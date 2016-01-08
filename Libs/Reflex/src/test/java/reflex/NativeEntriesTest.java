@@ -41,7 +41,7 @@ public class NativeEntriesTest extends ResourceBasedTest {
             runTestFor("/nativeEntriesBad.rfx");
             fail("Should have thrown exception.");
         } catch (ReflexException e) {
-            assertEquals(28, e.getLineNumber());
+            assertEquals(39, e.getLineNumber());
         }
     }
 }
