@@ -29,10 +29,6 @@ import org.apache.log4j.Logger;
 
 import com.incapture.rapgen.docString.DocumentationParser;
 
-/**
- * @author bardhi
- * @since 6/3/15.
- */
 public class FunctionFactory {
     private static final Logger log = Logger.getLogger(FunctionFactory.class);
 

@@ -5,7 +5,7 @@ import org.gradle.api.Project;
 import com.sun.org.apache.bcel.internal.classfile.SourceFile;
 
 project.group = 'com.rapture'
-project.version = '1.5'
+project.version = '3.0'
 
 File sourceFile = file('src/main/resources/incapture.gradle');
 File destDir = new File(getGradle().getGradleUserHomeDir(), "incapture");

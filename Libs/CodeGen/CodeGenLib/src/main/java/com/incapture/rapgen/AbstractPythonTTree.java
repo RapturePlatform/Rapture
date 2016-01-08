@@ -43,6 +43,7 @@ public abstract class AbstractPythonTTree extends AbstractTTree {
     private static String[] reservedWords = {"and", "del", "from", "not", "while", "as", "elif", "global", "or", "with", "assert", "else", "if", "pass",
             "yield", "break", "except", "import", "print", "class", "exec", "in", "raise", "continue", "finally", "is", "return", "def", "for", "lambda", "try"};
 
+    // If we have a reserved word as a parameter in a RaptureAPI, don't use that name, use a different one.
     protected String ensureNotReserved(String name) {
         for (String res : reservedWords) {
             if (name.equals(res)) {

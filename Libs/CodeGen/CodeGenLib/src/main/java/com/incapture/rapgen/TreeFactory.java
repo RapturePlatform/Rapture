@@ -26,10 +26,6 @@ package com.incapture.rapgen;
 import org.antlr.runtime.tree.CommonTreeNodeStream;
 import org.antlr.stringtemplate.StringTemplateGroup;
 
-/**
- * @author bardhi
- * @since 7/21/15.
- */
 public class TreeFactory {
     public static AbstractTTree createTreeWalker(CommonTreeNodeStream ns, StringTemplateGroup templates, String language) {
         ApiLanguage lang = ApiLanguage.valueOf(language.toUpperCase());

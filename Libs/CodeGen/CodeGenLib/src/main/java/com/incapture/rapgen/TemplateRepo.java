@@ -32,10 +32,6 @@ import java.util.TreeMap;
 
 import org.antlr.stringtemplate.StringTemplateGroup;
 
-/**
- * @author bardhi
- * @since 7/20/15.
- */
 public class TemplateRepo {
     private static final Map<String, Boolean> MULTI_FILE_LANGS = createMultiFileLangs();
 

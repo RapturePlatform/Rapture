@@ -23,10 +23,6 @@
  */
 package com.incapture.apigen.slate.function;
 
-/**
- * @author bardhi
- * @since 6/5/15.
- */
 public class Field {
     private String name;
     private String packageName;

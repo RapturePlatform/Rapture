@@ -23,9 +23,5 @@
  */
 package com.incapture.apigen.slate.function;
 
-/**
- * @author bardhi
- * @since 6/3/15.
- */
 public class Parameter extends Field {
 }

@@ -25,10 +25,6 @@ package com.incapture.apigen.slate.function;
 
 import java.util.List;
 
-/**
- * @author bardhi
- * @since 6/3/15.
- */
 public class Function {
     private Field returnType;
     private String name;

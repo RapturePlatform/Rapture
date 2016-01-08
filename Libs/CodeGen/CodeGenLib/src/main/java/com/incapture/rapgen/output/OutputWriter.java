@@ -40,10 +40,6 @@ import org.apache.commons.io.FileUtils;
 
 import com.incapture.rapgen.AbstractTTree;
 
-/**
- * @author bardhi
- * @since 11/17/14.
- */
 public class OutputWriter {
     public static void writeList(String outputKernelFolder, List<String> list, String filePath) {
         String filepath = outputKernelFolder + "/" + AbstractTTree.GEN_PATH_PREFIX + filePath;

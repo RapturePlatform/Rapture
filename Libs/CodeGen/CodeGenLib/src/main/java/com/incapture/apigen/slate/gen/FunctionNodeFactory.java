@@ -46,10 +46,6 @@ import com.incapture.slate.model.node.description.table.TableHeaderNode;
 import com.incapture.slate.model.node.description.table.TableNode;
 import com.incapture.slate.model.node.description.table.TableRowNode;
 
-/**
- * @author bardhi
- * @since 6/5/15.
- */
 public class FunctionNodeFactory {
     public static FunctionNode createFunctionNode(String apiName, Function function, TypesContainer typesContainer) {
         String functionName = function.getName();

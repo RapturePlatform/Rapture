@@ -3,15 +3,16 @@ buildscript {
     apply from: fromFile.getAbsolutePath();
 }
 
-
 plugins {
     id "com.github.hierynomus.license" version "0.12.1"
 }
+
 
 license {
     header = file('LICENSE')
 }
 apply plugin: 'sonar'
+
 project.version = '3.0.0'
 project.group = 'com.rapture'
 

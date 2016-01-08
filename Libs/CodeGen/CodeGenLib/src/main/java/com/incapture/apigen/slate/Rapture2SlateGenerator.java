@@ -49,10 +49,6 @@ import com.incapture.slate.model.node.WrapperNode;
 import com.incapture.slate.model.node.code.CodeAnnotationNode;
 import com.incapture.slate.model.node.code.CodeLanguageNode;
 
-/**
- * @author bardhi
- * @since 6/3/15.
- */
 public class Rapture2SlateGenerator {
     public ApiNodeWrapper generate(String version, String minVersion, List<Api> apis, List<TypeDefinition> typeDefinitions) {
         ApiNodeWrapper wrapper = new ApiNodeWrapper();

@@ -27,10 +27,6 @@ import java.util.List;
 
 import com.incapture.apigen.slate.function.Field;
 
-/**
- * @author bardhi
- * @since 6/5/15.
- */
 public class TypeDefinition {
     private String name;
     private String packageName;

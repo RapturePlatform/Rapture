@@ -48,10 +48,6 @@ public abstract class AbstractTTreeCurtisDoc extends AbstractTTree {
     private Map<String, Map<String, StringTemplate>> apiTemplates = new HashMap<String, Map<String, StringTemplate>>();
 
     protected void addApiTemplate(String fileName, String section, StringTemplate template) {
-        //System.out.println("Adding api template " + fileName);
-        //if (fileName.endsWith("/")) {
-        //    System.out.println(template.toString());
-        //}
         if (!apiTemplates.containsKey(fileName)) {
             Map<String, StringTemplate> t = new HashMap<String, StringTemplate>();
             apiTemplates.put(fileName, t);

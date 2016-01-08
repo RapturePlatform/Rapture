@@ -42,10 +42,6 @@ import com.google.common.collect.Lists;
 import com.incapture.apigen.slate.function.Parameter;
 import com.incapture.rapgen.parser.SampleCodeParser;
 
-/**
- * @author bardhi
- * @since 6/3/15.
- */
 public enum SampleCodeFactory {
     INSTANCE;
 

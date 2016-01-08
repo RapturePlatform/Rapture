@@ -23,10 +23,6 @@
  */
 package com.incapture.apigen.slate;
 
-/**
- * @author bardhi
- * @since 6/4/15.
- */
 public class ApiNameComparator implements java.util.Comparator<Api> {
 
     @Override

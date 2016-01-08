@@ -23,9 +23,6 @@
  */
 package com.incapture.rapgen;
 
-import rapture.common.exception.ExceptionToString;
-
-import java.io.File;
 import java.io.IOException;
 
 import org.antlr.runtime.CommonTokenStream;
@@ -39,8 +36,9 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 
+import rapture.common.exception.ExceptionToString;
+
 import com.incapture.rapgen.TParser.hmxdef_return;
-import com.incapture.rapgen.reader.FileApiReader;
 import com.incapture.rapgen.reader.ResourceBasedApiReader;
 
 class GenApi {
@@ -77,7 +75,6 @@ class GenApi {
             // And off we go
 
             TLexer lexer = new TLexer();
-            File apiRootDir = new File("src/main/resources");
             ResourceBasedApiReader apiReader = new ResourceBasedApiReader();
             lexer.setApiReader(apiReader);
             lexer.setCharStream(apiReader.read(mainApiFile));

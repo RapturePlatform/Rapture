@@ -30,10 +30,6 @@ import java.nio.charset.StandardCharsets;
 import org.antlr.runtime.ANTLRInputStream;
 import org.antlr.runtime.ANTLRStringStream;
 
-/**
- * @author bardhi
- * @since 7/21/15.
- */
 public class ResourceBasedApiReader implements ApiReader {
     @Override
     public ANTLRStringStream read(String apiFileName) throws IOException {

@@ -28,10 +28,6 @@ import java.util.List;
 import com.incapture.slate.model.node.ApiNode;
 import com.incapture.slate.model.node.IndexNode;
 
-/**
- * @author bardhi
- * @since 6/3/15.
- */
 public class ApiNodeWrapper {
     private IndexNode indexNode;
     private List<ApiNode> apiNodes;

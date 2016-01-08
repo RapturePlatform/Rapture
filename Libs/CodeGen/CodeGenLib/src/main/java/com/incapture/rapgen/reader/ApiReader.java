@@ -27,10 +27,6 @@ import java.io.IOException;
 
 import org.antlr.runtime.ANTLRStringStream;
 
-/**
- * @author bardhi
- * @since 7/21/15.
- */
 public interface ApiReader {
 
     /**
