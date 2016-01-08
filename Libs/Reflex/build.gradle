@@ -42,6 +42,12 @@ task copyReflexProps(type:Copy) {
        dependsOn generateGrammarSource
 }
 
+sourceSets {
+	main {
+     	java { srcDir "$buildDir/generated-sources/antlr" }
+	}
+}
+    
 compileJava {
      dependsOn copyReflexProps
      source generateGrammarSource.destinationDir

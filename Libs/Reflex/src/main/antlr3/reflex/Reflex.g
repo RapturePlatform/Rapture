@@ -1,11 +1,10 @@
-// This is the grammer for Reflex
+// This is the combined lexer/parser for Reflex
 
 grammar Reflex;
 
 options {
   output=AST;
   backtrack=true;
-  //memoize=true;
 }
 
 
@@ -437,6 +436,9 @@ push
 throwStatement
   :  Throw expression
      -> ^(Throw expression);
+  
+  // These are split into two for performance reasons - functions in the first set will be detected by
+  // the parser quicker than those in the second.
   
 functionCall
   :  PackageIdentifier '(' exprList? ')' -> ^(FUNC_CALL[$PackageIdentifier] PackageIdentifier exprList?)

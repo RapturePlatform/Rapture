@@ -38,8 +38,6 @@ public abstract class BaseAuditImplementation implements AuditLog {
         AuditLogEntry entry = new AuditLogEntry();
         entry.setLevel(level);
         entry.setCategory(category);
-        // entry.setSource(Kernel.getKernel().getAppStyle() + "."
-        // + Kernel.getKernel().getAppId());
         entry.setLogId(getLogId());
         entry.setUser(user);
         entry.setMessage(message);
