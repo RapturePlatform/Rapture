@@ -1,0 +1,41 @@
+/**
+ * This is the Rapture API
+ */
+
+version(2.0.0)
+minVer(2.0.0)
+
+include "api/types.api"
+
+include "api/activity.api"
+include "api/bootstrap.api"
+include "api/script.api"
+include "api/lock.api"
+include "api/notification.api"
+include "api/table.api"
+include "api/index.api"
+include "api/admin.api"
+include "api/idgen.api"
+include "api/entitlements.api"
+include "api/user.api"
+include "api/schedule.api"
+include "api/event.api"
+include "api/audit.api"
+include "api/mailbox.api"
+include "api/fields.api"
+include "api/blob.api"
+include "api/jar.api"
+include "api/sheet.api"
+include "api/plugin.api"
+include "api/pipeline.api"
+include "api/async.api"
+include "api/sys.api"
+include "api/runner.api"
+include "api/series.api"
+include "api/decision.api"
+include "api/repo.api"
+include "api/doc.api"
+include "api/relationship.api"
+include "api/environment.api"
+include "api/question.api"
+include "api/structured.api"

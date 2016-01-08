@@ -1,0 +1,29 @@
+{
+  "id" : "ORD00000620",
+  "orderDate" : "20140627",
+  "ordType" : "market",
+  "handlInst" : "manual",
+  "legs" : [ {
+    "side" : "buy",
+    "quantity" : 30.0,
+    "remainingQuantity" : 22.0,
+    "quantityType" : "contracts",
+    "allocations" : [ {
+      "account" : "ALPHACAP",
+      "accountIdSource" : 100,
+      "quantity" : 30.0,
+      "allocationMethod" : "units",
+      "nestedParties" : [ {
+        "id" : "UK_SPREAD_2",
+        "role" : "strategy"
+      } 
+    } ],
+    "preallocationMethod" : "user",
+    "symbol" : "IKU4 Comdty"
+  } ],
+  "parties" : [ ],
+  "strategy" : "CAEVENT",
+  "fund" : "ALPHACAPTURE",
+  "status" : "PARTIALLY_FILLED",
+  "traderId" : "11774453"
+}

@@ -1,0 +1,48 @@
+jar.manifest.attributes "Implementation-Title" : "Reflex"
+
+dependencies {
+    compile project(':RaptureAPI')
+	compile project(':RaptureCommon')
+}
+
+configurations {
+    antlr3
+}
+
+dependencies {
+     compile 'org.antlr:antlr-runtime:3.5.2'
+     antlr3 'org.antlr:antlr:3.5.2'
+     compile 'org.antlr:stringtemplate:4.0.2'
+     compile 'org.apache.commons:commons-math3:3.0'
+}
+
+task antlrOutputDir << {
+     mkdir(generateGrammarSource.destinationDir)
+}
+
+task generateGrammarSource(dependsOn: antlrOutputDir, type: JavaExec) {
+     description = 'Generates Java sources from Antlr3 grammars.'
+     convention.destinationDir = "$buildDir/generated-sources/antlr/reflex"
+     def antlrSource = 'src/main/antlr3'
+
+     inputs.dir(fileTree(antlrSource))
+     outputs.dir(fileTree(destinationDir))
+
+     def grammars = fileTree(antlrSource).include('**/*.g')
+
+     main = 'org.antlr.Tool'
+     classpath = configurations.antlr3
+     args = ["-o", "${destinationDir}", grammars.files].flatten()
+}
+
+task copyReflexProps(type:Copy) {
+       from generateGrammarSource.destinationDir
+       into 'build/classes/main'
+       include '**/*.tokens'
+       dependsOn generateGrammarSource
+}
+
+compileJava {
+     dependsOn copyReflexProps
+     source generateGrammarSource.destinationDir
+}

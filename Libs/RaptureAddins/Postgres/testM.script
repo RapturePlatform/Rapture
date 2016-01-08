@@ -1,0 +1,27 @@
+// Create repo
+//
+
+//#doc.createDocRepo('//mTest','NREP {} USING MONGODB { "prefix" = "pTest" }');
+
+// Loop through creating some values
+
+valNames = [];
+
+x = timer();
+
+for i = 0 to 1000 do
+    uri = '//mTest/' + (i%10) + '/' + i;
+    doc = { 'content' : i };
+//    println("Would write ${doc} to ${uri}");
+    doc --> uri;
+    valNames += uri;
+end
+
+for uri in valNames do
+//    println("Would load ${uri}");
+    v <-- uri;
+    println(v);
+end
+
+println("Elapsed is " + timer(x));
+

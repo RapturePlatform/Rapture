@@ -1,0 +1,93 @@
+buildscript {
+    File fromFile = new File(new File(getGradle().getGradleUserHomeDir(), "incapture"), "incapture.gradle");
+    apply from: fromFile.getAbsolutePath();
+}
+
+
+plugins {
+    id "com.github.hierynomus.license" version "0.12.1"
+}
+
+license {
+    header = file('LICENSE')
+}
+apply plugin: 'sonar'
+project.version = '3.0.0'
+project.group = 'com.rapture'
+
+subprojects {
+    project.ext.set('raptureBootstrapDisablePlugins', 'false')
+    apply plugin: 'rapture-bootstrap'
+    apply plugin: 'eclipse'
+
+    project.group = parent.group
+    project.version = parent.version
+
+    def loggingVersion = '1.6.1'
+    def httpVersion = '4.2.2'
+    def incaptureRepo = 'http://release.incapturesolutions.com/repository'
+
+    // Include messages/bundle properties files from the java area
+
+    task copyProps(type: Copy) {
+        from 'src/main/java'
+        into 'build/classes/main'
+        include '**/*.txt', '**/*.xml', '**/*.properties', '**/*.proto'
+    }
+
+    compileJava.dependsOn(copyProps)
+
+    test {
+        include 'rapture/**'
+        include 'reflex/**'
+        include 'config/**'
+
+        // set JVM arguments for the test JVM(s)
+        jvmArgs '-noverify'
+    }
+
+    jar {
+        manifest {
+            attributes "Implementation-Vendor": "Incapture Technologies"
+            attributes "Implementation-Version": project.version
+            attributes "Built-By": System.getProperty('user.name')
+            attributes "Built-Date": project.timestamp
+        }
+    }
+
+    task jarTest (type: Jar) {
+        from sourceSets.test.output
+        classifier = 'test'
+    }
+
+    configurations {
+        testOutput
+    }
+
+    artifacts {
+        testOutput jarTest
+    }
+
+    dependencies {
+        compile "org.apache.httpcomponents:httpcore:$httpVersion"
+        compile "org.apache.httpcomponents:httpcore-nio:$httpVersion"
+        compile "org.apache.httpcomponents:httpclient:$httpVersion"
+        compile "org.apache.httpcomponents:httpmime:$httpVersion"
+        compile 'joda-time:joda-time:2.1'
+        compile 'commons-cli:commons-cli:1.1'
+        compile 'commons-io:commons-io:2.0'
+        compile 'com.fasterxml.jackson.core:jackson-databind:2.5.4'
+        compile "log4j:log4j:1.2.17"
+        compile "uk.org.simonsite:log4j-rolling-appender:20131024-2017"
+        compile "org.slf4j:jcl-over-slf4j:$loggingVersion"
+        compile "org.slf4j:slf4j-api:$loggingVersion"
+        compile "org.slf4j:slf4j-log4j12:$loggingVersion"
+        testCompile 'junit:junit:4.10'
+        testCompile 'org.testng:testng:6.8.7'
+        testCompile 'com.googlecode.catch-exception:catch-exception:1.0.4'
+        testCompile 'org.objenesis:objenesis:2.0'
+        testCompile 'org.powermock:powermock-module-junit4:1.5.1'
+        testCompile 'org.powermock:powermock-api-easymock:1.5.1'
+        testCompile 'org.easymock:easymock:3.2'
+    }
+}

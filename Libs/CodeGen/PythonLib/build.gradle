@@ -1,0 +1,82 @@
+apply plugin: 'maven'
+apply plugin: 'maven-publish'
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    compile project(":CodeGen:CodeGenLib")
+    compile project(":CodeGen:ApiGen")
+}
+
+task copyPy(type: Copy) {
+    from "../../API/Python/"
+    into "${buildDir}/raptureAPI"
+    include "*.py"
+}
+
+task copyApi(type: Copy) {
+    from "src/main/python/raptureAPI"
+    into "${buildDir}/raptureAPI"
+    include "_*"
+}
+
+task copySrc(type: Copy) {
+    from "src/main/python"
+    into "${buildDir}"
+    include "*.*"
+    outputs.upToDateWhen { false }
+}
+
+task makeWheel () {
+    println "Packaging Python RaptureAPI"
+    println "-" * 30
+    dependsOn copySrc
+    dependsOn copyPy
+    dependsOn copyApi
+    outputs.dir "${buildDir}/dist" 
+
+    doLast {
+        exec {
+        executable = 'python'
+            args 'setup.py', 'bdist_wheel'
+            workingDir "${buildDir}"
+        }
+    }
+}
+
+task makeZip (type: Zip) {
+    dependsOn makeWheel
+    from ("${buildDir}/dist") 
+    include '**.whl'
+    archiveName "${project.name}-${version}.zip"
+    destinationDir = new File("${buildDir}/dist")
+}
+
+task copyZip(type: Copy) {
+    dependsOn makeZip
+    from "${buildDir}/dist"
+    into "../../API/Python/"
+    include "*"
+}
+
+build.dependsOn(copyZip)
+install.dependsOn(copyZip)
+
+configurations.archives.artifacts.with { archives -> def jarArtifact
+    def list = []
+    archives.each {
+        if (it.file =~ 'jar') {
+            list.push(it)
+        }
+    }
+    list.each {
+        archives.remove(it) 
+    }
+}
+
+artifacts {
+    archives file("${buildDir}/dist/${project.name}-${version}.zip")
+}

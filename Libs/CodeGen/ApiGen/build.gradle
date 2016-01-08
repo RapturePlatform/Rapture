@@ -1,0 +1,98 @@
+jar.manifest.attributes "Implementation-Title" : "ApiGen"
+
+import com.incapture.rapgen.GenApi
+
+dependencies {
+    compile project(":CodeGen:CodeGenLib")
+}
+
+// Create generator tasks for all but Java (which will place the output in a different folder)
+
+def langs = [
+        'JS',
+        'Ruby',
+        'VB',
+        'Go',
+        'Python',
+        'SlateMd'
+]
+def taskGroup = "RaptureGenerators"
+
+langs.each { lang ->
+    project.tasks.create(name: "gen${lang}", type: GenApi, group: taskGroup) {
+        language = lang
+        mainApiFile = "api/rapt.api"
+        apiDestDir = file("../../API/")
+    }
+}
+
+task genJava (type: GenApi, group: taskGroup) {
+    language = "Java"
+    codeSamplesJava = file("../../RaptureCore/src/test/java")
+    apiDestDir = file('../../RaptureAPI')
+    kernelDestDir = file('../../RaptureCore')
+    mainApiFile = "api/rapt.api"
+}
+
+langs << 'Java'
+
+
+def mainClassName = "com.incapture.rapgen.GenApi"
+
+project.tasks.create(name: 'genDotNet',  type: JavaExec, group: taskGroup) {
+    description "Generate API for DotNet"
+    main = mainClassName
+    classpath = project.sourceSets.main.runtimeClasspath
+    inputs.dir file("api/")
+    inputs.file "template/DotNet.stg"
+    outputs.dir(fileTree("../../DotNetRaptureApi/DotNetRaptureApi/Generated"));
+
+    args = [
+            '-mainApiFile',
+            'api/rapt.api',
+            '-l',
+            'DotNet',
+            '-o',
+            "../../DotNetRaptureApi/DotNetRaptureApi",
+            '-a',
+            "../../DotNetRaptureApi/DotNetRaptureApi",
+            '-g',
+            "API",
+    ]
+}
+
+langs << "DotNet"
+
+project.tasks.create(name: 'genCurtisDoc',  type: JavaExec, group: taskGroup) {
+    description "Generate API for CurtisDoc"
+    main = mainClassName
+    classpath = project.sourceSets.main.runtimeClasspath
+    inputs.dir file("api/")
+    outputs.dir(fileTree("../../CurtisDocRaptureApi/Generated"));
+
+    args = [
+            '-mainApiFile',
+            'api/rapt.api',
+            '-l',
+            'CurtisDoc',
+            '-o',
+            "../../../RaptureSamples/Curtis/CurtisApiDoc/src/main/resources/FEATURE/content/curtis.api",
+            '-a',
+            "../../../RaptureSamples/Curtis/CurtisApiDoc/src/main/resources/FEATURE/content/curtis.api",
+            '-g',
+            "API",
+    ]
+}
+
+langs << "CurtisDoc"
+
+
+task genAll(description: "Generate all apis", group: taskGroup) << { println "Generating all apis for Rapture" }
+
+langs.each { lang -> genAll.dependsOn "gen${lang}" }
+
+genAll.dependsOn("compileJava")
+
+task packagePython << {
+	println "packagePython task is no longer necessary. This action is now done by build in PythonLib"
+}

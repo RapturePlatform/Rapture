@@ -1,0 +1,73 @@
+[The plugin API is used to manipulate information about stored plugins in the system. A plugin is a set of scripts, type and data definitions.]
+
+api(Plugin) {
+ 
+   [Lists plugins in the system.]
+   @entitle=/admin/main
+   @public List(PluginConfig) getInstalledPlugins();
+   
+   [Retrieves the manifest for a plugin.]
+   @entitle=/admin/main
+   @public PluginManifest getPluginManifest(String manifestUri);
+   
+   [Retrieves the manifest for a plugin.]
+   @entitle=/admin/main
+   @public void recordPlugin(PluginConfig plugin);
+
+   [Installs the plugin and updates the registry.]
+   @entitle=/admin/main
+   @public void installPlugin(PluginManifest manifest, Map(String,PluginTransportItem)payload);
+
+   [Installs a single item from a plugin to allow clients to operate in a low-memory environment]
+   @entitle=/admin/main
+   @public void installPluginItem(String pluginName, PluginTransportItem item);
+
+   [Removes a plugin.]  
+   @entitle=/admin/main
+   @public void uninstallPlugin(String name);
+   
+   [Removes an item from a plugin.]  
+   @entitle=/admin/main
+   @public void uninstallPluginItem(PluginTransportItem item);
+   
+   [Removes plugin Manifest but does not uninstall any referenced items.]
+   @entitle=/admin/main
+   @public void deletePluginManifest(String manifestUri);
+   
+   [Gets the encoding for a Rapture object given its URI.]
+   @entitle=/admin/main
+   @public PluginTransportItem getPluginItem(String uri);   
+   
+   [Verifies that the contents of a plugin match the hashes in the manifest.]
+   @entitle=/admin/main
+   @public Map(String,String) verifyPlugin(String plugin);   
+
+   [create an empty manifest on the server with version 0.0.0]
+   @entitle=/admin/main
+   @public void createManifest(String pluginName);
+
+   [add an object on the server to a plugin manifest on the server]
+   @entitle=/admin/main
+   @public void addManifestItem(String pluginName, String uri);
+
+   [add uris within the specified docpath root. If no type is specifed in the uri, use all four of doc, blob, series, and sheet. Example1: //myProject/myfolder adds all four types. Example2: blob://myproject/myfolder adds only blobs]
+   @entitle=/admin/main
+   @public void addManifestDataFolder(String pluginName, String uri);
+
+   [remove uris within the specified path. If no type is specifed in the uri, use all four of doc, blob, series, and sheet.]
+   @entitle=/admin/main
+   @public void removeManifestDataFolder(String pluginName, String uri);
+
+   [refresh the MD5 checksums in the manifest and set the version for a manifest on the server]
+   @entitle=/admin/main
+   @public void setManifestVersion(String pluginName, String version);
+   
+   [remove an item from the manifest of a plugin on the server]
+   @entitle=/admin/main
+   @public void removeItemFromManifest(String pluginName, String uri);
+   
+   [Export a plugin as a single blob. We pass in a parent path; the blob will be generated somewhere under that path, in a non-predictable location. The location is returned.]
+   @entitle=/admin/main
+   @public String exportPlugin(String pluginName, String path);
+}
+

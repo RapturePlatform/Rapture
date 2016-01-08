@@ -1,0 +1,44 @@
+jar.manifest.attributes "Implementation-Title" : "RaptureAddinCore"
+
+dependencies {
+    compile project(':RaptureAPI')
+    compile project(':RaptureCommon')
+    compile 'org.yaml:snakeyaml:1.10'
+    compile 'org.apache.ddlutils:ddlutils:1.0'
+}
+
+project.ext.grammarpackage = "rapture/parser"
+
+configurations {
+    antlr3
+}
+
+dependencies {
+     compile 'org.antlr:antlr-runtime:3.5.2'
+     antlr3 'org.antlr:antlr:3.5.2'
+}
+
+task antlrOutputDir << {
+     mkdir(generateGrammarSource.destinationDir)
+}
+
+task generateGrammarSource(dependsOn: antlrOutputDir, type: JavaExec) {
+     description = 'Generates Java sources from Antlr3 grammars.'
+     convention.destinationDir = "$buildDir/generated-sources/antlr/rapture/parser"
+     def antlrSource = 'src/main/antlr3'
+
+     inputs.dir file(antlrSource)
+     outputs.dir file(destinationDir)
+
+     def grammars = fileTree(antlrSource).include('**/*.g')
+
+     main = 'org.antlr.Tool'
+     classpath = configurations.antlr3
+     args = ["-o", "${destinationDir}", grammars.files].flatten()
+}
+
+compileJava {
+     dependsOn generateGrammarSource
+     source generateGrammarSource.destinationDir
+}
+

@@ -1,0 +1,3 @@
+# With shell, you can just pass the correct header with each request
+curl "http://localhost:8665/rapture"
+  -H "Authorization: someAuthToken"

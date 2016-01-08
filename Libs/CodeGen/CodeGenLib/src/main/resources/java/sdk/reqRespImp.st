@@ -1,0 +1,1 @@
+import rapture.<sdkname>.common.shared.<apitype; format="lower">.<name; format="upcase">Payload;

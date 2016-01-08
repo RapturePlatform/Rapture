@@ -1,0 +1,29 @@
+[For manipulating Rapture tables. Tables are data warehouses in Rapture that are used primarily internally to manage things such as indexes on other data. The terms index and table are used interchangeably in Rapture.]
+@deprecated="The Table api is deprecated, use the index api instead"
+api(Table) {
+    [Creates a RaptureTableConfig object with the specified configuration and stores it in the config repo.]
+    @entitle=/admin/index
+    @deprecated="The Table api is deprecated, use the index api instead"
+    @public RaptureTableConfig createTable(String indexURI, String config);
+    
+    [Gets the configs for all tables in a given authority.]
+    @entitle=/admin/index
+    @deprecated="The Table api is deprecated, use the index api instead"
+    @public List(RaptureTableConfig) getTablesForAuthority(String authority);
+    
+    [Gets the config for a specified table.]
+    @entitle=/admin/index
+    @deprecated="The Table api is deprecated, use the index api instead"
+    @public RaptureTableConfig getTable(String indexURI);
+    
+    [Deletes a RaptureTableConfig from the config repo.]
+    @entitle=/admin/index
+    @deprecated="The Table api is deprecated, use the index api instead"
+    @public Boolean deleteTable(String indexURI);
+    
+    [Runs a TableQuery on a given table/index URI.]
+    @entitle=/admin/index
+    @deprecated="The Table api is deprecated, use the index api instead"
+    @public List(TableRecord) queryTable(String indexURI, TableQuery query);
+}
+

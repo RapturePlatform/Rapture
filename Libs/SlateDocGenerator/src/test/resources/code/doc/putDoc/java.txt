@@ -1,0 +1,5 @@
+HttpDocApi docApi = new HttpDocApi(loginApi);
+/**
+@param docURI could be xyz
+*/
+String doc = docApi.putDoc(docURI, jsonValuew);

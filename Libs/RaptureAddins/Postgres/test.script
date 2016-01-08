@@ -1,0 +1,30 @@
+// Create repo
+//
+
+//#doc.createDocRepo('//pTest4','NREP {} USING POSTGRES { prefix="pTest4" }');
+
+// Loop through creating some values
+
+valNames = [];
+names = [ 'alan', 'fred', 'wilma', 'joe', 'james', 'billy', 'brandy', 'carly', 'newman', 'zilla', 'dunga' ];
+x = timer();
+
+println("Creating");
+for i = 0 to 1000 do
+    uri = '//pTest4/' + names[i%10] + '/' + i;
+    doc = { 'content' : i*5 };
+//    println("Would write ${doc} to ${uri}");
+    doc --> uri;
+    valNames += uri;
+end
+
+println("Elapsed is " + timer(x));
+println("loading");
+for uri in valNames do
+//    println("Would load ${uri}");
+    v <-- uri;
+//    println(v);
+end
+
+println("Elapsed is " + timer(x));
+

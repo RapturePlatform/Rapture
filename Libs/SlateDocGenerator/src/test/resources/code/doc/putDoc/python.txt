@@ -1,0 +1,1 @@
+baseAPI.doDoc_PutDoc("document://my/uri", "{\"field1\": 1}");

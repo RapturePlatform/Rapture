@@ -1,0 +1,1 @@
+result = prime * result + ((<fieldName> == null) ? 0 : <fieldName>.hashCode());

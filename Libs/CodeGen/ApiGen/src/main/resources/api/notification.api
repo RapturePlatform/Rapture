@@ -1,0 +1,52 @@
+
+[The notification API is used as a means for transferring notifications between interested parties. In most cases a notification provider maintains a list of messages, 
+and each message is associated with an ever increasing 'epoch number.' A client can retrieve the latest epoch number from a provider and then poll for changes since
+that epoch - all updates since that point can be returned.]
+api(Notification) {
+  [This method retrieves the notification providers in use at this Rapture system.]
+  @entitle=/admin/notification
+  @public List(RaptureNotificationConfig) getNotificationManagerConfigs();
+   
+  [Returns a list of full display names of the paths below this one. Ideally optimized depending on the repo.]
+  @entitle=/user/get
+  @public List(RaptureFolderInfo) listNotificationsByUriPrefix(String uriPrefix);
+    
+  [Notification providers have an associated purpose - this method returns only those providers that match the given purpose.]
+  @entitle=/admin/notification
+  @public List(RaptureNotificationConfig) findNotificationManagerConfigsByPurpose(String purpose);
+   
+  [This method creates a definition of a notification provider.]
+  @entitle=/admin/notification
+  @public RaptureNotificationConfig createNotificationManager(String notificationManagerUri, String config, String purpose);
+
+  [Indicates whether a notification provider with notificationName was found.]
+  @entitle=/admin/notification
+  @public Boolean notificationManagerExists(String notificationManagerUri);
+    
+  [This method returns the low level config for a given notification provider.]
+  @entitle=/admin/notification
+  @public RaptureNotificationConfig getNotificationManagerConfig(String notificationManagerUri);
+    
+  [This method removes a notification provider and all its content.]
+  @entitle=/admin/notification
+  @public void deleteNotificationManager(String notificationManagerUri);
+   
+  [This method retrieves the current epoch number for a given notification point.]
+  @entitle=/user/notification
+  @public Long getLatestNotificationEpoch(String notificationManagerUri);
+
+  [This method pushes a notification to a provider.]
+  @entitle=/user/notification
+  @public String publishNotification(String notificationManagerUri, String referenceId, String content, String contentType);
+
+  [This method returns the changes seen on a notification since an epoch. A client would then update its latest epoch by using the value in the 
+  notification result.]
+  @entitle=/admin/notification
+  @public NotificationResult findNotificationsAfterEpoch(String notificationManagerUri, Long epoch);
+
+  [This method returns a notification message given its id.]
+  @entitle=/admin/notification
+  @public NotificationInfo getNotification(String notificationUri, String id);
+}
+
+

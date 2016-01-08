@@ -1,0 +1,27 @@
+[The Async API works closely with the Pipeline API - it puts tasks onto the Pipeline for future execution. The most often used
+call is one where a Reflex script is scheduled for execution, using the asyncReflex* calls.]
+
+api(Async) {
+   [Run a passed script in an asynchronous manner. Tells Rapture to run the script as part of a predefined internal workflow,
+   and returns workOrderURI that can be used in other calls to retrieve the status. The second parameter is the set of
+   parameters that will be passed to the script upon execution.]
+   @entitle=/async/reflex
+   @public String asyncReflexScript(String reflexScript, Map(String, String) parameters);
+
+   [Run a script that has already been loaded onto Rapture in an asynchronous manner. The script is named through its
+   uri. As with asyncReflexScript, the parameters passed in the last parameter to this function are passed
+   to the script upon invocation, and the return value from this function is a workOrderURI that can be used to determine
+   the ultimate status of this WorkOrder.]
+   @entitle=/async/reflex
+   @public String asyncReflexReference(String scriptURI, Map(String, String) parameters);
+
+   [Retrieve the status of a given async task. Will return null if the task id is not known to the environment.]
+   @entitle=/admin/main
+   @public WorkOrderStatus asyncStatus(String taskId);
+
+   [Sets up workflows needed to run any of these scripts. Should be called by Rapture internally on init]
+   @entitle=/admin/async
+   @public void setupDefaultWorkflows(Boolean force);
+
+}
+

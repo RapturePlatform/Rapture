@@ -1,0 +1,43 @@
+
+// This is a decision process "script" - it is parsed into a data structure as part of the Decision Process and then "executed" as it moves through 
+// stages
+
+/*
+ * This is a sample decision process
+ */
+ 
+dp(OrderValidation) {
+	tag(entry, CheckCompliance); 
+	tag(exit, FinishSuccess); 
+	
+	step(CheckCompliance) {
+		link(approved, AutoApprove);
+		
+		reflex --->
+			// This is a Reflex script embedded in the Decision Process
+			println("Running step 'CheckCompliance'");
+			return "approved";
+		<---
+	}
+	
+	step(AutoApprove) {
+		link(default, FinishSuccess);
+		
+		reflex --->
+			println("Auto approving");
+			return "default";
+		<---
+	}
+	
+	step(FinishSuccess) {
+		reflex --->
+			println("Finish Success");
+			return "";
+		<---
+	}
+	
+}
+
+
+
+

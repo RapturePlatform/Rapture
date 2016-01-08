@@ -1,0 +1,6 @@
+jar.manifest.attributes "Implementation-Title": "Common Workflows used by the Rapture Kernel"
+
+dependencies {
+    compile project(':RaptureCommon')
+    compile project(':RaptureAPI')
+}

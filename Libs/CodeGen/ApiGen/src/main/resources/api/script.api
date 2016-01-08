@@ -1,0 +1,100 @@
+[The Scripting API is used to define and manage Reflex scripts that are used within Rapture.]
+api(Script) {
+    [Creates a script in the system.]
+    @entitle=/script/write/$f(scriptURI)
+    @public RaptureScript createScript(String scriptURI, RaptureScriptLanguage language, RaptureScriptPurpose purpose, String script);
+
+    [Creates a symbolic link to a script in the system.]
+    @entitle=/script/write/$f(fromScriptURI)
+    @public void createScriptLink(String fromScriptURI, String toScriptURI);
+    
+    [Removes a symbolic link to a script in the system.]
+    @entitle=/script/write/$f(fromScriptURI)
+    @public void removeScriptLink(String fromScriptURI);
+    
+    [Sets the parameters that should be used for a script. Parameters are the names of the arguments that should be passed in, not the argument values themselves.]
+    @entitle=/script/write/$f(scriptURI)
+    @public RaptureScript setScriptParameters(String scriptURI, List(RaptureParameter) parameters);
+
+    [Returns true the given script was found.]
+    @entitle=/script/read/$f(scriptURI)
+    @public Boolean doesScriptExist(String scriptURI);
+
+    [Removes the script from the system.]
+    @entitle=/script/write/$f(scriptURI)
+    @public void deleteScript(String scriptURI);
+    
+    [Retrieves all of the scripts within a authority.]
+    @entitle=/script/read/$f(scriptURI)
+    @public List(String) getScriptNames(String scriptURI);
+
+    [Retrieves the contents of a script.]
+    @entitle=/script/read/$f(scriptURI)
+    @public RaptureScript getScript(String scriptURI);
+   
+    [Stores a script in the system using a RaptureScript object. 
+     TODO is there really any point in passing the URI? The storage location is based on RaptureScript.
+     All we do is extract the Authority from the URI; the caller can do that. ]
+    @entitle=/script/write/$f(scriptURI)
+    @public RaptureScript putScript(String scriptURI, RaptureScript script);
+    
+    [Store a script in the system using raw inputs. Most users will want the value PROGRAM for purpose.]
+    @entitle=/script/write/$f(scriptURI)
+    @public RaptureScript putRawScript(String scriptURI, String content, String language, String purpose, List(String) param_types, List(String) param_names);
+   
+    [Run a script in the Rapture environment. ]
+    @entitle=/script/exec/$f(scriptURI)
+    @public String runScript(String scriptURI, Map(String, String) parameters);
+
+    [Runs a script in the Rapture environment. ]
+    @entitle=/script/exec/$f(scriptURI)
+    @public ScriptResult runScriptExtended(String scriptURI, Map(String, String) parameters);
+
+    [Parses the script and returns any error messages from the parsing process. If the String returned is empty the script is valid Reflex.]
+    @entitle=/script/read/$f(scriptURI)
+    @public String checkScript(String scriptURI);  
+    
+    [Creates a Reflex REPL session that can be written to. These sessions eventually die if not used
+      or killed]
+    @entitle=/script/exec
+    @public String createREPLSession();
+    
+    [Kills an existing Reflex REPL session.]
+    @entitle=/script/exec
+    @public void destroyREPLSession(String sessionId);
+    
+    [Adds a line to the current Reflex session, returns back what the parser/evaluator says]
+    @entitle=/script/exec
+    @public String evaluateREPL(String sessionId, String line);
+    
+    [Archive/delete old REPL sessions]
+    @entitle=/admin/script
+    @public void archiveOldREPLSessions(Long ageInMinutes);
+    
+    [Creates a code snippet and stores it in Rapture.]
+    @entitle=/admin/snippet
+    @public RaptureSnippet createSnippet(String snippetURI, String snippet);
+    
+    [Returns all children snippets with a given prefix.]
+    @entitle=/admin/snippet
+    @public List(RaptureFolderInfo) getSnippetChildren(String prefix);
+    
+    [Deletes a snippet by its URI.]
+    @entitle=/admin/snippet
+    @public void deleteSnippet(String snippetURI);
+    
+    [Retrieves a snippet by its URI.]
+    @entitle=/admin/snippet
+    @public RaptureSnippet getSnippet(String snippetURI);
+       
+    [Returns full pathnames for an entire subtree as a map of path to RFI.]
+    @entitle=/script/read/$f(uriPrefix)
+    @public Map(String,RaptureFolderInfo) listScriptsByUriPrefix(String uriPrefix, int depth);
+
+    [Removes a folder and its contents recursively, including empty subfolders. Returns a list of the scripts and folders removed.]
+    @entitle=/script/write/$f(uriPrefix)
+    @public List(String) deleteScriptsByUriPrefix(String uriPrefix);
+
+}
+
+

@@ -1,0 +1,66 @@
+
+[ The Blob api is used to manipulate large opaque objects that have names (displaynames) like other data but do not
+have any insight to be gained from their contents from within Rapture. The RESTful API can be used to efficiently download
+a blob as a stream (or upload it)]
+
+api(Blob) {
+   [Creates a repository for unstructured data.]
+   @entitle=/repo/write
+   @public void createBlobRepo(String blobRepoUri, String config, String metaConfig);
+
+   [Retrieves blob repository information]
+   @entitle=/repo/read
+   @public BlobRepoConfig getBlobRepoConfig(String blobRepoUri);
+   
+   [Retrieves a collection of objects that contain the configuration information for all the defined blob repositories.]
+   @entitle=/repo/read
+   @public List(BlobRepoConfig) getBlobRepoConfigs();
+
+   [This method removes a blob Repository and its data from the Rapture system. There is no undo.] 
+   @entitle=/repo/write
+   @public void deleteBlobRepo(String repoUri);
+
+   [This api call can be used to determine whether a given repo exists.]
+   @entitle=/repo/list
+   @public Boolean blobRepoExists(String repoUri);
+
+   [This api call can be used to determine whether a given blob exists.]
+   @entitle=/data/list/$f(blobUri)
+   @public Boolean blobExists(String blobUri);
+   
+   [Appends to a blob.]
+   @entitle=/data/write/$f(blobUri)
+   @public void addBlobContent(String blobUri, ByteArray content);
+   
+   [Stores a blob in one hit, assuming a String representation. If append, adds to any content already existing]
+   @entitle=/data/write/$f(blobUri)
+   @public void putBlob(String blobUri, ByteArray content, String contentType);
+
+   [Retrieves a blob and its metadata. The blob is represented as a byte array.]
+   @entitle=/data/read/$f(blobUri)
+   @public BlobContainer getBlob(String blobUri);
+
+   [Removes a blob from the backing store. There is no undo.]
+   @entitle=/data/write/$f(blobUri)
+   @public void deleteBlob(String blobUri);
+
+   [Retrieves the number of bytes in a blob.]
+   @entitle=/data/list/$f(blobUri)
+   @public Long getBlobSize(String blobUri);
+   
+   [Retrieves all metadata associated with a blob.]
+   @entitle=/data/list/$f(blobUri)
+   @public Map(String,String) getBlobMetaData(String blobUri);
+
+   [Returns full pathnames for an entire subtree as a map of the path to RFI.]
+   @entitle=/data/list/$f(uriPrefix)
+   @public Map(String,RaptureFolderInfo) listBlobsByUriPrefix(String uriPrefix, int depth);
+
+   [Removes a folder and its contents recursively, including empty subfolders. Validates entitlement on individual blobs and folders. Returns a list of the blobs and folders removed.]
+   @entitle=/data/write/$f(uriPrefix)
+   @public List(String) deleteBlobsByUriPrefix(String uriPrefix);
+
+
+}
+
+

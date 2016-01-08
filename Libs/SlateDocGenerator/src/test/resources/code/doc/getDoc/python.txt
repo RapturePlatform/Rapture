@@ -1,0 +1,1 @@
+baseAPI.doDoc_GetDoc("document://my/uri");

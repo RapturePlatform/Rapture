@@ -1,0 +1,20 @@
+// Test script folder removal
+
+const SCRIPTAREA = '//testScript';
+
+//#script.deleteScript(SCRIPTNAME);
+
+for i = 1 to 5 do
+  #script.createScript("${SCRIPTAREA}/${i}", 'REFLEX', 'PROGRAM', "println(${i});");
+end
+
+printScripts();
+x = #script.deleteScriptsByUriPrefix(SCRIPTAREA);
+println("Removed ${x}");
+printScripts();
+
+def printScripts()
+  scripts = #script.getScriptNames(SCRIPTAREA);
+  println("Scripts are ${scripts}");
+end
+

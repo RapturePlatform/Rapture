@@ -1,0 +1,38 @@
+group T;
+
+PythonApiParam(type, name) ::= <<
+<name>
+>>
+
+PythonApiSetter(type, paramName, name) ::= <<
+params['<paramName>'] = self.raptureAPI.fixTypes(<name>)
+>>
+
+
+PythonApiFn(sdkName, apitype, name, apiParams, setterParams, ret, comment) ::= <<
+    def do<apitype; format="upcase">_<name; format="upcase">(self<if(apiParams)>,<endif><apiParams; separator=",">):
+        '''
+        <comment>
+        '''
+        params = {}
+        params['context'] = self.raptureAPI.context
+        <setterParams; separator="\n">
+        ret= self.raptureAPI.runMultipart("/<sdkName>/<apitype; format="lower">", "<name; format="upper">", params)
+        return ret['response']
+
+>>
+
+PythonApi(types, fns) ::= <<
+    <fns; separator="\n">
+>>
+
+PythonApiFile(apis, module) ::= <<
+
+import multipart, json, numpy
+
+class <module>API:
+    def __init__(self, raptureAPI):
+        self.raptureAPI = raptureAPI
+
+<apis; separator="\n">
+>>

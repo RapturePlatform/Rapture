@@ -1,0 +1,7 @@
+jar.manifest.attributes "Implementation-Title" : "PersistenceGenLib"
+
+dependencies {
+    compile project(":CodeGen:CodeGenLib")
+    compile project(":RaptureAPI")
+    compile 'org.reflections:reflections:0.9.10'
+}

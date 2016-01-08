@@ -1,0 +1,22 @@
+[ The Repo API is used to interact with documents in the system.]
+@deprecated="The Repo API is being eliminated"
+api(Repo) {
+
+    [Retrieve the content given a documentURI]
+    @entitle=/repo/getcontent
+    @deprecated="The Repo API is being eliminated"
+	@public ContentEnvelope getContent(String raptureURI);
+	
+    [Store the content supplied at the document URI given. Existing content will be overwritten at this URI, 
+    but the previous version may be stored if the underlying repository supports it]
+    @entitle=/repo/putcontent
+    @deprecated="The Repo API is being eliminated"
+	@public void putContent(String raptureURI, Object content, String comment);
+	
+	[Remove a document from the system.]
+    @entitle=/user/delete/$f(raptureURI)
+    @deprecated="The Repo API is being eliminated"
+    @public void deleteContent(String raptureURI, String comment);
+
+
+}

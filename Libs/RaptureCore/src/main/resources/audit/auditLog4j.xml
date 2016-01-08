@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    The MIT License (MIT)
+
+    Copyright (C) 2011-2016 Incapture Technologies LLC
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+
+-->
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd" >
+<!-- This file contains an appender and logger that will be used by the Log4jAudit 
+	implementation -->
+<log4j:configuration>
+
+	<appender name="auditError"
+		class="uk.org.simonsite.log4j.appender.TimeAndSizeRollingAppender">
+		<param name="File" value="${LOG_DIR_PATH}/important.log" />
+		<param name="MaxRollFileCount" value="5" />
+		<param name="MaxFileSize" value="100MB" />
+		<param name="DatePattern" value="'.'yyyy-MM-dd" />
+		<param name="DateRollEnforced" value="true" />
+		<param name="Threshold" value="ERROR" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d{ABSOLUTE} %5p [%t] (%F:%L) - %m%n" />
+		</layout>
+	</appender>
+
+	<appender name="auditWarn"
+		class="uk.org.simonsite.log4j.appender.TimeAndSizeRollingAppender">
+		<param name="File" value="${LOG_DIR_PATH}/warn.log" />
+		<param name="MaxRollFileCount" value="5" />
+		<param name="MaxFileSize" value="100MB" />
+		<param name="DatePattern" value="'.'yyyy-MM-dd" />
+		<param name="DateRollEnforced" value="true" />
+		<param name="Threshold" value="warn" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d{ABSOLUTE} %5p [%t] (%F:%L) - %m%n" />
+		</layout>
+		<filter class="org.apache.log4j.varia.LevelRangeFilter">
+			<param name="LevelMin" value="warn" />
+			<param name="LevelMax" value="warn" />
+		</filter>
+	</appender>
+
+	<appender name="auditOther"
+		class="uk.org.simonsite.log4j.appender.TimeAndSizeRollingAppender">
+		<param name="File" value="${LOG_DIR_PATH}/other.log" />
+		<param name="MaxRollFileCount" value="5" />
+		<param name="MaxFileSize" value="100MB" />
+		<param name="DatePattern" value="'.'yyyy-MM-dd" />
+		<param name="DateRollEnforced" value="true" />
+		<param name="Threshold" value="DEBUG" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d{ABSOLUTE} %5p [%t] (%F:%L) - %m%n" />
+		</layout>
+		<filter class="org.apache.log4j.varia.LevelRangeFilter">
+			<param name="LevelMin" value="debug" />
+			<param name="LevelMax" value="info" />
+		</filter>
+	</appender>
+
+	<logger name="rapture.AuditLog" additivity="false">
+		<level value="DEBUG" />
+		<appender-ref ref="auditWarn" />
+		<appender-ref ref="auditError" />
+		<appender-ref ref="auditOther" />
+	</logger>
+
+</log4j:configuration>

@@ -1,0 +1,51 @@
+group T;
+
+param(name, type) ::= <<
+     <type>    <name>
+>>
+
+// The entry for a single function
+docApiEntry(apitype, ret, name, apiparams, paramNames, doc, ent) ::= <<
+\section{<name; format="upcase">}
+\label{Api:<name; format="upcase">}
+\begin{verbatim}
+   <ret> <name> (
+      <apiparams; separator="\n">
+   )
+\end{verbatim}
+\begin{lstlisting}
+// Reflex use
+ret = #<apitype; format="lower">.<name>(<paramNames; separator=",">);
+\end{lstlisting}
+<doc>
+
+
+\rule{15cm}{2pt}
+>>
+docApiList(apitype, apis, doc) ::= <<
+\chapter{<apitype> API}
+<doc>
+<apis; separator="\n">
+>>
+
+docTypeField(name, type) ::= <<
+    <type>   <name>
+>>
+
+docTypeDef(name, fields, doc) ::= <<
+\section{<name; format="upcase">}
+\label{type:<name; format="upcase">}
+<doc>
+\begin{verbatim}
+   type <name> {
+      <fields; separator="\n">
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+>>
+
+docTypes(types) ::= <<
+\part{Types}
+<types; separator="\n">
+>>

@@ -1,0 +1,4 @@
+@{header.getContent()}
+@{separator.getContent()}
+@foreach{row : rows}@{row.getContent()}
+@end{}

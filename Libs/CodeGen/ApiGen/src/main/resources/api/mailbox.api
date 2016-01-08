@@ -1,0 +1,21 @@
+[Each Rapture environment has a single mailbox, although it is divided into logical parts by authority and category. Remote users (usually remote systems) can submit items to a mailbox, whereupon an event is signaled to allow for any processing of that item. Typical processing validates the mailbox content and creates real entities within the local system (e.g. an incoming order is converted into a real order if valid). When processed the category of an item can be changed to 'Done' to ensure it isn't reprocessed.]
+
+api(Mailbox) {
+  [This method is used to post a message onto a category (for a authority).]
+  @entitle=/mail/post/$f(messageUri)
+  @public String putMessage(String messageUri, String content);
+
+  [Moves a message from one category to another.]
+  @entitle=/mail/move/$f(messageUri)
+  @public void moveMessage(String messageUri, String newMessageUri);
+
+  [Define the config for mailbox storage.]
+  @entitle=/admin/mail
+  @public void createMailboxRepo(String mailboxConfig, String idGenConfig);
+
+  [Retrieves all mailbox messages for a category.]
+  @entitle=/admin/mail/$f(mailboxUri)
+  @public List(RaptureMailMessage) getMessages(String mailboxUri);
+}
+
+

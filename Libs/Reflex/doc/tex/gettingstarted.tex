@@ -1,0 +1,27 @@
+\part{Getting Started}
+
+\chapter{Installation}
+
+\Reflex is available in every \Rapture environment but can also be downloaded to a client machine for development and testing. This chapter explains how to install \Reflex on the client machine.
+
+\section{Eclipse}
+The \Reflex development environment is a plugin to the Eclipse IDE. The first step is to install an appropriate version of Eclipse (the Java version is recommended) from http://www.eclipse.org.
+
+Once Eclipse is up and running, simple go to the "Help/Install New Software" menu option and add a new site with the following URL - http://incapture.github.com/RaptureRepo/reflex. This should bring up a single Category of software - \Rapture, and from that you should click the check box to install all of the components. After agreeing to the license agreement, installing the software and restarting Eclipse you should have a \Rapture (or \Reflex) environment setup.
+
+\section{Configuration}
+
+Once Eclipse has the \Reflex plugin installed it needs to be configured to connect to a suitable \Rapture instance. In the Eclipse/Preferences menu option there is a \Rapture section and the configuration for that section has a URL for a \Rapture environment and a space for a user name and password for that environment. These will need to be filled in for some of the remote execution of \Reflex scripts to work correctly.
+
+\section{A first script}
+To test that the plugin is installed correctly you can create your first \Reflex script. Create a new file with the extension ".rfx" - the default extension for \Reflex scripts. Type the following into the file and save it:
+
+\begin{verbatim}
+
+println("Hello Reflex");
+
+\end{verbatim}
+
+If you then click on the "Run Reflex Script" button (or menu option) you should see the output "Hello Reflex" produced on the Eclipse console. If the console is not visible you will be able to show it by using the Window/Console menu option.
+
+Congratulations! You have run your first \Reflex script. The next part of this document extends this simple script into more complex directions to explore the features of \Reflex.

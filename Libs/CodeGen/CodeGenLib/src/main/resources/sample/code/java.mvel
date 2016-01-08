@@ -1,0 +1,2 @@
+Http@{apiUpper}Api @{apiLower}Api = new Http@{apiUpper}Api(loginApi);
+@{retType.type} retVal = @{apiLower}Api.@{functionName}(@{parameters});

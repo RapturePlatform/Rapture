@@ -1,0 +1,42 @@
+[A data center can contain multiple instances of Rapture, such as staging, production, or testing, that are nearly identical. In fact, a single piece of hardware can host multiple instances. In this case we cannot rely on host names or IP addresses to uniquely identify systems. The Environment API generates and assigns UIDs to the Rapture instance and to its component servers. Servers in the same network share the same bootstrap configuration and low level connectivity to data source configuration.
+Although one topology for a Rapture network is a collection of homogeneous servers sharing the same data and messaging infrastructure, an alternate topology would be a collection of heterogeneous servers connected together through synchronization. A server in this topology is considered an "appliance" - it is essentially a Rapture network with one member. In this configuration the Rapture kernel needs to handle tasks that are normally performed by other servers. Appliance Mode can be enabled or disabled as necessary.]
+
+api(Environment) {
+  [Retrieves the unique identifier and name for this Rapture instance.]
+  @entitle=/env/common
+  @public RaptureNetwork getNetworkInfo();
+  
+  [Applies network information matching the passed parameter to the current instance of the Rapture network.]
+  @entitle=/env/admin
+  @public RaptureNetwork setNetworkInfo(RaptureNetwork network);
+  
+  [Retrieves the unique identifier and name for this Rapture server instance.]
+  @entitle=/env/common
+  @public RaptureServerInfo getThisServer();
+  
+  [Returns a list of the unique identifiers and names for all Rapture servers in the network.]
+  @entitle=/env/common
+  @public List(RaptureServerInfo) getServers();
+  
+  [Sets the passed parameter as information for the current server instance.]
+  @entitle=/env/admin
+  @public RaptureServerInfo setThisServer(RaptureServerInfo info);
+  
+  [Configures the instance into or out of appliance mode.]
+  @entitle=/env/admin
+  @public void setApplianceMode(Boolean mode);
+  
+  [Determines whether the instance is currently in appliance mode.]
+  @entitle=/env/common
+  @public Boolean getApplianceMode();
+  
+  [Returns the last reported state for each server in the network. This includes a numerical status, a human readable message, and a Date object indicating the time that the status was last updated.]
+  @entitle=/env/common
+  @public List(RaptureServerStatus) getServerStatus();
+  
+  [Returns the licensee name, license expiration date, and whether the license is a developer license.]
+  @entitle=/env/common
+  @public LicenseInfo getLicenseInfo();
+}
+
+

@@ -1,0 +1,74 @@
+group T;
+
+GoApiParam(type, name) ::= <<
+  <name> <type>
+>>
+
+GoApiSetter(type, name) ::= <<
+   request.<name; format="upcase"> = <name>
+>>
+
+GoApiPayloadParam(type, name) ::= <<
+  <name; format="upcase"> <type> `json:"<name>"`
+>>
+
+GoApiType(apitype, name, paramPayload, ret) ::= <<
+   type RaptApi<apitype; format="upcase"><name; format="upcase"> struct {
+       Context RaptApiLoginPayload `json:"context"`
+       <paramPayload; separator="\n">
+   }
+   
+<if(ret)>
+   type RaptApi<apitype; format="upcase"><name; format="upcase">Response struct {
+      Response <ret> `json:"response"`
+     InError bool `json:"inError"`
+  }
+<endif>
+>>
+
+GoApiFn(apitype, name, apiParams, setterParams, ret) ::= <<
+  func (rctx *RaptureContext) <apitype; format="upcase">_<name; format="upcase">(<apiParams; separator=",">) <ret> {
+     request :=  RaptApi<apitype; format="upcase"><name; format="upcase">  {}
+     request.Context = rctx.Context
+     // Now we need to set the params
+     <setterParams; separator="\n">
+     jsonString, err := json.Marshal(request)
+      if err != nil {
+          log.Fatal(err)
+      }
+      resp :=  rctx.performDistRequest("<apitype; format="lower">", "<name; format="upper">", string(jsonString))
+<if(ret)>
+      var response RaptApi<apitype; format="upcase"><name; format="upcase">Response
+      json.Unmarshal(resp, &response)
+      return response.Response
+<endif>
+   }
+>>
+
+GoApi(types, fns) ::= <<
+package rapture
+
+import (
+     "encoding/json"
+     "log"
+ )
+    <types; separator="\n">
+    <fns; separator="\n">
+>>
+
+GoStruct(name, fields) ::= <<
+type <name> struct {
+<fields; separator="\n">
+}
+>>
+
+GoStructField(name, type) ::= <<
+    <name; format="upcase">     <type>
+>>
+
+GoStructFile(structs) ::= <<
+package rapture
+
+<structs; separator="\n">
+>>
+

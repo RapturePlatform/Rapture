@@ -1,0 +1,129 @@
+
+# coding: utf-8
+
+# In[1]:
+
+def is_py():
+    try:
+        __file__
+        return True
+    except:
+        return False
+
+import os
+import sys
+import ConfigParser
+import pandas as pd
+import numpy as np
+import argparse
+import matplotlib
+import logging
+import json
+from collections import OrderedDict
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+import smtplib
+
+if is_py():
+    matplotlib.use('Agg')
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--config', type=str, default='config.ini', 
+                        help='path to config.ini file created by AppManager')
+    args = parser.parse_args()
+    
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    idpresearch_path = os.path.abspath(os.sep.join([current_dir, '..', '..', '..', '..', '..', '..', 'IDPResearch']))
+    sys.path.append(idpresearch_path)
+    from idpresearch import *
+    
+    appio = applib.AppIO(vars(args)['config'])
+    
+else:
+    get_ipython().magic(u'pylab inline')
+    figsize(20, 6)
+    current_dir = os.getcwd()
+    idpresearch_path = os.path.abspath(os.sep.join([current_dir, '..', '..', '..', '..', '..', '..', 'IDPResearch']))
+    sys.path.append(idpresearch_path)
+    from idpresearch import *
+    
+    appio = applib.AppIO('config.ini')
+
+from datetime import datetime, date, timedelta
+from dateutil.parser import parse
+
+
+# ```
+# # load ipywidgets
+# pretty_table_path = appio.get_source('pretty_table')
+# pretty_table_path = os.path.dirname(pretty_table_path)
+# sys.path.append(pretty_table_path)
+# print pretty_table_path
+# import pretty_table
+# 
+# # pretty_table=/Users/ricenaylor/Documents/GitHub/IDPAlphaGen/features/fxpnl/content/model.FXDM/python/pretty_table.py
+# ```
+
+# In[2]:
+
+# load ipywidgets
+FinancialAnalyticsJar = appio.get_source('FinancialAnalyticsJar')
+AnalyticsPYJar = appio.get_source('AnalyticsPYJar')
+jars = [FinancialAnalyticsJar, AnalyticsPYJar]
+
+#FinancialAnalyticsJar_path = os.path.dirname(FinancialAnalyticsJar)
+#AnalyticsPYJar_path = os.path.dirname(AnalyticsPYJar)
+#print FinancialAnalyticsJar_path
+#print AnalyticsPYJar_path
+
+
+# In[3]:
+
+CP = ':'.join(jars)
+os.environ['CLASSPATH'] = CP
+
+
+# In[4]:
+
+print "DEBUGGING: %s" %CP
+
+
+# ```
+# # Setup Java Analytics
+# #jars = ['FinancialAnalytics-3.0.8.jar',
+# #        'AnalyticsPY-1.0.0.jar']
+# 
+# # Classpath must be set first
+# from jnius import autoclass
+# 
+# JulianDate = autoclass("org.drip.analytics.date.JulianDate")
+# ois = autoclass('rates.OIS')
+# _ = ois.init() # nb: this reports failure, but is still required as in LK's example. TODO: o resolve this
+# 
+# ois.main([])
+# date = JulianDate.CreateFromYMD(2014,9,9).toString()
+# print date
+# ```
+
+# ```
+# import email
+# import smtplib
+# 
+# 
+# from_email = 'peter.goldstein@incaptureinvestments.com'
+# to_email =  'peter.goldstein@incaptureinvestments.com'
+# 
+# msg = email.MIMEMultipart.MIMEMultipart('mixed')
+# msg['Subject'] = 'Hello World !! %s'%date
+# msg['From'] = from_email
+# msg['To'] = to_email
+# 
+# server = smtplib.SMTP()
+# server.connect('10.1.40.10') # ECI: '72.21.175.47', INCAP: '10.1.40.10'
+# server.sendmail(from_email, to_email, msg.as_string())
+# server.quit()
+# ```
+
+# In[4]:
+
+
+

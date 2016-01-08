@@ -1,0 +1,11 @@
+import raptureAPI,multipart,json,pprint,idpAPI,time
+uri = "http://localhost:8665/rapture" # change this to real uri
+user = "rapture"  # change this to real user 
+password = "password" # change this to real password
+
+# connect to Rapture and log in 
+baseApi = raptureAPI.raptureAPI(uri, user, password)
+if 'valid' in baseApi.context and baseApi.context['valid']:
+    print 'logged in successfully'
+else:
+    print 'oops. there was an error logging in.'

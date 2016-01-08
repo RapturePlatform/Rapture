@@ -1,0 +1,122 @@
+group T;
+
+PythonApiParam(type, name) ::= <<
+<name>
+>>
+
+PythonApiSetter(type, paramName, name) ::= <<
+params['<paramName>'] = self.fixTypes(<name>)
+>>
+
+
+PythonApiFn(sdkName, apitype, name, apiParams, setterParams, ret, comment, deprecated) ::= <<
+    def do<apitype; format="upcase">_<name; format="upcase">(self<if(apiParams)>,<endif><apiParams; separator=",">):
+        '''
+        <if(deprecated)>
+        @Deprecated: <deprecated> <endif>
+        <comment>
+        '''
+        <if(deprecated)>
+        warnings.warn(
+           'do<apitype; format="upcase">_<name; format="upcase"> <deprecated>',
+           DeprecationWarning
+        ) <endif>
+        params = {}
+        params['context'] = self.context
+        <setterParams; separator="\n">
+        ret= self.runMultipart("/<apitype; format="lower">", "<name; format="upper">", params)
+        return ret['response']
+
+>>
+
+PythonApi(types, fns) ::= <<
+    <fns; separator="\n">
+>>
+
+PythonApiFile(apis, versionMajor, versionMinor, versionMicro) ::= <<
+
+import multipart, json, numpy, warnings
+import requests
+
+
+class raptureAPI:
+    def __init__(self, url, user, password):
+        if (url[0:7] == 'http://'):
+            url = url[7:]
+        if (url[0:8] == 'https://'):
+            url = url[8:]
+        mylist = url.split("/", 1)
+        self.url = mylist[0]
+        if len(mylist) ==1 or len(mylist[1]) == 0:
+          self.prefix = ""
+        else:
+          self.prefix = "/" + mylist[1]
+        self.session = requests.Session()
+        # TODO: implement auth in terms of requests.auth so we can automatically
+        # log back in
+        self.login(user, password)
+
+    def login(self, user, password):
+        params={}
+        params['user'] = user
+        context={}
+        try:
+            context=self.runMultipart("/login","CONTEXT", params)
+        except:
+            raise ValueError("Unable to access " + self.url + self.prefix)
+        if context['inError']:
+            raise ValueError("Login failure: " + str(context['response']['message']))
+        self.salt = context['response']['salt']
+        self.contextid = context['response']['contextId']
+        params = {}
+        params['user'] = user
+        params['context'] = self.contextid
+        hashpassword = multipart.MD5(multipart.MD5(password) + ":" +self.salt)
+        params['digest'] = hashpassword
+        clientApiVersion = {}
+        clientApiVersion['major'] = <versionMajor>
+        clientApiVersion['minor'] = <versionMinor>
+        clientApiVersion['micro'] = <versionMicro>
+        params['clientApiVersion'] = clientApiVersion
+        res = self.runMultipart("/login", "LOGIN", params)
+        if res['inError']:
+            raise ValueError("Login failure: " + str(res['response']['message']))
+        self.context = res['response']
+
+# RAP-1126 JSON Encoder cannot handle objects of type numpy.int* so convert them to long first
+# In Python 2.x longs have no limit. In 3.x I believe type conversion is automatic, but I'm not sure what versions we need to support.
+# Any other parameter type tweaking can also be performed here as the need arises
+
+    def fixTypes(self, obj):
+        if (isinstance(obj, numpy.int64) | isinstance(obj, numpy.int32) | isinstance(obj, numpy.int16) | isinstance(obj, numpy.int8) | isinstance(obj, numpy.int0)) :
+            return (long(obj))
+        if (isinstance(obj, list)):
+            # iterate through list and convert any numpy types. Note that lists can hold mixed types, so check each individually
+            newlist = list(obj)
+            for i in range (0, len(obj)):
+                entry = obj[i]
+                if (isinstance(entry, numpy.int64) | isinstance(entry, numpy.int32) | isinstance(entry, numpy.int16) | isinstance(entry, numpy.int8) | isinstance(entry, numpy.int0)) :
+                    newlist[i] = long(entry)
+            return newlist
+        return obj
+
+    def runMultipart(self, urlprefix, fnName, params):
+        paramArray = [('FUNCTION',fnName),('PARAMS', json.dumps(params))]
+        fullURL = self.prefix + urlprefix
+        jsonString = multipart.post_multipart(self.session, self.url, fullURL, paramArray, [])
+        try:
+            result = json.loads(jsonString)
+        except Exception:
+            result = json.loads(jsonString.decode('cp1252').encode('utf-8'))
+
+        if 'inError' in result and result['inError']:
+            raise RuntimeError('Error returned from server. Response was:\n' + str(result['response']))
+        else:
+            return result
+
+
+    def getClientApiVersion(self):
+        return {u"major":<versionMajor>, u"minor":<versionMinor>, u"micro":<versionMicro>};
+
+<apis; separator="\n">
+>>

@@ -1,0 +1,41 @@
+jar.manifest.attributes "Implementation-Title" : "RaptureCommon"
+
+configurations { antlr3 }
+
+dependencies {
+    compile group: 'com.google.guava', name: 'guava', version: '14.0'
+    compile 'org.antlr:antlr-runtime:3.5.2', { transitive = false }
+    antlr3 'org.antlr:antlr:3.5.2'
+    compile 'org.apache.commons:commons-lang3:3.4';
+    compile 'commons-collections:commons-collections:3.2.1'
+    compile 'org.yaml:snakeyaml:1.10'
+}
+
+task antlrOutputDir << { mkdir(generateGrammarSource.destinationDir) }
+
+task generateGrammarSource(dependsOn: antlrOutputDir, type: JavaExec) {
+    description = 'Generates Java sources from Antlr3 grammars.'
+    convention.antlrGenRootDir = "$buildDir/generated-sources/antlr3/";
+    convention.destinationDir = "$antlrGenRootDir/rapture/generated"
+    def antlrSource = 'src/main/antlr3'
+
+    inputs.dir file(antlrSource)
+    outputs.dir fileTree(destinationDir)
+
+    def grammars = fileTree(antlrSource).include('**/*.g')
+
+    main = 'org.antlr.Tool'
+    classpath = configurations.antlr3
+    args = [
+        "-fo",
+        "${destinationDir}",
+        grammars.files
+    ].flatten()
+}
+
+sourceSets.main.java.srcDir generateGrammarSource.antlrGenRootDir
+sourceSets.main.java.srcDir project.ext.generatedMainJava
+
+sourceSets.test.java.srcDir project.ext.generatedTestJava
+
+compileJava.dependsOn("generateGrammarSource")
