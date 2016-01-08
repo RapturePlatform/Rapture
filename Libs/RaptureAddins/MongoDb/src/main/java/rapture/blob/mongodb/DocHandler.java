@@ -70,11 +70,11 @@ public class DocHandler implements BlobHandler {
                 getCollection().insert(toStore);
                 return true;
             } catch (MongoException e) {
-                log.info("Could not store " + docPath + ": " + e.getMessage());
+                log.error("Could not store " + docPath + ": " + e.getMessage());
                 log.debug(ExceptionToString.format(e));
             }
         } catch (IOException e1) {
-            log.info("Could not read content gto store: " + e1.getMessage());
+            log.error("Could not read content gto store: " + e1.getMessage());
             log.debug(ExceptionToString.format(e1));
         }
         return false;
@@ -110,7 +110,7 @@ public class DocHandler implements BlobHandler {
             WriteResult res = getCollection().remove(query);
             return res.getN() != 0;
         } catch (MongoException e) {
-            log.info("Could not delete " + docPath + ": " + e.getMessage());
+            log.error("Could not delete " + docPath + ": " + e.getMessage());
             log.debug(ExceptionToString.format(e));
         }
         return false;

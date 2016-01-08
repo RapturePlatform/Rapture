@@ -73,9 +73,7 @@ public class IdGenMongoStore implements IdGenStore {
     @Override
     public Long getNextIdGen(Long interval) {
         BasicDBObject realUpdate = getIncUpdateObject(getUpdateObject(interval));
-        log.debug("Real update object is " + realUpdate);
-        log.debug("Query object is " + getQueryObject());
-        DBObject ret = getIdGenCollection().findAndModify(getQueryObject(), null, null, false, realUpdate, true,
+         DBObject ret = getIdGenCollection().findAndModify(getQueryObject(), null, null, false, realUpdate, true,
                 true);
         Boolean valid = (Boolean) ret.get(VALID);
         if (valid != null && !valid) {
@@ -138,7 +136,6 @@ public class IdGenMongoStore implements IdGenStore {
 
     @Override
     public void init() {
-        //log.info("Reset to 0");
-        //resetidGen(0L);
+
     }
 }

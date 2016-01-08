@@ -104,12 +104,12 @@ public class GridFSBlobHandler implements BlobHandler {
                 try {
                     sequence.close();
                 } catch (IOException e) {
-                    log.warn(String.format("Error closing sequence input stream: %s", ExceptionToString.format(e)));
+                    log.error(String.format("Error closing sequence input stream: %s", ExceptionToString.format(e)));
                 }
                 try {
                     tempIn.close();
                 } catch (IOException e) {
-                    log.warn(String.format("Error closing sequence input stream: %s", ExceptionToString.format(e)));
+                    log.error(String.format("Error closing sequence input stream: %s", ExceptionToString.format(e)));
                 }
             }
         } finally {

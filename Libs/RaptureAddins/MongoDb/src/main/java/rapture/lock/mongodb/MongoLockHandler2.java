@@ -23,15 +23,20 @@
  */
 package rapture.lock.mongodb;
 
-import com.mongodb.*;
+import java.util.Map;
+
 import org.apache.log4j.Logger;
+
 import rapture.common.LockHandle;
 import rapture.lock.ILockingHandler;
 import rapture.mongodb.MongoDBFactory;
 
-import java.util.Date;
-import java.util.Map;
-import java.util.UUID;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
+import com.mongodb.WriteConcern;
+import com.mongodb.WriteResult;
 
 /**
  *
@@ -45,18 +50,6 @@ public class MongoLockHandler2 implements ILockingHandler {
     @Override
     public void setInstanceName(String instanceName) {
         this.instanceName = instanceName;
-    }
-
-    private boolean waitAndShouldBail(long bailTime) {
-        try {
-            Thread.sleep(100);
-        } catch (InterruptedException e) {
-            //
-        }
-        if (System.currentTimeMillis() > bailTime) {
-            return true;
-        }
-        return false;
     }
 
     @Override
