@@ -1,0 +1,17 @@
+{
+  "fields" : { 
+       "fields" : [ 
+           { "ref" : {  "table" : "t1", "field" : "field1" }, "jsonKey" : "field1" }
+       ]
+  },
+  "joins" : {
+       "joins" : [
+           { "left" : { "table" : "t1", "field" : "id" }, "right" : { "table" : "t2", "field" : "id" }}
+       ]
+  },
+  "display" : {
+       "points" : [
+           { "ref" : { "table" : "t1", "field" : "name" }, "fixedValue" : "" }
+       ]  
+  }
+}

@@ -1,0 +1,8 @@
+jar.manifest.attributes "Implementation-Title" : "Rapture RabbitMQ Addin"
+
+dependencies {
+    compile project(':RaptureAPI')
+    testCompile project(':RaptureCore')
+    compile project(':RaptureAddinCore')
+    compile 'com.rabbitmq:amqp-client:3.3.4'
+}

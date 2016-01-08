@@ -1,0 +1,6 @@
+# @{title}@if{codeNode != null}
+
+@{codeNode.getContent()}@end{}@if{descriptionNode != null}
+
+@{descriptionNode.getContent()}@end{}@foreach{functionNode : functionNodes}
+@{functionNode.getContent()}@end{}

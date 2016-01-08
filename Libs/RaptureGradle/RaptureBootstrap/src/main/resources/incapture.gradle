@@ -1,0 +1,11 @@
+project.buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'com.rapture:RaptureBootstrapPlugin:latest.integration'
+    }
+}

@@ -1,0 +1,15 @@
+jar.manifest.attributes "Implementation-Title" : "Rapture Postgres Addin"
+
+dependencies {
+    compile project(':RaptureCore')
+    compile project(':RaptureAPI')
+    compile project(':RaptureAddinCore')
+    compile project(':RaptureAddins:JDBC')
+    testCompile project(':RaptureAddins:JDBC').sourceSets.test.output
+    compile 'org.postgresql:postgresql:9.4-1201-jdbc41'
+    compile 'org.springframework:spring-jdbc:4.1.5.RELEASE'
+    compile 'com.mchange:c3p0:0.9.5'
+
+    testCompile project (path: ":RaptureCore", configuration: 'testArtifacts')
+    testCompile 'com.h2database:h2:1.4.186'
+}

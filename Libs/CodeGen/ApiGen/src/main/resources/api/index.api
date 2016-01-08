@@ -1,0 +1,21 @@
+[One key feature of Rapture is that it is not restricted to any particular backing store; it can leverage multiple database technologies at the same time. As a result, the underlying implementation might not support a fast searchable index. To address this issue, each backing store can provide its own index mechanism. The intention is that the implementation can use native indexing where available, but that the indexing interface is abstracted.
+Note that only Mongo, Memory and Postgres implementations are available as of this release of the API. There is no indexing implementation for Cassandra.]
+api(Index) {
+    [Generates a new index for the repository. Note that objects are indexed only when they are written. Any objects already in the repository are not automatically indexed; they need to be read and written back.]
+    @entitle=/admin/index/write
+    @public IndexConfig createIndex(String indexUri, String config);
+        
+    [Gets the config for a specified index.]
+    @entitle=/admin/index/read
+    @public IndexConfig getIndex(String indexUri);
+    
+    [Removes an index.]
+    @entitle=/admin/index/write
+    @public void deleteIndex(String indexUri);
+    
+    [findIndex uses a simple structure of the form SELECT (DISTINCT) field (,field...) WHERE condition (,condition...) (ORDER BY field (DESC) )
+    Example: SELECT DISTINCT foo, bar WHERE baz = "wibble" ORDER BY foo]
+    @entitle=/admin/index/read
+    @public TableQueryResult findIndex(String indexUri, String query);
+}
+

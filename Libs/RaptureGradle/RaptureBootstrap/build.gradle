@@ -1,0 +1,25 @@
+import java.util.Properties;
+
+import org.gradle.api.Project;
+
+import com.sun.org.apache.bcel.internal.classfile.SourceFile;
+
+project.group = 'com.rapture'
+project.version = '1.5'
+
+File sourceFile = file('src/main/resources/incapture.gradle');
+File destDir = new File(getGradle().getGradleUserHomeDir(), "incapture");
+
+task install(dependsOn: 'copyInit') {
+}
+
+task mkInitDir() {
+    println "destDir is " + destDir.getAbsolutePath();
+    destDir.mkdirs();
+}
+
+task copyInit(type:Copy, dependsOn: 'mkInitDir') {
+    from sourceFile
+    into destDir
+    outputs.upToDateWhen { false }
+}

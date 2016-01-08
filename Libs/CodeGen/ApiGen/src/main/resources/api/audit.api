@@ -1,0 +1,48 @@
+
+[The Audit API provides a way to create special logs that contain permanent records of activity in a Rapture system. Internally Rapture uses a system audit log for recording important events that take place in a Rapture environment. Users (or applications) can create their own custom audit logs for the same purpose.
+
+The API provides a way of creating and removing these logs, along with a simple way of recording log entries. A final API call gives the caller the ability to retrieve log entries.]
+api(Audit) {
+
+   [Sets up anything needed for audit to run properly. This should be called from the _startup.rfx script. This call is used internally by Rapture on startup, and is normally called only for debugging purposes.]
+   @entitle=/audit/admin
+   @public void setup(Boolean force);
+
+   [This method creates a new audit log, given a name and a config string. The config string defines the implementation to be used to store the audit entries.]
+   @entitle=/audit/admin
+   @public void createAuditLog(String name, String config);
+
+   [This method checks whether an audit log exists at the specified URI. The log must have been created using createAuditLog.]
+   @entitle=/audit/main
+   @public Boolean doesAuditLogExist(String  logURI);
+
+   [This method searches for audit logs whose name follows the pattern prefix/anything_else/under/here, where prefix is the argument that is passed in.]
+   @entitle=/audit/main
+   @public List(RaptureFolderInfo) getChildren(String prefix);
+   
+   [This method removes a previously created audit log.]
+   @entitle=/audit/admin
+   @public void deleteAuditLog(String logURI);
+
+   [This method retrieves the config information for a previously created audit log.]
+   @entitle=/audit/admin
+   @public AuditLogConfig getAuditLog(String logURI);
+
+   [This method writes an audit entry to the audit log specified by the URI parameter.]
+   @entitle=/audit/admin
+   @public void writeAuditEntry(String logURI, String category, int level, String message);
+   
+   [This method writes an audit entry to an audit log.]
+   @entitle=/audit/admin
+   @public void writeAuditEntryData(String logURI, String category, int level, String message, Map(String, Object) data);
+   
+
+   [This method retrieves previously registered log entries, given a maximum number of entries to return.]
+   @entitle=/audit/admin
+   @public List(AuditLogEntry) getRecentLogEntries(String logURI, int count);
+   
+   [This method retrieves any entries since a given entry was retrieved. The date of this audit entry is used to determine the start point of the query.]
+   @entitle=/audit/main
+   @public List(AuditLogEntry) getEntriesSince(String logURI, AuditLogEntry when);
+}
+

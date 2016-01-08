@@ -1,0 +1,11 @@
+A new command here would be
+
+gradle genAll
+
+(regenerates the api for all supported languages)
+
+gradle genX
+
+(regenerates the api for X, where X is one of Java, JS, Ruby, Python, Go, Doc, VB)
+
+

@@ -1,0 +1,35 @@
+group T;
+
+// Ruby
+  
+rubyapi(apilist, versionMinor, versionMajor, versionMicro) ::= <<
+module RaptureClient
+   class Api
+   @@distMap = {
+          :RequestSession => [ 'login', 'CONTEXT', 'response', [ {  :name => 'user'}]],
+          :Login => [ 'login', 'LOGIN', 'response', [ { :name => 'user' }, 
+                { :name => 'digest' },
+                { :name => 'context' }
+          ]],
+   	<apilist; separator=",\n">
+   }
+   def self.distMap
+        @@distMap
+    end
+    def self.getClientApiVersion
+        return {"major" => <versionMajor>, "minor" => <versionMinor>, "micro" => <versionMicro> };
+    end
+   
+   end
+end
+>>
+
+rubyApiEntry(apitype, name, params) ::= <<
+	:<name; format="upcase"> => [ '<apitype; format="lower">', '<name; format="upper">', 'response', [ <params; separator=",">]]
+>>
+
+rubyParam(name) ::= <<
+{ :name => '<name>' <if(bang)>, :json => 1<endif>}
+>>
+
+

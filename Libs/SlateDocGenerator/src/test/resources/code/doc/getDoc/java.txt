@@ -1,0 +1,2 @@
+HttpDocApi docApi = new HttpDocApi(loginApi);
+String doc = docApi.getDoc("document://my/uri");

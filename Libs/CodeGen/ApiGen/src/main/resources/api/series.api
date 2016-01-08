@@ -1,0 +1,132 @@
+
+[For manipulating time series objects.]
+api(Series) {
+
+   [Creates a repository for series data.]
+   @entitle=/repo/write
+   @public void createSeriesRepo(String seriesRepoUri, String config);
+   
+   [Check for the existence of a given repository]
+   @entitle=/repo/list
+   @public Boolean seriesRepoExists(String seriesRepoUri);
+   
+   [Check for the existence of a given series]
+   @entitle=/repo/list
+   @public Boolean seriesExists(String seriesUri);
+   
+   [Fetches the series repository config, or null if the repository is not found.]
+   @entitle=/repo/read
+   @public SeriesRepoConfig getSeriesRepoConfig(String seriesRepoUri);
+
+   [Fetch a list of all series repositories.]
+   @entitle=/repo/read
+   @public List(SeriesRepoConfig) getSeriesRepoConfigs();
+
+   [This method removes a Series Repository and its data from the Rapture system. There is no undo.] 
+   @entitle=/repo/write
+   @public void deleteSeriesRepo(String seriesRepoUri);
+
+   [This method removes a Series and its data from the Rapture system. There is no undo.] 
+   @entitle=/data/write/$f(seriesRepoUri)
+   @public void deleteSeries(String seriesRepoUri);
+
+   [Recursively removes all series repositories that are children of the given Uri.]
+   @entitle=/data/write/$f(seriesUri)
+   @public List(String) deleteSeriesByUriPrefix(String seriesUri);
+
+   [Adds one point of floating-point data to a given series.]
+   @entitle=/data/write/$f(seriesUri)
+   @public void addDoubleToSeries(String seriesUri, String pointKey, Double pointValue);
+   
+   [Adds one point of type long to a given series.]
+   @entitle=/data/write/$f(seriesUri)
+   @public void addLongToSeries(String seriesUri, String pointKey, Long pointValue);
+   
+   [Adds one point of string data to a given series.]
+   @entitle=/data/write/$f(seriesUri)
+   @public void addStringToSeries(String seriesUri, String pointKey, String pointValue);
+   
+   [Adds one point containing a JSON-encoded structure to a given series.]
+   @entitle=/data/write/$f(seriesUri)
+   @public void addStructureToSeries(String seriesUri, String pointKey, String pointValue);
+
+   [Adds a list of points of floating-point data to a given series.]
+   @entitle=/data/write/$f(seriesUri)
+   @public void addDoublesToSeries(String seriesUri, List(String) pointKeys, List(Double) pointValues);
+   
+   [Adds a list of points of type long to a given series.]
+   @entitle=/data/write/$f(seriesUri)
+   @public void addLongsToSeries(String seriesUri, List(String) pointKeys, List(Long) pointValues);
+   
+   [Adds a list of string points to a given series.]
+   @entitle=/data/write/$f(seriesUri)
+   @public void addStringsToSeries(String seriesUri, List(String) pointKeys, List(String) pointValues);
+   
+   [Adds a list of points containing JSON-encoded structures to a series.]
+   @entitle=/data/write/$f(seriesUri)
+   @public void addStructuresToSeries(String seriesUri, List(String) pointKeys, List(String) pointValues);
+
+   [Delete a list of points from a series.]
+   @entitle=/data/write/$f(seriesUri)
+   @public void deletePointsFromSeriesByPointKey(String seriesUri, List(String) pointKeys);
+
+   [Removes all points in a series, then removes the series from the directory listing for its parent folder.]
+   @entitle=/data/write/$f(seriesUri)
+   @public void deletePointsFromSeries(String seriesUri);
+
+   [Retrieves the last point in a series.]
+   @entitle=/data/read/$f(seriesUri)
+   @public SeriesPoint getLastPoint(String seriesUri);
+
+   [If the series size is less than the maximum batch size (one million points by default), this returns all points in a list. If the series is larger, an exception is thrown.]
+   @entitle=/data/read/$f(seriesUri)
+   @public List(SeriesPoint) getPoints(String seriesUri);
+
+   [Gets one page of data from a series]
+   @entitle=/data/read/$f(seriesUri)
+   @public List(SeriesPoint) getPointsAfter(String seriesUri, String startColumn, int maxNumber);
+   
+   [Gets one page of data and reverses the normal sort order]
+   @entitle=/data/read/$f(seriesUri)
+   @public List(SeriesPoint) getPointsAfterReverse(String seriesUri, String startColumn, int maxNumber);
+   
+   [Gets one page of data from a series range.]
+   @entitle=/data/read/$f(seriesUri)
+   @public List(SeriesPoint) getPointsInRange(String seriesUri, String startColumn, String endColumn, int maxNumber);
+   
+   [Gets the entire contents of a series and casts each value to type Double.]
+   @entitle=/data/read/$f(seriesUri)
+   @public List(SeriesDouble) getPointsAsDoubles(String seriesUri);
+
+   [Gets one page of data from a series and casts each value to type Double.]
+   @entitle=/data/read/$f(seriesUri)
+   @public List(SeriesDouble) getPointsAfterAsDoubles(String seriesUri, String startColumn, int maxNumber);
+   
+   [Gets one page of data from a series range and casts each value to type Double.]
+   @entitle=/data/read/$f(seriesUri)
+   @public List(SeriesDouble) getPointsInRangeAsDoubles(String seriesUri, String startColumn, String endColumn, int maxNumber);
+   
+   [Gets the entire contents of a series and casts each value to type String.]
+   @entitle=/data/read/$f(seriesUri)
+   @public List(SeriesString) getPointsAsStrings(String seriesUri);
+
+   [Gets one page of data from a series and casts each value to type String.]
+   @entitle=/data/read/$f(seriesUri)
+   @public List(SeriesString) getPointsAfterAsStrings(String seriesUri, String startColumn, int maxNumber);
+
+   [Gets one page of data from a series range and casts each value to type String.]
+   @entitle=/data/read/$f(seriesUri)
+   @public List(SeriesString) getPointsInRangeAsStrings(String seriesUri, String startColumn, String endColumn, int maxNumber);
+   
+   [Executes a series function program and returns its default output.]
+   @entitle=/data/user
+   @public List(SeriesPoint) runSeriesScript(String scriptContent, List(String) arguments);
+      
+   [Executes a series function program and returns success status only.]
+   @entitle=/data/user
+   @public void runSeriesScriptQuiet(String scriptContent, List(String) arguments);
+   
+   [Returns full pathnames for an entire subtree as a map of path to RFI.]
+   @entitle=/data/read/$f(uriPrefix)
+   @public Map(String,RaptureFolderInfo) listSeriesByUriPrefix(String uriPrefix, int depth);
+}

@@ -1,0 +1,46 @@
+
+[ The JAR api is used to manage the storage of Java Archive (JAR) files for use by a Rapture server. ]
+
+api(Jar) {
+   [Indicates whether a given JAR exists.]
+   @entitle=/data/list/$f(jarUri)
+   @public Boolean jarExists(String jarUri);
+   
+   [Stores a JAR.]
+   @entitle=/data/write/$f(jarUri)
+   @public void putJar(String jarUri, ByteArray jarContent);
+
+   [Retrieves a JAR and its metadata. The JAR is represented as a byte array.]
+   @entitle=/data/read/$f(jarUri)
+   @public BlobContainer getJar(String jarUri);
+
+   [Removes a JAR from the backing store. There is no undo.]
+   @entitle=/data/write/$f(jarUri)
+   @public void deleteJar(String jarUri);
+
+   [Retrieves the number of bytes in a JAR.]
+   @entitle=/data/list/$f(jarUri)
+   @public Long getJarSize(String jarUri);
+   
+   [Retrieves all metadata associated with a JAR.]
+   @entitle=/data/list/$f(jarUri)
+   @public Map(String,String) getJarMetaData(String jarUri);
+
+   [Returns full pathnames for an entire subtree as a map of the path to RFI.]
+   @entitle=/data/list/$f(uriPrefix)
+   @public Map(String,RaptureFolderInfo) listJarsByUriPrefix(String uriPrefix, int depth);
+
+   [Indicates whether a given JAR is enabled on this server.]
+   @entitle=/data/list/$f(jarUri)
+   @public Boolean jarIsEnabled(String jarUri);
+
+   [Enables a JAR to be used on this server.]
+   @entitle=/admin/jar
+   @public void enableJar(String jarUri);
+
+   [Disables a JAR from being used on this server.]
+   @entitle=/admin/jar
+   @public void disableJar(String jarUri);
+}
+
+

@@ -1,0 +1,40 @@
+[A idGen is a unique number generator - once defined it can be used to create unique ids that can be attached to documents or entities. idGens can be attached to a document repository so that new documents created in that repository can optionally have unique ids.]
+api(IdGen) {
+    [Gets a list of idGens that have the given authority. Each idGen has a URI, and the authority is part of the URI. idGens whose URIs have an authority that matches the passed parameter will be returned.]
+    @entitle=/admin/idgen
+    @public List(RaptureIdGenConfig) getIdGenConfigs(String authority);
+
+    [Retrieves a single idGen config given its name.]
+    @entitle=/admin/idgen
+    @public RaptureIdGenConfig getIdGenConfig(String idGenUri);
+
+    [This method is used to define a new idGen in a given authority. The config parameter defines the 
+    storage to be used for managing the idGen.]
+    @entitle=/admin/idgen
+    @public RaptureIdGenConfig createIdGen(String idGenUri, String config);
+
+    [Returns true if the idGen was found.]
+    @entitle=/admin/idgen
+    @public Boolean idGenExists(String idGenUri);
+
+    [This method is used to delete a previously defined idGen.]
+    @entitle=/admin/idgen
+    @public void deleteIdGen(String idGenUri);
+
+    [This method can be used to reset an idGen to a new id - all future requests will start from this new point.]
+    @entitle=/admin/idgen
+    @public void setIdGen(String idGenUri, Long count);
+
+    [This method is used to increment the idGen and returns a string that corresponds to the newly generated id.]
+    @entitle=/admin/idgen
+    @public String next(String idGenUri);
+
+	[This method is used to increment the idGen by given amount and returns a string that corresponds to the newly generated id.]
+    @entitle=/admin/idgen
+    @public String nextIds(String idGenUri, Long num);
+    
+    [Sets up any idGens needed by Rapture by default, should be called from any startup scripts. If force is set to true, it will force the config
+    to be set up again, even if it already exists.]
+    @entitle=/admin/lock
+    @public void setupDefaultIdGens(Boolean force);
+}

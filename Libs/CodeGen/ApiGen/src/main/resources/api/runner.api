@@ -1,0 +1,193 @@
+[The Runner api is used to manage application definitions for a Rapture environment that will be started and managed by the RaptureRunner application.]
+
+api(Runner) {
+   [ Creates a new server group. ]
+   @entitle=/admin/main
+   @public RaptureServerGroup createServerGroup(String name, String description);
+
+   [ Remove a server group (and all of its application definitions ) ]
+   @entitle=/admin/main
+   @public void deleteServerGroup(String name);
+
+   [ Returns all server groups defined in Rapture. ]
+   @entitle=/admin/main
+   @public List<RaptureServerGroup> getAllServerGroups();
+   
+   [Returns a list of all the applications defined in Rapture, which Rapture Runner knows about, including their versions. This is the list of applications that Rapture is aware of, but it does not necessarily run everything. To get a list of what will be running, look at getAllApplicationInstances.]
+   @entitle=/admin/main
+   @public List<RaptureApplicationDefinition> getAllApplicationDefinitions();
+
+   [Get a list of all libraries defined in Rapture. These are also known as Rapture add-ons, or plugins.]
+   @entitle=/admin/main
+   @public List<RaptureLibraryDefinition> getAllLibraryDefinitions();
+   
+   [Retrieves all the application instances defined in Rapture. This is really the list of schedule entries, meaning every application-server group combination that is scheduled to run.]
+   @entitle=/admin/main
+   @public List<RaptureApplicationInstance> getAllApplicationInstances();
+   
+   [ Retrieves a server group object, or null if no such object was found. ]
+   @entitle=/admin/main
+   @public RaptureServerGroup getServerGroup(String name);
+
+   [Add a server group inclusion. An inclusion is a hostname where this server group should run. By default, this is set to *, which means run everywhere. Adding an inclusion makes it so that this server group will run only on certain servers.]
+   @entitle=/admin/main
+   @public RaptureServerGroup addGroupInclusion(String name, String inclusion);
+   
+   [Removes a server group inclusion. Refer to AddGroupInclusion for more details.]
+   @entitle=/admin/main
+   @public RaptureServerGroup removeGroupInclusion(String name, String inclusion);
+
+   [Add a server group exclusion. An exclusion is a hostname where this server group should not run. By default, this is set to empty, which means run on every host specified in inclusions. It makes more sense to add an exclusion if this server group has a wildcard (*) for inclusions. See also addGroupInclusion.]
+   @entitle=/admin/main
+   @public RaptureServerGroup addGroupExclusion(String name, String exclusion);
+   
+   [Removes a server group exclusion. Refer to AddGroupExclusion for more details.]
+   @entitle=/admin/main
+   @public RaptureServerGroup removeGroupExclusion(String name, String exclusion);
+
+   [Remove an entry from either an exclusion or inclusion ]
+   @entitle=/admin/main
+   @public RaptureServerGroup removeGroupEntry(String name, String entry);
+
+   [Creates an application definition.]
+   @entitle=/admin/main
+   @public RaptureApplicationDefinition createApplicationDefinition(String name, String ver, String description);
+
+   [Delete an application definition (and any references in server groups)]
+   @entitle=/admin/main
+   @public void deleteApplicationDefinition(String name);
+
+   [Update a version of an application]
+   @entitle=/admin/main
+   @public RaptureApplicationDefinition updateApplicationVersion(String name, String ver);
+
+   [Creates an application library. See also getAllLibraryDefinitions.]
+   @entitle=/admin/main
+   @public RaptureLibraryDefinition createLibraryDefinition(String name, String ver, String description);
+
+   [Remove a library definition (and any references in server groups)]
+   @entitle=/admin/main
+   @public void deleteLibraryDefinition(String name);
+
+   [Retrieve an library definition]
+   @entitle=/admin/main
+   @public RaptureLibraryDefinition getLibraryDefinition(String name);
+
+   [Update a version of a library]
+   @entitle=/admin/main
+   @public RaptureLibraryDefinition updateLibraryVersion(String name, String ver);
+
+   [Associates a library with a server group.]
+   @entitle=/admin/main
+   @public RaptureServerGroup addLibraryToGroup(String serverGroup, String libraryName);
+
+   [Remove the association between a library and a server group]
+   @entitle=/admin/main
+   @public RaptureServerGroup removeLibraryFromGroup(String serverGroup, String libraryName);
+
+
+   [Adds an association between an application and a server group. This is the way to tell Rapture that a certain application needs to run (or be scheduled to run at given hours) as part of a server group.]
+   @entitle=/admin/main
+   @public RaptureApplicationInstance createApplicationInstance(String name, String description, String serverGroup, String appName, String timeRange, int retryCount, String parameters, String apiUser);
+
+   [Start a batch/single process (ultimately to replace the oneshot calls).]
+   @entitle=/admin/main
+   @public RaptureApplicationStatus runApplication(String appName, String queueName, Map(String, String) parameterInput, Map(String, String) parameterOutput);
+
+   [Start a batch/single process (ultimately to replace the oneshot calls)s.]
+   @entitle=/admin/main
+   @public RaptureApplicationStatus runCustomApplication(String appName, String queueName, Map(String, String) parameterInput, Map(String, String) parameterOutput, String customApplicationPath);
+
+   [Returns a status object that shows the current state of the app.]
+   @entitle=/admin/main
+   @public RaptureApplicationStatus getApplicationStatus(String applicationStatusURI);
+
+   [Lists the apps that are interesting, given a QBE template (empty strings have default behavior).]
+   @entitle=/admin/main
+   @public List(RaptureApplicationStatus) getApplicationStatuses(String date);
+   
+   [Lists the dates for which statuses exist.]
+   @entitle=/admin/main
+   @public List(String) getApplicationStatusDates();
+   
+   [Tidy up old status invocations]
+   @entitle=/admin/main
+   @public void archiveApplicationStatuses();
+
+   [Update the status of an application instance.]
+   @entitle=/admin/main
+   @public RaptureApplicationStatus changeApplicationStatus(String applicationStatusURI, RaptureApplicationStatusStep statusCode, String message);
+
+   [Adds messages to a running application instance.]
+   @entitle=/admin/main
+   @public void recordStatusMessages(String applicationStatusURI, List(String) messages);
+   
+   [Attempts to cancel the execution of an application.]
+   @entitle=/admin/main
+   @public RaptureApplicationStatus terminateApplication(String applicationStatusURI, String reasonMessage);
+
+   [Delete an application instance]
+   @entitle=/admin/main
+   @public void deleteApplicationInstance(String name, String serverGroup);
+
+   [Retrieve an application instance]
+   @entitle=/admin/main
+   @public RaptureApplicationInstance getApplicationInstance(String name, String serverGroup);
+
+   [Update the status of a one shot execution, potentially marking it as finished]
+   @entitle=/admin/main
+   @public void updateStatus(String name, String serverGroup, String myServer, String status, Boolean finished);
+
+   [Returns a list of application instance (aka schedule) names that are configured to run as part of a specific server group.]
+   @entitle=/admin/main
+   @public List(String) getApplicationsForServerGroup(String serverGroup);
+
+   [Returns a list of applications that should run on a specific host (aka server). Servers are defined in inclusions; see addGroupInclusion for more details. All applications that will run on a given server will be returned. Applications belonging to a server group that includes all servers via the * wildcard will also be returned.]
+   @entitle=/admin/main
+   @public List(RaptureApplicationInstance) getApplicationsForServer(String serverName);
+
+   [Retrieve an application definition]
+   @entitle=/admin/main
+   @public RaptureApplicationDefinition getApplicationDefinition(String name);
+
+   [Set a config variable available in RaptureRunner. The config variables understood are APPSOURCE and MODSOURCE, and they specify the location of the apps and libraries controlled by RaptureRunner.]
+   @entitle=/admin/main
+   @public void setRunnerConfig(String name, String value);
+
+   [Removes a variable from the Runner config.]
+   @entitle=/admin/main
+   @public void deleteRunnerConfig(String name);
+
+   [Returns the RaptureRunnerConfig object, which contains the values of the variables configured via setRunnerConfig.]
+   @entitle=/admin/main
+   @public RaptureRunnerConfig getRunnerConfig();
+
+   [Records the status of an application instance by acquiring a lock based on the server name, similar to the behavior of cleanRunnerStatus and markForRestart.]
+   @entitle=/admin/main
+   @public void recordRunnerStatus(String serverName, String serverGroup, String appInstance, String appName, String status);
+
+   [Each RaptureApplicationInstance has certain capabilities associated with it. These could be queried by other apps if necessary (see getCapabilities). For example, the RaptureAPIServer has a capability to handle api calls, and it posts its api uri, including port, as a capability, that other apps can retrieve if they want to contact the api directly. This method will record capabilities for a given instance.]
+   @entitle=/admin/main
+   @public void recordInstanceCapabilities(String serverName, String instanceName, Map<String, Object> capabilities);
+
+   [Returns the capabilities for one or more instance running on the specified host. See also recordInstanceCapabilities.]
+   @entitle=/admin/main
+   @public Map<String, RaptureInstanceCapabilities> getCapabilities(String serverName, List<String> instanceNames);
+
+   [Gets a list of all the known server names (aka hostnames). This is determined by finding where a RaptureRunner is currently running or has run in the past and recorded a status (which has not been deleted), whether it be up or down.]
+   @entitle=/admin/main
+   @public List(String) getRunnerServers();
+
+   [Get a RaptureRunnerStatus object for one specific host, which is a map of the statuses of all instances on a specific host.]
+   @entitle=/admin/main
+   @public RaptureRunnerStatus getRunnerStatus(String serverName);
+
+   [Cleans out old status information, older than the passed parameter in minutes. It acquires a lock based on the server name, same as recordRunnerStatus and markForRestart.]
+   @entitle=/admin/main
+   @public void cleanRunnerStatus(int ageInMinutes);
+   
+   [Marks a running instance as needing reboot. If an application is not found as running on the specified server, nothing is done. This will not start a server that is not running. This acquires a lock based on the server name, same as recordRunnerStatus and cleanRunnerStatus.]
+   @entitle=/admin/main
+   @public void markForRestart(String serverName, String name);
+}
+

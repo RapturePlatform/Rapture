@@ -1,0 +1,76 @@
+
+[Events are used to coordinate large scale activity in Rapture. The process is relatively simple: a caller assigns any number of scripts to a named event (simply a unique path), and then when the event is fired all attached scripts are scheduled for execution. Some events are internally managed (system events) and other events can be user created and managed.]
+api(Event) {
+
+   [This method is used to retrieve information about an event (primarily the scripts attached to it).]
+   @entitle=/event/admin
+   @public RaptureEvent getEvent(String eventUri);
+      
+   [This method puts an event in the system.]
+   @entitle=/event/admin
+   @public void putEvent(RaptureEvent event);
+   
+   [This method removes an event (and any attached scripts) from the system. If the event is fired at a later point nothing will happen as there would be no scripts attached.]
+   @entitle=/event/admin
+   @public void deleteEvent(String eventUri);
+
+   [Return a list of full display names of the paths below this one. Ideally optimized depending on the repo.]
+   @entitle=/user/get
+   @public List(RaptureFolderInfo) listEventsByUriPrefix(String eventUriPrefix);
+  
+   [ This method is used to attach a script to an event. A final parameter signals whether this script should be detached from the event when it is fired.]
+   @entitle=/event/admin
+   @public void addEventScript(String eventUri, String scriptUri, Boolean performOnce);
+
+   [This method detaches a script from the event.]
+   @entitle=/event/admin
+   @public void deleteEventScript(String eventUri, String scriptUri);
+
+   [ This method is used to attach a message to an event. When the event is fired a message is sent to the pipeline with content
+     based on the context of the event and parameters passed to this call.]
+   @entitle=/event/admin
+   @public void addEventMessage(String eventUri, String name, String pipeline, Map(String, String) params);
+   
+   [ This method reverses the message attachment, using the same name as passed in the original attachMessage call]
+   @entitle=/event/admin
+   @public void deleteEventMessage(String eventUri, String name);
+   
+   [ This method is used to attach a notification to an event. When the event is fired a message is sent to the notification with content
+     based on the context of the event and parameters passed to this call.]
+   @entitle=/event/admin
+   @public void addEventNotification(String eventUri, String name, String notification, Map(String, String) params);
+   
+   [ This method reverses the notification attachment, using the same name as passed in the original attachNotification call]
+   @entitle=/event/admin
+   @public void deleteEventNotification(String eventUri, String name);
+   
+   [ This method is used to attach a workflow (dp) to an event. When the event is fired an instance of the workflow
+   is started.]
+   @entitle=/event/admin
+   @public void addEventWorkflow(String eventUri, String name, String workflowUri, Map(String, String) params);
+   
+   [ This method reverses the notification attachment, using the same name as passed in the original attachWorflowToEvent call.]
+   @entitle=/event/admin
+   @public void deleteEventWorkflow(String eventUri, String name);
+    
+   [This method fires an event, scheduling any attached scripts to run. The optional displayName and context
+    parameters are passed to the script when fired.]
+   @entitle=/event/admin
+   @public Boolean runEvent(String eventUri, String associatedUri, String eventContext);
+
+   [This method fires an event, scheduling any attached workflows or scripts to run. The optional associatedURI and context
+    map are passed to the event workflow when fired. The event's unique id is returned. This id is passed to any scripts, workflows, etc
+    invoked by the event]
+   @entitle=/event/admin
+   @public RunEventHandle runEventWithContext(String eventUri, String associatedUri, Map<String, String> eventContextMap);
+
+   [Determines whether an event has been defined.]
+   @entitle=/event/admin
+   @public Boolean eventExists(String eventUri);
+
+   [Removes a folder and its contents recursively, including empty subfolders. Validates entitlement on individual events and folders. Returns a list of the events and folders removed.]
+   @entitle=/data/write/$f(uriPrefix)
+   @public List(String) deleteEventsByUriPrefix(String uriPrefix);
+}
+
+

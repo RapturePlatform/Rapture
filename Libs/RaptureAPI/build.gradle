@@ -1,0 +1,22 @@
+jar.manifest.attributes "Implementation-Title": "RaptureAPI"
+
+dependencies {
+    compile project(":RaptureCommon")
+    compile project(":CodeGen:ApiGen")
+    compile 'commons-httpclient:commons-httpclient:3.1'
+    compile 'net.logstash.log4j:jsonevent-layout:1.6'
+}
+
+sourceSets {
+    main {
+        java { srcDir project.generatedMainJava }
+    }
+    test {
+        java {
+            srcDir "test/java"
+            srcDir project.generatedTestJava
+        }
+    }
+}
+
+compileJava.dependsOn(":CodeGen:ApiGen:genAll")

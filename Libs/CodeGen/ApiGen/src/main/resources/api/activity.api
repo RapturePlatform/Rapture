@@ -1,0 +1,37 @@
+[The activity API gives clients and programs the ability to record messages about changes and status for common activity running in the system.
+One common use case of activities is to see what percentage of a certain task is complete and what the last message associated with that task was.]
+api(Activity) {
+
+  [This method creates and starts recording a new activity. It returns a unique id that can be used to update the status of the activity.]
+  @entitle=/activity/write
+  @public String createActivity(String description, String message, Long progress, Long max);
+
+  [This method updates the status of an activity.
+  The return value is false if the activity was already marked as finished or aborted.  If the value is false, this function will not take effect.]
+  @entitle=/activity/write
+  @public Boolean updateActivity(String activityId, String message, Long progress, Long max);
+
+  [This method marks an activity as finished.
+  The return value is false if the activity was already marked as finished or aborted.  If the value is false, this function will not take effect.]
+  @entitle=/activity/write
+  @public Boolean finishActivity(String activityId, String message);
+
+  [This method is used to request that an activity abort. This will indicate to callers of updateActivity that the request is aborted, via the return value
+  of calls that write to this activity, such as updateActivity or recordActivity.
+  The return value is false if the activity was already marked as finished or aborted.  If the value is false, this function will not take effect.]
+  @entitle=/activity/write
+  @public Boolean requestAbortActivity(String activityId, String message);
+
+  [Retrieve activities updated after a given timestamp
+  - nextBatchId: the id for the batch, if this is not the first request. Empty string to indicate the first request
+  - batchSize: the maximum number of items you want to see in this batch. Maximum is 10000 -- if the number passed in is > 10k, it gets set to 10k.
+  - lastSeen: an epoch timestamp in milliseconds. only activities that were last updated after this time will be returned
+  ]
+  @entitle=/activity/read
+  @public ActivityQueryResponse queryByExpiryTime(String nextBatchId, Long batchSize, Long lastSeen);
+
+  [Get an activity by id]
+  @entitle=/activity/read
+  @public Activity getById(String activityId);
+
+}

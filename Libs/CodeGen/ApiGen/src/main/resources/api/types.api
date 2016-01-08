@@ -1,0 +1,1692 @@
+[Contains information associated with an error captured by the Rapture system.]
+@Bean
+type ErrorWrapper(@package=rapture.common) {
+    String id;
+    Integer status;
+    String message;
+}
+
+[A return value from a native query.]
+type RaptureQueryResult(@package=rapture.common) {
+	List<JsonContent> rows;
+}
+
+[This is the result of a FilterCubeView.]
+type RaptureCubeResult(@package=rapture.common) {
+	List<String> groupNames;
+	List<String> columnNames;
+	List<RaptureCubeRow> rows;
+}
+
+[Defines a displayNameQuery cursor.]
+type RaptureDNCursor(@package=rapture.common) {
+	String authority;
+	List<String> displayNames;
+	String continueContext;
+	boolean finished = false;
+}
+
+[Defines a BlobRepository.]
+@Addressable(scheme = BLOB(true))
+@Storable(storagePath : {authority}, prefix="blobConf")
+type BlobRepoConfig(@package=rapture.common.model) {
+  String description;
+  String config;
+  String authority;
+  String metaConfig;
+}
+
+[ This is a mailbox message, usually posted by an external user.]
+@Addressable(scheme = MAILBOX(false))
+@Storable(storagePath : {authority, documentPath, id}, prefix="mail/message", repoName=MAIL_REPO)
+type RaptureMailMessage(@package=rapture.common.model) {
+   String id;
+   String authority;
+   String documentPath;
+   String content;
+   Date when;
+   String user;
+}
+
+[ A RaptureField is the definition of a concept in Rapture, referenced within a type or a series of types.]
+@Addressable(scheme = FIELD(false))
+@Storable(storagePath : {authority, name}, prefix="field")
+type RaptureField(@package=rapture.common) {
+    String authority;
+    String category;
+    String name;
+    String longName;
+    String description;
+    String units;
+    RaptureGroupingFn groupingFn = RaptureGroupingFn.SUM;
+    List<RaptureFieldBand> bands = new ArrayList<RaptureFieldBand>();
+    Set<RaptureFieldPath> fieldPaths = new HashSet<RaptureFieldPath>();
+}
+
+[Defines an audit result to be logged.]
+type AuditLogEntry(@package=rapture.common.model) {
+    String category;
+    String entryId;
+    int level; 
+    String logId;
+    String message;
+    String source;
+    String user;
+    Date when;
+}
+
+[]
+@Storable(storagePath : { serverName }, prefix="audit/logj/config")
+type Log4jAuditConfig(@package=rapture.common.model.audit) {
+    String serverName;
+    String logDirPath;
+    String xml;
+}
+
+[Stores the config information for an audit log.]
+@Addressable(scheme = LOG(false))
+@Storable(storagePath : {name}, prefix="audit/config")
+type AuditLogConfig(@package=rapture.common) {
+    String name;
+    String config;
+}
+
+[Describes an object that can be committed to version history.]
+type CommitObject(@package=rapture.common.repo) {
+    String treeRef;
+    String user;
+    Date when;
+    String comment;
+    String changes;
+    List(String) docReferences;
+    List(String) treeReferences;
+}
+
+[Defines a document object.]
+type DocumentObject(@package=rapture.common.repo) {
+    JsonContent content;
+}
+
+[Defines a tree object.]
+type TreeObject(@package=rapture.common.repo) {
+    Map(String, String) trees;
+    List(DocumentBagReference) documents;
+}
+
+[Defines a remote instance of Rapture.]
+@Storable(storagePath : {name}, prefix="remote")
+type RaptureRemote(@package=rapture.common) {
+    String name;
+    String description;
+    String url;
+    String apiKey;
+    String optionalPass;
+}
+
+[This is a write handle returned after a write (update, delete, insert) operation to a document. It contains information about the document]
+@Bean
+type DocWriteHandle(@package=rapture.common.model) {
+    Boolean isSuccess;
+    RaptureURI documentURI;
+    RunEventHandle eventHandle; //if there was an event created associated with this
+}
+
+[Defines a script used to run a Rapture job.]
+@Addressable(scheme = SCRIPT(false))
+@Storable(storagePath : {authority, name}, prefix="script")
+@Cacheable
+type RaptureScript (@package=rapture.common) {
+   String name;
+   String script;
+   RaptureScriptLanguage language;
+   RaptureScriptPurpose purpose;
+   String authority;
+   List(RaptureParameter) parameters;
+}
+
+[Defines a portion of a Rapture script.]
+@Addressable(scheme = SNIPPET(false))
+@Storable(storagePath : {authority, name}, prefix="snippet")
+@Cacheable
+type RaptureSnippet (@package=rapture.common) {
+   String name;
+   String authority;
+   String snippet;
+}
+
+
+[Defines a variable used in a read-eval-print loop. ]
+@Bean
+type REPLVariable(@package=rapture.common) {
+	String name;
+	String serializedVar;
+}
+
+[Describes a read-eval-print loop in Reflex.]
+@Storable(storagePath : { id }, prefix="reflex/repl", repoName=EPHEMERAL_REPO)
+@Bean
+type ReflexREPLSession(@package=rapture.common) {
+	String id;
+	List(REPLVariable) vars;
+	String partialLine = "";
+	List(String) functionDecls = null;
+	Date lastSeen;
+}
+
+[One of the scripting languages compatible with Rapture.]
+type RaptureScriptLanguage (@package=rapture.common) {
+   String REFLEX;
+}
+
+[Describes the script's functionality.]
+type RaptureScriptPurpose (@package=rapture.common) {
+   String INDEXGENERATOR;
+   String MAP;
+   String FILTER;
+   String OPERATION;
+   String PROGRAM;
+   String LINK;
+}
+
+[Metadata used by objects in the Lock API.]
+@Addressable(scheme = LOCK(false))
+@Storable(storagePath : {authority, name}, prefix="lock/config")
+type RaptureLockConfig(@package=rapture.common) {
+   String name;
+   String config;
+   String authority;
+   String pathPosition;
+}
+
+[Handle to a Rapture lock.]
+@Bean
+type LockHandle(@package=rapture.common) {
+    String lockName;
+    String handle;
+    String lockHolder;
+}
+
+[Controls access to a resource using the standard semaphore model in programming.]
+@Storable(storagePath: {lockKey}, ttlDays=7, repoName=EPHEMERAL_REPO)
+type SemaphoreLock(@package=rapture.common) {
+    String lockKey;
+    Set<RaptureURI> stakeholderURIs = new HashSet<String>();
+}
+
+[An object returned by public API calls that create things. If the object was created, the URI is
+returned. Otherwise, the message contains the reason the object was not created.]
+@Bean
+type CreateResponse(@package=rapture.common) {
+    Boolean isCreated;
+    RaptureURI uri;
+    String message;
+}
+
+[A response returned when trying to acquire a semaphore lock. It indicates whether the lock
+was acquired and identifies any existing stakeholders.]
+@Bean
+type SemaphoreAcquireResponse(@package=rapture.common) {
+    Boolean isAcquired;
+    RaptureURI acquiredURI;
+    Set<RaptureURI> existingStakeholderURIs = new HashSet<String>();
+}
+
+[Holds the config info for a idgen as described in the idgen API.]
+@Addressable(scheme = IDGEN(false))
+@Storable(storagePath : {authority, name}, prefix="idgen")
+type RaptureIdGenConfig(@package=rapture.common) {
+   String name;
+   String config;
+   String authority;
+}
+
+[Holds the config info for a Rapture table, as described in the table API.]
+@Addressable(scheme = TABLE(false))
+@Storable(storagePath : {authority, name}, prefix="indexOld")
+type RaptureTableConfig(@package=rapture.common) {
+   String name;
+   String config;
+   String authority;
+}
+
+[Searches performed by any API calls are stored in this type.]
+type RaptureSearchResult(@package=rapture.common) {
+   String displayName;
+}
+
+[Holds the config info for a Rapture index.]
+@Storable(storagePath : {authority, name}, prefix="fulltextindex")
+type RaptureFullTextIndexConfig(@package=rapture.common) {
+   String name;
+   String config;
+   String authority;
+}
+
+[Holds the config info for a repository.]
+@Storable(storagePath : {"sys", name}, separator=".", prefix="repo/config", repoName=BOOTSTRAP_REPO)
+type RepoConfig (@package=rapture.common.model) {
+   String name;
+   String config;
+}
+
+[Identifies the user making an API call. The metadata map allows API clients to associate values with a particular session (such as user preferences or client location).]
+@Storable(storagePath : {context}, prefix="session", repoName=EPHEMERAL_REPO)
+type CallingContext(@package=rapture.common) {
+   String user;
+   String context;
+   String salt;
+   Map<String, String> metadata;
+   Boolean valid = false;
+}
+
+[Holds the details of a particular context.]
+@Storable(storagePath : {sessionId}, prefix="context")
+type RaptureContextInfo(@package=rapture.common) {
+   String sessionId;
+   String authority;
+   String perspective;
+}
+
+[Identifies the current authority.]
+@Addressable(scheme = AUTHORITY(false))
+type RaptureAuthority(@package=rapture.common) {
+}
+
+[Describes config info for a repository that stores Rapture documents.]
+@Addressable(scheme = DOCUMENT(true))
+@Storable(storagePath : {authority}, prefix="type")
+type DocumentRepoConfig(@package=rapture.common.model) {
+    String description;
+    String config;
+    String authority;
+    IdGenURI idGenUri;
+    Boolean strictCheck = true;
+    Set<IndexScriptPair> indexes = new HashSet<IndexScriptPair>();
+    Set<FullTextIndexScriptPair> fullTextIndexes = new HashSet<FullTextIndexScriptPair>();
+    String updateQueue;
+    RaptureDocConfig documentRepo;
+}
+
+[Describes config info for a single Rapture document.]
+@Storable(storagePath : {authority}, prefix="docConf")
+type RaptureDocConfig(@package=rapture.common.model) {
+   String authority;
+   String config;
+}
+
+[Stores info about a specific change made to a repository.]
+type RaptureCommit(@package=rapture.common.model) {
+   String who;
+   Date when;
+   String comment;
+   String changes;
+   String reference;
+   List(String) docReferences;
+   List(String) treeReferences;
+}
+
+[Defines a user account for the Rapture system.]
+@Storable(storagePath : {username}, prefix="sys.user", repoName=SETTINGS_REPO)
+@Addressable(scheme = USER)
+@Cacheable
+type RaptureUser(@package=rapture.common.model) {
+    String username; //deprecated
+    String userId;
+    String emailAddress;
+    String salt = "";
+    String hashPassword;
+    String description = "";
+    Boolean inactive = false;
+    Boolean apiKey = false;
+    Boolean hasRoot = false;
+    String passwordResetToken;
+    Long tokenExpirationTime;
+}
+
+[]
+@Storable(storagePath : {authority, viewName}, prefix="view")
+type RaptureView(@package=rapture.common.model) {
+   String authority;
+   String viewName;
+   String mapFn;
+   String filterFn;
+   List<String> parameterNames;
+   List<String> columnNames;
+}
+
+[]
+type RaptureViewResult(@package=rapture.common.model) {
+   List(String) columnNames;
+   List(List(Object)) rows;
+   List(Object) currentRow;
+}
+
+[The base object used by the entitlements API.]
+@Addressable(scheme = ENTITLEMENT(true))
+@Storable(storagePath : {name}, prefix="entitlement")
+@Cacheable(shouldCacheNulls=true)
+type RaptureEntitlement(@package=rapture.common.model) {
+   String name;
+   EntitlementType entType;
+   Set<String> groups;
+}
+
+[A named collection of users who share any entitlements assigned to the group, as long as they remain members of the group.]
+@Addressable(scheme = ENTITLEMENTGROUP(true))
+@Storable(storagePath : {name}, prefix="entitlementgroup")
+@Cacheable
+type RaptureEntitlementGroup(@package=rapture.common.model) {
+   String name;
+   Set<String> users;
+   String dynamicEntitlementClassName;
+}
+
+[Describes the main object used by the Operation API.]
+type RaptureOperation(@package=rapture.common.model) {
+    String opName;
+    String paramDef;
+    String scriptName;
+}
+
+[Describes the main object used by the Event API.]
+@Addressable(scheme = EVENT(false))
+@Storable(storagePath : {uriFullPath}, prefix="event")
+@Cacheable
+type RaptureEvent(@package=rapture.common.model) {
+   String uriFullPath;
+   Set(RaptureEventScript) scripts;
+   Set(RaptureEventMessage) messages;
+   Set(RaptureEventNotification) notifications;
+   Set(RaptureEventWorkflow) workflows;
+}
+
+[This is a write handle returned after an event is executed.]
+@Bean
+type RunEventHandle(@package=rapture.common.model) {
+    RaptureURI eventUri;
+    String eventId;
+    Boolean didRun;
+}
+
+[Holds information about a server that is running Rapture.]
+@Addressable(scheme = SERVER(false))
+@Storable(storagePath : {serverId}, prefix="environment/server")
+type RaptureServerInfo(@package=rapture.common.model) {
+   String serverId;
+   String name;
+}
+
+[Holds information about the status of a server that is running Rapture.]
+@Addressable(scheme = SERVERSTATUS(false))
+@Storable(storagePath : {serverId}, prefix="environment/status", repoName=EPHEMERAL_REPO)
+type RaptureServerStatus(@package=rapture.common.model) {
+   String serverId;
+   Long status;
+   String statusMessage;
+   Date lastSeen = new Date();
+}
+
+[Holds basic information about the network that Rapture can access. ]
+@Addressable(scheme = NETWORK(false))
+@Storable(storagePath : {networkId}, prefix="environment/network")
+type RaptureNetwork(@package=rapture.common.model) {
+   String networkId;
+   String networkName;
+}
+
+[Holds config information for the main object used by the Plugin API.]
+@Addressable(scheme = PLUGIN(false))
+@Storable(storagePath : {plugin}, prefix="plugin/config")
+type PluginConfig(@package=rapture.common) {
+   Map(String, PluginVersion) depends;
+   String description;
+   String plugin;
+   PluginVersion version;
+}
+
+[This is a more detailed variant of PluginConfig that details the complete contents of a version of a plugin instance.]
+@Addressable(scheme = PLUGIN_MANIFEST(false))
+@Storable(storagePath : {plugin}, prefix="plugin/manifest")
+type PluginManifest(@package=rapture.common) {
+   List(PluginManifestItem) contents;
+   Map(String, PluginVersion) depends;
+   String description;
+   String plugin;
+   PluginVersion version;
+}
+
+[Contains a single entry in the contents of a Plugin manifest.]
+@Addressable(scheme = PLUGIN_MANIFEST(false))
+type PluginManifestItem(@package=rapture.common) {
+    String uri;
+    String hash;
+}
+
+[The PluginTransportItem is an internal class used by the PluginInstaller. It carries the encoded form of a Rapture object between the PluginInstaller and the Rapture server.]
+@Bean
+type PluginTransportItem(@package=rapture.common) {
+    String uri;
+    ByteArray content;
+    String hash;
+}
+
+[Holds version information for a Rapture plugin.]
+type PluginVersion(@package=rapture.common) {
+	int major;
+	int minor;
+	int release;
+	long timestamp;
+}
+
+[Holds information about a stored JAR.]
+@Addressable(scheme = JAR(false))
+@Storable(storagePath : {authority}, prefix="jar", repoName=JAR_REPO)
+type Jar(@package=rapture.common) {
+  String description;
+  String authority;
+}
+
+[Describes a repository for apps.]
+@Storable(storagePath : {"settings"}, prefix="app/reposettings")
+type AppRepoSettings(@package=rapture.common) {
+	String codeBase;
+	String raptureBase;
+}
+
+[Contains configuration details for hosted apps.]
+@Storable(storagePath : {name}, prefix="app/config")
+type AppConfig(@package=rapture.common) {
+	String name;
+	String title;
+	String vendor;
+	String homePage;
+	String longDescription;
+	String shortDescription;
+	String iconLocation;
+	String splashLocation;
+	String jarFile;
+	String mainClass;
+}
+
+[Records when and where an event (such as a recurring task) was processed.]
+@Storable(storagePath : {network}, prefix="timeprocessor", repoName=EPHEMERAL_REPO)
+@Deprecated("TimeServer is superseded by ScheduleServer")
+type TimeProcessorStatus(@package=rapture.common) {
+	String network;
+	Long when;
+	String processingServer;
+}
+
+[Contains information about an active instance of a hosted app.]
+@Storable(storagePath : {appConfig, name}, prefix="app/instance")
+type AppInstanceConfig(@package=rapture.common) {
+	String name;
+	String appConfig;
+	List(String) arguments;
+	Map(String, String) properties;
+	String apiKey;
+}
+
+[A RaptureExchange is the coordination point for a task based pipeline.
+  
+ Clients put RapturePipelineTask instances onto an exchange, which then routes
+ that task to a set of queues that are then consumed.
+  
+ This class defines the config of an exchange ]
+@Storable(storagePath : {name}, prefix="exchange")
+type RaptureExchange(@package=rapture.common.model) {
+	String domain;
+	String name;
+	RaptureExchangeType exchangeType;
+	List(RaptureExchangeQueue) queueBindings;
+}
+
+
+[Represents a task that has been submitted to the Rapture pipeline. Includes the task's status, type, and categories associated with it.]
+type RapturePipelineTask(@package=rapture.common) {
+	PipelineTaskStatus status;
+	PipelineTaskType taskType;
+	int priority;
+	List<String> categoryList;
+	String taskId;
+	String content;
+	String contentType;
+	Long epoch;
+}
+
+[Associates a server category with a comment.]
+@Storable(storagePath : {name}, prefix="servercategory")
+type ServerCategory(@package=rapture.common) {
+    String name;
+    String description;
+}
+
+[Describes bound queues in a task exchange pipeline.]
+@Storable(storagePath : {name}, prefix="categorybinding")
+type CategoryQueueBindings(@package=rapture.common) {
+	String name;
+	Map(String, Set(String)) bindings;
+}
+
+[Contains configuration details for a pipeline exchange.]
+@Addressable(scheme = EXCHANGE_DOMAIN(false))
+@Storable(storagePath: {name}, prefix="exchangeDomain")
+type ExchangeDomain(@package=rapture.common) {
+	String name;
+	String config;
+}
+
+[Describes a table object.]
+type TableRecord(@package=rapture.common) {
+	String keyName;
+	Map(String, Object) fields;
+	String content;
+}
+
+[Describes a query made against a table.]
+type TableQuery(@package=rapture.common) {
+	List(TableSelect) fieldTests;
+	List(String) fieldReturns;
+	List(TableColumnSort) sortFields;
+	int skip;
+	int limit;
+}
+
+[Contains the metadata, if any, in a Rapture document.]
+@Bean
+type DocumentMetadata(@package=rapture.common.model) {
+	Integer version;
+	Date writeTime; //deprecated, replaced by modifiedTimestamp
+	Long createdTimestamp;
+	Long modifiedTimestamp;
+	String user;
+	String comment;
+	Boolean deleted;
+}
+
+[Contains a Rapture document and its metadata.]
+@Bean
+type DocumentWithMeta(@package=rapture.common.model) {
+	String displayName;
+	DocumentMetadata metaData;
+	String content;
+}
+
+[Holds a key/value pair for an attribute of a document object.]
+type XferDocumentAttribute(@package=rapture.common) {
+    String attributeType;
+    String key;
+    String value;
+}
+
+[Contains details about the current tasks on a pipeline.]
+type PipelineTaskStatus(@package=rapture.common) {
+	PipelineTaskState currentState;
+	String taskId;
+	String relatedTaskId;
+	Date creationTime;
+	Date startExecutionTime;
+	Date endExecutionTime;
+	int suspensionCount;
+	List(String) output;
+}
+
+[Contains info for a script-driven job in Rapture.]
+@Addressable(scheme = JOB(false))
+@Storable(storagePath : {jobURI}, prefix="versioned/schedule/job/v2")
+type RaptureJob(@package=rapture.common) {
+    JobURI jobURI;
+    String description;
+    ScriptURI scriptURI;
+    String cronSpec;
+    String timeZone = "America/New_York";
+    Map<String, String> params;
+    Boolean autoActivate = true;
+    Boolean activated = true;
+    JobType jobType;
+    Integer maxRuntimeMinutes = -1;
+    String appStatusNamePattern; //appstatus name pattern, will be interpreted and passed in to workflow
+}
+
+[Contains info about an active or queued job.]
+@Storable(storagePath : {jobURI, execTime}, ttlDays=180, prefix="versioned/schedule/exec/default/v2")
+type RaptureJobExec(@package=rapture.common) {
+    JobURI jobURI;
+    JobType jobType;
+    JobExecStatus status = JobExecStatus.WAITING;
+    Long execTime;
+    Map<String, String> passedParams = new HashMap<String, String>();
+    String execDetails = ""; //stores additional details, to be interpreted based on jobType
+}
+
+[Represents the workorderId, which is stored in a RaptureJobExec for a workflow-based job.]
+@Bean
+type WorkflowJobDetails(@package=rapture.common) {
+    String workOrderURI;
+}
+
+[Contains a copy of the upcoming JobExec for a RaptureJob.
+It is used by the ScheduleManager to determine whether something needs to run.
+This way the ScheduleManager doesn't have to inefficiently sift through all jobs to make this decision.]
+@Storable(storagePath : {jobURI}, prefix="versioned/schedule/exec/upcoming/v2")
+@Extends(rapture.common RaptureJobExec)
+type UpcomingJobExec(@package=rapture.common) {
+}
+
+[Contains a copy of the previous JobExec for a RaptureJob.
+It is used to retrieve statuses of jobs that were previously executed, so that
+the ScheduleManager doesn't have to inefficiently sift through all jobs to determine statuses.]
+@Storable(storagePath : {jobURI}, ttlDays=180, prefix="versioned/schedule/exec/last/v2")
+@Extends(rapture.common RaptureJobExec)
+type LastJobExec(@package=rapture.common) {
+}
+
+[The status for an individual workflow-based job execution -- either upcoming or in the past.]
+@Bean
+type WorkflowJobExecDetails(@package=rapture.common) {
+    JobURI jobURI;
+    Map<String, String> parameters;
+    Map<String, String> passedParams = new HashMap<String, String>(); //optional override
+    WorkflowURI workflowURI;
+    WorkOrderURI workOrderURI;
+    String workOrderID; //a shorter version of workOrderURI -- just the id at the end, useful for display
+    Long startDate;
+    Long lastUpdated;
+    WorkOrderExecutionState workOrderStatus;
+    JobExecStatus jobStatus;
+    String prettyStatus; //a human-readable status, aggregating jobStatus and workOrderStatus
+    Long overrunMillis = 0L; //how much we have overrun, or 0 if not overrun yet
+    Integer maxRuntimeMinutes = -1;
+    String notes; // optional notes about this workflow's status (e.g. "Still running")
+    JobErrorAck errorAck; // set if this is in error state and someone acknowledged the error
+}
+
+[Acknowledgement of a job failure or delay.]
+@Storable(storagePath : {jobURI, execTime}, repoName=EPHEMERAL_REPO)
+type JobErrorAck(@package=rapture.common) {
+    JobURI jobURI;
+    Long execTime;
+    JobErrorType errorType; // the type of error that was acknowledged
+    Long timestamp; // when this was acknowledged
+    String user; // who acknowledged this
+}
+
+[The status for a workflow-based job that's already completed.]
+@Bean
+type WorkflowExecsStatus(@package=rapture.common) {
+    List<WorkflowJobExecDetails> failed = new ArrayList<WorkflowJobExecDetails>();
+    List<WorkflowJobExecDetails> ok = new ArrayList<WorkflowJobExecDetails>();
+    List<WorkflowJobExecDetails> overrun = new ArrayList<WorkflowJobExecDetails>();
+    List<WorkflowJobExecDetails> success = new ArrayList<WorkflowJobExecDetails>();
+}
+
+[An customizable description of a workflow layout. The detailed positions are filled in by the client based on local font sizes and the like]
+@Storable(storagePath: {workflowURI})
+type WorkflowGridLayout(@package=rapture.common.dp) {
+    String workflowURI;
+    List(WorkflowColumnLayout) columns;
+    List(WorkflowArrowLayout) arrows;
+}
+
+[Simple holder for box in a grid by column to make layout easier]
+@Bean 
+type WorkflowColumnLayout(@package=rapture.common.dp) {
+    Integer columnNumber;
+    List(WorkflowBoxLayout) boxes;
+}
+
+[Grid details for a box in a WorkflowGridLayout]
+@Bean
+type WorkflowBoxLayout(@package=rapture.common.dp) {
+    Integer gx;
+    Integer gy;
+    String kind;
+    String name; // name for display, not guaranteed to be unique
+    String id; // rigid reference, not for display
+    Integer offsetX; //replace absolute offsets with fractions?
+    Integer offsetY;
+}
+
+[Grid details for a box in a WorkflowArrowLayout]
+@Bean
+type WorkflowArrowLayout(@package=rapture.common.dp) {
+    String name;
+    String fromBoxName;
+    String toBoxName;
+    Integer offsetX;
+    Integer offsetY;
+}
+
+[Metadata for a Rapture server group.]
+@Storable(storagePath : {name}, prefix="runner/servergroup")
+type RaptureServerGroup(@package=rapture.common) {
+	String name;
+	String description;
+	Integer jmxPort;
+	Set(String) inclusions;
+	Set(String) exclusions;
+	Set(String) libraries;
+}
+
+[Describes an application that this Rapture instance recognizes.]
+@Storable(storagePath : {name}, prefix="runner/definition")
+type RaptureApplicationDefinition(@package=rapture.common) {
+	String name;
+	String description;
+	String version;
+}
+
+[Describes a third-party library being used in this Rapture instance.]
+@Storable(storagePath : {name}, prefix="runner/library")
+type RaptureLibraryDefinition(@package=rapture.common) {
+	String name;
+	String description;
+	String version;
+}
+
+[Describes an active application.]
+@Storable(storagePath : {serverGroup, name}, prefix="runner/instance")
+type RaptureApplicationInstance(@package=rapture.common) {
+	String name;
+	String appName;
+	String description;
+	String serverGroup;
+	String timeRangeSpecification;
+	Integer retryCount = 0;
+	String parameters;
+	String apiUser;
+    String lockedBy;
+    Boolean oneShot = false;
+    Boolean finished = false;
+    String status;
+    Date lastStateChange;
+}
+
+[Describes the state of a currently running instance of RaptureRunner.]
+@Bean
+type RaptureRunnerInstanceStatus(@package=rapture.common) {
+    String serverGroup;
+    String appInstance;
+    String appName;
+    String status;
+    Date lastSeen;
+    Boolean needsRestart = false;
+}
+
+
+[Contains info about the capabilities that exist in the current Rapture system.]
+@Storable(storagePath : {server, instanceName}, prefix="runner/capabilities", repoName=EPHEMERAL_REPO)
+type RaptureInstanceCapabilities(@package=rapture.common) {
+    String server;
+    String instanceName;
+    Map<String, Object> capabilities = new HashMap<String, Object>();
+}
+
+
+[Contains status info for all instances of RaptureRunner.]
+@Storable(storagePath : {serverName}, prefix="runner/status", repoName=EPHEMERAL_REPO)
+type RaptureRunnerStatus(@package=rapture.common) {
+	String serverName;
+	Map<String, RaptureRunnerInstanceStatus> statusByInstanceName;
+}
+
+[Config info for the current RaptureRunner implementation.]
+@Storable(storagePath : {""}, prefix="runner/config")
+type RaptureRunnerConfig(@package=rapture.common) {
+	Map(String, String) config;
+}
+
+[Config info for the main object in the Notification API.]
+@Addressable(scheme = NOTIFICATION(false))
+@Storable(storagePath : {name}, prefix="notification")
+type RaptureNotificationConfig(@package=rapture.common.model) { 
+	String name;
+	String config;
+	String purpose;
+}
+
+[The object returned by a notification]
+type NotificationResult(@package=rapture.common) {
+	Long currentEpoch;
+	List(String) references;
+}
+
+[Contains all relevant data for a notification.]
+type NotificationInfo(@package=rapture.common) {
+	String id;
+	String content;
+	String reference;
+	Long epoch;
+	Date when;
+	String contentType;
+	String who;
+}
+
+[Information about a folder or a file in a repository.]
+type RaptureFolderInfo(@package=rapture.common) {
+	String name;
+	boolean folder;
+}
+
+[Parameters that should be passed to a script.]
+type RaptureParameter(@package=rapture.common) {
+	String name;
+	RaptureParameterType parameterType;
+}
+
+[The status of the link between two jobs.]
+@Storable(storagePath : {to, from}, prefix="joblinkstatus", repoName=EPHEMERAL_REPO)
+type JobLinkStatus(@package=rapture.common) {
+	String from;
+	String to;
+	Integer level;
+	Date lastChange;
+}
+
+
+[The link between two jobs.]
+@Storable(storagePath : {from, to}, prefix="joblink")
+type JobLink(@package=rapture.common) {
+	String from;
+	String to;
+}
+
+[A response to a query on Activities]
+@Bean
+type ActivityQueryResponse(@package=rapture.common) {
+    Boolean isLast; // whether this is the last response. if false, the response is split in batches: use nextBatchId to get the rest
+    String nextBatchId; // a unique id that can be used to read the next batch of responses if this was not marked as isLast
+    List<Activity> activities = new ArrayList<Activity>();
+}
+
+[An activity.]
+@Storable(storagePath : {id}, ttlDays=7, prefix="versioned/activity/activity/v2")
+@Indexable(name: "default", fields: {id, lastSeen})
+type Activity(@package=rapture.common) {
+	String id;          // a unique id for this activity
+	String description; // a human-friendly description of the activity
+	String message;     // a human-friendly text message of the status
+	Long progress;      // how many units are complete
+	Long max;           // the maximum units when this will be considered finished
+	Long lastSeen;      // when the last update was done
+	ActivityStatus status;
+}
+
+[An activity.]
+@Deprecated("use Activity")
+@Storable(storagePath : {id}, prefix="activity", repoName=EPHEMERAL_REPO)
+type RaptureActivity(@package=rapture.common) {
+	String id;
+	String otherId;
+	String message;
+	Long progress;
+	Long maxProgress;
+	Boolean requestFinish = false;
+	Date lastSeen;
+	Long expiresAt;
+	Boolean finished = false;
+}
+
+[A structured repository definition]
+@Addressable(scheme = STRUCTURED(true))
+@Storable(storagePath : {authority})
+type StructuredRepoConfig(@package=rapture.common) {
+    String description;
+    String config;
+    String authority;
+}
+
+[metadata for a column within a structured store table]
+@Bean
+type StructuredColumn(@package=rapture.common) {
+    String name;
+    String nativeName;
+    String raptureType; //TODO replace this with an enumeration
+    String nativeType;
+}
+
+[metadata for a table in a structured repository]
+@Storable(storagePath : {authority, name})
+type StructuredTable(@package=rapture.column) {
+    String authority;
+    String name;
+    String nativeName;
+    List(StructuredColumn) columns;
+}
+
+[metadata that describes the rows of a SQL table (name->datatype)]
+@Bean
+type TableMeta(@package=rapture.common) {
+    Map<String, String> rows;
+}
+
+[Configuration info for a repository that stores series data.]
+@Addressable(scheme = SERIES(true))
+@Storable(storagePath : {authority}, prefix="series")
+type SeriesRepoConfig(@package=rapture.common) {
+	String description;
+	String config;
+	String authority;
+	String seriesName;
+    String sampleColumn;
+}
+
+[This object holds the data for a series value that was requested, without specifying what type to present data as. ]
+type SeriesPoint(@package=rapture.common) {
+    String column;
+    String value;
+}
+
+[Convenience structure for casting SeriesValues to Doubles.]
+type SeriesDouble(@package=rapture.common) {
+    String columns;
+    Double values;
+}
+
+[convenience structure for casting SeriesValues to Strings.]
+type SeriesString(@package=rapture.common) {
+    String columns;
+    String values;
+}
+
+[The config used when archiving the data in a type.]
+@Storable(storagePath : {authority, typeName}, prefix="archiveSettings", repoName=SETTINGS_REPO)
+@Addressable(scheme = DOCUMENT(true))
+@Cacheable
+type TypeArchiveConfig(@package=rapture.common) {
+    String authority;
+    String typeName;
+    Boolean useScript = false;
+    String scriptName = "";
+    Long versionsToKeep = new Long(-1);
+    Long timeRangeToKeepInDays = new Long(-1);
+}
+
+//-----------------------
+//Decision process objects
+//-----------------------
+
+[Defines a workflow. Each workflow is a flowchart of WorkflowSteps and Transitions.]
+@Storable(storagePath : {workflowURI}, prefix="dp/workflow")
+@Addressable(scheme = WORKFLOW(false))
+@Cacheable
+type Workflow(@package=rapture.common.dp) {
+    WorkflowURI workflowURI;
+    //the semaphore type and config below is used when creating Work Orders
+    SemaphoreType semaphoreType = SemaphoreType.UNLIMITED;
+    String semaphoreConfig;
+    List<Step> steps = new ArrayList<Step>();
+    String startStep; // name of the step to start on by default
+    String category = "alpha"; // name of the category associated with this workflow. defaults 
+                               // to "alpha", which is the category associated with RaptureAPIServer and
+                               // RaptureComputeServer 
+    Map<String, String> view = new HashMap<String, String>();
+    List<ExpectedArgument> expectedArguments = new ArrayList<ExpectedArgument>();
+    String defaultAppStatusNamePattern; //appstatus name pattern, to be used if nothing passed in to workorder 
+}
+
+[An argument that's expected to be passed to a workflow]
+@Bean
+type ExpectedArgument(@package=rapture.common.dp) {
+    String name;
+    Boolean isRequired;
+    String defaultValue;
+}
+
+[An argument passed in to a workorder. Not to be confused with ExpectedArgument, which is a list of possible arguments]
+@Bean
+type PassedArgument(@package=rapture.common.dp) {
+    String name;
+    String value;
+}
+
+
+[The argument values that were passed in to a workorder]
+@Storable(storagePath: {workOrderURI}, prefix="dp/woArguments", repoName=EPHEMERAL_REPO)
+type WorkOrderArguments(@package=rapture.common.dp) {
+    WorkOrderURI workOrderURI; // the uri of the associated workorder
+    List<PassedArgument> arguments = new ArrayList<PassedArgument>();
+}
+
+
+[Points to the next step in a given sequence.]
+@Bean
+type Transition(@package=rapture.common.dp) {
+    String name;
+    String targetStep;  // set to $RETURN:returnCode for a terminal step.  the return code is the name of the 
+                        // transition to take in the step in the calling context (if any)
+                        // targetStep is assumed to be the stepName, not a full URI
+                        // 
+                        // We'll need to document special target steps. Currently, look at 
+                        // StepHelper to figure out what's available
+}
+
+[An executable step with config data.]
+@Bean
+type Step(@package=rapture.common.dp) {
+    String name; //this is not a URI, just a String with this step's name
+    String description; //this is a description of the step
+    String executable; // workflow:// script:// qtemplate:// $RETURN:value $SLEEP:275
+    // $varName or #literal -- always switch on and discard first character
+    Map<String,String> view = new HashMap<String, String>();
+    List<Transition> transitions = new ArrayList<Transition>();
+    String categoryOverride; //category associated with this step, if it overrides the workflow category
+    Integer softTimeout = -1;
+}
+
+
+[A workflow step template]
+@Storable(storagePath : {workflowStepTemplateURI}, prefix="dp/workflowStepTemplate")
+@Addressable(scheme = WORKFLOWSTEPTEMPLATE(false))
+@Cacheable
+type WorkflowStepTemplate(@package=rapture.common.dp) {
+    WorkflowStepTemplateURI workflowStepTemplateURI;
+    String description; // some common name of which this is a step template for
+    String executable; // What is the executable for the newly created step
+    List<String> inputVariables; // What view contexts need to be set for this to run?
+    List<String> outputVariables; // What view contexts does this step set?
+    List<String> outputTransitionNames; // What are the possible output transitions for this step
+}
+
+[Each time a Workflow is executed, the execution is identified by a matching WorkOrder. A WorkOrderURI may be qualified with an id (index) of a particular Worker, e.g. workorder://myProj/myFlow#0]
+@Storable(storagePath: {workOrderURI}, prefix="dp/workorder")
+@Addressable(scheme = WORKORDER(false))
+@Indexable(name: "default", fields: {workOrderURI, priority, startTime, endTime})
+type WorkOrder(@package=rapture.common.dp) {
+    WorkOrderURI workOrderURI;
+    WorkflowURI workflowURI; //uri of Workflow used when creating this WorkOrder
+    List<String> workerIds; // all ids since the start of time
+    List<String> pendingIds; // top-level ids that have not terminated
+    Integer priority; 
+    Long startTime; //epoch in milliseconds
+    Long endTime = new Long(-1); //epoch in milliseconds
+    SemaphoreType semaphoreType = SemaphoreType.UNLIMITED;
+    String semaphoreConfig;
+    WorkOrderExecutionState status;
+}
+
+[Holds the hash value of the initial argument values for this workorder. Useful info since two workorders with the same hash
+have the same initial arguments, which means that they could be compared like for like (e.g. in terms of how long they take to run)]
+@Storable(storagePath: {workOrderURI}, prefix="dp/workorder/argsHash", repoName=EPHEMERAL_REPO)
+type WorkOrderInitialArgsHash(@package=rapture.common.dp) {
+    WorkOrderURI workOrderURI;
+    String hashValue;
+}
+
+[Workflow historical metrics]
+@Bean
+type WorkflowHistoricalMetrics(@package=rapture.common.dp) {
+    Double workflowAverage;
+    Double jobAverage;
+    Double workflowWithArgsAverage;
+    String workflowMetricName;
+    String jobMetricName;
+    String argsHashMetricName;
+}
+
+
+
+[The execution context for a WorkOrder]
+@Bean
+type ExecutionContext(@package=rapture.common.dp) {
+    WorkOrderURI workOrderURI; //the uri of the associated workorder
+    Map<String, String> data;
+}
+
+[An individual field from the execution context for a WorkOrder]
+@Storable(storagePath: {workOrderURI, varName}, prefix="dp/execontextfield", repoName=EPHEMERAL_REPO)
+type ExecutionContextField(@package=rapture.common.dp) {
+    WorkOrderURI workOrderURI; // the uri of the associated workorder
+    String varName;
+    String value;
+}
+
+[The status of a work order.]
+@Bean
+type WorkOrderStatus(@package=rapture.common.dp) {
+    List<String> workerIds;
+    WorkOrderExecutionState status;  // ACTIVE, CANCELLING, CANCELLED, FINISHED, ERROR
+}
+
+[Used for multiple work orders that share the same app status name.]
+@Storable(storagePath: {name}, encoding="RaptureLightweightCoder", prefix="dp/statusgroup")
+type AppStatusGroup(@package=rapture.common) {
+    String name;
+    Map<WorkOrderURI, AppStatus> idToStatus = new HashMap<String, AppStatus>();
+}
+
+[The status of a Rapture app.]
+@Storable(storagePath: {name}, encoding="RaptureLightweightCoder", prefix="dp/appstatus")
+type AppStatus(@package=rapture.common) {
+    String name;
+    WorkOrderURI workOrderURI;
+    WorkOrderExecutionState overallStatus;
+    Long lastUpdated;
+}
+
+[Deprecated! However it cannot be easily deleted because Worker contains List<StepExecutionRecord> stepExecutionRecords
+and that's going to give JSON a hard time. We need to have a strategy to handle things like this. See RAP-2596]
+@Deprecated("use StepRecord")
+@Bean
+type StepExecutionRecord(@package=rapture.common.dp) {
+    WorkflowURI stepURI; //fully qualified workflowURI with stepName (e.g. //myProj/myWorkflow#myStep)
+    Long time; //in milliseconds
+    String hostname;
+    StepExecutionRecordType recordType;
+}
+
+[A detailed step execution record, containing start and finish times and short step name.]
+@Bean
+type StepRecord(@package=rapture.common.dp) {
+    WorkflowURI stepURI; //fully qualified workflowURI with stepName (e.g. //myProj/myWorkflow#myStep)
+    String name; //short step name, e.g. myStep
+    Long startTime;
+    Long endTime;
+    String retVal;
+    String hostname;
+    WorkOrderExecutionState status; //status of this step
+    ErrorWrapper exceptionInfo; //@Nullable: the rapture exception id associated with this, in case this failed and there was an exception.
+    String activityId; //@Nullable: the activity id associated with this step record, in case we are reporting progress on it
+}
+
+[A list of step executions for a particular Worker]
+@Storable(storagePath: {workOrderURI, workerId}, prefix="dp/stepRecords", repoName=EPHEMERAL_REPO)
+type StepRecordsWrapper(@package=rapture.common.dp) {
+    WorkOrderURI workOrderURI;
+    String workerId;
+    List<StepRecord> stepRecords = new ArrayList<StepRecord>();
+}
+
+[Contains additional data about the app status.]
+@Bean
+type AppStatusDetails(@package=rapture.common.dp) {
+    AppStatus appStatus;
+    Map<String, List<StepRecord>> workerIdToSteps = new HashMap<String, List<StepRecord>>();
+    String logURI;
+    Map<String, String> extraContextValues = new HashMap<String, String>();
+}
+
+
+[A request to cancel a work order.]
+@Storable(storagePath: {workOrderURI})
+type WorkOrderCancellation(@package=rapture.common.dp) {
+    WorkOrderURI workOrderURI;
+    Long time;
+}
+
+[Workers keep track of progress when executing a work order. Each worker handles one thread of execution.]
+@Storable(storagePath: {workOrderURI, id}, prefix="dp/worker")
+@Indexable(name: "default", fields: {workOrderURI, status})
+type Worker(@package=rapture.common.dp) {
+    WorkOrderURI workOrderURI; //the uri of the associated workorder
+    String id;
+    // the view of the current step, overlayed by things such as $varName or #literal -- always switch 
+    // on and discard first character
+    Map<String,String> viewOverlay = new HashMap<String, String>();
+    // fully qualified workflowURI with stepName (e.g. //myProj/myWorkflow#myStep)
+    List<WorkflowURI> stack = new ArrayList<String>();
+    List<Map<String,String>> localView = new ArrayList<Map<String, String>>();
+    List<StepExecutionRecord> stepExecutionRecords = new ArrayList<StepExecutionRecord>(); // deprecated
+    List<StepRecord> stepRecords = new ArrayList<StepRecord>(); // deprecated
+    WorkerExecutionState status; // RUNNING, READY, BLOCKED, CANCELLED, FINISHED
+    String detail; // subscription id if waiting, thread psuedo-id if running (TODO suppress populating this sometimes? separate fields?)
+    String effectiveUser;
+    Integer priority;
+    CallingContext callingContext;
+    String activityId = null; // If present, the activityId this worker reports general status to
+    List<String> appStatusNameStack = new ArrayList<String>(); //appstatus uri being used here, interpreted
+    String parent; // reference to my parent (null for the original worker)
+    Integer siblingCount; // number of children in the SPLIT that formed this worker (one for the original worker)
+    Integer siblingPosition; // position within the litter this child was SPLIT in, counting from zero (zero for the original worker)
+    Integer waitCount; // number of children to wait for <== deprecated: this has been moved to JoinCountdown, don't use this
+    ErrorWrapper exceptionInfo; //@Nullable: if an exception occurred while executing this worker, info about it
+
+    String myActivityId = null; // deprecated
+}
+
+[This is a temporary object that implements a cluster-wide countdown latch]
+@Storable(storagePath: {workOrderURI, parentId}, prefix = "dp/joins")
+type JoinCountdown(@package=rapture.server.dp) {
+    Integer waitCount;
+    String parentId;
+    String workOrderURI;
+}
+
+[Used to store values for searching work orders.]
+@Bean
+type WorkOrderSearch(@package=rapture.common.dp) {
+    WorkerExecutionState status;
+    List<WorkOrderURI> workOrderURIs; // should really be Collection - we don't support that yet
+	Long startTimeBegin; //in milliseconds
+	Long startTimeEnd; //in milliseconds
+	Long endTimeBegin; //in milliseconds
+	Long endTimeEnd; //in milliseconds
+}
+
+[Contains extra information about a work order, useful mainly for debugging.]
+@Bean
+type WorkOrderDebug(@package=rapture.common.dp) {
+    WorkOrder order;
+    List<WorkerDebug> workerDebugs = new ArrayList<WorkerDebug>();
+    List<PassedArgument> passedArguments = new ArrayList<PassedArgument>();
+    ExecutionContext context;
+    String logURI;
+    String argsHashValue;
+    String parentJobURI;
+}
+
+[Debug/extended information about a worker. Includes what the Worker object includes plus more details that are stored elsewhere,
+such as step record information.]
+@Bean
+type WorkerDebug(@package=rapture.common.dp) {
+    Worker worker;
+    List<StepRecordDebug> stepRecordDebugs = new ArrayList<StepRecordDebug>();
+}
+
+[Debug/extended information about a step record. Includes what StepRecord object includes plus more details that are stored elsewhere,
+such as the progress of a step (if available)]
+@Bean
+type StepRecordDebug(@package=rapture.common.dp) {
+    StepRecord stepRecord;
+    Activity activity; // @Nullable
+}
+
+[An invocable piece of Java code.]
+@Addressable(scheme = DP_JAVA_INVOCABLE(false))
+type JavaInvocable(@package=rapture.common.dp) {
+}
+
+[Config for the property-based semaphore strategy.]
+@Bean
+type PropertyBasedSemaphoreConfig(@package=rapture.common.dp) {
+    Integer maxAllowed;
+    Integer timeout;
+    String propertyName;
+}
+
+[Config for the workflow-based semaphore strategy.]
+@Bean
+type WorkflowBasedSemaphoreConfig(@package=rapture.common.dp) {
+    Integer maxAllowed;
+    Integer timeout;
+}
+
+
+// ----------------------
+// QUESTION API TYPES
+// ----------------------
+[Template data for a Question object, as defined in the Question API.]
+@Storable(storagePath : {qtemplateURI}, prefix="dp/qtemplate")
+@Addressable(scheme = QTEMPLATE(false))
+@Cacheable
+type QTemplate(@package = rapture.common.dp.question) {
+    QTemplateURI qtemplateURI;
+    List(UserURI) quorum; // should include users and groups
+    AnswerRule rule; // FIRST, MAJORITY, PLURALITY, ...
+    String prompt;
+    List(String) options; // e.g. { "Yes", "No", "Cancel" }    
+    List(QDetail) form; // fill in the blanks question list the blanks with prompts here
+    List(String) reports; // ignored for now
+    Long timeout;		// Default timeout value. Can be overridden.
+}
+
+[Callback information for a question object.]
+@Storable(storagePath : { uuid })
+type QCallback(@package = rapture.common.dp.question) {
+    String uuid;
+    WorkOrderURI workerURI; // should be qualified with #workerId
+}
+
+[Main data for a Question API object.]
+@Storable(storagePath : {questionURI}, prefix="dp/question")
+@Addressable(scheme = QUESTION(false))
+type Question(@package = rapture.common.dp.question) {
+    QuestionURI questionURI;
+    QTemplateURI qtemplateURI;
+    String answer;
+    String priority;
+    Map(String, String) mapping;
+    ReplyProgress progress; // UNSTARTED, STARTED, FINISHED
+}
+
+[Used when notifications are needed for question objects.]
+@Storable(storagePath: {qnotificationURI}, prefix="dp/qnotification")
+@Addressable(scheme = QNOTIFICATION(false))
+@Indexable(name: "default", fields: {qnotificationURI, addressee, progress})
+type QNotification(@package = rapture.common.dp.question) {
+    QNotificationURI qnotificationURI;
+    String addressee;
+    QuestionURI questionURI;
+    Map(String, Object) formData;
+    String response;
+    ReplyProgress progress; // UNSTARTED, STARTED, FINISHED
+    Long whenAsked;			
+    Long deadline;			// At what point should this notification be discarded;
+}
+
+[Additional detail for a question object.]
+@Bean
+type QDetail(@package = rapture.common.dp.question) {
+    String prompt;
+    String kind; // this is the t y p e of the data, but t y p e is a reserved word
+}
+
+[Contains search results for questions.]
+@Bean
+type QuestionSearch(@package = rapture.common.dp.question) {
+    //expect this to grow
+    String user; // the user or group that's being asked
+    ReplyProgress progress;
+    String sortOrder;
+    Long timeStamp;
+}
+
+//-----------------------
+
+[The ApiVersion]
+type ApiVersion(@package=rapture.common.version) {
+    String major;
+    String minor;
+    String micro;
+}
+
+[Describes a scheduled event.]
+@Bean
+type TimedEventRecord(@package=rapture.common) {
+	String eventName;
+	String eventContext;
+	Date when;
+	Date end;
+	String infoContext; // Usually a color to differentiate these with other entries
+}
+
+[Describes the content of a repository.]
+type ContentEnvelope(@package=rapture.common) {
+	Map(String, String) headers;
+	Object content;
+	String contentType;
+	String raptureURI;
+}
+
+[Describes a blob repository.]
+type BlobContainer(@package=rapture.common) {
+	Map(String, String) headers;
+	ByteArray content;
+}
+
+[Describes a sheet repository. Refer to the Sheet API for additional details.]
+@Addressable(scheme = SHEET(true))
+@Storable(storagePath : {authority}, prefix="sheet")
+type SheetRepoConfig(@package=rapture.common) {
+    String description;
+    String config;
+    String authority;
+}
+
+[Describes a single Rapture sheet. Refer to the Sheet API for additional details.]
+type RaptureSheet(@package=rapture.common) {
+    String authority;
+    String name;
+}
+
+[Data for one cell in a sheet. Refer to the Sheet API for additional details.]
+type RaptureSheetCell(@package=rapture.common) {
+    int row;
+    int column;
+    String data;
+    Long epoch;
+}
+
+[Data for how to display a given cell. Refer to the Sheet API for additional details.]
+@Bean
+type RaptureSheetDisplayCell(@package=rapture.common) {
+    String data;
+    String style;
+}
+
+[Data for how to display a list of cells. Refer to the Sheet API for additional details.]
+@Bean
+type SheetAndMeta(@package=rapture.common) {
+    List(List(RaptureSheetDisplayCell)) cells;
+    List(RaptureSheetStyle) styles;
+}
+
+[Used for determining the updates since a fixed point in time (the epoch field).]
+type RaptureSheetStatus(@package=rapture.common) {
+    List(RaptureSheetCell) cells;
+    Long epoch;
+}
+
+[Stores CSS information for cells in a Rapture sheet.]
+type RaptureSheetStyle(@package=rapture.common) {
+    String name;
+    String numberFormatString;
+    RaptureSheetStyleWeight weight;
+    RaptureSheetStyleAlignment alignment;
+    RaptureSheetStyleColor color;
+    RaptureSheetStyleSize size;
+    RaptureSheetStyleNumberFormat numberFormat;
+}
+
+[A Reflex script stored within a sheet and able to reference the current sheet.]
+type RaptureSheetScript(@package=rapture.common) {
+    String name;
+    String description;
+    String script;
+    boolean autoRun;
+    int intervalInSeconds;
+    Date lastRun;
+}
+
+[Specifies any range of cells within one sheet.]
+type RaptureSheetRange(@package=rapture.common) {
+	String name;
+	int startRow;
+	int endRow;
+	int startColumn;
+	int endColumn;
+}
+
+[A note that can be attached to a sheet.]
+type RaptureSheetNote(@package=rapture.common) {
+	String id;
+	String note;
+	String who;
+	Date when;
+}
+
+[Determines whether the license of the current instance of Rapture is valid.]
+@Bean    
+type LicenseInfo(@package=rapture.common) {
+	String companyName = "Unlicensed";
+	String salt;
+	Boolean developer = true;
+	Long expirationTimestamp;
+}
+
+[Specifies a given row in a sheet.]
+type RaptureSheetRow(@package=rapture.common) {
+    List(RaptureSheetCell) cells;
+}
+
+[Returns the variable name and output of a given script.]
+type ScriptResult(@package=rapture.common) {
+	String returnValue;
+	List(String) output;
+}
+
+[A subsection of a table that matches a given query.]
+type TableQueryResult(@package=rapture.common) {
+	List(String) columnNames;
+	List(String) columnTypes;
+	List(List(Object)) rows;
+}
+
+[Describes outgoing and incoming Rapture Relationships, as described in the Relationship API.]
+@Storable(storagePath : {uri}, prefix="relation")
+type RaptureRelation(@package=rapture.common) {
+    String uri;
+    List<RaptureRelationship> outgoingRelationships = new ArrayList<RaptureRelationship>();
+    List<RaptureRelationship> incomingRelationships = new ArrayList<RaptureRelationship>();
+    RaptureURI targetURI;
+}
+
+[The main object in the Relationship API.]
+@Addressable(scheme = RELATIONSHIP(true))
+type RaptureRelationship(@package=rapture.common) {
+    RaptureURI fromURI;
+    RaptureURI toURI;
+    String label;
+    Long createDateUTC = System.currentTimeMillis();
+    String user;
+    Map(String,String) properties;
+    RaptureURI uri;
+    UUID uuid = UUID.randomUUID();
+}
+
+[Describes a cluster of relationship nodes with an arbitrary central node.]
+@Bean
+type RaptureRelationshipRegion(@package=rapture.common) {
+	RaptureURI centerNode;
+	Long depth;
+	List<RaptureURI> nodes;
+	List<RaptureRelationship> relationships;
+}
+
+[Config information for a repository for relationships.]
+@Addressable(scheme = RELATIONSHIP(true))
+@Storable(storagePath : {authority}, prefix="relationship/repoconf")
+type RelationshipRepoConfig(@package=rapture.common.model) {
+    String description;
+	String config;
+	String authority;
+}
+
+[]
+@Addressable(scheme = INDEX(false))
+@Storable(storagePath : {name}, prefix="index")
+type IndexConfig(@package=rapture.common.model) {
+    String name;
+    String config;
+}
+
+[Takes one of the values in the strings to describe where an Application is in its execution.]
+type RaptureApplicationStatusStep (@package=rapture.common.model) {
+   String INITIATED;
+   String PICKEDUP;
+   String PREPROCESSING;
+   String RUNNING;
+   String POSTPROCESSING;
+   String COMPLETED;
+   String FAILED;
+}
+
+[A complete description of an application's status.]
+@Addressable(scheme = APPSTATUS(false))
+@Storable(storagePath : { theDate, appName, instanceId }, prefix="application", repoName=EPHEMERAL_REPO)
+type RaptureApplicationStatus(@package=rapture.common.model) {
+    String appName;
+    String theDate;
+    String instanceId;
+    String overrideApplicationPath;
+    RaptureApplicationStatusStep status;
+    String lastMessage;
+    List(String) messages;
+    Map(String, String) inputConfig;
+    Map(String, String) outputConfig;
+}
+
+[Config data for event hooks. Refer to the Event API for more details.]
+@Storable(storagePath : {"config"}, prefix="api/hooks")
+type HooksConfig(@package=rapture.common.hooks) {
+    Map(String, SingleHookConfig) idToHook;
+}
+
+[Contains IP addresses that are allowed to connect to the current Rapture platform.]
+@Storable(storagePath : {""}, prefix="ipwhitelist", repoName=SETTINGS_REPO)
+type RaptureIPWhiteList(@package=rapture.common) {
+    List<String> ipWhiteList = new ArrayList<String>();
+}
+
+[Contains Rapture's environment variables and the message of the day (MOTD).]
+@Storable(storagePath : { "envInfo" })
+type EnvironmentInfo(@package=rapture.common) {
+    String name;
+    String motd;
+    Map(String, String) properties = new HashMap<String, String>();
+}
+
+
+[A TimerStartRecord contains information about when an event that we are timing started. This record
+can be looked up if we are finishing an event on a different host than where it started.
+-timestamp: When the event occurred
+-recordId: Unique id to identify this record
+]
+@Storable(storagePath : {metricName, id},
+    encoding="RaptureURLCoder",
+    ttlDays=1,
+    prefix="metrics/timerStart",
+    repoName=EPHEMERAL_REPO)
+type TimerStartRecord(@package=rapture.common.metrics) {
+    String id;
+    String metricName;
+    Long timestamp;
+}
+
+[A single log message]
+@Bean
+type LogMessage(@package=rapture.common) {
+    Long    timestamp;
+    String  host;
+    String  level;
+    String  appName;
+    String  threadName;
+    String  className;
+    Integer lineNumber;
+    String  message;
+
+    //the variables below are special MDC context variables that are set by Rapture in some context
+    String  workOrderURI;
+    String  workerId;
+    String  rfxScript;
+    String  stepName;
+}
+
+[A response to a query on log messages]
+@Bean
+type LogQueryResponse(@package=rapture.common) {
+    Boolean isLast; // whether this is the last response. if false, the response is split in batches: use nextBatchId to get the rest
+    String nextBatchId; // a unique id that can be used to read the next batch of responses if this was not marked as isLast
+    List<LogMessage> messages = new ArrayList<LogMessage>();
+}
+
+[Container for return types for SQL procedure calls]
+@Bean
+type StoredProcedureResponse(@package=rapture.common) {
+    Boolean callSuccessful;
+    Map<String, Object> singleValueReturn;
+}
+
+[Container for params for SQL procedure call: inParams(paramName->paramObject), outParams(paramName->java.sql.Types)]
+@Bean
+type StoredProcedureParams(@package=rapture.common) {
+    Map<String, Object> inParams;
+    Map<String, Integer> outParams;
+    Map<String, Object> inOutParams;
+}
+
+[Transfer Object to pass back children of URI.]
+@Bean
+type ChildrenTransferObject(@package=rapture.common) {
+	String parentURI; 						// Not strictly necessary but could be useful 
+	Map<String,RaptureFolderInfo> children;	// Main result set
+	Map<String,RaptureFolderInfo> deleted;	// removed values
+	String indexMark;						// If result set is incomplete pass this back to get the next set
+	Long remainder;							// if more results pending
+}
+
+[Representation of a row for structured api]
+@Bean
+type StructuredRow(@package=rapture.common){
+    Map<String,Object> columns;
+}

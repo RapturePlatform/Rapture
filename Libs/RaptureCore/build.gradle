@@ -1,0 +1,70 @@
+jar.manifest.attributes "Implementation-Title" : "RaptureCore"
+
+configurations { antlr3 }
+
+dependencies {
+    compile project(':CodeGen:PersistenceGen')
+    compile project(':RaptureAPI')
+    compile project(':RaptureAddinCore')
+    compile project(':Reflex')
+    compile project(':RaptureCommon')
+    compile project(':WorkflowsCommon')
+    compile project(':CodeGen:PersistenceGen')
+    compile 'org.antlr:antlr-runtime:3.5.2', { transitive = false }
+    antlr3 'org.antlr:antlr:3.5.2'
+    compile 'org.apache.lucene:lucene-core:4.10.3'
+    compile 'org.antlr:stringtemplate:3.2'
+    compile 'javax.mail:mail:1.4.5'
+    compile 'org.apache.commons:commons-math:2.2'
+    compile 'org.ocpsoft.prettytime:prettytime:1.0.8.Final'
+    compile 'org.apache.tomcat:tomcat-servlet-api:7.0.39'
+    compile group: 'com.google.guava', name: 'guava', version: '14.0'
+    compile group: 'org.apache.commons', name: 'commons-digester3', version: '3.2'
+    compile 'com.timgroup:java-statsd-client:3.0.2'
+}
+
+task buildinfo (type: com.rapture.gradle.bootstrap.plugin.JavaBuildInfoTask) { module_name = 'Core' }
+
+compileJava.dependsOn('buildinfo')
+
+task antlrOutputDir << { mkdir(generateGrammarSource.destinationDir) }
+
+task generateGrammarSource(dependsOn: antlrOutputDir, type: JavaExec) {
+    description = 'Generates Java sources from Antlr3 grammars.'
+    convention.antlrGenRootDir = "$buildDir/generated-sources/antlr3/";
+    convention.destinationDir = "$antlrGenRootDir/rapture/generated"
+    def antlrSource = 'src/main/antlr3'
+
+    inputs.dir file(antlrSource)
+    outputs.dir fileTree(destinationDir)
+
+    def grammars = fileTree(antlrSource).include('**/*.g')
+
+    main = 'org.antlr.Tool'
+    classpath = configurations.antlr3
+    args = [
+        "-fo",
+        "${destinationDir}",
+        grammars.files
+    ].flatten()
+}
+
+com.rapture.gradle.bootstrap.plugin.RaptureBootstrapPlugin.addPath(project, "main", "java", generateGrammarSource.antlrGenRootDir)
+
+
+compileJava.dependsOn(":CodeGen:PersistenceGen:genPersistence")
+compileJava.dependsOn("generateGrammarSource")
+
+configurations {
+    testArtifacts.extendsFrom testRuntime
+}
+
+task testJar(type: Jar) {
+    classifier "test"
+    from sourceSets.test.output
+}
+artifacts {
+    testArtifacts testJar
+}
+
+compileJava.dependsOn(":CodeGen:PersistenceGen:genAll")

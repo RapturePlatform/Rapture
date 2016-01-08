@@ -1,0 +1,9 @@
+jar.manifest.attributes "Implementation-Title" : "Rapture MongoDb Addin"
+
+dependencies {
+    compile project(':RaptureCore')
+    compile project(':RaptureAPI')
+    compile project(':RaptureAddinCore')
+    compile 'org.mongodb:mongo-java-driver:2.11.4'
+    testCompile 'com.github.fakemongo:fongo:1.4.5'
+}

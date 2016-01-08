@@ -1,0 +1,7 @@
+Date,words,numbers,counts,space header,slash/header
+types,string,double,long,double,string
+2007,Hello,2,1,24.3,"comma,comma"
+2008,You,3.3,2,24.3,space space
+2009,Nice,4.4,3,24.3,colon:colon
+2010,String,5.5,4,24,slash/slash
+2011,Series,6.6,5,34.2,percent%percent

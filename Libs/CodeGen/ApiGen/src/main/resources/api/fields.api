@@ -1,0 +1,34 @@
+[Fields are well known concepts in Rapture that are parts of documents. By defining a field and its relationship to the data within a type, information can be retrieved from a document without transferring the complete document 
+back to a client. The methods in this API are used to both define fields and retrieve information from a document. ]
+
+api(Fields) {
+    [Returns a list of URIs of all documents and folders below this point, mapping the URI to a RaptureFolderInfo object]
+    @entitle=/admin/field
+    @public Map<String, RaptureFolderInfo> listFieldsByUriPrefix(String authority, int depth);
+
+    [Retrieves the field definition.]
+    @entitle=/admin/field
+    @public RaptureField getField(String fieldUri);
+
+    [Create or replace the field definition]
+    @entitle=/admin/field
+    @public void putField(RaptureField field);
+
+    [Check whether a field definition with the given uri exists]
+    @entitle=/admin/field
+    @public Boolean fieldExists(String fieldUri);
+
+    [Delete a field definition]
+    @entitle=/admin/field
+    @public void deleteField(String fieldUri);
+
+    [Returns a list of values referenced by the fields. Note that there is not a simple 1:1 mapping between the returned list and the list of fields supplied as a parameter.]
+    @entitle=/user/field/$f(docURI)
+    @public List(String) getDocumentFields(String docURI, List(String) fields);
+    
+    [Behaves similarly to getFieldsFromDocument, except that the supplied content is first added to the document cache, overwriting any previous values.]
+    @entitle=/user/field/$f(docURI)
+    @public List(String) putDocumentAndGetDocumentFields(String docURI, String content, List(String) fields);
+
+}
+

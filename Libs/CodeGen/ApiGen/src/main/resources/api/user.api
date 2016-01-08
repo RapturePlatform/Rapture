@@ -1,0 +1,74 @@
+
+/**
+ * The user api
+ * 
+ * The user api is fixed on the current authority and perpective, which
+ * can be altered in the first two calls. All other calls are rooted to that
+ * authority. The information is stored in the session context.
+ */
+
+[The user API contains methods for users to query and manipulate their own accounts and sessions.]
+api(User) {
+    [Returns account information for the current user.]
+    @entitle=/everyone
+    @public RaptureUser getWhoAmI();
+
+    [Logs out the active user and terminates the current session.]
+    @entitle=/everyone
+    @public void logoutUser();
+
+    [Stores application preferences for the current user.]
+    @entitle=/user/preferences
+    @public void storePreference(String category, String name, String content);
+
+    [Retrieves application preferences for the current user.]
+    @entitle=/user/preferences
+    @public String getPreference(String category, String name);
+
+    [Removes a previously stored preference.]
+    @entitle=/user/preferences
+    @public void removePreference(String category, String name);
+
+    [This method will list the categories of preferences available for a user.]
+    @entitle=/user/preferences
+    @public List(String) getPreferenceCategories();
+
+    [This method will list the preference documents in a category.]
+    @entitle=/user/preferences
+    @public List(String) getPreferencesInCategory(String category);
+
+    [Updates the description for the current user.]
+    @entitle=/everyone
+    @public RaptureUser updateMyDescription(String description);
+
+    [Changes the password for the current user.]
+    @entitle=/everyone
+    @public RaptureUser changeMyPassword(String oldHashPassword, String newHashPassword);
+
+    [Changes the email for the current user.]
+    @entitle=/everyone
+    @public RaptureUser changeMyEmail(String newAddress);
+
+    [Retrieves the API version currently in use.] 
+    @entitle=/everyone
+    @public ApiVersion getServerApiVersion();  
+    
+    []
+    @entitle=/user/read
+    @public RaptureCubeResult runFilterCubeView(String typeURI, String scriptURI, String filterParams, String groupFields, String columnFields);
+
+    []
+    @entitle=/user/read
+    @public RaptureQueryResult runNativeQuery(String typeURI, String repoType, List(String) queryParams);
+
+    [Very much like a filter cube view, except that the initial content is taken from a native query executed against a REP repository instead of running through the view
+    sub system.]
+    @entitle=/user/read
+    @public RaptureCubeResult runNativeFilterCubeView(String typeURI, String repoType, List(String) queryParams, String groupFields, String columnFields);
+
+    [A method to check whether the current user is allowed to make the API call. Useful for the UI so that it can determine whether or not to show a particular item.]
+    @entitle=/everyone
+    @public Boolean isPermitted(String apiCall, String callParam);
+}	
+
+

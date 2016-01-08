@@ -1,0 +1,5 @@
+CredentialsProvider provider
+    = new SimpleCredentialsProvider("rapture", "password");
+HttpLoginApi loginApi
+    = new HttpLoginApi("http://localhost:8665/rapture", provider);
+loginApi.login();

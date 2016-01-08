@@ -1,0 +1,32 @@
+[The question API allows control input to a decision process from clients (typically humans -- automated steps are better served by scripts).]
+
+api(Question) {
+
+    [Defines or redefines a question template.]
+    @entitle=/data/write/$f(qTemplateURI)
+    @public void putTemplate(String qTemplateURI, QTemplate template);
+    
+    [Retrieves a question template.]
+    @entitle=/data/read/$f(qTemplateURI)
+    @public QTemplate getTemplate(String qTemplateURI);
+    
+    [Retrieve a question for a URI.]
+    @entitle=/data/read/$f(questionURI)
+    @public Question getQuestion(String questionURI);
+    
+    [Asks a question using a template. The callback may not contain slashes.]
+    @entitle=/question/exec/$f(qTemplateURI)
+    @public String askQuestion(String qTemplateURI, Map(String,String) variables, String callback);
+    
+    [Lists what questions are pending for a given condition.]
+    @entitle=/data/read
+    @public List(QNotification) getQNotifications(QuestionSearch search);
+    
+    [Gets the URIs for a questionSearch.]
+    @entitle=/data/read
+    @public List(String) getQNotificationURIs(QuestionSearch search);
+    
+    [Attaches an answer to the given question.]
+    @entitle=/data/read
+    @public void answerQuestion(String questionURI, String response, Map(String,Object) data);
+}

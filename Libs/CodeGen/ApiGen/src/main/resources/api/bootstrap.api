@@ -1,0 +1,63 @@
+[ The Bootstrap API is used to setup an initial Rapture environment and to migrate existing bootstrap repositories to a new repository format. ]
+api(Bootstrap) {
+
+   [ The ephemeral repository is used to store information that does not need to survive a restart of Rapture. It normally holds
+     information such as sessions, and its config is usually based around a shared non-versioned memory model]
+   @entitle=/admin/bootstrap
+   @public void setEmphemeralRepo(String config);
+
+   [ The config repository is used to store general config information about entities in Rapture. These entities include users, types, indices, queues and the like. ]
+   @entitle=/admin/bootstrap
+   @public void setConfigRepo(String config);
+
+   [The settings repository is used to store general low level settings in Rapture.]
+   @entitle=/void/bootstrap
+   @public void setSettingsRepo(String config);
+
+   [This method is used to migrate the top level Config repository to a new config. This task takes place in the background, and once completed the config repository is switched to the new config.
+   Any changes to config up to this point may be lost.]
+   @entitle=/admin/bootstrap
+   @public void migrateConfigRepo(String newConfig);
+
+   [This method is used to migrate the top level Ephemeral repository to a new config. This task takes place in the background, and once completed the config repository is switched to the new config.
+   Any changes to config up to this point may be lost.]
+   @entitle=/admin/bootstrap
+   @public void migrateEphemeralRepo(String newConfig);
+
+   [This method is used to migrate the top level Settings repository to a new config. This task takes place in the background, and once completed the config repository is switched to the new config.
+   Any changes to config up to this point may be lost.]
+   @entitle=/admin/bootstrap
+   @public void migrateSettingsRepo(String newConfig);
+
+   [Retrieve the current settings of the config repository.]
+   @entitle=/admin/main
+   @public String getConfigRepo();
+
+   [Retrieve the current settings of the settings repository.]
+   @entitle=/admin/main
+   @public String getSettingsRepo();
+
+  [Retrieve the current settings of the ephemeral repository.]
+   @entitle=/admin/main
+   @public String getEphemeralRepo();
+
+
+   [After changing the definition of any bootstrap repository, Rapture will need to be restarted. This method will restart Rapture.]
+   @entitle=/admin/bootstrap
+   @public void restartBootstrap();
+
+   [All scripts that are run by Rapture are passed a set of helper instances that can be used by the script. The helpers are locked to the entitlement context of the calling user. This method sets the name of such a class in this context. It is primarily an internal function, defined during startup, as the class provided must be accessible by the main Rapture application.]
+   @entitle=/admin/bootstrap
+   @public void addScriptClass(String keyword, String className);
+
+   [This method retrieves previous defined script classes for this system]
+   @entitle=/admin/bootstrap
+   @public Map(String, String) getScriptClasses();
+
+   [This method removes a previously defined script class.]
+   @entitle=/admin/bootstrap
+   @public Boolean deleteScriptClass(String keyword);
+
+}
+
+

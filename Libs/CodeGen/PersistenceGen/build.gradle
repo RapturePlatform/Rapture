@@ -1,0 +1,26 @@
+jar.manifest.attributes "Implementation-Title" : "PersistenceGen"
+
+import com.incapture.rapgen.GenPersistence
+
+dependencies {
+    compile project(":CodeGen:CodeGenLib")
+    compile project(":CodeGen:PersistenceGenLib")
+    compile project(":CodeGen:ApiGen")
+    compile project(":RaptureAPI")
+}
+
+
+def taskGroup = "RaptureGenerators"
+
+task genPersistence(type: GenPersistence, group: taskGroup) {
+    destFilesDir = project.file("../../RaptureCore")
+    mainApiFile = "api/rapt.api"
+}
+
+
+task genAll(description: "Generate all apis", group: taskGroup) << {
+    println "Generating all apis for Rapture"
+}
+
+genAll.dependsOn "genPersistence"
+genPersistence.dependsOn "compileJava"

@@ -1,0 +1,157 @@
+
+[ The Document api is used for manipulating document objects in Rapture. Documents are normally stored in JSON format.]
+
+api(Doc) {
+    [Validates repository; requires write permission because it can cause files/tables to be created on first use.]
+    @entitle=/repo/write
+    @public Boolean validateDocRepo(String docRepoUri);
+    
+    [A DocumentRepository is used to store JSON docs. This method creates and configures the repository for an authority.]
+    @entitle=/repo/write
+    @public void createDocRepo(String docRepoUri, String config);
+
+    [This API call can be used to determine whether a given repository exists.]
+    @entitle=/repo/list
+    @public Boolean docRepoExists(String docRepoUri);
+
+    [This api call can be used to determine whether a given type exists in a given authority.]
+    @entitle=/repo/list
+    @public Boolean docExists(String docUri);
+
+    [Retrieves the configuration string for the given document repository.]
+    @entitle=/repo/read
+    @public DocumentRepoConfig getDocRepoConfig(String docRepoUri);
+   
+    [Gets any available information about a repository.]
+    @entitle=/repo/read
+    @public Map<String, String> getDocRepoStatus(String docRepoUri);
+    
+    [Retrieves document repositories]
+    @entitle=/repo/read
+    @public List(DocumentRepoConfig) getDocRepoConfigs();
+
+    [This method removes a documentRepository and its data from the Rapture system. There is no undo.] 
+    @entitle=/repo/write
+    @public void deleteDocRepo(String docRepoUri);
+
+    [This method archives older versions of a documentRepository.]
+    @entitle=/repo/write
+    @public void archiveRepoDocs(String docRepoUri, int versionLimit, long timeLimit, Boolean ensureVersionLimit);
+    
+    [Retrieves the content and the meta data associated with a document, including version and user information. If the storage
+    does not support metadata, this method returns a dummy object.]
+    @entitle=/data/get/$f(docUri)
+    @public DocumentWithMeta getDocAndMeta(String docUri);
+
+    [Retrieves only the meta data associated with a document, including version and user information. If the storage does not
+    support metadata, this method returns a dummy object.]
+    @entitle=/data/list/$f(docUri)
+    @public DocumentMetadata getDocMeta(String docUri);
+
+    [Reverts this document back to the previous version by taking the previous version and making a new version.]
+    @entitle=/data/write/$f(docUri)
+    @public DocumentWithMeta revertDoc(String docUri);
+
+    [Retrieves the content of a document.
+    @param docUri a string of characters used to identify a document]
+    @entitle=/data/read/$f(docUri)
+    @public String getDoc(String docUri);
+
+    [Stores a document in the Rapture system.
+    @param docUri a string of characters used to identify a document
+    @param  content the information to be stored within the document
+    @since 1.0.0]
+    @entitle=/data/write/$f(docUri)
+    @public String putDoc(String docUri, String content);
+
+    [Attempts to put the content into the repository, but fails if the repository supports versioning and the current version of
+    the document stored does not match the version passed. A version of zero implies that the document should not exist. The purpose
+    of this call is for a client to be able to call getDocAndMeta to retrieve an existing document, modify it, and save the content
+    back, using the version number in the metadata of the document. If another client has modified the data since it was loaded, this
+    call will return false, indicating that the save was not possible.]
+    @entitle=/data/write/$f(docUri)
+    @public Boolean putDocWithVersion(String docUri, String content, int currentVersion);
+
+    [Store a document in the Rapture system, passing in an event context to be added to any events spawned off by this put. Parts of
+    the uri could be automatically generated
+    @return A DocWriteHandle object that contains a value on whether the write was successful, the uri of the document that was written, and
+    a handle to the event uri that was fired, if any]
+    @entitle=/data/write/$f(docUri)
+    @public DocWriteHandle putDocWithEventContext(String docUri, String content, Map<String, String> eventContext);
+
+    [Removes a document attribute. Can be used to remove all attributes for a given type as well if the key argument is null.]
+    @entitle=/data/write/$f(docUri)
+    @public Boolean deleteDoc(String docUri);
+
+    [Renames a document, by getting and putting it on the system without transferring the data back to the client.]
+    @entitle=/data/write/$f(fromDocUri)
+    @public String renameDoc(String fromDocUri, String toDocUri);
+
+    /* Batch operations */
+    
+    [Returns a map of contents where the key is the normalized input Uri and the value is the document retrieved]
+    @entitle=/data/batch
+    @public Map(String, String) getDocs(List(String) docUris);
+    
+    [Returns a list of documents and their associated meta data - the meta data includes version and user information]
+    @entitle=/data/batch
+    @public List(DocumentWithMeta) getDocAndMetas(List(String) docUris);
+
+    [Returns a list of true/false statements on whether the listed Uris refer to a valid document. Note: a folder is not considered to
+    be a document.]
+    @entitle=/data/batch
+    @public List(Boolean) docsExist(List(String) docUris);
+
+    [Put a series of documents in a batch form. Refer to putDoc for details.]
+    @entitle=/data/batch
+    @public List(Object) putDocs(List(String) docUris, List(String) contents);
+            
+    [Renames a series of documents in batch form. See renameDoc.]
+	@entitle=/data/batch
+    @public List(String) renameDocs(String authority, String comment, List(String) fromDocUris, List(String) toDocUris);
+
+    [Removes a folder and its contents recursively, including empty subfolders. Validates entitlement on individual docs and folders. Returns a list of the documents and folders removed.]
+    @entitle=/data/write/$f(docUri)
+    @public List(String) deleteDocsByUriPrefix(String docUri);
+   
+    [Returns a list of Uris of all documents and folders below this point, mapping the Uri to a RaptureFolderInfo object]
+    @entitle=/data/read/$f(docUri)
+    @public Map<String, RaptureFolderInfo> listDocsByUriPrefix(String docUri, int depth);
+
+    [Adds a single attribute to an existing document.]
+    @entitle=/data/write/$f(attributeUri)
+    @public Boolean setDocAttribute(String attributeUri, String value);
+  
+    [Adds attributes to an existing document in key/value pairs.]
+    @entitle=/data/write/$f(attributeUri)
+    @public Map<String, Boolean> setDocAttributes(String attributeUri, List<String> keys, List<String> values);
+  
+    [Get a single attribute for the given uri, attributeType, and key e.g. displayName/$attributeType/key]
+    @entitle=/data/read/$f(attributeUri)
+    @public XferDocumentAttribute getDocAttribute(String attributeUri);
+  
+    [Gets all known attributes for the given uri e.g. displayName/$attributeType]
+    @entitle=/data/read/$f(attributeUri)
+    @public List(XferDocumentAttribute) getDocAttributes(String attributeUri);
+   
+    [Removes a document attribute.  Can be used to remove all attributes for a given type as well if key argument is null.]
+    @entitle=/data/write/$f(attributeUri)
+    @public Boolean deleteDocAttribute(String attributeUri);
+
+    [Returns the Uri that's associated with the idgen that belongs to this document repository. Note that every repository has a
+    idgen Uri, even if no idgen is attached to it.]
+    @entitle=/admin/idgen
+    @public String getDocRepoIdGenUri(String docRepoUri);
+
+    [This method creates a idgen and attaches it to a document repository. This way, when a document containing an autoid string
+    is created that autoid will be replaced with a unique id.]
+    @entitle=/admin/idgen
+    @public DocumentRepoConfig setDocRepoIdGenConfig(String docRepoUri, String idGenConfig);
+
+    [This method returns any idgen associated with this doc repo, or null if there isn't one.]
+    @entitle=/admin/idgen
+    @public RaptureIdGenConfig getDocRepoIdGenConfig(String docRepoUri);
+
+}
+
+

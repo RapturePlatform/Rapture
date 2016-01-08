@@ -1,0 +1,14 @@
+---
+title: @{title}
+
+language_tabs:
+@foreach{language : languages}  - @{language.getContent()}
+@end{}
+toc_footers:
+@foreach{toc: tocFooters}  - @{toc.getContent()}
+@end{}
+includes:
+@foreach{include: includeFiles}  - @{include}
+@end{}
+search: @{isSearchable}
+---

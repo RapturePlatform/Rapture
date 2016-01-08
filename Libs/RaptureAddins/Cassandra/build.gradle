@@ -1,0 +1,13 @@
+jar.manifest.attributes "Implementation-Title" : "Rapture Cassandra Addin"
+
+dependencies {
+    compile project(':RaptureCore')
+    testCompile project(':RaptureCore').sourceSets.test.output
+    compile project(':RaptureAPI')
+    compile project(':RaptureAddinCore')
+    compile 'org.apache.cassandra:cassandra-thrift:1.2.0'
+    compile 'me.prettyprint:hector-core:1.0-5'
+    compile 'com.netflix.astyanax:astyanax-cassandra:2.0.2'
+    compile 'com.netflix.astyanax:astyanax-thrift:2.0.2'
+    compile 'com.netflix.astyanax:astyanax-recipes:2.0.2'
+}

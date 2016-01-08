@@ -1,0 +1,81 @@
+[Entitlements are a very important part of the security of Rapture, and the Entitlement API is the way in which information about these entitlements is updated. The API is of course protected by the same entitlements system, so care must be taken to not remove your own entitlement to this API through the use of this API.
+Concepts/Terminology
+User - A user represents a person who is making calls to Rapture or an application that is making calls to Rapture. A user is a single entity with a username/password who needs access to Rapture.
+Group - A group represents a collection of users.
+Entitlement - An entitlement is a named permission that has associated with it 0 or more groups. If an entitlement has no groups associated with it, it is essentially open, and any defined user in Rapture can access it. If an entitlement has at least 1 group associated with it, any user wishing to access the resource protected by this entitlement, must be a member of one of the associated groups.
+
+Each API call within Rapture is associated with an entitlement path, and when users wish to execute that API call they are checked to see if they are a member of that entitlement (by seeing which groups they are members of). Some API calls have dynamic entitlements, where the full name of the entitlement is derived from the URI of the object that the method uses. For example, a method that writes a document to a specific URI can use that URI as part of the entitlement. 
+
+If an entitlement with the specified name exists, then it is used; otherwise the full entitlement path is truncated one part at a time until an entitlement is found.]
+
+api(Entitlement) {
+    [ This method is used to retrieve all of the entitlements defined in Rapture.] 
+    @entitle=/admin/ent
+    @public List(RaptureEntitlement) getEntitlements();
+
+    [Retrieves a single entitlement, or null if not found.]
+    @entitle=/admin/ent
+    @public RaptureEntitlement getEntitlement(String entitlementName);
+
+    [Retrieves a single entitlement by using its URI.]
+    @entitle=/admin/ent
+    @public RaptureEntitlement getEntitlementByAddress(String entitlementURI);
+
+    [Retrieves a single entitlement group.]
+    @entitle=/admin/ent
+    @public RaptureEntitlementGroup getEntitlementGroup(String groupName);
+
+    [Retrieves a single entitlement group from its URI.]
+    @entitle=/admin/ent
+    @public RaptureEntitlementGroup getEntitlementGroupByAddress(String groupURI);
+
+    [This method returns all of the entitlement groups defined in the Rapture environment.]
+    @entitle=/admin/ent
+    @public List(RaptureEntitlementGroup) getEntitlementGroups();
+
+    [This method adds a new entitlement, specifying an initial group that should be assigned to this entitlement. The reason for assigning an initial group is to prevent lock out.]
+    @entitle=/admin/ent
+    @public RaptureEntitlement addEntitlement(String entitlementName, String initialGroup);
+
+    [This method is used to add an entitlement group to an entitlement.]
+    @entitle=/admin/ent
+    @public RaptureEntitlement addGroupToEntitlement(String entitlementName, String groupName);
+
+    [This method reverses the act of adding a group to an entitlement.]
+    @entitle=/admin/ent
+    @public RaptureEntitlement removeGroupFromEntitlement(String entitlementName, String groupName);
+
+    [This method removes an entitlement entirely from the system.]
+    @entitle=/admin/ent
+    @public void deleteEntitlement(String entitlementName);
+
+    [This method removes an entitlement group from the system.]
+    @entitle=/admin/ent
+    @public void deleteEntitlementGroup(String groupName);
+
+    [This method adds a new entitlement group to the system.]
+    @entitle=/admin/ent
+    @public RaptureEntitlementGroup addEntitlementGroup(String groupName);
+
+    [This method adds a user to an existing entitlement group. The user will then have all of the privileges (entitlements) associated with that group.]
+    @entitle=/admin/ent
+    @public RaptureEntitlementGroup addUserToEntitlementGroup(String groupName, String userName);
+
+    [This method reverses the act of the adding a user to a group.]
+    @entitle=/admin/ent
+    @public RaptureEntitlementGroup removeUserFromEntitlementGroup(String groupName, String userName);
+    
+    [Convenience method to get all the entitlements for a user]
+    @entitle=/admin/ent
+    @public List(RaptureEntitlement) findEntitlementsByUser(String username);
+    
+    [Convenience method to get all the entitlements for a group]
+    @entitle=/admin/ent
+    @public List(RaptureEntitlement) findEntitlementsByGroup(String groupname);
+    
+    [Convenience method to get all entitlements for the current user]
+    @entitle=/everyone
+    @public List(RaptureEntitlement) findEntitlementsBySelf();
+}
+
+

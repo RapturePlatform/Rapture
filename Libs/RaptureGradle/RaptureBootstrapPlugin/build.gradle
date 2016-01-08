@@ -1,0 +1,69 @@
+import java.util.Properties;
+
+import org.gradle.api.Project;
+
+apply plugin: "groovy"
+apply plugin: "java"
+apply plugin: "maven"
+
+project.group = 'com.rapture'
+project.version = '2.15'
+
+project.targetCompatibility = 1.7
+project.sourceCompatibility = 1.7
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+configurations { deployerJars }
+
+dependencies {
+    compile localGroovy()
+    compile gradleApi()
+
+    runtime 'commons-io:commons-io:2.0'
+    compile 'org.ajoberstar:gradle-git:0.2.3'
+    compile 'nl.javadude.gradle.plugins:license-gradle-plugin:0.11.0'
+
+    testCompile 'junit:junit:4.11'
+    deployerJars 'org.apache.maven.wagon:wagon-ssh:2.8'
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+jar {
+    manifest {
+        attributes "Implementation-Vendor": 'Incapture Technologies'
+        attributes "Implementation-Version": project.version
+        attributes "Built-By": System.getProperty('user.name')
+        attributes "Built-Date": new Date().format('yyyyMMddHHmmss')
+    }
+}
+
+FileInputStream inStream = new FileInputStream(file('src/main/resources/repo.properties'));
+
+Properties props = new Properties();
+props.load(inStream);
+try {
+    inStream.close();
+}
+    catch (Exception ignore) {
+}
+
+File keyFile = file('src/main/resources/keys/id_rsa')
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            configuration = configurations.deployerJars
+            name = 'sshDeployer'
+            repository(url: props.getProperty("officialDeployUrl")) {
+                authentication(userName: 'ubuntu', privateKey: keyFile.getAbsolutePath(), passphrase: "raptur3")
+            }
+        }
+    }
+}

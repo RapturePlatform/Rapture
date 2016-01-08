@@ -1,0 +1,101 @@
+
+// This is a decision process "script" - it is parsed into a data structure as part of the Decision Process and then "executed" as it moves through 
+// stages
+
+/*
+ * This is a sample decision process
+ */
+ 
+dp(OrderValidation) {
+	approvers(tradingCheck,any) {
+		alan,
+		@admin
+	};
+	
+	tag(entry, CheckCompliance); // This indicates that the "entry" tag is bound to the CheckCompliance step - CheckCompliance will be run first.
+	tag(exit, FinishSuccess); // This indicates that if the step to execute ends up being FinishSuccess, that is the last step to be executed.
+	tag(exit, FinishReject); // This indicates that if the step to execute ends up being FinishReject, that is the last step to be executed.
+	
+	step(CheckCompliance) {
+		link(approved, AutoApprove); // If we return "approved" from our Reflex script we will go to this step
+		link(manual, ManualApprove); // If we return "manual" from our Reflex script we will go to this step
+		
+		// The Reflex script will be passed (in _params) the decision packet (_params['dp']). We index out of that what we want
+		reflex --->
+			// This is a Reflex script embedded in the Decision Process
+			println("Running step 'CheckCompliance');
+			orderId = _params['dp']['docs']['order'];
+			orderDoc <-- orderId;
+			// In this example we simply check whether the document has an "autoApprove" flag set. If it is, we auto approve. We could
+			// of course make it much more sophisticated.
+			
+			if (orderDoc['autoApprove'] == true) do
+			    return 'approved';
+			end
+			return 'manual';
+		<---
+	}
+	
+	step(AutoApprove) {
+		link(default, FinishSuccess);
+		
+		reflex --->
+			orderId = _params['dp']['docs']['order'];
+			orderDoc <-- orderId;
+			orderDoc['approved'] = true;
+			orderDoc --> orderId;
+			return "default";
+		<---
+	}
+	
+	step(FinishSuccess) {
+		reflex --->
+			$dp.setSuccess(); // The DP plugin is automatically activated and configured in the Reflex script, set to the current dp. If we want to manipulate
+			                  // the decision packet we can do so from here.
+		<---
+	}
+	
+	step(FinishReject) {
+	    reflex --->
+	        $dp.setFailure();
+	    <---
+	}
+	
+	step(ManualApprove) {
+	    link(approved, FinishSuccess);
+	    link(rejected, FinishReject);
+	 	   
+		approval(tradingCheck);
+	 	
+	    reflex --->
+	    	// This is called everytime an approver is added and on initial entry but we don't care for this dp.
+	    	// In other examples we could call $dp.addApprover(); etc. to automatically add potential approvers based on the state of the document
+	    	// or information in the packet added by earlier calls.
+	    <---
+	}
+}
+
+// What happens with the above?
+// (State is "NEW")
+// 1. Look for entry tag - mark step as "CheckCompliance"
+// (State is "RUNNING, CheckCompliance)
+// 2. Execute reflex script on CheckCompliance. Assume autoApprove is false, return "manual"
+// 3. "manual" indicates (for this step) that the next step is ManualApprove
+// (State is "RUNNING", ManualApprove)
+// 4. Look at ManualApprove step - it has an approval section
+// 5. Check approvals (there are none). Pause DP, wait for someone to call an approval or rejection API call for this DecisionPacket/Process.
+// (State is "WAITING", "ManualApprove)
+// [User alan (member of admins) approves]
+// (State is "RUNNING", "ManualApprove)
+// 6. Look at ManualApprove step - it has an approval section
+// 7. Look at approvals/rejections on DecisionPacket (for ManualApproval). Apply "alan" to the "any" section, "oneOf" type. This returns "approved" (or equivalent status) 
+// 8. Approval is approved, look for special "approved" link - it is FinishSuccess
+// (State is "RUNNING", "FinishSuccess")
+// 9,. Look at FinishSuccess, understand that FinishSuccess is an "exit" Step.
+// 10. Execute reflex script.
+// (State is "FINISHED")
+
+
+
+
+

@@ -1,0 +1,94 @@
+[The Pipeline Api is used to configure the Rapture System pipeline for running tasks within a cluster of Rapture Servers.]
+
+api(Pipeline) {
+   [Deletes a given category.]
+   @entitle=/admin/main
+   @public void removeServerCategory(String category);
+
+   [List server categories.]
+   @entitle=/admin/main
+   @public List(String) getServerCategories();
+
+   [Get bound exchanges for a category]
+   @entitle=/admin/main
+   @public List(CategoryQueueBindings) getBoundExchanges(String category);
+
+   [Removes an exchange.]
+   @entitle=/admin/main
+   @public void deregisterPipelineExchange(String name);
+
+   [Retrieves all registered exchanges.]
+   @entitle=/admin/main
+   @public List(String) getExchanges();
+
+   [Retrieves an exchange object by name.]
+   @entitle=/admin/main
+   @public RaptureExchange getExchange(String name);
+   
+   [Publishes a message. This message will be published to the category specified in the RapturePipelineTask object.
+   If no category is specified, an error is thrown. This type of message should be handled by only one of
+   the servers belonging to this category; in other words, it is not a broadcast.]
+   @entitle=/admin/main
+   @public void publishMessageToCategory(RapturePipelineTask task);
+
+   [This message will be broadcasted to all servers belonging to the category specified in the RapturePipelineTask
+    object. If no category is specified, an error is thrown.]
+   @entitle=/admin/main
+   @public void broadcastMessageToCategory(RapturePipelineTask task);
+
+   [This message will be broadcasted to all servers connected to the pipeline system.]
+   @entitle=/admin/main
+   @public void broadcastMessageToAll(RapturePipelineTask task);
+
+   [Gets the status for a published RapturePipelineTask.]
+   @entitle=/admin/main
+   @public PipelineTaskStatus getStatus(String taskId);
+   
+   [Queries for pipeline statuses.]
+   @entitle=/admin/main
+   @public List<RapturePipelineTask> queryTasks(String query);
+
+   [Queries for pipeline statuses.]
+   @entitle=/admin/main
+   @public List(RapturePipelineTask) queryTasksOld(TableQuery query);
+
+   [On the task information, get the latest epoch (the maximum message id).]
+   @entitle=/admin/main
+   @public Long getLatestTaskEpoch();
+   
+   [Drain an exchange - remove all messages.]
+   @entitle=/admin/main
+   @public void drainPipeline(String exchange);
+
+   [Registers a new exchange domain.]
+   @entitle=/admin/main
+   @public void registerExchangeDomain(String domainURI, String config);
+
+   [Removes an exchange domain.]
+   @entitle=/admin/main
+   @public void deregisterExchangeDomain(String domainURI);
+
+   [Retrieves all registered exchange domains.]
+   @entitle=/admin/main
+   @public List(String) getExchangeDomains();
+   
+   [Sets up the default queue-exchanges and bindings for a given category.]
+   @entitle=/admin/main
+   @public void setupStandardCategory(String category);
+   
+   [Make an RPC call using a pair of queues on the pipeline of the default exchange. I notice
+     that the exchange is removed from the above call which seems to be a bit of a regression]
+    
+   @entitle=/user/call
+   @public Map<String, Object> makeRPC(String queueName, String fnName, Map<String, Object> params, Long timeoutInSeconds);
+   
+   [Create a topic exchange that can be used to pub/sub on]
+   @entitle=/admin/main
+   @public void createTopicExchange(String domain, String exchange);
+   
+   [Publish on topic exchange (Subscription has to go low level)]
+   @entitle=/admin/main
+   @public void publishTopicMessage(String domain, String exchange, String topic, String message);
+   
+}
+	

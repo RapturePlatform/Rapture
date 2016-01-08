@@ -1,0 +1,186 @@
+%\documentclass[12pt]{memoir}
+\documentclass[ 11pt, a4paper, footinclude=true, headinclude=true]{scrbook}
+\input{config}
+\usepackage[usenames,dvipsnames]{xcolor}
+\usepackage{mathtools}
+\usepackage{moreverb}
+\usepackage{fancyvrb}
+\usepackage{float}
+\usepackage{arrayjobx}
+\usepackage{tikz}
+\usepackage[T1]{fontenc}
+\usepackage{paralist}
+\usepackage{arev}
+\usepackage{tgadventor}
+\usepackage{makeidx}
+\usepackage{varioref}
+\usetikzlibrary{positioning,shapes.symbols,shapes.multipart,shapes.misc,shadows,arrows,decorations.pathmorphing,decorations.pathreplacing,backgrounds,positioning,fit,petri,chains,mindmap}
+\newcommand{\Rapture}{${\mathbf{Rapture}}$~}
+\newcommand{\Reflex}{${\mathbf{Reflex}}$~}
+\usepackage{hyperref}
+\hypersetup{colorlinks,linkcolor=blue}
+\fvset{fontsize=\small}
+\lstdefinelanguage{reflex}
+{
+  morekeywords={def,end,for,while,if,else,do,const},
+  morecomment=[l]{//},  
+  morestring=[b]" 
+}
+\setcounter{secnumdepth}{0}  
+\makeindex
+\lstset{ %
+  aboveskip=7pt,
+  belowskip=7pt,
+  numberbychapter=false,
+  language=reflex,                % the language of the code
+  basicstyle=\small,           % the size of the fonts that are used for the code
+  numbers=left,                   % where to put the line-numbers
+  numberstyle=\tiny\color{Gray},  % the style that is used for the line-numbers
+  stepnumber=1,                   % the step between two line-numbers. If it's 1, each line 
+  numbersep=7pt,                  % how far the line-numbers are from the code
+  columns=fixed,
+%  backgroundcolor=\color{GreenYellow},      % choose the background color. You must add \usepackage{color}
+  showspaces=false,               % show spaces adding particular underscores
+  showstringspaces=false,         % underline spaces within strings
+  showtabs=false,                 % show tabs within strings adding particular underscores
+  frame=TB,                   % adds a frame around the code
+  rulecolor=\color{black},        % if not set, the frame-color may be changed on line-breaks within not-black text (e.g. commens (green here))
+  tabsize=2,                      % sets default tabsize to 2 spaces
+  captionpos=b,                   % sets the caption-position to bottom
+  breaklines=true,                % sets automatic line breaking
+  breakatwhitespace=false,        % sets if automatic breaks should only happen at whitespace
+  escapeinside={\%*}{*)},            % if you want to add LaTeX within your code
+  morekeywords={*,...}               % if you want to add more keywords to the set
+}
+
+\newpagestyle{MyInCapturePageStyle}
+{
+  {}
+  {}
+  {
+    \hfill
+    \begin{minipage}{5cm}
+      \includegraphics[width=\textwidth]{../Graphics/Incapture}
+    \end{minipage}
+  }
+}
+{
+  {}
+  {}
+  {
+    \normalfont
+    {Proprietary and Confidential}
+    \hfill
+    \pagemark{}  
+   }
+}
+
+
+\begin{document}
+\tikzset{	
+	inner sep=2mm,bend angle=45,
+	ewd/.style={rectangle split, rectangle split parts=2,draw=black,fill=green!20,thick,drop shadow},
+	external/.style={circle,draw=black,fill=blue!20,thick,circular drop shadow},
+	internal/.style={circle,draw=black,fill=green!20,thick,circular drop shadow},
+	client/.style={rounded rectangle,draw=black,fill=red!20,thick,drop shadow},
+	server/.style={rounded rectangle,draw=black,fill=green!20,thick,drop shadow},
+	appserver/.style={rounded rectangle,draw=black,fill=yellow!20,thick,drop shadow},
+	yround/.style={rounded rectangle,draw=black,fill=yellow!20,thick,drop shadow},
+	api/.style={circle,draw=black,fill=yellow!20,thick,circular drop shadow},
+	lab/.style={circle,draw=black,thin,inner sep=2pt,outer sep=3pt,fill=orange!10},
+	main/.style={rounded rectangle,draw=black,fill=blue!20,thick,drop shadow},
+	highlight/.style={rounded rectangle,draw=black,fill=yellow!20,thick,drop shadow},
+	ctx/.style={rounded rectangle,draw=black,fill=green!20,thick,drop shadow},
+	qtop/.style={rectangle,draw=black,fill=green!20,thick},
+	qbot/.style={rectangle,draw=black,fill=blue!20,thick},
+	desc/.style={rectangle,draw=white},
+	pre/.style={->,shorten <=1pt,>=triangle 60,thin},
+	post/.style={<-,shorten >=1pt,>=triangle 60,thin},
+	line/.style={thin},
+	both/.style={<->,shorten >=1pt,>=triangle 60,thin},
+	fog/.style={cloud,draw=black,fill=orange!40,thick,drop shadow},
+	fogclient/.style={cloud,draw=black,fill=blue!40,thick,drop shadow}
+}
+
+\pagestyle{plain}
+\setheadsepline{1pt}
+\setfootsepline{1pt}
+\setlength{\headsep}{30pt}
+%*******************************************************
+% Titlepage
+%*******************************************************
+\ThisULCornerWallPaper{1}{../Graphics/IncaptureBar}  
+\ThisLLCornerWallPaper{1}{../Graphics/IncaptureBar}
+\begin{titlepage}
+    \begin{center}
+        \large  
+
+        \hfill
+
+        \vfill
+
+        \begingroup
+            \color{Maroon}\Huge\spacedallcaps{\myClient} \\ \bigskip
+                          \Large\spacedallcaps{\myTitle} \bigskip
+        \endgroup
+
+        \Large\spacedlowsmallcaps{\myTime}
+
+        \vfill
+
+        \includegraphics[width=6cm]{../Graphics/Logo} \\ \medskip
+
+        \vfill                      
+
+        \bigskip  
+         
+        \includegraphics[width=0.5\textwidth]{../Graphics/Incapture} 
+
+    \end{center}      
+\end{titlepage}       
+\cleardoublepage
+\clearpage
+\LLCornerWallPaper{1}{../Graphics/IncaptureBar}  
+\pagestyle{MyInCapturePageStyle}
+
+\tableofcontents
+\listoftables
+\listoffigures
+\input{../../../docs/Sections/Overview/ReflexContent}
+
+%*******************************************************
+% Disclaimer
+%*******************************************************
+\clearpage
+\ThisLLCornerWallPaper{1}{../Graphics/IncaptureBar}  
+\thispagestyle{MyInCapturePageStyle}
+
+\vspace*{10pt}
+
+\color{incapturecolor} 
+
+\begin{center} \textbf{DISCLAIMER} \end{center}
+
+\textbf{Copyright}: Unless otherwise noted, text, images and layout of this publication are the exclusive property of Incapture Technologies LLC and/or its related, affiliated and subsidiary companies and may not be copied or distributed, in whole or in part, without the express written consent of Incapture Technologies LLC or its related and affiliated companies.
+
+\begin{center} \copyright 2012 Incapture Technologies LLC \end{center}
+    
+%*******************************************************
+% Last Page
+%*******************************************************    
+\clearpage
+
+\ThisULCornerWallPaper{1}{../Graphics/IncaptureBar}  
+\ThisLLCornerWallPaper{1}{../Graphics/IncaptureBar}  
+\thispagestyle{empty}  % no page number on this page
+\begin{center}   
+\large 
+\hfill
+\vfill 
+\color{Maroon}\small\spacedallcaps{\myCompanyFull} \\ 
+\color{Black}\small{\myCompanyAddress} \\
+\vspace{100pt}
+\includegraphics[width=0.5\textwidth]{../Graphics/Incapture} 
+\end{center}
+ 
+\end{document}

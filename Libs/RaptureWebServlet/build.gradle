@@ -1,0 +1,13 @@
+jar.manifest.attributes "Implementation-Title" : "RaptureWebServlet"
+
+dependencies {
+     compile project(':RaptureCore')
+     compile project(':RaptureAPI')
+     compile project(':RaptureAddinCore')
+     compile project(':RaptureCommon')
+     compile project(':Reflex')
+     
+     compile 'javax.websocket:javax.websocket-api:1.0'
+     
+}
+

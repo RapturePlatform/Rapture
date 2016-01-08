@@ -1,0 +1,58 @@
+[The sys api is used to modify System config at the low level, bypassing the normal api calls. To be used with great care as incorrect usage can disable an environment.]
+
+api(Sys) {
+   [Retrieve a system config]
+   @entitle=/admin/root
+   @public String retrieveSystemConfig(String area, String path);
+
+   [Write a system config]
+   @entitle=/admin/root
+   @public String writeSystemConfig(String area, String path, String content);
+ 
+   [Remove a system document]
+   @entitle=/admin/root
+   @public void removeSystemConfig(String area, String path);
+
+   [Gets the hiearchy (the documents below this point, like with user.getChildren)]
+   @entitle=/admin/root
+   @public List(RaptureFolderInfo) getSystemFolders(String area, String path);
+   
+    [Retrieve all top level repos ]
+    @entitle=/repo/read
+	@public List<String> getAllTopLevelRepos();
+	
+    [Get children from the specified point.
+    
+    URI Cannot be null, but it can be the IndexMark from the ChildrenTransferObject returned by a previous call.
+    depth indicates the number of levels to retrieve data for.
+    If maximum > 0 then cap the number of entries returned
+    
+    if refresh is false and there are more results than the defined maximum then store the remainder in the cache for quick access next time
+          
+     If refresh is true and there are more results than the defined maximum then keep track of the values that have been returned.
+     On the next call re-read the tree and return only new entries. 
+     This is much slower than without refresh because the tree is re-read each time. ]
+     
+    @entitle=/repo/read
+    @public ChildrenTransferObject listByUriPrefix(String raptureURI, String marker, int depth, Long maximum, Boolean refresh);
+    
+    [Retrieve all the immediate children of a URI]
+    @entitle=/repo/read
+    @public ChildrenTransferObject getChildren(String raptureURI);
+    
+    [Retrieve all the children of a URI, spanning multiple levels. The page size must be specified.
+     If refresh is false and there are more results than the defined page size then store the remainder in the cache for quick access next time
+
+     If refresh is true and there are more results than the defined maximum then keep track of the values that have been returned.
+     On the next call re-read the tree and return only new entries.
+     This is slower than without refresh because the tree is re-read each time.]
+
+    @entitle=/repo/read
+    @public ChildrenTransferObject getAllChildren(String raptureURI, String marker, Long maximum, Boolean refresh);
+    
+    [Determine whether the URI references an object, a folder, both or neither]
+    @entitle=/repo/read
+    @public NodeEnum getFolderInfo(String raptureURI);
+   
+}
+
