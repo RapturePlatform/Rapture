@@ -33,7 +33,6 @@ import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.elasticsearch.common.collect.ImmutableSet;
 
 import rapture.common.CallingContext;
 import rapture.common.ChildrenTransferObject;
@@ -53,6 +52,7 @@ import rapture.repo.Repository;
 import rapture.util.IDGenerator;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.google.common.collect.ImmutableSet;
 
 /**
  * Low level config settings manipulation

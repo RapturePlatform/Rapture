@@ -27,11 +27,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -43,9 +41,6 @@ import java.util.jar.Manifest;
 
 import org.apache.log4j.Logger;
 
-import com.google.common.base.Optional;
-import com.google.common.cache.Cache;
-
 import rapture.api.hooks.ApiHooksService;
 import rapture.audit.AuditLog;
 import rapture.audit.AuditLogCache;
@@ -53,7 +48,6 @@ import rapture.common.CallingContext;
 import rapture.common.CallingContextStorage;
 import rapture.common.IEntitlementsContext;
 import rapture.common.InstallableKernel;
-import rapture.common.LicenseInfo;
 import rapture.common.RaptureConstants;
 import rapture.common.RaptureIPWhiteList;
 import rapture.common.RaptureIPWhiteListStorage;
@@ -80,7 +74,6 @@ import rapture.common.model.RaptureServerStatusStorage;
 import rapture.common.model.RaptureUser;
 import rapture.common.model.RaptureUserStorage;
 import rapture.config.ConfigLoader;
-import rapture.config.MultiValueConfigLoader;
 import rapture.dsl.entparser.ParseEntitlementPath;
 import rapture.event.generator.TimeProcessorThread;
 import rapture.exchange.QueueHandler;
@@ -92,9 +85,6 @@ import rapture.kernel.internalnotification.TypeChangeManager;
 import rapture.kernel.pipeline.KernelTaskHandler;
 import rapture.kernel.plugin.RapturePluginClassLoader;
 import rapture.kernel.stat.StatHelper;
-import rapture.license.LicenseException;
-import rapture.license.LicenseHandler;
-import rapture.license.LicenseUtil;
 import rapture.log.management.LogManagerConnection;
 import rapture.log.manager.LogManagerConnectionFactory;
 import rapture.metrics.MetricsFactory;
@@ -112,6 +102,9 @@ import rapture.util.DefaultConfigRetriever;
 import rapture.util.IConfigRetriever;
 import rapture.util.IDGenerator;
 import rapture.util.ResourceLoader;
+
+import com.google.common.base.Optional;
+import com.google.common.cache.Cache;
 
 /**
  * The Rapture kernel is a singleton and hosts the apis for Rapture
@@ -293,18 +286,7 @@ public enum Kernel {
 
     public static void initBootstrap(Map<String, String> templates, Object context, boolean startScheduler) {
         // Validate license
-        try {
-            validateRaptureLicense();
-        } catch (LicenseException e) {
-            log.error("Error validating license: " + e.getMessage());
-            log.debug(ExceptionToString.format(e));
-            log.warn("For now, will continue unlicensed");
-            licenseInfo = new LicenseInfo();
-        } catch (Exception e) {
-            log.error("Error validating license: " + ExceptionToString.format(e));
-            log.warn("For now, will continue unlicensed");
-            licenseInfo = new LicenseInfo();
-        }
+       
         // AT THIS POINT, attempt to load and run a startup script
         // TODO: These strings need to be in a constant
         if (templates != null) {
@@ -467,25 +449,7 @@ public enum Kernel {
         exchangeChangeManager.registerExchangeListener(Kernel.INSTANCE.pipeline.getTrusted());
     }
 
-    private static LicenseInfo licenseInfo;
 
-    public static LicenseInfo getLicenseInfo() {
-        return licenseInfo;
-    }
-
-    private static void validateRaptureLicense() {
-        PublicKey publicKey = LicenseUtil.readPublicKeyFromResource(Kernel.class, "/sec/rapture.pub");
-        LicenseHandler handler = new LicenseHandler();
-
-        String licenseFilePath = MultiValueConfigLoader.getConfig("LICENSE-filePath", "/opt/rapture/license/rapture.license");
-
-        licenseInfo = handler.validateLicense(licenseFilePath, publicKey);
-        log.info("LICENSE INFORMATION");
-        log.info("This copy of Rapture is licensed to : " + licenseInfo.getCompanyName());
-        if (licenseInfo.getExpirationTimestamp() != null) {
-            log.info("The license is valid until : " + new Date(licenseInfo.getExpirationTimestamp() * 1000));
-        }
-    }
 
     /**
      * Check the config for a passed api user to run the kernel as. If so, check

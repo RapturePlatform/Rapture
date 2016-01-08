@@ -23,13 +23,8 @@
  */
 package rapture.metrics;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-
 import org.apache.log4j.Logger;
 
-import rapture.common.exception.ExceptionToString;
-import rapture.metrics.reader.GraphiteMetricsReader;
 import rapture.metrics.reader.MetricsConfigReader;
 import rapture.metrics.reader.MetricsReader;
 import rapture.metrics.reader.NoOpMetricsReader;
@@ -59,20 +54,6 @@ public class MetricsFactory {
     private static final Logger log = Logger.getLogger(MetricsFactory.class);
 
     private static MetricsReader createDefaultReader() {
-        String scheme = MetricsConfigReader.getGraphiteUrlScheme();
-        String host = MetricsConfigReader.getGraphiteHost();
-        int graphitePort = MetricsConfigReader.getGraphitePort();
-
-        if (scheme == null || host == null) {
-            log.error(String.format("Unable to initialize graphite reader. Cannot determine graphite url. scheme=%s, host=%s", scheme, host));
-        } else {
-            try {
-                URL url = new URL(scheme, host, graphitePort, "");
-                return new GraphiteMetricsReader(url);
-            } catch (MalformedURLException e) {
-                log.error(ExceptionToString.format(e));
-            }
-        }
         return new NoOpMetricsReader();
     }
 

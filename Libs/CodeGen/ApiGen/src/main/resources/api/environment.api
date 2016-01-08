@@ -33,10 +33,6 @@ api(Environment) {
   [Returns the last reported state for each server in the network. This includes a numerical status, a human readable message, and a Date object indicating the time that the status was last updated.]
   @entitle=/env/common
   @public List(RaptureServerStatus) getServerStatus();
-  
-  [Returns the licensee name, license expiration date, and whether the license is a developer license.]
-  @entitle=/env/common
-  @public LicenseInfo getLicenseInfo();
 }
 
 

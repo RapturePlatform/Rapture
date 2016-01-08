@@ -65,11 +65,7 @@ api(Sheet) {
    ]
    @entitle=/data/read/$f(sheetURI)
    @public SheetAndMeta getSheetAndMeta(String sheetURI);
-   
-   [Renders the sheet to a PDF document, and saves the PDF as a blob in Rapture.]
-   @entitle=/data/read/$f(sheetURI)
-   @public void exportSheetAsPdf(String sheetURI, String blobURI);
-   
+    
    [Gets all the style objects associated with this sheet. See also createStyle.]
    @entitle=/data/read/$f(sheetURI)
    @public List(RaptureSheetStyle) getAllStyles(String sheetURI);

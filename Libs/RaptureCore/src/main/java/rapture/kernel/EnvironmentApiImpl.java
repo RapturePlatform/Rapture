@@ -103,9 +103,4 @@ public class EnvironmentApiImpl extends KernelBase implements EnvironmentApi {
         return RaptureServerStatusStorage.readAll();
     }
 
-    @Override
-    public LicenseInfo getLicenseInfo(CallingContext context) {
-        return Kernel.getLicenseInfo();
-    }
-
 }

@@ -27,7 +27,7 @@ import com.google.common.collect.Lists;
 
 import org.apache.commons.codec.binary.Hex;
 import org.apache.log4j.Logger;
-import org.elasticsearch.common.joda.time.DateTime;
+import org.joda.time.DateTime;
 
 import rapture.batch.ScriptParser;
 import rapture.batch.kernel.ContextCommandExecutor;
