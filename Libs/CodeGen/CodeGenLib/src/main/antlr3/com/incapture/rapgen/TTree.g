@@ -1,3 +1,5 @@
+// The tree walker for the Java API generator
+
 tree grammar TTree;
 
 options {

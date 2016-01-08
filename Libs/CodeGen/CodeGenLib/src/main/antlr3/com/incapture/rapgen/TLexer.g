@@ -1,11 +1,11 @@
 /*
- * Lexer for the HMX API parser
+ * Lexer for the Rapture API parser, parseable using ANTLR
  */
  
 lexer grammar TLexer;
 
 options {
-   language=Java;  // Default
+   language=Java;
    superClass = AbstractTLexer;
 }
 
@@ -27,7 +27,6 @@ options {
  
      Stack<SaveStruct> includes = new Stack<SaveStruct>();
  
-    // We should override this method for handling EOF of included file
      public Token nextToken(){
        Token token = super.nextToken();
  
@@ -58,8 +57,8 @@ options {
 
 STRING : '"' .* '"'
       ;
-// and lexer rule
- INCLUDE
+
+INCLUDE
      : 'include' (WS)? f=STRING {
        String name = f.getText();
        name = name.substring(1,name.length()-1);
@@ -77,81 +76,78 @@ STRING : '"' .* '"'
      ;
 
 //Annotations
-AT  : '@';     
-STORAGE_PATH : 'storagePath';
-SCHEME : 'scheme';
-STORABLE : 'Storable';
-CACHEABLE : 'Cacheable';
-ADDRESSABLE : 'Addressable';
-DEPRECATED : ('d'|'D') 'eprecated';
-EXTENDS : 'Extends';
-BEAN : 'Bean';
-INDEXED : 'Indexable';
+AT  			: '@';     
+STORAGE_PATH 	: 'storagePath';
+SCHEME 			: 'scheme';
+STORABLE 		: 'Storable';
+CACHEABLE 		: 'Cacheable';
+ADDRESSABLE 	: 'Addressable';
+DEPRECATED 		: ('d'|'D') 'eprecated';
+EXTENDS 		: 'Extends';
+BEAN 			: 'Bean';
+INDEXED 		: 'Indexable';
+SDKNAME   		: 'sdk'; 
+TYPED 			: 'type';
+CRUDTYPED   	: 'crud';
+PACKAGE 		: '@package';
+ENTITLE   		: '@entitle';
+PRIVATE   		: '@private';
+PUBLIC    		: '@public';
+STREAMING 		: '@streaming';
+EQUAL 			: '=';
+DATA   			: 'Data' ;
+LPAREN 			: '{' ;
+RPAREN 			: '}' ;
+LBRAC 			: '(' ;
+RBRAC 			: ')' ;
+API 			: 'api';
+BANG    		: '!';
+INTTYPE 		: 'int';
+LONGTYPE 		: 'long';
+LONGCTYPE		: 'Long';
+OBJECTTYPE		: 'Object';
+STRINGTYPE 		: 'String';
+DOUBLETYPE  	: 'Double';
+BOOLTYPE 		: 'Boolean';
+LISTTYPE 		: 'List';
+MAPTYPE 		: 'Map';
+SETTYPE     	: 'Set';
+BYTEARRAYTYPE 	: 'ByteArray';
+TRUE			: 'true';
+FALSE			: 'false';
+DATETYPE    	: 'Date';
+NEW         	: 'new';
+VOIDTYPE    	: 'void';
 
-SDKNAME   : 'sdk'; 
-TYPED 		: 'type';
-CRUDTYPED   : 'crud';
-PACKAGE 	: '@package';
-ENTITLE   : '@entitle';
-PRIVATE   : '@private';
-PUBLIC    : '@public';
-STREAMING 	: '@streaming';
-EQUAL 		: '=';
-DATA   		: 'Data' ;
-LPAREN 		: '{' ;
-RPAREN 		: '}' ;
-LBRAC 		: '(' ;
-RBRAC 		: ')' ;
-API 		: 'api';
-BANG    : '!';
-INTTYPE 	: 'int';
-LONGTYPE 	: 'long';
-LONGCTYPE	: 'Long';
-OBJECTTYPE	: 'Object';
-STRINGTYPE 	: 'String';
-DOUBLETYPE  : 'Double';
-BOOLTYPE 	: 'Boolean';
-LISTTYPE 	: 'List';
-MAPTYPE 	: 'Map';
-SETTYPE     : 'Set';
-BYTEARRAYTYPE : 'ByteArray';
-TRUE		: 'true';
-FALSE		: 'false';
-DATETYPE    : 'Date';
-NEW         : 'new';
-VOIDTYPE    : 'void';
+OPENSQUARE  	: '[' ;
+CLOSESQUARE 	: ']' ;
+COMMA 			: ',';
+DOT       		: '.';
+PACKAGENAME 	: ('a'..'z')+ ('.' ('a' ..'z')+)+;
+REGULARENTITLE 	: '/' ('a'..'z')+;
+DYNENT 			: '/$';
+SEMI			: ';' ;
+ID  			:	('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')*;
 
-OPENSQUARE  : '[' ;
-CLOSESQUARE : ']' ;
-COMMA 		: ',';
-DOT       : '.';
-PACKAGENAME : ('a'..'z')+ ('.' ('a' ..'z')+)+;
-REGULARENTITLE : '/' ('a'..'z')+;
-DYNENT : '/$';
-SEMI		: ';' ;
-ID  		:	('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')*
-    		;
+INT 			:	'0'..'9'+;
 
-INT 		:	'0'..'9'+
-    		;
+DOC     		:   OPENSQUARE ( options {greedy=false;} : ~('\u0080'..'\uFFFE') )* CLOSESQUARE;
 
-DOC     :   OPENSQUARE ( options {greedy=false;} : ~('\u0080'..'\uFFFE') )* CLOSESQUARE;
+COMMENT     	:   '//' ~('\n'|'\r')* '\r'? '\n' { $channel = HIDDEN; }
+    			|   '/*' ( options {greedy=false;} : . )* '*/' { $channel = HIDDEN; }
+    			;
 
-COMMENT     :   '//' ~('\n'|'\r')* '\r'? '\n' { $channel = HIDDEN; }
-    		|   '/*' ( options {greedy=false;} : . )* '*/' { $channel = HIDDEN; }
-    		;
+SQUOTE    		: '\'';
+L_THAN    		: '<';
+G_THAN    		: '>';
+MINUS     		: '-';
 
-SQUOTE    : '\'';
-L_THAN    : '<';
-G_THAN    : '>';
-MINUS     : '-';
+WS      		:   ( ' '
+          		| '\t'
+          		| '\r'
+          		| '\n'
+          		| '\f'
+          			) { $channel = HIDDEN;}
+        		;
 
-WS      :   ( ' '
-          | '\t'
-          | '\r'
-          | '\n'
-          | '\f'
-          ) { $channel = HIDDEN;}
-        ;
-
-COLUMN : ':';
+COLUMN 			: ':';
