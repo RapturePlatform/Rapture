@@ -1,0 +1,8 @@
+// Print out header Info
+
+ret = {};
+ret['ENV'] = ENV;
+ret['PROPS'] = PROPS;
+ret['SERVER'] = SERVER;
+
+println(json(ret));

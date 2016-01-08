@@ -1,0 +1,35 @@
+// retrieving data from a webbrowser's URL or POST
+data = web['data'];
+path = web['path'];
+partition = web['partition'];
+official = web['official'];
+displayName = web['displayName'];
+
+// data = "ORD00000003,ORD00000004,ORD00000005";
+// path = "data/otrs/order/official/FX";
+// partition = "otrs";
+// official = "official";
+// displayName = "order/FX";
+
+success = true;
+
+arr = data.split(",");
+length = size(arr);
+x = 0;
+
+while x < length do
+	try do
+		itemToDelete = 	displayName + "/" + arr[x];
+		#user.deleteContent(partition, official, itemToDelete, "Deleting " + itemToDelete);
+		x = x + 1;
+	end
+	catch e do
+		success = false;
+		x = length;
+	end
+end
+
+
+obj = {};
+obj['success'] = success;
+println(json(obj));

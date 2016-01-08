@@ -1,0 +1,13 @@
+version = '3.0.0'
+adjustVersion.execute()
+
+apply plugin: 'application'
+
+jar.manifest.attributes "Implementation-Title" : "Rapture ReflexRunner application"
+jar.manifest.attributes "Implementation-Version" : version
+
+dependencies {
+    compile 'jline:jline:2.7'
+}
+
+mainClassName = "reflex.app.Runner"

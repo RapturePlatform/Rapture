@@ -1,0 +1,10 @@
+{
+   "name" : "stepA",
+   "partition" : "demo",
+   "scriptName" : "schedule/two",
+   "description" : "Will be run after the topLevel runs",
+   "cronSpec" : "* * * * * *",
+   "params" : "",
+   "autoActivate" : false,
+   "dependencies" : [ "lastLevel"]
+}

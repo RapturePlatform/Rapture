@@ -1,0 +1,8 @@
+// Returns the details of a workflow, which is passed as id
+
+combinedId = web['id'];
+idParts = combinedId.split('-');
+ret = {};
+ret['id'] = idParts[0];
+#workflow.removeWorkflowStatus(idParts[0], idParts[1]);
+println(json(ret));

@@ -1,0 +1,9 @@
+// return appliance state
+
+state = {};
+status = #environment.getApplianceMode();
+unstate = !status;
+#environment.setApplianceMode(unstate);
+state['status'] = unstate;
+println(json(state));
+

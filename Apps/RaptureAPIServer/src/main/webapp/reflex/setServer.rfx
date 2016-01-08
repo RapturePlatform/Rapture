@@ -1,0 +1,7 @@
+// setServer
+
+serverName = web['id'];
+server = #environment.getThisServer();
+server['name'] = serverName;
+#environment.setThisServer(server);
+println(json(server));

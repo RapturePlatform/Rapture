@@ -1,0 +1,7 @@
+// Prehook script
+//
+
+println("This is the pre-hook script for localOne");
+
+return true;
+

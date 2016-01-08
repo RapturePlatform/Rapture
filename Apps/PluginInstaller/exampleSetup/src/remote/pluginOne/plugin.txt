@@ -1,0 +1,11 @@
+{ 
+  "plugin" : "pluginOne", 
+  "version" : { 
+   		"major" : 1, 
+   		"minor" : 0, 
+   		"release" : 0 },
+  "depends" : { 
+  	"pluginTwo" : [ 1, 0, 1] 
+  },
+  "description" : "A remotely installed plugin" 
+}

@@ -1,0 +1,10 @@
+{
+  "name" : "topLeveL",
+  "partition" : "demo",
+  "scriptName" : "schedule/one",
+  "description" : "The top level script, fires every 10 minutes",
+  "cronSpec" : "*/3 * * * * *",
+  "params" : "",
+  "autoActivate" : true,
+  "dependencies" : [ "stepA", "stepB" ]
+}

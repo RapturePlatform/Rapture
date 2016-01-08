@@ -1,0 +1,9 @@
+// Returns the list of plugins
+workflowURI = web['workflowURI'];
+
+if (workflowURI != null) do 
+    workflow = #decision.getWorkflow(workflowURI);
+    println(json(workflow));
+else do
+println("");
+end

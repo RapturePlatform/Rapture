@@ -1,0 +1,35 @@
+version = '3.0.0'
+adjustVersion.execute()
+
+apply plugin: 'application'
+
+jar.manifest.attributes "Implementation-Title" : "Rapture ScheduleServer application"
+jar.manifest.attributes "Implementation-Version" : version
+
+dependencies {
+     compile "com.rapture:MongoDb:$project.platformVersion"
+     compile "com.rapture:RabbitMQ:$project.platformVersion"
+	 compile "com.rapture:RaptureCore:$project.platformVersion"
+	 compile "com.rapture:RaptureAddinCore:$project.platformVersion"
+     compile 'jline:jline:2.7'
+}
+
+mainClassName = "rapture.server.ScheduleServer"
+
+// Config files
+//
+
+import groovy.text.*
+import java.io.*
+
+
+compileJava {
+    dependsOn copyConfigFiles
+}
+
+startScripts {
+       doLast {
+             unixScript.text = unixScript.text.replace('DEFAULT_JVM_OPTS=""',
+             'DEFAULT_JVM_OPTS="-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=9013 -Dcom.sun.management.jmxremote.local.only=false -Dcom.sun.management.jmxremote.authenticate=false"')
+            }
+        }

@@ -1,0 +1,10 @@
+{
+  "structure" : [
+      {
+        "name" : "localTwo",
+        "types" : [
+            { "name" : "testTwo", "configuration" : "REP {} USING MEMORY { }" }
+        ]
+       }
+  ]
+}

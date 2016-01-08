@@ -1,0 +1,32 @@
+version = '3.0.0'
+adjustVersion.execute()
+
+apply plugin: 'application'
+
+jar.manifest.attributes "Implementation-Title" : "Rapture PluginInstaller application"
+jar.manifest.attributes "Implementation-Version" : version
+
+dependencies {
+    compile 'jline:jline:2.7'
+    compile "com.rapture:PluginInstallerLib:$project.platformVersion"
+    compile "com.rapture:RaptureCore:$project.platformVersion"
+    compile "com.rapture:RaptureAddinCore:$project.platformVersion"
+    compile "com.rapture:MongoDb:$project.platformVersion"
+    compile "com.rapture:RabbitMQ:$project.platformVersion"
+    compile "com.rapture:Cassandra:$project.platformVersion"
+}
+
+mainClassName = "rapture.plugin.install.PluginShell"
+
+startScripts {
+    doLast {
+        unixScript.text = unixScript.text.replace('DEFAULT_JVM_OPTS=""', 'DEFAULT_JVM_OPTS="-Xmx2G"')
+        windowsScript.text = windowsScript.text.replace('DEFAULT_JVM_OPTS=', 'DEFAULT_JVM_OPTS="-Xmx2G"')
+    }
+}
+
+installApp.dependsOn(install)
+
+artifacts {
+    archives file("${buildDir}/libs/${project.name}-${version}.jar")
+}

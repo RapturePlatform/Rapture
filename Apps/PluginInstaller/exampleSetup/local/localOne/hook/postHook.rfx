@@ -1,0 +1,8 @@
+// Posthook script for localOne
+//
+
+println("This is the local post install hook for localOne");
+
+return true;
+
+

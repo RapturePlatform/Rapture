@@ -1,0 +1,12 @@
+{ 
+  "plugin" : "localOne", 
+  "version" : { 
+   		"major" : 1, 
+   		"minor" : 0, 
+   		"release" : 0 },
+  "depends" : { 
+  	"pluginOne" : [ 1, 0, 0],
+  	"localTwo" : [ 1,0,1]
+  },
+  "description" : "A locally defined plugin" 
+}

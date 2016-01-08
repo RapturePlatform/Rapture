@@ -1,0 +1,20 @@
+This describes the example install to test all of the plugins of the pluginInstaller.
+
+1. We have a remote plugin install, setup in a jar file, at file://remote/pluginOne/1.0.0/pluginOne.jar.
+2. pluginOne.jar has the following structure
+   plugin.txt (simply pluginOne, version 1.0.0, one dependency, pluginTwo, version 1.0.1)
+   structure.txt (creates partition "pluginOne", type "testOne")
+3. A second remote plugin, pluginTwo.jar, with no dependencies but creates partition pluginTwo, testTwo. It is version 1.0.1
+4. A local plugin set, with two folders and one local jar.
+4. One local ("localOne", version 1.0.0) depends on pluginOne, version 1.0.0
+5. It also depends on "localTwo", version 1.0.1).
+6. localThree is a standalone Jar, internally version 1.0.1.
+
+At the end of this install we should have the plugins installed in this order
+
+pluginTwo, pluginOne, localTwo, localOne, localThree.
+
+7. The pluginInstaller is called with a set of files and/or folders, or urls to files.
+
+In this case it will be to the directory localOne, the directory localTwo, and the file localThree.
+
