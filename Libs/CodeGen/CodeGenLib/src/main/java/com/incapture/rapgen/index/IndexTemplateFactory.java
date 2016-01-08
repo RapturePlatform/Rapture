@@ -33,10 +33,6 @@ import org.antlr.stringtemplate.StringTemplateGroup;
 import com.incapture.rapgen.AbstractTTree;
 import com.incapture.rapgen.annotations.IndexedAnnotation;
 
-/**
- * @author bardhi
- * @since 4/8/15.
- */
 public class IndexTemplateFactory {
     public static StringTemplate createIndexTemplate(String typeName, String sdkName, String packageName, List<IndexedAnnotation> indices,
             Map<String, String> fieldNameToType, StringTemplateGroup templateLib) {
@@ -64,7 +60,7 @@ public class IndexTemplateFactory {
             IndexedAnnotation indexedAnnotation,
             Map<String, String> fieldNameToType) {
         List<StringTemplate> fields = createIndexFieldsTemplates(templateLib, packageName, className, indexedAnnotation, fieldNameToType);
-        Map definitionMap = new AbstractTTree.STAttrMap().put("name", indexedAnnotation.getName()).put("fields", fields);
+        Map<?, ?> definitionMap = new AbstractTTree.STAttrMap().put("name", indexedAnnotation.getName()).put("fields", fields);
         return templateLib.getInstanceOf("createIndexDefinition", definitionMap);
     }
 
@@ -73,14 +69,14 @@ public class IndexTemplateFactory {
         List<StringTemplate> templates = new LinkedList<>();
         for (String name : indexedAnnotation.getFields()) {
             String type = IndexFieldMapper.fieldToType(packageName, className, indexedAnnotation.getName(), fieldNameToType, name);
-            Map attrMap = new AbstractTTree.STAttrMap().put("name", name).put("type", type);
+            Map<?, ?> attrMap = new AbstractTTree.STAttrMap().put("name", name).put("type", type);
             templates.add(templateLib.getInstanceOf("indexField", attrMap));
         }
         return templates;
     }
 
     private static StringTemplate createIndexCallTemplate(StringTemplateGroup templateLib, IndexedAnnotation indexedAnnotation) {
-        Map callMap = new AbstractTTree.STAttrMap().put("name", indexedAnnotation.getName());
+        Map<?, ?> callMap = new AbstractTTree.STAttrMap().put("name", indexedAnnotation.getName());
         return templateLib.getInstanceOf("createIndexCall", callMap);
     }
 }

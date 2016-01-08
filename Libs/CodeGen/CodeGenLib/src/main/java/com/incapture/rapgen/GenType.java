@@ -23,10 +23,6 @@
  */
 package com.incapture.rapgen;
 
-/**
- * @author bardhi
- * @since 7/20/15.
- */
 public enum GenType {
     API,
     SDK;

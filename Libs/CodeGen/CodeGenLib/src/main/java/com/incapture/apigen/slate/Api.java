@@ -27,10 +27,6 @@ import java.util.List;
 
 import com.incapture.apigen.slate.function.Function;
 
-/**
- * @author bardhi
- * @since 6/3/15.
- */
 public class Api {
     private String name;
     private List<Function> functions;

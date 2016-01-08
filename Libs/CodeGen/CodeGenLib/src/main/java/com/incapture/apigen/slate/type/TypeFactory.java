@@ -25,10 +25,6 @@ package com.incapture.apigen.slate.type;
 
 import com.incapture.apigen.slate.function.Field;
 
-/**
- * @author bardhi
- * @since 6/5/15.
- */
 public class TypeFactory {
     public static Field createField(String fieldType, String fieldName) {
         Field field = new Field();

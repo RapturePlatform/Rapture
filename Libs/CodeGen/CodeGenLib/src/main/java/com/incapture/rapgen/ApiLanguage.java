@@ -30,7 +30,9 @@ public enum ApiLanguage {
     SLATEMD,
     DOC,
     GO,
-    JAVASCRIPT,JS,
+    JAVASCRIPT,
+    JS,
     VB,
-    DOTNET, CURTISDOC,
+    DOTNET, 
+    CURTISDOC,
 }

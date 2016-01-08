@@ -68,8 +68,6 @@ public abstract class AbstractTTree extends TreeParser {
     public static final String GEN_PATH_PREFIX = "build/generated-sources/main/";
     public static final String GEN_PATH_PREFIX_JAVA = GEN_PATH_PREFIX + "java/";
     private static final String DEFAULT_PACKAGE = "rapture.common";
-    private static final int CUT_OFF_LENGTH = 80;
-
     /**
      * So this abstract tree will be used to host a number of generated files with a generated file simply being a list of templates ordered by some means
      * <p/>

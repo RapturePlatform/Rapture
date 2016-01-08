@@ -29,10 +29,6 @@ import java.util.Map;
 
 import com.google.common.base.Optional;
 
-/**
- * @author bardhi
- * @since 6/5/15.
- */
 public class TypesContainer {
     private final Map<String, Map<String, TypeDefinition>> packageToNameToType;
 

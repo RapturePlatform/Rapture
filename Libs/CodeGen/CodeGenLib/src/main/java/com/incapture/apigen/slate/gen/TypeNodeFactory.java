@@ -42,10 +42,6 @@ import com.incapture.slate.model.node.description.table.TableHeaderNode;
 import com.incapture.slate.model.node.description.table.TableNode;
 import com.incapture.slate.model.node.description.table.TableRowNode;
 
-/**
- * @author bardhi
- * @since 6/5/15.
- */
 public class TypeNodeFactory {
 
     public static Collection<Node> createTypesNodes(Function function, TypesContainer typesContainer) {

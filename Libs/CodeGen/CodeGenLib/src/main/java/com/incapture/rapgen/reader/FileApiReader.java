@@ -30,10 +30,6 @@ import java.nio.charset.StandardCharsets;
 import org.antlr.runtime.ANTLRFileStream;
 import org.antlr.runtime.ANTLRStringStream;
 
-/**
- * @author bardhi
- * @since 7/21/15.
- */
 public class FileApiReader implements ApiReader {
     private final File rootDir;
 

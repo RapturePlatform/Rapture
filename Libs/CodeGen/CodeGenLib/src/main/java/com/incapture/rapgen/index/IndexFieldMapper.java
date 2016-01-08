@@ -27,10 +27,6 @@ import java.util.Map;
 
 import com.google.common.collect.ImmutableMap;
 
-/**
- * @author bardhi
- * @since 4/8/15.
- */
 public class IndexFieldMapper {
     private static final Map<String, String> RAW_TO_INDEX_TYPE = createTypeMap();
 

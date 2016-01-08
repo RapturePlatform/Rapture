@@ -1,3 +1,5 @@
+// The ANTLR parser for the Rapture API generator
+
 parser grammar TParser;
 
 options {
@@ -61,8 +63,8 @@ tokens {
     package com.incapture.rapgen;
 }
 
-// (INNERA (APISEC [ This is a test api of the SDK.] TestSDK  (APIENTRY [Log a message to standard out] (ENTITLEASPECT /admin/main) (VISIBILITY PUBLICVIS) (RETTYPE (RAW Boolean)) (FNNAME logMessage)   (PARAMS (PARAM (TYPE (RAW String)) (NAME msg))))))
-// (INNERA (APISEC [Hello]                           SomeCrud (APIENTRY [Some doc]                      (ENTITLEASPECT Something)   (VISIBILITY PUBLICVIS) (RETTYPE (RAW Bool))    (FNNAME getSomething) (PARAMS (PARAM (TYPE (RAW String)) (NAME value)))))))
+// hmxdef is the root of the parser
+
 hmxdef      : sdkExpr? versionExpr minVerExpr innerExpr* -> ^(MAIN sdkExpr? versionExpr minVerExpr innerExpr*);
 
 innerExpr   : typeExpr -> ^(INNERT typeExpr)
@@ -195,7 +197,7 @@ vartype     :
             INTTYPE                         -> ^(RAW INTTYPE)
             | STRINGTYPE                    -> ^(RAW STRINGTYPE)
             | OBJECTTYPE                    -> ^(RAW OBJECTTYPE)
-            | DATETYPE            -> ^(RAW DATETYPE)
+            | DATETYPE            			-> ^(RAW DATETYPE)
             | LONGTYPE                      -> ^(RAW LONGTYPE)
             | LONGCTYPE                     -> ^(RAW LONGCTYPE)
             | BOOLTYPE                      -> ^(RAW BOOLTYPE)
