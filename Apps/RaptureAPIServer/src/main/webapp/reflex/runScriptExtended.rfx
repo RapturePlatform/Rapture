@@ -1,0 +1,5 @@
+// run a script
+
+scriptURI = web['id'];
+res = #script.runScriptExtended(scriptURI, {});
+println(json(res));

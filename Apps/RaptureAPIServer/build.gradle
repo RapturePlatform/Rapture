@@ -1,0 +1,76 @@
+version = '3.0.0'
+adjustVersion.execute()
+
+apply plugin: 'application'
+
+jar.manifest.attributes "Implementation-Title" : "Rapture APIServer application"
+jar.manifest.attributes "Implementation-Version" : version
+
+apply plugin: 'docker'
+
+buildscript {
+    repositories { jcenter() }
+    dependencies {
+         classpath 'se.transmode.gradle:gradle-docker:1.2'
+    }
+}
+
+docker {
+    baseImage "ubuntu:latest"
+    maintainer "Alan Moore <alan.moore@incapturetechnologies.com>"
+    }
+
+task buildDocker(type: Docker, dependsOn: 'installApp') {
+    applicationName = 'raptureapiserver'
+    runCommand "apt-get update"
+    runCommand "apt-get install -y default-jdk"
+    addFile ("build/install/RaptureAPIServer/","/rapture")
+    setEnvironment("RAPTURE_CONFIG_HOME", "/rapture/etc/rapture/config")
+    workingDir "/rapture/bin"
+    exposePort 8665
+    entryPoint( [ "/bin/bash", "/rapture/bin/RaptureAPIServer"])
+}
+
+dependencies {
+    compile "com.rapture:WorkflowsCore:$project.platformVersion"
+    compile "com.rapture:RaptureCore:$project.platformVersion"
+    compile "com.rapture:RaptureAddinCore:$project.platformVersion"
+    compile "com.rapture:MongoDb:$project.platformVersion"
+    compile "com.rapture:RabbitMQ:$project.platformVersion"
+    compile("com.rapture:Cassandra:$project.platformVersion") {
+       exclude module: 'servlet-api'
+    }
+    compile "com.rapture:RaptureWebServlet:$project.platformVersion"
+    compile 'org.apache.tomcat.embed:tomcat-embed-logging-juli:7.0.39'
+    compile 'org.apache.tomcat.embed:tomcat-embed-core:7.0.39'
+    compile 'org.apache.tomcat.embed:tomcat-embed-jasper:7.0.39'
+    compile 'org.apache.tomcat:tomcat-api:7.0.39'
+    compile 'org.apache.tomcat:tomcat-jasper:7.0.39'
+    compile 'org.apache.tomcat:tomcat-jasper-el:7.0.39'
+    compile 'org.apache.tomcat:tomcat-jsp-api:7.0.39'
+
+    exploded "com.rapture:ExplodedDeps:$project.platformVersion"
+}
+
+mainClassName = "rapture.server.RaptureWebServer"
+
+// Config files
+//
+
+import groovy.text.*
+import java.io.*
+
+
+task targetWebApp {
+    def docs = file("$buildDir/webapp")
+    outputs.dir docs
+}
+
+compileJava {
+    dependsOn copyConfigFiles
+    dependsOn copyWebApplication
+}
+
+applicationDistribution.from(targetWebApp) {
+    into "bin/webapp"
+}

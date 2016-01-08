@@ -1,0 +1,29 @@
+// Called by dynatree to get the nodes below this one for data. This one is "key"
+
+prefix = web['key'];
+response = [];
+if prefix == "/" do
+    // We need to get the documentRepositories
+    repos = #blob.getBlobRepoConfigs();
+    for repo in repos do
+       repoName = repo['authority']; //"test"; //repo.getPartitionName();
+       inner = { "title" : repoName, "isLazy" : true, "key" : "//${repoName}", "isFolder" : true };
+       response += inner;
+    end
+else do
+  children = #blob.findBlobsByUriPrefix(prefix, 1);
+
+    rfis = []
+    for each in keys(children) do
+    rfis += children[each];
+    end
+
+  x = fromjson(json(rfis));
+  for c in x do 
+     f = c['folder'];
+     name = c['name'];
+     inner = { "title" : name, "isLazy" : f, "key" : "${prefix}/${name}", "isFolder" : f };
+     response += inner;
+  end
+end
+println(json(response));

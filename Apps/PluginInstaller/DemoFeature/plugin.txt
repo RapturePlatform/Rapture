@@ -1,0 +1,12 @@
+{
+   "plugin" : "Demo",
+   "version" : {
+        "major" : 0,
+        "minor" : 1,
+        "release" : 1 
+    },
+    "depends" : {
+    },
+    "description" : "Demonstration of some plugins"
+}
+

@@ -1,0 +1,42 @@
+// retrieving data from a webbrowser's URL or POST
+
+jsonDoc = web['jsonDoc'];
+content = jsonDoc;
+
+const partition = 'c_rskrs';
+const queueName = 'varloader';   
+const waitInSeconds = 3;
+
+#queue.putItemOnQueue(partition,queueName,content);
+
+listen = true;
+workflowDate = "20120913";
+sender = "client";
+success = true;
+msg = "test";
+
+while listen == true do
+	msg = #queue.getItemFromQueue(partition, queueName, waitInSeconds);
+	taskId = msg['taskId'];
+	content = msg['content'];
+	fromjsoncontent = fromjson(msg['content']);	
+	sender = fromjsoncontent['sender'];
+	workflowDate = fromjsoncontent['workflowDate'];
+	
+	if sender == "server" do
+		result = fromjsoncontent['result'];
+		#queue.markQueueItem(partition, queueName, taskId, true);		
+		listen = false;
+		if result == 0 do
+			success = false;
+		end
+	end
+end
+
+obj = {};
+obj['success'] = success;
+obj['msg'] = msg;
+obj['sender'] = sender;
+obj['workflowDate'] = workflowDate;
+
+println(json(obj));

@@ -1,0 +1,132 @@
+import groovy.text.SimpleTemplateEngine
+
+import org.gradle.api.tasks.Copy
+import org.gradle.api.tasks.bundling.Zip
+
+import sun.security.util.Resources_de;
+
+buildscript {
+    File fromFile = new File(new File(getGradle().getGradleUserHomeDir(), "incapture"), "incapture.gradle");
+    apply from : fromFile.getAbsolutePath();
+}
+
+apply plugin: "sonar"
+
+project.group = 'com.rapture'
+
+ext { platformVersion = '3.0.0' }
+
+project.ext.set('raptureBootstrapDisablePlugins', 'true')
+apply plugin: 'rapture-bootstrap'
+
+
+subprojects {
+    project.ext.set('raptureBootstrapDisablePlugins', 'false')
+    apply plugin: 'rapture-bootstrap'
+
+    project.group = parent.group
+
+    task buildinfo (type: com.rapture.gradle.bootstrap.plugin.JavaBuildInfoTask) { module_name = project.name }
+
+    def loggingVersion = '1.6.1'
+    def httpVersion = '4.2.2'
+    def jacksonVersion = '1.9.2'
+    def incaptureRepo = 'http://release.incapturesolutions.com/repository'
+
+    task copyProps(type:Copy) {
+        from 'src/main/java'
+        into 'build/classes/main'
+        include '**/*.txt', '**/*.xml', '**/*.properties', '**/*.proto'
+    }
+
+    compileJava {
+        dependsOn copyProps
+        dependsOn buildinfo
+        source buildinfo.dir_name
+    }
+
+    test {
+        include 'rapture/**'
+
+        // set JVM arguments for the test JVM(s)
+        jvmArgs '-noverify'
+    }
+
+    plugins.withType(ApplicationPlugin) {
+
+        final RAPTURE_CONFIG_DIR = 'rapture/config';
+        task generateApplicationConfig {
+            description 'Generates the application configuration file'
+            def output = file('build/config/' + RAPTURE_CONFIG_DIR + '/RaptureAPPLICATION.cfg')
+            outputs.files output
+            outputs.upToDateWhen { false }
+            doLast {
+                def templ = '''
+    # Application Configuration
+    # Auto generated
+    APIVersion=${version}
+    '''
+                def binding = [ 'version' : project.version ]
+                def writable = new SimpleTemplateEngine().createTemplate(templ).make(binding)
+                File dir = output.getParentFile()
+                dir.mkdirs()
+                def destination = new FileWriter(output)
+                writable.writeTo(destination)
+                destination.flush()
+                destination.close()
+                println("Created application configuration")
+            }
+        }
+
+        task copyConfigFiles (type: Copy) {
+            dependsOn generateApplicationConfig
+            from 'src/main/resources';
+            include RAPTURE_CONFIG_DIR + '/*.cfg'
+            into 'build/config'
+            outputs.upToDateWhen { false }
+        }
+
+        task copyWebApplication(type: Copy) {
+            dependsOn copyConfigFiles
+            from 'src/main/webapp'
+            into 'build/webapp'
+        }
+
+        jar {
+            manifest {
+                attributes "Implementation-Vendor" : "Incapture Technologies"
+                attributes "Built-By" : System.getProperty('user.name')
+                attributes "Built-Date" : parent.timestamp
+            }
+        }
+
+        task targetConfig {
+            outputs.dir file("$buildDir/config")
+        }
+
+        applicationDistribution.from(targetConfig) { into "etc" }
+    }
+
+    tasks.withType(Zip) { task ->
+        task.doLast {
+            ant.checksum file: it.archivePath
+        }
+    }
+
+    dependencies {
+        compile "com.rapture:RaptureAppConfig:$project.platformVersion"
+        compile "com.rapture:RaptureAPI:$project.platformVersion"
+        compile "com.rapture:Reflex:$project.platformVersion"
+        compile 'log4j:log4j:1.2.14'
+        compile "org.slf4j:jcl-over-slf4j:$loggingVersion"
+        compile "org.slf4j:slf4j-api:$loggingVersion"
+        compile "org.slf4j:slf4j-log4j12:$loggingVersion"
+        testCompile 'junit:junit:4.10'
+        testCompile 'org.testng:testng:6.8.7'
+        testCompile 'com.googlecode.catch-exception:catch-exception:1.0.4'
+        testCompile 'org.objenesis:objenesis:2.0'
+        testCompile 'org.powermock:powermock-module-junit4:1.5.1'
+        testCompile 'org.powermock:powermock-api-easymock:1.5.1'
+        testCompile 'org.easymock:easymock:3.2'
+    }
+}

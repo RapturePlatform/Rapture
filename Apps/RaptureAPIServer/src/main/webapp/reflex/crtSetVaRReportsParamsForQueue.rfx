@@ -1,0 +1,16 @@
+// retrieving data from a webbrowser's URL or POST
+
+jsonDoc = web['jsonDoc'];
+content = jsonDoc;
+
+const partition = 'c_rskrs';
+const queueName = 'varloader';   
+const waitInSeconds = 3;
+
+#queue.putItemOnQueue(partition,queueName,content);
+
+obj = {};
+obj['success'] = true;
+obj['msg'] = "Report Submitted";
+
+println(json(obj));

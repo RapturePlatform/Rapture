@@ -1,0 +1,10 @@
+{
+  "structure" : [
+      {
+        "name" : "pluginTwo",
+        "types" : [
+            { "name" : "testTwo", "configuration" : "REP {} USING MEMORY { }" }
+        ]
+      }
+  ]
+}

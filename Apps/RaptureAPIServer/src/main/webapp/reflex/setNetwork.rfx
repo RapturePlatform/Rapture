@@ -1,0 +1,7 @@
+// setNetworkName
+
+networkName = web['id'];
+netInfo = #environment.getNetworkInfo();
+netInfo['networkName'] = networkName;
+#environment.setNetworkInfo(netInfo);
+println(json(netInfo));

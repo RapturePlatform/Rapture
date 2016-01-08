@@ -1,0 +1,29 @@
+vd = web['valuationdate'];
+cr = web['currency'];
+df = web['dfformat'];
+	
+// vd = "20110406"; // valuationdate
+// cr = "USD";  // currency
+// df = "ordered"; // dfformat
+
+// params = "valuationdate=" + vd + ",currency=" + cr + ",dfformat=" + df;
+params = "valuationdate=" + vd + ",currency=" + cr;
+
+//  mylibsuccess = #script.runScript("c_iars", "GetSwapDFArray", "valuationdate=20110406,currency=USD,dfformat=ordered");
+
+success = true;
+content = "";
+
+try do
+	data = #script.runScript("c_iars", "GetSwapDFArray", params);
+	content = fromjson(data);
+end
+
+catch e do
+    success = false;
+end
+
+obj = {};
+obj['success'] = success;
+obj['content'] = content;
+println(json(obj));

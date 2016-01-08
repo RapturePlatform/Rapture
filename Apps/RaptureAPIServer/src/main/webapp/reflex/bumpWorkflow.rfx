@@ -1,0 +1,6 @@
+// bump a workflow
+
+combinedId = web['id'];
+idParts = combinedId.split('-');
+wflow = #workflow.bumpWorkflow(idParts[0], idParts[1]);
+println(json(wflow));

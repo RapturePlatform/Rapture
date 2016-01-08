@@ -1,0 +1,9 @@
+// The first script
+//
+
+println("Hello from script one");
+sleep(1000);
+println("Done");
+
+
+

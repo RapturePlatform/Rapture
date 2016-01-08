@@ -1,0 +1,8 @@
+// Called by dynatree to get the nodes below this one for data. This one is "key"
+
+id = web['id'];
+response = {};
+script = #script.getScript(id);
+x = fromjson(json(script));
+response['content'] = script['script'];
+println(json(response));

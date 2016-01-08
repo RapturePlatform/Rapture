@@ -1,0 +1,33 @@
+// retrieving data from a webbrowser's URL or POST
+path = web['path'];
+businessdate = web['businessdate'];
+estimationwindow = web['estimationwindow'];
+estimationprobability = web['estimationprobability'];
+
+// businessdate = "2012/10/14";
+// estimationwindow = 3;
+// estimationprobability = 5;
+// path = "var/dummy";
+
+base = "c_rprs/official/reports/";
+fullpath = base + path;
+
+doc = {};
+doc['businessdate'] = businessdate;
+doc['estimationwindow'] = estimationwindow;
+doc['estimationprobability'] = estimationprobability;
+
+// path = "c_arsk/official/config/pricing/partialrevalassets";
+
+success = true;
+try do
+	doc --> fullpath;
+end
+
+catch e do
+	success = false;
+end
+
+obj = {};
+obj['success'] = true;
+println(json(obj));
