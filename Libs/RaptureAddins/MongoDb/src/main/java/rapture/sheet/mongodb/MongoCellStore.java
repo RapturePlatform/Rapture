@@ -30,7 +30,6 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import rapture.common.RaptureSheetCell;
-import rapture.common.RaptureSheetStatus;
 import rapture.mongodb.MongoDBFactory;
 import rapture.mongodb.MongoRetryWrapper;
 

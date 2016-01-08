@@ -30,10 +30,6 @@ import rapture.series.mongo.MongoSeriesStore;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @author bardhi
- * @since 5/8/15.
- */
 public class MongoChildrenRepo extends ChildrenRepo {
     private final MongoSeriesStore seriesStore;
 

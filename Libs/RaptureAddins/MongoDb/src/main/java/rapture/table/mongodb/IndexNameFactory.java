@@ -32,10 +32,6 @@ import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
-/**
- * @author bardhi
- * @since 4/23/15.
- */
 public class IndexNameFactory {
     static String createIndexName(IndexDefinition indexDefinition) {
         String indexName = indexDefinition.getIndexName();
