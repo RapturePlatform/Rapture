@@ -23,9 +23,8 @@
  */
 package rapture.log.manager;
 
-import rapture.log.management.LogManagementConfigReader;
 import rapture.log.management.LogManagerConnection;
-import rapture.logstash.reader.elasticsearch.LogstashEsConnection;
+//import rapture.logstash.reader.elasticsearch.LogstashEsConnection;
 
 /**
  * @author bardhi
@@ -33,6 +32,13 @@ import rapture.logstash.reader.elasticsearch.LogstashEsConnection;
  */
 public class LogManagerConnectionFactory {
     public static LogManagerConnection createDefaultConnection() {
+        return new NoOpLogConnection();
+    }
+}
+
+
+/**
+ * OLD CODE
         if (LogManagementConfigReader.isEnabled()) {
             return new LogstashEsConnection(LogManagementConfigReader.getLogHostFqdn(), LogManagementConfigReader.getApiPort());
         } else {
@@ -40,3 +46,4 @@ public class LogManagerConnectionFactory {
         }
     }
 }
+*/

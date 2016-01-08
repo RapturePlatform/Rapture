@@ -36,7 +36,6 @@ import java.util.Map;
 import java.util.Stack;
 import java.util.regex.Pattern;
 
-import org.antlr.runtime.RecognitionException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -66,19 +65,14 @@ import rapture.common.exception.RaptureExceptionFactory;
 import rapture.common.impl.jackson.JacksonUtil;
 import rapture.common.shared.doc.GetDocPayload;
 import rapture.kernel.context.ContextValidator;
-import rapture.kernel.script.KernelScript;
-import rapture.render.PDFSheetRenderer;
 import rapture.repo.SheetRepo;
 import rapture.script.IActivityInfo;
 import rapture.script.IRaptureScript;
 import rapture.script.ScriptFactory;
-import rapture.series.config.ConfigValidatorService;
-import rapture.series.config.InvalidConfigException;
 import rapture.util.StringUtil;
 
 import com.google.common.collect.Table;
 import com.google.common.collect.TreeBasedTable;
-import com.lowagie.text.DocumentException;
 
 public class SheetApiImpl extends KernelBase implements SheetApi {
     private static Logger log = Logger.getLogger(SheetApiImpl.class);
@@ -563,18 +557,6 @@ public class SheetApiImpl extends KernelBase implements SheetApi {
         return form;
     }
 
-    @Override
-    public void exportSheetAsPdf(CallingContext context, String sheetURI, String blobURI) {
-        PDFSheetRenderer renderer = new PDFSheetRenderer(sheetURI, blobURI);
-        KernelScript api = new KernelScript();
-        api.setCallingContext(context);
-        try {
-            renderer.renderAndSave(api);
-        } catch (DocumentException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-    }
 
     private SheetRepo getRepoFromCache(String authority) {
         return Kernel.getRepoCacheManager().getSheetRepo(authority);
