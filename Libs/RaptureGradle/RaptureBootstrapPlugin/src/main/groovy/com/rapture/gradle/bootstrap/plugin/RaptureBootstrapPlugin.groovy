@@ -61,11 +61,11 @@ class RaptureBootstrapPlugin implements Plugin<Project>, ProjectEvaluationListen
             }
         }
     }
-    
+
     void beforeEvaluate(Project project) {
         //println "beforeEvaluate: ${project.name}"
     }
-    
+
     void addWrapperTask(Project project) {
         project.tasks.create(name: 'wrapper', type: Wrapper) {
             distributionUrl = 'https://services.gradle.org/distributions/gradle-2.0-all.zip'
@@ -264,9 +264,9 @@ class RaptureBootstrapPlugin implements Plugin<Project>, ProjectEvaluationListen
     }
 
     File setupKeyFile() {
-        URL url = getClass().getClassLoader().getResource("keys/id_rsa");
+        // URL url = getClass().getClassLoader().getResource("keys/id_rsa");
         File file = File.createTempFile("rsa", ".private");
-        FileUtils.copyURLToFile(url, file);
+        // FileUtils.copyURLToFile(url, file);
         file.deleteOnExit();
         return file;
     }
@@ -339,15 +339,15 @@ class RaptureBootstrapPlugin implements Plugin<Project>, ProjectEvaluationListen
     }
 
     /**
-     * Add the official maven repo for publishing. Auth is required 
+     * Add the official maven repo for publishing. Auth is required
      * @param project
      */
     void addOfficialRepo(Project project) {
         project.repositories {
             maven {
                 credentials {
-                    username = "rapture"
-                    password = "raptureRelease"
+                    username = "xxx"
+                    password = "xxx"
                 }
                 name = "incaptureRepo"
                 url = getOfficialRepoUrl()
@@ -360,7 +360,7 @@ class RaptureBootstrapPlugin implements Plugin<Project>, ProjectEvaluationListen
      * @param project
      */
     void addOfficialUpload(Project project) {
-        File privateKey = setupKeyFile();
+        File privateKey = setupKeyFile(); // Need to have a keys folder with a pub/private key for this
 
         project.configurations { deployerJars }
         project.dependencies { deployerJars 'org.apache.maven.wagon:wagon:2.8' }
@@ -372,7 +372,7 @@ class RaptureBootstrapPlugin implements Plugin<Project>, ProjectEvaluationListen
                     configuration = project.configurations.deployerJars
                     name = 'sshDeployer'
                     repository(url: getOfficialDeployUrl()) {
-                        authentication(userName: 'ubuntu', privateKey: privateKey.getAbsolutePath(), passphrase: "raptur3")
+                        authentication(userName: 'ubuntu', privateKey: privateKey.getAbsolutePath(), passphrase: "xxx")
                     }
                 }
             }
