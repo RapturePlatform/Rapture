@@ -1,69 +1,55 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en-us">
   <head>
-    <meta charset='utf-8'>
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <meta name="description" content="Rapture : ">
-
-    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
-
-    <title>Rapture</title>
+    <meta charset="UTF-8">
+    <title>Rapture by RapturePlatform</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
   </head>
-
   <body>
+    <section class="page-header">
+      <h1 class="project-name">Rapture</h1>
+      <h2 class="project-tagline"></h2>
+      <a href="https://github.com/RapturePlatform/Rapture" class="btn">View on GitHub</a>
+      <a href="https://github.com/RapturePlatform/Rapture/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/RapturePlatform/Rapture/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
 
-    <!-- HEADER -->
-    <div id="header_wrap" class="outer">
-        <header class="inner">
-          <a id="forkme_banner" href="https://github.com/Incapture/Rapture">View on GitHub</a>
-
-          <h1 id="project_title">Rapture</h1>
-          <h2 id="project_tagline"></h2>
-
-            <section id="downloads">
-              <a class="zip_download_link" href="https://github.com/Incapture/Rapture/zipball/master">Download this project as a .zip file</a>
-              <a class="tar_download_link" href="https://github.com/Incapture/Rapture/tarball/master">Download this project as a tar.gz file</a>
-            </section>
-        </header>
-    </div>
-
-    <!-- MAIN CONTENT -->
-    <div id="main_content_wrap" class="outer">
-      <section id="main_content" class="inner">
-        <h3>
-<a id="rapture" class="anchor" href="#rapture" aria-hidden="true"><span class="octicon octicon-link"></span></a>Rapture</h3>
+    <section class="main-content">
+      <h3>
+<a id="rapture" class="anchor" href="#rapture" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Rapture</h3>
 
 <p>Rapture is a platform on which you can host applications that manage and manipulate data. Rapture can host the data on MongoDB, Cassandra or you can add your own addin to support an alternate store. Rapture instances communicate through messaging and there is a default RabbitMQ implementation.</p>
 
 <p>The Rapture platform also supports workflows - custom sequences of steps that can be invoked through an API or tied to a schedule. Individual steps in the workflow could run custom Java code or Rapture's internal scripting language known as Reflex. </p>
 
 <h3>
-<a id="rapture-api" class="anchor" href="#rapture-api" aria-hidden="true"><span class="octicon octicon-link"></span></a>Rapture API</h3>
+<a id="rapture-api" class="anchor" href="#rapture-api" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Rapture API</h3>
 
 <p>Rapture's API is defined in an IDL and the build process creates client side stubs in a number of languages - Java, JavaScript, Python, Ruby and DotNet are some of the languages supported. You can write client side applications that connect to Rapture servers using that technique.</p>
 
 <h3>
-<a id="rapture-core" class="anchor" href="#rapture-core" aria-hidden="true"><span class="octicon octicon-link"></span></a>Rapture Core</h3>
+<a id="rapture-core" class="anchor" href="#rapture-core" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Rapture Core</h3>
 
 <p>You can also create server side applications that embed the Rapture Core. If you choose to you can make your application also be an endpoint for the RaptureAPI by referencing the common servlets contained in the codebase.</p>
 
 <h3>
-<a id="authors-and-contributors" class="anchor" href="#authors-and-contributors" aria-hidden="true"><span class="octicon octicon-link"></span></a>Authors and Contributors</h3>
+<a id="authors-and-contributors" class="anchor" href="#authors-and-contributors" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Authors and Contributors</h3>
 
 <p>Alan Moore <a href="https://github.com/amkimian" class="user-mention">@amkimian</a></p>
-      </section>
-    </div>
 
-    <!-- FOOTER  -->
-    <div id="footer_wrap" class="outer">
-      <footer class="inner">
-        <p class="copyright">Rapture maintained by <a href="https://github.com/Incapture">Incapture</a></p>
-        <p>Published with <a href="https://pages.github.com">GitHub Pages</a></p>
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/RapturePlatform/Rapture">Rapture</a> is maintained by <a href="https://github.com/RapturePlatform">RapturePlatform</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
       </footer>
-    </div>
 
-              <script type="text/javascript">
+    </section>
+
+            <script type="text/javascript">
             var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
             document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
           </script>
@@ -73,7 +59,6 @@
             pageTracker._trackPageview();
             } catch(err) {}
           </script>
-
 
   </body>
 </html>
