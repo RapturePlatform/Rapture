@@ -15,7 +15,7 @@ apply plugin: "sonar"
 project.group = 'com.rapture'
 
 ext { platformVersion = '3.0.0' }
-
+apply plugin: 'license'
 project.ext.set('raptureBootstrapDisablePlugins', 'true')
 apply plugin: 'rapture-bootstrap'
 
