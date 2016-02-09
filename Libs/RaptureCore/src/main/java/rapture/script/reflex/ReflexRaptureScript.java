@@ -250,7 +250,7 @@ public class ReflexRaptureScript implements IRaptureScript {
             collector.addInstrumentationLog(progress.getInstrumenter().getTextLog());
             // Now record collector
             if (auditLogUri != null) {
-                Kernel.getAudit().writeAuditEntry(context, auditLogUri, "", 1, collector.getBlobContent());
+                Kernel.getAudit().writeAuditEntry(context, auditLogUri, "debug", 1, collector.getBlobContent());
             } else {
                 ScriptCollectorHelper.writeCollector(context, collector);
             }
