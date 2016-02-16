@@ -1,0 +1,10 @@
+The \verb+putDocWithVersion+ can be used to implement an optimistic locking
+strategy for updating data into a repository. The approach is for an application
+to load a document with its version using the \verb+getDocAndMeta+ call. The
+application can then modify that document and use this call to store the
+update, passing in the last known version. The call will succeed if and only if
+no other program has modified the document -- in which case the version number
+of the document will be incremented and not match.
+
+If the version check fails the call will fail with an exception that will be
+returned to the caller in a manner appropriate to the calling language implementation.

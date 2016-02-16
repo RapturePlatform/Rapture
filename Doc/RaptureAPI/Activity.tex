@@ -1,0 +1,102 @@
+\section{Activity API}
+\input{activity/info}
+\subsubsection{CreateActivity}
+\label{Api:CreateActivity}
+\begin{verbatim}
+   String createActivity (
+           String    description
+           String    message
+           Long    progress
+           Long    max
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #activity.createActivity(description,message,progress,max);
+\end{lstlisting}
+\input{activity/createActivity}
+
+
+\rule{15cm}{2pt}
+\subsubsection{UpdateActivity}
+\label{Api:UpdateActivity}
+\begin{verbatim}
+   boolean updateActivity (
+           String    activityId
+           String    message
+           Long    progress
+           Long    max
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #activity.updateActivity(activityId,message,progress,max);
+\end{lstlisting}
+\input{activity/updateActivity}
+
+
+\rule{15cm}{2pt}
+\subsubsection{FinishActivity}
+\label{Api:FinishActivity}
+\begin{verbatim}
+   boolean finishActivity (
+           String    activityId
+           String    message
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #activity.finishActivity(activityId,message);
+\end{lstlisting}
+\input{activity/finishActivity}
+
+
+\rule{15cm}{2pt}
+\subsubsection{RequestAbortActivity}
+\label{Api:RequestAbortActivity}
+\begin{verbatim}
+   boolean requestAbortActivity (
+           String    activityId
+           String    message
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #activity.requestAbortActivity(activityId,message);
+\end{lstlisting}
+\input{activity/requestAbortActivity}
+
+
+\rule{15cm}{2pt}
+\subsubsection{QueryByExpiryTime}
+\label{Api:QueryByExpiryTime}
+\begin{verbatim}
+   ActivityQueryResponse queryByExpiryTime (
+           String    nextBatchId
+           Long    batchSize
+           Long    lastSeen
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #activity.queryByExpiryTime(nextBatchId,batchSize,lastSeen);
+\end{lstlisting}
+\input{activity/queryByExpiryTime}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetById}
+\label{Api:GetById}
+\begin{verbatim}
+   Activity getById (
+           String    activityId
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #activity.getById(activityId);
+\end{lstlisting}
+\input{activity/getById}
+
+
+\rule{15cm}{2pt}

@@ -1,0 +1,130 @@
+\section{Lock API}
+\input{lock/info}
+\subsubsection{GetLockManagerConfigs}
+\label{Api:GetLockManagerConfigs}
+\begin{verbatim}
+   List<RaptureLockConfig> getLockManagerConfigs (
+           String    managerUri
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #lock.getLockManagerConfigs(managerUri);
+\end{lstlisting}
+\input{lock/getLockManagerConfigs}
+
+
+\rule{15cm}{2pt}
+\subsubsection{CreateLockManager}
+\label{Api:CreateLockManager}
+\begin{verbatim}
+   RaptureLockConfig createLockManager (
+           String    managerUri
+           String    config
+           String    pathPosition
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #lock.createLockManager(managerUri,config,pathPosition);
+\end{lstlisting}
+\input{lock/createLockManager}
+
+
+\rule{15cm}{2pt}
+\subsubsection{LockManagerExists}
+\label{Api:LockManagerExists}
+\begin{verbatim}
+   boolean lockManagerExists (
+           String    managerUri
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #lock.lockManagerExists(managerUri);
+\end{lstlisting}
+\input{lock/lockManagerExists}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetLockManagerConfig}
+\label{Api:GetLockManagerConfig}
+\begin{verbatim}
+   RaptureLockConfig getLockManagerConfig (
+           String    managerUri
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #lock.getLockManagerConfig(managerUri);
+\end{lstlisting}
+\input{lock/getLockManagerConfig}
+
+
+\rule{15cm}{2pt}
+\subsubsection{DeleteLockManager}
+\label{Api:DeleteLockManager}
+\begin{verbatim}
+   void deleteLockManager (
+           String    managerUri
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #lock.deleteLockManager(managerUri);
+\end{lstlisting}
+\input{lock/deleteLockManager}
+
+
+\rule{15cm}{2pt}
+\subsubsection{AcquireLock}
+\label{Api:AcquireLock}
+\begin{verbatim}
+   LockHandle acquireLock (
+           String    managerUri
+           String    lockName
+           long    secondsToWait
+           long    secondsToKeep
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #lock.acquireLock(managerUri,lockName,secondsToWait,secondsToKeep);
+\end{lstlisting}
+\input{lock/acquireLock}
+
+
+\rule{15cm}{2pt}
+\subsubsection{ReleaseLock}
+\label{Api:ReleaseLock}
+\begin{verbatim}
+   boolean releaseLock (
+           String    managerUri
+           String    lockName
+           LockHandle    lockHandle
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #lock.releaseLock(managerUri,lockName,lockHandle);
+\end{lstlisting}
+\input{lock/releaseLock}
+
+
+\rule{15cm}{2pt}
+\subsubsection{ForceReleaseLock}
+\label{Api:ForceReleaseLock}
+\begin{verbatim}
+   void forceReleaseLock (
+           String    managerUri
+           String    lockName
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #lock.forceReleaseLock(managerUri,lockName);
+\end{lstlisting}
+\input{lock/forceReleaseLock}
+
+
+\rule{15cm}{2pt}

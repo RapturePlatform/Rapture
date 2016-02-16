@@ -1,0 +1,148 @@
+\section{Sys API}
+\input{sys/info}
+\subsubsection{RetrieveSystemConfig}
+\label{Api:RetrieveSystemConfig}
+\begin{verbatim}
+   String retrieveSystemConfig (
+           String    area
+           String    path
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #sys.retrieveSystemConfig(area,path);
+\end{lstlisting}
+\input{sys/retrieveSystemConfig}
+
+
+\rule{15cm}{2pt}
+\subsubsection{WriteSystemConfig}
+\label{Api:WriteSystemConfig}
+\begin{verbatim}
+   String writeSystemConfig (
+           String    area
+           String    path
+           String    content
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #sys.writeSystemConfig(area,path,content);
+\end{lstlisting}
+\input{sys/writeSystemConfig}
+
+
+\rule{15cm}{2pt}
+\subsubsection{RemoveSystemConfig}
+\label{Api:RemoveSystemConfig}
+\begin{verbatim}
+   void removeSystemConfig (
+           String    area
+           String    path
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #sys.removeSystemConfig(area,path);
+\end{lstlisting}
+\input{sys/removeSystemConfig}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetSystemFolders}
+\label{Api:GetSystemFolders}
+\begin{verbatim}
+   List<RaptureFolderInfo> getSystemFolders (
+           String    area
+           String    path
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #sys.getSystemFolders(area,path);
+\end{lstlisting}
+\input{sys/getSystemFolders}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetAllTopLevelRepos}
+\label{Api:GetAllTopLevelRepos}
+\begin{verbatim}
+   List<String> getAllTopLevelRepos (
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #sys.getAllTopLevelRepos();
+\end{lstlisting}
+\input{sys/getAllTopLevelRepos}
+
+
+\rule{15cm}{2pt}
+\subsubsection{ListByUriPrefix}
+\label{Api:ListByUriPrefix}
+\begin{verbatim}
+   ChildrenTransferObject listByUriPrefix (
+           String    raptureURI
+           String    marker
+           int    depth
+           Long    maximum
+           boolean    refresh
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #sys.listByUriPrefix(raptureURI,marker,depth,maximum,refresh);
+\end{lstlisting}
+\input{sys/listByUriPrefix}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetChildren}
+\label{Api:GetChildren}
+\begin{verbatim}
+   ChildrenTransferObject getChildren (
+           String    raptureURI
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #sys.getChildren(raptureURI);
+\end{lstlisting}
+\input{sys/getChildren}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetAllChildren}
+\label{Api:GetAllChildren}
+\begin{verbatim}
+   ChildrenTransferObject getAllChildren (
+           String    raptureURI
+           String    marker
+           Long    maximum
+           boolean    refresh
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #sys.getAllChildren(raptureURI,marker,maximum,refresh);
+\end{lstlisting}
+\input{sys/getAllChildren}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetFolderInfo}
+\label{Api:GetFolderInfo}
+\begin{verbatim}
+   NodeEnum getFolderInfo (
+           String    raptureURI
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #sys.getFolderInfo(raptureURI);
+\end{lstlisting}
+\input{sys/getFolderInfo}
+
+
+\rule{15cm}{2pt}

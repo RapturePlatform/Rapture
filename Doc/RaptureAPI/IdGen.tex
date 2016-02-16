@@ -1,0 +1,140 @@
+\section{IdGen API}
+\input{idgen/info}
+\subsubsection{GetIdGenConfigs}
+\label{Api:GetIdGenConfigs}
+\begin{verbatim}
+   List<RaptureIdGenConfig> getIdGenConfigs (
+           String    authority
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #idgen.getIdGenConfigs(authority);
+\end{lstlisting}
+\input{idgen/getIdGenConfigs}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetIdGenConfig}
+\label{Api:GetIdGenConfig}
+\begin{verbatim}
+   RaptureIdGenConfig getIdGenConfig (
+           String    idGenUri
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #idgen.getIdGenConfig(idGenUri);
+\end{lstlisting}
+\input{idgen/getIdGenConfig}
+
+
+\rule{15cm}{2pt}
+\subsubsection{CreateIdGen}
+\label{Api:CreateIdGen}
+\begin{verbatim}
+   RaptureIdGenConfig createIdGen (
+           String    idGenUri
+           String    config
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #idgen.createIdGen(idGenUri,config);
+\end{lstlisting}
+\input{idgen/createIdGen}
+
+
+\rule{15cm}{2pt}
+\subsubsection{IdGenExists}
+\label{Api:IdGenExists}
+\begin{verbatim}
+   boolean idGenExists (
+           String    idGenUri
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #idgen.idGenExists(idGenUri);
+\end{lstlisting}
+\input{idgen/idGenExists}
+
+
+\rule{15cm}{2pt}
+\subsubsection{DeleteIdGen}
+\label{Api:DeleteIdGen}
+\begin{verbatim}
+   void deleteIdGen (
+           String    idGenUri
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #idgen.deleteIdGen(idGenUri);
+\end{lstlisting}
+\input{idgen/deleteIdGen}
+
+
+\rule{15cm}{2pt}
+\subsubsection{SetIdGen}
+\label{Api:SetIdGen}
+\begin{verbatim}
+   void setIdGen (
+           String    idGenUri
+           Long    count
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #idgen.setIdGen(idGenUri,count);
+\end{lstlisting}
+\input{idgen/setIdGen}
+
+
+\rule{15cm}{2pt}
+\subsubsection{Next}
+\label{Api:Next}
+\begin{verbatim}
+   String next (
+           String    idGenUri
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #idgen.next(idGenUri);
+\end{lstlisting}
+\input{idgen/next}
+
+
+\rule{15cm}{2pt}
+\subsubsection{NextIds}
+\label{Api:NextIds}
+\begin{verbatim}
+   String nextIds (
+           String    idGenUri
+           Long    num
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #idgen.nextIds(idGenUri,num);
+\end{lstlisting}
+\input{idgen/nextIds}
+
+
+\rule{15cm}{2pt}
+\subsubsection{SetupDefaultIdGens}
+\label{Api:SetupDefaultIdGens}
+\begin{verbatim}
+   void setupDefaultIdGens (
+           boolean    force
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #idgen.setupDefaultIdGens(force);
+\end{lstlisting}
+\input{idgen/setupDefaultIdGens}
+
+
+\rule{15cm}{2pt}

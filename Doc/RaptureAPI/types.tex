@@ -1,0 +1,2329 @@
+\subsection{Types}
+\subsection{ErrorWrapper}
+\label{type:ErrorWrapper}
+
+\begin{verbatim}
+   type ErrorWrapper {
+          String   id
+          Integer   status
+          String   message
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{RaptureQueryResult}
+\label{type:RaptureQueryResult}
+
+\begin{verbatim}
+   type RaptureQueryResult {
+          List<JsonContent>   rows
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{RaptureCubeResult}
+\label{type:RaptureCubeResult}
+
+\begin{verbatim}
+   type RaptureCubeResult {
+          List<String>   groupNames
+          List<String>   columnNames
+          List<RaptureCubeRow>   rows
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{RaptureDNCursor}
+\label{type:RaptureDNCursor}
+
+\begin{verbatim}
+   type RaptureDNCursor {
+          String   authority
+          List<String>   displayNames
+          String   continueContext
+          boolean   finished
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{BlobRepoConfig}
+\label{type:BlobRepoConfig}
+
+\begin{verbatim}
+   type BlobRepoConfig {
+          String   description
+          String   config
+          String   authority
+          String   metaConfig
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{RaptureMailMessage}
+\label{type:RaptureMailMessage}
+
+\begin{verbatim}
+   type RaptureMailMessage {
+          String   id
+          String   authority
+          String   documentPath
+          String   content
+          Date   when
+          String   user
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{RaptureField}
+\label{type:RaptureField}
+
+\begin{verbatim}
+   type RaptureField {
+          String   authority
+          String   category
+          String   name
+          String   longName
+          String   description
+          String   units
+          RaptureGroupingFn   groupingFn
+          List<RaptureFieldBand>   bands
+          Set<RaptureFieldPath>   fieldPaths
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{AuditLogEntry}
+\label{type:AuditLogEntry}
+
+\begin{verbatim}
+   type AuditLogEntry {
+          String   category
+          String   entryId
+          int   level
+          String   logId
+          String   message
+          String   source
+          String   user
+          Date   when
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{Log4jAuditConfig}
+\label{type:Log4jAuditConfig}
+
+\begin{verbatim}
+   type Log4jAuditConfig {
+          String   serverName
+          String   logDirPath
+          String   xml
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{AuditLogConfig}
+\label{type:AuditLogConfig}
+
+\begin{verbatim}
+   type AuditLogConfig {
+          String   name
+          String   config
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{CommitObject}
+\label{type:CommitObject}
+
+\begin{verbatim}
+   type CommitObject {
+          String   treeRef
+          String   user
+          Date   when
+          String   comment
+          String   changes
+          List(String)   docReferences
+          List(String)   treeReferences
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{DocumentObject}
+\label{type:DocumentObject}
+
+\begin{verbatim}
+   type DocumentObject {
+          JsonContent   content
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{TreeObject}
+\label{type:TreeObject}
+
+\begin{verbatim}
+   type TreeObject {
+          Map(String, String)   trees
+          List(DocumentBagReference)   documents
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{RaptureRemote}
+\label{type:RaptureRemote}
+
+\begin{verbatim}
+   type RaptureRemote {
+          String   name
+          String   description
+          String   url
+          String   apiKey
+          String   optionalPass
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{DocWriteHandle}
+\label{type:DocWriteHandle}
+
+\begin{verbatim}
+   type DocWriteHandle {
+          Boolean   isSuccess
+          RaptureURI   documentURI
+          RunEventHandle   eventHandle
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{RaptureScript}
+\label{type:RaptureScript}
+
+\begin{verbatim}
+   type RaptureScript {
+          String   name
+          String   script
+          RaptureScriptLanguage   language
+          RaptureScriptPurpose   purpose
+          String   authority
+          List(RaptureParameter)   parameters
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{RaptureSnippet}
+\label{type:RaptureSnippet}
+
+\begin{verbatim}
+   type RaptureSnippet {
+          String   name
+          String   authority
+          String   snippet
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{REPLVariable}
+\label{type:REPLVariable}
+
+\begin{verbatim}
+   type REPLVariable {
+          String   name
+          String   serializedVar
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{ReflexREPLSession}
+\label{type:ReflexREPLSession}
+
+\begin{verbatim}
+   type ReflexREPLSession {
+          String   id
+          List(REPLVariable)   vars
+          String   partialLine
+          List(String)   functionDecls
+          Date   lastSeen
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{RaptureScriptLanguage}
+\label{type:RaptureScriptLanguage}
+
+\begin{verbatim}
+   type RaptureScriptLanguage {
+          String   REFLEX
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{RaptureScriptPurpose}
+\label{type:RaptureScriptPurpose}
+
+\begin{verbatim}
+   type RaptureScriptPurpose {
+          String   INDEXGENERATOR
+          String   MAP
+          String   FILTER
+          String   OPERATION
+          String   PROGRAM
+          String   LINK
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{RaptureLockConfig}
+\label{type:RaptureLockConfig}
+
+\begin{verbatim}
+   type RaptureLockConfig {
+          String   name
+          String   config
+          String   authority
+          String   pathPosition
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{LockHandle}
+\label{type:LockHandle}
+
+\begin{verbatim}
+   type LockHandle {
+          String   lockName
+          String   handle
+          String   lockHolder
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{SemaphoreLock}
+\label{type:SemaphoreLock}
+
+\begin{verbatim}
+   type SemaphoreLock {
+          String   lockKey
+          Set<RaptureURI>   stakeholderURIs
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{CreateResponse}
+\label{type:CreateResponse}
+
+\begin{verbatim}
+   type CreateResponse {
+          Boolean   isCreated
+          RaptureURI   uri
+          String   message
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{SemaphoreAcquireResponse}
+\label{type:SemaphoreAcquireResponse}
+
+\begin{verbatim}
+   type SemaphoreAcquireResponse {
+          Boolean   isAcquired
+          RaptureURI   acquiredURI
+          Set<RaptureURI>   existingStakeholderURIs
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{RaptureIdGenConfig}
+\label{type:RaptureIdGenConfig}
+
+\begin{verbatim}
+   type RaptureIdGenConfig {
+          String   name
+          String   config
+          String   authority
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{RaptureTableConfig}
+\label{type:RaptureTableConfig}
+
+\begin{verbatim}
+   type RaptureTableConfig {
+          String   name
+          String   config
+          String   authority
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{RaptureSearchResult}
+\label{type:RaptureSearchResult}
+
+\begin{verbatim}
+   type RaptureSearchResult {
+          String   displayName
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{RaptureFullTextIndexConfig}
+\label{type:RaptureFullTextIndexConfig}
+
+\begin{verbatim}
+   type RaptureFullTextIndexConfig {
+          String   name
+          String   config
+          String   authority
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{RepoConfig}
+\label{type:RepoConfig}
+
+\begin{verbatim}
+   type RepoConfig {
+          String   name
+          String   config
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{CallingContext}
+\label{type:CallingContext}
+
+\begin{verbatim}
+   type CallingContext {
+          String   user
+          String   context
+          String   salt
+          Map<String, String>   metadata
+          Boolean   valid
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{RaptureContextInfo}
+\label{type:RaptureContextInfo}
+
+\begin{verbatim}
+   type RaptureContextInfo {
+          String   sessionId
+          String   authority
+          String   perspective
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{RaptureAuthority}
+\label{type:RaptureAuthority}
+
+\begin{verbatim}
+   type RaptureAuthority {
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{DocumentRepoConfig}
+\label{type:DocumentRepoConfig}
+
+\begin{verbatim}
+   type DocumentRepoConfig {
+          String   description
+          String   config
+          String   authority
+          IdGenURI   idGenUri
+          Boolean   strictCheck
+          Set<IndexScriptPair>   indexes
+          Set<FullTextIndexScriptPair>   fullTextIndexes
+          String   updateQueue
+          RaptureDocConfig   documentRepo
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{RaptureDocConfig}
+\label{type:RaptureDocConfig}
+
+\begin{verbatim}
+   type RaptureDocConfig {
+          String   authority
+          String   config
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{RaptureCommit}
+\label{type:RaptureCommit}
+
+\begin{verbatim}
+   type RaptureCommit {
+          String   who
+          Date   when
+          String   comment
+          String   changes
+          String   reference
+          List(String)   docReferences
+          List(String)   treeReferences
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{RaptureUser}
+\label{type:RaptureUser}
+
+\begin{verbatim}
+   type RaptureUser {
+          String   username
+          String   userId
+          String   emailAddress
+          String   salt
+          String   hashPassword
+          String   description
+          Boolean   inactive
+          Boolean   apiKey
+          Boolean   hasRoot
+          String   passwordResetToken
+          Long   tokenExpirationTime
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{RaptureView}
+\label{type:RaptureView}
+
+\begin{verbatim}
+   type RaptureView {
+          String   authority
+          String   viewName
+          String   mapFn
+          String   filterFn
+          List<String>   parameterNames
+          List<String>   columnNames
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{RaptureViewResult}
+\label{type:RaptureViewResult}
+
+\begin{verbatim}
+   type RaptureViewResult {
+          List(String)   columnNames
+          List(List(Object))   rows
+          List(Object)   currentRow
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{RaptureEntitlement}
+\label{type:RaptureEntitlement}
+
+\begin{verbatim}
+   type RaptureEntitlement {
+          String   name
+          EntitlementType   entType
+          Set<String>   groups
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{RaptureEntitlementGroup}
+\label{type:RaptureEntitlementGroup}
+
+\begin{verbatim}
+   type RaptureEntitlementGroup {
+          String   name
+          Set<String>   users
+          String   dynamicEntitlementClassName
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{RaptureOperation}
+\label{type:RaptureOperation}
+
+\begin{verbatim}
+   type RaptureOperation {
+          String   opName
+          String   paramDef
+          String   scriptName
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{RaptureEvent}
+\label{type:RaptureEvent}
+
+\begin{verbatim}
+   type RaptureEvent {
+          String   uriFullPath
+          Set(RaptureEventScript)   scripts
+          Set(RaptureEventMessage)   messages
+          Set(RaptureEventNotification)   notifications
+          Set(RaptureEventWorkflow)   workflows
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{RunEventHandle}
+\label{type:RunEventHandle}
+
+\begin{verbatim}
+   type RunEventHandle {
+          RaptureURI   eventUri
+          String   eventId
+          Boolean   didRun
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{RaptureServerInfo}
+\label{type:RaptureServerInfo}
+
+\begin{verbatim}
+   type RaptureServerInfo {
+          String   serverId
+          String   name
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{RaptureServerStatus}
+\label{type:RaptureServerStatus}
+
+\begin{verbatim}
+   type RaptureServerStatus {
+          String   serverId
+          Long   status
+          String   statusMessage
+          Date   lastSeen
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{RaptureNetwork}
+\label{type:RaptureNetwork}
+
+\begin{verbatim}
+   type RaptureNetwork {
+          String   networkId
+          String   networkName
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{PluginConfig}
+\label{type:PluginConfig}
+
+\begin{verbatim}
+   type PluginConfig {
+          Map(String, PluginVersion)   depends
+          String   description
+          String   plugin
+          PluginVersion   version
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{PluginManifest}
+\label{type:PluginManifest}
+
+\begin{verbatim}
+   type PluginManifest {
+          List(PluginManifestItem)   contents
+          Map(String, PluginVersion)   depends
+          String   description
+          String   plugin
+          PluginVersion   version
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{PluginManifestItem}
+\label{type:PluginManifestItem}
+
+\begin{verbatim}
+   type PluginManifestItem {
+          String   uri
+          String   hash
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{PluginTransportItem}
+\label{type:PluginTransportItem}
+
+\begin{verbatim}
+   type PluginTransportItem {
+          String   uri
+          ByteArray   content
+          String   hash
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{PluginVersion}
+\label{type:PluginVersion}
+
+\begin{verbatim}
+   type PluginVersion {
+          int   major
+          int   minor
+          int   release
+          long   timestamp
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{Jar}
+\label{type:Jar}
+
+\begin{verbatim}
+   type Jar {
+          String   description
+          String   authority
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{AppRepoSettings}
+\label{type:AppRepoSettings}
+
+\begin{verbatim}
+   type AppRepoSettings {
+          String   codeBase
+          String   raptureBase
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{AppConfig}
+\label{type:AppConfig}
+
+\begin{verbatim}
+   type AppConfig {
+          String   name
+          String   title
+          String   vendor
+          String   homePage
+          String   longDescription
+          String   shortDescription
+          String   iconLocation
+          String   splashLocation
+          String   jarFile
+          String   mainClass
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{TimeProcessorStatus}
+\label{type:TimeProcessorStatus}
+
+\begin{verbatim}
+   type TimeProcessorStatus {
+          String   network
+          Long   when
+          String   processingServer
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{AppInstanceConfig}
+\label{type:AppInstanceConfig}
+
+\begin{verbatim}
+   type AppInstanceConfig {
+          String   name
+          String   appConfig
+          List(String)   arguments
+          Map(String, String)   properties
+          String   apiKey
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{RaptureExchange}
+\label{type:RaptureExchange}
+
+\begin{verbatim}
+   type RaptureExchange {
+          String   domain
+          String   name
+          RaptureExchangeType   exchangeType
+          List(RaptureExchangeQueue)   queueBindings
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{RapturePipelineTask}
+\label{type:RapturePipelineTask}
+
+\begin{verbatim}
+   type RapturePipelineTask {
+          PipelineTaskStatus   status
+          PipelineTaskType   taskType
+          int   priority
+          List<String>   categoryList
+          String   taskId
+          String   content
+          String   contentType
+          Long   epoch
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{ServerCategory}
+\label{type:ServerCategory}
+
+\begin{verbatim}
+   type ServerCategory {
+          String   name
+          String   description
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{CategoryQueueBindings}
+\label{type:CategoryQueueBindings}
+
+\begin{verbatim}
+   type CategoryQueueBindings {
+          String   name
+          Map(String, Set(String))   bindings
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{ExchangeDomain}
+\label{type:ExchangeDomain}
+
+\begin{verbatim}
+   type ExchangeDomain {
+          String   name
+          String   config
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{TableRecord}
+\label{type:TableRecord}
+
+\begin{verbatim}
+   type TableRecord {
+          String   keyName
+          Map(String, Object)   fields
+          String   content
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{TableQuery}
+\label{type:TableQuery}
+
+\begin{verbatim}
+   type TableQuery {
+          List(TableSelect)   fieldTests
+          List(String)   fieldReturns
+          List(TableColumnSort)   sortFields
+          int   skip
+          int   limit
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{DocumentMetadata}
+\label{type:DocumentMetadata}
+
+\begin{verbatim}
+   type DocumentMetadata {
+          Integer   version
+          Date   writeTime
+          Long   createdTimestamp
+          Long   modifiedTimestamp
+          String   user
+          String   comment
+          Boolean   deleted
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{DocumentWithMeta}
+\label{type:DocumentWithMeta}
+
+\begin{verbatim}
+   type DocumentWithMeta {
+          String   displayName
+          DocumentMetadata   metaData
+          String   content
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{XferDocumentAttribute}
+\label{type:XferDocumentAttribute}
+
+\begin{verbatim}
+   type XferDocumentAttribute {
+          String   attributeType
+          String   key
+          String   value
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{PipelineTaskStatus}
+\label{type:PipelineTaskStatus}
+
+\begin{verbatim}
+   type PipelineTaskStatus {
+          PipelineTaskState   currentState
+          String   taskId
+          String   relatedTaskId
+          Date   creationTime
+          Date   startExecutionTime
+          Date   endExecutionTime
+          int   suspensionCount
+          List(String)   output
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{RaptureJob}
+\label{type:RaptureJob}
+
+\begin{verbatim}
+   type RaptureJob {
+          JobURI   jobURI
+          String   description
+          ScriptURI   scriptURI
+          String   cronSpec
+          String   timeZone
+          Map<String, String>   params
+          Boolean   autoActivate
+          Boolean   activated
+          JobType   jobType
+          Integer   maxRuntimeMinutes
+          String   appStatusNamePattern
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{RaptureJobExec}
+\label{type:RaptureJobExec}
+
+\begin{verbatim}
+   type RaptureJobExec {
+          JobURI   jobURI
+          JobType   jobType
+          JobExecStatus   status
+          Long   execTime
+          Map<String, String>   passedParams
+          String   execDetails
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{WorkflowJobDetails}
+\label{type:WorkflowJobDetails}
+
+\begin{verbatim}
+   type WorkflowJobDetails {
+          String   workOrderURI
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{UpcomingJobExec}
+\label{type:UpcomingJobExec}
+
+\begin{verbatim}
+   type UpcomingJobExec {
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{LastJobExec}
+\label{type:LastJobExec}
+
+\begin{verbatim}
+   type LastJobExec {
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{WorkflowJobExecDetails}
+\label{type:WorkflowJobExecDetails}
+
+\begin{verbatim}
+   type WorkflowJobExecDetails {
+          JobURI   jobURI
+          Map<String, String>   parameters
+          Map<String, String>   passedParams
+          WorkflowURI   workflowURI
+          WorkOrderURI   workOrderURI
+          String   workOrderID
+          Long   startDate
+          Long   lastUpdated
+          WorkOrderExecutionState   workOrderStatus
+          JobExecStatus   jobStatus
+          String   prettyStatus
+          Long   overrunMillis
+          Integer   maxRuntimeMinutes
+          String   notes
+          JobErrorAck   errorAck
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{JobErrorAck}
+\label{type:JobErrorAck}
+
+\begin{verbatim}
+   type JobErrorAck {
+          JobURI   jobURI
+          Long   execTime
+          JobErrorType   errorType
+          Long   timestamp
+          String   user
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{WorkflowExecsStatus}
+\label{type:WorkflowExecsStatus}
+
+\begin{verbatim}
+   type WorkflowExecsStatus {
+          List<WorkflowJobExecDetails>   failed
+          List<WorkflowJobExecDetails>   ok
+          List<WorkflowJobExecDetails>   overrun
+          List<WorkflowJobExecDetails>   success
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{WorkflowGridLayout}
+\label{type:WorkflowGridLayout}
+
+\begin{verbatim}
+   type WorkflowGridLayout {
+          String   workflowURI
+          List(WorkflowColumnLayout)   columns
+          List(WorkflowArrowLayout)   arrows
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{WorkflowColumnLayout}
+\label{type:WorkflowColumnLayout}
+
+\begin{verbatim}
+   type WorkflowColumnLayout {
+          Integer   columnNumber
+          List(WorkflowBoxLayout)   boxes
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{WorkflowBoxLayout}
+\label{type:WorkflowBoxLayout}
+
+\begin{verbatim}
+   type WorkflowBoxLayout {
+          Integer   gx
+          Integer   gy
+          String   kind
+          String   name
+          String   id
+          Integer   offsetX
+          Integer   offsetY
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{WorkflowArrowLayout}
+\label{type:WorkflowArrowLayout}
+
+\begin{verbatim}
+   type WorkflowArrowLayout {
+          String   name
+          String   fromBoxName
+          String   toBoxName
+          Integer   offsetX
+          Integer   offsetY
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{RaptureServerGroup}
+\label{type:RaptureServerGroup}
+
+\begin{verbatim}
+   type RaptureServerGroup {
+          String   name
+          String   description
+          Integer   jmxPort
+          Set(String)   inclusions
+          Set(String)   exclusions
+          Set(String)   libraries
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{RaptureApplicationDefinition}
+\label{type:RaptureApplicationDefinition}
+
+\begin{verbatim}
+   type RaptureApplicationDefinition {
+          String   name
+          String   description
+          String   version
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{RaptureLibraryDefinition}
+\label{type:RaptureLibraryDefinition}
+
+\begin{verbatim}
+   type RaptureLibraryDefinition {
+          String   name
+          String   description
+          String   version
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{RaptureApplicationInstance}
+\label{type:RaptureApplicationInstance}
+
+\begin{verbatim}
+   type RaptureApplicationInstance {
+          String   name
+          String   appName
+          String   description
+          String   serverGroup
+          String   timeRangeSpecification
+          Integer   retryCount
+          String   parameters
+          String   apiUser
+          String   lockedBy
+          Boolean   oneShot
+          Boolean   finished
+          String   status
+          Date   lastStateChange
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{RaptureRunnerInstanceStatus}
+\label{type:RaptureRunnerInstanceStatus}
+
+\begin{verbatim}
+   type RaptureRunnerInstanceStatus {
+          String   serverGroup
+          String   appInstance
+          String   appName
+          String   status
+          Date   lastSeen
+          Boolean   needsRestart
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{RaptureInstanceCapabilities}
+\label{type:RaptureInstanceCapabilities}
+
+\begin{verbatim}
+   type RaptureInstanceCapabilities {
+          String   server
+          String   instanceName
+          Map<String, Object>   capabilities
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{RaptureRunnerStatus}
+\label{type:RaptureRunnerStatus}
+
+\begin{verbatim}
+   type RaptureRunnerStatus {
+          String   serverName
+          Map<String, RaptureRunnerInstanceStatus>   statusByInstanceName
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{RaptureRunnerConfig}
+\label{type:RaptureRunnerConfig}
+
+\begin{verbatim}
+   type RaptureRunnerConfig {
+          Map(String, String)   config
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{RaptureNotificationConfig}
+\label{type:RaptureNotificationConfig}
+
+\begin{verbatim}
+   type RaptureNotificationConfig {
+          String   name
+          String   config
+          String   purpose
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{NotificationResult}
+\label{type:NotificationResult}
+
+\begin{verbatim}
+   type NotificationResult {
+          Long   currentEpoch
+          List(String)   references
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{NotificationInfo}
+\label{type:NotificationInfo}
+
+\begin{verbatim}
+   type NotificationInfo {
+          String   id
+          String   content
+          String   reference
+          Long   epoch
+          Date   when
+          String   contentType
+          String   who
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{RaptureFolderInfo}
+\label{type:RaptureFolderInfo}
+
+\begin{verbatim}
+   type RaptureFolderInfo {
+          String   name
+          boolean   folder
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{RaptureParameter}
+\label{type:RaptureParameter}
+
+\begin{verbatim}
+   type RaptureParameter {
+          String   name
+          RaptureParameterType   parameterType
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{JobLinkStatus}
+\label{type:JobLinkStatus}
+
+\begin{verbatim}
+   type JobLinkStatus {
+          String   from
+          String   to
+          Integer   level
+          Date   lastChange
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{JobLink}
+\label{type:JobLink}
+
+\begin{verbatim}
+   type JobLink {
+          String   from
+          String   to
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{ActivityQueryResponse}
+\label{type:ActivityQueryResponse}
+
+\begin{verbatim}
+   type ActivityQueryResponse {
+          Boolean   isLast
+          String   nextBatchId
+          List<Activity>   activities
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{Activity}
+\label{type:Activity}
+
+\begin{verbatim}
+   type Activity {
+          String   id
+          String   description
+          String   message
+          Long   progress
+          Long   max
+          Long   lastSeen
+          ActivityStatus   status
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{RaptureActivity}
+\label{type:RaptureActivity}
+
+\begin{verbatim}
+   type RaptureActivity {
+          String   id
+          String   otherId
+          String   message
+          Long   progress
+          Long   maxProgress
+          Boolean   requestFinish
+          Date   lastSeen
+          Long   expiresAt
+          Boolean   finished
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{StructuredRepoConfig}
+\label{type:StructuredRepoConfig}
+
+\begin{verbatim}
+   type StructuredRepoConfig {
+          String   description
+          String   config
+          String   authority
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{StructuredColumn}
+\label{type:StructuredColumn}
+
+\begin{verbatim}
+   type StructuredColumn {
+          String   name
+          String   nativeName
+          String   raptureType
+          String   nativeType
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{StructuredTable}
+\label{type:StructuredTable}
+
+\begin{verbatim}
+   type StructuredTable {
+          String   authority
+          String   name
+          String   nativeName
+          List(StructuredColumn)   columns
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{TableMeta}
+\label{type:TableMeta}
+
+\begin{verbatim}
+   type TableMeta {
+          Map<String, String>   rows
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{SeriesRepoConfig}
+\label{type:SeriesRepoConfig}
+
+\begin{verbatim}
+   type SeriesRepoConfig {
+          String   description
+          String   config
+          String   authority
+          String   seriesName
+          String   sampleColumn
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{SeriesPoint}
+\label{type:SeriesPoint}
+
+\begin{verbatim}
+   type SeriesPoint {
+          String   column
+          String   value
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{SeriesDouble}
+\label{type:SeriesDouble}
+
+\begin{verbatim}
+   type SeriesDouble {
+          String   columns
+          Double   values
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{SeriesString}
+\label{type:SeriesString}
+
+\begin{verbatim}
+   type SeriesString {
+          String   columns
+          String   values
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{TypeArchiveConfig}
+\label{type:TypeArchiveConfig}
+
+\begin{verbatim}
+   type TypeArchiveConfig {
+          String   authority
+          String   typeName
+          Boolean   useScript
+          String   scriptName
+          Long   versionsToKeep
+          Long   timeRangeToKeepInDays
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{Workflow}
+\label{type:Workflow}
+
+\begin{verbatim}
+   type Workflow {
+          WorkflowURI   workflowURI
+          SemaphoreType   semaphoreType
+          String   semaphoreConfig
+          List<Step>   steps
+          String   startStep
+          String   category
+          Map<String, String>   view
+          List<ExpectedArgument>   expectedArguments
+          String   defaultAppStatusNamePattern
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{ExpectedArgument}
+\label{type:ExpectedArgument}
+
+\begin{verbatim}
+   type ExpectedArgument {
+          String   name
+          Boolean   isRequired
+          String   defaultValue
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{PassedArgument}
+\label{type:PassedArgument}
+
+\begin{verbatim}
+   type PassedArgument {
+          String   name
+          String   value
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{WorkOrderArguments}
+\label{type:WorkOrderArguments}
+
+\begin{verbatim}
+   type WorkOrderArguments {
+          WorkOrderURI   workOrderURI
+          List<PassedArgument>   arguments
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{Transition}
+\label{type:Transition}
+
+\begin{verbatim}
+   type Transition {
+          String   name
+          String   targetStep
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{Step}
+\label{type:Step}
+
+\begin{verbatim}
+   type Step {
+          String   name
+          String   description
+          String   executable
+          Map<String,String>   view
+          List<Transition>   transitions
+          String   categoryOverride
+          Integer   softTimeout
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{WorkflowStepTemplate}
+\label{type:WorkflowStepTemplate}
+
+\begin{verbatim}
+   type WorkflowStepTemplate {
+          WorkflowStepTemplateURI   workflowStepTemplateURI
+          String   description
+          String   executable
+          List<String>   inputVariables
+          List<String>   outputVariables
+          List<String>   outputTransitionNames
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{WorkOrder}
+\label{type:WorkOrder}
+
+\begin{verbatim}
+   type WorkOrder {
+          WorkOrderURI   workOrderURI
+          WorkflowURI   workflowURI
+          List<String>   workerIds
+          List<String>   pendingIds
+          Integer   priority
+          Long   startTime
+          Long   endTime
+          SemaphoreType   semaphoreType
+          String   semaphoreConfig
+          WorkOrderExecutionState   status
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{WorkOrderInitialArgsHash}
+\label{type:WorkOrderInitialArgsHash}
+
+\begin{verbatim}
+   type WorkOrderInitialArgsHash {
+          WorkOrderURI   workOrderURI
+          String   hashValue
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{WorkflowHistoricalMetrics}
+\label{type:WorkflowHistoricalMetrics}
+
+\begin{verbatim}
+   type WorkflowHistoricalMetrics {
+          Double   workflowAverage
+          Double   jobAverage
+          Double   workflowWithArgsAverage
+          String   workflowMetricName
+          String   jobMetricName
+          String   argsHashMetricName
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{ExecutionContext}
+\label{type:ExecutionContext}
+
+\begin{verbatim}
+   type ExecutionContext {
+          WorkOrderURI   workOrderURI
+          Map<String, String>   data
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{ExecutionContextField}
+\label{type:ExecutionContextField}
+
+\begin{verbatim}
+   type ExecutionContextField {
+          WorkOrderURI   workOrderURI
+          String   varName
+          String   value
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{WorkOrderStatus}
+\label{type:WorkOrderStatus}
+
+\begin{verbatim}
+   type WorkOrderStatus {
+          List<String>   workerIds
+          WorkOrderExecutionState   status
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{AppStatusGroup}
+\label{type:AppStatusGroup}
+
+\begin{verbatim}
+   type AppStatusGroup {
+          String   name
+          Map<WorkOrderURI, AppStatus>   idToStatus
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{AppStatus}
+\label{type:AppStatus}
+
+\begin{verbatim}
+   type AppStatus {
+          String   name
+          WorkOrderURI   workOrderURI
+          WorkOrderExecutionState   overallStatus
+          Long   lastUpdated
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{StepExecutionRecord}
+\label{type:StepExecutionRecord}
+
+\begin{verbatim}
+   type StepExecutionRecord {
+          WorkflowURI   stepURI
+          Long   time
+          String   hostname
+          StepExecutionRecordType   recordType
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{StepRecord}
+\label{type:StepRecord}
+
+\begin{verbatim}
+   type StepRecord {
+          WorkflowURI   stepURI
+          String   name
+          Long   startTime
+          Long   endTime
+          String   retVal
+          String   hostname
+          WorkOrderExecutionState   status
+          ErrorWrapper   exceptionInfo
+          String   activityId
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{StepRecordsWrapper}
+\label{type:StepRecordsWrapper}
+
+\begin{verbatim}
+   type StepRecordsWrapper {
+          WorkOrderURI   workOrderURI
+          String   workerId
+          List<StepRecord>   stepRecords
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{AppStatusDetails}
+\label{type:AppStatusDetails}
+
+\begin{verbatim}
+   type AppStatusDetails {
+          AppStatus   appStatus
+          Map<String, List<StepRecord>>   workerIdToSteps
+          String   logURI
+          Map<String, String>   extraContextValues
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{WorkOrderCancellation}
+\label{type:WorkOrderCancellation}
+
+\begin{verbatim}
+   type WorkOrderCancellation {
+          WorkOrderURI   workOrderURI
+          Long   time
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{Worker}
+\label{type:Worker}
+
+\begin{verbatim}
+   type Worker {
+          WorkOrderURI   workOrderURI
+          String   id
+          Map<String,String>   viewOverlay
+          List<WorkflowURI>   stack
+          List<Map<String,String>>   localView
+          List<StepExecutionRecord>   stepExecutionRecords
+          List<StepRecord>   stepRecords
+          WorkerExecutionState   status
+          String   detail
+          String   effectiveUser
+          Integer   priority
+          CallingContext   callingContext
+          String   activityId
+          List<String>   appStatusNameStack
+          String   parent
+          Integer   siblingCount
+          Integer   siblingPosition
+          Integer   waitCount
+          ErrorWrapper   exceptionInfo
+          String   myActivityId
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{JoinCountdown}
+\label{type:JoinCountdown}
+
+\begin{verbatim}
+   type JoinCountdown {
+          Integer   waitCount
+          String   parentId
+          String   workOrderURI
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{WorkOrderSearch}
+\label{type:WorkOrderSearch}
+
+\begin{verbatim}
+   type WorkOrderSearch {
+          WorkerExecutionState   status
+          List<WorkOrderURI>   workOrderURIs
+          Long   startTimeBegin
+          Long   startTimeEnd
+          Long   endTimeBegin
+          Long   endTimeEnd
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{WorkOrderDebug}
+\label{type:WorkOrderDebug}
+
+\begin{verbatim}
+   type WorkOrderDebug {
+          WorkOrder   order
+          List<WorkerDebug>   workerDebugs
+          List<PassedArgument>   passedArguments
+          ExecutionContext   context
+          String   logURI
+          String   argsHashValue
+          String   parentJobURI
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{WorkerDebug}
+\label{type:WorkerDebug}
+
+\begin{verbatim}
+   type WorkerDebug {
+          Worker   worker
+          List<StepRecordDebug>   stepRecordDebugs
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{StepRecordDebug}
+\label{type:StepRecordDebug}
+
+\begin{verbatim}
+   type StepRecordDebug {
+          StepRecord   stepRecord
+          Activity   activity
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{JavaInvocable}
+\label{type:JavaInvocable}
+
+\begin{verbatim}
+   type JavaInvocable {
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{PropertyBasedSemaphoreConfig}
+\label{type:PropertyBasedSemaphoreConfig}
+
+\begin{verbatim}
+   type PropertyBasedSemaphoreConfig {
+          Integer   maxAllowed
+          Integer   timeout
+          String   propertyName
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{WorkflowBasedSemaphoreConfig}
+\label{type:WorkflowBasedSemaphoreConfig}
+
+\begin{verbatim}
+   type WorkflowBasedSemaphoreConfig {
+          Integer   maxAllowed
+          Integer   timeout
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{QTemplate}
+\label{type:QTemplate}
+
+\begin{verbatim}
+   type QTemplate {
+          QTemplateURI   qtemplateURI
+          List(UserURI)   quorum
+          AnswerRule   rule
+          String   prompt
+          List(String)   options
+          List(QDetail)   form
+          List(String)   reports
+          Long   timeout
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{QCallback}
+\label{type:QCallback}
+
+\begin{verbatim}
+   type QCallback {
+          String   uuid
+          WorkOrderURI   workerURI
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{Question}
+\label{type:Question}
+
+\begin{verbatim}
+   type Question {
+          QuestionURI   questionURI
+          QTemplateURI   qtemplateURI
+          String   answer
+          String   priority
+          Map(String, String)   mapping
+          ReplyProgress   progress
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{QNotification}
+\label{type:QNotification}
+
+\begin{verbatim}
+   type QNotification {
+          QNotificationURI   qnotificationURI
+          String   addressee
+          QuestionURI   questionURI
+          Map(String, Object)   formData
+          String   response
+          ReplyProgress   progress
+          Long   whenAsked
+          Long   deadline
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{QDetail}
+\label{type:QDetail}
+
+\begin{verbatim}
+   type QDetail {
+          String   prompt
+          String   kind
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{QuestionSearch}
+\label{type:QuestionSearch}
+
+\begin{verbatim}
+   type QuestionSearch {
+          String   user
+          ReplyProgress   progress
+          String   sortOrder
+          Long   timeStamp
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{ApiVersion}
+\label{type:ApiVersion}
+
+\begin{verbatim}
+   type ApiVersion {
+          String   major
+          String   minor
+          String   micro
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{TimedEventRecord}
+\label{type:TimedEventRecord}
+
+\begin{verbatim}
+   type TimedEventRecord {
+          String   eventName
+          String   eventContext
+          Date   when
+          Date   end
+          String   infoContext
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{ContentEnvelope}
+\label{type:ContentEnvelope}
+
+\begin{verbatim}
+   type ContentEnvelope {
+          Map(String, String)   headers
+          Object   content
+          String   contentType
+          String   raptureURI
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{BlobContainer}
+\label{type:BlobContainer}
+
+\begin{verbatim}
+   type BlobContainer {
+          Map(String, String)   headers
+          ByteArray   content
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{SheetRepoConfig}
+\label{type:SheetRepoConfig}
+
+\begin{verbatim}
+   type SheetRepoConfig {
+          String   description
+          String   config
+          String   authority
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{RaptureSheet}
+\label{type:RaptureSheet}
+
+\begin{verbatim}
+   type RaptureSheet {
+          String   authority
+          String   name
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{RaptureSheetCell}
+\label{type:RaptureSheetCell}
+
+\begin{verbatim}
+   type RaptureSheetCell {
+          int   row
+          int   column
+          String   data
+          Long   epoch
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{RaptureSheetDisplayCell}
+\label{type:RaptureSheetDisplayCell}
+
+\begin{verbatim}
+   type RaptureSheetDisplayCell {
+          String   data
+          String   style
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{SheetAndMeta}
+\label{type:SheetAndMeta}
+
+\begin{verbatim}
+   type SheetAndMeta {
+          List(List(RaptureSheetDisplayCell))   cells
+          List(RaptureSheetStyle)   styles
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{RaptureSheetStatus}
+\label{type:RaptureSheetStatus}
+
+\begin{verbatim}
+   type RaptureSheetStatus {
+          List(RaptureSheetCell)   cells
+          Long   epoch
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{RaptureSheetStyle}
+\label{type:RaptureSheetStyle}
+
+\begin{verbatim}
+   type RaptureSheetStyle {
+          String   name
+          String   numberFormatString
+          RaptureSheetStyleWeight   weight
+          RaptureSheetStyleAlignment   alignment
+          RaptureSheetStyleColor   color
+          RaptureSheetStyleSize   size
+          RaptureSheetStyleNumberFormat   numberFormat
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{RaptureSheetScript}
+\label{type:RaptureSheetScript}
+
+\begin{verbatim}
+   type RaptureSheetScript {
+          String   name
+          String   description
+          String   script
+          boolean   autoRun
+          int   intervalInSeconds
+          Date   lastRun
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{RaptureSheetRange}
+\label{type:RaptureSheetRange}
+
+\begin{verbatim}
+   type RaptureSheetRange {
+          String   name
+          int   startRow
+          int   endRow
+          int   startColumn
+          int   endColumn
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{RaptureSheetNote}
+\label{type:RaptureSheetNote}
+
+\begin{verbatim}
+   type RaptureSheetNote {
+          String   id
+          String   note
+          String   who
+          Date   when
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{LicenseInfo}
+\label{type:LicenseInfo}
+
+\begin{verbatim}
+   type LicenseInfo {
+          String   companyName
+          String   salt
+          Boolean   developer
+          Long   expirationTimestamp
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{RaptureSheetRow}
+\label{type:RaptureSheetRow}
+
+\begin{verbatim}
+   type RaptureSheetRow {
+          List(RaptureSheetCell)   cells
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{ScriptResult}
+\label{type:ScriptResult}
+
+\begin{verbatim}
+   type ScriptResult {
+          String   returnValue
+          List(String)   output
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{TableQueryResult}
+\label{type:TableQueryResult}
+
+\begin{verbatim}
+   type TableQueryResult {
+          List(String)   columnNames
+          List(String)   columnTypes
+          List(List(Object))   rows
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{RaptureRelation}
+\label{type:RaptureRelation}
+
+\begin{verbatim}
+   type RaptureRelation {
+          String   uri
+          List<RaptureRelationship>   outgoingRelationships
+          List<RaptureRelationship>   incomingRelationships
+          RaptureURI   targetURI
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{RaptureRelationship}
+\label{type:RaptureRelationship}
+
+\begin{verbatim}
+   type RaptureRelationship {
+          RaptureURI   fromURI
+          RaptureURI   toURI
+          String   label
+          Long   createDateUTC
+          String   user
+          Map(String,String)   properties
+          RaptureURI   uri
+          UUID   uuid
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{RaptureRelationshipRegion}
+\label{type:RaptureRelationshipRegion}
+
+\begin{verbatim}
+   type RaptureRelationshipRegion {
+          RaptureURI   centerNode
+          Long   depth
+          List<RaptureURI>   nodes
+          List<RaptureRelationship>   relationships
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{RelationshipRepoConfig}
+\label{type:RelationshipRepoConfig}
+
+\begin{verbatim}
+   type RelationshipRepoConfig {
+          String   description
+          String   config
+          String   authority
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{IndexConfig}
+\label{type:IndexConfig}
+
+\begin{verbatim}
+   type IndexConfig {
+          String   name
+          String   config
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{RaptureApplicationStatusStep}
+\label{type:RaptureApplicationStatusStep}
+
+\begin{verbatim}
+   type RaptureApplicationStatusStep {
+          String   INITIATED
+          String   PICKEDUP
+          String   PREPROCESSING
+          String   RUNNING
+          String   POSTPROCESSING
+          String   COMPLETED
+          String   FAILED
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{RaptureApplicationStatus}
+\label{type:RaptureApplicationStatus}
+
+\begin{verbatim}
+   type RaptureApplicationStatus {
+          String   appName
+          String   theDate
+          String   instanceId
+          String   overrideApplicationPath
+          RaptureApplicationStatusStep   status
+          String   lastMessage
+          List(String)   messages
+          Map(String, String)   inputConfig
+          Map(String, String)   outputConfig
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{HooksConfig}
+\label{type:HooksConfig}
+
+\begin{verbatim}
+   type HooksConfig {
+          Map(String, SingleHookConfig)   idToHook
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{RaptureIPWhiteList}
+\label{type:RaptureIPWhiteList}
+
+\begin{verbatim}
+   type RaptureIPWhiteList {
+          List<String>   ipWhiteList
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{EnvironmentInfo}
+\label{type:EnvironmentInfo}
+
+\begin{verbatim}
+   type EnvironmentInfo {
+          String   name
+          String   motd
+          Map(String, String)   properties
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{TimerStartRecord}
+\label{type:TimerStartRecord}
+
+\begin{verbatim}
+   type TimerStartRecord {
+          String   id
+          String   metricName
+          Long   timestamp
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{LogMessage}
+\label{type:LogMessage}
+
+\begin{verbatim}
+   type LogMessage {
+          Long   timestamp
+          String   host
+          String   level
+          String   appName
+          String   threadName
+          String   className
+          Integer   lineNumber
+          String   message
+          String   workOrderURI
+          String   workerId
+          String   rfxScript
+          String   stepName
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{LogQueryResponse}
+\label{type:LogQueryResponse}
+
+\begin{verbatim}
+   type LogQueryResponse {
+          Boolean   isLast
+          String   nextBatchId
+          List<LogMessage>   messages
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{StoredProcedureResponse}
+\label{type:StoredProcedureResponse}
+
+\begin{verbatim}
+   type StoredProcedureResponse {
+          Boolean   callSuccessful
+          Map<String, Object>   singleValueReturn
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{StoredProcedureParams}
+\label{type:StoredProcedureParams}
+
+\begin{verbatim}
+   type StoredProcedureParams {
+          Map<String, Object>   inParams
+          Map<String, Integer>   outParams
+          Map<String, Object>   inOutParams
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{ChildrenTransferObject}
+\label{type:ChildrenTransferObject}
+
+\begin{verbatim}
+   type ChildrenTransferObject {
+          String   parentURI
+          Map<String,RaptureFolderInfo>   children
+          Map<String,RaptureFolderInfo>   deleted
+          String   indexMark
+          Long   remainder
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\subsection{StructuredRow}
+\label{type:StructuredRow}
+
+\begin{verbatim}
+   type StructuredRow {
+          Map<String,Object>   columns
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}

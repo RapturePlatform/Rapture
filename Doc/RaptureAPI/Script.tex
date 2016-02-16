@@ -1,0 +1,362 @@
+\section{Script API}
+\input{script/info}
+\subsubsection{CreateScript}
+\label{Api:CreateScript}
+\begin{verbatim}
+   RaptureScript createScript (
+           String    scriptURI
+           RaptureScriptLanguage    language
+           RaptureScriptPurpose    purpose
+           String    script
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #script.createScript(scriptURI,language,purpose,script);
+\end{lstlisting}
+\input{script/createScript}
+
+
+\rule{15cm}{2pt}
+\subsubsection{CreateScriptLink}
+\label{Api:CreateScriptLink}
+\begin{verbatim}
+   void createScriptLink (
+           String    fromScriptURI
+           String    toScriptURI
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #script.createScriptLink(fromScriptURI,toScriptURI);
+\end{lstlisting}
+\input{script/createScriptLink}
+
+
+\rule{15cm}{2pt}
+\subsubsection{RemoveScriptLink}
+\label{Api:RemoveScriptLink}
+\begin{verbatim}
+   void removeScriptLink (
+           String    fromScriptURI
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #script.removeScriptLink(fromScriptURI);
+\end{lstlisting}
+\input{script/removeScriptLink}
+
+
+\rule{15cm}{2pt}
+\subsubsection{SetScriptParameters}
+\label{Api:SetScriptParameters}
+\begin{verbatim}
+   RaptureScript setScriptParameters (
+           String    scriptURI
+           List<RaptureParameter>    parameters
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #script.setScriptParameters(scriptURI,parameters);
+\end{lstlisting}
+\input{script/setScriptParameters}
+
+
+\rule{15cm}{2pt}
+\subsubsection{DoesScriptExist}
+\label{Api:DoesScriptExist}
+\begin{verbatim}
+   boolean doesScriptExist (
+           String    scriptURI
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #script.doesScriptExist(scriptURI);
+\end{lstlisting}
+\input{script/doesScriptExist}
+
+
+\rule{15cm}{2pt}
+\subsubsection{DeleteScript}
+\label{Api:DeleteScript}
+\begin{verbatim}
+   void deleteScript (
+           String    scriptURI
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #script.deleteScript(scriptURI);
+\end{lstlisting}
+\input{script/deleteScript}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetScriptNames}
+\label{Api:GetScriptNames}
+\begin{verbatim}
+   List<String> getScriptNames (
+           String    scriptURI
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #script.getScriptNames(scriptURI);
+\end{lstlisting}
+\input{script/getScriptNames}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetScript}
+\label{Api:GetScript}
+\begin{verbatim}
+   RaptureScript getScript (
+           String    scriptURI
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #script.getScript(scriptURI);
+\end{lstlisting}
+\input{script/getScript}
+
+
+\rule{15cm}{2pt}
+\subsubsection{PutScript}
+\label{Api:PutScript}
+\begin{verbatim}
+   RaptureScript putScript (
+           String    scriptURI
+           RaptureScript    script
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #script.putScript(scriptURI,script);
+\end{lstlisting}
+\input{script/putScript}
+
+
+\rule{15cm}{2pt}
+\subsubsection{PutRawScript}
+\label{Api:PutRawScript}
+\begin{verbatim}
+   RaptureScript putRawScript (
+           String    scriptURI
+           String    content
+           String    language
+           String    purpose
+           List<String>    param_types
+           List<String>    param_names
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #script.putRawScript(scriptURI,content,language,purpose,param_types,param_names);
+\end{lstlisting}
+\input{script/putRawScript}
+
+
+\rule{15cm}{2pt}
+\subsubsection{RunScript}
+\label{Api:RunScript}
+\begin{verbatim}
+   String runScript (
+           String    scriptURI
+           Map<String,String>    parameters
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #script.runScript(scriptURI,parameters);
+\end{lstlisting}
+\input{script/runScript}
+
+
+\rule{15cm}{2pt}
+\subsubsection{RunScriptExtended}
+\label{Api:RunScriptExtended}
+\begin{verbatim}
+   ScriptResult runScriptExtended (
+           String    scriptURI
+           Map<String,String>    parameters
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #script.runScriptExtended(scriptURI,parameters);
+\end{lstlisting}
+\input{script/runScriptExtended}
+
+
+\rule{15cm}{2pt}
+\subsubsection{CheckScript}
+\label{Api:CheckScript}
+\begin{verbatim}
+   String checkScript (
+           String    scriptURI
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #script.checkScript(scriptURI);
+\end{lstlisting}
+\input{script/checkScript}
+
+
+\rule{15cm}{2pt}
+\subsubsection{CreateREPLSession}
+\label{Api:CreateREPLSession}
+\begin{verbatim}
+   String createREPLSession (
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #script.createREPLSession();
+\end{lstlisting}
+\input{script/createREPLSession}
+
+
+\rule{15cm}{2pt}
+\subsubsection{DestroyREPLSession}
+\label{Api:DestroyREPLSession}
+\begin{verbatim}
+   void destroyREPLSession (
+           String    sessionId
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #script.destroyREPLSession(sessionId);
+\end{lstlisting}
+\input{script/destroyREPLSession}
+
+
+\rule{15cm}{2pt}
+\subsubsection{EvaluateREPL}
+\label{Api:EvaluateREPL}
+\begin{verbatim}
+   String evaluateREPL (
+           String    sessionId
+           String    line
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #script.evaluateREPL(sessionId,line);
+\end{lstlisting}
+\input{script/evaluateREPL}
+
+
+\rule{15cm}{2pt}
+\subsubsection{ArchiveOldREPLSessions}
+\label{Api:ArchiveOldREPLSessions}
+\begin{verbatim}
+   void archiveOldREPLSessions (
+           Long    ageInMinutes
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #script.archiveOldREPLSessions(ageInMinutes);
+\end{lstlisting}
+\input{script/archiveOldREPLSessions}
+
+
+\rule{15cm}{2pt}
+\subsubsection{CreateSnippet}
+\label{Api:CreateSnippet}
+\begin{verbatim}
+   RaptureSnippet createSnippet (
+           String    snippetURI
+           String    snippet
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #script.createSnippet(snippetURI,snippet);
+\end{lstlisting}
+\input{script/createSnippet}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetSnippetChildren}
+\label{Api:GetSnippetChildren}
+\begin{verbatim}
+   List<RaptureFolderInfo> getSnippetChildren (
+           String    prefix
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #script.getSnippetChildren(prefix);
+\end{lstlisting}
+\input{script/getSnippetChildren}
+
+
+\rule{15cm}{2pt}
+\subsubsection{DeleteSnippet}
+\label{Api:DeleteSnippet}
+\begin{verbatim}
+   void deleteSnippet (
+           String    snippetURI
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #script.deleteSnippet(snippetURI);
+\end{lstlisting}
+\input{script/deleteSnippet}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetSnippet}
+\label{Api:GetSnippet}
+\begin{verbatim}
+   RaptureSnippet getSnippet (
+           String    snippetURI
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #script.getSnippet(snippetURI);
+\end{lstlisting}
+\input{script/getSnippet}
+
+
+\rule{15cm}{2pt}
+\subsubsection{ListScriptsByUriPrefix}
+\label{Api:ListScriptsByUriPrefix}
+\begin{verbatim}
+   Map<String,RaptureFolderInfo> listScriptsByUriPrefix (
+           String    uriPrefix
+           int    depth
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #script.listScriptsByUriPrefix(uriPrefix,depth);
+\end{lstlisting}
+\input{script/listScriptsByUriPrefix}
+
+
+\rule{15cm}{2pt}
+\subsubsection{DeleteScriptsByUriPrefix}
+\label{Api:DeleteScriptsByUriPrefix}
+\begin{verbatim}
+   List<String> deleteScriptsByUriPrefix (
+           String    uriPrefix
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #script.deleteScriptsByUriPrefix(uriPrefix);
+\end{lstlisting}
+\input{script/deleteScriptsByUriPrefix}
+
+
+\rule{15cm}{2pt}

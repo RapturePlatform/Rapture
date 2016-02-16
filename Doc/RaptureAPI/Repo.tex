@@ -1,0 +1,50 @@
+\section{Repo API}
+\input{repo/info}
+\subsubsection{GetContent}
+\label{Api:GetContent}
+\begin{verbatim}
+   ContentEnvelope getContent (
+           String    raptureURI
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #repo.getContent(raptureURI);
+\end{lstlisting}
+\input{repo/getContent}
+
+
+\rule{15cm}{2pt}
+\subsubsection{PutContent}
+\label{Api:PutContent}
+\begin{verbatim}
+   void putContent (
+           String    raptureURI
+           Object    content
+           String    comment
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #repo.putContent(raptureURI,content,comment);
+\end{lstlisting}
+\input{repo/putContent}
+
+
+\rule{15cm}{2pt}
+\subsubsection{DeleteContent}
+\label{Api:DeleteContent}
+\begin{verbatim}
+   void deleteContent (
+           String    raptureURI
+           String    comment
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #repo.deleteContent(raptureURI,comment);
+\end{lstlisting}
+\input{repo/deleteContent}
+
+
+\rule{15cm}{2pt}

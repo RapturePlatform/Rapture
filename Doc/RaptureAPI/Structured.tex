@@ -1,0 +1,663 @@
+\section{Structured API}
+\input{structured/info}
+\subsubsection{CreateStructuredRepo}
+\label{Api:CreateStructuredRepo}
+\begin{verbatim}
+   void createStructuredRepo (
+           String    uri
+           String    config
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #structured.createStructuredRepo(uri,config);
+\end{lstlisting}
+\input{structured/createStructuredRepo}
+
+
+\rule{15cm}{2pt}
+\subsubsection{DeleteStructuredRepo}
+\label{Api:DeleteStructuredRepo}
+\begin{verbatim}
+   void deleteStructuredRepo (
+           String    uri
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #structured.deleteStructuredRepo(uri);
+\end{lstlisting}
+\input{structured/deleteStructuredRepo}
+
+
+\rule{15cm}{2pt}
+\subsubsection{StructuredRepoExists}
+\label{Api:StructuredRepoExists}
+\begin{verbatim}
+   boolean structuredRepoExists (
+           String    uri
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #structured.structuredRepoExists(uri);
+\end{lstlisting}
+\input{structured/structuredRepoExists}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetStructuredRepoConfig}
+\label{Api:GetStructuredRepoConfig}
+\begin{verbatim}
+   StructuredRepoConfig getStructuredRepoConfig (
+           String    uri
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #structured.getStructuredRepoConfig(uri);
+\end{lstlisting}
+\input{structured/getStructuredRepoConfig}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetStructuredRepoConfigs}
+\label{Api:GetStructuredRepoConfigs}
+\begin{verbatim}
+   List<StructuredRepoConfig> getStructuredRepoConfigs (
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #structured.getStructuredRepoConfigs();
+\end{lstlisting}
+\input{structured/getStructuredRepoConfigs}
+
+
+\rule{15cm}{2pt}
+\subsubsection{CreateTableUsingSql}
+\label{Api:CreateTableUsingSql}
+\begin{verbatim}
+   void createTableUsingSql (
+           String    schema
+           String    rawSql
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #structured.createTableUsingSql(schema,rawSql);
+\end{lstlisting}
+\input{structured/createTableUsingSql}
+
+
+\rule{15cm}{2pt}
+\subsubsection{CreateTable}
+\label{Api:CreateTable}
+\begin{verbatim}
+   void createTable (
+           String    tableUri
+           Map<String,String>    columns
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #structured.createTable(tableUri,columns);
+\end{lstlisting}
+\input{structured/createTable}
+
+
+\rule{15cm}{2pt}
+\subsubsection{DropTable}
+\label{Api:DropTable}
+\begin{verbatim}
+   void dropTable (
+           String    tableUri
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #structured.dropTable(tableUri);
+\end{lstlisting}
+\input{structured/dropTable}
+
+
+\rule{15cm}{2pt}
+\subsubsection{TableExists}
+\label{Api:TableExists}
+\begin{verbatim}
+   boolean tableExists (
+           String    tableUri
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #structured.tableExists(tableUri);
+\end{lstlisting}
+\input{structured/tableExists}
+
+
+\rule{15cm}{2pt}
+\subsubsection{DescribeTable}
+\label{Api:DescribeTable}
+\begin{verbatim}
+   Map<String,String> describeTable (
+           String    tableUri
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #structured.describeTable(tableUri);
+\end{lstlisting}
+\input{structured/describeTable}
+
+
+\rule{15cm}{2pt}
+\subsubsection{AddTableColumns}
+\label{Api:AddTableColumns}
+\begin{verbatim}
+   void addTableColumns (
+           String    tableUri
+           Map<String,String>    columns
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #structured.addTableColumns(tableUri,columns);
+\end{lstlisting}
+\input{structured/addTableColumns}
+
+
+\rule{15cm}{2pt}
+\subsubsection{DeleteTableColumns}
+\label{Api:DeleteTableColumns}
+\begin{verbatim}
+   void deleteTableColumns (
+           String    tableUri
+           List<String>    columnNames
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #structured.deleteTableColumns(tableUri,columnNames);
+\end{lstlisting}
+\input{structured/deleteTableColumns}
+
+
+\rule{15cm}{2pt}
+\subsubsection{UpdateTableColumns}
+\label{Api:UpdateTableColumns}
+\begin{verbatim}
+   void updateTableColumns (
+           String    tableUri
+           Map<String,String>    columns
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #structured.updateTableColumns(tableUri,columns);
+\end{lstlisting}
+\input{structured/updateTableColumns}
+
+
+\rule{15cm}{2pt}
+\subsubsection{RenameTableColumns}
+\label{Api:RenameTableColumns}
+\begin{verbatim}
+   void renameTableColumns (
+           String    tableUri
+           Map<String,String>    columnNames
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #structured.renameTableColumns(tableUri,columnNames);
+\end{lstlisting}
+\input{structured/renameTableColumns}
+
+
+\rule{15cm}{2pt}
+\subsubsection{CreateIndex}
+\label{Api:CreateIndex}
+\begin{verbatim}
+   void createIndex (
+           String    tableUri
+           String    indexName
+           List<String>    columnNames
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #structured.createIndex(tableUri,indexName,columnNames);
+\end{lstlisting}
+\input{structured/createIndex}
+
+
+\rule{15cm}{2pt}
+\subsubsection{DropIndex}
+\label{Api:DropIndex}
+\begin{verbatim}
+   void dropIndex (
+           String    tableUri
+           String    indexName
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #structured.dropIndex(tableUri,indexName);
+\end{lstlisting}
+\input{structured/dropIndex}
+
+
+\rule{15cm}{2pt}
+\subsubsection{SelectJoinedRows}
+\label{Api:SelectJoinedRows}
+\begin{verbatim}
+   List<Map<String,Object>> selectJoinedRows (
+           List<String>    tableUris
+           List<String>    columnNames
+           String    from
+           String    where
+           List<String>    order
+           boolean    ascending
+           int    limit
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #structured.selectJoinedRows(tableUris,columnNames,from,where,order,ascending,limit);
+\end{lstlisting}
+\input{structured/selectJoinedRows}
+
+
+\rule{15cm}{2pt}
+\subsubsection{SelectUsingSql}
+\label{Api:SelectUsingSql}
+\begin{verbatim}
+   List<Map<String,Object>> selectUsingSql (
+           String    schema
+           String    rawSql
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #structured.selectUsingSql(schema,rawSql);
+\end{lstlisting}
+\input{structured/selectUsingSql}
+
+
+\rule{15cm}{2pt}
+\subsubsection{SelectRows}
+\label{Api:SelectRows}
+\begin{verbatim}
+   List<Map<String,Object>> selectRows (
+           String    tableUri
+           List<String>    columnNames
+           String    where
+           List<String>    order
+           boolean    ascending
+           int    limit
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #structured.selectRows(tableUri,columnNames,where,order,ascending,limit);
+\end{lstlisting}
+\input{structured/selectRows}
+
+
+\rule{15cm}{2pt}
+\subsubsection{InsertUsingSql}
+\label{Api:InsertUsingSql}
+\begin{verbatim}
+   void insertUsingSql (
+           String    schema
+           String    rawSql
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #structured.insertUsingSql(schema,rawSql);
+\end{lstlisting}
+\input{structured/insertUsingSql}
+
+
+\rule{15cm}{2pt}
+\subsubsection{InsertRow}
+\label{Api:InsertRow}
+\begin{verbatim}
+   void insertRow (
+           String    tableUri
+           Map<String,Object>    values
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #structured.insertRow(tableUri,values);
+\end{lstlisting}
+\input{structured/insertRow}
+
+
+\rule{15cm}{2pt}
+\subsubsection{InsertRows}
+\label{Api:InsertRows}
+\begin{verbatim}
+   void insertRows (
+           String    tableUri
+           List<Map<String,Object>>    values
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #structured.insertRows(tableUri,values);
+\end{lstlisting}
+\input{structured/insertRows}
+
+
+\rule{15cm}{2pt}
+\subsubsection{DeleteUsingSql}
+\label{Api:DeleteUsingSql}
+\begin{verbatim}
+   void deleteUsingSql (
+           String    schema
+           String    rawSql
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #structured.deleteUsingSql(schema,rawSql);
+\end{lstlisting}
+\input{structured/deleteUsingSql}
+
+
+\rule{15cm}{2pt}
+\subsubsection{DeleteRows}
+\label{Api:DeleteRows}
+\begin{verbatim}
+   void deleteRows (
+           String    tableUri
+           String    where
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #structured.deleteRows(tableUri,where);
+\end{lstlisting}
+\input{structured/deleteRows}
+
+
+\rule{15cm}{2pt}
+\subsubsection{UpdateUsingSql}
+\label{Api:UpdateUsingSql}
+\begin{verbatim}
+   void updateUsingSql (
+           String    schema
+           String    rawSql
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #structured.updateUsingSql(schema,rawSql);
+\end{lstlisting}
+\input{structured/updateUsingSql}
+
+
+\rule{15cm}{2pt}
+\subsubsection{UpdateRows}
+\label{Api:UpdateRows}
+\begin{verbatim}
+   void updateRows (
+           String    tableUri
+           Map<String,Object>    values
+           String    where
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #structured.updateRows(tableUri,values,where);
+\end{lstlisting}
+\input{structured/updateRows}
+
+
+\rule{15cm}{2pt}
+\subsubsection{Begin}
+\label{Api:Begin}
+\begin{verbatim}
+   boolean begin (
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #structured.begin();
+\end{lstlisting}
+\input{structured/begin}
+
+
+\rule{15cm}{2pt}
+\subsubsection{Commit}
+\label{Api:Commit}
+\begin{verbatim}
+   boolean commit (
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #structured.commit();
+\end{lstlisting}
+\input{structured/commit}
+
+
+\rule{15cm}{2pt}
+\subsubsection{Rollback}
+\label{Api:Rollback}
+\begin{verbatim}
+   boolean rollback (
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #structured.rollback();
+\end{lstlisting}
+\input{structured/rollback}
+
+
+\rule{15cm}{2pt}
+\subsubsection{Abort}
+\label{Api:Abort}
+\begin{verbatim}
+   boolean abort (
+           String    transactionId
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #structured.abort(transactionId);
+\end{lstlisting}
+\input{structured/abort}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetTransactions}
+\label{Api:GetTransactions}
+\begin{verbatim}
+   List<String> getTransactions (
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #structured.getTransactions();
+\end{lstlisting}
+\input{structured/getTransactions}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetDdl}
+\label{Api:GetDdl}
+\begin{verbatim}
+   String getDdl (
+           String    uri
+           boolean    includeTableData
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #structured.getDdl(uri,includeTableData);
+\end{lstlisting}
+\input{structured/getDdl}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetCursorUsingSql}
+\label{Api:GetCursorUsingSql}
+\begin{verbatim}
+   String getCursorUsingSql (
+           String    schema
+           String    rawSql
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #structured.getCursorUsingSql(schema,rawSql);
+\end{lstlisting}
+\input{structured/getCursorUsingSql}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetCursor}
+\label{Api:GetCursor}
+\begin{verbatim}
+   String getCursor (
+           String    tableUri
+           List<String>    columnNames
+           String    where
+           List<String>    order
+           boolean    ascending
+           int    limit
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #structured.getCursor(tableUri,columnNames,where,order,ascending,limit);
+\end{lstlisting}
+\input{structured/getCursor}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetCursorForJoin}
+\label{Api:GetCursorForJoin}
+\begin{verbatim}
+   String getCursorForJoin (
+           List<String>    tableUris
+           List<String>    columnNames
+           String    from
+           String    where
+           List<String>    order
+           boolean    ascending
+           int    limit
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #structured.getCursorForJoin(tableUris,columnNames,from,where,order,ascending,limit);
+\end{lstlisting}
+\input{structured/getCursorForJoin}
+
+
+\rule{15cm}{2pt}
+\subsubsection{Next}
+\label{Api:Next}
+\begin{verbatim}
+   List<Map<String,Object>> next (
+           String    tableUri
+           String    cursorId
+           int    count
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #structured.next(tableUri,cursorId,count);
+\end{lstlisting}
+\input{structured/next}
+
+
+\rule{15cm}{2pt}
+\subsubsection{Previous}
+\label{Api:Previous}
+\begin{verbatim}
+   List<Map<String,Object>> previous (
+           String    tableUri
+           String    cursorId
+           int    count
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #structured.previous(tableUri,cursorId,count);
+\end{lstlisting}
+\input{structured/previous}
+
+
+\rule{15cm}{2pt}
+\subsubsection{CloseCursor}
+\label{Api:CloseCursor}
+\begin{verbatim}
+   void closeCursor (
+           String    tableUri
+           String    cursorId
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #structured.closeCursor(tableUri,cursorId);
+\end{lstlisting}
+\input{structured/closeCursor}
+
+
+\rule{15cm}{2pt}
+\subsubsection{CreateProcedureCallUsingSql}
+\label{Api:CreateProcedureCallUsingSql}
+\begin{verbatim}
+   void createProcedureCallUsingSql (
+           String    procUri
+           String    rawSql
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #structured.createProcedureCallUsingSql(procUri,rawSql);
+\end{lstlisting}
+\input{structured/createProcedureCallUsingSql}
+
+
+\rule{15cm}{2pt}
+\subsubsection{CallProcedure}
+\label{Api:CallProcedure}
+\begin{verbatim}
+   StoredProcedureResponse callProcedure (
+           String    procUri
+           StoredProcedureParams    params
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #structured.callProcedure(procUri,params);
+\end{lstlisting}
+\input{structured/callProcedure}
+
+
+\rule{15cm}{2pt}
+\subsubsection{DropProcedureUsingSql}
+\label{Api:DropProcedureUsingSql}
+\begin{verbatim}
+   void dropProcedureUsingSql (
+           String    procUri
+           String    rawSql
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #structured.dropProcedureUsingSql(procUri,rawSql);
+\end{lstlisting}
+\input{structured/dropProcedureUsingSql}
+
+
+\rule{15cm}{2pt}

@@ -1,0 +1,117 @@
+\section{Environment API}
+\input{environment/info}
+\subsubsection{GetNetworkInfo}
+\label{Api:GetNetworkInfo}
+\begin{verbatim}
+   RaptureNetwork getNetworkInfo (
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #environment.getNetworkInfo();
+\end{lstlisting}
+\input{environment/getNetworkInfo}
+
+
+\rule{15cm}{2pt}
+\subsubsection{SetNetworkInfo}
+\label{Api:SetNetworkInfo}
+\begin{verbatim}
+   RaptureNetwork setNetworkInfo (
+           RaptureNetwork    network
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #environment.setNetworkInfo(network);
+\end{lstlisting}
+\input{environment/setNetworkInfo}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetThisServer}
+\label{Api:GetThisServer}
+\begin{verbatim}
+   RaptureServerInfo getThisServer (
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #environment.getThisServer();
+\end{lstlisting}
+\input{environment/getThisServer}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetServers}
+\label{Api:GetServers}
+\begin{verbatim}
+   List<RaptureServerInfo> getServers (
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #environment.getServers();
+\end{lstlisting}
+\input{environment/getServers}
+
+
+\rule{15cm}{2pt}
+\subsubsection{SetThisServer}
+\label{Api:SetThisServer}
+\begin{verbatim}
+   RaptureServerInfo setThisServer (
+           RaptureServerInfo    info
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #environment.setThisServer(info);
+\end{lstlisting}
+\input{environment/setThisServer}
+
+
+\rule{15cm}{2pt}
+\subsubsection{SetApplianceMode}
+\label{Api:SetApplianceMode}
+\begin{verbatim}
+   void setApplianceMode (
+           boolean    mode
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #environment.setApplianceMode(mode);
+\end{lstlisting}
+\input{environment/setApplianceMode}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetApplianceMode}
+\label{Api:GetApplianceMode}
+\begin{verbatim}
+   boolean getApplianceMode (
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #environment.getApplianceMode();
+\end{lstlisting}
+\input{environment/getApplianceMode}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetServerStatus}
+\label{Api:GetServerStatus}
+\begin{verbatim}
+   List<RaptureServerStatus> getServerStatus (
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #environment.getServerStatus();
+\end{lstlisting}
+\input{environment/getServerStatus}
+
+
+\rule{15cm}{2pt}

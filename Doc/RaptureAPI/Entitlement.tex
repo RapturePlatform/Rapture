@@ -1,0 +1,259 @@
+\section{Entitlement API}
+\input{entitlement/info}
+\subsubsection{GetEntitlements}
+\label{Api:GetEntitlements}
+\begin{verbatim}
+   List<RaptureEntitlement> getEntitlements (
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #entitlement.getEntitlements();
+\end{lstlisting}
+\input{entitlement/getEntitlements}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetEntitlement}
+\label{Api:GetEntitlement}
+\begin{verbatim}
+   RaptureEntitlement getEntitlement (
+           String    entitlementName
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #entitlement.getEntitlement(entitlementName);
+\end{lstlisting}
+\input{entitlement/getEntitlement}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetEntitlementByAddress}
+\label{Api:GetEntitlementByAddress}
+\begin{verbatim}
+   RaptureEntitlement getEntitlementByAddress (
+           String    entitlementURI
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #entitlement.getEntitlementByAddress(entitlementURI);
+\end{lstlisting}
+\input{entitlement/getEntitlementByAddress}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetEntitlementGroup}
+\label{Api:GetEntitlementGroup}
+\begin{verbatim}
+   RaptureEntitlementGroup getEntitlementGroup (
+           String    groupName
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #entitlement.getEntitlementGroup(groupName);
+\end{lstlisting}
+\input{entitlement/getEntitlementGroup}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetEntitlementGroupByAddress}
+\label{Api:GetEntitlementGroupByAddress}
+\begin{verbatim}
+   RaptureEntitlementGroup getEntitlementGroupByAddress (
+           String    groupURI
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #entitlement.getEntitlementGroupByAddress(groupURI);
+\end{lstlisting}
+\input{entitlement/getEntitlementGroupByAddress}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetEntitlementGroups}
+\label{Api:GetEntitlementGroups}
+\begin{verbatim}
+   List<RaptureEntitlementGroup> getEntitlementGroups (
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #entitlement.getEntitlementGroups();
+\end{lstlisting}
+\input{entitlement/getEntitlementGroups}
+
+
+\rule{15cm}{2pt}
+\subsubsection{AddEntitlement}
+\label{Api:AddEntitlement}
+\begin{verbatim}
+   RaptureEntitlement addEntitlement (
+           String    entitlementName
+           String    initialGroup
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #entitlement.addEntitlement(entitlementName,initialGroup);
+\end{lstlisting}
+\input{entitlement/addEntitlement}
+
+
+\rule{15cm}{2pt}
+\subsubsection{AddGroupToEntitlement}
+\label{Api:AddGroupToEntitlement}
+\begin{verbatim}
+   RaptureEntitlement addGroupToEntitlement (
+           String    entitlementName
+           String    groupName
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #entitlement.addGroupToEntitlement(entitlementName,groupName);
+\end{lstlisting}
+\input{entitlement/addGroupToEntitlement}
+
+
+\rule{15cm}{2pt}
+\subsubsection{RemoveGroupFromEntitlement}
+\label{Api:RemoveGroupFromEntitlement}
+\begin{verbatim}
+   RaptureEntitlement removeGroupFromEntitlement (
+           String    entitlementName
+           String    groupName
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #entitlement.removeGroupFromEntitlement(entitlementName,groupName);
+\end{lstlisting}
+\input{entitlement/removeGroupFromEntitlement}
+
+
+\rule{15cm}{2pt}
+\subsubsection{DeleteEntitlement}
+\label{Api:DeleteEntitlement}
+\begin{verbatim}
+   void deleteEntitlement (
+           String    entitlementName
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #entitlement.deleteEntitlement(entitlementName);
+\end{lstlisting}
+\input{entitlement/deleteEntitlement}
+
+
+\rule{15cm}{2pt}
+\subsubsection{DeleteEntitlementGroup}
+\label{Api:DeleteEntitlementGroup}
+\begin{verbatim}
+   void deleteEntitlementGroup (
+           String    groupName
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #entitlement.deleteEntitlementGroup(groupName);
+\end{lstlisting}
+\input{entitlement/deleteEntitlementGroup}
+
+
+\rule{15cm}{2pt}
+\subsubsection{AddEntitlementGroup}
+\label{Api:AddEntitlementGroup}
+\begin{verbatim}
+   RaptureEntitlementGroup addEntitlementGroup (
+           String    groupName
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #entitlement.addEntitlementGroup(groupName);
+\end{lstlisting}
+\input{entitlement/addEntitlementGroup}
+
+
+\rule{15cm}{2pt}
+\subsubsection{AddUserToEntitlementGroup}
+\label{Api:AddUserToEntitlementGroup}
+\begin{verbatim}
+   RaptureEntitlementGroup addUserToEntitlementGroup (
+           String    groupName
+           String    userName
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #entitlement.addUserToEntitlementGroup(groupName,userName);
+\end{lstlisting}
+\input{entitlement/addUserToEntitlementGroup}
+
+
+\rule{15cm}{2pt}
+\subsubsection{RemoveUserFromEntitlementGroup}
+\label{Api:RemoveUserFromEntitlementGroup}
+\begin{verbatim}
+   RaptureEntitlementGroup removeUserFromEntitlementGroup (
+           String    groupName
+           String    userName
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #entitlement.removeUserFromEntitlementGroup(groupName,userName);
+\end{lstlisting}
+\input{entitlement/removeUserFromEntitlementGroup}
+
+
+\rule{15cm}{2pt}
+\subsubsection{FindEntitlementsByUser}
+\label{Api:FindEntitlementsByUser}
+\begin{verbatim}
+   List<RaptureEntitlement> findEntitlementsByUser (
+           String    username
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #entitlement.findEntitlementsByUser(username);
+\end{lstlisting}
+\input{entitlement/findEntitlementsByUser}
+
+
+\rule{15cm}{2pt}
+\subsubsection{FindEntitlementsByGroup}
+\label{Api:FindEntitlementsByGroup}
+\begin{verbatim}
+   List<RaptureEntitlement> findEntitlementsByGroup (
+           String    groupname
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #entitlement.findEntitlementsByGroup(groupname);
+\end{lstlisting}
+\input{entitlement/findEntitlementsByGroup}
+
+
+\rule{15cm}{2pt}
+\subsubsection{FindEntitlementsBySelf}
+\label{Api:FindEntitlementsBySelf}
+\begin{verbatim}
+   List<RaptureEntitlement> findEntitlementsBySelf (
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #entitlement.findEntitlementsBySelf();
+\end{lstlisting}
+\input{entitlement/findEntitlementsBySelf}
+
+
+\rule{15cm}{2pt}

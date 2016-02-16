@@ -1,0 +1,79 @@
+\section{Table API}
+\input{table/info}
+\subsubsection{CreateTable}
+\label{Api:CreateTable}
+\begin{verbatim}
+   RaptureTableConfig createTable (
+           String    indexURI
+           String    config
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #table.createTable(indexURI,config);
+\end{lstlisting}
+\input{table/createTable}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetTablesForAuthority}
+\label{Api:GetTablesForAuthority}
+\begin{verbatim}
+   List<RaptureTableConfig> getTablesForAuthority (
+           String    authority
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #table.getTablesForAuthority(authority);
+\end{lstlisting}
+\input{table/getTablesForAuthority}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetTable}
+\label{Api:GetTable}
+\begin{verbatim}
+   RaptureTableConfig getTable (
+           String    indexURI
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #table.getTable(indexURI);
+\end{lstlisting}
+\input{table/getTable}
+
+
+\rule{15cm}{2pt}
+\subsubsection{DeleteTable}
+\label{Api:DeleteTable}
+\begin{verbatim}
+   boolean deleteTable (
+           String    indexURI
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #table.deleteTable(indexURI);
+\end{lstlisting}
+\input{table/deleteTable}
+
+
+\rule{15cm}{2pt}
+\subsubsection{QueryTable}
+\label{Api:QueryTable}
+\begin{verbatim}
+   List<TableRecord> queryTable (
+           String    indexURI
+           TableQuery    query
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #table.queryTable(indexURI,query);
+\end{lstlisting}
+\input{table/queryTable}
+
+
+\rule{15cm}{2pt}

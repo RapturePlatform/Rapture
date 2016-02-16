@@ -1,0 +1,515 @@
+\section{Doc API}
+\input{doc/info}
+\subsubsection{ValidateDocRepo}
+\label{Api:ValidateDocRepo}
+\begin{verbatim}
+   boolean validateDocRepo (
+           String    docRepoUri
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #doc.validateDocRepo(docRepoUri);
+\end{lstlisting}
+\input{doc/validateDocRepo}
+
+
+\rule{15cm}{2pt}
+\subsubsection{CreateDocRepo}
+\label{Api:CreateDocRepo}
+\begin{verbatim}
+   void createDocRepo (
+           String    docRepoUri
+           String    config
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #doc.createDocRepo(docRepoUri,config);
+\end{lstlisting}
+\input{doc/createDocRepo}
+
+
+\rule{15cm}{2pt}
+\subsubsection{DocRepoExists}
+\label{Api:DocRepoExists}
+\begin{verbatim}
+   boolean docRepoExists (
+           String    docRepoUri
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #doc.docRepoExists(docRepoUri);
+\end{lstlisting}
+\input{doc/docRepoExists}
+
+
+\rule{15cm}{2pt}
+\subsubsection{DocExists}
+\label{Api:DocExists}
+\begin{verbatim}
+   boolean docExists (
+           String    docUri
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #doc.docExists(docUri);
+\end{lstlisting}
+\input{doc/docExists}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetDocRepoConfig}
+\label{Api:GetDocRepoConfig}
+\begin{verbatim}
+   DocumentRepoConfig getDocRepoConfig (
+           String    docRepoUri
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #doc.getDocRepoConfig(docRepoUri);
+\end{lstlisting}
+\input{doc/getDocRepoConfig}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetDocRepoStatus}
+\label{Api:GetDocRepoStatus}
+\begin{verbatim}
+   Map<String,String> getDocRepoStatus (
+           String    docRepoUri
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #doc.getDocRepoStatus(docRepoUri);
+\end{lstlisting}
+\input{doc/getDocRepoStatus}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetDocRepoConfigs}
+\label{Api:GetDocRepoConfigs}
+\begin{verbatim}
+   List<DocumentRepoConfig> getDocRepoConfigs (
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #doc.getDocRepoConfigs();
+\end{lstlisting}
+\input{doc/getDocRepoConfigs}
+
+
+\rule{15cm}{2pt}
+\subsubsection{DeleteDocRepo}
+\label{Api:DeleteDocRepo}
+\begin{verbatim}
+   void deleteDocRepo (
+           String    docRepoUri
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #doc.deleteDocRepo(docRepoUri);
+\end{lstlisting}
+\input{doc/deleteDocRepo}
+
+
+\rule{15cm}{2pt}
+\subsubsection{ArchiveRepoDocs}
+\label{Api:ArchiveRepoDocs}
+\begin{verbatim}
+   void archiveRepoDocs (
+           String    docRepoUri
+           int    versionLimit
+           long    timeLimit
+           boolean    ensureVersionLimit
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #doc.archiveRepoDocs(docRepoUri,versionLimit,timeLimit,ensureVersionLimit);
+\end{lstlisting}
+\input{doc/archiveRepoDocs}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetDocAndMeta}
+\label{Api:GetDocAndMeta}
+\begin{verbatim}
+   DocumentWithMeta getDocAndMeta (
+           String    docUri
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #doc.getDocAndMeta(docUri);
+\end{lstlisting}
+\input{doc/getDocAndMeta}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetDocMeta}
+\label{Api:GetDocMeta}
+\begin{verbatim}
+   DocumentMetadata getDocMeta (
+           String    docUri
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #doc.getDocMeta(docUri);
+\end{lstlisting}
+\input{doc/getDocMeta}
+
+
+\rule{15cm}{2pt}
+\subsubsection{RevertDoc}
+\label{Api:RevertDoc}
+\begin{verbatim}
+   DocumentWithMeta revertDoc (
+           String    docUri
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #doc.revertDoc(docUri);
+\end{lstlisting}
+\input{doc/revertDoc}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetDoc}
+\label{Api:GetDoc}
+\begin{verbatim}
+   String getDoc (
+           String    docUri
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #doc.getDoc(docUri);
+\end{lstlisting}
+\input{doc/getDoc}
+
+
+\rule{15cm}{2pt}
+\subsubsection{PutDoc}
+\label{Api:PutDoc}
+\begin{verbatim}
+   String putDoc (
+           String    docUri
+           String    content
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #doc.putDoc(docUri,content);
+\end{lstlisting}
+\input{doc/putDoc}
+
+
+\rule{15cm}{2pt}
+\subsubsection{PutDocWithVersion}
+\label{Api:PutDocWithVersion}
+\begin{verbatim}
+   boolean putDocWithVersion (
+           String    docUri
+           String    content
+           int    currentVersion
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #doc.putDocWithVersion(docUri,content,currentVersion);
+\end{lstlisting}
+\input{doc/putDocWithVersion}
+
+
+\rule{15cm}{2pt}
+\subsubsection{PutDocWithEventContext}
+\label{Api:PutDocWithEventContext}
+\begin{verbatim}
+   DocWriteHandle putDocWithEventContext (
+           String    docUri
+           String    content
+           Map<String,String>    eventContext
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #doc.putDocWithEventContext(docUri,content,eventContext);
+\end{lstlisting}
+\input{doc/putDocWithEventContext}
+
+
+\rule{15cm}{2pt}
+\subsubsection{DeleteDoc}
+\label{Api:DeleteDoc}
+\begin{verbatim}
+   boolean deleteDoc (
+           String    docUri
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #doc.deleteDoc(docUri);
+\end{lstlisting}
+\input{doc/deleteDoc}
+
+
+\rule{15cm}{2pt}
+\subsubsection{RenameDoc}
+\label{Api:RenameDoc}
+\begin{verbatim}
+   String renameDoc (
+           String    fromDocUri
+           String    toDocUri
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #doc.renameDoc(fromDocUri,toDocUri);
+\end{lstlisting}
+\input{doc/renameDoc}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetDocs}
+\label{Api:GetDocs}
+\begin{verbatim}
+   Map<String,String> getDocs (
+           List<String>    docUris
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #doc.getDocs(docUris);
+\end{lstlisting}
+\input{doc/getDocs}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetDocAndMetas}
+\label{Api:GetDocAndMetas}
+\begin{verbatim}
+   List<DocumentWithMeta> getDocAndMetas (
+           List<String>    docUris
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #doc.getDocAndMetas(docUris);
+\end{lstlisting}
+\input{doc/getDocAndMetas}
+
+
+\rule{15cm}{2pt}
+\subsubsection{DocsExist}
+\label{Api:DocsExist}
+\begin{verbatim}
+   List<boolean> docsExist (
+           List<String>    docUris
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #doc.docsExist(docUris);
+\end{lstlisting}
+\input{doc/docsExist}
+
+
+\rule{15cm}{2pt}
+\subsubsection{PutDocs}
+\label{Api:PutDocs}
+\begin{verbatim}
+   List<Object> putDocs (
+           List<String>    docUris
+           List<String>    contents
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #doc.putDocs(docUris,contents);
+\end{lstlisting}
+\input{doc/putDocs}
+
+
+\rule{15cm}{2pt}
+\subsubsection{RenameDocs}
+\label{Api:RenameDocs}
+\begin{verbatim}
+   List<String> renameDocs (
+           String    authority
+           String    comment
+           List<String>    fromDocUris
+           List<String>    toDocUris
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #doc.renameDocs(authority,comment,fromDocUris,toDocUris);
+\end{lstlisting}
+\input{doc/renameDocs}
+
+
+\rule{15cm}{2pt}
+\subsubsection{DeleteDocsByUriPrefix}
+\label{Api:DeleteDocsByUriPrefix}
+\begin{verbatim}
+   List<String> deleteDocsByUriPrefix (
+           String    docUri
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #doc.deleteDocsByUriPrefix(docUri);
+\end{lstlisting}
+\input{doc/deleteDocsByUriPrefix}
+
+
+\rule{15cm}{2pt}
+\subsubsection{ListDocsByUriPrefix}
+\label{Api:ListDocsByUriPrefix}
+\begin{verbatim}
+   Map<String,RaptureFolderInfo> listDocsByUriPrefix (
+           String    docUri
+           int    depth
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #doc.listDocsByUriPrefix(docUri,depth);
+\end{lstlisting}
+\input{doc/listDocsByUriPrefix}
+
+
+\rule{15cm}{2pt}
+\subsubsection{SetDocAttribute}
+\label{Api:SetDocAttribute}
+\begin{verbatim}
+   boolean setDocAttribute (
+           String    attributeUri
+           String    value
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #doc.setDocAttribute(attributeUri,value);
+\end{lstlisting}
+\input{doc/setDocAttribute}
+
+
+\rule{15cm}{2pt}
+\subsubsection{SetDocAttributes}
+\label{Api:SetDocAttributes}
+\begin{verbatim}
+   Map<String,boolean> setDocAttributes (
+           String    attributeUri
+           List<String>    keys
+           List<String>    values
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #doc.setDocAttributes(attributeUri,keys,values);
+\end{lstlisting}
+\input{doc/setDocAttributes}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetDocAttribute}
+\label{Api:GetDocAttribute}
+\begin{verbatim}
+   XferDocumentAttribute getDocAttribute (
+           String    attributeUri
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #doc.getDocAttribute(attributeUri);
+\end{lstlisting}
+\input{doc/getDocAttribute}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetDocAttributes}
+\label{Api:GetDocAttributes}
+\begin{verbatim}
+   List<XferDocumentAttribute> getDocAttributes (
+           String    attributeUri
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #doc.getDocAttributes(attributeUri);
+\end{lstlisting}
+\input{doc/getDocAttributes}
+
+
+\rule{15cm}{2pt}
+\subsubsection{DeleteDocAttribute}
+\label{Api:DeleteDocAttribute}
+\begin{verbatim}
+   boolean deleteDocAttribute (
+           String    attributeUri
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #doc.deleteDocAttribute(attributeUri);
+\end{lstlisting}
+\input{doc/deleteDocAttribute}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetDocRepoIdGenUri}
+\label{Api:GetDocRepoIdGenUri}
+\begin{verbatim}
+   String getDocRepoIdGenUri (
+           String    docRepoUri
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #doc.getDocRepoIdGenUri(docRepoUri);
+\end{lstlisting}
+\input{doc/getDocRepoIdGenUri}
+
+
+\rule{15cm}{2pt}
+\subsubsection{SetDocRepoIdGenConfig}
+\label{Api:SetDocRepoIdGenConfig}
+\begin{verbatim}
+   DocumentRepoConfig setDocRepoIdGenConfig (
+           String    docRepoUri
+           String    idGenConfig
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #doc.setDocRepoIdGenConfig(docRepoUri,idGenConfig);
+\end{lstlisting}
+\input{doc/setDocRepoIdGenConfig}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetDocRepoIdGenConfig}
+\label{Api:GetDocRepoIdGenConfig}
+\begin{verbatim}
+   RaptureIdGenConfig getDocRepoIdGenConfig (
+           String    docRepoUri
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #doc.getDocRepoIdGenConfig(docRepoUri);
+\end{lstlisting}
+\input{doc/getDocRepoIdGenConfig}
+
+
+\rule{15cm}{2pt}

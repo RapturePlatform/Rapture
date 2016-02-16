@@ -6,25 +6,25 @@ param(name, type) ::= <<
 
 // The entry for a single function
 docApiEntry(apitype, ret, name, apiparams, paramNames, doc, ent) ::= <<
-\section{<name; format="upcase">}
+\subsubsection{<name; format="upcase">}
 \label{Api:<name; format="upcase">}
 \begin{verbatim}
    <ret> <name> (
       <apiparams; separator="\n">
    )
 \end{verbatim}
-\begin{lstlisting}
+\begin{lstlisting}[language=reflex]
 // Reflex use
 ret = #<apitype; format="lower">.<name>(<paramNames; separator=",">);
 \end{lstlisting}
-<doc>
+\input{<apitype; format="lower">/<name>}
 
 
 \rule{15cm}{2pt}
 >>
 docApiList(apitype, apis, doc) ::= <<
-\chapter{<apitype> API}
-<doc>
+\section{<apitype> API}
+\input{<apitype; format="lower">/info}
 <apis; separator="\n">
 >>
 
@@ -33,9 +33,9 @@ docTypeField(name, type) ::= <<
 >>
 
 docTypeDef(name, fields, doc) ::= <<
-\section{<name; format="upcase">}
+\subsection{<name; format="upcase">}
 \label{type:<name; format="upcase">}
-<doc>
+
 \begin{verbatim}
    type <name> {
       <fields; separator="\n">
@@ -46,6 +46,6 @@ docTypeDef(name, fields, doc) ::= <<
 >>
 
 docTypes(types) ::= <<
-\part{Types}
+\subsection{Types}
 <types; separator="\n">
 >>

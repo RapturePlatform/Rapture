@@ -1,0 +1,21 @@
+The \verb+getDocAndMeta+ API call is used to retrieve both the content of
+a document and the meta data associated with that document. If the uri does
+not have a version qualifier the information returned will refer to the latest
+version of the document. The return value is complex is structure -- please
+refer to the table at the end of this section to understand the fields within that
+structure.
+
+The \verb+DocumentWithMeta+ return value is a complex structure that contains
+the following fields:
+
+\begin{table}[h]
+\begin{center}
+\begin{tabular}{rl p{8cm}}
+  Field & Type & Description \\
+  \hline
+  displayName & String & the url of this document \\
+  metaData & DocumentMetaData & the metadata associated with this document \\
+  content & String & the content of this document \\
+\end{tabular}
+\end{center}
+\end{table}

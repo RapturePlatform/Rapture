@@ -1,0 +1,36 @@
+\subsection{General Repository Behavior}
+The document API for \Rapture is often abbreviated to \emph{Doc}. The API is used
+to manipulate the presence and the content of document repositories in \Rapture.
+
+In the abstract a document repository in \Rapture is a key/value store with optional
+enhancements. The key in \Rapture corresponds to a URI for the document and where the
+context is not obvious the scheme of the uri is \verb+document://+. In all document
+API calls this scheme may be omitted.
+
+Document repositories in \Rapture are backed by concrete data storage systems. When
+you define a repository in \Rapture you provide a configuration string that is used
+by \Rapture to route your request to a low level driver that interacts with the
+underlying system. The format of this configuration string will be described in
+the API call for creating a repository.
+
+Document repositories can also be versioned. When you update a document in a
+versioned repository the previous history of that document is preserved. In fact you can
+qualify the URI of a document with the @ symbol and a version number to retrieve
+previous versions of a document. Omitting the @ symbol will always retrieve the
+latest version of a document.
+
+Documents in repositories can also have metadata associated with them. \Rapture
+automatically maintains some of this metadata - the time the document was created, the
+user that created it. But a developer can use metadata update calls to add their
+own attributes to documents in \Rapture.
+
+The URI of a document in a repository implies a folder-like structure with the
+forward slash delineating these folders. There are document API calls to treat a
+document repository like a file system -- these are useful when constructing
+browsable user interfaces to a repository.
+
+\subsection{Repository Configuration}
+
+Blah blah blah
+
+\subsection{Document API}

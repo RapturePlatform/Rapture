@@ -1,0 +1,264 @@
+\section{Plugin API}
+\input{plugin/info}
+\subsubsection{GetInstalledPlugins}
+\label{Api:GetInstalledPlugins}
+\begin{verbatim}
+   List<PluginConfig> getInstalledPlugins (
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #plugin.getInstalledPlugins();
+\end{lstlisting}
+\input{plugin/getInstalledPlugins}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetPluginManifest}
+\label{Api:GetPluginManifest}
+\begin{verbatim}
+   PluginManifest getPluginManifest (
+           String    manifestUri
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #plugin.getPluginManifest(manifestUri);
+\end{lstlisting}
+\input{plugin/getPluginManifest}
+
+
+\rule{15cm}{2pt}
+\subsubsection{RecordPlugin}
+\label{Api:RecordPlugin}
+\begin{verbatim}
+   void recordPlugin (
+           PluginConfig    plugin
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #plugin.recordPlugin(plugin);
+\end{lstlisting}
+\input{plugin/recordPlugin}
+
+
+\rule{15cm}{2pt}
+\subsubsection{InstallPlugin}
+\label{Api:InstallPlugin}
+\begin{verbatim}
+   void installPlugin (
+           PluginManifest    manifest
+           Map<String,PluginTransportItem>    payload
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #plugin.installPlugin(manifest,payload);
+\end{lstlisting}
+\input{plugin/installPlugin}
+
+
+\rule{15cm}{2pt}
+\subsubsection{InstallPluginItem}
+\label{Api:InstallPluginItem}
+\begin{verbatim}
+   void installPluginItem (
+           String    pluginName
+           PluginTransportItem    item
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #plugin.installPluginItem(pluginName,item);
+\end{lstlisting}
+\input{plugin/installPluginItem}
+
+
+\rule{15cm}{2pt}
+\subsubsection{UninstallPlugin}
+\label{Api:UninstallPlugin}
+\begin{verbatim}
+   void uninstallPlugin (
+           String    name
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #plugin.uninstallPlugin(name);
+\end{lstlisting}
+\input{plugin/uninstallPlugin}
+
+
+\rule{15cm}{2pt}
+\subsubsection{UninstallPluginItem}
+\label{Api:UninstallPluginItem}
+\begin{verbatim}
+   void uninstallPluginItem (
+           PluginTransportItem    item
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #plugin.uninstallPluginItem(item);
+\end{lstlisting}
+\input{plugin/uninstallPluginItem}
+
+
+\rule{15cm}{2pt}
+\subsubsection{DeletePluginManifest}
+\label{Api:DeletePluginManifest}
+\begin{verbatim}
+   void deletePluginManifest (
+           String    manifestUri
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #plugin.deletePluginManifest(manifestUri);
+\end{lstlisting}
+\input{plugin/deletePluginManifest}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetPluginItem}
+\label{Api:GetPluginItem}
+\begin{verbatim}
+   PluginTransportItem getPluginItem (
+           String    uri
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #plugin.getPluginItem(uri);
+\end{lstlisting}
+\input{plugin/getPluginItem}
+
+
+\rule{15cm}{2pt}
+\subsubsection{VerifyPlugin}
+\label{Api:VerifyPlugin}
+\begin{verbatim}
+   Map<String,String> verifyPlugin (
+           String    plugin
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #plugin.verifyPlugin(plugin);
+\end{lstlisting}
+\input{plugin/verifyPlugin}
+
+
+\rule{15cm}{2pt}
+\subsubsection{CreateManifest}
+\label{Api:CreateManifest}
+\begin{verbatim}
+   void createManifest (
+           String    pluginName
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #plugin.createManifest(pluginName);
+\end{lstlisting}
+\input{plugin/createManifest}
+
+
+\rule{15cm}{2pt}
+\subsubsection{AddManifestItem}
+\label{Api:AddManifestItem}
+\begin{verbatim}
+   void addManifestItem (
+           String    pluginName
+           String    uri
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #plugin.addManifestItem(pluginName,uri);
+\end{lstlisting}
+\input{plugin/addManifestItem}
+
+
+\rule{15cm}{2pt}
+\subsubsection{AddManifestDataFolder}
+\label{Api:AddManifestDataFolder}
+\begin{verbatim}
+   void addManifestDataFolder (
+           String    pluginName
+           String    uri
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #plugin.addManifestDataFolder(pluginName,uri);
+\end{lstlisting}
+\input{plugin/addManifestDataFolder}
+
+
+\rule{15cm}{2pt}
+\subsubsection{RemoveManifestDataFolder}
+\label{Api:RemoveManifestDataFolder}
+\begin{verbatim}
+   void removeManifestDataFolder (
+           String    pluginName
+           String    uri
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #plugin.removeManifestDataFolder(pluginName,uri);
+\end{lstlisting}
+\input{plugin/removeManifestDataFolder}
+
+
+\rule{15cm}{2pt}
+\subsubsection{SetManifestVersion}
+\label{Api:SetManifestVersion}
+\begin{verbatim}
+   void setManifestVersion (
+           String    pluginName
+           String    version
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #plugin.setManifestVersion(pluginName,version);
+\end{lstlisting}
+\input{plugin/setManifestVersion}
+
+
+\rule{15cm}{2pt}
+\subsubsection{RemoveItemFromManifest}
+\label{Api:RemoveItemFromManifest}
+\begin{verbatim}
+   void removeItemFromManifest (
+           String    pluginName
+           String    uri
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #plugin.removeItemFromManifest(pluginName,uri);
+\end{lstlisting}
+\input{plugin/removeItemFromManifest}
+
+
+\rule{15cm}{2pt}
+\subsubsection{ExportPlugin}
+\label{Api:ExportPlugin}
+\begin{verbatim}
+   String exportPlugin (
+           String    pluginName
+           String    path
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #plugin.exportPlugin(pluginName,path);
+\end{lstlisting}
+\input{plugin/exportPlugin}
+
+
+\rule{15cm}{2pt}

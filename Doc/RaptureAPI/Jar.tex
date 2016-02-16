@@ -1,0 +1,154 @@
+\section{Jar API}
+\input{jar/info}
+\subsubsection{JarExists}
+\label{Api:JarExists}
+\begin{verbatim}
+   boolean jarExists (
+           String    jarUri
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #jar.jarExists(jarUri);
+\end{lstlisting}
+\input{jar/jarExists}
+
+
+\rule{15cm}{2pt}
+\subsubsection{PutJar}
+\label{Api:PutJar}
+\begin{verbatim}
+   void putJar (
+           String    jarUri
+           byte[]    jarContent
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #jar.putJar(jarUri,jarContent);
+\end{lstlisting}
+\input{jar/putJar}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetJar}
+\label{Api:GetJar}
+\begin{verbatim}
+   BlobContainer getJar (
+           String    jarUri
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #jar.getJar(jarUri);
+\end{lstlisting}
+\input{jar/getJar}
+
+
+\rule{15cm}{2pt}
+\subsubsection{DeleteJar}
+\label{Api:DeleteJar}
+\begin{verbatim}
+   void deleteJar (
+           String    jarUri
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #jar.deleteJar(jarUri);
+\end{lstlisting}
+\input{jar/deleteJar}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetJarSize}
+\label{Api:GetJarSize}
+\begin{verbatim}
+   Long getJarSize (
+           String    jarUri
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #jar.getJarSize(jarUri);
+\end{lstlisting}
+\input{jar/getJarSize}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetJarMetaData}
+\label{Api:GetJarMetaData}
+\begin{verbatim}
+   Map<String,String> getJarMetaData (
+           String    jarUri
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #jar.getJarMetaData(jarUri);
+\end{lstlisting}
+\input{jar/getJarMetaData}
+
+
+\rule{15cm}{2pt}
+\subsubsection{ListJarsByUriPrefix}
+\label{Api:ListJarsByUriPrefix}
+\begin{verbatim}
+   Map<String,RaptureFolderInfo> listJarsByUriPrefix (
+           String    uriPrefix
+           int    depth
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #jar.listJarsByUriPrefix(uriPrefix,depth);
+\end{lstlisting}
+\input{jar/listJarsByUriPrefix}
+
+
+\rule{15cm}{2pt}
+\subsubsection{JarIsEnabled}
+\label{Api:JarIsEnabled}
+\begin{verbatim}
+   boolean jarIsEnabled (
+           String    jarUri
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #jar.jarIsEnabled(jarUri);
+\end{lstlisting}
+\input{jar/jarIsEnabled}
+
+
+\rule{15cm}{2pt}
+\subsubsection{EnableJar}
+\label{Api:EnableJar}
+\begin{verbatim}
+   void enableJar (
+           String    jarUri
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #jar.enableJar(jarUri);
+\end{lstlisting}
+\input{jar/enableJar}
+
+
+\rule{15cm}{2pt}
+\subsubsection{DisableJar}
+\label{Api:DisableJar}
+\begin{verbatim}
+   void disableJar (
+           String    jarUri
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #jar.disableJar(jarUri);
+\end{lstlisting}
+\input{jar/disableJar}
+
+
+\rule{15cm}{2pt}

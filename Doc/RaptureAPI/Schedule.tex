@@ -1,0 +1,323 @@
+\section{Schedule API}
+\input{schedule/info}
+\subsubsection{CreateJob}
+\label{Api:CreateJob}
+\begin{verbatim}
+   RaptureJob createJob (
+           String    jobURI
+           String    description
+           String    scriptURI
+           String    cronExpression
+           String    timeZone
+           Map<String,String>    jobParams
+           boolean    autoActivate
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #schedule.createJob(jobURI,description,scriptURI,cronExpression,timeZone,jobParams,autoActivate);
+\end{lstlisting}
+\input{schedule/createJob}
+
+
+\rule{15cm}{2pt}
+\subsubsection{CreateWorkflowJob}
+\label{Api:CreateWorkflowJob}
+\begin{verbatim}
+   RaptureJob createWorkflowJob (
+           String    jobURI
+           String    description
+           String    workflowURI
+           String    cronExpression
+           String    timeZone
+           Map<String,String>    jobParams
+           boolean    autoActivate
+           int    maxRuntimeMinutes
+           String    appStatusNamePattern
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #schedule.createWorkflowJob(jobURI,description,workflowURI,cronExpression,timeZone,jobParams,autoActivate,maxRuntimeMinutes,appStatusNamePattern);
+\end{lstlisting}
+\input{schedule/createWorkflowJob}
+
+
+\rule{15cm}{2pt}
+\subsubsection{ActivateJob}
+\label{Api:ActivateJob}
+\begin{verbatim}
+   void activateJob (
+           String    jobURI
+           Map<String,String>    extraParams
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #schedule.activateJob(jobURI,extraParams);
+\end{lstlisting}
+\input{schedule/activateJob}
+
+
+\rule{15cm}{2pt}
+\subsubsection{DeactivateJob}
+\label{Api:DeactivateJob}
+\begin{verbatim}
+   void deactivateJob (
+           String    jobURI
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #schedule.deactivateJob(jobURI);
+\end{lstlisting}
+\input{schedule/deactivateJob}
+
+
+\rule{15cm}{2pt}
+\subsubsection{RetrieveJob}
+\label{Api:RetrieveJob}
+\begin{verbatim}
+   RaptureJob retrieveJob (
+           String    jobURI
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #schedule.retrieveJob(jobURI);
+\end{lstlisting}
+\input{schedule/retrieveJob}
+
+
+\rule{15cm}{2pt}
+\subsubsection{RetrieveJobs}
+\label{Api:RetrieveJobs}
+\begin{verbatim}
+   List<RaptureJob> retrieveJobs (
+           String    uriPrefix
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #schedule.retrieveJobs(uriPrefix);
+\end{lstlisting}
+\input{schedule/retrieveJobs}
+
+
+\rule{15cm}{2pt}
+\subsubsection{RunJobNow}
+\label{Api:RunJobNow}
+\begin{verbatim}
+   void runJobNow (
+           String    jobURI
+           Map<String,String>    extraParams
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #schedule.runJobNow(jobURI,extraParams);
+\end{lstlisting}
+\input{schedule/runJobNow}
+
+
+\rule{15cm}{2pt}
+\subsubsection{ResetJob}
+\label{Api:ResetJob}
+\begin{verbatim}
+   void resetJob (
+           String    jobURI
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #schedule.resetJob(jobURI);
+\end{lstlisting}
+\input{schedule/resetJob}
+
+
+\rule{15cm}{2pt}
+\subsubsection{RetrieveJobExec}
+\label{Api:RetrieveJobExec}
+\begin{verbatim}
+   RaptureJobExec retrieveJobExec (
+           String    jobURI
+           Long    execTime
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #schedule.retrieveJobExec(jobURI,execTime);
+\end{lstlisting}
+\input{schedule/retrieveJobExec}
+
+
+\rule{15cm}{2pt}
+\subsubsection{DeleteJob}
+\label{Api:DeleteJob}
+\begin{verbatim}
+   void deleteJob (
+           String    jobURI
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #schedule.deleteJob(jobURI);
+\end{lstlisting}
+\input{schedule/deleteJob}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetJobs}
+\label{Api:GetJobs}
+\begin{verbatim}
+   List<String> getJobs (
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #schedule.getJobs();
+\end{lstlisting}
+\input{schedule/getJobs}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetUpcomingJobs}
+\label{Api:GetUpcomingJobs}
+\begin{verbatim}
+   List<RaptureJobExec> getUpcomingJobs (
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #schedule.getUpcomingJobs();
+\end{lstlisting}
+\input{schedule/getUpcomingJobs}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetWorkflowExecsStatus}
+\label{Api:GetWorkflowExecsStatus}
+\begin{verbatim}
+   WorkflowExecsStatus getWorkflowExecsStatus (
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #schedule.getWorkflowExecsStatus();
+\end{lstlisting}
+\input{schedule/getWorkflowExecsStatus}
+
+
+\rule{15cm}{2pt}
+\subsubsection{AckJobError}
+\label{Api:AckJobError}
+\begin{verbatim}
+   JobErrorAck ackJobError (
+           String    jobURI
+           Long    execTime
+           String    jobErrorType
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #schedule.ackJobError(jobURI,execTime,jobErrorType);
+\end{lstlisting}
+\input{schedule/ackJobError}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetNextExec}
+\label{Api:GetNextExec}
+\begin{verbatim}
+   RaptureJobExec getNextExec (
+           String    jobURI
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #schedule.getNextExec(jobURI);
+\end{lstlisting}
+\input{schedule/getNextExec}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetJobExecs}
+\label{Api:GetJobExecs}
+\begin{verbatim}
+   List<RaptureJobExec> getJobExecs (
+           String    jobURI
+           int    start
+           int    count
+           boolean    reversed
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #schedule.getJobExecs(jobURI,start,count,reversed);
+\end{lstlisting}
+\input{schedule/getJobExecs}
+
+
+\rule{15cm}{2pt}
+\subsubsection{BatchGetJobExecs}
+\label{Api:BatchGetJobExecs}
+\begin{verbatim}
+   List<RaptureJobExec> batchGetJobExecs (
+           List<String>    jobURI
+           int    start
+           int    count
+           boolean    reversed
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #schedule.batchGetJobExecs(jobURI,start,count,reversed);
+\end{lstlisting}
+\input{schedule/batchGetJobExecs}
+
+
+\rule{15cm}{2pt}
+\subsubsection{IsJobReadyToRun}
+\label{Api:IsJobReadyToRun}
+\begin{verbatim}
+   boolean isJobReadyToRun (
+           String    toJobURI
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #schedule.isJobReadyToRun(toJobURI);
+\end{lstlisting}
+\input{schedule/isJobReadyToRun}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetCurrentWeekTimeRecords}
+\label{Api:GetCurrentWeekTimeRecords}
+\begin{verbatim}
+   List<TimedEventRecord> getCurrentWeekTimeRecords (
+           int    weekOffsetfromNow
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #schedule.getCurrentWeekTimeRecords(weekOffsetfromNow);
+\end{lstlisting}
+\input{schedule/getCurrentWeekTimeRecords}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetCurrentDayJobs}
+\label{Api:GetCurrentDayJobs}
+\begin{verbatim}
+   List<TimedEventRecord> getCurrentDayJobs (
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #schedule.getCurrentDayJobs();
+\end{lstlisting}
+\input{schedule/getCurrentDayJobs}
+
+
+\rule{15cm}{2pt}

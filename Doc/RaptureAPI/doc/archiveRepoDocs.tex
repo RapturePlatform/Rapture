@@ -1,0 +1,19 @@
+The \verb+archiveRepoDocs+ call removes older versions of documents from a
+repository that match certain criteria.
+
+\begin{table}[h]
+\begin{center}
+\begin{tabular}{r p{8cm}}
+  Parameter & Purpose \\
+  \hline
+  docRepoUri & If this document uri contains just the name of a repository then all
+  documents in the repository will be checked. Otherwise just those matching this prefix will be
+  scanned. \\
+  versionLimit & If the ensureVersionLimit parameter is true this parameter will determine
+  the minimum number of versions to keep fora document. \\
+  timeLimit & This parameter determines the modification time of the oldest version to keep during this
+  archive process. \\
+  ensureVersionLimit & If this parameter is true the versionLimit parameter is used \\
+\end{tabular}
+\end{center}
+\end{table}

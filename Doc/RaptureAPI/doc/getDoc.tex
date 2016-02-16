@@ -1,0 +1,12 @@
+The \verb+getDoc+ API call is used to retrieve content from a document repository
+in \Rapture. The single parameter \verb+docUri+ is a string that defines the
+location of the document within the \Rapture system. It can optionally be
+prefixed with the \verb+document:+ scheme qualifier. Depending on the client
+side implementation the call can throw an exception if the repository is not
+existent or the entitlements of the server prohibit such access. Some implementations
+wrap the document does not exist failure into returning a null value from this
+API call.
+
+In the \Reflex scripting language a caller can use the \emph{pull} operator (\verb+<--+)
+to retrieve a document from \Rapture and convert its contents from JSON to a \Reflex map
+of maps. This call will fail if the document is not in JSON format.

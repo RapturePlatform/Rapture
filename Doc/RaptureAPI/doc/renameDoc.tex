@@ -1,0 +1,8 @@
+The \verb+renameDoc+ call is an atomic wrapper around the \verb+deleteDoc+ and \verb+putDoc+.
+
+The implementation simply retrieves the original document contents using
+\verb+getDoc+ and then stores the document using \verb+putDoc+. Finally
+the original document is deleted using \verb+deleteDoc+.
+
+The entitlements check for this call also checks the entitlements for the
+three calls it makes.

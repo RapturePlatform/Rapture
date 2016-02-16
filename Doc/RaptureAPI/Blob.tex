@@ -1,0 +1,217 @@
+\section{Blob API}
+\input{blob/info}
+\subsubsection{CreateBlobRepo}
+\label{Api:CreateBlobRepo}
+\begin{verbatim}
+   void createBlobRepo (
+           String    blobRepoUri
+           String    config
+           String    metaConfig
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #blob.createBlobRepo(blobRepoUri,config,metaConfig);
+\end{lstlisting}
+\input{blob/createBlobRepo}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetBlobRepoConfig}
+\label{Api:GetBlobRepoConfig}
+\begin{verbatim}
+   BlobRepoConfig getBlobRepoConfig (
+           String    blobRepoUri
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #blob.getBlobRepoConfig(blobRepoUri);
+\end{lstlisting}
+\input{blob/getBlobRepoConfig}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetBlobRepoConfigs}
+\label{Api:GetBlobRepoConfigs}
+\begin{verbatim}
+   List<BlobRepoConfig> getBlobRepoConfigs (
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #blob.getBlobRepoConfigs();
+\end{lstlisting}
+\input{blob/getBlobRepoConfigs}
+
+
+\rule{15cm}{2pt}
+\subsubsection{DeleteBlobRepo}
+\label{Api:DeleteBlobRepo}
+\begin{verbatim}
+   void deleteBlobRepo (
+           String    repoUri
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #blob.deleteBlobRepo(repoUri);
+\end{lstlisting}
+\input{blob/deleteBlobRepo}
+
+
+\rule{15cm}{2pt}
+\subsubsection{BlobRepoExists}
+\label{Api:BlobRepoExists}
+\begin{verbatim}
+   boolean blobRepoExists (
+           String    repoUri
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #blob.blobRepoExists(repoUri);
+\end{lstlisting}
+\input{blob/blobRepoExists}
+
+
+\rule{15cm}{2pt}
+\subsubsection{BlobExists}
+\label{Api:BlobExists}
+\begin{verbatim}
+   boolean blobExists (
+           String    blobUri
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #blob.blobExists(blobUri);
+\end{lstlisting}
+\input{blob/blobExists}
+
+
+\rule{15cm}{2pt}
+\subsubsection{AddBlobContent}
+\label{Api:AddBlobContent}
+\begin{verbatim}
+   void addBlobContent (
+           String    blobUri
+           byte[]    content
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #blob.addBlobContent(blobUri,content);
+\end{lstlisting}
+\input{blob/addBlobContent}
+
+
+\rule{15cm}{2pt}
+\subsubsection{PutBlob}
+\label{Api:PutBlob}
+\begin{verbatim}
+   void putBlob (
+           String    blobUri
+           byte[]    content
+           String    contentType
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #blob.putBlob(blobUri,content,contentType);
+\end{lstlisting}
+\input{blob/putBlob}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetBlob}
+\label{Api:GetBlob}
+\begin{verbatim}
+   BlobContainer getBlob (
+           String    blobUri
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #blob.getBlob(blobUri);
+\end{lstlisting}
+\input{blob/getBlob}
+
+
+\rule{15cm}{2pt}
+\subsubsection{DeleteBlob}
+\label{Api:DeleteBlob}
+\begin{verbatim}
+   void deleteBlob (
+           String    blobUri
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #blob.deleteBlob(blobUri);
+\end{lstlisting}
+\input{blob/deleteBlob}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetBlobSize}
+\label{Api:GetBlobSize}
+\begin{verbatim}
+   Long getBlobSize (
+           String    blobUri
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #blob.getBlobSize(blobUri);
+\end{lstlisting}
+\input{blob/getBlobSize}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetBlobMetaData}
+\label{Api:GetBlobMetaData}
+\begin{verbatim}
+   Map<String,String> getBlobMetaData (
+           String    blobUri
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #blob.getBlobMetaData(blobUri);
+\end{lstlisting}
+\input{blob/getBlobMetaData}
+
+
+\rule{15cm}{2pt}
+\subsubsection{ListBlobsByUriPrefix}
+\label{Api:ListBlobsByUriPrefix}
+\begin{verbatim}
+   Map<String,RaptureFolderInfo> listBlobsByUriPrefix (
+           String    uriPrefix
+           int    depth
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #blob.listBlobsByUriPrefix(uriPrefix,depth);
+\end{lstlisting}
+\input{blob/listBlobsByUriPrefix}
+
+
+\rule{15cm}{2pt}
+\subsubsection{DeleteBlobsByUriPrefix}
+\label{Api:DeleteBlobsByUriPrefix}
+\begin{verbatim}
+   List<String> deleteBlobsByUriPrefix (
+           String    uriPrefix
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #blob.deleteBlobsByUriPrefix(uriPrefix);
+\end{lstlisting}
+\input{blob/deleteBlobsByUriPrefix}
+
+
+\rule{15cm}{2pt}

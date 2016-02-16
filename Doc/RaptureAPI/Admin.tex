@@ -1,0 +1,737 @@
+\section{Admin API}
+\input{admin/info}
+\subsubsection{GetSystemProperties}
+\label{Api:GetSystemProperties}
+\begin{verbatim}
+   Map<String,String> getSystemProperties (
+           List<String>    keys
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #admin.getSystemProperties(keys);
+\end{lstlisting}
+\input{admin/getSystemProperties}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetRepoConfig}
+\label{Api:GetRepoConfig}
+\begin{verbatim}
+   List<RepoConfig> getRepoConfig (
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #admin.getRepoConfig();
+\end{lstlisting}
+\input{admin/getRepoConfig}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetSessionsForUser}
+\label{Api:GetSessionsForUser}
+\begin{verbatim}
+   List<CallingContext> getSessionsForUser (
+           String    user
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #admin.getSessionsForUser(user);
+\end{lstlisting}
+\input{admin/getSessionsForUser}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetTags}
+\label{Api:GetTags}
+\begin{verbatim}
+   List<String> getTags (
+           String    raptureURI
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #admin.getTags(raptureURI);
+\end{lstlisting}
+\input{admin/getTags}
+
+
+\rule{15cm}{2pt}
+\subsubsection{DeleteUser}
+\label{Api:DeleteUser}
+\begin{verbatim}
+   void deleteUser (
+           String    userName
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #admin.deleteUser(userName);
+\end{lstlisting}
+\input{admin/deleteUser}
+
+
+\rule{15cm}{2pt}
+\subsubsection{DestroyUser}
+\label{Api:DestroyUser}
+\begin{verbatim}
+   void destroyUser (
+           String    userName
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #admin.destroyUser(userName);
+\end{lstlisting}
+\input{admin/destroyUser}
+
+
+\rule{15cm}{2pt}
+\subsubsection{RestoreUser}
+\label{Api:RestoreUser}
+\begin{verbatim}
+   void restoreUser (
+           String    userName
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #admin.restoreUser(userName);
+\end{lstlisting}
+\input{admin/restoreUser}
+
+
+\rule{15cm}{2pt}
+\subsubsection{AddUser}
+\label{Api:AddUser}
+\begin{verbatim}
+   void addUser (
+           String    userName
+           String    description
+           String    hashPassword
+           String    email
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #admin.addUser(userName,description,hashPassword,email);
+\end{lstlisting}
+\input{admin/addUser}
+
+
+\rule{15cm}{2pt}
+\subsubsection{DoesUserExist}
+\label{Api:DoesUserExist}
+\begin{verbatim}
+   boolean doesUserExist (
+           String    userName
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #admin.doesUserExist(userName);
+\end{lstlisting}
+\input{admin/doesUserExist}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetUser}
+\label{Api:GetUser}
+\begin{verbatim}
+   RaptureUser getUser (
+           String    userName
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #admin.getUser(userName);
+\end{lstlisting}
+\input{admin/getUser}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GenerateApiUser}
+\label{Api:GenerateApiUser}
+\begin{verbatim}
+   RaptureUser generateApiUser (
+           String    prefix
+           String    description
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #admin.generateApiUser(prefix,description);
+\end{lstlisting}
+\input{admin/generateApiUser}
+
+
+\rule{15cm}{2pt}
+\subsubsection{ResetUserPassword}
+\label{Api:ResetUserPassword}
+\begin{verbatim}
+   void resetUserPassword (
+           String    userName
+           String    newHashPassword
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #admin.resetUserPassword(userName,newHashPassword);
+\end{lstlisting}
+\input{admin/resetUserPassword}
+
+
+\rule{15cm}{2pt}
+\subsubsection{CreatePasswordResetToken}
+\label{Api:CreatePasswordResetToken}
+\begin{verbatim}
+   String createPasswordResetToken (
+           String    username
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #admin.createPasswordResetToken(username);
+\end{lstlisting}
+\input{admin/createPasswordResetToken}
+
+
+\rule{15cm}{2pt}
+\subsubsection{CancelPasswordResetToken}
+\label{Api:CancelPasswordResetToken}
+\begin{verbatim}
+   void cancelPasswordResetToken (
+           String    username
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #admin.cancelPasswordResetToken(username);
+\end{lstlisting}
+\input{admin/cancelPasswordResetToken}
+
+
+\rule{15cm}{2pt}
+\subsubsection{UpdateUserEmail}
+\label{Api:UpdateUserEmail}
+\begin{verbatim}
+   void updateUserEmail (
+           String    userName
+           String    newEmail
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #admin.updateUserEmail(userName,newEmail);
+\end{lstlisting}
+\input{admin/updateUserEmail}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetRemotes}
+\label{Api:GetRemotes}
+\begin{verbatim}
+   List<RaptureRemote> getRemotes (
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #admin.getRemotes();
+\end{lstlisting}
+\input{admin/getRemotes}
+
+
+\rule{15cm}{2pt}
+\subsubsection{AddRemote}
+\label{Api:AddRemote}
+\begin{verbatim}
+   RaptureRemote addRemote (
+           String    name
+           String    description
+           String    url
+           String    apiKey
+           String    optP
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #admin.addRemote(name,description,url,apiKey,optP);
+\end{lstlisting}
+\input{admin/addRemote}
+
+
+\rule{15cm}{2pt}
+\subsubsection{DeleteRemote}
+\label{Api:DeleteRemote}
+\begin{verbatim}
+   void deleteRemote (
+           String    name
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #admin.deleteRemote(name);
+\end{lstlisting}
+\input{admin/deleteRemote}
+
+
+\rule{15cm}{2pt}
+\subsubsection{UpdateRemoteApiKey}
+\label{Api:UpdateRemoteApiKey}
+\begin{verbatim}
+   void updateRemoteApiKey (
+           String    name
+           String    apiKey
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #admin.updateRemoteApiKey(name,apiKey);
+\end{lstlisting}
+\input{admin/updateRemoteApiKey}
+
+
+\rule{15cm}{2pt}
+\subsubsection{SetRemote}
+\label{Api:SetRemote}
+\begin{verbatim}
+   void setRemote (
+           String    raptureURI
+           String    remote
+           String    remoteURI
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #admin.setRemote(raptureURI,remote,remoteURI);
+\end{lstlisting}
+\input{admin/setRemote}
+
+
+\rule{15cm}{2pt}
+\subsubsection{ClearRemote}
+\label{Api:ClearRemote}
+\begin{verbatim}
+   void clearRemote (
+           String    raptureURI
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #admin.clearRemote(raptureURI);
+\end{lstlisting}
+\input{admin/clearRemote}
+
+
+\rule{15cm}{2pt}
+\subsubsection{PullRemote}
+\label{Api:PullRemote}
+\begin{verbatim}
+   void pullRemote (
+           String    raptureURI
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #admin.pullRemote(raptureURI);
+\end{lstlisting}
+\input{admin/pullRemote}
+
+
+\rule{15cm}{2pt}
+\subsubsection{AddTemplate}
+\label{Api:AddTemplate}
+\begin{verbatim}
+   void addTemplate (
+           String    name
+           String    template
+           boolean    overwrite
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #admin.addTemplate(name,template,overwrite);
+\end{lstlisting}
+\input{admin/addTemplate}
+
+
+\rule{15cm}{2pt}
+\subsubsection{RunTemplate}
+\label{Api:RunTemplate}
+\begin{verbatim}
+   String runTemplate (
+           String    name
+           String    parameters
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #admin.runTemplate(name,parameters);
+\end{lstlisting}
+\input{admin/runTemplate}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetTemplate}
+\label{Api:GetTemplate}
+\begin{verbatim}
+   String getTemplate (
+           String    name
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #admin.getTemplate(name);
+\end{lstlisting}
+\input{admin/getTemplate}
+
+
+\rule{15cm}{2pt}
+\subsubsection{CopyDocumentRepo}
+\label{Api:CopyDocumentRepo}
+\begin{verbatim}
+   void copyDocumentRepo (
+           String    srcAuthority
+           String    targAuthority
+           boolean    wipe
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #admin.copyDocumentRepo(srcAuthority,targAuthority,wipe);
+\end{lstlisting}
+\input{admin/copyDocumentRepo}
+
+
+\rule{15cm}{2pt}
+\subsubsection{AddIPToWhiteList}
+\label{Api:AddIPToWhiteList}
+\begin{verbatim}
+   void addIPToWhiteList (
+           String    ipAddress
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #admin.addIPToWhiteList(ipAddress);
+\end{lstlisting}
+\input{admin/addIPToWhiteList}
+
+
+\rule{15cm}{2pt}
+\subsubsection{RemoveIPFromWhiteList}
+\label{Api:RemoveIPFromWhiteList}
+\begin{verbatim}
+   void removeIPFromWhiteList (
+           String    ipAddress
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #admin.removeIPFromWhiteList(ipAddress);
+\end{lstlisting}
+\input{admin/removeIPFromWhiteList}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetIPWhiteList}
+\label{Api:GetIPWhiteList}
+\begin{verbatim}
+   List<String> getIPWhiteList (
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #admin.getIPWhiteList();
+\end{lstlisting}
+\input{admin/getIPWhiteList}
+
+
+\rule{15cm}{2pt}
+\subsubsection{RunBatchScript}
+\label{Api:RunBatchScript}
+\begin{verbatim}
+   String runBatchScript (
+           String    script
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #admin.runBatchScript(script);
+\end{lstlisting}
+\input{admin/runBatchScript}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetAllUsers}
+\label{Api:GetAllUsers}
+\begin{verbatim}
+   List<RaptureUser> getAllUsers (
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #admin.getAllUsers();
+\end{lstlisting}
+\input{admin/getAllUsers}
+
+
+\rule{15cm}{2pt}
+\subsubsection{InitiateTypeConversion}
+\label{Api:InitiateTypeConversion}
+\begin{verbatim}
+   void initiateTypeConversion (
+           String    raptureURI
+           String    newConfig
+           int    versionsToKeep
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #admin.initiateTypeConversion(raptureURI,newConfig,versionsToKeep);
+\end{lstlisting}
+\input{admin/initiateTypeConversion}
+
+
+\rule{15cm}{2pt}
+\subsubsection{PutArchiveConfig}
+\label{Api:PutArchiveConfig}
+\begin{verbatim}
+   void putArchiveConfig (
+           String    raptureURI
+           TypeArchiveConfig    config
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #admin.putArchiveConfig(raptureURI,config);
+\end{lstlisting}
+\input{admin/putArchiveConfig}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetArchiveConfig}
+\label{Api:GetArchiveConfig}
+\begin{verbatim}
+   TypeArchiveConfig getArchiveConfig (
+           String    raptureURI
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #admin.getArchiveConfig(raptureURI);
+\end{lstlisting}
+\input{admin/getArchiveConfig}
+
+
+\rule{15cm}{2pt}
+\subsubsection{DeleteArchiveConfig}
+\label{Api:DeleteArchiveConfig}
+\begin{verbatim}
+   void deleteArchiveConfig (
+           String    raptureURI
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #admin.deleteArchiveConfig(raptureURI);
+\end{lstlisting}
+\input{admin/deleteArchiveConfig}
+
+
+\rule{15cm}{2pt}
+\subsubsection{Ping}
+\label{Api:Ping}
+\begin{verbatim}
+   boolean ping (
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #admin.ping();
+\end{lstlisting}
+\input{admin/ping}
+
+
+\rule{15cm}{2pt}
+\subsubsection{AddMetadata}
+\label{Api:AddMetadata}
+\begin{verbatim}
+   void addMetadata (
+           Map<String,String>    values
+           boolean    overwrite
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #admin.addMetadata(values,overwrite);
+\end{lstlisting}
+\input{admin/addMetadata}
+
+
+\rule{15cm}{2pt}
+\subsubsection{SetMOTD}
+\label{Api:SetMOTD}
+\begin{verbatim}
+   void setMOTD (
+           String    message
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #admin.setMOTD(message);
+\end{lstlisting}
+\input{admin/setMOTD}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetMOTD}
+\label{Api:GetMOTD}
+\begin{verbatim}
+   String getMOTD (
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #admin.getMOTD();
+\end{lstlisting}
+\input{admin/getMOTD}
+
+
+\rule{15cm}{2pt}
+\subsubsection{SetEnvironmentName}
+\label{Api:SetEnvironmentName}
+\begin{verbatim}
+   void setEnvironmentName (
+           String    name
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #admin.setEnvironmentName(name);
+\end{lstlisting}
+\input{admin/setEnvironmentName}
+
+
+\rule{15cm}{2pt}
+\subsubsection{SetEnvironmentProperties}
+\label{Api:SetEnvironmentProperties}
+\begin{verbatim}
+   void setEnvironmentProperties (
+           Map<String,String>    properties
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #admin.setEnvironmentProperties(properties);
+\end{lstlisting}
+\input{admin/setEnvironmentProperties}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetEnvironmentName}
+\label{Api:GetEnvironmentName}
+\begin{verbatim}
+   String getEnvironmentName (
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #admin.getEnvironmentName();
+\end{lstlisting}
+\input{admin/getEnvironmentName}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetEnvironmentProperties}
+\label{Api:GetEnvironmentProperties}
+\begin{verbatim}
+   Map<String,String> getEnvironmentProperties (
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #admin.getEnvironmentProperties();
+\end{lstlisting}
+\input{admin/getEnvironmentProperties}
+
+
+\rule{15cm}{2pt}
+\subsubsection{Encode}
+\label{Api:Encode}
+\begin{verbatim}
+   String encode (
+           String    toEncode
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #admin.encode(toEncode);
+\end{lstlisting}
+\input{admin/encode}
+
+
+\rule{15cm}{2pt}
+\subsubsection{CreateURI}
+\label{Api:CreateURI}
+\begin{verbatim}
+   String createURI (
+           String    path
+           String    leaf
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #admin.createURI(path,leaf);
+\end{lstlisting}
+\input{admin/createURI}
+
+
+\rule{15cm}{2pt}
+\subsubsection{CreateMultipartURI}
+\label{Api:CreateMultipartURI}
+\begin{verbatim}
+   String createMultipartURI (
+           List<String>    elements
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #admin.createMultipartURI(elements);
+\end{lstlisting}
+\input{admin/createMultipartURI}
+
+
+\rule{15cm}{2pt}
+\subsubsection{Decode}
+\label{Api:Decode}
+\begin{verbatim}
+   String decode (
+           String    encoded
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #admin.decode(encoded);
+\end{lstlisting}
+\input{admin/decode}
+
+
+\rule{15cm}{2pt}
+\subsubsection{FindGroupNamesByUser}
+\label{Api:FindGroupNamesByUser}
+\begin{verbatim}
+   List<String> findGroupNamesByUser (
+           String    username
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #admin.findGroupNamesByUser(username);
+\end{lstlisting}
+\input{admin/findGroupNamesByUser}
+
+
+\rule{15cm}{2pt}

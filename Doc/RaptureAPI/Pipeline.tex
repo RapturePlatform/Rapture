@@ -1,0 +1,321 @@
+\section{Pipeline API}
+\input{pipeline/info}
+\subsubsection{RemoveServerCategory}
+\label{Api:RemoveServerCategory}
+\begin{verbatim}
+   void removeServerCategory (
+           String    category
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #pipeline.removeServerCategory(category);
+\end{lstlisting}
+\input{pipeline/removeServerCategory}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetServerCategories}
+\label{Api:GetServerCategories}
+\begin{verbatim}
+   List<String> getServerCategories (
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #pipeline.getServerCategories();
+\end{lstlisting}
+\input{pipeline/getServerCategories}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetBoundExchanges}
+\label{Api:GetBoundExchanges}
+\begin{verbatim}
+   List<CategoryQueueBindings> getBoundExchanges (
+           String    category
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #pipeline.getBoundExchanges(category);
+\end{lstlisting}
+\input{pipeline/getBoundExchanges}
+
+
+\rule{15cm}{2pt}
+\subsubsection{DeregisterPipelineExchange}
+\label{Api:DeregisterPipelineExchange}
+\begin{verbatim}
+   void deregisterPipelineExchange (
+           String    name
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #pipeline.deregisterPipelineExchange(name);
+\end{lstlisting}
+\input{pipeline/deregisterPipelineExchange}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetExchanges}
+\label{Api:GetExchanges}
+\begin{verbatim}
+   List<String> getExchanges (
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #pipeline.getExchanges();
+\end{lstlisting}
+\input{pipeline/getExchanges}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetExchange}
+\label{Api:GetExchange}
+\begin{verbatim}
+   RaptureExchange getExchange (
+           String    name
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #pipeline.getExchange(name);
+\end{lstlisting}
+\input{pipeline/getExchange}
+
+
+\rule{15cm}{2pt}
+\subsubsection{PublishMessageToCategory}
+\label{Api:PublishMessageToCategory}
+\begin{verbatim}
+   void publishMessageToCategory (
+           RapturePipelineTask    task
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #pipeline.publishMessageToCategory(task);
+\end{lstlisting}
+\input{pipeline/publishMessageToCategory}
+
+
+\rule{15cm}{2pt}
+\subsubsection{BroadcastMessageToCategory}
+\label{Api:BroadcastMessageToCategory}
+\begin{verbatim}
+   void broadcastMessageToCategory (
+           RapturePipelineTask    task
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #pipeline.broadcastMessageToCategory(task);
+\end{lstlisting}
+\input{pipeline/broadcastMessageToCategory}
+
+
+\rule{15cm}{2pt}
+\subsubsection{BroadcastMessageToAll}
+\label{Api:BroadcastMessageToAll}
+\begin{verbatim}
+   void broadcastMessageToAll (
+           RapturePipelineTask    task
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #pipeline.broadcastMessageToAll(task);
+\end{lstlisting}
+\input{pipeline/broadcastMessageToAll}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetStatus}
+\label{Api:GetStatus}
+\begin{verbatim}
+   PipelineTaskStatus getStatus (
+           String    taskId
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #pipeline.getStatus(taskId);
+\end{lstlisting}
+\input{pipeline/getStatus}
+
+
+\rule{15cm}{2pt}
+\subsubsection{QueryTasks}
+\label{Api:QueryTasks}
+\begin{verbatim}
+   List<RapturePipelineTask> queryTasks (
+           String    query
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #pipeline.queryTasks(query);
+\end{lstlisting}
+\input{pipeline/queryTasks}
+
+
+\rule{15cm}{2pt}
+\subsubsection{QueryTasksOld}
+\label{Api:QueryTasksOld}
+\begin{verbatim}
+   List<RapturePipelineTask> queryTasksOld (
+           TableQuery    query
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #pipeline.queryTasksOld(query);
+\end{lstlisting}
+\input{pipeline/queryTasksOld}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetLatestTaskEpoch}
+\label{Api:GetLatestTaskEpoch}
+\begin{verbatim}
+   Long getLatestTaskEpoch (
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #pipeline.getLatestTaskEpoch();
+\end{lstlisting}
+\input{pipeline/getLatestTaskEpoch}
+
+
+\rule{15cm}{2pt}
+\subsubsection{DrainPipeline}
+\label{Api:DrainPipeline}
+\begin{verbatim}
+   void drainPipeline (
+           String    exchange
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #pipeline.drainPipeline(exchange);
+\end{lstlisting}
+\input{pipeline/drainPipeline}
+
+
+\rule{15cm}{2pt}
+\subsubsection{RegisterExchangeDomain}
+\label{Api:RegisterExchangeDomain}
+\begin{verbatim}
+   void registerExchangeDomain (
+           String    domainURI
+           String    config
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #pipeline.registerExchangeDomain(domainURI,config);
+\end{lstlisting}
+\input{pipeline/registerExchangeDomain}
+
+
+\rule{15cm}{2pt}
+\subsubsection{DeregisterExchangeDomain}
+\label{Api:DeregisterExchangeDomain}
+\begin{verbatim}
+   void deregisterExchangeDomain (
+           String    domainURI
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #pipeline.deregisterExchangeDomain(domainURI);
+\end{lstlisting}
+\input{pipeline/deregisterExchangeDomain}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetExchangeDomains}
+\label{Api:GetExchangeDomains}
+\begin{verbatim}
+   List<String> getExchangeDomains (
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #pipeline.getExchangeDomains();
+\end{lstlisting}
+\input{pipeline/getExchangeDomains}
+
+
+\rule{15cm}{2pt}
+\subsubsection{SetupStandardCategory}
+\label{Api:SetupStandardCategory}
+\begin{verbatim}
+   void setupStandardCategory (
+           String    category
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #pipeline.setupStandardCategory(category);
+\end{lstlisting}
+\input{pipeline/setupStandardCategory}
+
+
+\rule{15cm}{2pt}
+\subsubsection{MakeRPC}
+\label{Api:MakeRPC}
+\begin{verbatim}
+   Map<String,Object> makeRPC (
+           String    queueName
+           String    fnName
+           Map<String,Object>    params
+           Long    timeoutInSeconds
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #pipeline.makeRPC(queueName,fnName,params,timeoutInSeconds);
+\end{lstlisting}
+\input{pipeline/makeRPC}
+
+
+\rule{15cm}{2pt}
+\subsubsection{CreateTopicExchange}
+\label{Api:CreateTopicExchange}
+\begin{verbatim}
+   void createTopicExchange (
+           String    domain
+           String    exchange
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #pipeline.createTopicExchange(domain,exchange);
+\end{lstlisting}
+\input{pipeline/createTopicExchange}
+
+
+\rule{15cm}{2pt}
+\subsubsection{PublishTopicMessage}
+\label{Api:PublishTopicMessage}
+\begin{verbatim}
+   void publishTopicMessage (
+           String    domain
+           String    exchange
+           String    topic
+           String    message
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #pipeline.publishTopicMessage(domain,exchange,topic,message);
+\end{lstlisting}
+\input{pipeline/publishTopicMessage}
+
+
+\rule{15cm}{2pt}

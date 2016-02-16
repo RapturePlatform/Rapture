@@ -1,0 +1,6 @@
+The \verb+deleteDoc+ call is used to remove a document from a document repository.
+
+In a versioned repository the history of the document is preserved -- the effect of
+this call is to set the \emph{current} version of the document to a null version, so
+that \verb+getDoc+ and \verb+existsDoc+ calls work as expected, but you can retrieve
+old versions of the document.

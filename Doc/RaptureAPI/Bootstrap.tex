@@ -1,0 +1,193 @@
+\section{Bootstrap API}
+\input{bootstrap/info}
+\subsubsection{SetEmphemeralRepo}
+\label{Api:SetEmphemeralRepo}
+\begin{verbatim}
+   void setEmphemeralRepo (
+           String    config
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #bootstrap.setEmphemeralRepo(config);
+\end{lstlisting}
+\input{bootstrap/setEmphemeralRepo}
+
+
+\rule{15cm}{2pt}
+\subsubsection{SetConfigRepo}
+\label{Api:SetConfigRepo}
+\begin{verbatim}
+   void setConfigRepo (
+           String    config
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #bootstrap.setConfigRepo(config);
+\end{lstlisting}
+\input{bootstrap/setConfigRepo}
+
+
+\rule{15cm}{2pt}
+\subsubsection{SetSettingsRepo}
+\label{Api:SetSettingsRepo}
+\begin{verbatim}
+   void setSettingsRepo (
+           String    config
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #bootstrap.setSettingsRepo(config);
+\end{lstlisting}
+\input{bootstrap/setSettingsRepo}
+
+
+\rule{15cm}{2pt}
+\subsubsection{MigrateConfigRepo}
+\label{Api:MigrateConfigRepo}
+\begin{verbatim}
+   void migrateConfigRepo (
+           String    newConfig
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #bootstrap.migrateConfigRepo(newConfig);
+\end{lstlisting}
+\input{bootstrap/migrateConfigRepo}
+
+
+\rule{15cm}{2pt}
+\subsubsection{MigrateEphemeralRepo}
+\label{Api:MigrateEphemeralRepo}
+\begin{verbatim}
+   void migrateEphemeralRepo (
+           String    newConfig
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #bootstrap.migrateEphemeralRepo(newConfig);
+\end{lstlisting}
+\input{bootstrap/migrateEphemeralRepo}
+
+
+\rule{15cm}{2pt}
+\subsubsection{MigrateSettingsRepo}
+\label{Api:MigrateSettingsRepo}
+\begin{verbatim}
+   void migrateSettingsRepo (
+           String    newConfig
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #bootstrap.migrateSettingsRepo(newConfig);
+\end{lstlisting}
+\input{bootstrap/migrateSettingsRepo}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetConfigRepo}
+\label{Api:GetConfigRepo}
+\begin{verbatim}
+   String getConfigRepo (
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #bootstrap.getConfigRepo();
+\end{lstlisting}
+\input{bootstrap/getConfigRepo}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetSettingsRepo}
+\label{Api:GetSettingsRepo}
+\begin{verbatim}
+   String getSettingsRepo (
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #bootstrap.getSettingsRepo();
+\end{lstlisting}
+\input{bootstrap/getSettingsRepo}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetEphemeralRepo}
+\label{Api:GetEphemeralRepo}
+\begin{verbatim}
+   String getEphemeralRepo (
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #bootstrap.getEphemeralRepo();
+\end{lstlisting}
+\input{bootstrap/getEphemeralRepo}
+
+
+\rule{15cm}{2pt}
+\subsubsection{RestartBootstrap}
+\label{Api:RestartBootstrap}
+\begin{verbatim}
+   void restartBootstrap (
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #bootstrap.restartBootstrap();
+\end{lstlisting}
+\input{bootstrap/restartBootstrap}
+
+
+\rule{15cm}{2pt}
+\subsubsection{AddScriptClass}
+\label{Api:AddScriptClass}
+\begin{verbatim}
+   void addScriptClass (
+           String    keyword
+           String    className
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #bootstrap.addScriptClass(keyword,className);
+\end{lstlisting}
+\input{bootstrap/addScriptClass}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetScriptClasses}
+\label{Api:GetScriptClasses}
+\begin{verbatim}
+   Map<String,String> getScriptClasses (
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #bootstrap.getScriptClasses();
+\end{lstlisting}
+\input{bootstrap/getScriptClasses}
+
+
+\rule{15cm}{2pt}
+\subsubsection{DeleteScriptClass}
+\label{Api:DeleteScriptClass}
+\begin{verbatim}
+   boolean deleteScriptClass (
+           String    keyword
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #bootstrap.deleteScriptClass(keyword);
+\end{lstlisting}
+\input{bootstrap/deleteScriptClass}
+
+
+\rule{15cm}{2pt}

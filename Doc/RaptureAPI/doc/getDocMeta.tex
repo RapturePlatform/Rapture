@@ -1,0 +1,24 @@
+The \verb+getDocMeta+ API call is used to retrieve the meta data associated
+with a given document in a repository. If the uri does not have a version
+qualifier the information returned will refer to the latest version of the
+document. The return value is complex is structure -- please refer to the
+table at the end of this section to understand the fields within that
+structure.
+
+The \verb+DocumentMetaData+ return value is a complex structure that contains
+the following fields:
+
+\begin{table}[h]
+\begin{center}
+\begin{tabular}{rl p{8cm}}
+  Field & Type & Description \\
+  \hline
+  version & integer & the version number of this document \\
+  createdTimestamp & long & when this document was first created \\
+  modifiedTimestamp & long & when this document was last modified \\
+  user & string & the user that made this modification \\
+  comment & string & any comment that was provided when the document was written \\
+  deleted & boolean & whether this document is deleted \\
+\end{tabular}
+\end{center}
+\end{table}

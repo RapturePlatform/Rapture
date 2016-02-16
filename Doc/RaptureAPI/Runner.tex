@@ -1,0 +1,746 @@
+\section{Runner API}
+\input{runner/info}
+\subsubsection{CreateServerGroup}
+\label{Api:CreateServerGroup}
+\begin{verbatim}
+   RaptureServerGroup createServerGroup (
+           String    name
+           String    description
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #runner.createServerGroup(name,description);
+\end{lstlisting}
+\input{runner/createServerGroup}
+
+
+\rule{15cm}{2pt}
+\subsubsection{DeleteServerGroup}
+\label{Api:DeleteServerGroup}
+\begin{verbatim}
+   void deleteServerGroup (
+           String    name
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #runner.deleteServerGroup(name);
+\end{lstlisting}
+\input{runner/deleteServerGroup}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetAllServerGroups}
+\label{Api:GetAllServerGroups}
+\begin{verbatim}
+   List<RaptureServerGroup> getAllServerGroups (
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #runner.getAllServerGroups();
+\end{lstlisting}
+\input{runner/getAllServerGroups}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetAllApplicationDefinitions}
+\label{Api:GetAllApplicationDefinitions}
+\begin{verbatim}
+   List<RaptureApplicationDefinition> getAllApplicationDefinitions (
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #runner.getAllApplicationDefinitions();
+\end{lstlisting}
+\input{runner/getAllApplicationDefinitions}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetAllLibraryDefinitions}
+\label{Api:GetAllLibraryDefinitions}
+\begin{verbatim}
+   List<RaptureLibraryDefinition> getAllLibraryDefinitions (
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #runner.getAllLibraryDefinitions();
+\end{lstlisting}
+\input{runner/getAllLibraryDefinitions}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetAllApplicationInstances}
+\label{Api:GetAllApplicationInstances}
+\begin{verbatim}
+   List<RaptureApplicationInstance> getAllApplicationInstances (
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #runner.getAllApplicationInstances();
+\end{lstlisting}
+\input{runner/getAllApplicationInstances}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetServerGroup}
+\label{Api:GetServerGroup}
+\begin{verbatim}
+   RaptureServerGroup getServerGroup (
+           String    name
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #runner.getServerGroup(name);
+\end{lstlisting}
+\input{runner/getServerGroup}
+
+
+\rule{15cm}{2pt}
+\subsubsection{AddGroupInclusion}
+\label{Api:AddGroupInclusion}
+\begin{verbatim}
+   RaptureServerGroup addGroupInclusion (
+           String    name
+           String    inclusion
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #runner.addGroupInclusion(name,inclusion);
+\end{lstlisting}
+\input{runner/addGroupInclusion}
+
+
+\rule{15cm}{2pt}
+\subsubsection{RemoveGroupInclusion}
+\label{Api:RemoveGroupInclusion}
+\begin{verbatim}
+   RaptureServerGroup removeGroupInclusion (
+           String    name
+           String    inclusion
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #runner.removeGroupInclusion(name,inclusion);
+\end{lstlisting}
+\input{runner/removeGroupInclusion}
+
+
+\rule{15cm}{2pt}
+\subsubsection{AddGroupExclusion}
+\label{Api:AddGroupExclusion}
+\begin{verbatim}
+   RaptureServerGroup addGroupExclusion (
+           String    name
+           String    exclusion
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #runner.addGroupExclusion(name,exclusion);
+\end{lstlisting}
+\input{runner/addGroupExclusion}
+
+
+\rule{15cm}{2pt}
+\subsubsection{RemoveGroupExclusion}
+\label{Api:RemoveGroupExclusion}
+\begin{verbatim}
+   RaptureServerGroup removeGroupExclusion (
+           String    name
+           String    exclusion
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #runner.removeGroupExclusion(name,exclusion);
+\end{lstlisting}
+\input{runner/removeGroupExclusion}
+
+
+\rule{15cm}{2pt}
+\subsubsection{RemoveGroupEntry}
+\label{Api:RemoveGroupEntry}
+\begin{verbatim}
+   RaptureServerGroup removeGroupEntry (
+           String    name
+           String    entry
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #runner.removeGroupEntry(name,entry);
+\end{lstlisting}
+\input{runner/removeGroupEntry}
+
+
+\rule{15cm}{2pt}
+\subsubsection{CreateApplicationDefinition}
+\label{Api:CreateApplicationDefinition}
+\begin{verbatim}
+   RaptureApplicationDefinition createApplicationDefinition (
+           String    name
+           String    ver
+           String    description
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #runner.createApplicationDefinition(name,ver,description);
+\end{lstlisting}
+\input{runner/createApplicationDefinition}
+
+
+\rule{15cm}{2pt}
+\subsubsection{DeleteApplicationDefinition}
+\label{Api:DeleteApplicationDefinition}
+\begin{verbatim}
+   void deleteApplicationDefinition (
+           String    name
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #runner.deleteApplicationDefinition(name);
+\end{lstlisting}
+\input{runner/deleteApplicationDefinition}
+
+
+\rule{15cm}{2pt}
+\subsubsection{UpdateApplicationVersion}
+\label{Api:UpdateApplicationVersion}
+\begin{verbatim}
+   RaptureApplicationDefinition updateApplicationVersion (
+           String    name
+           String    ver
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #runner.updateApplicationVersion(name,ver);
+\end{lstlisting}
+\input{runner/updateApplicationVersion}
+
+
+\rule{15cm}{2pt}
+\subsubsection{CreateLibraryDefinition}
+\label{Api:CreateLibraryDefinition}
+\begin{verbatim}
+   RaptureLibraryDefinition createLibraryDefinition (
+           String    name
+           String    ver
+           String    description
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #runner.createLibraryDefinition(name,ver,description);
+\end{lstlisting}
+\input{runner/createLibraryDefinition}
+
+
+\rule{15cm}{2pt}
+\subsubsection{DeleteLibraryDefinition}
+\label{Api:DeleteLibraryDefinition}
+\begin{verbatim}
+   void deleteLibraryDefinition (
+           String    name
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #runner.deleteLibraryDefinition(name);
+\end{lstlisting}
+\input{runner/deleteLibraryDefinition}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetLibraryDefinition}
+\label{Api:GetLibraryDefinition}
+\begin{verbatim}
+   RaptureLibraryDefinition getLibraryDefinition (
+           String    name
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #runner.getLibraryDefinition(name);
+\end{lstlisting}
+\input{runner/getLibraryDefinition}
+
+
+\rule{15cm}{2pt}
+\subsubsection{UpdateLibraryVersion}
+\label{Api:UpdateLibraryVersion}
+\begin{verbatim}
+   RaptureLibraryDefinition updateLibraryVersion (
+           String    name
+           String    ver
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #runner.updateLibraryVersion(name,ver);
+\end{lstlisting}
+\input{runner/updateLibraryVersion}
+
+
+\rule{15cm}{2pt}
+\subsubsection{AddLibraryToGroup}
+\label{Api:AddLibraryToGroup}
+\begin{verbatim}
+   RaptureServerGroup addLibraryToGroup (
+           String    serverGroup
+           String    libraryName
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #runner.addLibraryToGroup(serverGroup,libraryName);
+\end{lstlisting}
+\input{runner/addLibraryToGroup}
+
+
+\rule{15cm}{2pt}
+\subsubsection{RemoveLibraryFromGroup}
+\label{Api:RemoveLibraryFromGroup}
+\begin{verbatim}
+   RaptureServerGroup removeLibraryFromGroup (
+           String    serverGroup
+           String    libraryName
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #runner.removeLibraryFromGroup(serverGroup,libraryName);
+\end{lstlisting}
+\input{runner/removeLibraryFromGroup}
+
+
+\rule{15cm}{2pt}
+\subsubsection{CreateApplicationInstance}
+\label{Api:CreateApplicationInstance}
+\begin{verbatim}
+   RaptureApplicationInstance createApplicationInstance (
+           String    name
+           String    description
+           String    serverGroup
+           String    appName
+           String    timeRange
+           int    retryCount
+           String    parameters
+           String    apiUser
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #runner.createApplicationInstance(name,description,serverGroup,appName,timeRange,retryCount,parameters,apiUser);
+\end{lstlisting}
+\input{runner/createApplicationInstance}
+
+
+\rule{15cm}{2pt}
+\subsubsection{RunApplication}
+\label{Api:RunApplication}
+\begin{verbatim}
+   RaptureApplicationStatus runApplication (
+           String    appName
+           String    queueName
+           Map<String,String>    parameterInput
+           Map<String,String>    parameterOutput
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #runner.runApplication(appName,queueName,parameterInput,parameterOutput);
+\end{lstlisting}
+\input{runner/runApplication}
+
+
+\rule{15cm}{2pt}
+\subsubsection{RunCustomApplication}
+\label{Api:RunCustomApplication}
+\begin{verbatim}
+   RaptureApplicationStatus runCustomApplication (
+           String    appName
+           String    queueName
+           Map<String,String>    parameterInput
+           Map<String,String>    parameterOutput
+           String    customApplicationPath
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #runner.runCustomApplication(appName,queueName,parameterInput,parameterOutput,customApplicationPath);
+\end{lstlisting}
+\input{runner/runCustomApplication}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetApplicationStatus}
+\label{Api:GetApplicationStatus}
+\begin{verbatim}
+   RaptureApplicationStatus getApplicationStatus (
+           String    applicationStatusURI
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #runner.getApplicationStatus(applicationStatusURI);
+\end{lstlisting}
+\input{runner/getApplicationStatus}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetApplicationStatuses}
+\label{Api:GetApplicationStatuses}
+\begin{verbatim}
+   List<RaptureApplicationStatus> getApplicationStatuses (
+           String    date
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #runner.getApplicationStatuses(date);
+\end{lstlisting}
+\input{runner/getApplicationStatuses}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetApplicationStatusDates}
+\label{Api:GetApplicationStatusDates}
+\begin{verbatim}
+   List<String> getApplicationStatusDates (
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #runner.getApplicationStatusDates();
+\end{lstlisting}
+\input{runner/getApplicationStatusDates}
+
+
+\rule{15cm}{2pt}
+\subsubsection{ArchiveApplicationStatuses}
+\label{Api:ArchiveApplicationStatuses}
+\begin{verbatim}
+   void archiveApplicationStatuses (
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #runner.archiveApplicationStatuses();
+\end{lstlisting}
+\input{runner/archiveApplicationStatuses}
+
+
+\rule{15cm}{2pt}
+\subsubsection{ChangeApplicationStatus}
+\label{Api:ChangeApplicationStatus}
+\begin{verbatim}
+   RaptureApplicationStatus changeApplicationStatus (
+           String    applicationStatusURI
+           RaptureApplicationStatusStep    statusCode
+           String    message
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #runner.changeApplicationStatus(applicationStatusURI,statusCode,message);
+\end{lstlisting}
+\input{runner/changeApplicationStatus}
+
+
+\rule{15cm}{2pt}
+\subsubsection{RecordStatusMessages}
+\label{Api:RecordStatusMessages}
+\begin{verbatim}
+   void recordStatusMessages (
+           String    applicationStatusURI
+           List<String>    messages
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #runner.recordStatusMessages(applicationStatusURI,messages);
+\end{lstlisting}
+\input{runner/recordStatusMessages}
+
+
+\rule{15cm}{2pt}
+\subsubsection{TerminateApplication}
+\label{Api:TerminateApplication}
+\begin{verbatim}
+   RaptureApplicationStatus terminateApplication (
+           String    applicationStatusURI
+           String    reasonMessage
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #runner.terminateApplication(applicationStatusURI,reasonMessage);
+\end{lstlisting}
+\input{runner/terminateApplication}
+
+
+\rule{15cm}{2pt}
+\subsubsection{DeleteApplicationInstance}
+\label{Api:DeleteApplicationInstance}
+\begin{verbatim}
+   void deleteApplicationInstance (
+           String    name
+           String    serverGroup
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #runner.deleteApplicationInstance(name,serverGroup);
+\end{lstlisting}
+\input{runner/deleteApplicationInstance}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetApplicationInstance}
+\label{Api:GetApplicationInstance}
+\begin{verbatim}
+   RaptureApplicationInstance getApplicationInstance (
+           String    name
+           String    serverGroup
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #runner.getApplicationInstance(name,serverGroup);
+\end{lstlisting}
+\input{runner/getApplicationInstance}
+
+
+\rule{15cm}{2pt}
+\subsubsection{UpdateStatus}
+\label{Api:UpdateStatus}
+\begin{verbatim}
+   void updateStatus (
+           String    name
+           String    serverGroup
+           String    myServer
+           String    status
+           boolean    finished
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #runner.updateStatus(name,serverGroup,myServer,status,finished);
+\end{lstlisting}
+\input{runner/updateStatus}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetApplicationsForServerGroup}
+\label{Api:GetApplicationsForServerGroup}
+\begin{verbatim}
+   List<String> getApplicationsForServerGroup (
+           String    serverGroup
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #runner.getApplicationsForServerGroup(serverGroup);
+\end{lstlisting}
+\input{runner/getApplicationsForServerGroup}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetApplicationsForServer}
+\label{Api:GetApplicationsForServer}
+\begin{verbatim}
+   List<RaptureApplicationInstance> getApplicationsForServer (
+           String    serverName
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #runner.getApplicationsForServer(serverName);
+\end{lstlisting}
+\input{runner/getApplicationsForServer}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetApplicationDefinition}
+\label{Api:GetApplicationDefinition}
+\begin{verbatim}
+   RaptureApplicationDefinition getApplicationDefinition (
+           String    name
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #runner.getApplicationDefinition(name);
+\end{lstlisting}
+\input{runner/getApplicationDefinition}
+
+
+\rule{15cm}{2pt}
+\subsubsection{SetRunnerConfig}
+\label{Api:SetRunnerConfig}
+\begin{verbatim}
+   void setRunnerConfig (
+           String    name
+           String    value
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #runner.setRunnerConfig(name,value);
+\end{lstlisting}
+\input{runner/setRunnerConfig}
+
+
+\rule{15cm}{2pt}
+\subsubsection{DeleteRunnerConfig}
+\label{Api:DeleteRunnerConfig}
+\begin{verbatim}
+   void deleteRunnerConfig (
+           String    name
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #runner.deleteRunnerConfig(name);
+\end{lstlisting}
+\input{runner/deleteRunnerConfig}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetRunnerConfig}
+\label{Api:GetRunnerConfig}
+\begin{verbatim}
+   RaptureRunnerConfig getRunnerConfig (
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #runner.getRunnerConfig();
+\end{lstlisting}
+\input{runner/getRunnerConfig}
+
+
+\rule{15cm}{2pt}
+\subsubsection{RecordRunnerStatus}
+\label{Api:RecordRunnerStatus}
+\begin{verbatim}
+   void recordRunnerStatus (
+           String    serverName
+           String    serverGroup
+           String    appInstance
+           String    appName
+           String    status
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #runner.recordRunnerStatus(serverName,serverGroup,appInstance,appName,status);
+\end{lstlisting}
+\input{runner/recordRunnerStatus}
+
+
+\rule{15cm}{2pt}
+\subsubsection{RecordInstanceCapabilities}
+\label{Api:RecordInstanceCapabilities}
+\begin{verbatim}
+   void recordInstanceCapabilities (
+           String    serverName
+           String    instanceName
+           Map<String,Object>    capabilities
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #runner.recordInstanceCapabilities(serverName,instanceName,capabilities);
+\end{lstlisting}
+\input{runner/recordInstanceCapabilities}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetCapabilities}
+\label{Api:GetCapabilities}
+\begin{verbatim}
+   Map<String,RaptureInstanceCapabilities> getCapabilities (
+           String    serverName
+           List<String>    instanceNames
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #runner.getCapabilities(serverName,instanceNames);
+\end{lstlisting}
+\input{runner/getCapabilities}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetRunnerServers}
+\label{Api:GetRunnerServers}
+\begin{verbatim}
+   List<String> getRunnerServers (
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #runner.getRunnerServers();
+\end{lstlisting}
+\input{runner/getRunnerServers}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetRunnerStatus}
+\label{Api:GetRunnerStatus}
+\begin{verbatim}
+   RaptureRunnerStatus getRunnerStatus (
+           String    serverName
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #runner.getRunnerStatus(serverName);
+\end{lstlisting}
+\input{runner/getRunnerStatus}
+
+
+\rule{15cm}{2pt}
+\subsubsection{CleanRunnerStatus}
+\label{Api:CleanRunnerStatus}
+\begin{verbatim}
+   void cleanRunnerStatus (
+           int    ageInMinutes
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #runner.cleanRunnerStatus(ageInMinutes);
+\end{lstlisting}
+\input{runner/cleanRunnerStatus}
+
+
+\rule{15cm}{2pt}
+\subsubsection{MarkForRestart}
+\label{Api:MarkForRestart}
+\begin{verbatim}
+   void markForRestart (
+           String    serverName
+           String    name
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #runner.markForRestart(serverName,name);
+\end{lstlisting}
+\input{runner/markForRestart}
+
+
+\rule{15cm}{2pt}

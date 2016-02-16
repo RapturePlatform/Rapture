@@ -1,0 +1,12 @@
+The \verb+putDoc+ call writes data into a \Rapture document repository. The
+data in a document repository is a simple string but this is usually formatted
+as a JSON document. If the repository is versioned this call will write a new
+version to the repository and set the latest version to be this version. If it
+is not versioned this call will simply overwrite the current version.
+
+If there is no document at this location the call will create a new document.
+
+If the repository has an id generator attached to it (see the id API) the uri
+can end in the special keyword \verb+#id+ a new unique id will be generated when
+this document is written. The return value of this API call will then reflect
+the actual location that was used to store this content.

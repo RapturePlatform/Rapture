@@ -1,0 +1,112 @@
+\section{Question API}
+\input{question/info}
+\subsubsection{PutTemplate}
+\label{Api:PutTemplate}
+\begin{verbatim}
+   void putTemplate (
+           String    qTemplateURI
+           QTemplate    template
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #question.putTemplate(qTemplateURI,template);
+\end{lstlisting}
+\input{question/putTemplate}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetTemplate}
+\label{Api:GetTemplate}
+\begin{verbatim}
+   QTemplate getTemplate (
+           String    qTemplateURI
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #question.getTemplate(qTemplateURI);
+\end{lstlisting}
+\input{question/getTemplate}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetQuestion}
+\label{Api:GetQuestion}
+\begin{verbatim}
+   Question getQuestion (
+           String    questionURI
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #question.getQuestion(questionURI);
+\end{lstlisting}
+\input{question/getQuestion}
+
+
+\rule{15cm}{2pt}
+\subsubsection{AskQuestion}
+\label{Api:AskQuestion}
+\begin{verbatim}
+   String askQuestion (
+           String    qTemplateURI
+           Map<String,String>    variables
+           String    callback
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #question.askQuestion(qTemplateURI,variables,callback);
+\end{lstlisting}
+\input{question/askQuestion}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetQNotifications}
+\label{Api:GetQNotifications}
+\begin{verbatim}
+   List<QNotification> getQNotifications (
+           QuestionSearch    search
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #question.getQNotifications(search);
+\end{lstlisting}
+\input{question/getQNotifications}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetQNotificationURIs}
+\label{Api:GetQNotificationURIs}
+\begin{verbatim}
+   List<String> getQNotificationURIs (
+           QuestionSearch    search
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #question.getQNotificationURIs(search);
+\end{lstlisting}
+\input{question/getQNotificationURIs}
+
+
+\rule{15cm}{2pt}
+\subsubsection{AnswerQuestion}
+\label{Api:AnswerQuestion}
+\begin{verbatim}
+   void answerQuestion (
+           String    questionURI
+           String    response
+           Map<String,Object>    data
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #question.answerQuestion(questionURI,response,data);
+\end{lstlisting}
+\input{question/answerQuestion}
+
+
+\rule{15cm}{2pt}

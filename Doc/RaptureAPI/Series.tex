@@ -1,0 +1,519 @@
+\section{Series API}
+\input{series/info}
+\subsubsection{CreateSeriesRepo}
+\label{Api:CreateSeriesRepo}
+\begin{verbatim}
+   void createSeriesRepo (
+           String    seriesRepoUri
+           String    config
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #series.createSeriesRepo(seriesRepoUri,config);
+\end{lstlisting}
+\input{series/createSeriesRepo}
+
+
+\rule{15cm}{2pt}
+\subsubsection{SeriesRepoExists}
+\label{Api:SeriesRepoExists}
+\begin{verbatim}
+   boolean seriesRepoExists (
+           String    seriesRepoUri
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #series.seriesRepoExists(seriesRepoUri);
+\end{lstlisting}
+\input{series/seriesRepoExists}
+
+
+\rule{15cm}{2pt}
+\subsubsection{SeriesExists}
+\label{Api:SeriesExists}
+\begin{verbatim}
+   boolean seriesExists (
+           String    seriesUri
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #series.seriesExists(seriesUri);
+\end{lstlisting}
+\input{series/seriesExists}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetSeriesRepoConfig}
+\label{Api:GetSeriesRepoConfig}
+\begin{verbatim}
+   SeriesRepoConfig getSeriesRepoConfig (
+           String    seriesRepoUri
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #series.getSeriesRepoConfig(seriesRepoUri);
+\end{lstlisting}
+\input{series/getSeriesRepoConfig}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetSeriesRepoConfigs}
+\label{Api:GetSeriesRepoConfigs}
+\begin{verbatim}
+   List<SeriesRepoConfig> getSeriesRepoConfigs (
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #series.getSeriesRepoConfigs();
+\end{lstlisting}
+\input{series/getSeriesRepoConfigs}
+
+
+\rule{15cm}{2pt}
+\subsubsection{DeleteSeriesRepo}
+\label{Api:DeleteSeriesRepo}
+\begin{verbatim}
+   void deleteSeriesRepo (
+           String    seriesRepoUri
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #series.deleteSeriesRepo(seriesRepoUri);
+\end{lstlisting}
+\input{series/deleteSeriesRepo}
+
+
+\rule{15cm}{2pt}
+\subsubsection{DeleteSeries}
+\label{Api:DeleteSeries}
+\begin{verbatim}
+   void deleteSeries (
+           String    seriesRepoUri
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #series.deleteSeries(seriesRepoUri);
+\end{lstlisting}
+\input{series/deleteSeries}
+
+
+\rule{15cm}{2pt}
+\subsubsection{DeleteSeriesByUriPrefix}
+\label{Api:DeleteSeriesByUriPrefix}
+\begin{verbatim}
+   List<String> deleteSeriesByUriPrefix (
+           String    seriesUri
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #series.deleteSeriesByUriPrefix(seriesUri);
+\end{lstlisting}
+\input{series/deleteSeriesByUriPrefix}
+
+
+\rule{15cm}{2pt}
+\subsubsection{AddDoubleToSeries}
+\label{Api:AddDoubleToSeries}
+\begin{verbatim}
+   void addDoubleToSeries (
+           String    seriesUri
+           String    pointKey
+           double    pointValue
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #series.addDoubleToSeries(seriesUri,pointKey,pointValue);
+\end{lstlisting}
+\input{series/addDoubleToSeries}
+
+
+\rule{15cm}{2pt}
+\subsubsection{AddLongToSeries}
+\label{Api:AddLongToSeries}
+\begin{verbatim}
+   void addLongToSeries (
+           String    seriesUri
+           String    pointKey
+           Long    pointValue
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #series.addLongToSeries(seriesUri,pointKey,pointValue);
+\end{lstlisting}
+\input{series/addLongToSeries}
+
+
+\rule{15cm}{2pt}
+\subsubsection{AddStringToSeries}
+\label{Api:AddStringToSeries}
+\begin{verbatim}
+   void addStringToSeries (
+           String    seriesUri
+           String    pointKey
+           String    pointValue
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #series.addStringToSeries(seriesUri,pointKey,pointValue);
+\end{lstlisting}
+\input{series/addStringToSeries}
+
+
+\rule{15cm}{2pt}
+\subsubsection{AddStructureToSeries}
+\label{Api:AddStructureToSeries}
+\begin{verbatim}
+   void addStructureToSeries (
+           String    seriesUri
+           String    pointKey
+           String    pointValue
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #series.addStructureToSeries(seriesUri,pointKey,pointValue);
+\end{lstlisting}
+\input{series/addStructureToSeries}
+
+
+\rule{15cm}{2pt}
+\subsubsection{AddDoublesToSeries}
+\label{Api:AddDoublesToSeries}
+\begin{verbatim}
+   void addDoublesToSeries (
+           String    seriesUri
+           List<String>    pointKeys
+           List<double>    pointValues
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #series.addDoublesToSeries(seriesUri,pointKeys,pointValues);
+\end{lstlisting}
+\input{series/addDoublesToSeries}
+
+
+\rule{15cm}{2pt}
+\subsubsection{AddLongsToSeries}
+\label{Api:AddLongsToSeries}
+\begin{verbatim}
+   void addLongsToSeries (
+           String    seriesUri
+           List<String>    pointKeys
+           List<Long>    pointValues
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #series.addLongsToSeries(seriesUri,pointKeys,pointValues);
+\end{lstlisting}
+\input{series/addLongsToSeries}
+
+
+\rule{15cm}{2pt}
+\subsubsection{AddStringsToSeries}
+\label{Api:AddStringsToSeries}
+\begin{verbatim}
+   void addStringsToSeries (
+           String    seriesUri
+           List<String>    pointKeys
+           List<String>    pointValues
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #series.addStringsToSeries(seriesUri,pointKeys,pointValues);
+\end{lstlisting}
+\input{series/addStringsToSeries}
+
+
+\rule{15cm}{2pt}
+\subsubsection{AddStructuresToSeries}
+\label{Api:AddStructuresToSeries}
+\begin{verbatim}
+   void addStructuresToSeries (
+           String    seriesUri
+           List<String>    pointKeys
+           List<String>    pointValues
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #series.addStructuresToSeries(seriesUri,pointKeys,pointValues);
+\end{lstlisting}
+\input{series/addStructuresToSeries}
+
+
+\rule{15cm}{2pt}
+\subsubsection{DeletePointsFromSeriesByPointKey}
+\label{Api:DeletePointsFromSeriesByPointKey}
+\begin{verbatim}
+   void deletePointsFromSeriesByPointKey (
+           String    seriesUri
+           List<String>    pointKeys
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #series.deletePointsFromSeriesByPointKey(seriesUri,pointKeys);
+\end{lstlisting}
+\input{series/deletePointsFromSeriesByPointKey}
+
+
+\rule{15cm}{2pt}
+\subsubsection{DeletePointsFromSeries}
+\label{Api:DeletePointsFromSeries}
+\begin{verbatim}
+   void deletePointsFromSeries (
+           String    seriesUri
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #series.deletePointsFromSeries(seriesUri);
+\end{lstlisting}
+\input{series/deletePointsFromSeries}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetLastPoint}
+\label{Api:GetLastPoint}
+\begin{verbatim}
+   SeriesPoint getLastPoint (
+           String    seriesUri
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #series.getLastPoint(seriesUri);
+\end{lstlisting}
+\input{series/getLastPoint}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetPoints}
+\label{Api:GetPoints}
+\begin{verbatim}
+   List<SeriesPoint> getPoints (
+           String    seriesUri
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #series.getPoints(seriesUri);
+\end{lstlisting}
+\input{series/getPoints}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetPointsAfter}
+\label{Api:GetPointsAfter}
+\begin{verbatim}
+   List<SeriesPoint> getPointsAfter (
+           String    seriesUri
+           String    startColumn
+           int    maxNumber
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #series.getPointsAfter(seriesUri,startColumn,maxNumber);
+\end{lstlisting}
+\input{series/getPointsAfter}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetPointsAfterReverse}
+\label{Api:GetPointsAfterReverse}
+\begin{verbatim}
+   List<SeriesPoint> getPointsAfterReverse (
+           String    seriesUri
+           String    startColumn
+           int    maxNumber
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #series.getPointsAfterReverse(seriesUri,startColumn,maxNumber);
+\end{lstlisting}
+\input{series/getPointsAfterReverse}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetPointsInRange}
+\label{Api:GetPointsInRange}
+\begin{verbatim}
+   List<SeriesPoint> getPointsInRange (
+           String    seriesUri
+           String    startColumn
+           String    endColumn
+           int    maxNumber
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #series.getPointsInRange(seriesUri,startColumn,endColumn,maxNumber);
+\end{lstlisting}
+\input{series/getPointsInRange}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetPointsAsDoubles}
+\label{Api:GetPointsAsDoubles}
+\begin{verbatim}
+   List<SeriesDouble> getPointsAsDoubles (
+           String    seriesUri
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #series.getPointsAsDoubles(seriesUri);
+\end{lstlisting}
+\input{series/getPointsAsDoubles}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetPointsAfterAsDoubles}
+\label{Api:GetPointsAfterAsDoubles}
+\begin{verbatim}
+   List<SeriesDouble> getPointsAfterAsDoubles (
+           String    seriesUri
+           String    startColumn
+           int    maxNumber
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #series.getPointsAfterAsDoubles(seriesUri,startColumn,maxNumber);
+\end{lstlisting}
+\input{series/getPointsAfterAsDoubles}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetPointsInRangeAsDoubles}
+\label{Api:GetPointsInRangeAsDoubles}
+\begin{verbatim}
+   List<SeriesDouble> getPointsInRangeAsDoubles (
+           String    seriesUri
+           String    startColumn
+           String    endColumn
+           int    maxNumber
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #series.getPointsInRangeAsDoubles(seriesUri,startColumn,endColumn,maxNumber);
+\end{lstlisting}
+\input{series/getPointsInRangeAsDoubles}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetPointsAsStrings}
+\label{Api:GetPointsAsStrings}
+\begin{verbatim}
+   List<SeriesString> getPointsAsStrings (
+           String    seriesUri
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #series.getPointsAsStrings(seriesUri);
+\end{lstlisting}
+\input{series/getPointsAsStrings}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetPointsAfterAsStrings}
+\label{Api:GetPointsAfterAsStrings}
+\begin{verbatim}
+   List<SeriesString> getPointsAfterAsStrings (
+           String    seriesUri
+           String    startColumn
+           int    maxNumber
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #series.getPointsAfterAsStrings(seriesUri,startColumn,maxNumber);
+\end{lstlisting}
+\input{series/getPointsAfterAsStrings}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetPointsInRangeAsStrings}
+\label{Api:GetPointsInRangeAsStrings}
+\begin{verbatim}
+   List<SeriesString> getPointsInRangeAsStrings (
+           String    seriesUri
+           String    startColumn
+           String    endColumn
+           int    maxNumber
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #series.getPointsInRangeAsStrings(seriesUri,startColumn,endColumn,maxNumber);
+\end{lstlisting}
+\input{series/getPointsInRangeAsStrings}
+
+
+\rule{15cm}{2pt}
+\subsubsection{RunSeriesScript}
+\label{Api:RunSeriesScript}
+\begin{verbatim}
+   List<SeriesPoint> runSeriesScript (
+           String    scriptContent
+           List<String>    arguments
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #series.runSeriesScript(scriptContent,arguments);
+\end{lstlisting}
+\input{series/runSeriesScript}
+
+
+\rule{15cm}{2pt}
+\subsubsection{RunSeriesScriptQuiet}
+\label{Api:RunSeriesScriptQuiet}
+\begin{verbatim}
+   void runSeriesScriptQuiet (
+           String    scriptContent
+           List<String>    arguments
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #series.runSeriesScriptQuiet(scriptContent,arguments);
+\end{lstlisting}
+\input{series/runSeriesScriptQuiet}
+
+
+\rule{15cm}{2pt}
+\subsubsection{ListSeriesByUriPrefix}
+\label{Api:ListSeriesByUriPrefix}
+\begin{verbatim}
+   Map<String,RaptureFolderInfo> listSeriesByUriPrefix (
+           String    uriPrefix
+           int    depth
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #series.listSeriesByUriPrefix(uriPrefix,depth);
+\end{lstlisting}
+\input{series/listSeriesByUriPrefix}
+
+
+\rule{15cm}{2pt}

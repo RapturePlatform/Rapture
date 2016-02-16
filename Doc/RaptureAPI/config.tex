@@ -1,0 +1,207 @@
+
+\PassOptionsToPackage{listings,%
+				              pdfspacing,%floatperchapter,%linedheaders,%
+				              subfig,eulermath,dottedtoc}{classicthesis}
+\usepackage{ifthen}
+\newboolean{enable-backrefs} % enable backrefs in the bibliography
+\setboolean{enable-backrefs}{false} % true false
+\newcommand{\myTitle}{ RaptureAPI\xspace}
+\newcommand{\myClient}{\xspace}
+\newcommand{\myName}{Alan Moore\xspace}
+\newcommand{\myTime}{February 12, 2016\xspace}
+\newcommand{\myCFootnote}{Documentation By\xspace}
+\newcommand{\myCompany}{Incapture\xspace}
+\newcommand{\myCompanyFull}{Incapture Technologies LLC\xspace}
+\newcommand{\myCompanyAddress}{600 Montgomery Street\\San Francisco \\ CA 94111\xspace}
+
+% ***********************************************f*********************
+% Setup, finetuning, and useful commands
+% ********************************************************************
+\newcounter{dummy} % necessary for correct hyperlinks (to index, bib, etc.)
+\newlength{\abcd} % for ab..z string length calculation
+\providecommand{\mLyX}{L\kern-.1667em\lower.25em\hbox{Y}\kern-.125emX\@}
+\newcommand{\ie}{i.\,e.}
+\newcommand{\Ie}{I.\,e.}
+\newcommand{\eg}{e.\,g.}
+\newcommand{\Eg}{E.\,g.}
+% ****************************************************************************************************
+
+
+% ****************************************************************************************************
+% 3. Loading some handy packages
+% ****************************************************************************************************
+% ********************************************************************
+% Packages with options that might require adjustments
+% ********************************************************************
+\PassOptionsToPackage{latin9}{inputenc}	% latin9 (ISO-8859-9) = latin1+"Euro sign"
+ \usepackage{inputenc}
+
+\PassOptionsToPackage{ngerman,american,english}{babel}   % change this to your language(s)
+\usepackage{babel}
+
+\PassOptionsToPackage{square,numbers}{natbib}
+ \usepackage{natbib}
+
+%\PassOptionsToPackage{fleqn}{amsmath}		% math environments and more by the AMS   Note - fleqn means left align equations
+ \usepackage{amsmath}
+
+% ********************************************************************
+% General useful packages
+% ********************************************************************
+\PassOptionsToPackage{T1}{fontenc} % T2A for cyrillics
+	\usepackage{fontenc}
+\usepackage{xspace} % to get the spacing after macros right
+\usepackage{mparhack} % get marginpar right
+\usepackage{fixltx2e} % fixes some LaTeX stuff
+\PassOptionsToPackage{printonlyused,smaller}{acronym}
+	\usepackage{acronym} % nice macros for handling all acronyms in the thesis
+%\renewcommand*{\acsfont}[1]{\textssc{#1}} % for MinionPro
+\renewcommand{\bflabel}[1]{{#1}\hfill} % fix the list of acronyms
+% ****************************************************************************************************
+
+
+% ****************************************************************************************************
+% 4. Setup floats: tables, (sub)figures, and captions
+% ****************************************************************************************************
+\usepackage{tabularx} % better tables
+	\setlength{\extrarowheight}{3pt} % increase table row height
+\newcommand{\tableheadline}[1]{\multicolumn{1}{c}{\spacedlowsmallcaps{#1}}}
+\newcommand{\myfloatalign}{\centering} % to be used with each float for alignment
+\usepackage{caption}
+\captionsetup{format=hang,font=small}
+\usepackage{subfig}
+% ****************************************************************************************************
+
+
+% ****************************************************************************************************
+% 5. Setup code listings
+% ****************************************************************************************************
+\usepackage{listings}
+%\lstset{emph={trueIndex,root},emphstyle=\color{BlueViolet}}%\underbar} % for special keywords
+\lstset{language=[LaTeX]Tex,%C++,
+    keywordstyle=\color{RoyalBlue},%\bfseries,
+    basicstyle=\small\ttfamily,
+    %identifierstyle=\color{NavyBlue},
+    commentstyle=\color{Green}\ttfamily,
+    stringstyle=\rmfamily,
+    numbers=none,%left,%
+    numberstyle=\scriptsize,%\tiny
+    stepnumber=5,
+    numbersep=8pt,
+    showstringspaces=false,
+    breaklines=true,
+    frameround=ftff,
+    frame=single,
+    belowcaptionskip=.75\baselineskip
+    %frame=L
+}
+% ****************************************************************************************************
+
+
+% ****************************************************************************************************
+% 6. PDFLaTeX, hyperreferences and citation backreferences
+% ****************************************************************************************************
+% ********************************************************************
+% Using PDFLaTeX
+% ********************************************************************
+\PassOptionsToPackage{pdftex,hyperfootnotes=false,pdfpagelabels}{hyperref}
+	\usepackage{hyperref}  % backref linktocpage pagebackref
+\pdfcompresslevel=9
+\pdfadjustspacing=1
+\PassOptionsToPackage{pdftex}{graphicx}
+	\usepackage{graphicx}
+
+% ********************************************************************
+% Setup the style of the backrefs from the bibliography
+% (translate the options to any language you use)
+% ********************************************************************
+\newcommand{\backrefnotcitedstring}{\relax}%(Not cited.)
+\newcommand{\backrefcitedsinglestring}[1]{(Cited on page~#1.)}
+\newcommand{\backrefcitedmultistring}[1]{(Cited on pages~#1.)}
+\ifthenelse{\boolean{enable-backrefs}}%
+{%
+		\PassOptionsToPackage{hyperpageref}{backref}
+		\usepackage{backref} % to be loaded after hyperref package
+		   \renewcommand{\backreftwosep}{ and~} % separate 2 pages
+		   \renewcommand{\backreflastsep}{, and~} % separate last of longer list
+		   \renewcommand*{\backref}[1]{}  % disable standard
+		   \renewcommand*{\backrefalt}[4]{% detailed backref
+		      \ifcase #1 %
+		         \backrefnotcitedstring%
+		      \or%
+		         \backrefcitedsinglestring{#2}%
+		      \else%
+		         \backrefcitedmultistring{#2}%
+		      \fi}%
+}{\relax}
+
+% ********************************************************************
+% Hyperreferences
+% ********************************************************************
+\hypersetup{%
+    %draft,	% = no hyperlinking at all (useful in b/w printouts)
+    colorlinks=true, linktocpage=true, pdfstartpage=3, pdfstartview=FitV,%
+    % uncomment the following line if you want to have black links (e.g., for printing)
+    %colorlinks=false, linktocpage=false, pdfborder={0 0 0}, pdfstartpage=3, pdfstartview=FitV,%
+    breaklinks=true, pdfpagemode=UseNone, pageanchor=true, pdfpagemode=UseOutlines,%
+    plainpages=false, bookmarksnumbered, bookmarksopen=true, bookmarksopenlevel=1,%
+    hypertexnames=true, pdfhighlight=/O,%nesting=true,%frenchlinks,%
+    urlcolor=webbrown, linkcolor=RoyalBlue, citecolor=webgreen, %pagecolor=RoyalBlue,%
+    %urlcolor=Black, linkcolor=Black, citecolor=Black, %pagecolor=Black,%
+    pdftitle={\myTitle},%
+    pdfauthor={\myName},%
+    pdfsubject={},%
+    pdfkeywords={},%
+    pdfcreator={pdfLaTeX},%
+    pdfproducer={LaTeX with hyperref and classicthesis}%
+}
+
+% ********************************************************************
+% Setup autoreferences
+% ********************************************************************
+% There are some issues regarding autorefnames
+% http://www.ureader.de/msg/136221647.aspx
+% http://www.tex.ac.uk/cgi-bin/texfaq2html?label=latexwords
+% you have to redefine the makros for the
+% language you use, e.g., american, ngerman
+% (as chosen when loading babel/AtBeginDocument)
+% ********************************************************************
+\makeatletter
+\@ifpackageloaded{babel}%
+    {%
+       \addto\extrasamerican{%
+					\renewcommand*{\figureautorefname}{Figure}%
+					\renewcommand*{\tableautorefname}{Table}%
+					\renewcommand*{\partautorefname}{Part}%
+					\renewcommand*{\chapterautorefname}{Chapter}%
+					\renewcommand*{\sectionautorefname}{Section}%
+					\renewcommand*{\subsectionautorefname}{Section}%
+					\renewcommand*{\subsubsectionautorefname}{Section}%
+				}%
+       \addto\extrasngerman{%
+					\renewcommand*{\paragraphautorefname}{Absatz}%
+					\renewcommand*{\subparagraphautorefname}{Unterabsatz}%
+					\renewcommand*{\footnoteautorefname}{Fu\"snote}%
+					\renewcommand*{\FancyVerbLineautorefname}{Zeile}%
+					\renewcommand*{\theoremautorefname}{Theorem}%
+					\renewcommand*{\appendixautorefname}{Anhang}%
+					\renewcommand*{\equationautorefname}{Gleichung}%
+					\renewcommand*{\itemautorefname}{Punkt}%
+				}%
+			% Fix to getting autorefs for subfigures right (thanks to Belinda Vogt for changing the definition)
+			\providecommand{\subfigureautorefname}{\figureautorefname}%
+    }{\relax}
+\makeatother
+
+\listfiles
+
+%\usepackage{classicthesis}
+% ****************************************************************************************************
+\usepackage{wallpaper}
+% ****************************************************************************************************
+\usepackage{tikz}
+\usetikzlibrary{arrows,decorations.pathmorphing,backgrounds,positioning,fit,petri,calc,shadows,mindmap,shapes,trees}
+% ****************************************************************************************************
+\usepackage{varwidth}
+\usepackage{hyperref}
+\usepackage{rotating}

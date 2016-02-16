@@ -1,0 +1,239 @@
+\section{User API}
+\input{user/info}
+\subsubsection{GetWhoAmI}
+\label{Api:GetWhoAmI}
+\begin{verbatim}
+   RaptureUser getWhoAmI (
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #user.getWhoAmI();
+\end{lstlisting}
+\input{user/getWhoAmI}
+
+
+\rule{15cm}{2pt}
+\subsubsection{LogoutUser}
+\label{Api:LogoutUser}
+\begin{verbatim}
+   void logoutUser (
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #user.logoutUser();
+\end{lstlisting}
+\input{user/logoutUser}
+
+
+\rule{15cm}{2pt}
+\subsubsection{StorePreference}
+\label{Api:StorePreference}
+\begin{verbatim}
+   void storePreference (
+           String    category
+           String    name
+           String    content
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #user.storePreference(category,name,content);
+\end{lstlisting}
+\input{user/storePreference}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetPreference}
+\label{Api:GetPreference}
+\begin{verbatim}
+   String getPreference (
+           String    category
+           String    name
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #user.getPreference(category,name);
+\end{lstlisting}
+\input{user/getPreference}
+
+
+\rule{15cm}{2pt}
+\subsubsection{RemovePreference}
+\label{Api:RemovePreference}
+\begin{verbatim}
+   void removePreference (
+           String    category
+           String    name
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #user.removePreference(category,name);
+\end{lstlisting}
+\input{user/removePreference}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetPreferenceCategories}
+\label{Api:GetPreferenceCategories}
+\begin{verbatim}
+   List<String> getPreferenceCategories (
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #user.getPreferenceCategories();
+\end{lstlisting}
+\input{user/getPreferenceCategories}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetPreferencesInCategory}
+\label{Api:GetPreferencesInCategory}
+\begin{verbatim}
+   List<String> getPreferencesInCategory (
+           String    category
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #user.getPreferencesInCategory(category);
+\end{lstlisting}
+\input{user/getPreferencesInCategory}
+
+
+\rule{15cm}{2pt}
+\subsubsection{UpdateMyDescription}
+\label{Api:UpdateMyDescription}
+\begin{verbatim}
+   RaptureUser updateMyDescription (
+           String    description
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #user.updateMyDescription(description);
+\end{lstlisting}
+\input{user/updateMyDescription}
+
+
+\rule{15cm}{2pt}
+\subsubsection{ChangeMyPassword}
+\label{Api:ChangeMyPassword}
+\begin{verbatim}
+   RaptureUser changeMyPassword (
+           String    oldHashPassword
+           String    newHashPassword
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #user.changeMyPassword(oldHashPassword,newHashPassword);
+\end{lstlisting}
+\input{user/changeMyPassword}
+
+
+\rule{15cm}{2pt}
+\subsubsection{ChangeMyEmail}
+\label{Api:ChangeMyEmail}
+\begin{verbatim}
+   RaptureUser changeMyEmail (
+           String    newAddress
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #user.changeMyEmail(newAddress);
+\end{lstlisting}
+\input{user/changeMyEmail}
+
+
+\rule{15cm}{2pt}
+\subsubsection{GetServerApiVersion}
+\label{Api:GetServerApiVersion}
+\begin{verbatim}
+   ApiVersion getServerApiVersion (
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #user.getServerApiVersion();
+\end{lstlisting}
+\input{user/getServerApiVersion}
+
+
+\rule{15cm}{2pt}
+\subsubsection{RunFilterCubeView}
+\label{Api:RunFilterCubeView}
+\begin{verbatim}
+   RaptureCubeResult runFilterCubeView (
+           String    typeURI
+           String    scriptURI
+           String    filterParams
+           String    groupFields
+           String    columnFields
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #user.runFilterCubeView(typeURI,scriptURI,filterParams,groupFields,columnFields);
+\end{lstlisting}
+\input{user/runFilterCubeView}
+
+
+\rule{15cm}{2pt}
+\subsubsection{RunNativeQuery}
+\label{Api:RunNativeQuery}
+\begin{verbatim}
+   RaptureQueryResult runNativeQuery (
+           String    typeURI
+           String    repoType
+           List<String>    queryParams
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #user.runNativeQuery(typeURI,repoType,queryParams);
+\end{lstlisting}
+\input{user/runNativeQuery}
+
+
+\rule{15cm}{2pt}
+\subsubsection{RunNativeFilterCubeView}
+\label{Api:RunNativeFilterCubeView}
+\begin{verbatim}
+   RaptureCubeResult runNativeFilterCubeView (
+           String    typeURI
+           String    repoType
+           List<String>    queryParams
+           String    groupFields
+           String    columnFields
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #user.runNativeFilterCubeView(typeURI,repoType,queryParams,groupFields,columnFields);
+\end{lstlisting}
+\input{user/runNativeFilterCubeView}
+
+
+\rule{15cm}{2pt}
+\subsubsection{IsPermitted}
+\label{Api:IsPermitted}
+\begin{verbatim}
+   boolean isPermitted (
+           String    apiCall
+           String    callParam
+   )
+\end{verbatim}
+\begin{lstlisting}[language=reflex]
+// Reflex use
+ret = #user.isPermitted(apiCall,callParam);
+\end{lstlisting}
+\input{user/isPermitted}
+
+
+\rule{15cm}{2pt}

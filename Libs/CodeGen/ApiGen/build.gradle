@@ -14,7 +14,8 @@ def langs = [
         'VB',
         'Go',
         'Python',
-        'SlateMd'
+        'SlateMd',
+        'Doc'
 ]
 def taskGroup = "RaptureGenerators"
 
