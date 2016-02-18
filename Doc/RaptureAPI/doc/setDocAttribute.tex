@@ -1,2 +1,10 @@
-Set Doc Attribute
+The \verb+setDocAttribute+ call is used to add an attribute to a document in a repository.
 
+Attributes are metadata that can be used to place any arbitrary value on a document independent of its
+content.
+
+In the call an attribute uri is the combination of a document path (as seen in many other calls) with a
+bookmark symbol (\verb+#+) followed by the name of an attribute. The value is a string value that has
+meaning to the calling application.
+
+The return value is true if the attribute was set by the repository.

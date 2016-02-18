@@ -1,6 +1,6 @@
-\section{Relationship API}
+\chapter{Relationship API}
 \input{relationship/info}
-\subsubsection{CreateRelationshipRepo}
+\subsection{CreateRelationshipRepo}
 \label{Api:CreateRelationshipRepo}
 \begin{verbatim}
    void createRelationshipRepo (
@@ -8,89 +8,83 @@
            String    config
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #relationship.createRelationshipRepo(relationshipRepoURI,config);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #relationship.createRelationshipRepo(relationshipRepoURI,config);
+%\end{lstlisting}
 \input{relationship/createRelationshipRepo}
 
 
 \rule{15cm}{2pt}
-\subsubsection{GetRelationshipRepoConfig}
+\subsection{GetRelationshipRepoConfig}
 \label{Api:GetRelationshipRepoConfig}
 \begin{verbatim}
    RelationshipRepoConfig getRelationshipRepoConfig (
            String    blobRepoURI
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #relationship.getRelationshipRepoConfig(blobRepoURI);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #relationship.getRelationshipRepoConfig(blobRepoURI);
+%\end{lstlisting}
 \input{relationship/getRelationshipRepoConfig}
 
 
 \rule{15cm}{2pt}
-\subsubsection{GetAllRelationshipRepoConfigs}
+\subsection{GetAllRelationshipRepoConfigs}
 \label{Api:GetAllRelationshipRepoConfigs}
 \begin{verbatim}
    List<RelationshipRepoConfig> getAllRelationshipRepoConfigs (
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #relationship.getAllRelationshipRepoConfigs();
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #relationship.getAllRelationshipRepoConfigs();
+%\end{lstlisting}
 \input{relationship/getAllRelationshipRepoConfigs}
 
 
 \rule{15cm}{2pt}
-\subsubsection{DeleteRelationshipRepo}
+\subsection{DeleteRelationshipRepo}
 \label{Api:DeleteRelationshipRepo}
 \begin{verbatim}
    void deleteRelationshipRepo (
            String    repoURI
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #relationship.deleteRelationshipRepo(repoURI);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #relationship.deleteRelationshipRepo(repoURI);
+%\end{lstlisting}
 \input{relationship/deleteRelationshipRepo}
 
 
 \rule{15cm}{2pt}
-\subsubsection{DoesRelationshipRepoExist}
+\subsection{DoesRelationshipRepoExist}
 \label{Api:DoesRelationshipRepoExist}
 \begin{verbatim}
    boolean doesRelationshipRepoExist (
            String    repoURI
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #relationship.doesRelationshipRepoExist(repoURI);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #relationship.doesRelationshipRepoExist(repoURI);
+%\end{lstlisting}
 \input{relationship/doesRelationshipRepoExist}
 
 
 \rule{15cm}{2pt}
-\subsubsection{DoesRelationshipExist}
+\subsection{DoesRelationshipExist}
 \label{Api:DoesRelationshipExist}
 \begin{verbatim}
    boolean doesRelationshipExist (
            String    relationshipURI
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #relationship.doesRelationshipExist(relationshipURI);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #relationship.doesRelationshipExist(relationshipURI);
+%\end{lstlisting}
 \input{relationship/doesRelationshipExist}
 
 
 \rule{15cm}{2pt}
-\subsubsection{CreateRelationship}
+\subsection{CreateRelationship}
 \label{Api:CreateRelationship}
 \begin{verbatim}
    String createRelationship (
@@ -101,45 +95,42 @@ ret = #relationship.doesRelationshipExist(relationshipURI);
            Map<String,String>    properties
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #relationship.createRelationship(relationshipAuthorityURI,fromURI,toURI,label,properties);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #relationship.createRelationship(relationshipAuthorityURI,fromURI,toURI,label,properties);
+%\end{lstlisting}
 \input{relationship/createRelationship}
 
 
 \rule{15cm}{2pt}
-\subsubsection{GetRelationship}
+\subsection{GetRelationship}
 \label{Api:GetRelationship}
 \begin{verbatim}
    RaptureRelationship getRelationship (
            String    relationshipURI
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #relationship.getRelationship(relationshipURI);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #relationship.getRelationship(relationshipURI);
+%\end{lstlisting}
 \input{relationship/getRelationship}
 
 
 \rule{15cm}{2pt}
-\subsubsection{DeleteRelationship}
+\subsection{DeleteRelationship}
 \label{Api:DeleteRelationship}
 \begin{verbatim}
    void deleteRelationship (
            String    relationshipURI
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #relationship.deleteRelationship(relationshipURI);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #relationship.deleteRelationship(relationshipURI);
+%\end{lstlisting}
 \input{relationship/deleteRelationship}
 
 
 \rule{15cm}{2pt}
-\subsubsection{GetOutboundRelationships}
+\subsection{GetOutboundRelationships}
 \label{Api:GetOutboundRelationships}
 \begin{verbatim}
    List<RaptureRelationship> getOutboundRelationships (
@@ -147,15 +138,14 @@ ret = #relationship.deleteRelationship(relationshipURI);
            String    fromURI
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #relationship.getOutboundRelationships(relationshipRepoURI,fromURI);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #relationship.getOutboundRelationships(relationshipRepoURI,fromURI);
+%\end{lstlisting}
 \input{relationship/getOutboundRelationships}
 
 
 \rule{15cm}{2pt}
-\subsubsection{GetInboundRelationships}
+\subsection{GetInboundRelationships}
 \label{Api:GetInboundRelationships}
 \begin{verbatim}
    List<RaptureRelationship> getInboundRelationships (
@@ -163,15 +153,14 @@ ret = #relationship.getOutboundRelationships(relationshipRepoURI,fromURI);
            String    toURI
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #relationship.getInboundRelationships(relationshipRepoURI,toURI);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #relationship.getInboundRelationships(relationshipRepoURI,toURI);
+%\end{lstlisting}
 \input{relationship/getInboundRelationships}
 
 
 \rule{15cm}{2pt}
-\subsubsection{GetLabledRelationships}
+\subsection{GetLabledRelationships}
 \label{Api:GetLabledRelationships}
 \begin{verbatim}
    List<RaptureRelationship> getLabledRelationships (
@@ -179,45 +168,42 @@ ret = #relationship.getInboundRelationships(relationshipRepoURI,toURI);
            String    relationshipLabel
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #relationship.getLabledRelationships(relationshipRepoURI,relationshipLabel);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #relationship.getLabledRelationships(relationshipRepoURI,relationshipLabel);
+%\end{lstlisting}
 \input{relationship/getLabledRelationships}
 
 
 \rule{15cm}{2pt}
-\subsubsection{GetChildren}
+\subsection{GetChildren}
 \label{Api:GetChildren}
 \begin{verbatim}
    List<RaptureFolderInfo> getChildren (
            String    prefix
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #relationship.getChildren(prefix);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #relationship.getChildren(prefix);
+%\end{lstlisting}
 \input{relationship/getChildren}
 
 
 \rule{15cm}{2pt}
-\subsubsection{GetAllChildrenMap}
+\subsection{GetAllChildrenMap}
 \label{Api:GetAllChildrenMap}
 \begin{verbatim}
    Map<String,RaptureFolderInfo> getAllChildrenMap (
            String    prefix
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #relationship.getAllChildrenMap(prefix);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #relationship.getAllChildrenMap(prefix);
+%\end{lstlisting}
 \input{relationship/getAllChildrenMap}
 
 
 \rule{15cm}{2pt}
-\subsubsection{GetRelationshipCenteredOn}
+\subsection{GetRelationshipCenteredOn}
 \label{Api:GetRelationshipCenteredOn}
 \begin{verbatim}
    RaptureRelationshipRegion getRelationshipCenteredOn (
@@ -225,10 +211,9 @@ ret = #relationship.getAllChildrenMap(prefix);
            Map<String,String>    options
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #relationship.getRelationshipCenteredOn(relationshipNodeURI,options);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #relationship.getRelationshipCenteredOn(relationshipNodeURI,options);
+%\end{lstlisting}
 \input{relationship/getRelationshipCenteredOn}
 
 

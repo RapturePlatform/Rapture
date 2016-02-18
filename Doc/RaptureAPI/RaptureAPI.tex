@@ -1,4 +1,4 @@
-\documentclass[12pt,twoside,a4paper]{article}
+\documentclass[12pt,twoside,a4paper]{book}
 
 \renewcommand*\sfdefault{phv}
 \renewcommand{\familydefault}{\sfdefault}
@@ -6,6 +6,8 @@
 %\usepackage{arev}
 \usepackage[scaled]{helvet}
 \usepackage[T1]{fontenc}
+
+\setcounter{secnumdepth}{0}
 
 %\newcommand{\Rapture}{${\mathbf{Rapture}}$~}
 %\newcommand{\Reflex}{${\mathbf{Reflex}}$~}
@@ -48,7 +50,7 @@
   numberbychapter=false,
   %language=reflex,                % the language of the code
   %basicstyle=\small,           % the size of the fonts that are used for the code
-  numbers=left,                   % where to put the line-numbers
+  %numbers=left,                   % where to put the line-numbers
   backgroundcolor=\color{mygray},
   numberstyle=\tiny\color{gray},  % the style that is used for the line-numbers
   keywordstyle=\color{blue},
@@ -59,7 +61,7 @@
   showspaces=false,               % show spaces adding particular underscores
   showstringspaces=false,         % underline spaces within strings
   showtabs=false,                 % show tabs within strings adding particular underscores
-  frame=TB,                   % adds a frame around the code
+  %frame=TB,                   % adds a frame around the code
   rulecolor=\color{black},        % if not set, the frame-color may be changed on line-breaks within not-black text (e.g. commens (green here))
   tabsize=2,                      % sets default tabsize to 2 spaces
   captionpos=b,                   % sets the caption-position to bottom
@@ -69,16 +71,37 @@
   morekeywords={*,...}               % if you want to add more keywords to the set
 }
 
+
 \begin{document}
 
 \title{The Rapture API}
 \author{Alan Moore}
 \date{February 2016}
 
-\maketitle
-\tableofcontents
+\makeatletter
+    \begin{titlepage}
+      \includegraphics[width=0.7\linewidth]{Graphics/RaptureLogo.png}\\[4ex]
+        \begin{center}
+            {\huge \bfseries  \@title }\\[2ex]
+            {\LARGE  \@author}\\[50ex]
+            {\large \@date}
+        \end{center}
+    \end{titlepage}
+\makeatother
+\thispagestyle{empty}
+\newpage
 
-\section{Background}
+%Add content for page two here (useful for two-sided printing)
+%\thispagestyle{empty}
+%\newpage
+
+%\maketitle
+\tableofcontents
+\setcounter{page}{1} %Start the actually document on page 1
+
+
+\part{Rapture}
+\chapter{Background}
 \Rapture is a platform system that can be used to build applications that are scalable,
 distributed, consistent and coordinated. At its heart \Rapture is simply a well defined
 set of libraries with an external facing api that provides an abstraction to a number
@@ -101,7 +124,7 @@ the \Rapture API is that the interaction with \Rapture is invariant to the locat
 of the application -- the API looks \emph{the same} no matter where the application
 resides.
 
-\section{Application Locations}
+\chapter{Application Locations}
 Applications interacting with \Rapture will typicall fall within one of the
 following categories.
 
@@ -114,7 +137,7 @@ following categories.
   \item{Scripts run in the context of an ajax call from a web browser.}
 \end{itemize}
 
-\subsection{Context and Entitlements}
+\section{Context and Entitlements}
 Every interaction with a \Rapture API call is made in the context of a logged in
 user. That user, and its entitlement group membership and the parameters passed
 to the call are used to determine whether the call can proceed or not. If an
@@ -133,7 +156,7 @@ leaving the programmer free to not worry about this aspect.
 Wrapper applications such as ReflexRunner log in on the caller's behalf and then
 pass that logged in API context to the underlying container that runs the script.
 
-\subsection{Custom client applications}
+\section{Custom client applications}
 
 Client applications that talk to \Rapture can be written in any of these supported languages as
 long as the application can reach (using TCP/IP) a \Rapture API Server.
@@ -196,7 +219,7 @@ Here we see a similar login approach and then the invocation of the same \Raptur
 API call. With the same target \Rapture environment these two code snippets will
 produce exactly the same output.
 
-\subsection{Client \Reflex scripts}
+\section{Client \Reflex scripts}
 
 \Reflex scripts running on the client (or the server) are always running in a
 container that has already been connected to an environment -- the wrapper is
@@ -220,7 +243,7 @@ In the second access example we convert the raw JSON formatted document from
 \Rapture into a \Reflex map structure so as to make the two approaches produce
 the same output.
 
-\subsection{Server side kernel applications}
+\section{Server side kernel applications}
 
 If a Java (or Java VM) application embeds the \Rapture kernel code within it the
 means for calling the \Rapture API can have a number of forms. Code running within
@@ -247,14 +270,15 @@ underlying data stores and then calling:
    Kernel.initBootstrap();
 \end{lstlisting}
 
-\section{Application Location Summary}
+\chapter{Application Location Summary}
 Applications can sit in many places in the architecture of a solution that
 includes a \Rapture system. The goal of the \Rapture API is to make the access
 to \Rapture as simple and consistent as possible to all applications so it is
 easy for a developer to move their applications within the system architecture or
 to switch and change the programming languages used for an application.
 
-\section{API Introduction}
+\part{API}
+\chapter{API Introduction}
 The \Rapture API is divided into a number of sections. We've seen in an earlier
 section how you may need to use the \emph{login} api to establish a connection
 to \Rapture. The other sections of the API will form the rest of this document.
@@ -262,6 +286,28 @@ For each section the general positioning of the section with respect to \Rapture
 will be described and then the detailed API calls will follow.
 
 \input{Doc}
+\input{Blob}
+\input{Series}
+\input{Script}
+\input{Decision}
+\input{Admin}
+\input{User}
+\input{Index}
+\input{Event}
+\input{Entitlement}
+\input{Environment}
+\input{Lock}
+\input{IdGen}
+\input{Activity}
+\input{Async}
+\input{Audit}
+\input{Bootstrap}
+\input{Sys}
+\input{Structured}
+\input{Schedule}
+\input{Jar}
+\input{Plugin}
+
 %*******************************************************
 % Disclaimer
 %*******************************************************

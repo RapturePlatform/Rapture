@@ -1,6 +1,6 @@
-\section{Async API}
+\chapter{Async API}
 \input{async/info}
-\subsubsection{AsyncReflexScript}
+\subsection{AsyncReflexScript}
 \label{Api:AsyncReflexScript}
 \begin{verbatim}
    String asyncReflexScript (
@@ -8,15 +8,14 @@
            Map<String,String>    parameters
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #async.asyncReflexScript(reflexScript,parameters);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #async.asyncReflexScript(reflexScript,parameters);
+%\end{lstlisting}
 \input{async/asyncReflexScript}
 
 
 \rule{15cm}{2pt}
-\subsubsection{AsyncReflexReference}
+\subsection{AsyncReflexReference}
 \label{Api:AsyncReflexReference}
 \begin{verbatim}
    String asyncReflexReference (
@@ -24,40 +23,37 @@ ret = #async.asyncReflexScript(reflexScript,parameters);
            Map<String,String>    parameters
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #async.asyncReflexReference(scriptURI,parameters);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #async.asyncReflexReference(scriptURI,parameters);
+%\end{lstlisting}
 \input{async/asyncReflexReference}
 
 
 \rule{15cm}{2pt}
-\subsubsection{AsyncStatus}
+\subsection{AsyncStatus}
 \label{Api:AsyncStatus}
 \begin{verbatim}
    WorkOrderStatus asyncStatus (
            String    taskId
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #async.asyncStatus(taskId);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #async.asyncStatus(taskId);
+%\end{lstlisting}
 \input{async/asyncStatus}
 
 
 \rule{15cm}{2pt}
-\subsubsection{SetupDefaultWorkflows}
+\subsection{SetupDefaultWorkflows}
 \label{Api:SetupDefaultWorkflows}
 \begin{verbatim}
    void setupDefaultWorkflows (
            boolean    force
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #async.setupDefaultWorkflows(force);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #async.setupDefaultWorkflows(force);
+%\end{lstlisting}
 \input{async/setupDefaultWorkflows}
 
 

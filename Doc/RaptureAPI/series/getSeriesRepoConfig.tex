@@ -1,0 +1,16 @@
+The \verb+getDocRepoConfig+ api call returns the underlying structure of a series repository. The return
+value is a complex type that has the following fields:
+
+\begin{table}[h]
+\begin{center}
+\begin{tabular}{r l p{8cm}}
+  Field & Type & Description \\
+  \hline
+  description & String & The description of this repository. \\
+  config & String & The configuration passed to the createDocRepo call. \\
+  authority & String & No longer used. \\
+  seriesName & String & The name of this series repository \\
+  sampleColumn & String & A typical column format for this repository \\
+\end{tabular}
+\end{center}
+\end{table}

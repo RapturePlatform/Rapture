@@ -1,6 +1,6 @@
-\section{Question API}
+\chapter{Question API}
 \input{question/info}
-\subsubsection{PutTemplate}
+\subsection{PutTemplate}
 \label{Api:PutTemplate}
 \begin{verbatim}
    void putTemplate (
@@ -8,45 +8,42 @@
            QTemplate    template
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #question.putTemplate(qTemplateURI,template);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #question.putTemplate(qTemplateURI,template);
+%\end{lstlisting}
 \input{question/putTemplate}
 
 
 \rule{15cm}{2pt}
-\subsubsection{GetTemplate}
+\subsection{GetTemplate}
 \label{Api:GetTemplate}
 \begin{verbatim}
    QTemplate getTemplate (
            String    qTemplateURI
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #question.getTemplate(qTemplateURI);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #question.getTemplate(qTemplateURI);
+%\end{lstlisting}
 \input{question/getTemplate}
 
 
 \rule{15cm}{2pt}
-\subsubsection{GetQuestion}
+\subsection{GetQuestion}
 \label{Api:GetQuestion}
 \begin{verbatim}
    Question getQuestion (
            String    questionURI
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #question.getQuestion(questionURI);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #question.getQuestion(questionURI);
+%\end{lstlisting}
 \input{question/getQuestion}
 
 
 \rule{15cm}{2pt}
-\subsubsection{AskQuestion}
+\subsection{AskQuestion}
 \label{Api:AskQuestion}
 \begin{verbatim}
    String askQuestion (
@@ -55,45 +52,42 @@ ret = #question.getQuestion(questionURI);
            String    callback
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #question.askQuestion(qTemplateURI,variables,callback);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #question.askQuestion(qTemplateURI,variables,callback);
+%\end{lstlisting}
 \input{question/askQuestion}
 
 
 \rule{15cm}{2pt}
-\subsubsection{GetQNotifications}
+\subsection{GetQNotifications}
 \label{Api:GetQNotifications}
 \begin{verbatim}
    List<QNotification> getQNotifications (
            QuestionSearch    search
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #question.getQNotifications(search);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #question.getQNotifications(search);
+%\end{lstlisting}
 \input{question/getQNotifications}
 
 
 \rule{15cm}{2pt}
-\subsubsection{GetQNotificationURIs}
+\subsection{GetQNotificationURIs}
 \label{Api:GetQNotificationURIs}
 \begin{verbatim}
    List<String> getQNotificationURIs (
            QuestionSearch    search
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #question.getQNotificationURIs(search);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #question.getQNotificationURIs(search);
+%\end{lstlisting}
 \input{question/getQNotificationURIs}
 
 
 \rule{15cm}{2pt}
-\subsubsection{AnswerQuestion}
+\subsection{AnswerQuestion}
 \label{Api:AnswerQuestion}
 \begin{verbatim}
    void answerQuestion (
@@ -102,10 +96,9 @@ ret = #question.getQNotificationURIs(search);
            Map<String,Object>    data
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #question.answerQuestion(questionURI,response,data);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #question.answerQuestion(questionURI,response,data);
+%\end{lstlisting}
 \input{question/answerQuestion}
 
 

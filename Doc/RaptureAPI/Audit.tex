@@ -1,21 +1,20 @@
-\section{Audit API}
+\chapter{Audit API}
 \input{audit/info}
-\subsubsection{Setup}
+\subsection{Setup}
 \label{Api:Setup}
 \begin{verbatim}
    void setup (
            boolean    force
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #audit.setup(force);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #audit.setup(force);
+%\end{lstlisting}
 \input{audit/setup}
 
 
 \rule{15cm}{2pt}
-\subsubsection{CreateAuditLog}
+\subsection{CreateAuditLog}
 \label{Api:CreateAuditLog}
 \begin{verbatim}
    void createAuditLog (
@@ -23,75 +22,70 @@ ret = #audit.setup(force);
            String    config
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #audit.createAuditLog(name,config);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #audit.createAuditLog(name,config);
+%\end{lstlisting}
 \input{audit/createAuditLog}
 
 
 \rule{15cm}{2pt}
-\subsubsection{DoesAuditLogExist}
+\subsection{DoesAuditLogExist}
 \label{Api:DoesAuditLogExist}
 \begin{verbatim}
    boolean doesAuditLogExist (
            String    logURI
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #audit.doesAuditLogExist(logURI);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #audit.doesAuditLogExist(logURI);
+%\end{lstlisting}
 \input{audit/doesAuditLogExist}
 
 
 \rule{15cm}{2pt}
-\subsubsection{GetChildren}
+\subsection{GetChildren}
 \label{Api:GetChildren}
 \begin{verbatim}
    List<RaptureFolderInfo> getChildren (
            String    prefix
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #audit.getChildren(prefix);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #audit.getChildren(prefix);
+%\end{lstlisting}
 \input{audit/getChildren}
 
 
 \rule{15cm}{2pt}
-\subsubsection{DeleteAuditLog}
+\subsection{DeleteAuditLog}
 \label{Api:DeleteAuditLog}
 \begin{verbatim}
    void deleteAuditLog (
            String    logURI
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #audit.deleteAuditLog(logURI);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #audit.deleteAuditLog(logURI);
+%\end{lstlisting}
 \input{audit/deleteAuditLog}
 
 
 \rule{15cm}{2pt}
-\subsubsection{GetAuditLog}
+\subsection{GetAuditLog}
 \label{Api:GetAuditLog}
 \begin{verbatim}
    AuditLogConfig getAuditLog (
            String    logURI
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #audit.getAuditLog(logURI);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #audit.getAuditLog(logURI);
+%\end{lstlisting}
 \input{audit/getAuditLog}
 
 
 \rule{15cm}{2pt}
-\subsubsection{WriteAuditEntry}
+\subsection{WriteAuditEntry}
 \label{Api:WriteAuditEntry}
 \begin{verbatim}
    void writeAuditEntry (
@@ -101,15 +95,14 @@ ret = #audit.getAuditLog(logURI);
            String    message
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #audit.writeAuditEntry(logURI,category,level,message);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #audit.writeAuditEntry(logURI,category,level,message);
+%\end{lstlisting}
 \input{audit/writeAuditEntry}
 
 
 \rule{15cm}{2pt}
-\subsubsection{WriteAuditEntryData}
+\subsection{WriteAuditEntryData}
 \label{Api:WriteAuditEntryData}
 \begin{verbatim}
    void writeAuditEntryData (
@@ -120,15 +113,14 @@ ret = #audit.writeAuditEntry(logURI,category,level,message);
            Map<String,Object>    data
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #audit.writeAuditEntryData(logURI,category,level,message,data);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #audit.writeAuditEntryData(logURI,category,level,message,data);
+%\end{lstlisting}
 \input{audit/writeAuditEntryData}
 
 
 \rule{15cm}{2pt}
-\subsubsection{GetRecentLogEntries}
+\subsection{GetRecentLogEntries}
 \label{Api:GetRecentLogEntries}
 \begin{verbatim}
    List<AuditLogEntry> getRecentLogEntries (
@@ -136,15 +128,14 @@ ret = #audit.writeAuditEntryData(logURI,category,level,message,data);
            int    count
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #audit.getRecentLogEntries(logURI,count);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #audit.getRecentLogEntries(logURI,count);
+%\end{lstlisting}
 \input{audit/getRecentLogEntries}
 
 
 \rule{15cm}{2pt}
-\subsubsection{GetEntriesSince}
+\subsection{GetEntriesSince}
 \label{Api:GetEntriesSince}
 \begin{verbatim}
    List<AuditLogEntry> getEntriesSince (
@@ -152,10 +143,9 @@ ret = #audit.getRecentLogEntries(logURI,count);
            AuditLogEntry    when
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #audit.getEntriesSince(logURI,when);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #audit.getEntriesSince(logURI,when);
+%\end{lstlisting}
 \input{audit/getEntriesSince}
 
 

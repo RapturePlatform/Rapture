@@ -1,6 +1,6 @@
-\section{Runner API}
+\chapter{Runner API}
 \input{runner/info}
-\subsubsection{CreateServerGroup}
+\subsection{CreateServerGroup}
 \label{Api:CreateServerGroup}
 \begin{verbatim}
    RaptureServerGroup createServerGroup (
@@ -8,101 +8,94 @@
            String    description
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #runner.createServerGroup(name,description);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #runner.createServerGroup(name,description);
+%\end{lstlisting}
 \input{runner/createServerGroup}
 
 
 \rule{15cm}{2pt}
-\subsubsection{DeleteServerGroup}
+\subsection{DeleteServerGroup}
 \label{Api:DeleteServerGroup}
 \begin{verbatim}
    void deleteServerGroup (
            String    name
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #runner.deleteServerGroup(name);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #runner.deleteServerGroup(name);
+%\end{lstlisting}
 \input{runner/deleteServerGroup}
 
 
 \rule{15cm}{2pt}
-\subsubsection{GetAllServerGroups}
+\subsection{GetAllServerGroups}
 \label{Api:GetAllServerGroups}
 \begin{verbatim}
    List<RaptureServerGroup> getAllServerGroups (
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #runner.getAllServerGroups();
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #runner.getAllServerGroups();
+%\end{lstlisting}
 \input{runner/getAllServerGroups}
 
 
 \rule{15cm}{2pt}
-\subsubsection{GetAllApplicationDefinitions}
+\subsection{GetAllApplicationDefinitions}
 \label{Api:GetAllApplicationDefinitions}
 \begin{verbatim}
    List<RaptureApplicationDefinition> getAllApplicationDefinitions (
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #runner.getAllApplicationDefinitions();
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #runner.getAllApplicationDefinitions();
+%\end{lstlisting}
 \input{runner/getAllApplicationDefinitions}
 
 
 \rule{15cm}{2pt}
-\subsubsection{GetAllLibraryDefinitions}
+\subsection{GetAllLibraryDefinitions}
 \label{Api:GetAllLibraryDefinitions}
 \begin{verbatim}
    List<RaptureLibraryDefinition> getAllLibraryDefinitions (
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #runner.getAllLibraryDefinitions();
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #runner.getAllLibraryDefinitions();
+%\end{lstlisting}
 \input{runner/getAllLibraryDefinitions}
 
 
 \rule{15cm}{2pt}
-\subsubsection{GetAllApplicationInstances}
+\subsection{GetAllApplicationInstances}
 \label{Api:GetAllApplicationInstances}
 \begin{verbatim}
    List<RaptureApplicationInstance> getAllApplicationInstances (
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #runner.getAllApplicationInstances();
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #runner.getAllApplicationInstances();
+%\end{lstlisting}
 \input{runner/getAllApplicationInstances}
 
 
 \rule{15cm}{2pt}
-\subsubsection{GetServerGroup}
+\subsection{GetServerGroup}
 \label{Api:GetServerGroup}
 \begin{verbatim}
    RaptureServerGroup getServerGroup (
            String    name
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #runner.getServerGroup(name);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #runner.getServerGroup(name);
+%\end{lstlisting}
 \input{runner/getServerGroup}
 
 
 \rule{15cm}{2pt}
-\subsubsection{AddGroupInclusion}
+\subsection{AddGroupInclusion}
 \label{Api:AddGroupInclusion}
 \begin{verbatim}
    RaptureServerGroup addGroupInclusion (
@@ -110,15 +103,14 @@ ret = #runner.getServerGroup(name);
            String    inclusion
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #runner.addGroupInclusion(name,inclusion);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #runner.addGroupInclusion(name,inclusion);
+%\end{lstlisting}
 \input{runner/addGroupInclusion}
 
 
 \rule{15cm}{2pt}
-\subsubsection{RemoveGroupInclusion}
+\subsection{RemoveGroupInclusion}
 \label{Api:RemoveGroupInclusion}
 \begin{verbatim}
    RaptureServerGroup removeGroupInclusion (
@@ -126,15 +118,14 @@ ret = #runner.addGroupInclusion(name,inclusion);
            String    inclusion
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #runner.removeGroupInclusion(name,inclusion);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #runner.removeGroupInclusion(name,inclusion);
+%\end{lstlisting}
 \input{runner/removeGroupInclusion}
 
 
 \rule{15cm}{2pt}
-\subsubsection{AddGroupExclusion}
+\subsection{AddGroupExclusion}
 \label{Api:AddGroupExclusion}
 \begin{verbatim}
    RaptureServerGroup addGroupExclusion (
@@ -142,15 +133,14 @@ ret = #runner.removeGroupInclusion(name,inclusion);
            String    exclusion
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #runner.addGroupExclusion(name,exclusion);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #runner.addGroupExclusion(name,exclusion);
+%\end{lstlisting}
 \input{runner/addGroupExclusion}
 
 
 \rule{15cm}{2pt}
-\subsubsection{RemoveGroupExclusion}
+\subsection{RemoveGroupExclusion}
 \label{Api:RemoveGroupExclusion}
 \begin{verbatim}
    RaptureServerGroup removeGroupExclusion (
@@ -158,15 +148,14 @@ ret = #runner.addGroupExclusion(name,exclusion);
            String    exclusion
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #runner.removeGroupExclusion(name,exclusion);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #runner.removeGroupExclusion(name,exclusion);
+%\end{lstlisting}
 \input{runner/removeGroupExclusion}
 
 
 \rule{15cm}{2pt}
-\subsubsection{RemoveGroupEntry}
+\subsection{RemoveGroupEntry}
 \label{Api:RemoveGroupEntry}
 \begin{verbatim}
    RaptureServerGroup removeGroupEntry (
@@ -174,15 +163,14 @@ ret = #runner.removeGroupExclusion(name,exclusion);
            String    entry
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #runner.removeGroupEntry(name,entry);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #runner.removeGroupEntry(name,entry);
+%\end{lstlisting}
 \input{runner/removeGroupEntry}
 
 
 \rule{15cm}{2pt}
-\subsubsection{CreateApplicationDefinition}
+\subsection{CreateApplicationDefinition}
 \label{Api:CreateApplicationDefinition}
 \begin{verbatim}
    RaptureApplicationDefinition createApplicationDefinition (
@@ -191,30 +179,28 @@ ret = #runner.removeGroupEntry(name,entry);
            String    description
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #runner.createApplicationDefinition(name,ver,description);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #runner.createApplicationDefinition(name,ver,description);
+%\end{lstlisting}
 \input{runner/createApplicationDefinition}
 
 
 \rule{15cm}{2pt}
-\subsubsection{DeleteApplicationDefinition}
+\subsection{DeleteApplicationDefinition}
 \label{Api:DeleteApplicationDefinition}
 \begin{verbatim}
    void deleteApplicationDefinition (
            String    name
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #runner.deleteApplicationDefinition(name);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #runner.deleteApplicationDefinition(name);
+%\end{lstlisting}
 \input{runner/deleteApplicationDefinition}
 
 
 \rule{15cm}{2pt}
-\subsubsection{UpdateApplicationVersion}
+\subsection{UpdateApplicationVersion}
 \label{Api:UpdateApplicationVersion}
 \begin{verbatim}
    RaptureApplicationDefinition updateApplicationVersion (
@@ -222,15 +208,14 @@ ret = #runner.deleteApplicationDefinition(name);
            String    ver
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #runner.updateApplicationVersion(name,ver);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #runner.updateApplicationVersion(name,ver);
+%\end{lstlisting}
 \input{runner/updateApplicationVersion}
 
 
 \rule{15cm}{2pt}
-\subsubsection{CreateLibraryDefinition}
+\subsection{CreateLibraryDefinition}
 \label{Api:CreateLibraryDefinition}
 \begin{verbatim}
    RaptureLibraryDefinition createLibraryDefinition (
@@ -239,45 +224,42 @@ ret = #runner.updateApplicationVersion(name,ver);
            String    description
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #runner.createLibraryDefinition(name,ver,description);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #runner.createLibraryDefinition(name,ver,description);
+%\end{lstlisting}
 \input{runner/createLibraryDefinition}
 
 
 \rule{15cm}{2pt}
-\subsubsection{DeleteLibraryDefinition}
+\subsection{DeleteLibraryDefinition}
 \label{Api:DeleteLibraryDefinition}
 \begin{verbatim}
    void deleteLibraryDefinition (
            String    name
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #runner.deleteLibraryDefinition(name);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #runner.deleteLibraryDefinition(name);
+%\end{lstlisting}
 \input{runner/deleteLibraryDefinition}
 
 
 \rule{15cm}{2pt}
-\subsubsection{GetLibraryDefinition}
+\subsection{GetLibraryDefinition}
 \label{Api:GetLibraryDefinition}
 \begin{verbatim}
    RaptureLibraryDefinition getLibraryDefinition (
            String    name
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #runner.getLibraryDefinition(name);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #runner.getLibraryDefinition(name);
+%\end{lstlisting}
 \input{runner/getLibraryDefinition}
 
 
 \rule{15cm}{2pt}
-\subsubsection{UpdateLibraryVersion}
+\subsection{UpdateLibraryVersion}
 \label{Api:UpdateLibraryVersion}
 \begin{verbatim}
    RaptureLibraryDefinition updateLibraryVersion (
@@ -285,15 +267,14 @@ ret = #runner.getLibraryDefinition(name);
            String    ver
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #runner.updateLibraryVersion(name,ver);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #runner.updateLibraryVersion(name,ver);
+%\end{lstlisting}
 \input{runner/updateLibraryVersion}
 
 
 \rule{15cm}{2pt}
-\subsubsection{AddLibraryToGroup}
+\subsection{AddLibraryToGroup}
 \label{Api:AddLibraryToGroup}
 \begin{verbatim}
    RaptureServerGroup addLibraryToGroup (
@@ -301,15 +282,14 @@ ret = #runner.updateLibraryVersion(name,ver);
            String    libraryName
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #runner.addLibraryToGroup(serverGroup,libraryName);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #runner.addLibraryToGroup(serverGroup,libraryName);
+%\end{lstlisting}
 \input{runner/addLibraryToGroup}
 
 
 \rule{15cm}{2pt}
-\subsubsection{RemoveLibraryFromGroup}
+\subsection{RemoveLibraryFromGroup}
 \label{Api:RemoveLibraryFromGroup}
 \begin{verbatim}
    RaptureServerGroup removeLibraryFromGroup (
@@ -317,15 +297,14 @@ ret = #runner.addLibraryToGroup(serverGroup,libraryName);
            String    libraryName
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #runner.removeLibraryFromGroup(serverGroup,libraryName);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #runner.removeLibraryFromGroup(serverGroup,libraryName);
+%\end{lstlisting}
 \input{runner/removeLibraryFromGroup}
 
 
 \rule{15cm}{2pt}
-\subsubsection{CreateApplicationInstance}
+\subsection{CreateApplicationInstance}
 \label{Api:CreateApplicationInstance}
 \begin{verbatim}
    RaptureApplicationInstance createApplicationInstance (
@@ -339,15 +318,14 @@ ret = #runner.removeLibraryFromGroup(serverGroup,libraryName);
            String    apiUser
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #runner.createApplicationInstance(name,description,serverGroup,appName,timeRange,retryCount,parameters,apiUser);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #runner.createApplicationInstance(name,description,serverGroup,appName,timeRange,retryCount,parameters,apiUser);
+%\end{lstlisting}
 \input{runner/createApplicationInstance}
 
 
 \rule{15cm}{2pt}
-\subsubsection{RunApplication}
+\subsection{RunApplication}
 \label{Api:RunApplication}
 \begin{verbatim}
    RaptureApplicationStatus runApplication (
@@ -357,15 +335,14 @@ ret = #runner.createApplicationInstance(name,description,serverGroup,appName,tim
            Map<String,String>    parameterOutput
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #runner.runApplication(appName,queueName,parameterInput,parameterOutput);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #runner.runApplication(appName,queueName,parameterInput,parameterOutput);
+%\end{lstlisting}
 \input{runner/runApplication}
 
 
 \rule{15cm}{2pt}
-\subsubsection{RunCustomApplication}
+\subsection{RunCustomApplication}
 \label{Api:RunCustomApplication}
 \begin{verbatim}
    RaptureApplicationStatus runCustomApplication (
@@ -376,73 +353,68 @@ ret = #runner.runApplication(appName,queueName,parameterInput,parameterOutput);
            String    customApplicationPath
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #runner.runCustomApplication(appName,queueName,parameterInput,parameterOutput,customApplicationPath);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #runner.runCustomApplication(appName,queueName,parameterInput,parameterOutput,customApplicationPath);
+%\end{lstlisting}
 \input{runner/runCustomApplication}
 
 
 \rule{15cm}{2pt}
-\subsubsection{GetApplicationStatus}
+\subsection{GetApplicationStatus}
 \label{Api:GetApplicationStatus}
 \begin{verbatim}
    RaptureApplicationStatus getApplicationStatus (
            String    applicationStatusURI
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #runner.getApplicationStatus(applicationStatusURI);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #runner.getApplicationStatus(applicationStatusURI);
+%\end{lstlisting}
 \input{runner/getApplicationStatus}
 
 
 \rule{15cm}{2pt}
-\subsubsection{GetApplicationStatuses}
+\subsection{GetApplicationStatuses}
 \label{Api:GetApplicationStatuses}
 \begin{verbatim}
    List<RaptureApplicationStatus> getApplicationStatuses (
            String    date
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #runner.getApplicationStatuses(date);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #runner.getApplicationStatuses(date);
+%\end{lstlisting}
 \input{runner/getApplicationStatuses}
 
 
 \rule{15cm}{2pt}
-\subsubsection{GetApplicationStatusDates}
+\subsection{GetApplicationStatusDates}
 \label{Api:GetApplicationStatusDates}
 \begin{verbatim}
    List<String> getApplicationStatusDates (
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #runner.getApplicationStatusDates();
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #runner.getApplicationStatusDates();
+%\end{lstlisting}
 \input{runner/getApplicationStatusDates}
 
 
 \rule{15cm}{2pt}
-\subsubsection{ArchiveApplicationStatuses}
+\subsection{ArchiveApplicationStatuses}
 \label{Api:ArchiveApplicationStatuses}
 \begin{verbatim}
    void archiveApplicationStatuses (
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #runner.archiveApplicationStatuses();
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #runner.archiveApplicationStatuses();
+%\end{lstlisting}
 \input{runner/archiveApplicationStatuses}
 
 
 \rule{15cm}{2pt}
-\subsubsection{ChangeApplicationStatus}
+\subsection{ChangeApplicationStatus}
 \label{Api:ChangeApplicationStatus}
 \begin{verbatim}
    RaptureApplicationStatus changeApplicationStatus (
@@ -451,15 +423,14 @@ ret = #runner.archiveApplicationStatuses();
            String    message
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #runner.changeApplicationStatus(applicationStatusURI,statusCode,message);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #runner.changeApplicationStatus(applicationStatusURI,statusCode,message);
+%\end{lstlisting}
 \input{runner/changeApplicationStatus}
 
 
 \rule{15cm}{2pt}
-\subsubsection{RecordStatusMessages}
+\subsection{RecordStatusMessages}
 \label{Api:RecordStatusMessages}
 \begin{verbatim}
    void recordStatusMessages (
@@ -467,15 +438,14 @@ ret = #runner.changeApplicationStatus(applicationStatusURI,statusCode,message);
            List<String>    messages
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #runner.recordStatusMessages(applicationStatusURI,messages);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #runner.recordStatusMessages(applicationStatusURI,messages);
+%\end{lstlisting}
 \input{runner/recordStatusMessages}
 
 
 \rule{15cm}{2pt}
-\subsubsection{TerminateApplication}
+\subsection{TerminateApplication}
 \label{Api:TerminateApplication}
 \begin{verbatim}
    RaptureApplicationStatus terminateApplication (
@@ -483,15 +453,14 @@ ret = #runner.recordStatusMessages(applicationStatusURI,messages);
            String    reasonMessage
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #runner.terminateApplication(applicationStatusURI,reasonMessage);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #runner.terminateApplication(applicationStatusURI,reasonMessage);
+%\end{lstlisting}
 \input{runner/terminateApplication}
 
 
 \rule{15cm}{2pt}
-\subsubsection{DeleteApplicationInstance}
+\subsection{DeleteApplicationInstance}
 \label{Api:DeleteApplicationInstance}
 \begin{verbatim}
    void deleteApplicationInstance (
@@ -499,15 +468,14 @@ ret = #runner.terminateApplication(applicationStatusURI,reasonMessage);
            String    serverGroup
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #runner.deleteApplicationInstance(name,serverGroup);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #runner.deleteApplicationInstance(name,serverGroup);
+%\end{lstlisting}
 \input{runner/deleteApplicationInstance}
 
 
 \rule{15cm}{2pt}
-\subsubsection{GetApplicationInstance}
+\subsection{GetApplicationInstance}
 \label{Api:GetApplicationInstance}
 \begin{verbatim}
    RaptureApplicationInstance getApplicationInstance (
@@ -515,15 +483,14 @@ ret = #runner.deleteApplicationInstance(name,serverGroup);
            String    serverGroup
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #runner.getApplicationInstance(name,serverGroup);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #runner.getApplicationInstance(name,serverGroup);
+%\end{lstlisting}
 \input{runner/getApplicationInstance}
 
 
 \rule{15cm}{2pt}
-\subsubsection{UpdateStatus}
+\subsection{UpdateStatus}
 \label{Api:UpdateStatus}
 \begin{verbatim}
    void updateStatus (
@@ -534,60 +501,56 @@ ret = #runner.getApplicationInstance(name,serverGroup);
            boolean    finished
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #runner.updateStatus(name,serverGroup,myServer,status,finished);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #runner.updateStatus(name,serverGroup,myServer,status,finished);
+%\end{lstlisting}
 \input{runner/updateStatus}
 
 
 \rule{15cm}{2pt}
-\subsubsection{GetApplicationsForServerGroup}
+\subsection{GetApplicationsForServerGroup}
 \label{Api:GetApplicationsForServerGroup}
 \begin{verbatim}
    List<String> getApplicationsForServerGroup (
            String    serverGroup
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #runner.getApplicationsForServerGroup(serverGroup);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #runner.getApplicationsForServerGroup(serverGroup);
+%\end{lstlisting}
 \input{runner/getApplicationsForServerGroup}
 
 
 \rule{15cm}{2pt}
-\subsubsection{GetApplicationsForServer}
+\subsection{GetApplicationsForServer}
 \label{Api:GetApplicationsForServer}
 \begin{verbatim}
    List<RaptureApplicationInstance> getApplicationsForServer (
            String    serverName
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #runner.getApplicationsForServer(serverName);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #runner.getApplicationsForServer(serverName);
+%\end{lstlisting}
 \input{runner/getApplicationsForServer}
 
 
 \rule{15cm}{2pt}
-\subsubsection{GetApplicationDefinition}
+\subsection{GetApplicationDefinition}
 \label{Api:GetApplicationDefinition}
 \begin{verbatim}
    RaptureApplicationDefinition getApplicationDefinition (
            String    name
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #runner.getApplicationDefinition(name);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #runner.getApplicationDefinition(name);
+%\end{lstlisting}
 \input{runner/getApplicationDefinition}
 
 
 \rule{15cm}{2pt}
-\subsubsection{SetRunnerConfig}
+\subsection{SetRunnerConfig}
 \label{Api:SetRunnerConfig}
 \begin{verbatim}
    void setRunnerConfig (
@@ -595,44 +558,41 @@ ret = #runner.getApplicationDefinition(name);
            String    value
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #runner.setRunnerConfig(name,value);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #runner.setRunnerConfig(name,value);
+%\end{lstlisting}
 \input{runner/setRunnerConfig}
 
 
 \rule{15cm}{2pt}
-\subsubsection{DeleteRunnerConfig}
+\subsection{DeleteRunnerConfig}
 \label{Api:DeleteRunnerConfig}
 \begin{verbatim}
    void deleteRunnerConfig (
            String    name
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #runner.deleteRunnerConfig(name);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #runner.deleteRunnerConfig(name);
+%\end{lstlisting}
 \input{runner/deleteRunnerConfig}
 
 
 \rule{15cm}{2pt}
-\subsubsection{GetRunnerConfig}
+\subsection{GetRunnerConfig}
 \label{Api:GetRunnerConfig}
 \begin{verbatim}
    RaptureRunnerConfig getRunnerConfig (
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #runner.getRunnerConfig();
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #runner.getRunnerConfig();
+%\end{lstlisting}
 \input{runner/getRunnerConfig}
 
 
 \rule{15cm}{2pt}
-\subsubsection{RecordRunnerStatus}
+\subsection{RecordRunnerStatus}
 \label{Api:RecordRunnerStatus}
 \begin{verbatim}
    void recordRunnerStatus (
@@ -643,15 +603,14 @@ ret = #runner.getRunnerConfig();
            String    status
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #runner.recordRunnerStatus(serverName,serverGroup,appInstance,appName,status);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #runner.recordRunnerStatus(serverName,serverGroup,appInstance,appName,status);
+%\end{lstlisting}
 \input{runner/recordRunnerStatus}
 
 
 \rule{15cm}{2pt}
-\subsubsection{RecordInstanceCapabilities}
+\subsection{RecordInstanceCapabilities}
 \label{Api:RecordInstanceCapabilities}
 \begin{verbatim}
    void recordInstanceCapabilities (
@@ -660,15 +619,14 @@ ret = #runner.recordRunnerStatus(serverName,serverGroup,appInstance,appName,stat
            Map<String,Object>    capabilities
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #runner.recordInstanceCapabilities(serverName,instanceName,capabilities);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #runner.recordInstanceCapabilities(serverName,instanceName,capabilities);
+%\end{lstlisting}
 \input{runner/recordInstanceCapabilities}
 
 
 \rule{15cm}{2pt}
-\subsubsection{GetCapabilities}
+\subsection{GetCapabilities}
 \label{Api:GetCapabilities}
 \begin{verbatim}
    Map<String,RaptureInstanceCapabilities> getCapabilities (
@@ -676,59 +634,55 @@ ret = #runner.recordInstanceCapabilities(serverName,instanceName,capabilities);
            List<String>    instanceNames
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #runner.getCapabilities(serverName,instanceNames);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #runner.getCapabilities(serverName,instanceNames);
+%\end{lstlisting}
 \input{runner/getCapabilities}
 
 
 \rule{15cm}{2pt}
-\subsubsection{GetRunnerServers}
+\subsection{GetRunnerServers}
 \label{Api:GetRunnerServers}
 \begin{verbatim}
    List<String> getRunnerServers (
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #runner.getRunnerServers();
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #runner.getRunnerServers();
+%\end{lstlisting}
 \input{runner/getRunnerServers}
 
 
 \rule{15cm}{2pt}
-\subsubsection{GetRunnerStatus}
+\subsection{GetRunnerStatus}
 \label{Api:GetRunnerStatus}
 \begin{verbatim}
    RaptureRunnerStatus getRunnerStatus (
            String    serverName
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #runner.getRunnerStatus(serverName);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #runner.getRunnerStatus(serverName);
+%\end{lstlisting}
 \input{runner/getRunnerStatus}
 
 
 \rule{15cm}{2pt}
-\subsubsection{CleanRunnerStatus}
+\subsection{CleanRunnerStatus}
 \label{Api:CleanRunnerStatus}
 \begin{verbatim}
    void cleanRunnerStatus (
            int    ageInMinutes
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #runner.cleanRunnerStatus(ageInMinutes);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #runner.cleanRunnerStatus(ageInMinutes);
+%\end{lstlisting}
 \input{runner/cleanRunnerStatus}
 
 
 \rule{15cm}{2pt}
-\subsubsection{MarkForRestart}
+\subsection{MarkForRestart}
 \label{Api:MarkForRestart}
 \begin{verbatim}
    void markForRestart (
@@ -736,10 +690,9 @@ ret = #runner.cleanRunnerStatus(ageInMinutes);
            String    name
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #runner.markForRestart(serverName,name);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #runner.markForRestart(serverName,name);
+%\end{lstlisting}
 \input{runner/markForRestart}
 
 

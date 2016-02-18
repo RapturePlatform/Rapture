@@ -1,50 +1,47 @@
-\section{Notification API}
+\chapter{Notification API}
 \input{notification/info}
-\subsubsection{GetNotificationManagerConfigs}
+\subsection{GetNotificationManagerConfigs}
 \label{Api:GetNotificationManagerConfigs}
 \begin{verbatim}
    List<RaptureNotificationConfig> getNotificationManagerConfigs (
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #notification.getNotificationManagerConfigs();
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #notification.getNotificationManagerConfigs();
+%\end{lstlisting}
 \input{notification/getNotificationManagerConfigs}
 
 
 \rule{15cm}{2pt}
-\subsubsection{ListNotificationsByUriPrefix}
+\subsection{ListNotificationsByUriPrefix}
 \label{Api:ListNotificationsByUriPrefix}
 \begin{verbatim}
    List<RaptureFolderInfo> listNotificationsByUriPrefix (
            String    uriPrefix
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #notification.listNotificationsByUriPrefix(uriPrefix);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #notification.listNotificationsByUriPrefix(uriPrefix);
+%\end{lstlisting}
 \input{notification/listNotificationsByUriPrefix}
 
 
 \rule{15cm}{2pt}
-\subsubsection{FindNotificationManagerConfigsByPurpose}
+\subsection{FindNotificationManagerConfigsByPurpose}
 \label{Api:FindNotificationManagerConfigsByPurpose}
 \begin{verbatim}
    List<RaptureNotificationConfig> findNotificationManagerConfigsByPurpose (
            String    purpose
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #notification.findNotificationManagerConfigsByPurpose(purpose);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #notification.findNotificationManagerConfigsByPurpose(purpose);
+%\end{lstlisting}
 \input{notification/findNotificationManagerConfigsByPurpose}
 
 
 \rule{15cm}{2pt}
-\subsubsection{CreateNotificationManager}
+\subsection{CreateNotificationManager}
 \label{Api:CreateNotificationManager}
 \begin{verbatim}
    RaptureNotificationConfig createNotificationManager (
@@ -53,75 +50,70 @@ ret = #notification.findNotificationManagerConfigsByPurpose(purpose);
            String    purpose
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #notification.createNotificationManager(notificationManagerUri,config,purpose);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #notification.createNotificationManager(notificationManagerUri,config,purpose);
+%\end{lstlisting}
 \input{notification/createNotificationManager}
 
 
 \rule{15cm}{2pt}
-\subsubsection{NotificationManagerExists}
+\subsection{NotificationManagerExists}
 \label{Api:NotificationManagerExists}
 \begin{verbatim}
    boolean notificationManagerExists (
            String    notificationManagerUri
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #notification.notificationManagerExists(notificationManagerUri);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #notification.notificationManagerExists(notificationManagerUri);
+%\end{lstlisting}
 \input{notification/notificationManagerExists}
 
 
 \rule{15cm}{2pt}
-\subsubsection{GetNotificationManagerConfig}
+\subsection{GetNotificationManagerConfig}
 \label{Api:GetNotificationManagerConfig}
 \begin{verbatim}
    RaptureNotificationConfig getNotificationManagerConfig (
            String    notificationManagerUri
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #notification.getNotificationManagerConfig(notificationManagerUri);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #notification.getNotificationManagerConfig(notificationManagerUri);
+%\end{lstlisting}
 \input{notification/getNotificationManagerConfig}
 
 
 \rule{15cm}{2pt}
-\subsubsection{DeleteNotificationManager}
+\subsection{DeleteNotificationManager}
 \label{Api:DeleteNotificationManager}
 \begin{verbatim}
    void deleteNotificationManager (
            String    notificationManagerUri
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #notification.deleteNotificationManager(notificationManagerUri);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #notification.deleteNotificationManager(notificationManagerUri);
+%\end{lstlisting}
 \input{notification/deleteNotificationManager}
 
 
 \rule{15cm}{2pt}
-\subsubsection{GetLatestNotificationEpoch}
+\subsection{GetLatestNotificationEpoch}
 \label{Api:GetLatestNotificationEpoch}
 \begin{verbatim}
    Long getLatestNotificationEpoch (
            String    notificationManagerUri
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #notification.getLatestNotificationEpoch(notificationManagerUri);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #notification.getLatestNotificationEpoch(notificationManagerUri);
+%\end{lstlisting}
 \input{notification/getLatestNotificationEpoch}
 
 
 \rule{15cm}{2pt}
-\subsubsection{PublishNotification}
+\subsection{PublishNotification}
 \label{Api:PublishNotification}
 \begin{verbatim}
    String publishNotification (
@@ -131,15 +123,14 @@ ret = #notification.getLatestNotificationEpoch(notificationManagerUri);
            String    contentType
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #notification.publishNotification(notificationManagerUri,referenceId,content,contentType);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #notification.publishNotification(notificationManagerUri,referenceId,content,contentType);
+%\end{lstlisting}
 \input{notification/publishNotification}
 
 
 \rule{15cm}{2pt}
-\subsubsection{FindNotificationsAfterEpoch}
+\subsection{FindNotificationsAfterEpoch}
 \label{Api:FindNotificationsAfterEpoch}
 \begin{verbatim}
    NotificationResult findNotificationsAfterEpoch (
@@ -147,15 +138,14 @@ ret = #notification.publishNotification(notificationManagerUri,referenceId,conte
            Long    epoch
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #notification.findNotificationsAfterEpoch(notificationManagerUri,epoch);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #notification.findNotificationsAfterEpoch(notificationManagerUri,epoch);
+%\end{lstlisting}
 \input{notification/findNotificationsAfterEpoch}
 
 
 \rule{15cm}{2pt}
-\subsubsection{GetNotification}
+\subsection{GetNotification}
 \label{Api:GetNotification}
 \begin{verbatim}
    NotificationInfo getNotification (
@@ -163,10 +153,9 @@ ret = #notification.findNotificationsAfterEpoch(notificationManagerUri,epoch);
            String    id
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #notification.getNotification(notificationUri,id);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #notification.getNotification(notificationUri,id);
+%\end{lstlisting}
 \input{notification/getNotification}
 
 

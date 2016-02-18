@@ -104,7 +104,7 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
 
         RaptureURI internalUri = new RaptureURI(docRepoUri, Scheme.DOCUMENT);
         String authority = internalUri.getAuthority();
-        
+
         if ((authority == null) || authority.isEmpty()) {
             throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, apiMessageCatalog.getMessage("NoAuthority")); //$NON-NLS-1$
         }
@@ -252,8 +252,8 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
                 GetDocPayload requestObj = new GetDocPayload();
                 requestObj.setContext(context);
                 requestObj.setDocUri(uri);
-                ContextValidator.validateContext(context, EntitlementSet.Doc_getDoc, requestObj); 
-                
+                ContextValidator.validateContext(context, EntitlementSet.Doc_getDoc, requestObj);
+
                 retVal.add(exists(context, uri));
             } catch (RaptureException e) {
                 retVal.add(false);
@@ -283,7 +283,7 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
                 GetDocPayload requestObj = new GetDocPayload();
                 requestObj.setContext(context);
                 requestObj.setDocUri(uri);
-                ContextValidator.validateContext(context, EntitlementSet.Doc_getDoc, requestObj); 
+                ContextValidator.validateContext(context, EntitlementSet.Doc_getDoc, requestObj);
 
                 String toAdd = result.get(uri);
                 if (toAdd == null) {
@@ -346,7 +346,7 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
                 GetDocPayload requestObj = new GetDocPayload();
                 requestObj.setContext(context);
                 requestObj.setDocUri(docUri);
-                ContextValidator.validateContext(context, EntitlementSet.Doc_getDoc, requestObj); 
+                ContextValidator.validateContext(context, EntitlementSet.Doc_getDoc, requestObj);
 
                 RaptureURI internalUri = new RaptureURI(docUri, Scheme.DOCUMENT);
                 repoToUriMap.put(internalUri.getAuthority(), internalUri);
@@ -509,19 +509,19 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
 
     @Override
     public String renameDoc(CallingContext context, String fromDocUri, String toDocUri) {
-        
+
         // Note: we can reuse the payload because the calls are effectively the same; only the entitlement set changed.
         GetDocPayload requestObj = new GetDocPayload();
         requestObj.setContext(context);
         requestObj.setDocUri(fromDocUri);
-        ContextValidator.validateContext(context, EntitlementSet.Doc_getDoc, requestObj); 
-        ContextValidator.validateContext(context, EntitlementSet.Doc_deleteDoc, requestObj); 
-        
+        ContextValidator.validateContext(context, EntitlementSet.Doc_getDoc, requestObj);
+        ContextValidator.validateContext(context, EntitlementSet.Doc_deleteDoc, requestObj);
+
         requestObj.setDocUri(toDocUri);
         // Requiring that you be able to read the target isn't necessarily a requirement
         // but it might not be a bad idea to warn the user if they don't have EntitlementSet.Doc_getDoc on the target
-        ContextValidator.validateContext(context, EntitlementSet.Doc_putDoc, requestObj); 
-        
+        ContextValidator.validateContext(context, EntitlementSet.Doc_putDoc, requestObj);
+
         String content = getDoc(context, fromDocUri);
         String retval = null;
         if (content != null) {
@@ -692,12 +692,12 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
 
     @Override
     public List<String> deleteDocsByUriPrefix(CallingContext context, String docUri) {
-        
+
         Map<String, RaptureFolderInfo> docs = listDocsByUriPrefix(context, docUri, Integer.MAX_VALUE);
         List<String> folders = new ArrayList<>();
         Set<String> notEmpty = new HashSet<>();
         List<String> removed = new ArrayList<>();
-        
+
         for (Entry<String, RaptureFolderInfo> entry : docs.entrySet()) {
             String uri = entry.getKey();
             boolean isFolder = entry.getValue().isFolder();
@@ -705,8 +705,8 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
                 GetDocPayload requestObj = new GetDocPayload();
                 requestObj.setContext(context);
                 requestObj.setDocUri(uri);
-                ContextValidator.validateContext(context, EntitlementSet.Doc_deleteDoc, requestObj); 
-                if (isFolder) 
+                ContextValidator.validateContext(context, EntitlementSet.Doc_deleteDoc, requestObj);
+                if (isFolder)
                     folders.add(0, uri.substring(0, uri.length()-1));
                 else {
                     deleteDoc(context, uri);
@@ -731,25 +731,25 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
         }
         return removed;
     }
-    
+
     @Override
     public Map<String, RaptureFolderInfo> listDocsByUriPrefix(CallingContext context, String uriPrefix, int depth) {
         RaptureURI internalUri = new RaptureURI(uriPrefix, Scheme.DOCUMENT);
         String authority = internalUri.getAuthority();
         Map<String, RaptureFolderInfo> ret = new HashMap<String, RaptureFolderInfo>();
-        
+
         // Schema level is special case.
         if (authority.isEmpty()) {
             --depth;
             try {
                 GetDocPayload requestObj = new GetDocPayload();
                 requestObj.setContext(context);
-                ContextValidator.validateContext(context, EntitlementSet.Doc_getDocRepoConfigs, requestObj); 
+                ContextValidator.validateContext(context, EntitlementSet.Doc_getDocRepoConfigs, requestObj);
 
                 List<DocumentRepoConfig> configs = this.getDocRepoConfigs(context);
                 for (DocumentRepoConfig config : configs) {
                      authority = config.getAuthority();
-                     // NULL or empty string should not exist. 
+                     // NULL or empty string should not exist.
                      if ((authority == null) || authority.isEmpty()) {
                          log.warn("Invalid authority (null or empty string) found for "+JacksonUtil.jsonFromObject(config));
                          continue;
@@ -767,13 +767,13 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
             }
             return ret;
         }
-        
+
         Repository repository = getRepoFromCache(authority);
         Boolean getAll = false;
         if (repository == null) {
             throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST,  apiMessageCatalog.getMessage("NoSuchRepo", internalUri.toAuthString())); //$NON-NLS-1$
         }
-        
+
         String parentDocPath = internalUri.getDocPath() == null ? "" : internalUri.getDocPath();
         int startDepth = StringUtils.countMatches(parentDocPath, "/");
 
@@ -790,13 +790,13 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
             int currDepth = StringUtils.countMatches(currParentDocPath, "/") - startDepth;
             if (!getAll && currDepth >= depth) continue;
             boolean top = currParentDocPath.isEmpty();
-            
+
             // Make sure that you have permission to read the folder.
             try {
                 GetDocPayload requestObj = new GetDocPayload();
                 requestObj.setContext(context);
                 requestObj.setDocUri(currParentDocPath);
-                ContextValidator.validateContext(context, EntitlementSet.Doc_getDoc, requestObj); 
+                ContextValidator.validateContext(context, EntitlementSet.Doc_getDoc, requestObj);
 
                 List<RaptureFolderInfo> children = repository.getChildren(currParentDocPath);
                 if (children != null) {

@@ -1,110 +1,103 @@
-\section{Decision API}
+\chapter{Decision API}
 \input{decision/info}
-\subsubsection{GetAllWorkflows}
+\subsection{GetAllWorkflows}
 \label{Api:GetAllWorkflows}
 \begin{verbatim}
    List<Workflow> getAllWorkflows (
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #decision.getAllWorkflows();
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #decision.getAllWorkflows();
+%\end{lstlisting}
 \input{decision/getAllWorkflows}
 
 
 \rule{15cm}{2pt}
-\subsubsection{GetWorkflowChildren}
+\subsection{GetWorkflowChildren}
 \label{Api:GetWorkflowChildren}
 \begin{verbatim}
    List<RaptureFolderInfo> getWorkflowChildren (
            String    workflowURI
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #decision.getWorkflowChildren(workflowURI);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #decision.getWorkflowChildren(workflowURI);
+%\end{lstlisting}
 \input{decision/getWorkflowChildren}
 
 
 \rule{15cm}{2pt}
-\subsubsection{GetWorkOrderChildren}
+\subsection{GetWorkOrderChildren}
 \label{Api:GetWorkOrderChildren}
 \begin{verbatim}
    List<RaptureFolderInfo> getWorkOrderChildren (
            String    parentPath
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #decision.getWorkOrderChildren(parentPath);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #decision.getWorkOrderChildren(parentPath);
+%\end{lstlisting}
 \input{decision/getWorkOrderChildren}
 
 
 \rule{15cm}{2pt}
-\subsubsection{PutWorkflow}
+\subsection{PutWorkflow}
 \label{Api:PutWorkflow}
 \begin{verbatim}
    void putWorkflow (
            Workflow    workflow
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #decision.putWorkflow(workflow);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #decision.putWorkflow(workflow);
+%\end{lstlisting}
 \input{decision/putWorkflow}
 
 
 \rule{15cm}{2pt}
-\subsubsection{GetWorkflow}
+\subsection{GetWorkflow}
 \label{Api:GetWorkflow}
 \begin{verbatim}
    Workflow getWorkflow (
            String    workflowURI
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #decision.getWorkflow(workflowURI);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #decision.getWorkflow(workflowURI);
+%\end{lstlisting}
 \input{decision/getWorkflow}
 
 
 \rule{15cm}{2pt}
-\subsubsection{GetWorkflowStep}
+\subsection{GetWorkflowStep}
 \label{Api:GetWorkflowStep}
 \begin{verbatim}
    Step getWorkflowStep (
            String    stepURI
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #decision.getWorkflowStep(stepURI);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #decision.getWorkflowStep(stepURI);
+%\end{lstlisting}
 \input{decision/getWorkflowStep}
 
 
 \rule{15cm}{2pt}
-\subsubsection{GetStepCategory}
+\subsection{GetStepCategory}
 \label{Api:GetStepCategory}
 \begin{verbatim}
    String getStepCategory (
            String    stepURI
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #decision.getStepCategory(stepURI);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #decision.getStepCategory(stepURI);
+%\end{lstlisting}
 \input{decision/getStepCategory}
 
 
 \rule{15cm}{2pt}
-\subsubsection{AddStep}
+\subsection{AddStep}
 \label{Api:AddStep}
 \begin{verbatim}
    void addStep (
@@ -112,15 +105,14 @@ ret = #decision.getStepCategory(stepURI);
            Step    step
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #decision.addStep(workflowURI,step);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #decision.addStep(workflowURI,step);
+%\end{lstlisting}
 \input{decision/addStep}
 
 
 \rule{15cm}{2pt}
-\subsubsection{RemoveStep}
+\subsection{RemoveStep}
 \label{Api:RemoveStep}
 \begin{verbatim}
    void removeStep (
@@ -128,15 +120,14 @@ ret = #decision.addStep(workflowURI,step);
            String    stepName
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #decision.removeStep(workflowURI,stepName);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #decision.removeStep(workflowURI,stepName);
+%\end{lstlisting}
 \input{decision/removeStep}
 
 
 \rule{15cm}{2pt}
-\subsubsection{AddTransition}
+\subsection{AddTransition}
 \label{Api:AddTransition}
 \begin{verbatim}
    void addTransition (
@@ -145,15 +136,14 @@ ret = #decision.removeStep(workflowURI,stepName);
            Transition    transition
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #decision.addTransition(workflowURI,stepName,transition);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #decision.addTransition(workflowURI,stepName,transition);
+%\end{lstlisting}
 \input{decision/addTransition}
 
 
 \rule{15cm}{2pt}
-\subsubsection{RemoveTransition}
+\subsection{RemoveTransition}
 \label{Api:RemoveTransition}
 \begin{verbatim}
    void removeTransition (
@@ -162,90 +152,84 @@ ret = #decision.addTransition(workflowURI,stepName,transition);
            String    transitionName
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #decision.removeTransition(workflowURI,stepName,transitionName);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #decision.removeTransition(workflowURI,stepName,transitionName);
+%\end{lstlisting}
 \input{decision/removeTransition}
 
 
 \rule{15cm}{2pt}
-\subsubsection{DeleteWorkflow}
+\subsection{DeleteWorkflow}
 \label{Api:DeleteWorkflow}
 \begin{verbatim}
    void deleteWorkflow (
            String    workflowURI
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #decision.deleteWorkflow(workflowURI);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #decision.deleteWorkflow(workflowURI);
+%\end{lstlisting}
 \input{decision/deleteWorkflow}
 
 
 \rule{15cm}{2pt}
-\subsubsection{PutWorkflowStepTemplate}
+\subsection{PutWorkflowStepTemplate}
 \label{Api:PutWorkflowStepTemplate}
 \begin{verbatim}
    void putWorkflowStepTemplate (
            WorkflowStepTemplate    template
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #decision.putWorkflowStepTemplate(template);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #decision.putWorkflowStepTemplate(template);
+%\end{lstlisting}
 \input{decision/putWorkflowStepTemplate}
 
 
 \rule{15cm}{2pt}
-\subsubsection{GetWorkflowStepTemplate}
+\subsection{GetWorkflowStepTemplate}
 \label{Api:GetWorkflowStepTemplate}
 \begin{verbatim}
    WorkflowStepTemplate getWorkflowStepTemplate (
            String    workflowStepTemplateURI
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #decision.getWorkflowStepTemplate(workflowStepTemplateURI);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #decision.getWorkflowStepTemplate(workflowStepTemplateURI);
+%\end{lstlisting}
 \input{decision/getWorkflowStepTemplate}
 
 
 \rule{15cm}{2pt}
-\subsubsection{DeleteWorkflowStepTemplate}
+\subsection{DeleteWorkflowStepTemplate}
 \label{Api:DeleteWorkflowStepTemplate}
 \begin{verbatim}
    void deleteWorkflowStepTemplate (
            String    workflowStepTemplateURI
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #decision.deleteWorkflowStepTemplate(workflowStepTemplateURI);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #decision.deleteWorkflowStepTemplate(workflowStepTemplateURI);
+%\end{lstlisting}
 \input{decision/deleteWorkflowStepTemplate}
 
 
 \rule{15cm}{2pt}
-\subsubsection{GetWorflowStepTemplateChildren}
+\subsection{GetWorflowStepTemplateChildren}
 \label{Api:GetWorflowStepTemplateChildren}
 \begin{verbatim}
    List<RaptureFolderInfo> getWorflowStepTemplateChildren (
            String    parentPath
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #decision.getWorflowStepTemplateChildren(parentPath);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #decision.getWorflowStepTemplateChildren(parentPath);
+%\end{lstlisting}
 \input{decision/getWorflowStepTemplateChildren}
 
 
 \rule{15cm}{2pt}
-\subsubsection{CreateWorkOrder}
+\subsection{CreateWorkOrder}
 \label{Api:CreateWorkOrder}
 \begin{verbatim}
    String createWorkOrder (
@@ -253,15 +237,14 @@ ret = #decision.getWorflowStepTemplateChildren(parentPath);
            Map<String,String>    argsMap
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #decision.createWorkOrder(workflowURI,argsMap);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #decision.createWorkOrder(workflowURI,argsMap);
+%\end{lstlisting}
 \input{decision/createWorkOrder}
 
 
 \rule{15cm}{2pt}
-\subsubsection{CreateWorkOrderP}
+\subsection{CreateWorkOrderP}
 \label{Api:CreateWorkOrderP}
 \begin{verbatim}
    CreateResponse createWorkOrderP (
@@ -270,45 +253,42 @@ ret = #decision.createWorkOrder(workflowURI,argsMap);
            String    appStatusUriPattern
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #decision.createWorkOrderP(workflowURI,argsMap,appStatusUriPattern);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #decision.createWorkOrderP(workflowURI,argsMap,appStatusUriPattern);
+%\end{lstlisting}
 \input{decision/createWorkOrderP}
 
 
 \rule{15cm}{2pt}
-\subsubsection{ReleaseWorkOrderLock}
+\subsection{ReleaseWorkOrderLock}
 \label{Api:ReleaseWorkOrderLock}
 \begin{verbatim}
    void releaseWorkOrderLock (
            String    workOrderURI
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #decision.releaseWorkOrderLock(workOrderURI);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #decision.releaseWorkOrderLock(workOrderURI);
+%\end{lstlisting}
 \input{decision/releaseWorkOrderLock}
 
 
 \rule{15cm}{2pt}
-\subsubsection{GetWorkOrderStatus}
+\subsection{GetWorkOrderStatus}
 \label{Api:GetWorkOrderStatus}
 \begin{verbatim}
    WorkOrderStatus getWorkOrderStatus (
            String    workOrderURI
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #decision.getWorkOrderStatus(workOrderURI);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #decision.getWorkOrderStatus(workOrderURI);
+%\end{lstlisting}
 \input{decision/getWorkOrderStatus}
 
 
 \rule{15cm}{2pt}
-\subsubsection{WriteWorkflowAuditEntry}
+\subsection{WriteWorkflowAuditEntry}
 \label{Api:WriteWorkflowAuditEntry}
 \begin{verbatim}
    void writeWorkflowAuditEntry (
@@ -317,45 +297,42 @@ ret = #decision.getWorkOrderStatus(workOrderURI);
            boolean    error
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #decision.writeWorkflowAuditEntry(workOrderURI,message,error);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #decision.writeWorkflowAuditEntry(workOrderURI,message,error);
+%\end{lstlisting}
 \input{decision/writeWorkflowAuditEntry}
 
 
 \rule{15cm}{2pt}
-\subsubsection{GetWorkOrdersByDay}
+\subsection{GetWorkOrdersByDay}
 \label{Api:GetWorkOrdersByDay}
 \begin{verbatim}
    List<WorkOrder> getWorkOrdersByDay (
            Long    startTimeInstant
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #decision.getWorkOrdersByDay(startTimeInstant);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #decision.getWorkOrdersByDay(startTimeInstant);
+%\end{lstlisting}
 \input{decision/getWorkOrdersByDay}
 
 
 \rule{15cm}{2pt}
-\subsubsection{GetWorkOrder}
+\subsection{GetWorkOrder}
 \label{Api:GetWorkOrder}
 \begin{verbatim}
    WorkOrder getWorkOrder (
            String    workOrderURI
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #decision.getWorkOrder(workOrderURI);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #decision.getWorkOrder(workOrderURI);
+%\end{lstlisting}
 \input{decision/getWorkOrder}
 
 
 \rule{15cm}{2pt}
-\subsubsection{GetWorker}
+\subsection{GetWorker}
 \label{Api:GetWorker}
 \begin{verbatim}
    Worker getWorker (
@@ -363,30 +340,28 @@ ret = #decision.getWorkOrder(workOrderURI);
            String    workerId
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #decision.getWorker(workOrderURI,workerId);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #decision.getWorker(workOrderURI,workerId);
+%\end{lstlisting}
 \input{decision/getWorker}
 
 
 \rule{15cm}{2pt}
-\subsubsection{CancelWorkOrder}
+\subsection{CancelWorkOrder}
 \label{Api:CancelWorkOrder}
 \begin{verbatim}
    void cancelWorkOrder (
            String    workOrderURI
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #decision.cancelWorkOrder(workOrderURI);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #decision.cancelWorkOrder(workOrderURI);
+%\end{lstlisting}
 \input{decision/cancelWorkOrder}
 
 
 \rule{15cm}{2pt}
-\subsubsection{ResumeWorkOrder}
+\subsection{ResumeWorkOrder}
 \label{Api:ResumeWorkOrder}
 \begin{verbatim}
    CreateResponse resumeWorkOrder (
@@ -394,60 +369,56 @@ ret = #decision.cancelWorkOrder(workOrderURI);
            String    resumeStepURI
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #decision.resumeWorkOrder(workOrderURI,resumeStepURI);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #decision.resumeWorkOrder(workOrderURI,resumeStepURI);
+%\end{lstlisting}
 \input{decision/resumeWorkOrder}
 
 
 \rule{15cm}{2pt}
-\subsubsection{WasCancelCalled}
+\subsection{WasCancelCalled}
 \label{Api:WasCancelCalled}
 \begin{verbatim}
    boolean wasCancelCalled (
            String    workOrderURI
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #decision.wasCancelCalled(workOrderURI);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #decision.wasCancelCalled(workOrderURI);
+%\end{lstlisting}
 \input{decision/wasCancelCalled}
 
 
 \rule{15cm}{2pt}
-\subsubsection{GetCancellationDetails}
+\subsection{GetCancellationDetails}
 \label{Api:GetCancellationDetails}
 \begin{verbatim}
    WorkOrderCancellation getCancellationDetails (
            String    workOrderURI
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #decision.getCancellationDetails(workOrderURI);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #decision.getCancellationDetails(workOrderURI);
+%\end{lstlisting}
 \input{decision/getCancellationDetails}
 
 
 \rule{15cm}{2pt}
-\subsubsection{GetWorkOrderDebug}
+\subsection{GetWorkOrderDebug}
 \label{Api:GetWorkOrderDebug}
 \begin{verbatim}
    WorkOrderDebug getWorkOrderDebug (
            String    workOrderURI
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #decision.getWorkOrderDebug(workOrderURI);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #decision.getWorkOrderDebug(workOrderURI);
+%\end{lstlisting}
 \input{decision/getWorkOrderDebug}
 
 
 \rule{15cm}{2pt}
-\subsubsection{SetWorkOrderIdGenConfig}
+\subsection{SetWorkOrderIdGenConfig}
 \label{Api:SetWorkOrderIdGenConfig}
 \begin{verbatim}
    void setWorkOrderIdGenConfig (
@@ -455,15 +426,14 @@ ret = #decision.getWorkOrderDebug(workOrderURI);
            boolean    force
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #decision.setWorkOrderIdGenConfig(config,force);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #decision.setWorkOrderIdGenConfig(config,force);
+%\end{lstlisting}
 \input{decision/setWorkOrderIdGenConfig}
 
 
 \rule{15cm}{2pt}
-\subsubsection{SetContextLiteral}
+\subsection{SetContextLiteral}
 \label{Api:SetContextLiteral}
 \begin{verbatim}
    void setContextLiteral (
@@ -472,15 +442,14 @@ ret = #decision.setWorkOrderIdGenConfig(config,force);
            String    literalValue
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #decision.setContextLiteral(workerURI,varAlias,literalValue);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #decision.setContextLiteral(workerURI,varAlias,literalValue);
+%\end{lstlisting}
 \input{decision/setContextLiteral}
 
 
 \rule{15cm}{2pt}
-\subsubsection{SetContextLink}
+\subsection{SetContextLink}
 \label{Api:SetContextLink}
 \begin{verbatim}
    void setContextLink (
@@ -489,15 +458,14 @@ ret = #decision.setContextLiteral(workerURI,varAlias,literalValue);
            String    expressionValue
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #decision.setContextLink(workerURI,varAlias,expressionValue);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #decision.setContextLink(workerURI,varAlias,expressionValue);
+%\end{lstlisting}
 \input{decision/setContextLink}
 
 
 \rule{15cm}{2pt}
-\subsubsection{GetContextValue}
+\subsection{GetContextValue}
 \label{Api:GetContextValue}
 \begin{verbatim}
    String getContextValue (
@@ -505,15 +473,14 @@ ret = #decision.setContextLink(workerURI,varAlias,expressionValue);
            String    varAlias
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #decision.getContextValue(workerURI,varAlias);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #decision.getContextValue(workerURI,varAlias);
+%\end{lstlisting}
 \input{decision/getContextValue}
 
 
 \rule{15cm}{2pt}
-\subsubsection{AddErrorToContext}
+\subsection{AddErrorToContext}
 \label{Api:AddErrorToContext}
 \begin{verbatim}
    void addErrorToContext (
@@ -521,45 +488,42 @@ ret = #decision.getContextValue(workerURI,varAlias);
            ErrorWrapper    errorWrapper
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #decision.addErrorToContext(workerURI,errorWrapper);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #decision.addErrorToContext(workerURI,errorWrapper);
+%\end{lstlisting}
 \input{decision/addErrorToContext}
 
 
 \rule{15cm}{2pt}
-\subsubsection{GetErrorsFromContext}
+\subsection{GetErrorsFromContext}
 \label{Api:GetErrorsFromContext}
 \begin{verbatim}
    List<ErrorWrapper> getErrorsFromContext (
            String    workerURI
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #decision.getErrorsFromContext(workerURI);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #decision.getErrorsFromContext(workerURI);
+%\end{lstlisting}
 \input{decision/getErrorsFromContext}
 
 
 \rule{15cm}{2pt}
-\subsubsection{GetExceptionInfo}
+\subsection{GetExceptionInfo}
 \label{Api:GetExceptionInfo}
 \begin{verbatim}
    List<ErrorWrapper> getExceptionInfo (
            String    workOrderURI
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #decision.getExceptionInfo(workOrderURI);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #decision.getExceptionInfo(workOrderURI);
+%\end{lstlisting}
 \input{decision/getExceptionInfo}
 
 
 \rule{15cm}{2pt}
-\subsubsection{ReportStepProgress}
+\subsection{ReportStepProgress}
 \label{Api:ReportStepProgress}
 \begin{verbatim}
    void reportStepProgress (
@@ -570,30 +534,28 @@ ret = #decision.getExceptionInfo(workOrderURI);
            Long    max
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #decision.reportStepProgress(workerURI,stepStartTime,message,progress,max);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #decision.reportStepProgress(workerURI,stepStartTime,message,progress,max);
+%\end{lstlisting}
 \input{decision/reportStepProgress}
 
 
 \rule{15cm}{2pt}
-\subsubsection{GetAppStatuses}
+\subsection{GetAppStatuses}
 \label{Api:GetAppStatuses}
 \begin{verbatim}
    List<AppStatus> getAppStatuses (
            String    prefix
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #decision.getAppStatuses(prefix);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #decision.getAppStatuses(prefix);
+%\end{lstlisting}
 \input{decision/getAppStatuses}
 
 
 \rule{15cm}{2pt}
-\subsubsection{GetAppStatusDetails}
+\subsection{GetAppStatusDetails}
 \label{Api:GetAppStatusDetails}
 \begin{verbatim}
    List<AppStatusDetails> getAppStatusDetails (
@@ -601,15 +563,14 @@ ret = #decision.getAppStatuses(prefix);
            List<String>    extraContextValues
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #decision.getAppStatusDetails(prefix,extraContextValues);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #decision.getAppStatusDetails(prefix,extraContextValues);
+%\end{lstlisting}
 \input{decision/getAppStatusDetails}
 
 
 \rule{15cm}{2pt}
-\subsubsection{GetMonthlyMetrics}
+\subsection{GetMonthlyMetrics}
 \label{Api:GetMonthlyMetrics}
 \begin{verbatim}
    WorkflowHistoricalMetrics getMonthlyMetrics (
@@ -619,15 +580,14 @@ ret = #decision.getAppStatusDetails(prefix,extraContextValues);
            String    state
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #decision.getMonthlyMetrics(workflowURI,jobURI,argsHashValue,state);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #decision.getMonthlyMetrics(workflowURI,jobURI,argsHashValue,state);
+%\end{lstlisting}
 \input{decision/getMonthlyMetrics}
 
 
 \rule{15cm}{2pt}
-\subsubsection{QueryLogs}
+\subsection{QueryLogs}
 \label{Api:QueryLogs}
 \begin{verbatim}
    LogQueryResponse queryLogs (
@@ -641,10 +601,9 @@ ret = #decision.getMonthlyMetrics(workflowURI,jobURI,argsHashValue,state);
            String    stepStartTime
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #decision.queryLogs(workOrderURI,startTime,endTime,keepAlive,bufferSize,nextBatchId,stepName,stepStartTime);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #decision.queryLogs(workOrderURI,startTime,endTime,keepAlive,bufferSize,nextBatchId,stepName,stepStartTime);
+%\end{lstlisting}
 \input{decision/queryLogs}
 
 

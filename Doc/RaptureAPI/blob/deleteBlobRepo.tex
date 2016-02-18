@@ -1,0 +1,6 @@
+The \verb+deleteBlobRepo+ call removes a blob repository from a \Rapture system. The underlying
+implementation of a repository driver determines whether the data associated with this repository
+is also removed from the system.
+
+Currently both the MongoDB and Cassandra implementations of blob repository simply remove the configuration
+and not the data.

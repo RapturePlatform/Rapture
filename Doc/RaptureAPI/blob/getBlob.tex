@@ -1,0 +1,9 @@
+The \verb+getBlob+ call is used to retrieve a blob from a repository. The \verb+BlobContainer+ structure
+returned is complex - it contains both the content of the blob and any \emph{headers} associated with the
+blob as provided by the underlying implementation. The keys to these headers will follow the HTTP protocol format and
+include mime type and content size.
+
+Note that \Rapture servers that have the BlobContentServlet installed will support a RESTful interface
+to adding content. A "GET" to the url formed by prepending the uri of the blob with the prefix
+\verb+/blob/+ will result in a more efficient client side experience, with the mime-type and content size
+set in the headers of the return.

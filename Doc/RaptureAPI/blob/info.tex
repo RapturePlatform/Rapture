@@ -1,0 +1,32 @@
+
+The blob API for \Rapture is used to manipulate the presence and the content of
+blob repositories in \Rapture.
+
+A blob in this context is an arbitrary large piece of binary data that the underlying
+\Rapture system does not have to process -- in effect a blob repository is simply a store
+of content. Each blob is keyed by a \Rapture uri and where the context is not obvious the scheme
+of the uri is \verb+blob://+. In all Blob API calls this scheme may be omitted.
+
+Blob repositories in \Rapture are backed by concrete data storage systems. When
+you define a blob repository in \Rapture you provide a configuration string that is used
+by \Rapture to route your request to a low level driver that interacts with the
+underlying system. The format of this configuration string will be described in
+the API call for creating a blob repository.
+
+Blobs in repositories can also have metadata associated with them. \Rapture
+automatically maintains some of this metadata - the time the document was created, the
+user that created it and the size of the content. \Rapture also attempts to guess (using the
+"extension" of the uri name) the mime-type of the content but this can also be overridden. The
+mime type is often used by user interfaces as a way of attempting to display the content in a
+meaningful way.
+
+The URI of a blob in a repository implies a folder-like structure with the
+forward slash delineating these folders. There are blob API calls to treat a
+blob repository like a file system -- these are useful when constructing
+browsable user interfaces to a repository.
+
+In the \Rapture environment blobs can also be manipulated from a servlet that works in a more
+RESTful manner for retrieving the content and POSTing the content. This technique is much more
+appropriate for client side calls.
+
+\subsection{Methods}

@@ -1,2 +1,6 @@
-Get Doc Id 
+Document repositories can have an id generator attached to them. If a document is added to
+a repository and it contains a "\verb+#id+" suffix the id generator will replace that keyword with
+a newly generated unique id.
 
+The \verb+getDocRepoIdGenConfig+ call retrieves the configuration of the associated id generator
+that was previously set with the \verb+setDocRepoIdGenConfig+ call.

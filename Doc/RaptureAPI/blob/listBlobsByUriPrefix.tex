@@ -1,0 +1,20 @@
+The \verb+listBlobsByUriPrefix+ call is normally used by user interfaces that wish
+to present a browser type interface on a blob repository. The call returns all blobs
+and "sub folders" (to a given depth) below a given point in the hierarchy implied
+by the naming conventions used in uris. Typically an interface will use \verb+/+ as
+the initial prefix and then append onto that prefix the names of either documents
+or folders for further \verb+listBlobs+ type calls or \verb+getBlob+ if the location
+maps to a real blob.
+
+The \verb+RaptureFolderInfo+ structure returned by this call is described below:
+
+\begin{table}[ht]
+\begin{center}
+\begin{tabular}{r l p{8cm}}
+  Field & Type & Description \\
+  \hline
+  name & String & The name of this element. \\
+  folder & Boolean & Whether the name refers to a blob or a sub-folder \\
+\end{tabular}
+\end{center}
+\end{table}

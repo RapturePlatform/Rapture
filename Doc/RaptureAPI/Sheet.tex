@@ -1,6 +1,6 @@
-\section{Sheet API}
+\chapter{Sheet API}
 \input{sheet/info}
-\subsubsection{CreateSheetRepo}
+\subsection{CreateSheetRepo}
 \label{Api:CreateSheetRepo}
 \begin{verbatim}
    void createSheetRepo (
@@ -8,119 +8,111 @@
            String    config
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #sheet.createSheetRepo(sheetURI,config);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #sheet.createSheetRepo(sheetURI,config);
+%\end{lstlisting}
 \input{sheet/createSheetRepo}
 
 
 \rule{15cm}{2pt}
-\subsubsection{GetSheetRepoConfig}
+\subsection{GetSheetRepoConfig}
 \label{Api:GetSheetRepoConfig}
 \begin{verbatim}
    SheetRepoConfig getSheetRepoConfig (
            String    sheetURI
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #sheet.getSheetRepoConfig(sheetURI);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #sheet.getSheetRepoConfig(sheetURI);
+%\end{lstlisting}
 \input{sheet/getSheetRepoConfig}
 
 
 \rule{15cm}{2pt}
-\subsubsection{GetSheetRepoConfigs}
+\subsection{GetSheetRepoConfigs}
 \label{Api:GetSheetRepoConfigs}
 \begin{verbatim}
    List<SheetRepoConfig> getSheetRepoConfigs (
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #sheet.getSheetRepoConfigs();
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #sheet.getSheetRepoConfigs();
+%\end{lstlisting}
 \input{sheet/getSheetRepoConfigs}
 
 
 \rule{15cm}{2pt}
-\subsubsection{CreateSheet}
+\subsection{CreateSheet}
 \label{Api:CreateSheet}
 \begin{verbatim}
    RaptureSheet createSheet (
            String    sheetURI
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #sheet.createSheet(sheetURI);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #sheet.createSheet(sheetURI);
+%\end{lstlisting}
 \input{sheet/createSheet}
 
 
 \rule{15cm}{2pt}
-\subsubsection{DeleteSheet}
+\subsection{DeleteSheet}
 \label{Api:DeleteSheet}
 \begin{verbatim}
    RaptureSheet deleteSheet (
            String    sheetURI
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #sheet.deleteSheet(sheetURI);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #sheet.deleteSheet(sheetURI);
+%\end{lstlisting}
 \input{sheet/deleteSheet}
 
 
 \rule{15cm}{2pt}
-\subsubsection{SheetExists}
+\subsection{SheetExists}
 \label{Api:SheetExists}
 \begin{verbatim}
    boolean sheetExists (
            String    sheetURI
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #sheet.sheetExists(sheetURI);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #sheet.sheetExists(sheetURI);
+%\end{lstlisting}
 \input{sheet/sheetExists}
 
 
 \rule{15cm}{2pt}
-\subsubsection{DeleteSheetRepo}
+\subsection{DeleteSheetRepo}
 \label{Api:DeleteSheetRepo}
 \begin{verbatim}
    void deleteSheetRepo (
            String    repoURI
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #sheet.deleteSheetRepo(repoURI);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #sheet.deleteSheetRepo(repoURI);
+%\end{lstlisting}
 \input{sheet/deleteSheetRepo}
 
 
 \rule{15cm}{2pt}
-\subsubsection{SheetRepoExists}
+\subsection{SheetRepoExists}
 \label{Api:SheetRepoExists}
 \begin{verbatim}
    boolean sheetRepoExists (
            String    repoURI
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #sheet.sheetRepoExists(repoURI);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #sheet.sheetRepoExists(repoURI);
+%\end{lstlisting}
 \input{sheet/sheetRepoExists}
 
 
 \rule{15cm}{2pt}
-\subsubsection{ListSheetsByUriPrefix}
+\subsection{ListSheetsByUriPrefix}
 \label{Api:ListSheetsByUriPrefix}
 \begin{verbatim}
    Map<String,RaptureFolderInfo> listSheetsByUriPrefix (
@@ -128,30 +120,28 @@ ret = #sheet.sheetRepoExists(repoURI);
            int    depth
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #sheet.listSheetsByUriPrefix(uriPrefix,depth);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #sheet.listSheetsByUriPrefix(uriPrefix,depth);
+%\end{lstlisting}
 \input{sheet/listSheetsByUriPrefix}
 
 
 \rule{15cm}{2pt}
-\subsubsection{DeleteSheetsByUriPrefix}
+\subsection{DeleteSheetsByUriPrefix}
 \label{Api:DeleteSheetsByUriPrefix}
 \begin{verbatim}
    List<String> deleteSheetsByUriPrefix (
            String    uriPrefix
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #sheet.deleteSheetsByUriPrefix(uriPrefix);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #sheet.deleteSheetsByUriPrefix(uriPrefix);
+%\end{lstlisting}
 \input{sheet/deleteSheetsByUriPrefix}
 
 
 \rule{15cm}{2pt}
-\subsubsection{SetSheetCell}
+\subsection{SetSheetCell}
 \label{Api:SetSheetCell}
 \begin{verbatim}
    String setSheetCell (
@@ -162,15 +152,14 @@ ret = #sheet.deleteSheetsByUriPrefix(uriPrefix);
            int    tabId
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #sheet.setSheetCell(sheetURI,row,column,value,tabId);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #sheet.setSheetCell(sheetURI,row,column,value,tabId);
+%\end{lstlisting}
 \input{sheet/setSheetCell}
 
 
 \rule{15cm}{2pt}
-\subsubsection{SetBlock}
+\subsection{SetBlock}
 \label{Api:SetBlock}
 \begin{verbatim}
    void setBlock (
@@ -183,15 +172,14 @@ ret = #sheet.setSheetCell(sheetURI,row,column,value,tabId);
            int    tabId
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #sheet.setBlock(sheetURI,startRow,startColumn,values,height,width,tabId);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #sheet.setBlock(sheetURI,startRow,startColumn,values,height,width,tabId);
+%\end{lstlisting}
 \input{sheet/setBlock}
 
 
 \rule{15cm}{2pt}
-\subsubsection{GetSheetCell}
+\subsection{GetSheetCell}
 \label{Api:GetSheetCell}
 \begin{verbatim}
    String getSheetCell (
@@ -201,15 +189,14 @@ ret = #sheet.setBlock(sheetURI,startRow,startColumn,values,height,width,tabId);
            int    tabId
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #sheet.getSheetCell(sheetURI,row,column,tabId);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #sheet.getSheetCell(sheetURI,row,column,tabId);
+%\end{lstlisting}
 \input{sheet/getSheetCell}
 
 
 \rule{15cm}{2pt}
-\subsubsection{FindCellsByEpoch}
+\subsection{FindCellsByEpoch}
 \label{Api:FindCellsByEpoch}
 \begin{verbatim}
    List<RaptureSheetCell> findCellsByEpoch (
@@ -218,45 +205,42 @@ ret = #sheet.getSheetCell(sheetURI,row,column,tabId);
            Long    epoch
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #sheet.findCellsByEpoch(sheetURI,tabId,epoch);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #sheet.findCellsByEpoch(sheetURI,tabId,epoch);
+%\end{lstlisting}
 \input{sheet/findCellsByEpoch}
 
 
 \rule{15cm}{2pt}
-\subsubsection{GetSheetAndMeta}
+\subsection{GetSheetAndMeta}
 \label{Api:GetSheetAndMeta}
 \begin{verbatim}
    SheetAndMeta getSheetAndMeta (
            String    sheetURI
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #sheet.getSheetAndMeta(sheetURI);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #sheet.getSheetAndMeta(sheetURI);
+%\end{lstlisting}
 \input{sheet/getSheetAndMeta}
 
 
 \rule{15cm}{2pt}
-\subsubsection{GetAllStyles}
+\subsection{GetAllStyles}
 \label{Api:GetAllStyles}
 \begin{verbatim}
    List<RaptureSheetStyle> getAllStyles (
            String    sheetURI
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #sheet.getAllStyles(sheetURI);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #sheet.getAllStyles(sheetURI);
+%\end{lstlisting}
 \input{sheet/getAllStyles}
 
 
 \rule{15cm}{2pt}
-\subsubsection{RemoveStyle}
+\subsection{RemoveStyle}
 \label{Api:RemoveStyle}
 \begin{verbatim}
    void removeStyle (
@@ -264,15 +248,14 @@ ret = #sheet.getAllStyles(sheetURI);
            String    styleName
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #sheet.removeStyle(sheetURI,styleName);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #sheet.removeStyle(sheetURI,styleName);
+%\end{lstlisting}
 \input{sheet/removeStyle}
 
 
 \rule{15cm}{2pt}
-\subsubsection{CreateStyle}
+\subsection{CreateStyle}
 \label{Api:CreateStyle}
 \begin{verbatim}
    RaptureSheetStyle createStyle (
@@ -280,30 +263,28 @@ ret = #sheet.removeStyle(sheetURI,styleName);
            RaptureSheetStyle    style
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #sheet.createStyle(sheetURI,style);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #sheet.createStyle(sheetURI,style);
+%\end{lstlisting}
 \input{sheet/createStyle}
 
 
 \rule{15cm}{2pt}
-\subsubsection{GetAllScripts}
+\subsection{GetAllScripts}
 \label{Api:GetAllScripts}
 \begin{verbatim}
    List<RaptureSheetScript> getAllScripts (
            String    sheetURI
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #sheet.getAllScripts(sheetURI);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #sheet.getAllScripts(sheetURI);
+%\end{lstlisting}
 \input{sheet/getAllScripts}
 
 
 \rule{15cm}{2pt}
-\subsubsection{RemoveScript}
+\subsection{RemoveScript}
 \label{Api:RemoveScript}
 \begin{verbatim}
    void removeScript (
@@ -311,15 +292,14 @@ ret = #sheet.getAllScripts(sheetURI);
            String    scriptName
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #sheet.removeScript(sheetURI,scriptName);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #sheet.removeScript(sheetURI,scriptName);
+%\end{lstlisting}
 \input{sheet/removeScript}
 
 
 \rule{15cm}{2pt}
-\subsubsection{CreateScript}
+\subsection{CreateScript}
 \label{Api:CreateScript}
 \begin{verbatim}
    RaptureSheetScript createScript (
@@ -328,15 +308,14 @@ ret = #sheet.removeScript(sheetURI,scriptName);
            RaptureSheetScript    script
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #sheet.createScript(sheetURI,scriptName,script);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #sheet.createScript(sheetURI,scriptName,script);
+%\end{lstlisting}
 \input{sheet/createScript}
 
 
 \rule{15cm}{2pt}
-\subsubsection{RunScriptOnSheet}
+\subsection{RunScriptOnSheet}
 \label{Api:RunScriptOnSheet}
 \begin{verbatim}
    void runScriptOnSheet (
@@ -344,15 +323,14 @@ ret = #sheet.createScript(sheetURI,scriptName,script);
            String    scriptName
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #sheet.runScriptOnSheet(sheetURI,scriptName);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #sheet.runScriptOnSheet(sheetURI,scriptName);
+%\end{lstlisting}
 \input{sheet/runScriptOnSheet}
 
 
 \rule{15cm}{2pt}
-\subsubsection{GetSheetScript}
+\subsection{GetSheetScript}
 \label{Api:GetSheetScript}
 \begin{verbatim}
    RaptureSheetScript getSheetScript (
@@ -360,45 +338,42 @@ ret = #sheet.runScriptOnSheet(sheetURI,scriptName);
            String    scriptName
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #sheet.getSheetScript(sheetURI,scriptName);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #sheet.getSheetScript(sheetURI,scriptName);
+%\end{lstlisting}
 \input{sheet/getSheetScript}
 
 
 \rule{15cm}{2pt}
-\subsubsection{ExportSheetAsScript}
+\subsection{ExportSheetAsScript}
 \label{Api:ExportSheetAsScript}
 \begin{verbatim}
    String exportSheetAsScript (
            String    sheetURI
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #sheet.exportSheetAsScript(sheetURI);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #sheet.exportSheetAsScript(sheetURI);
+%\end{lstlisting}
 \input{sheet/exportSheetAsScript}
 
 
 \rule{15cm}{2pt}
-\subsubsection{GetSheetNamedSelections}
+\subsection{GetSheetNamedSelections}
 \label{Api:GetSheetNamedSelections}
 \begin{verbatim}
    List<RaptureSheetRange> getSheetNamedSelections (
            String    sheetURI
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #sheet.getSheetNamedSelections(sheetURI);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #sheet.getSheetNamedSelections(sheetURI);
+%\end{lstlisting}
 \input{sheet/getSheetNamedSelections}
 
 
 \rule{15cm}{2pt}
-\subsubsection{DeleteSheetNamedSelection}
+\subsection{DeleteSheetNamedSelection}
 \label{Api:DeleteSheetNamedSelection}
 \begin{verbatim}
    void deleteSheetNamedSelection (
@@ -406,15 +381,14 @@ ret = #sheet.getSheetNamedSelections(sheetURI);
            String    rangeName
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #sheet.deleteSheetNamedSelection(sheetURI,rangeName);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #sheet.deleteSheetNamedSelection(sheetURI,rangeName);
+%\end{lstlisting}
 \input{sheet/deleteSheetNamedSelection}
 
 
 \rule{15cm}{2pt}
-\subsubsection{CreateSheetNamedSelection}
+\subsection{CreateSheetNamedSelection}
 \label{Api:CreateSheetNamedSelection}
 \begin{verbatim}
    RaptureSheetRange createSheetNamedSelection (
@@ -423,30 +397,28 @@ ret = #sheet.deleteSheetNamedSelection(sheetURI,rangeName);
            RaptureSheetRange    range
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #sheet.createSheetNamedSelection(sheetURI,rangeName,range);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #sheet.createSheetNamedSelection(sheetURI,rangeName,range);
+%\end{lstlisting}
 \input{sheet/createSheetNamedSelection}
 
 
 \rule{15cm}{2pt}
-\subsubsection{GetSheetNotes}
+\subsection{GetSheetNotes}
 \label{Api:GetSheetNotes}
 \begin{verbatim}
    List<RaptureSheetNote> getSheetNotes (
            String    sheetURI
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #sheet.getSheetNotes(sheetURI);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #sheet.getSheetNotes(sheetURI);
+%\end{lstlisting}
 \input{sheet/getSheetNotes}
 
 
 \rule{15cm}{2pt}
-\subsubsection{DeleteSheetNote}
+\subsection{DeleteSheetNote}
 \label{Api:DeleteSheetNote}
 \begin{verbatim}
    void deleteSheetNote (
@@ -454,15 +426,14 @@ ret = #sheet.getSheetNotes(sheetURI);
            String    noteId
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #sheet.deleteSheetNote(sheetURI,noteId);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #sheet.deleteSheetNote(sheetURI,noteId);
+%\end{lstlisting}
 \input{sheet/deleteSheetNote}
 
 
 \rule{15cm}{2pt}
-\subsubsection{CreateSheetNote}
+\subsection{CreateSheetNote}
 \label{Api:CreateSheetNote}
 \begin{verbatim}
    RaptureSheetNote createSheetNote (
@@ -470,15 +441,14 @@ ret = #sheet.deleteSheetNote(sheetURI,noteId);
            RaptureSheetNote    note
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #sheet.createSheetNote(sheetURI,note);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #sheet.createSheetNote(sheetURI,note);
+%\end{lstlisting}
 \input{sheet/createSheetNote}
 
 
 \rule{15cm}{2pt}
-\subsubsection{CloneSheet}
+\subsection{CloneSheet}
 \label{Api:CloneSheet}
 \begin{verbatim}
    void cloneSheet (
@@ -486,15 +456,14 @@ ret = #sheet.createSheetNote(sheetURI,note);
            String    newSheetURI
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #sheet.cloneSheet(sheetURI,newSheetURI);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #sheet.cloneSheet(sheetURI,newSheetURI);
+%\end{lstlisting}
 \input{sheet/cloneSheet}
 
 
 \rule{15cm}{2pt}
-\subsubsection{GetSheetNamedSelection}
+\subsection{GetSheetNamedSelection}
 \label{Api:GetSheetNamedSelection}
 \begin{verbatim}
    List<RaptureSheetRow> getSheetNamedSelection (
@@ -502,15 +471,14 @@ ret = #sheet.cloneSheet(sheetURI,newSheetURI);
            String    rangeName
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #sheet.getSheetNamedSelection(sheetURI,rangeName);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #sheet.getSheetNamedSelection(sheetURI,rangeName);
+%\end{lstlisting}
 \input{sheet/getSheetNamedSelection}
 
 
 \rule{15cm}{2pt}
-\subsubsection{DeleteSheetColumn}
+\subsection{DeleteSheetColumn}
 \label{Api:DeleteSheetColumn}
 \begin{verbatim}
    void deleteSheetColumn (
@@ -518,15 +486,14 @@ ret = #sheet.getSheetNamedSelection(sheetURI,rangeName);
            int    column
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #sheet.deleteSheetColumn(sheetURI,column);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #sheet.deleteSheetColumn(sheetURI,column);
+%\end{lstlisting}
 \input{sheet/deleteSheetColumn}
 
 
 \rule{15cm}{2pt}
-\subsubsection{DeleteSheetRow}
+\subsection{DeleteSheetRow}
 \label{Api:DeleteSheetRow}
 \begin{verbatim}
    void deleteSheetRow (
@@ -534,15 +501,14 @@ ret = #sheet.deleteSheetColumn(sheetURI,column);
            int    row
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #sheet.deleteSheetRow(sheetURI,row);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #sheet.deleteSheetRow(sheetURI,row);
+%\end{lstlisting}
 \input{sheet/deleteSheetRow}
 
 
 \rule{15cm}{2pt}
-\subsubsection{DeleteSheetCell}
+\subsection{DeleteSheetCell}
 \label{Api:DeleteSheetCell}
 \begin{verbatim}
    void deleteSheetCell (
@@ -552,10 +518,9 @@ ret = #sheet.deleteSheetRow(sheetURI,row);
            int    tabId
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #sheet.deleteSheetCell(sheetURI,row,column,tabId);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #sheet.deleteSheetCell(sheetURI,row,column,tabId);
+%\end{lstlisting}
 \input{sheet/deleteSheetCell}
 
 

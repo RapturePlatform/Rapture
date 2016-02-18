@@ -1,6 +1,6 @@
-\section{Activity API}
+\chapter{Activity API}
 \input{activity/info}
-\subsubsection{CreateActivity}
+\subsection{CreateActivity}
 \label{Api:CreateActivity}
 \begin{verbatim}
    String createActivity (
@@ -10,15 +10,14 @@
            Long    max
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #activity.createActivity(description,message,progress,max);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #activity.createActivity(description,message,progress,max);
+%\end{lstlisting}
 \input{activity/createActivity}
 
 
 \rule{15cm}{2pt}
-\subsubsection{UpdateActivity}
+\subsection{UpdateActivity}
 \label{Api:UpdateActivity}
 \begin{verbatim}
    boolean updateActivity (
@@ -28,15 +27,14 @@ ret = #activity.createActivity(description,message,progress,max);
            Long    max
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #activity.updateActivity(activityId,message,progress,max);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #activity.updateActivity(activityId,message,progress,max);
+%\end{lstlisting}
 \input{activity/updateActivity}
 
 
 \rule{15cm}{2pt}
-\subsubsection{FinishActivity}
+\subsection{FinishActivity}
 \label{Api:FinishActivity}
 \begin{verbatim}
    boolean finishActivity (
@@ -44,15 +42,14 @@ ret = #activity.updateActivity(activityId,message,progress,max);
            String    message
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #activity.finishActivity(activityId,message);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #activity.finishActivity(activityId,message);
+%\end{lstlisting}
 \input{activity/finishActivity}
 
 
 \rule{15cm}{2pt}
-\subsubsection{RequestAbortActivity}
+\subsection{RequestAbortActivity}
 \label{Api:RequestAbortActivity}
 \begin{verbatim}
    boolean requestAbortActivity (
@@ -60,15 +57,14 @@ ret = #activity.finishActivity(activityId,message);
            String    message
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #activity.requestAbortActivity(activityId,message);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #activity.requestAbortActivity(activityId,message);
+%\end{lstlisting}
 \input{activity/requestAbortActivity}
 
 
 \rule{15cm}{2pt}
-\subsubsection{QueryByExpiryTime}
+\subsection{QueryByExpiryTime}
 \label{Api:QueryByExpiryTime}
 \begin{verbatim}
    ActivityQueryResponse queryByExpiryTime (
@@ -77,25 +73,23 @@ ret = #activity.requestAbortActivity(activityId,message);
            Long    lastSeen
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #activity.queryByExpiryTime(nextBatchId,batchSize,lastSeen);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #activity.queryByExpiryTime(nextBatchId,batchSize,lastSeen);
+%\end{lstlisting}
 \input{activity/queryByExpiryTime}
 
 
 \rule{15cm}{2pt}
-\subsubsection{GetById}
+\subsection{GetById}
 \label{Api:GetById}
 \begin{verbatim}
    Activity getById (
            String    activityId
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #activity.getById(activityId);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #activity.getById(activityId);
+%\end{lstlisting}
 \input{activity/getById}
 
 

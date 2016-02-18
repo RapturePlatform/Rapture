@@ -1,66 +1,62 @@
-\section{Event API}
+\chapter{Event API}
 \input{event/info}
-\subsubsection{GetEvent}
+\subsection{GetEvent}
 \label{Api:GetEvent}
 \begin{verbatim}
    RaptureEvent getEvent (
            String    eventUri
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #event.getEvent(eventUri);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #event.getEvent(eventUri);
+%\end{lstlisting}
 \input{event/getEvent}
 
 
 \rule{15cm}{2pt}
-\subsubsection{PutEvent}
+\subsection{PutEvent}
 \label{Api:PutEvent}
 \begin{verbatim}
    void putEvent (
            RaptureEvent    event
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #event.putEvent(event);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #event.putEvent(event);
+%\end{lstlisting}
 \input{event/putEvent}
 
 
 \rule{15cm}{2pt}
-\subsubsection{DeleteEvent}
+\subsection{DeleteEvent}
 \label{Api:DeleteEvent}
 \begin{verbatim}
    void deleteEvent (
            String    eventUri
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #event.deleteEvent(eventUri);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #event.deleteEvent(eventUri);
+%\end{lstlisting}
 \input{event/deleteEvent}
 
 
 \rule{15cm}{2pt}
-\subsubsection{ListEventsByUriPrefix}
+\subsection{ListEventsByUriPrefix}
 \label{Api:ListEventsByUriPrefix}
 \begin{verbatim}
    List<RaptureFolderInfo> listEventsByUriPrefix (
            String    eventUriPrefix
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #event.listEventsByUriPrefix(eventUriPrefix);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #event.listEventsByUriPrefix(eventUriPrefix);
+%\end{lstlisting}
 \input{event/listEventsByUriPrefix}
 
 
 \rule{15cm}{2pt}
-\subsubsection{AddEventScript}
+\subsection{AddEventScript}
 \label{Api:AddEventScript}
 \begin{verbatim}
    void addEventScript (
@@ -69,15 +65,14 @@ ret = #event.listEventsByUriPrefix(eventUriPrefix);
            boolean    performOnce
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #event.addEventScript(eventUri,scriptUri,performOnce);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #event.addEventScript(eventUri,scriptUri,performOnce);
+%\end{lstlisting}
 \input{event/addEventScript}
 
 
 \rule{15cm}{2pt}
-\subsubsection{DeleteEventScript}
+\subsection{DeleteEventScript}
 \label{Api:DeleteEventScript}
 \begin{verbatim}
    void deleteEventScript (
@@ -85,15 +80,14 @@ ret = #event.addEventScript(eventUri,scriptUri,performOnce);
            String    scriptUri
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #event.deleteEventScript(eventUri,scriptUri);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #event.deleteEventScript(eventUri,scriptUri);
+%\end{lstlisting}
 \input{event/deleteEventScript}
 
 
 \rule{15cm}{2pt}
-\subsubsection{AddEventMessage}
+\subsection{AddEventMessage}
 \label{Api:AddEventMessage}
 \begin{verbatim}
    void addEventMessage (
@@ -103,15 +97,14 @@ ret = #event.deleteEventScript(eventUri,scriptUri);
            Map<String,String>    params
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #event.addEventMessage(eventUri,name,pipeline,params);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #event.addEventMessage(eventUri,name,pipeline,params);
+%\end{lstlisting}
 \input{event/addEventMessage}
 
 
 \rule{15cm}{2pt}
-\subsubsection{DeleteEventMessage}
+\subsection{DeleteEventMessage}
 \label{Api:DeleteEventMessage}
 \begin{verbatim}
    void deleteEventMessage (
@@ -119,15 +112,14 @@ ret = #event.addEventMessage(eventUri,name,pipeline,params);
            String    name
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #event.deleteEventMessage(eventUri,name);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #event.deleteEventMessage(eventUri,name);
+%\end{lstlisting}
 \input{event/deleteEventMessage}
 
 
 \rule{15cm}{2pt}
-\subsubsection{AddEventNotification}
+\subsection{AddEventNotification}
 \label{Api:AddEventNotification}
 \begin{verbatim}
    void addEventNotification (
@@ -137,15 +129,14 @@ ret = #event.deleteEventMessage(eventUri,name);
            Map<String,String>    params
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #event.addEventNotification(eventUri,name,notification,params);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #event.addEventNotification(eventUri,name,notification,params);
+%\end{lstlisting}
 \input{event/addEventNotification}
 
 
 \rule{15cm}{2pt}
-\subsubsection{DeleteEventNotification}
+\subsection{DeleteEventNotification}
 \label{Api:DeleteEventNotification}
 \begin{verbatim}
    void deleteEventNotification (
@@ -153,15 +144,14 @@ ret = #event.addEventNotification(eventUri,name,notification,params);
            String    name
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #event.deleteEventNotification(eventUri,name);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #event.deleteEventNotification(eventUri,name);
+%\end{lstlisting}
 \input{event/deleteEventNotification}
 
 
 \rule{15cm}{2pt}
-\subsubsection{AddEventWorkflow}
+\subsection{AddEventWorkflow}
 \label{Api:AddEventWorkflow}
 \begin{verbatim}
    void addEventWorkflow (
@@ -171,15 +161,14 @@ ret = #event.deleteEventNotification(eventUri,name);
            Map<String,String>    params
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #event.addEventWorkflow(eventUri,name,workflowUri,params);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #event.addEventWorkflow(eventUri,name,workflowUri,params);
+%\end{lstlisting}
 \input{event/addEventWorkflow}
 
 
 \rule{15cm}{2pt}
-\subsubsection{DeleteEventWorkflow}
+\subsection{DeleteEventWorkflow}
 \label{Api:DeleteEventWorkflow}
 \begin{verbatim}
    void deleteEventWorkflow (
@@ -187,15 +176,14 @@ ret = #event.addEventWorkflow(eventUri,name,workflowUri,params);
            String    name
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #event.deleteEventWorkflow(eventUri,name);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #event.deleteEventWorkflow(eventUri,name);
+%\end{lstlisting}
 \input{event/deleteEventWorkflow}
 
 
 \rule{15cm}{2pt}
-\subsubsection{RunEvent}
+\subsection{RunEvent}
 \label{Api:RunEvent}
 \begin{verbatim}
    boolean runEvent (
@@ -204,15 +192,14 @@ ret = #event.deleteEventWorkflow(eventUri,name);
            String    eventContext
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #event.runEvent(eventUri,associatedUri,eventContext);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #event.runEvent(eventUri,associatedUri,eventContext);
+%\end{lstlisting}
 \input{event/runEvent}
 
 
 \rule{15cm}{2pt}
-\subsubsection{RunEventWithContext}
+\subsection{RunEventWithContext}
 \label{Api:RunEventWithContext}
 \begin{verbatim}
    RunEventHandle runEventWithContext (
@@ -221,40 +208,37 @@ ret = #event.runEvent(eventUri,associatedUri,eventContext);
            Map<String,String>    eventContextMap
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #event.runEventWithContext(eventUri,associatedUri,eventContextMap);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #event.runEventWithContext(eventUri,associatedUri,eventContextMap);
+%\end{lstlisting}
 \input{event/runEventWithContext}
 
 
 \rule{15cm}{2pt}
-\subsubsection{EventExists}
+\subsection{EventExists}
 \label{Api:EventExists}
 \begin{verbatim}
    boolean eventExists (
            String    eventUri
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #event.eventExists(eventUri);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #event.eventExists(eventUri);
+%\end{lstlisting}
 \input{event/eventExists}
 
 
 \rule{15cm}{2pt}
-\subsubsection{DeleteEventsByUriPrefix}
+\subsection{DeleteEventsByUriPrefix}
 \label{Api:DeleteEventsByUriPrefix}
 \begin{verbatim}
    List<String> deleteEventsByUriPrefix (
            String    uriPrefix
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #event.deleteEventsByUriPrefix(uriPrefix);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #event.deleteEventsByUriPrefix(uriPrefix);
+%\end{lstlisting}
 \input{event/deleteEventsByUriPrefix}
 
 

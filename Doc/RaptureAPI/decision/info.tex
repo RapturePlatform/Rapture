@@ -1,0 +1,84 @@
+The Decision API in \Rapture manages all aspects of Workflows. A \emph{workflow} in \Rapture
+is a sequence of steps that describe a formal process that can be executed from a \Rapture
+server. The steps can split, branch, rejoin and the flow of execution can be decided during
+the execution of a workflow.
+
+When running the status and context for a workflow is captured in a \emph{work order} (WorkOrder).
+
+Workflows are typically attached to general events or schedules. They can be embeded in other
+workflows and can also be invoked directly from the API.
+
+WorkOrders can be paused, cancelled and resumed. The output from a WorkOrder is typically captured
+in a system blob repository for later review.
+
+A step in a workflow can be implemented by running a \Reflex script or through a developer supplied
+Java class that conforms to a specific interface.
+
+An addon to \Rapture from Incapture provides a custom step and execution environment for allowing
+external processes (such as Python scripts) to be run as part of a workflow step.
+
+\subsection{Workflows}
+
+A workflow in \Rapture is referenced using a uri in a similar way to all other entities in the system. It can also
+have a description. The main body of a workflow is a set of \emph{Steps} that form its definition.
+
+\subsubsection{Steps}
+
+A step in a workflow has a name and a description. The configuration for a step also has an implementation
+section that defines either a class name of the Java code that will execute when the step is run or a \Reflex
+script.
+
+The return value from the execution of a step (either through \Reflex or Java) is a string. This string is used
+by the workflow engine to determine what the next step should be. The mapping that enables this is called the
+\emph{transitions} of a step.
+
+One step is identified in a workflow as the "starting step".
+
+\subsubsection{Transitions}
+
+Transitions manage how the execution of a workflow flows between steps. A transition is simply a mapping between
+the return value of a step execution and the next step associated with that return value. The transitions of steps
+in a workflow describe the directed graph that defines the workflow.
+
+In transitions there are some keyword based transitions that have special meanings. They could also be called in-built
+steps. The step "\$RETURN:xxx" implies that this workflow should end with the status code of "xxx". The status code is
+important as this could form the step transition code for an outer workflow.
+
+\subsubsection{Views and Contexts}
+
+As part of a workflow execution in a work order there is the concept of a view context. These are variables
+that are associated with the execution of a workflow or the execution of an individual step. (Some steps can be executed in
+parallel and each parallel execution may wish to have a slightly different context). There are calls in the decision api
+that can manipulate these context values and the step and workflow definition in the workflow can set default (or fixed) values
+of these variables.
+
+Context variables can also be set as part of workflow execution -- either in a general way through the invocation of the call
+to create a work order from a workflow or from other mechanisms (e.g. events or schedules). Views and contexts are important
+techniques for passing on transient information very specific to the execution of a work order between the steps.
+
+\subsubsection{Categories}
+
+The code for a given step execution could be very specific to the server it is running on -- perhaps it is looking at
+a specific folder on a hard drive, or perhaps it runs a Python scripts which requires the underlying server to have a set
+of modules pre-installed.
+
+The category facility of a step (and in a general sense a workflow) can be used to determine what \Rapture servers a
+step can be executed on. A step can be associated with a category (a server group) and a \Rapture server can be configured
+to be part of a given category (or many categories). Only servers that are members of a category can execute steps for that
+category.
+
+\subsection{Work Orders}
+
+Work Orders are instances of Workflows (to use a programming analogy). A work order references its workflow but is a unique
+instance of the workflow -- all variables, execution, context and status are associated with the work order and not the workflow.
+
+Workflows define what is to be executed and the flow between steps during execution. A work order captures the live state of an
+instance of a workflow.
+
+\subsection{Locks}
+
+The configuration of a workflow can restrict the number of running instances can be in a \Rapture system at any one time. Some
+workflows may have resource dependencies which imply that only one (or a small number) of active runs should be in progress. This
+is known as the lock or semaphore configuration of a workflow.
+
+\subsection{Methods}

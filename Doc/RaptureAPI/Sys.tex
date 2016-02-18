@@ -1,6 +1,6 @@
-\section{Sys API}
+\chapter{Sys API}
 \input{sys/info}
-\subsubsection{RetrieveSystemConfig}
+\subsection{RetrieveSystemConfig}
 \label{Api:RetrieveSystemConfig}
 \begin{verbatim}
    String retrieveSystemConfig (
@@ -8,15 +8,14 @@
            String    path
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #sys.retrieveSystemConfig(area,path);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #sys.retrieveSystemConfig(area,path);
+%\end{lstlisting}
 \input{sys/retrieveSystemConfig}
 
 
 \rule{15cm}{2pt}
-\subsubsection{WriteSystemConfig}
+\subsection{WriteSystemConfig}
 \label{Api:WriteSystemConfig}
 \begin{verbatim}
    String writeSystemConfig (
@@ -25,15 +24,14 @@ ret = #sys.retrieveSystemConfig(area,path);
            String    content
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #sys.writeSystemConfig(area,path,content);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #sys.writeSystemConfig(area,path,content);
+%\end{lstlisting}
 \input{sys/writeSystemConfig}
 
 
 \rule{15cm}{2pt}
-\subsubsection{RemoveSystemConfig}
+\subsection{RemoveSystemConfig}
 \label{Api:RemoveSystemConfig}
 \begin{verbatim}
    void removeSystemConfig (
@@ -41,15 +39,14 @@ ret = #sys.writeSystemConfig(area,path,content);
            String    path
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #sys.removeSystemConfig(area,path);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #sys.removeSystemConfig(area,path);
+%\end{lstlisting}
 \input{sys/removeSystemConfig}
 
 
 \rule{15cm}{2pt}
-\subsubsection{GetSystemFolders}
+\subsection{GetSystemFolders}
 \label{Api:GetSystemFolders}
 \begin{verbatim}
    List<RaptureFolderInfo> getSystemFolders (
@@ -57,29 +54,27 @@ ret = #sys.removeSystemConfig(area,path);
            String    path
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #sys.getSystemFolders(area,path);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #sys.getSystemFolders(area,path);
+%\end{lstlisting}
 \input{sys/getSystemFolders}
 
 
 \rule{15cm}{2pt}
-\subsubsection{GetAllTopLevelRepos}
+\subsection{GetAllTopLevelRepos}
 \label{Api:GetAllTopLevelRepos}
 \begin{verbatim}
    List<String> getAllTopLevelRepos (
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #sys.getAllTopLevelRepos();
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #sys.getAllTopLevelRepos();
+%\end{lstlisting}
 \input{sys/getAllTopLevelRepos}
 
 
 \rule{15cm}{2pt}
-\subsubsection{ListByUriPrefix}
+\subsection{ListByUriPrefix}
 \label{Api:ListByUriPrefix}
 \begin{verbatim}
    ChildrenTransferObject listByUriPrefix (
@@ -90,30 +85,28 @@ ret = #sys.getAllTopLevelRepos();
            boolean    refresh
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #sys.listByUriPrefix(raptureURI,marker,depth,maximum,refresh);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #sys.listByUriPrefix(raptureURI,marker,depth,maximum,refresh);
+%\end{lstlisting}
 \input{sys/listByUriPrefix}
 
 
 \rule{15cm}{2pt}
-\subsubsection{GetChildren}
+\subsection{GetChildren}
 \label{Api:GetChildren}
 \begin{verbatim}
    ChildrenTransferObject getChildren (
            String    raptureURI
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #sys.getChildren(raptureURI);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #sys.getChildren(raptureURI);
+%\end{lstlisting}
 \input{sys/getChildren}
 
 
 \rule{15cm}{2pt}
-\subsubsection{GetAllChildren}
+\subsection{GetAllChildren}
 \label{Api:GetAllChildren}
 \begin{verbatim}
    ChildrenTransferObject getAllChildren (
@@ -123,25 +116,23 @@ ret = #sys.getChildren(raptureURI);
            boolean    refresh
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #sys.getAllChildren(raptureURI,marker,maximum,refresh);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #sys.getAllChildren(raptureURI,marker,maximum,refresh);
+%\end{lstlisting}
 \input{sys/getAllChildren}
 
 
 \rule{15cm}{2pt}
-\subsubsection{GetFolderInfo}
+\subsection{GetFolderInfo}
 \label{Api:GetFolderInfo}
 \begin{verbatim}
    NodeEnum getFolderInfo (
            String    raptureURI
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #sys.getFolderInfo(raptureURI);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #sys.getFolderInfo(raptureURI);
+%\end{lstlisting}
 \input{sys/getFolderInfo}
 
 

@@ -1,6 +1,6 @@
-\section{Mailbox API}
+\chapter{Mailbox API}
 \input{mailbox/info}
-\subsubsection{PutMessage}
+\subsection{PutMessage}
 \label{Api:PutMessage}
 \begin{verbatim}
    String putMessage (
@@ -8,15 +8,14 @@
            String    content
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #mailbox.putMessage(messageUri,content);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #mailbox.putMessage(messageUri,content);
+%\end{lstlisting}
 \input{mailbox/putMessage}
 
 
 \rule{15cm}{2pt}
-\subsubsection{MoveMessage}
+\subsection{MoveMessage}
 \label{Api:MoveMessage}
 \begin{verbatim}
    void moveMessage (
@@ -24,15 +23,14 @@ ret = #mailbox.putMessage(messageUri,content);
            String    newMessageUri
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #mailbox.moveMessage(messageUri,newMessageUri);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #mailbox.moveMessage(messageUri,newMessageUri);
+%\end{lstlisting}
 \input{mailbox/moveMessage}
 
 
 \rule{15cm}{2pt}
-\subsubsection{CreateMailboxRepo}
+\subsection{CreateMailboxRepo}
 \label{Api:CreateMailboxRepo}
 \begin{verbatim}
    void createMailboxRepo (
@@ -40,25 +38,23 @@ ret = #mailbox.moveMessage(messageUri,newMessageUri);
            String    idGenConfig
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #mailbox.createMailboxRepo(mailboxConfig,idGenConfig);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #mailbox.createMailboxRepo(mailboxConfig,idGenConfig);
+%\end{lstlisting}
 \input{mailbox/createMailboxRepo}
 
 
 \rule{15cm}{2pt}
-\subsubsection{GetMessages}
+\subsection{GetMessages}
 \label{Api:GetMessages}
 \begin{verbatim}
    List<RaptureMailMessage> getMessages (
            String    mailboxUri
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #mailbox.getMessages(mailboxUri);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #mailbox.getMessages(mailboxUri);
+%\end{lstlisting}
 \input{mailbox/getMessages}
 
 

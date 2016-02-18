@@ -1,6 +1,6 @@
-\section{Index API}
+\chapter{Index API}
 \input{index/info}
-\subsubsection{CreateIndex}
+\subsection{CreateIndex}
 \label{Api:CreateIndex}
 \begin{verbatim}
    IndexConfig createIndex (
@@ -8,45 +8,42 @@
            String    config
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #index.createIndex(indexUri,config);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #index.createIndex(indexUri,config);
+%\end{lstlisting}
 \input{index/createIndex}
 
 
 \rule{15cm}{2pt}
-\subsubsection{GetIndex}
+\subsection{GetIndex}
 \label{Api:GetIndex}
 \begin{verbatim}
    IndexConfig getIndex (
            String    indexUri
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #index.getIndex(indexUri);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #index.getIndex(indexUri);
+%\end{lstlisting}
 \input{index/getIndex}
 
 
 \rule{15cm}{2pt}
-\subsubsection{DeleteIndex}
+\subsection{DeleteIndex}
 \label{Api:DeleteIndex}
 \begin{verbatim}
    void deleteIndex (
            String    indexUri
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #index.deleteIndex(indexUri);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #index.deleteIndex(indexUri);
+%\end{lstlisting}
 \input{index/deleteIndex}
 
 
 \rule{15cm}{2pt}
-\subsubsection{FindIndex}
+\subsection{FindIndex}
 \label{Api:FindIndex}
 \begin{verbatim}
    TableQueryResult findIndex (
@@ -54,10 +51,9 @@ ret = #index.deleteIndex(indexUri);
            String    query
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #index.findIndex(indexUri,query);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #index.findIndex(indexUri,query);
+%\end{lstlisting}
 \input{index/findIndex}
 
 

@@ -1,2 +1,7 @@
-Validate Doc Repo information
+The \verb+validateDocRepo+ call is used to instruct the repository implementation to validate itself. The effect is
+implementation specific but it usually means checking that the repository can be connected to and is a valid \Rapture
+repository.
 
+The parameter to the call is simply a uri pointing to the repository name. The call can throw an exception if the
+repository is not found or the parameter passed is invalid. It returns true if the underlying implementation asserts
+that the repository is valid.

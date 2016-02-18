@@ -1,0 +1,6 @@
+The most common way to page through points in a series is to use the \verb+getPointsAfter+ calls. In this call
+a start column is specified (a zero length string implies the starting point in this case). A max number parameter
+determines how many points could be returned.
+
+If the return value contains "maxNumber" entries than the column name of the last point in that list can be
+used as the starting point for the next "page" call.

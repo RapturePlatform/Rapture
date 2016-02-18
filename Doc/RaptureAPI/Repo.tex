@@ -1,21 +1,20 @@
-\section{Repo API}
+\chapter{Repo API}
 \input{repo/info}
-\subsubsection{GetContent}
+\subsection{GetContent}
 \label{Api:GetContent}
 \begin{verbatim}
    ContentEnvelope getContent (
            String    raptureURI
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #repo.getContent(raptureURI);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #repo.getContent(raptureURI);
+%\end{lstlisting}
 \input{repo/getContent}
 
 
 \rule{15cm}{2pt}
-\subsubsection{PutContent}
+\subsection{PutContent}
 \label{Api:PutContent}
 \begin{verbatim}
    void putContent (
@@ -24,15 +23,14 @@ ret = #repo.getContent(raptureURI);
            String    comment
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #repo.putContent(raptureURI,content,comment);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #repo.putContent(raptureURI,content,comment);
+%\end{lstlisting}
 \input{repo/putContent}
 
 
 \rule{15cm}{2pt}
-\subsubsection{DeleteContent}
+\subsection{DeleteContent}
 \label{Api:DeleteContent}
 \begin{verbatim}
    void deleteContent (
@@ -40,10 +38,9 @@ ret = #repo.putContent(raptureURI,content,comment);
            String    comment
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #repo.deleteContent(raptureURI,comment);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #repo.deleteContent(raptureURI,comment);
+%\end{lstlisting}
 \input{repo/deleteContent}
 
 

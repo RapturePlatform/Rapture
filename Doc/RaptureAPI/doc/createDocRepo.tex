@@ -1,2 +1,73 @@
-Create Doc Repo text
+The \verb+createDocRepo+ is used to create a new document repository in \Rapture. The parameters to the call
+look straightforward -- simply the name of the new repository and a configuration string. The configuration string is
+in fact a complex instruction written in a repository domain specific language (DSL) that is used to define the
+capabilities and underlying implementation of the repository.
 
+The typical configuration string for a versioned repository backed by MongoDB is reproduced below:
+
+\begin{verbatim}
+NREP {} USING MONGODB { prefix = 'test' }
+\end{verbatim}
+
+The general form of the configuration is:
+
+\begin{verbatim}
+[type of document repo] { [ document repo config] }
+     USING [underlying implementation] { [ config ]}
+     [ ON [ instance] ]
+\end{verbatim}
+
+The first part, the type of the document repo, can be either \verb+NREP+ or \verb+REP+. The former
+indicates that a versioned repository should be created, the latter that an unversioned repository
+should be created.
+
+The document repo config part of the configuration string is currently blank for all document repo types.
+
+The second part of the configuration string defines the underlying implementation and its configuration. In
+most cases the configuration associated with the implementation has a \verb+prefix+ parameter that is used to
+define a table or a collection or a prefix for such entities in the underlying storage. The underlying implementation
+defines what lower level software is used to host the data managed by \Rapture. The following table shows the current
+implementations:
+
+\begin{table}[h]
+\begin{center}
+\begin{tabular}{r l p{8cm}}
+  Keyword & Underlying & Configuration \\
+  \hline
+  MONGODB & MongoDb & The prefix parameter defines the name of the collections used by this repository. To avoid
+  conflict this is usually a function of the name of the \Rapture repository. \\
+  CASSANDRA & Cassandra & The prefix parameter defines the name of the collections used by this repository. To avoid
+  conflict this is usually a function of the name of the \Rapture repository. \\
+  POSTGRES & PostgresSql &  The prefix parameter defines the name of the tables used by this repository. To avoid
+  conflict this is usually a function of the name of the \Rapture repository. \\
+\end{tabular}
+\end{center}
+\end{table}
+
+Incapture has additional implementations of document repositories for Oracle, JDBC, Redis, ehCache and memcached.
+
+There are some additional directives that can be used in a repository configuration definition.
+
+If the keyword \verb+READONLY+ is used at the start of the configuration (e.g. \verb+READONLY NREP ...+) the repository will
+be readonly -- it is assumed that either a different repository configuration is used to write data (and they
+share the same \verb+preifx+ but different entitlements) or the underlying data in a repository is a backup of
+a repository created with a different system. In any case the \verb+READONLY+ keyword makes all writing API calls to
+this repository fail with an exception being thrown.
+
+The \verb+ON+ directive defines which configuration will be used to connect to the underlying store. If
+not present the \verb+DEFAULT+ configuration will be used. These keywords are used by the underlying
+implementation to load a system specific configuration file, environment variables or property set.
+
+For example the default configuration for MongoDb (\verb+ON DEFAULT+) instructs the MongoDB implementation
+to look in three places for a connection string to a MongoDB server -
+
+\begin{itemize}
+\item{The environment variable RAPTUREMONGODB-DEFAULT.}
+\item{The java property RAPTUREMONGODB-DEFAULT.}
+\item{The line beginning default= in the file RaptureMONGODB.cfg on the classpath of the application.}
+\end{itemize}
+
+In most cases the implementation will read the value from the file associated with the application server.
+
+Using this technique multiple underlying servers can be used and repositories attached to them using the
+\verb+ON+ keyword.

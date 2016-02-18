@@ -1,2 +1,11 @@
-Set Dc Attributes
+The \verb+setDocAttributes+ call takes an attribute uri prefix and then loops through
+each key and value in the passed parameters and calls the \verb+setDocAttribute+ call for each.
 
+For each invocation the \verb+attributeUri+ to the \verb+setDocAttribute+ call is formed using
+the following production:
+
+\begin{verbatim}
+   attributeUriForCall = attributeUri + '/' + key
+\end{verbatim}
+
+An entitlement check is made for each individual call.

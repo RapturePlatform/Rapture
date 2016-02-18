@@ -1,0 +1,7 @@
+The \verb+putBlob+ call is used to add content to a blob repository. The call
+takes the uri of the blob to create or update and an array of bytes that constitute the blob
+content. A mime-type of the content is also supplied.
+
+Note that \Rapture servers that have the BlobContentServlet installed will support a RESTful interface
+to adding content. A "file POST" to the url formed by prepending the uri of the blob with the prefix
+\verb+/blob/+ will result in a more efficient client side experience.

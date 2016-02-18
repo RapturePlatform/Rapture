@@ -1,0 +1,62 @@
+The \verb+createBlobRepo+ is used to create a new blob repository in \Rapture. The two configuration strings
+act in a similar way to the Document API's \verb+createDocRepo+ call, in fact the \verb+metaConfig+ parameter
+is used to define an internal document repository that will be used to store and manage the meta data for the
+repository. The documentation for \verb+createDocRepo+ shows the possible options for that configuration.
+
+The main configuration string is a similar domain specific language that is used to pass configuration
+options to an underlying implementation. The current options are simply described with an example.
+
+The typical configuration string for a blob repository backed by MongoDB is reproduced below:
+
+\begin{verbatim}
+BLOB {} USING MONGODB { prefix = 'testBlob' }
+\end{verbatim}
+
+The general form of the configuration is:
+
+\begin{verbatim}
+BLOB { [ blob repo config] }
+     USING [underlying implementation] { [ config ]}
+     [ ON [ instance] ]
+\end{verbatim}
+
+The blob repo config part of the configuration string is currently blank for all blob repo types.
+
+The second part of the configuration string defines the underlying implementation and its configuration. In
+most cases the configuration associated with the implementation has a \verb+prefix+ parameter that is used to
+define a table or a collection or a prefix for such entities in the underlying storage. The underlying implementation
+defines what lower level software is used to host the data managed by \Rapture. The following table shows the current
+implementations:
+
+\begin{table}[h]
+\begin{center}
+\begin{tabular}{r l p{8cm}}
+  Keyword & Underlying & Configuration \\
+  \hline
+  MONGODB & MongoDb & The prefix parameter defines the name of the collections used by this repository. To avoid
+  conflict this is usually a function of the name of the \Rapture repository. \\
+  CASSANDRA & Cassandra & The prefix parameter defines the name of the collections used by this repository. To avoid
+  conflict this is usually a function of the name of the \Rapture repository. \\
+\end{tabular}
+\end{center}
+\end{table}
+
+There are some additional directives that can be used in a repository configuration definition.
+
+The \verb+ON+ directive defines which configuration will be used to connect to the underlying store. If
+not present the \verb+DEFAULT+ configuration will be used. These keywords are used by the underlying
+implementation to load a system specific configuration file, environment variables or property set.
+
+For example the default configuration for MongoDb (\verb+ON DEFAULT+) instructs the MongoDB implementation
+to look in three places for a connection string to a MongoDB server -
+
+\begin{itemize}
+\item{The environment variable RAPTUREMONGODB-DEFAULT.}
+\item{The java property RAPTUREMONGODB-DEFAULT.}
+\item{The line beginning default= in the file RaptureMONGODB.cfg on the classpath of the application.}
+\end{itemize}
+
+In most cases the implementation will read the value from the file associated with the application server.
+
+Using this technique multiple underlying servers can be used and repositories attached to them using the
+\verb+ON+ keyword.

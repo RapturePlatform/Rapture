@@ -1,21 +1,20 @@
-\section{Lock API}
+\chapter{Lock API}
 \input{lock/info}
-\subsubsection{GetLockManagerConfigs}
+\subsection{GetLockManagerConfigs}
 \label{Api:GetLockManagerConfigs}
 \begin{verbatim}
    List<RaptureLockConfig> getLockManagerConfigs (
            String    managerUri
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #lock.getLockManagerConfigs(managerUri);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #lock.getLockManagerConfigs(managerUri);
+%\end{lstlisting}
 \input{lock/getLockManagerConfigs}
 
 
 \rule{15cm}{2pt}
-\subsubsection{CreateLockManager}
+\subsection{CreateLockManager}
 \label{Api:CreateLockManager}
 \begin{verbatim}
    RaptureLockConfig createLockManager (
@@ -24,60 +23,56 @@ ret = #lock.getLockManagerConfigs(managerUri);
            String    pathPosition
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #lock.createLockManager(managerUri,config,pathPosition);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #lock.createLockManager(managerUri,config,pathPosition);
+%\end{lstlisting}
 \input{lock/createLockManager}
 
 
 \rule{15cm}{2pt}
-\subsubsection{LockManagerExists}
+\subsection{LockManagerExists}
 \label{Api:LockManagerExists}
 \begin{verbatim}
    boolean lockManagerExists (
            String    managerUri
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #lock.lockManagerExists(managerUri);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #lock.lockManagerExists(managerUri);
+%\end{lstlisting}
 \input{lock/lockManagerExists}
 
 
 \rule{15cm}{2pt}
-\subsubsection{GetLockManagerConfig}
+\subsection{GetLockManagerConfig}
 \label{Api:GetLockManagerConfig}
 \begin{verbatim}
    RaptureLockConfig getLockManagerConfig (
            String    managerUri
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #lock.getLockManagerConfig(managerUri);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #lock.getLockManagerConfig(managerUri);
+%\end{lstlisting}
 \input{lock/getLockManagerConfig}
 
 
 \rule{15cm}{2pt}
-\subsubsection{DeleteLockManager}
+\subsection{DeleteLockManager}
 \label{Api:DeleteLockManager}
 \begin{verbatim}
    void deleteLockManager (
            String    managerUri
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #lock.deleteLockManager(managerUri);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #lock.deleteLockManager(managerUri);
+%\end{lstlisting}
 \input{lock/deleteLockManager}
 
 
 \rule{15cm}{2pt}
-\subsubsection{AcquireLock}
+\subsection{AcquireLock}
 \label{Api:AcquireLock}
 \begin{verbatim}
    LockHandle acquireLock (
@@ -87,15 +82,14 @@ ret = #lock.deleteLockManager(managerUri);
            long    secondsToKeep
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #lock.acquireLock(managerUri,lockName,secondsToWait,secondsToKeep);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #lock.acquireLock(managerUri,lockName,secondsToWait,secondsToKeep);
+%\end{lstlisting}
 \input{lock/acquireLock}
 
 
 \rule{15cm}{2pt}
-\subsubsection{ReleaseLock}
+\subsection{ReleaseLock}
 \label{Api:ReleaseLock}
 \begin{verbatim}
    boolean releaseLock (
@@ -104,15 +98,14 @@ ret = #lock.acquireLock(managerUri,lockName,secondsToWait,secondsToKeep);
            LockHandle    lockHandle
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #lock.releaseLock(managerUri,lockName,lockHandle);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #lock.releaseLock(managerUri,lockName,lockHandle);
+%\end{lstlisting}
 \input{lock/releaseLock}
 
 
 \rule{15cm}{2pt}
-\subsubsection{ForceReleaseLock}
+\subsection{ForceReleaseLock}
 \label{Api:ForceReleaseLock}
 \begin{verbatim}
    void forceReleaseLock (
@@ -120,10 +113,9 @@ ret = #lock.releaseLock(managerUri,lockName,lockHandle);
            String    lockName
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #lock.forceReleaseLock(managerUri,lockName);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #lock.forceReleaseLock(managerUri,lockName);
+%\end{lstlisting}
 \input{lock/forceReleaseLock}
 
 

@@ -1,0 +1,26 @@
+
+The series API is used to manipulate the presence and the content of series repositories
+in \Rapture.
+
+In the abstract a series repository in \Rapture marries a key (a uri like other content in \Rapture) with
+a set of points. Each point has a key (sometimes referred to as a column name) and a value. The value
+can be a discrete type such as a long or a string. It can also be a more complex structure where the meaning
+is known to the application developer or user of the repository.
+
+In many cases the column name will be a string representation of a timestamp or point in time. Usually these
+are formatted in such a way as to make lexical sorting of the columns imply a movement through time - for example
+using a YYYYMMDD format. Lexically 20160401 is "after" 20160331 which is what the user usually wants from the
+time series "specialization" of a \Rapture series repository.
+
+Series repositories in \Rapture are backed by concrete data storage systems. When
+you define a repository in \Rapture you provide a configuration string that is used
+by \Rapture to route your request to a low level driver that interacts with the
+underlying system. The format of this configuration string will be described in
+the API call for creating a repository.
+
+The URI of a series in a repository implies a folder-like structure with the
+forward slash delineating these folders. There are series API calls to treat a
+series repository like a file system -- these are useful when constructing
+browsable user interfaces to a repository.
+
+\subsection{Methods}

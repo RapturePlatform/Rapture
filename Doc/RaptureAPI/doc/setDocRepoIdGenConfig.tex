@@ -1,2 +1,16 @@
-Set Doc Repo Id Gen Config
+Document repositories can have an id generator attached to them. If a document is added to
+a repository and it contains a "\verb+#id+" suffix the id generator will replace that keyword with
+a newly generated unique id.
 
+The \verb+setDocRepoIdGenConfig+ is used to define the configuration for such a generator.
+
+In a manner similar to the general repository configuration an id generator is defined using
+a configuration string that conforms to a domain specific language (DSL). A typical example is
+reproduced below:
+
+\begin{verbatim}
+IDGEN {} USING MONGODB { prefix = 'testid' }
+\end{verbatim}
+
+In this example MongoDB is used as the id generator and this is the only option in the open
+source version of \Rapture.

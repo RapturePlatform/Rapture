@@ -1,2 +1,7 @@
-Get Doc Repo
+Document repositories can have an id generator attached to them. If a document is added to
+a repository and it contains a "\verb+#id+" suffix the id generator will replace that keyword with
+a newly generated unique id.
 
+The \verb+getDocRepoIdGenUri+ returns the id generator internal uri that is associated with
+this repository if it exists. Id generators can be independent of repositories (they can be used for
+more than repository unique ids).

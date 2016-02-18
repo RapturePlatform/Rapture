@@ -1,6 +1,6 @@
-\section{Fields API}
+\chapter{Fields API}
 \input{fields/info}
-\subsubsection{ListFieldsByUriPrefix}
+\subsection{ListFieldsByUriPrefix}
 \label{Api:ListFieldsByUriPrefix}
 \begin{verbatim}
    Map<String,RaptureFolderInfo> listFieldsByUriPrefix (
@@ -8,75 +8,70 @@
            int    depth
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #fields.listFieldsByUriPrefix(authority,depth);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #fields.listFieldsByUriPrefix(authority,depth);
+%\end{lstlisting}
 \input{fields/listFieldsByUriPrefix}
 
 
 \rule{15cm}{2pt}
-\subsubsection{GetField}
+\subsection{GetField}
 \label{Api:GetField}
 \begin{verbatim}
    RaptureField getField (
            String    fieldUri
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #fields.getField(fieldUri);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #fields.getField(fieldUri);
+%\end{lstlisting}
 \input{fields/getField}
 
 
 \rule{15cm}{2pt}
-\subsubsection{PutField}
+\subsection{PutField}
 \label{Api:PutField}
 \begin{verbatim}
    void putField (
            RaptureField    field
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #fields.putField(field);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #fields.putField(field);
+%\end{lstlisting}
 \input{fields/putField}
 
 
 \rule{15cm}{2pt}
-\subsubsection{FieldExists}
+\subsection{FieldExists}
 \label{Api:FieldExists}
 \begin{verbatim}
    boolean fieldExists (
            String    fieldUri
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #fields.fieldExists(fieldUri);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #fields.fieldExists(fieldUri);
+%\end{lstlisting}
 \input{fields/fieldExists}
 
 
 \rule{15cm}{2pt}
-\subsubsection{DeleteField}
+\subsection{DeleteField}
 \label{Api:DeleteField}
 \begin{verbatim}
    void deleteField (
            String    fieldUri
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #fields.deleteField(fieldUri);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #fields.deleteField(fieldUri);
+%\end{lstlisting}
 \input{fields/deleteField}
 
 
 \rule{15cm}{2pt}
-\subsubsection{GetDocumentFields}
+\subsection{GetDocumentFields}
 \label{Api:GetDocumentFields}
 \begin{verbatim}
    List<String> getDocumentFields (
@@ -84,15 +79,14 @@ ret = #fields.deleteField(fieldUri);
            List<String>    fields
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #fields.getDocumentFields(docURI,fields);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #fields.getDocumentFields(docURI,fields);
+%\end{lstlisting}
 \input{fields/getDocumentFields}
 
 
 \rule{15cm}{2pt}
-\subsubsection{PutDocumentAndGetDocumentFields}
+\subsection{PutDocumentAndGetDocumentFields}
 \label{Api:PutDocumentAndGetDocumentFields}
 \begin{verbatim}
    List<String> putDocumentAndGetDocumentFields (
@@ -101,10 +95,9 @@ ret = #fields.getDocumentFields(docURI,fields);
            List<String>    fields
    )
 \end{verbatim}
-\begin{lstlisting}[language=reflex]
-// Reflex use
-ret = #fields.putDocumentAndGetDocumentFields(docURI,content,fields);
-\end{lstlisting}
+%\begin{lstlisting}[language=reflex]
+%ret = #fields.putDocumentAndGetDocumentFields(docURI,content,fields);
+%\end{lstlisting}
 \input{fields/putDocumentAndGetDocumentFields}
 
 
