@@ -1,0 +1,41 @@
+The \verb+addTransition+ call is used to add a transition to an existing workflow definition.
+
+A transition is a link from one step to another step that will be traversed by a workflow if
+the return value upon execution of a step matches the transition name.
+
+As an example, imagine a step (implementing using a \Reflex script) that could return two results --
+"filesProcessed" and "error". For this step we would add two transitions. The first would map the result
+"filesProcessed" to a step that would perhaps continue the execution of the workflow. The second would map the
+result "error" to a terminal step or maybe an error handler step.
+
+The transition parameter to this call is a complex type which has fields defined as below.
+
+\begin{table}[h]
+\begin{center}
+\begin{tabular}{r l p{8cm}}
+  Field & Type & Description \\
+  \hline
+  name & string & The name of this transition in this step.\\
+  targetStep & string & The step that this transition points to.\\
+\end{tabular}
+\end{center}
+\end{table}
+
+The \verb+targetStep+ field of a transition can contain special directives that control
+special behavior in the workflow engine. These directives are described below.
+
+\begin{table}[h]
+\begin{center}
+\begin{tabular}{r p{8cm}}
+  Directive & Meaning \\
+  \hline
+  \verb+$RETURN+ & This directive instructs the workflow to exit and return a value to
+     the caller. The return value string is supplied after the \verb+$RETURN+ field like so:
+     \verb+$RETURN:ok+. \\
+  \verb+$JOIN+ & What what \\
+  \verb+$FORK+ & What what \\
+  \verb+$SPLIT+ & What what \\
+
+\end{tabular}
+\end{center}
+\end{table}
