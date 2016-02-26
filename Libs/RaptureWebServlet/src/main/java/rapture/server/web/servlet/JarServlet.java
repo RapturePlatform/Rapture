@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -81,19 +81,26 @@ public class JarServlet extends BaseServlet {
         }
 
         JarApiImplWrapper jar = Kernel.getJar();
-        BlobContainer jarContainer = jar.getJar(callingContext, JAR_URI_PREFIX + jarPath);
+        DispatchReturn response;
 
-        if (jarContainer != null) {
-            if (jarContainer.getHeaders() != null) {
-                String contentType = jarContainer.getHeaders().get(ContentEnvelope.CONTENT_TYPE_HEADER);
-                if (contentType != null) {
-                    resp.setContentType(contentType);
+        try {
+            BlobContainer jarContainer = jar.getJar(callingContext, JAR_URI_PREFIX + jarPath);
+
+            if (jarContainer != null) {
+                if (jarContainer.getHeaders() != null) {
+                    String contentType = jarContainer.getHeaders().get(ContentEnvelope.CONTENT_TYPE_HEADER);
+                    if (contentType != null) {
+                        resp.setContentType(contentType);
+                    }
                 }
+                resp.setStatus(HttpServletResponse.SC_OK);
+                resp.getOutputStream().write(jarContainer.getContent());
+            } else {
+                resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
             }
-            resp.setStatus(HttpServletResponse.SC_OK);
-            resp.getOutputStream().write(jarContainer.getContent());
-        } else {
-            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        } catch(Exception e) {
+            response = handleUnexpectedException(e);
+            sendResponseAppropriately(response.getContext(), req, resp, response.getResponse());
         }
     }
 

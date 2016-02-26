@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,7 +26,13 @@ package rapture.sheet;
 import java.util.List;
 import java.util.Map;
 
-import rapture.common.*;
+import rapture.common.RaptureFolderInfo;
+import rapture.common.RaptureSheet;
+import rapture.common.RaptureSheetCell;
+import rapture.common.RaptureSheetNote;
+import rapture.common.RaptureSheetRange;
+import rapture.common.RaptureSheetScript;
+import rapture.common.RaptureSheetStyle;
 
 public interface SheetStore {
 
@@ -40,7 +46,7 @@ public interface SheetStore {
 
     RaptureSheet deleteSheet(String name);
 
-    List<RaptureFolderInfo> listSheetByUriPrefix(String displayNamePart);
+    List<RaptureFolderInfo> listSheetsByUriPrefix(String displayNamePart);
 
     List<RaptureSheetCell> findCellsByEpoch(String name, int dimension, long epoch);
 

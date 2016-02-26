@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 
 import rapture.common.CallingContext;
+import rapture.common.RaptureURI;
 import rapture.common.api.ScriptingApi;
 import rapture.common.exception.RaptureExceptionFactory;
 import rapture.common.impl.jackson.JacksonUtil;
@@ -37,7 +38,8 @@ import rapture.common.model.DocumentWithMeta;
 import rapture.common.uri.URIParser;
 import rapture.kernel.script.KernelScript;
 import rapture.util.TypeUtil;
-import reflex.IReflexDataHandler;
+import reflex.AbstractReflexDataHandler;
+import reflex.value.ReflexValue;
 
 /**
  * An instance of this class is installed into the Reflex environment when
@@ -47,12 +49,11 @@ import reflex.IReflexDataHandler;
  * @author amkimian
  * 
  */
-public class ReflexDataHelper implements IReflexDataHandler {
+public class ReflexDataHelper extends AbstractReflexDataHandler {
 
     public ReflexDataHelper(CallingContext ctx) {
-        KernelScript sc = new KernelScript();
-        sc.setCallingContext(ctx);
-        this.api = sc;
+        super(new KernelScript());
+        ((KernelScript)api).setCallingContext(ctx);
     }
 
     @Override
@@ -192,9 +193,6 @@ public class ReflexDataHelper implements IReflexDataHandler {
     public boolean hasCapability() {
         return true;
     }
-
-    private ScriptingApi api;
-    private ScriptingApi originalApi;
     
     @Override
     public void switchApi(ScriptingApi api) {

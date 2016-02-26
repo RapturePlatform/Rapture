@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -38,7 +38,7 @@ public class FileReadAdapterFactory {
         } else if (typeName.equals("JSONDOC")) {
             return new JSONDocumentReadAdapter(param1, param2);
         }
-        return null;
+        return new DummyFileReadAdapter();
     }
 
 }

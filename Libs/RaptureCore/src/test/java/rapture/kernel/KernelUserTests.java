@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,6 +30,7 @@ import rapture.common.CallingContext;
 import rapture.common.exception.RaptureException;
 import rapture.common.impl.jackson.MD5Utils;
 import rapture.common.model.RaptureUser;
+import rapture.mail.Mailer;
 
 import java.util.List;
 
@@ -167,8 +168,26 @@ public class KernelUserTests {
         Kernel.getLogin().login(RAPTURE, RAPTURE, null);
     }
 
+    private void setupMailer() {
+        // create smtp config
+        CallingContext context = ContextFactory.getKernelUser();
+        String area = "CONFIG";
+        String smtpConfig = "{\"host\":\"email-smtp.us-west-2.amazonaws.com\",\"port\":25,\"username\":\"AKIAITJH4OMD772SGJEA\",\"password\":\"AsrWwMMyGHLJbJMEidXPH7b0d/s8/K7b41udMFDZXRlF\",\"from\":\"support@incapturetechnologies.com\"}";
+        Kernel.getSys().writeSystemConfig(context, area, Mailer.SMTP_CONFIG_URL, smtpConfig);
+
+        // create dummy email template
+        String templateName = "CREATE_PASSWORD_RESET_TOKEN";
+        String template = "{\"emailTo\":\"emailAddress\",\"subject\":\"Ignore - generated from test\",\"msgBody\":\"This email is generated from test\"}";
+        String url = Mailer.EMAIL_TEMPLATE_DIR + templateName;
+        Kernel.getSys().writeSystemConfig(context, area, url, template);
+
+        // update user email
+        Kernel.getAdmin().updateUserEmail(context, RAPTURE, "support@incapturetechnologies.com");
+    }
+
     @Test
     public void testCreatePasswordResetToken() {
+        setupMailer();
         long expireTime = System.currentTimeMillis() + 24*3600000;
         String token = Kernel.getAdmin().createPasswordResetToken(ctx, RAPTURE);
         RaptureUser user = Kernel.getAdmin().getUser(ctx, RAPTURE);
@@ -179,6 +198,7 @@ public class KernelUserTests {
 
     @Test
     public void testCancelPasswordResetToken() {
+        setupMailer();
         Kernel.getAdmin().createPasswordResetToken(ctx, RAPTURE);
         Kernel.getAdmin().cancelPasswordResetToken(ctx, RAPTURE);
         RaptureUser user = Kernel.getAdmin().getUser(ctx, RAPTURE);

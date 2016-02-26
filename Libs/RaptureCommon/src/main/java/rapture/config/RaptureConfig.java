@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -103,6 +103,8 @@ public class RaptureConfig {
     public WebConfig web = new WebConfig();
     public WebConfig execWeb = new WebConfig("8667");
     public Boolean Configured = false;
+
+    public Boolean randomizeDefaultPasswords = false;
 
     public void applyOverrides() {
         // Apply overrides to the public fields by looking for properties or env

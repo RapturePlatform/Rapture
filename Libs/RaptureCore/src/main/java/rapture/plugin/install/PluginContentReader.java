@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,7 @@ package rapture.plugin.install;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.DigestInputStream;
@@ -43,8 +44,20 @@ public class PluginContentReader {
     private static final Logger log = Logger.getLogger(PluginContentReader.class);
 
     public static byte[] readFromFile(File file, MessageDigest md) throws IOException {
-        DigestInputStream is = new DigestInputStream(new FileInputStream(file), md);
+        DigestInputStream is;
 
+        try {
+            is = new DigestInputStream(new FileInputStream(file), md);
+        } catch (FileNotFoundException e) {
+            String path = file.getPath();
+            if (path.endsWith(".bits")) {
+                File f = new File(path.substring(0, path.length()-5));
+                is = new DigestInputStream(new FileInputStream(f), md);
+            } else {
+                throw e;
+            }
+        }
+ 
         return readFromStream(is);
     }
     

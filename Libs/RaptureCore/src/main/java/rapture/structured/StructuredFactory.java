@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,6 +29,7 @@ import java.util.Map;
 import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import rapture.common.exception.ExceptionToString;
@@ -73,7 +74,7 @@ public class StructuredFactory {
     private static StructuredStore makeStructuredStore(StructuredConfigParser parser, String authority) {
         int storeType = parser.getStoreType();
         if (keyStoreImplementationMap.containsKey(storeType)) {
-            return getStructuredStore(keyStoreImplementationMap.get(storeType), "default", parser.getConfig().getConfig(), authority);
+            return getStructuredStore(keyStoreImplementationMap.get(storeType), parser.getInstance(), parser.getConfig().getConfig(), authority);
         } else {
             throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, "Unsupported structured store type");
         }

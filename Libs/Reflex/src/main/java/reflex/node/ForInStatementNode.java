@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -119,6 +119,8 @@ public class ForInStatementNode extends BaseNode {
             });
             debugger.stepEnd(this, retVal, scope);
             return retVal;
+        } else if (list.isNull()) {
+            throw new ReflexException(lineNumber, "The rhs of a for-in clause is NULL");
         } else {
             throw new ReflexException(lineNumber, "The rhs of a for-in clause must be a list, we have a " + list.getTypeAsString());
         }

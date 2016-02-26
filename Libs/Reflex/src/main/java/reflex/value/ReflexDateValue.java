@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,6 +24,7 @@
 package reflex.value;
 
 import java.util.Date;
+
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
@@ -40,6 +41,7 @@ import reflex.calendar.CalendarHandler;
  * 
  */
 public class ReflexDateValue {
+
     private LocalDate date;
     private String calendarString = "";
     private CalendarHandler calHandler;
@@ -127,5 +129,24 @@ public class ReflexDateValue {
 
     public long getEpoch() {
         return date.toDate().getTime();
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 7;
+        result = prime * result + ((date == null) ? 0 : date.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        ReflexDateValue that = null;
+        if ((obj != null) && (obj instanceof ReflexValue)) {
+            that = ((ReflexValue) obj).asDate();
+            return this.date.equals(that.date);
+        }
+        return false;
     }
 }

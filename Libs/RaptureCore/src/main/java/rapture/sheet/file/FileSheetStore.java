@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -237,7 +237,7 @@ public class FileSheetStore implements SheetStore {
     }
 
     @Override
-    public List<RaptureFolderInfo> listSheetByUriPrefix(String displayNamePart) {
+    public List<RaptureFolderInfo> listSheetsByUriPrefix(String displayNamePart) {
         File file = FileRepoUtils.makeGenericFile(parentDir, displayNamePart);
         File[] children = file.listFiles();
         List<RaptureFolderInfo> info = new ArrayList<>((children == null) ? 0 : children.length);

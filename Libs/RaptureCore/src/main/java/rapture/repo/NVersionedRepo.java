@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,6 +32,7 @@ import rapture.common.model.DocumentWithMeta;
 import rapture.dsl.dparse.AbsoluteVersion;
 import rapture.dsl.dparse.AsOfTimeDirective;
 import rapture.dsl.dparse.BaseDirective;
+import rapture.dsl.dparse.VersionDirective;
 import rapture.lock.ILockingHandler;
 import rapture.repo.meta.AbstractMetaBasedRepo;
 import rapture.repo.meta.handler.VersionedMetaHandler;
@@ -108,6 +109,16 @@ public class NVersionedRepo extends AbstractMetaBasedRepo<VersionedMetaHandler> 
             log.error("versionLimit should > 0");
             return false;
         }
+
+        if (metaHandler.supportsVersionLookupByTime()) {
+            return archiveDocumentVersionsWithTimestampRepo(docPath, versionLimit, timeLimit, ensureVersionLimit, user);
+        }
+        else {
+            return archiveDocumentVersionsWithStandardRepo(docPath, versionLimit, timeLimit, ensureVersionLimit, user);
+        }
+    }
+
+    private boolean archiveDocumentVersionsWithStandardRepo(String docPath, int versionLimit, long timeLimit, boolean ensureVersionLimit, String user) {
         try {
             int latestVersion = metaHandler.getLatestMeta(docPath).getVersion();
             int cutoffVersion = getCutoffVersion(docPath, versionLimit, timeLimit, ensureVersionLimit);
@@ -156,9 +167,94 @@ public class NVersionedRepo extends AbstractMetaBasedRepo<VersionedMetaHandler> 
         return cutoffVersion;
     }
 
+    private boolean archiveDocumentVersionsWithTimestampRepo(String docPath, int versionLimit, long timeLimit, boolean ensureVersionLimit, String user) {
+        try {
+            DocumentMetadata latestMeta = metaHandler.getLatestMeta(docPath);
+            long latestTimestamp = latestMeta.getModifiedTimestamp();
+            long cutoffTimestamp = getCutoffTimestamp(docPath, versionLimit, timeLimit, ensureVersionLimit, latestMeta);
+            log.info(String.format("Archive doc %s: latestTimestamp=%d, cutoffTimestamp=%d", docPath, latestTimestamp, cutoffTimestamp));
+
+            // no version to archive
+            if (cutoffTimestamp < 1) {
+                return true;
+            }
+            // cutoff version is the latest version, delete the document
+            if (cutoffTimestamp == latestTimestamp) {
+                return removeDocument(docPath, user, "Archive old versions");
+            }
+            return metaHandler.deleteOldVersions(docPath, cutoffTimestamp);
+
+        } catch (Exception e) {
+            log.error("Failed to archive " + docPath, e);
+            return false;
+        }
+    }
+
+    private long getCutoffTimestamp(String docPath, int versionLimit, long timeLimit, boolean ensureVersionLimit, DocumentMetadata latestMeta) {
+        Long cutoffTimestamp = -1L;
+
+        int cutoffVersion = latestMeta.getVersion() - versionLimit;
+
+        DocumentMetadata metadata = latestMeta;
+        if (timeLimit > 0) {
+            // Jump right to the timestamp we're looking for, then iterate if we need to to keep versionLimit versions.
+            metadata = metaHandler.getMetaAtTimestamp(docPath, timeLimit);
+        }
+
+        while (metadata != null) {
+            cutoffTimestamp = metadata.getModifiedTimestamp();
+            if (cutoffTimestamp == null && metadata.getWriteTime() != null) {
+                cutoffTimestamp = metadata.getWriteTime().getTime();
+            }
+
+            if (cutoffTimestamp == null || (cutoffTimestamp < timeLimit && !ensureVersionLimit)) {
+                // reached the cut off version
+                break;
+            } else {
+                if (metadata.getVersion() <= cutoffVersion) {
+                    break;
+                } else {
+                    // move on to previous version
+                    metadata = metaHandler.getMetaAtTimestamp(docPath, cutoffTimestamp - 1);
+                }
+            }
+        }
+
+        if (cutoffTimestamp == null) {
+            cutoffTimestamp = -1L;
+        }
+
+        return cutoffTimestamp.longValue();
+    }
+
     @Override
-    protected DocumentWithMeta getVersionedDocumentWithMeta(String docPath, AbsoluteVersion directive) {
-        return metaHandler.getDocumentWithMeta(docPath, directive.getVersion());
+    protected DocumentWithMeta getVersionedDocumentWithMeta(String docPath, VersionDirective directive) {
+        if (directive instanceof AsOfTimeDirective) {
+            return getVersionedDocumentWithMetaByAsOfTime(docPath, (AsOfTimeDirective) directive);
+        }
+        else {
+            return metaHandler.getDocumentWithMeta(docPath, ((AbsoluteVersion) directive).getVersion());
+        }
+    }
+
+    private DocumentWithMeta getVersionedDocumentWithMetaByAsOfTime(String docPath, AsOfTimeDirective directive) {
+        if (metaHandler.supportsVersionLookupByTime()) {
+            DocumentWithMeta documentWithMeta = metaHandler.getDocumentWithMeta(docPath, directive.getAsOfTimeMillis());
+
+            if (documentWithMeta == null) {
+                // Document didn't exist at that time.
+                String[] parameters = {docPath, directive.getAsOfTime()};
+                throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_NOT_FOUND,
+                        new MessageFormat(Messages.getString("InvalidAsOfTime"), parameters));
+            }
+
+            return documentWithMeta;
+        }
+        else {
+            String[] parameters = {directive.getClass().getName()};
+            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR,
+                    new MessageFormat(Messages.getString("NVersionedRepository.InvalidDirective"), parameters));
+        }
     }
 
     @Override
@@ -178,7 +274,11 @@ public class NVersionedRepo extends AbstractMetaBasedRepo<VersionedMetaHandler> 
         return ret;
     }
 
-    protected AbsoluteVersion getAbsoluteVersionFromAsOfTimeDirective(String docPath, AsOfTimeDirective directive) {
+    protected BaseDirective getAppropriateDirectiveFromAsOfTimeDirective(String docPath, AsOfTimeDirective directive) {
+        if (metaHandler.supportsVersionLookupByTime()) {
+            return directive;
+        }
+
         Integer version = metaHandler.getVersionNumberAsOfTime(docPath, directive.getAsOfTime());
         if (version == null) {
             // Document didn't exist at that time.
@@ -195,7 +295,7 @@ public class NVersionedRepo extends AbstractMetaBasedRepo<VersionedMetaHandler> 
     @Override
     public DocumentWithMeta getDocAndMeta(String docPath, BaseDirective directive) {
         if (directive instanceof AsOfTimeDirective) {
-            directive = getAbsoluteVersionFromAsOfTimeDirective(docPath, (AsOfTimeDirective) directive);
+            directive = getAppropriateDirectiveFromAsOfTimeDirective(docPath, (AsOfTimeDirective) directive);
         }
 
         return super.getDocAndMeta(docPath, directive);
@@ -204,7 +304,7 @@ public class NVersionedRepo extends AbstractMetaBasedRepo<VersionedMetaHandler> 
     @Override
     public DocumentMetadata getMeta(String docPath, BaseDirective directive) {
         if (directive instanceof AsOfTimeDirective) {
-            directive = getAbsoluteVersionFromAsOfTimeDirective(docPath, (AsOfTimeDirective) directive);
+            directive = getAppropriateDirectiveFromAsOfTimeDirective(docPath, (AsOfTimeDirective) directive);
         }
 
         return super.getMeta(docPath, directive);
@@ -213,7 +313,7 @@ public class NVersionedRepo extends AbstractMetaBasedRepo<VersionedMetaHandler> 
     @Override
     public String getDocument(String docPath, BaseDirective directive) {
         if (directive instanceof AsOfTimeDirective) {
-            directive = getAbsoluteVersionFromAsOfTimeDirective(docPath, (AsOfTimeDirective) directive);
+            directive = getAppropriateDirectiveFromAsOfTimeDirective(docPath, (AsOfTimeDirective) directive);
         }
 
         return super.getDocument(docPath, directive);

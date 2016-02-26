@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -34,8 +34,8 @@ public class AsOfTimeDirectiveTest {
     public void testGetAndSetAsOfTime() {
         AsOfTimeDirective directive = new AsOfTimeDirective();
         assertEquals("", directive.getAsOfTime());
-        directive.setAsOfTime("t1446836246");
-        assertEquals("t1446836246", directive.getAsOfTime());
+        directive.setAsOfTime("t1446836246345");
+        assertEquals("t1446836246345", directive.getAsOfTime());
     }
 
     @Test

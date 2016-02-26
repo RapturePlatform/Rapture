@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -51,10 +51,12 @@ public class LTNode extends BaseNode {
             retVal = new ReflexValue(a.asDouble() < b.asDouble());
         } else if (a.isString() && b.isString()) {
             retVal = new ReflexValue(a.asString().compareTo(b.asString()) < 0);
+        } else if (a.isTime() && b.isTime()) {
+            retVal = new ReflexValue(a.asTime().lessThan(b.asTime()));
         } else if (a.isDate() && b.isDate()) {
             retVal = new ReflexValue(a.asDate().lessThan(b.asDate()));
         } else {
-            throwError("both must be numeric or both must be string", lhs, rhs, a, b);
+            throwError("both must be of same type: numeric, date, time or string", lhs, rhs, a, b);
         }
         debugger.stepEnd(this, retVal, scope);
         return retVal;

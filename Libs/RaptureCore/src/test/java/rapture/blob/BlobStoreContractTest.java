@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,9 +27,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.BeforeClass;
@@ -86,6 +88,26 @@ public abstract class BlobStoreContractTest {
         String blob = IOUtils.toString(getBlobStore().getBlob(CONTEXT, TEST_URI));
         after = System.currentTimeMillis();
         printDiff("testCreateAndRetrieveBlob: getBlob", before, after);
+        assertEquals(TEST_BLOB_CONTENT, blob);
+    }
+
+    @Test
+    public void testCreateAndRetrieveSymlink() throws IOException {
+        RaptureURI SYMLINK_URI = new RaptureURI("blob://" + TEST_DISPLAY_NAME);
+        String fileDirName = FileUtils.getTempDirectoryPath() + "/testFSRepo";
+        new File(fileDirName).mkdirs();
+        File foo = new File(fileDirName, "foo");
+        foo.createNewFile();
+
+        long before = System.currentTimeMillis();
+        boolean result = getBlobStore().storeBlob(CONTEXT, SYMLINK_URI, false, IOUtils.toInputStream(TEST_BLOB_CONTENT));
+        long after = System.currentTimeMillis();
+        printDiff("testCreateAndRetrieveBlob: testCreateAndRetrieveSymlink", before, after);
+        assertTrue(result);
+        before = System.currentTimeMillis();
+        String blob = IOUtils.toString(getBlobStore().getBlob(CONTEXT, SYMLINK_URI));
+        after = System.currentTimeMillis();
+        printDiff("testCreateAndRetrieveSymlink: getBlob", before, after);
         assertEquals(TEST_BLOB_CONTENT, blob);
     }
 

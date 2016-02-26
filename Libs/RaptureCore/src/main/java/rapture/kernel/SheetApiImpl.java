@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,8 +31,11 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.Stack;
 import java.util.regex.Pattern;
 
@@ -64,7 +67,9 @@ import rapture.common.exception.RaptureException;
 import rapture.common.exception.RaptureExceptionFactory;
 import rapture.common.impl.jackson.JacksonUtil;
 import rapture.common.shared.doc.GetDocPayload;
+import rapture.common.shared.sheet.DeleteSheetPayload;
 import rapture.kernel.context.ContextValidator;
+import rapture.kernel.script.KernelScript;
 import rapture.repo.SheetRepo;
 import rapture.script.IActivityInfo;
 import rapture.script.IRaptureScript;
@@ -73,6 +78,7 @@ import rapture.util.StringUtil;
 
 import com.google.common.collect.Table;
 import com.google.common.collect.TreeBasedTable;
+
 
 public class SheetApiImpl extends KernelBase implements SheetApi {
     private static Logger log = Logger.getLogger(SheetApiImpl.class);
@@ -576,10 +582,6 @@ public class SheetApiImpl extends KernelBase implements SheetApi {
         if (authority.isEmpty()) {
             --depth;
             try {
-                GetDocPayload requestObj = new GetDocPayload();
-                requestObj.setContext(context);
-                ContextValidator.validateContext(context, EntitlementSet.Sheet_getSheetRepoConfigs, requestObj); 
-
                 List<SheetRepoConfig> configs = getSheetRepoConfigs(context);
                 for (SheetRepoConfig config : configs) {
                      authority = config.getAuthority();
@@ -628,9 +630,9 @@ public class SheetApiImpl extends KernelBase implements SheetApi {
                 GetDocPayload requestObj = new GetDocPayload();
                 requestObj.setContext(context);
                 requestObj.setDocUri(currParentDocPath);
-                ContextValidator.validateContext(context, EntitlementSet.Sheet_getSheetCell, requestObj); 
+                ContextValidator.validateContext(context, EntitlementSet.Sheet_listSheetsByUriPrefix, requestObj); 
     
-                List<RaptureFolderInfo> children = repo.listSheetByUriPrefix(currParentDocPath);
+                List<RaptureFolderInfo> children = repo.listSheetsByUriPrefix(currParentDocPath);
     
                 for (RaptureFolderInfo child : children) {
                     String childDocPath = currParentDocPath + (top ? "" : "/") + child.getName();
@@ -652,80 +654,44 @@ public class SheetApiImpl extends KernelBase implements SheetApi {
 
     @Override
     public List<String> deleteSheetsByUriPrefix(CallingContext context, String uriPrefix) {
-        RaptureURI internalUri = new RaptureURI(uriPrefix, SHEET);
-        String authority = internalUri.getAuthority();
-        List<String> ret = new ArrayList<String>();
-
-        // Schema level is special case.
-        if (authority.isEmpty()) {
+        Map<String, RaptureFolderInfo> docs = listSheetsByUriPrefix(context, uriPrefix, Integer.MAX_VALUE);
+        List<String> folders = new ArrayList<>();
+        Set<String> notEmpty = new HashSet<>();
+        List<String> removed = new ArrayList<>();
+        
+        DeleteSheetPayload requestObj = new DeleteSheetPayload();
+        requestObj.setContext(context);
+        
+        folders.add(uriPrefix.endsWith("/") ? uriPrefix : uriPrefix + "/");
+        for (Entry<String, RaptureFolderInfo> entry : docs.entrySet()) {
+            String uri = entry.getKey();
+            boolean isFolder = entry.getValue().isFolder();
             try {
-                GetDocPayload requestObj = new GetDocPayload();
-                requestObj.setContext(context);
-                ContextValidator.validateContext(context, EntitlementSet.Sheet_getSheetRepoConfigs, requestObj);
-
-                List<SheetRepoConfig> configs = getSheetRepoConfigs(context);
-                for (SheetRepoConfig config : configs) {
-                    authority = config.getAuthority();
-                    // NULL or empty string should not exist.
-                    if ((authority == null) || authority.isEmpty()) {
-                        log.warn("Invalid authority (null or empty string) found for "+JacksonUtil.jsonFromObject(config));
-                        continue;
-                    }
-                    String uri = SHEET+"://"+authority;
-                    deleteSheetRepo(context, uri);
-                    ret.add(uri);
+                requestObj.setSheetUri(uri);
+                if (isFolder) {
+                    ContextValidator.validateContext(context, EntitlementSet.Sheet_deleteSheetsByUriPrefix, requestObj); 
+                    folders.add(0, uri.substring(0, uri.length()-1));
+                } else {
+                    ContextValidator.validateContext(context, EntitlementSet.Sheet_deleteSheet, requestObj); 
+                    deleteSheet(context, uri);
+                    removed.add(uri);
                 }
-
             } catch (RaptureException e) {
                 // permission denied
-                log.debug("No read permission for "+uriPrefix);
-            }
-            return ret;
-        }
-
-        SheetRepo repo = getRepoFromCache(internalUri.getAuthority());
-        if (repo == null) {
-            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST,  apiMessageCatalog.getMessage("NoSuchRepo", internalUri.toAuthString())); //$NON-NLS-1$
-        }
-        String parentDocPath = internalUri.getDocPath() == null ? "" : internalUri.getDocPath();
-
-        if (log.isDebugEnabled()) {
-            log.debug("Loading all children from repo " + internalUri.getAuthority() + " with " + internalUri.getDocPath());
-        }
-
-        Stack<String> parentsStack = new Stack<String>();
-        parentsStack.push(parentDocPath);
-
-        while (!parentsStack.isEmpty()) {
-            String currParentDocPath = parentsStack.pop();
-            boolean top = currParentDocPath.isEmpty();
-            // Make sure that you have permission to read the folder.
-            try {
-                GetDocPayload requestObj = new GetDocPayload();
-                requestObj.setContext(context);
-                requestObj.setDocUri(currParentDocPath);
-                ContextValidator.validateContext(context, EntitlementSet.Sheet_getSheetCell, requestObj);
-
-                List<RaptureFolderInfo> children = repo.listSheetByUriPrefix(currParentDocPath);
-
-                for (RaptureFolderInfo child : children) {
-                    String childDocPath = currParentDocPath + (top ? "" : "/") + child.getName();
-                    if (child.getName().isEmpty()) continue;
-                    String childUri = Scheme.SHEET+"://" + authority + "/" + childDocPath + (child.isFolder() ? "/" : "");
-                    deleteSheet(context, childUri);
-                    ret.add(childUri);
-                    if (child.isFolder()) {
-                        parentsStack.push(childDocPath);
-                    }
+                log.debug("Unable to delete "+uri+" : " + e.getMessage());
+                int colon = uri.indexOf(":") +3;
+                while (true) {
+                    int slash = uri.lastIndexOf('/');
+                    if (slash < colon) break;
+                    uri = uri.substring(0, slash);
+                    notEmpty.add(uri);
                 }
-
-                deleteSheet(context, Scheme.SHEET+"://" + authority + "/" + parentDocPath);
-            } catch (RaptureException e) {
-                // permission denied
-                log.debug("No read permission on folder "+currParentDocPath);
             }
         }
-        return ret;
+        for (String uri : folders) {
+            if (notEmpty.contains(uri)) continue;
+            deleteSheet(context, uri);
+        }
+        return removed;
     }
-
 }

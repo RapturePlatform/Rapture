@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -103,14 +103,29 @@ public class MemoryAudit extends BaseAuditImplementation {
         addAuditEntryAndTrim(entry);
         return true;
     }
-    
+
     @Override
     public Boolean writeLogData(String category, int level, String message, String user, Map<String, Object> data) {
-        return writeLog(category, level, message + " " + AuditUtil.getStringRepresentation(data), user );
+        return writeLog(category, level, message + " " + AuditUtil.getStringRepresentation(data), user);
     }
 
     @Override
     public void setContext(RaptureURI internalURI) {
+    }
+
+    @Override
+    public List<AuditLogEntry> getRecentUserActivity(String user, int count) {
+        int numAdded = 0;
+        List<AuditLogEntry> ret = new ArrayList<>();
+        for (AuditLogEntry entry : entries) {
+            if (entry.getUser().equalsIgnoreCase(user)) {
+                ret.add(entry);
+                if (count > 0 && ++numAdded >= count) {
+                    break;
+                }
+            }
+        }
+        return ret;
     }
 
 }

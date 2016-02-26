@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,6 +30,12 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
+import com.mongodb.MongoException;
+
 import rapture.audit.AuditLog;
 import rapture.audit.AuditUtil;
 import rapture.common.RaptureURI;
@@ -38,12 +44,6 @@ import rapture.common.model.AuditLogEntry;
 import rapture.mongodb.MongoDBFactory;
 import rapture.mongodb.MongoRetryWrapper;
 import rapture.util.IDGenerator;
-
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
-import com.mongodb.MongoException;
 
 public class MongoDBAuditLog implements AuditLog {
     private static Logger log = Logger.getLogger(MongoDBAuditLog.class);
@@ -69,18 +69,18 @@ public class MongoDBAuditLog implements AuditLog {
     public List<AuditLogEntry> getRecentEntries(final int count) {
         final BasicDBObject sort = getSortObject();
 
-        MongoRetryWrapper<List<AuditLogEntry>> wrapper = new MongoRetryWrapper<List<AuditLogEntry>> () {
+        MongoRetryWrapper<List<AuditLogEntry>> wrapper = new MongoRetryWrapper<List<AuditLogEntry>>() {
             public DBCursor makeCursor() {
                 return getAuditCollection().find().sort(sort).limit(count);
             }
-            
+
             public List<AuditLogEntry> action(DBCursor cursor) {
                 List<AuditLogEntry> ret = new ArrayList<AuditLogEntry>();
                 fillFromCursor(ret, cursor);
                 return ret;
             }
         };
-        
+
         return wrapper.doAction();
     }
 
@@ -117,11 +117,11 @@ public class MongoDBAuditLog implements AuditLog {
         BasicDBObject test = new BasicDBObject();
         test.put("$gt", when.getWhen());
         query.put(WHEN, test);
-        MongoRetryWrapper<List<AuditLogEntry>> wrapper = new MongoRetryWrapper<List<AuditLogEntry>> () {
+        MongoRetryWrapper<List<AuditLogEntry>> wrapper = new MongoRetryWrapper<List<AuditLogEntry>>() {
             public DBCursor makeCursor() {
                 return getAuditCollection().find(query).sort(sort);
             }
-            
+
             public List<AuditLogEntry> action(DBCursor cursor) {
                 List<AuditLogEntry> ret = new ArrayList<AuditLogEntry>();
                 fillFromCursor(ret, cursor);
@@ -138,7 +138,7 @@ public class MongoDBAuditLog implements AuditLog {
         try {
             getAuditCollection().ensureIndex(WHEN);
         } catch (MongoException e) {
-            log.info("setConfig failed on "+tableName+": "+e.getMessage());
+            log.info("setConfig failed on " + tableName + ": " + e.getMessage());
             log.debug(ExceptionToString.format(e));
         }
     }
@@ -163,7 +163,7 @@ public class MongoDBAuditLog implements AuditLog {
         try {
             getAuditCollection().insert(obj);
         } catch (MongoException e) {
-            System.err.println("Cannot log "+message+": "+e.getMessage());
+            System.err.println("Cannot log " + message + ": " + e.getMessage());
             return false;
         }
         return true;
@@ -172,12 +172,12 @@ public class MongoDBAuditLog implements AuditLog {
     /**
      * For now
      */
-    
+
     @Override
     public Boolean writeLogData(String category, int level, String message, String user, Map<String, Object> data) {
-        return writeLog(category, level, message + " " + AuditUtil.getStringRepresentation(data), user );
+        return writeLog(category, level, message + " " + AuditUtil.getStringRepresentation(data), user);
     }
-    
+
     private BasicDBObject getSortObject() {
         BasicDBObject ret = new BasicDBObject();
         ret.append(WHEN, 1);
@@ -186,6 +186,31 @@ public class MongoDBAuditLog implements AuditLog {
 
     @Override
     public void setContext(RaptureURI internalURI) {
+    }
+
+    @Override
+    public List<AuditLogEntry> getRecentUserActivity(String user, final int count) {
+        final BasicDBObject sort = getSortObject();
+        final BasicDBObject query = new BasicDBObject();
+        BasicDBObject test = new BasicDBObject();
+        test.put("$eq", user);
+        query.put(USER, test);
+        MongoRetryWrapper<List<AuditLogEntry>> wrapper = new MongoRetryWrapper<List<AuditLogEntry>>() {
+            public DBCursor makeCursor() {
+                DBCursor ret = getAuditCollection().find(query).sort(sort);
+                if (count > 0) {
+                    ret = ret.limit(count);
+                }
+                return ret;
+            }
+
+            public List<AuditLogEntry> action(DBCursor cursor) {
+                List<AuditLogEntry> ret = new ArrayList<AuditLogEntry>();
+                fillFromCursor(ret, cursor);
+                return ret;
+            }
+        };
+        return wrapper.doAction();
     }
 
 }

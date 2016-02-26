@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,24 +26,31 @@ package rapture.kernel;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.commons.codec.CharEncoding;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 
+import rapture.audit.AuditEvent;
+import rapture.audit.AuditListener;
 import rapture.audit.AuditLog;
 import rapture.audit.log4j.Log4jAudit;
 import rapture.common.AuditLogConfig;
 import rapture.common.AuditLogConfigStorage;
 import rapture.common.CallingContext;
 import rapture.common.Messages;
+import rapture.common.RaptureConstants;
 import rapture.common.RaptureFolderInfo;
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
 import rapture.common.api.AuditApi;
 import rapture.common.exception.ExceptionToString;
+import rapture.common.exception.RaptureException;
 import rapture.common.exception.RaptureExceptionFactory;
 import rapture.common.model.AuditLogEntry;
 import rapture.common.model.audit.Log4jAuditConfig;
@@ -61,8 +68,11 @@ public class AuditApiImpl extends KernelBase implements AuditApi {
     private static final RaptureURI KERNEL_URI = RaptureURI.builder(Scheme.LOG, "//kernel").build();
     private static final Logger log = Logger.getLogger(AuditApiImpl.class);
 
+    private Messages auditMsgCatalog;
+
     public AuditApiImpl(Kernel raptureKernel) {
         super(raptureKernel);
+        auditMsgCatalog = new Messages("Audit");
     }
 
     @Override
@@ -110,8 +120,9 @@ public class AuditApiImpl extends KernelBase implements AuditApi {
         if (ilog != null) {
             ilog.writeLog(category, level, message, context.getUser());
         }
+        notifyListeners(category, level, message);
     }
-    
+
     @Override
     public void writeAuditEntryData(CallingContext context, String logURI, String category, int level, String message, Map<String, Object> data) {
         RaptureURI internalURI = new RaptureURI(logURI, Scheme.LOG);
@@ -119,6 +130,7 @@ public class AuditApiImpl extends KernelBase implements AuditApi {
         if (ilog != null) {
             ilog.writeLogData(category, level, message, context.getUser(), data);
         }
+        notifyListeners(category, level, message);
     }
 
     @Override
@@ -130,6 +142,19 @@ public class AuditApiImpl extends KernelBase implements AuditApi {
         } else {
             return null;
         }
+    }
+
+    @Override
+    public List<AuditLogEntry> getRecentUserActivity(CallingContext context, String user, int count) {
+        if (count == 0) {
+            return new ArrayList<>();
+        }
+        RaptureURI internalURI = new RaptureURI(RaptureConstants.DEFAULT_AUDIT_URI, Scheme.LOG);
+        AuditLog ilog = Kernel.getKernel().getLog(context, internalURI);
+        if (ilog == null) {
+            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, auditMsgCatalog.getMessage("KernelLogInvalid"));
+        }
+        return ilog.getRecentUserActivity(user, count);
     }
 
     @Override
@@ -195,4 +220,29 @@ public class AuditApiImpl extends KernelBase implements AuditApi {
         return AuditLogConfigStorage.getChildren(prefix);
     }
 
+    private List<AuditListener> listeners = new CopyOnWriteArrayList<>();
+    boolean auditAllExceptions = false;
+    
+    public void addAuditListener(AuditListener listener) {
+        if (!listeners.contains(listener)) listeners.add(listener);
+    }
+
+    public boolean removeAuditListener(AuditListener listener) {
+        boolean retVal = listeners.contains(listener);
+        if (retVal) listeners.remove(listener);
+        return retVal;
+    }
+
+    public void notifyListeners(String category, int level, String message) {
+        AuditEvent aevent = new AuditEvent(category, level, message);
+        for (AuditListener listener : listeners) listener.notify(aevent);
+    }
+    
+    public void writeException(RaptureException re) {
+        if (auditAllExceptions) {
+            writeAuditEntry(ContextFactory.getKernelUser(), RaptureConstants.DEFAULT_AUDIT_URI, "exception", 2, re.getMessage());
+        } else {
+            notifyListeners("exception", 2, ExceptionToString.format(re));
+        }
+    }
 }

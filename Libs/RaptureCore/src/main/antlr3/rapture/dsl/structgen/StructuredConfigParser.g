@@ -18,13 +18,14 @@ tokens {
    import rapture.dsl.structured.*;
 }
 
-repinfo    : repdef USING storedef;
+repinfo    : repdef USING storedef onInfo?;
 
 repdef     : s=repstyle config { addProcessorConfig($s.text); };
 storedef   : s=storestyle config { addConfig($s.text); };
 
 repstyle   : STRUCTURED;
 storestyle : s=(MEMORY | POSTGRES | HSQLDB) { setStore($s); };
+onInfo     : ON x=ID { setInstance($x.text); };
 
 config     : LBRACE entrylist RBRACE;
 

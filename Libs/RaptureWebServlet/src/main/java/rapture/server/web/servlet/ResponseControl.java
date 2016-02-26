@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -51,7 +51,17 @@ public class ResponseControl {
     public void setCookieMap(Map<String, ResponseCookie> cookieMap) {
         this.cookieMap = cookieMap;
     }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
     private int responseCode = 200;
     private String pageRedirection = null;
     private Map<String, ResponseCookie> cookieMap = new HashMap<String, ResponseCookie>();
+    private String message = null;
 }

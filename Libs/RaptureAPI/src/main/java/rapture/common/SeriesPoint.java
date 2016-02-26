@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -37,6 +37,18 @@ public class SeriesPoint {
     
     public void setColumn(String column) {
         this.column = column;
+    }
+    
+    public Number getValueNumeric() {
+        try {
+            return Double.valueOf(value.startsWith("'") ? value.substring(1) : value);
+        } catch (NumberFormatException e) {
+            return Double.NaN;
+        }
+    }
+    
+    public void setValueNumeric(Number value) {
+        this.value = value.toString();
     }
     
     public String getValue() {

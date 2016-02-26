@@ -27,8 +27,8 @@ api(Series) {
    @public void deleteSeriesRepo(String seriesRepoUri);
 
    [This method removes a Series and its data from the Rapture system. There is no undo.] 
-   @entitle=/data/write/$f(seriesRepoUri)
-   @public void deleteSeries(String seriesRepoUri);
+   @entitle=/data/write/$f(seriesUri)
+   @public void deleteSeries(String seriesUri);
 
    [Recursively removes all series repositories that are children of the given Uri.]
    @entitle=/data/write/$f(seriesUri)
@@ -127,6 +127,6 @@ api(Series) {
    @public void runSeriesScriptQuiet(String scriptContent, List(String) arguments);
    
    [Returns full pathnames for an entire subtree as a map of path to RFI.]
-   @entitle=/data/read/$f(uriPrefix)
-   @public Map(String,RaptureFolderInfo) listSeriesByUriPrefix(String uriPrefix, int depth);
+   @entitle=/data/read/$f(seriesUri)
+   @public Map(String,RaptureFolderInfo) listSeriesByUriPrefix(String seriesUri, int depth);
 }

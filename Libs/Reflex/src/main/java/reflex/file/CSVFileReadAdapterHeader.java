@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,6 +27,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.google.common.net.MediaType;
 
 import reflex.IReflexIOHandler;
 import reflex.IReflexLineCallback;
@@ -80,6 +82,11 @@ public class CSVFileReadAdapterHeader implements FileReadAdapter {
         });
 
         return new ReflexValue(valArray);
+    }
+
+    @Override
+    public MediaType getMimeType() {
+        return MediaType.CSV_UTF_8;
     }
 
 }

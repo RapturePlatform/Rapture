@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,6 +28,8 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import reflex.DebugLevel;
 import reflex.IReflexHandler;
 import reflex.ReflexException;
@@ -40,6 +42,7 @@ public class NativeCallNode extends BaseNode {
     private String vName;
     private String fnName;
     private List<ReflexNode> params;
+    protected static final Logger log = Logger.getLogger(NativeCallNode.class);
 
     public NativeCallNode(int lineNumber, IReflexHandler handler, Scope s, String varName, String fnName, List<ReflexNode> ps) {
         super(lineNumber, handler, s);
@@ -75,6 +78,7 @@ public class NativeCallNode extends BaseNode {
         ReflexValue ret = new ReflexNullValue(lineNumber);;
         boolean foundMethod = false;
         for (Method m : methods) {
+outer:
             if (m.getName().equals(fnName)) {
                 // Potential candidate
                 handler.getDebugHandler().statementReached(lineNumber, DebugLevel.SPAM, "Found candidate for " + fnName);
@@ -84,12 +88,16 @@ public class NativeCallNode extends BaseNode {
                     continue;
                 }
                 for (int i = 0; i < paramTypes.length; i++) {
-                    if (paramTypes[i] != evalParams.get(i).getClass() && paramTypes[i] != Object.class) {
-                        handler.getDebugHandler().statementReached(lineNumber, DebugLevel.SPAM,
-                                "Parameter mismatch, got " + evalParams.get(i).getClass().toString() + " and need " + paramTypes[i].toString());
-                        foundMethod = false;
-                        break;
-                    }
+                    if (!paramTypes[i].isPrimitive())
+                        try {
+                            paramTypes[i].cast(evalParams.get(i));
+                        } catch (ClassCastException e) {
+                            log.info("Cannot cast "+evalParams.get(i).getClass().getName()+" value "+evalParams.get(i)+" to "+paramTypes[i].getName());
+                            handler.getDebugHandler().statementReached(lineNumber, DebugLevel.SPAM,
+                                    "Parameter "+i+" mismatch, got " + evalParams.get(i).getClass().toString() + " and need " + paramTypes[i].toString());
+                            foundMethod = false;
+                            break outer;
+                        }
                 }
                 // This is the one to execute
                 try {
@@ -98,20 +106,20 @@ public class NativeCallNode extends BaseNode {
                         List<ReflexValue> listVal = new ArrayList<ReflexValue>();
                         Object[] rv = (Object[]) r;
                         for (Object x : rv) {
-                            listVal.add(new ReflexValue(x));
+                            listVal.add(new ReflexValue(lineNumber, x));
                         }
                         ret = new ReflexValue(listVal);
                     } else {
                         if (r == null) {
                             ret = new ReflexNullValue(lineNumber);;
                         } else {
-                            ret = new ReflexValue(r);
+                            ret = new ReflexValue(lineNumber, r);
                         }
                     }
                     foundMethod = true;
                     break;
                 } catch (Exception e) {
-                    throw new ReflexException(lineNumber, "Error invoking native method", e);
+                    throw new ReflexException(lineNumber, "Error invoking native method " + fnName + " on object "+realVal, e);
                 }
             }
         }
@@ -126,13 +134,13 @@ public class NativeCallNode extends BaseNode {
                         foundMethod = true;
                         break;
                     } catch (Exception e) {
-                        throw new ReflexException(lineNumber, "Error invoking native method", e);
+                        throw new ReflexException(lineNumber, "Error invoking native method " + fnName + " on object "+realVal, e);
                     }
                 }
             }
         }
         if (!foundMethod) {
-            throw new ReflexException(lineNumber, "Could not find method " + fnName);
+            throw new ReflexException(lineNumber, "Could not find method " + fnName + " on object "+realVal+" taking arguments "+evalParams.toString());
         }
         debugger.stepEnd(this, ret, scope);
         return ret;

@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -39,6 +39,7 @@ import rapture.common.RaptureScriptLanguage;
 import rapture.common.RaptureScriptPurpose;
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
+import rapture.common.DispatchReturn;
 import rapture.common.exception.RaptNotLoggedInException;
 import rapture.common.exception.RaptureExceptionFactory;
 import rapture.kernel.Kernel;
@@ -70,22 +71,29 @@ public class BlobUploadServlet extends BaseServlet {
         // So the description is a uri. Parse it as such
         RaptureURI uri = new RaptureURI(description, Scheme.BLOB);
         Part filePart = request.getPart("file"); // Retrieves <input type="file" name="file">
-        switch(uri.getScheme()) {
-        case BLOB:
-            storeBlob(context, filePart, uri, description);
-            break;
-        case SCRIPT:
-            storeScript(context, filePart, uri, description);
-            break;
-        case DOCUMENT:
-            storeDocument(context, filePart, uri, description);
-            break;
-        default:
-            throw RaptureExceptionFactory.create("Could not work with that scheme");
+        DispatchReturn dispatchReturn;
+
+        try {
+            switch (uri.getScheme()) {
+                case BLOB:
+                    storeBlob(context, filePart, uri, description);
+                    break;
+                case SCRIPT:
+                    storeScript(context, filePart, uri, description);
+                    break;
+                case DOCUMENT:
+                    storeDocument(context, filePart, uri, description);
+                    break;
+                default:
+                    throw RaptureExceptionFactory.create("Could not work with that scheme");
+            }
+
+            log.info("URI is " + description);
+            response.sendRedirect(request.getHeader("referer"));
+        } catch (Exception e){
+            dispatchReturn = handleUnexpectedException(e);
+            sendResponseAppropriately(dispatchReturn.getContext(), request, response, dispatchReturn.getResponse());
         }
- 
-        log.info("URI is " + description);
-        response.sendRedirect(request.getHeader("referer"));
     }
 
     private void storeDocument(CallingContext context, Part filePart, RaptureURI uri, String description) throws IOException {

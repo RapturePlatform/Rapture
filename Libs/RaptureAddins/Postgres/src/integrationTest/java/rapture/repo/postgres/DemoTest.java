@@ -34,7 +34,7 @@ import com.google.common.collect.ImmutableMap;
 
 public class DemoTest {
 
-    protected static final SimpleCredentialsProvider CREDENTIALS_PROVIDER = new SimpleCredentialsProvider("x", "x");
+    protected static final SimpleCredentialsProvider CREDENTIALS_PROVIDER = new SimpleCredentialsProvider("rapture", "rapture");
 
     private static final Logger log = Logger.getLogger(DemoTest.class);
 

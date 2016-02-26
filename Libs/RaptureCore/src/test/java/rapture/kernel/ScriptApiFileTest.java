@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,17 +24,16 @@
 package rapture.kernel;
 
 import static org.junit.Assert.assertEquals;
-import static rapture.kernel.AbstractFileTest.callingContext;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
-import org.apache.commons.io.FileUtils;
-import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -48,8 +47,6 @@ import rapture.common.RaptureScriptPurpose;
 import rapture.common.RaptureSnippet;
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
-import rapture.common.model.DocumentRepoConfig;
-import rapture.config.ConfigLoader;
 
 public class ScriptApiFileTest extends AbstractFileTest {
 
@@ -246,9 +243,12 @@ public class ScriptApiFileTest extends AbstractFileTest {
         assertEquals(8, resultsMap.size());
 
         List<String> removed = scriptImpl.deleteScriptsByUriPrefix(callingContext, uriPrefix + "/folder1/folder2");
-        assertEquals(3, removed.size());
-
+        assertEquals(2, removed.size());
         resultsMap = scriptImpl.listScriptsByUriPrefix(callingContext, uriPrefix, 0);
-        assertEquals(5, resultsMap.size());
+        int size = resultsMap.size();
+        Set<String> uris = resultsMap.keySet();
+        assertEquals(5, size);
+        removed = scriptImpl.deleteScriptsByUriPrefix(callingContext, uriPrefix);
+        assertEquals(4, removed.size());
     }
 }

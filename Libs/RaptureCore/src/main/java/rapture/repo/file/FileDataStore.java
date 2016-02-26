@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -220,11 +220,12 @@ public class FileDataStore extends AbstractKeyStore implements KeyStore {
 
     private void createSymLink(String k, String filePath) {
         Path originalFile = Paths.get(filePath);
-        Path docSymLink = Paths.get(folderPrefix, convertKeyToPathWithExtension(k));
+        File fromFile = FileRepoUtils.makeGenericFile(parentDir, convertKeyToPathWithExtension(k));
+        Path fromFilePath = Paths.get(fromFile.getAbsolutePath());
         try {
-            Files.deleteIfExists(docSymLink);
-            FileUtils.forceMkdir(docSymLink.getParent().toFile());
-            Files.createSymbolicLink(docSymLink, originalFile);
+            Files.deleteIfExists(fromFilePath);
+            FileUtils.forceMkdir(fromFilePath.getParent().toFile());
+            Files.createSymbolicLink(fromFilePath, originalFile);
         } catch (IOException e) {
             throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, "Error creating sym link", e);
         }

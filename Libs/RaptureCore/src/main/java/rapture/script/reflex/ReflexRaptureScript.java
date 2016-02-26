@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -227,6 +227,7 @@ public class ReflexRaptureScript implements IRaptureScript {
             ProgressDebugger progress = (timeout < 0) ? new TimeoutReflexDebugger(activity, script.getScript(), timeout) : new ProgressDebugger(activity,
                     script.getScript());
             log.info("Running script " + getScriptName(script));
+            ReflexExecutor.injectSystemIntoScope(walker.currentScope);
             if (timeout <= 0) {
                 ret = res.evaluateWithoutScope(progress).toString();
             } else {
@@ -250,7 +251,7 @@ public class ReflexRaptureScript implements IRaptureScript {
             collector.addInstrumentationLog(progress.getInstrumenter().getTextLog());
             // Now record collector
             if (auditLogUri != null) {
-                Kernel.getAudit().writeAuditEntry(context, auditLogUri, "", 1, collector.getBlobContent());
+                Kernel.getAudit().writeAuditEntry(context, auditLogUri, "debug", 1, collector.getBlobContent());
             } else {
                 ScriptCollectorHelper.writeCollector(context, collector);
             }

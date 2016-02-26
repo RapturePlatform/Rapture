@@ -56,6 +56,10 @@ api(Admin) {
     @entitle=/admin/main
     @public void addUser(String userName, String description, String hashPassword, String email);
 
+    [Verify user by providing a secret token]
+    @entitle=/admin/main
+    @public Boolean verifyUser(String userName, String token);
+
     [This api call can be used to determine whether a given user exists in the Rapture system. Only system administrators can use this api call.]
     @entitle=/admin/main
     @public Boolean doesUserExist(String userName);
@@ -73,13 +77,21 @@ api(Admin) {
     @entitle=/admin/main
     @public void resetUserPassword(String userName, String newHashPassword);
 
-    [Creates password reset token]
+    [Creates password reset token and emails it to the user]
     @entitle=/admin/main
     @public String createPasswordResetToken(String username);
+
+    [Creates registration token and emails it to the user]
+    @entitle=/admin/main
+    @public String createRegistrationToken(String username);
 
     [Cancels password reset token]
     @entitle=/admin/main
     @public void cancelPasswordResetToken(String username);
+
+    [Emails user]
+    @entitle=/admin/main
+    @public void emailUser(String userName, String emailTemplate, Map<String, Object> templateValues);
 
     [This method updates user email.]
     @entitle=/admin/main
@@ -194,7 +206,7 @@ api(Admin) {
    @public void setMOTD(String message);
    
    [Retrieve the MOTD]
-   @entitle=/admin/main
+   @entitle=/everyone
    @public String getMOTD();
    
    [Set the name of this environment]

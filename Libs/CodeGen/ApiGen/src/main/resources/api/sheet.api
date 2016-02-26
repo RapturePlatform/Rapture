@@ -19,8 +19,8 @@ api(Sheet) {
    @public RaptureSheet createSheet(String sheetURI);
    
    [Deletes a sheet and all its contents.]
-   @entitle=/data/write/$f(sheetURI)
-   @public RaptureSheet deleteSheet(String sheetURI);
+   @entitle=/data/write/$f(sheetUri)
+   @public RaptureSheet deleteSheet(String sheetUri);
   
    [Checks whether a sheet exists at a given URI.]
    @entitle=/repo/list
@@ -35,12 +35,12 @@ api(Sheet) {
    @public Boolean sheetRepoExists(String repoURI);
 
    [Return full pathnames for an entire subtree as a map of path to RFI]
-   @entitle=/data/read/$f(uriPrefix)
-   @public Map(String,RaptureFolderInfo) listSheetsByUriPrefix(String uriPrefix, int depth);
+   @entitle=/data/read/$f(sheetUri)
+   @public Map(String,RaptureFolderInfo) listSheetsByUriPrefix(String sheetUri, int depth);
 
    [Removes a folder and its contents recursively, including empty subfolders. Returns a list of the sheets and folders removed.]
-   @entitle=/admin/script
-   @public List(String) deleteSheetsByUriPrefix(String uriPrefix);
+   @entitle=/data/read/$f(sheetUri)
+   @public List(String) deleteSheetsByUriPrefix(String sheetUri);
       
    [Assigns the value passed to the specified cell.]
    @entitle=/data/write/$f(sheetURI)
@@ -65,7 +65,7 @@ api(Sheet) {
    ]
    @entitle=/data/read/$f(sheetURI)
    @public SheetAndMeta getSheetAndMeta(String sheetURI);
-    
+     
    [Gets all the style objects associated with this sheet. See also createStyle.]
    @entitle=/data/read/$f(sheetURI)
    @public List(RaptureSheetStyle) getAllStyles(String sheetURI);

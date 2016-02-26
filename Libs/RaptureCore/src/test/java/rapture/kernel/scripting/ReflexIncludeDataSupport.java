@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,6 +29,7 @@ import java.util.HashMap;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import rapture.common.CallingContext;
@@ -64,7 +65,7 @@ public class ReflexIncludeDataSupport {
 
         String scriptToInclude = "def createDoc(displayName, content)\nprintln('Will be creating ' + displayName);\ncontent --> displayName;\nend\n";
         Kernel.getScript().createScript(ctx, auth + "/createDoc", RaptureScriptLanguage.REFLEX, RaptureScriptPurpose.PROGRAM, scriptToInclude);
-        String scriptToUse = "include 'reflexIncludeDataAuthority/createDoc';\n\ncontent = {};\ncontent['test']=true;\n\ncreateDoc('//reflexIncludeDataAuthority/1', content);\n";
+        String scriptToUse = "include 'reflexIncludeDataAuthority/createDoc';\n\ncontent = {};\ncontent['test']=true;\n\ncreateDoc('document://reflexIncludeDataAuthority/1', content);\n";
         Kernel.getScript().createScript(ctx, auth + "/runTest", RaptureScriptLanguage.REFLEX, RaptureScriptPurpose.PROGRAM, scriptToUse);
     }
 
@@ -75,7 +76,7 @@ public class ReflexIncludeDataSupport {
         // And test the output
 
         String output = Kernel.getDoc().getDoc(ctx, auth + "/1");
-        assertEquals("{\"test\":true}", output);
+        assertEquals("{\"test\":true}", output.replaceAll("[ \n]*", ""));
 
     }
 }

@@ -1,10 +1,11 @@
-// This is the combined lexer/parser for Reflex
+// This is the grammer for Reflex
 
 grammar Reflex;
 
 options {
   output=AST;
   backtrack=true;
+  //memoize=true;
 }
 
 
@@ -164,7 +165,21 @@ package reflex;
         StringBuilder sb = new StringBuilder();
         CommonToken token = (CommonToken) e.token;
 	if (token == null) {
-	    sb.append("Exception ").append(e.getMessage());
+	    sb.append("Exception ");
+	    String message = e.getMessage();
+	    if (message != null) {
+		sb.append(message);
+	    } else {
+		sb.append("of type ").append(e.getClass().getCanonicalName());
+	    }
+	    sb.append(" on line ").append(e.line).append("\n");
+	    String[] lines = e.input.toString().split("\n");
+	    int lineNum = e.line - 1;
+	    sb.append(lines[lineNum++]).append("\n");
+            for (int i = 0; i < e.charPositionInLine; i++) sb.append("-");
+	    sb.append("^\n");
+	    if (lineNum < lines.length) sb.append(lines[lineNum++]).append("\n");
+	    if (lineNum < lines.length) sb.append(lines[lineNum++]).append("\n");
 	} else { 
 	    String[] badLine = token.getInputStream().substring(token.getStartIndex() - e.charPositionInLine, token.getStopIndex() + 256).split("\n");
 		
@@ -175,8 +190,12 @@ package reflex;
 	    if (badLine.length > 1) sb.append(badLine[1]).append("\n");            
 	    if (badLine.length > 2) sb.append(badLine[2]).append("\n");            
 	    sb.append("Error at token ").append(token.getText());
+	    sb.append(" on line ").append(e.line).append("\n");
 	}
-	sb.append(" on line ").append(e.line).append("\n");
+	Throwable cause = e.getCause();
+	if (cause != null) {
+	    sb.append("Caused by ").append(cause.getMessage()).append("\n");
+	}
 	return sb.toString();
     }
 
@@ -436,9 +455,6 @@ push
 throwStatement
   :  Throw expression
      -> ^(Throw expression);
-  
-  // These are split into two for performance reasons - functions in the first set will be detected by
-  // the parser quicker than those in the second.
   
 functionCall
   :  PackageIdentifier '(' exprList? ')' -> ^(FUNC_CALL[$PackageIdentifier] PackageIdentifier exprList?)

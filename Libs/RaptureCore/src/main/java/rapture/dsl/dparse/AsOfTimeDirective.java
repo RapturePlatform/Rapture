@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,9 +25,9 @@ package rapture.dsl.dparse;
 
 import rapture.common.repo.CommitObject;
 
-public class AsOfTimeDirective extends BaseDirective {
-
+public class AsOfTimeDirective extends BaseDirective implements VersionDirective {
     String asOfTime = "";
+    AsOfTimeDirectiveParser parser;
 
     @Override
     public boolean incorrect(CommitObject cObj) {
@@ -40,9 +40,14 @@ public class AsOfTimeDirective extends BaseDirective {
 
     public void setAsOfTime(String asOfTime) {
         this.asOfTime = asOfTime;
+        parser = new AsOfTimeDirectiveParser(asOfTime);
     }
 
     public String getAsOfTime() {
         return asOfTime;
+    }
+
+    public long getAsOfTimeMillis() {
+        return parser.getMillisTimestamp();
     }
 }

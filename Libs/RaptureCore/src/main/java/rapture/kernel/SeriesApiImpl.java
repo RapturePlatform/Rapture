@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,8 +28,10 @@ import static rapture.common.Scheme.SERIES;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Stack;
 
 import org.antlr.runtime.RecognitionException;
@@ -54,6 +56,8 @@ import rapture.common.exception.RaptureException;
 import rapture.common.exception.RaptureExceptionFactory;
 import rapture.common.impl.jackson.JacksonUtil;
 import rapture.common.shared.doc.GetDocPayload;
+import rapture.common.shared.series.DeleteSeriesPayload;
+import rapture.common.shared.series.ListSeriesByUriPrefixPayload;
 import rapture.dsl.serfun.HoseArg;
 import rapture.dsl.serfun.HoseProgram;
 import rapture.dsl.serfun.LoadHose;
@@ -430,10 +434,6 @@ public class SeriesApiImpl extends KernelBase implements SeriesApi {
         if (authority.isEmpty()) {
             --depth;
             try {
-                GetDocPayload requestObj = new GetDocPayload();
-                requestObj.setContext(context);
-                ContextValidator.validateContext(context, EntitlementSet.Series_getSeriesRepoConfigs, requestObj); 
-
                 List<SeriesRepoConfig> configs = getSeriesRepoConfigs(context);
                 for (SeriesRepoConfig config : configs) {
                      authority = config.getAuthority();
@@ -479,10 +479,10 @@ public class SeriesApiImpl extends KernelBase implements SeriesApi {
             boolean top = currParentDocPath.isEmpty();
             // Make sure that you have permission to read the folder.
             try {
-                GetDocPayload requestObj = new GetDocPayload();
+                ListSeriesByUriPrefixPayload requestObj = new ListSeriesByUriPrefixPayload();
                 requestObj.setContext(context);
-                requestObj.setDocUri(currParentDocPath);
-                ContextValidator.validateContext(context, EntitlementSet.Series_getPoints, requestObj); 
+                requestObj.setSeriesUri(currParentDocPath);
+                ContextValidator.validateContext(context, EntitlementSet.Series_listSeriesByUriPrefix, requestObj); 
     
                 List<RaptureFolderInfo> children = repo.listSeriesByUriPrefix(currParentDocPath);
     
@@ -514,27 +514,48 @@ public class SeriesApiImpl extends KernelBase implements SeriesApi {
 
     @Override
     public List<String> deleteSeriesByUriPrefix(CallingContext context, String uriPrefix) {
-        List<String> result = Lists.newArrayList();
-        RaptureURI uri = new RaptureURI(uriPrefix, Scheme.SERIES);
-        SeriesRepo repository = getRepoOrFail(uri);
-        Map<String, RaptureFolderInfo> map = listSeriesByUriPrefix(context, uriPrefix, 0);
-        for (Map.Entry<String, RaptureFolderInfo> entry : map.entrySet()) {
-            RaptureFolderInfo rfi = new RaptureFolderInfo();
-            rfi.setName(entry.getKey());
+        
+        Map<String, RaptureFolderInfo> map = listSeriesByUriPrefix(context, uriPrefix, Integer.MAX_VALUE);
+        List<String> folders = new ArrayList<>();
+        Set<String> notEmpty = new HashSet<>();
+        List<String> removed = new ArrayList<>();
 
-            if (!entry.getValue().isFolder()) {
-                deletePointsFromSeries(context, entry.getKey());
-                rfi.setFolder(false);
-                result.add(entry.getKey());
-            } else {
-                RaptureURI husk = new RaptureURI(entry.getKey(), Scheme.SERIES);
-                repository.unregisterKey(husk.getDocPath(), true);
-                rfi.setFolder(true);
+        DeleteSeriesPayload requestObj = new DeleteSeriesPayload();
+        requestObj.setContext(context);
+
+        folders.add(uriPrefix.endsWith("/") ? uriPrefix : uriPrefix + "/");
+        for (Map.Entry<String, RaptureFolderInfo> entry : map.entrySet()) {
+            String uri = entry.getKey();
+            boolean isFolder = entry.getValue().isFolder();
+            try {
+                requestObj.setSeriesUri(uri);
+                if (isFolder) {
+                    ContextValidator.validateContext(context, EntitlementSet.Series_deleteSeriesByUriPrefix, requestObj);
+                    folders.add(0, uri.substring(0, uri.length() - 1));
+                } else {
+                    ContextValidator.validateContext(context, EntitlementSet.Series_deleteSeries, requestObj);
+                    deletePointsFromSeries(context, uri);
+                    deleteSeries(context, uri);
+                    removed.add(uri);
+                }
+            } catch (RaptureException e) {
+                // permission denied
+                log.debug("Unable to delete " + uri + " : " + e.getMessage());
+                int colon = uri.indexOf(":") + 3;
+                while (true) {
+                    int slash = uri.lastIndexOf('/');
+                    if (slash < colon) break;
+                    uri = uri.substring(0, slash);
+                    notEmpty.add(uri);
+                }
             }
         }
+        for (String uri : folders) {
+            if (notEmpty.contains(uri)) continue;
+            deleteSeries(context, uri);
+        }
+        return removed;
 
-        repository.unregisterKey(uri.getDocPath(), true);
-        return result;
     }
 
     static final String DUMMY = "dUmMy__dUmMy";

@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,6 +23,12 @@
  */
 package rapture.kernel.cache;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import org.apache.log4j.Logger;
+
 import rapture.common.RaptureConstants;
 import rapture.common.RaptureURI;
 import rapture.common.impl.jackson.JacksonUtil;
@@ -30,12 +36,9 @@ import rapture.common.impl.jackson.MD5Utils;
 import rapture.common.model.RaptureUser;
 import rapture.common.model.RepoConfig;
 import rapture.common.model.RepoConfigStorage;
+import rapture.config.ConfigLoader;
 import rapture.repo.RepoFactory;
 import rapture.repo.Repository;
-
-import org.apache.log4j.Logger;
-
-import rapture.config.ConfigLoader;
 
 /**
  * Created by yanwang on 6/23/14.
@@ -57,7 +60,8 @@ public class SysRepoCache extends AbstractStorableRepoCache<RepoConfig> {
         Repository repository = RepoFactory.getRepo(bootstrapConfig);
         if (repository != null) {
             // Check that the bootstrap repo has the document "$bootstrap".
-            // If it does not we need to initialize the repo and set that document
+            // If it does not we need to initialize the repo and set that
+            // document
             RepoConfig config = new RepoConfig();
             config.setName(RaptureConstants.BOOTSTRAP_REPO);
             config.setConfig(bootstrapConfig);
@@ -111,21 +115,36 @@ public class SysRepoCache extends AbstractStorableRepoCache<RepoConfig> {
         Repository newRepo = RepoFactory.getRepo(configStr);
         addRepo(config.getStoragePath(), config, newRepo);
     }
+    
+    private static Map<String, String[]> defaultUsers = new HashMap<>();
+    public static final String APIUSER = "raptureApi";
+    public static final String APIPASSWORD = "raptivating";
+    public static final String RAPTUREUSER = "rapture";
+    static {
+        defaultUsers.put(RAPTUREUSER, new String[] {RAPTUREUSER, "Rapture User"});
+        defaultUsers.put(APIUSER, new String[] {APIPASSWORD, "Rapture Root User"});
+    }
 
     public void createDefaultUsers() {
-        log.debug("Creating default users as non exist");
-        RaptureUser defUser = new RaptureUser();
-        defUser.setHashPassword(MD5Utils.hash16("rapture"));
-        defUser.setUsername("rapture");
-        addUser(defUser);
-
-
-        RaptureUser defApiUser = new RaptureUser();
-        defApiUser.setHashPassword(MD5Utils.hash16("raptivating"));
-        defApiUser.setHasRoot(true);
-        defApiUser.setDescription("Rapture Root User");
-        defApiUser.setUsername("raptureApi");
-        addUser(defApiUser);
+        log.debug("Creating default users as none exist");
+        for (Entry<String, String[]> user : defaultUsers.entrySet()) {
+            RaptureUser rapUser = new RaptureUser();
+            rapUser.setUsername(user.getKey());
+            String password = user.getValue()[0];
+            rapUser.setHashPassword(MD5Utils.hash16(password));
+            rapUser.setDescription(user.getValue()[1]);
+            rapUser.setHasRoot(user.getKey().equals(APIUSER));
+            log.debug("Creating user "+user.getKey()+ " with " +
+                    ((RAPTUREUSER.equals(password) || APIPASSWORD.equals(password)) ? "default settings" : "randomized password"));
+            addUser(rapUser);
+        }
+    }
+    
+    static public void setDefaultUserPassword(String user, String password) {
+        String[] params = defaultUsers.get(user);
+        if (params != null) {
+            params[0] = password;
+        }
     }
 
     private void addUser(RaptureUser user) {

@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,32 +23,6 @@
  */
 package rapture.kernel;
 
-import com.google.common.collect.Lists;
-
-import org.apache.commons.codec.binary.Hex;
-import org.apache.log4j.Logger;
-import org.joda.time.DateTime;
-
-import rapture.batch.ScriptParser;
-import rapture.batch.kernel.ContextCommandExecutor;
-import rapture.common.*;
-import rapture.common.api.AdminApi;
-import rapture.common.exception.RaptureException;
-import rapture.common.exception.RaptureExceptionFactory;
-import rapture.common.exception.RaptureExceptionFormatter;
-import rapture.common.impl.jackson.JacksonUtil;
-import rapture.common.impl.jackson.JsonContent;
-import rapture.common.model.*;
-import rapture.common.storable.helpers.RaptureUserHelper;
-import rapture.dsl.tparse.TemplateF;
-import rapture.kernel.repo.TypeConversionExecutor;
-import rapture.object.storage.ObjectFilter;
-import rapture.repo.RepoVisitor;
-import rapture.repo.Repository;
-import rapture.util.IDGenerator;
-import rapture.util.RaptureURLCoder;
-import rapture.util.encode.RaptureURLCoderFilter;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
@@ -56,7 +30,59 @@ import java.net.HttpURLConnection;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.TreeMap;
+
+import org.apache.commons.codec.binary.Hex;
+import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
+
+import rapture.batch.ScriptParser;
+import rapture.batch.kernel.ContextCommandExecutor;
+import rapture.common.CallingContext;
+import rapture.common.CallingContextStorage;
+import rapture.common.EnvironmentInfo;
+import rapture.common.EnvironmentInfoStorage;
+import rapture.common.MessageFormat;
+import rapture.common.Messages;
+import rapture.common.RaptureConstants;
+import rapture.common.RaptureIPWhiteList;
+import rapture.common.RaptureIPWhiteListStorage;
+import rapture.common.RaptureRemote;
+import rapture.common.RaptureRemoteStorage;
+import rapture.common.RaptureURI;
+import rapture.common.Scheme;
+import rapture.common.TypeArchiveConfig;
+import rapture.common.TypeArchiveConfigStorage;
+import rapture.common.api.AdminApi;
+import rapture.common.exception.RaptureException;
+import rapture.common.exception.RaptureExceptionFactory;
+import rapture.common.exception.RaptureExceptionFormatter;
+import rapture.common.impl.jackson.JacksonUtil;
+import rapture.common.impl.jackson.JsonContent;
+import rapture.common.model.RaptureEntitlementGroup;
+import rapture.common.model.RaptureEntitlementGroupStorage;
+import rapture.common.model.RaptureUser;
+import rapture.common.model.RaptureUserStorage;
+import rapture.common.model.RepoConfig;
+import rapture.common.model.RepoConfigStorage;
+import rapture.common.storable.helpers.RaptureUserHelper;
+import rapture.dsl.tparse.TemplateF;
+import rapture.kernel.repo.TypeConversionExecutor;
+import rapture.mail.Mailer;
+import rapture.object.storage.ObjectFilter;
+import rapture.repo.RepoVisitor;
+import rapture.repo.Repository;
+import rapture.util.IDGenerator;
+import rapture.util.RaptureURLCoder;
+import rapture.util.encode.RaptureURLCoderFilter;
+
+import com.google.common.collect.Lists;
 
 /**
  * Admin is really dealing with the topLevel admin needs of a RaptureServer
@@ -68,12 +94,15 @@ public class AdminApiImpl extends KernelBase implements AdminApi {
     private static final String AUTHORITYNAME = "Authority"; //$NON-NLS-1$
     private static final String TEMPLATE = "TEMPLATE"; //$NON-NLS-1$
     private static Logger log = Logger.getLogger(AdminApiImpl.class);
-    private static final String ERROR = Messages.getString("Admin.CouldNotLoadDoc"); //$NON-NLS-1$
 
     private Map<String, String> templates = new HashMap<String, String>();
-
+    Messages adminMessageCatalog;
+    
     public AdminApiImpl(Kernel raptureKernel) {
         super(raptureKernel);
+        
+        adminMessageCatalog = new Messages("Admin");
+
         // Update templates from the command line (Environment and Defines)
         for (Map.Entry<String, String> entry : System.getenv().entrySet()) {
             if (entry.getKey().startsWith(TEMPLATE)) {
@@ -99,7 +128,7 @@ public class AdminApiImpl extends KernelBase implements AdminApi {
     public void addIPToWhiteList(CallingContext context, String ipAddress) {
         RaptureIPWhiteList wlist = RaptureIPWhiteListStorage.readByFields();
         wlist.getIpWhiteList().add(ipAddress);
-        RaptureIPWhiteListStorage.add(wlist, context.getUser(), Messages.getString("Admin.AddedToWhiteList")); //$NON-NLS-1$
+        RaptureIPWhiteListStorage.add(wlist, context.getUser(), adminMessageCatalog.getMessage("AddedToWhiteList").toString()); //$NON-NLS-1$
     }
 
     @Override
@@ -113,17 +142,16 @@ public class AdminApiImpl extends KernelBase implements AdminApi {
         ret.setUrl(url);
         ret.setApiKey(apiKey);
         ret.setOptionalPass(optPass);
-        RaptureRemoteStorage.add(ret, context.getUser(), Messages.getString("Admin.AddRemote")); //$NON-NLS-1$
+        RaptureRemoteStorage.add(ret, context.getUser(), adminMessageCatalog.getMessage("AddRemote").toString()); //$NON-NLS-1$
         return ret;
     }
 
     @Override
     public void addTemplate(CallingContext context, String name, String template, Boolean overwrite) {
         if (templates.containsKey(name) && !templates.get(name).isEmpty() && !overwrite) {
-            log.info(Messages.getString("Admin.NoOverwriteTemplate") + name); //$NON-NLS-1$
+            log.info(adminMessageCatalog.getMessage("NoOverwriteTemplate", name)); //$NON-NLS-1$
         } else {
-            log.info(Messages.getString("Admin.AddingTemplate") + name + Messages.getString("Admin.Value") + template); //$NON-NLS-1$ //$NON-NLS-2$
-            templates.put(name, template);
+            log.info(adminMessageCatalog.getMessage("AddingTemplate", new String[] { name, template }));
         }
     }
 
@@ -133,6 +161,9 @@ public class AdminApiImpl extends KernelBase implements AdminApi {
         // Does the user already exist?
         RaptureUser usr = getUser(context, userName);
         if (usr == null) {
+            String iAm = context.getUser();
+            // High-level audit log message. 
+            Kernel.getAudit().writeAuditEntry(context, RaptureConstants.DEFAULT_AUDIT_URI, "admin", 2, "New user "+userName+" added by "+iAm);
             usr = new RaptureUser();
             usr.setUsername(userName);
             usr.setDescription(description);
@@ -140,9 +171,9 @@ public class AdminApiImpl extends KernelBase implements AdminApi {
             usr.setEmailAddress(email);
             RaptureUserHelper.validateSalt(usr);
             usr.setInactive(false);
-            RaptureUserStorage.add(usr, context.getUser(), Messages.getString("Admin.AddedUser") + userName); //$NON-NLS-1$
+            RaptureUserStorage.add(usr, context.getUser(), adminMessageCatalog.getMessage("AddedUser", userName).toString()); //$NON-NLS-1$
         } else {
-            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, Messages.getString("Admin.UserAlreadyExists")); //$NON-NLS-1$
+            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, Messages.getMessage("Admin", "UserAlreadyExists", null, null)); //$NON-NLS-1$
         }
     }
 
@@ -170,19 +201,19 @@ public class AdminApiImpl extends KernelBase implements AdminApi {
 
         srcRepo.visitAll("", null, new RepoVisitor() { //$NON-NLS-1$
 
-            @Override
-            public boolean visit(String name, JsonContent content, boolean isFolder) {
-                try {
-                    log.info(Messages.getString("Admin.Copying") + name); //$NON-NLS-1$
-                    targRepo.addDocument(name, content.getContent(), "$copy", //$NON-NLS-1$
-                            Messages.getString("Admin.CopyRepo"), wipe); //$NON-NLS-1$
-                } catch (RaptureException e) {
-                    log.info(Messages.getString("Admin.NoAddDoc") + name); //$NON-NLS-1$
-                }
-                return true;
-            }
+                    @Override
+                    public boolean visit(String name, JsonContent content, boolean isFolder) {
+                        try {
+                            log.info(adminMessageCatalog.getMessage("Copying", name).toString()); //$NON-NLS-1$
+                            targRepo.addDocument(name, content.getContent(), "$copy", //$NON-NLS-1$
+                                    adminMessageCatalog.getMessage("CopyRepo", name).toString(), wipe); //$NON-NLS-1$
+                        } catch (RaptureException e) {
+                            log.info(adminMessageCatalog.getMessage("NoAddDoc", name)); //$NON-NLS-1$
+                        }
+                        return true;
+                    }
 
-        });
+                });
     }
 
     /**
@@ -193,29 +224,27 @@ public class AdminApiImpl extends KernelBase implements AdminApi {
         checkParameter("User", userName); //$NON-NLS-1$
         // Assuming the userName is not "you", mark the user as inactive
         if (userName.equals(context.getUser())) {
-            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, Messages.getString("Admin.NoDeleteYourself")); //$NON-NLS-1$
+            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, adminMessageCatalog.getMessage("NoDeleteYourself")); //$NON-NLS-1$
         }
-        log.info(Messages.getString("Admin.RemovingUser") + userName); //$NON-NLS-1$
+        log.info(adminMessageCatalog.getMessage("RemovingUser", userName)); //$NON-NLS-1$
         RaptureUser usr = getUser(context, userName);
         if (!usr.getInactive()) {
             if (usr.getHasRoot()) {
-                throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, Messages.getString("Admin.NoDeleteRoot")); //$NON-NLS-1$
+                throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, adminMessageCatalog.getMessage("NoDeleteRoot")); //$NON-NLS-1$
             }
             usr.setInactive(true);
-            RaptureUserStorage.add(usr, context.getUser(),
-                    Messages.getString("Admin.Made") + userName + Messages.getString("Admin.Inactive")); //$NON-NLS-1$ //$NON-NLS-2$
+            RaptureUserStorage.add(usr, context.getUser(), adminMessageCatalog.getMessage("Inactive", userName).toString()); //$NON-NLS-1$ //$NON-NLS-2$
         }
     }
 
     @Override
     public void restoreUser(CallingContext context, String userName) {
         checkParameter("User", userName); //$NON-NLS-1$
-        log.info(Messages.getString("Admin.RestoringUser") + userName); //$NON-NLS-1$
+        log.info(adminMessageCatalog.getMessage("RestoringUser", userName)); //$NON-NLS-1$
         RaptureUser usr = getUser(context, userName);
         if (usr.getInactive()) {
             usr.setInactive(false);
-            RaptureUserStorage
-                    .add(usr, context.getUser(), Messages.getString("Admin.Made") + userName + Messages.getString("Admin.Active")); //$NON-NLS-1$ //$NON-NLS-2$
+            RaptureUserStorage.add(usr, context.getUser(),  adminMessageCatalog.getMessage("Active", userName).toString()); //$NON-NLS-1$ //$NON-NLS-2$
         }
     }
 
@@ -246,7 +275,7 @@ public class AdminApiImpl extends KernelBase implements AdminApi {
         usr.setHashPassword(""); //$NON-NLS-1$
         usr.setInactive(false);
         usr.setApiKey(true);
-        RaptureUserStorage.add(usr, context.getUser(), Messages.getString("Admin.CreatedApi")); //$NON-NLS-1$
+        RaptureUserStorage.add(usr, context.getUser(), adminMessageCatalog.getMessage("CreatedApi").toString()); //$NON-NLS-1$
         return usr;
     }
 
@@ -336,7 +365,7 @@ public class AdminApiImpl extends KernelBase implements AdminApi {
     }
 
     private void logError(String name) {
-        log.error(String.format(ERROR, name));
+        log.error(adminMessageCatalog.getMessage("CouldNotLoadDoc", name).toString());
     }
 
     @Override
@@ -347,8 +376,8 @@ public class AdminApiImpl extends KernelBase implements AdminApi {
         }
         checkParameter(NAME, internalURI.getDocPath());
 
-        log.info(Messages.getString("Admin.PullPerspective") + Messages.getString("Admin.OnType") + internalURI.getDocPath() //$NON-NLS-1$ //$NON-NLS-2$
-                + Messages.getString("Admin.InAuthority") + internalURI.getAuthority()); //$NON-NLS-1$
+        log.info(adminMessageCatalog.getMessage("PullPerspective", new String[] { internalURI.getDocPath(), internalURI.getAuthority() })); //$NON-NLS-1$
+
         // NOW this is the fun one
         // Here are the steps
         // (1) Look at the local, does it have a remote defined? If
@@ -369,12 +398,12 @@ public class AdminApiImpl extends KernelBase implements AdminApi {
     public void removeIPFromWhiteList(CallingContext context, String ipAddress) {
         RaptureIPWhiteList wlist = RaptureIPWhiteListStorage.readByFields();
         wlist.getIpWhiteList().remove(ipAddress);
-        RaptureIPWhiteListStorage.add(wlist, context.getUser(), Messages.getString("Admin.RemoveWhiteList")); //$NON-NLS-1$
+        RaptureIPWhiteListStorage.add(wlist, context.getUser(), adminMessageCatalog.getMessage("RemoveWhiteList", ipAddress).toString()); //$NON-NLS-1$
     }
 
     @Override
     public void deleteRemote(CallingContext context, String name) {
-        RaptureRemoteStorage.deleteByFields(name, context.getUser(), Messages.getString("Admin.RemoveRemote")); //$NON-NLS-1$ //$NON-NLS-2$
+        RaptureRemoteStorage.deleteByFields(name, context.getUser(), adminMessageCatalog.getMessage("RemoveRemote", name).toString()); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     @Override
@@ -386,24 +415,61 @@ public class AdminApiImpl extends KernelBase implements AdminApi {
         if (usr != null) {
             usr.setInactive(false);
             usr.setHashPassword(newHashPassword);
-            RaptureUserStorage.add(usr, context.getUser(), Messages.getString("Admin.PasswordChange") + userName); //$NON-NLS-1$
+            RaptureUserStorage.add(usr, context.getUser(), adminMessageCatalog.getMessage("PasswordChange", userName).toString()); //$NON-NLS-1$
         } else {
-            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, Messages.getString("Admin.NoExistUser")); //$NON-NLS-1$
+            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, adminMessageCatalog.getMessage("NoExistUser", userName)); //$NON-NLS-1$
         }
     }
 
     @Override
-    public String createPasswordResetToken(CallingContext context, String username) {
-        checkParameter("User", username);
-        RaptureUser user = getUser(context, username);
-        if(user == null) {
-            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, Messages.getString("Admin.NoExistUser")); //$NON-NLS-1$
+    public String createPasswordResetToken(CallingContext context, String userName) {
+        checkParameter("User", userName);
+        RaptureUser user = getUser(context, userName);
+        if (user == null) {
+            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, adminMessageCatalog.getMessage("NoExistUser", userName)); //$NON-NLS-1$
         }
         String token = generateSecureToken();
         user.setPasswordResetToken(token);
         user.setTokenExpirationTime(DateTime.now().plusDays(1).getMillis());
-        RaptureUserStorage.add(user, context.getUser(), "Generate password reset token for user " + username); //$NON-NLS-1$
+
+        RaptureUserStorage.add(user, context.getUser(), adminMessageCatalog.getMessage("GenReset", userName).toString()); //$NON-NLS-1$
         return token;
+    }
+
+    @Override
+    public String createRegistrationToken(CallingContext context, String userName) {
+        checkParameter("User", userName);
+        RaptureUser user = getUser(context, userName);
+        if (user == null) {
+            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, adminMessageCatalog.getMessage("NoExistUser", userName)); //$NON-NLS-1$
+        }
+        String token = generateSecureToken();
+        user.setRegistrationToken(token);
+        user.setVerified(false);
+        // Registration Token doesn't
+        RaptureUserStorage.add(user, context.getUser(), adminMessageCatalog.getMessage("GenReg", userName).toString()); //$NON-NLS-1$
+        return token;
+    }
+
+    @Override
+    public Boolean verifyUser(CallingContext context, String userName, String token) {
+        checkParameter("User", userName);
+        checkParameter("Token", token);
+        RaptureUser user = getUser(context, userName);
+        boolean match = user.getVerified();
+
+        if (user == null) {
+            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, adminMessageCatalog.getMessage("NoExistUser", userName)); //$NON-NLS-1$
+        }
+        if (!match) {
+            match = token.equals(user.getRegistrationToken());
+            if (match) {
+                user.setRegistrationToken("");
+                user.setVerified(true);
+                RaptureUserStorage.add(user, context.getUser(), adminMessageCatalog.getMessage("CreatedApi").toString()); //$NON-NLS-1$
+            }
+        }
+        return match;
     }
 
     private String generateSecureToken() {
@@ -412,9 +478,9 @@ public class AdminApiImpl extends KernelBase implements AdminApi {
             SecureRandom random = SecureRandom.getInstance("SHA1PRNG");
             byte bytes[] = new byte[128];
             random.nextBytes(bytes);
-            //get its digest
+            // get its digest
             MessageDigest sha = MessageDigest.getInstance("SHA-1");
-            byte[] result =  sha.digest(bytes);
+            byte[] result = sha.digest(bytes);
             // encode to hex
             return (new Hex()).encodeHexString(result);
         } catch (NoSuchAlgorithmException e) {
@@ -423,15 +489,15 @@ public class AdminApiImpl extends KernelBase implements AdminApi {
     }
 
     @Override
-    public void cancelPasswordResetToken(CallingContext context, String username) {
-        checkParameter("User", username);
-        RaptureUser user = getUser(context, username);
-        if(user == null) {
-            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, Messages.getString("Admin.NoExistUser")); //$NON-NLS-1$
+    public void cancelPasswordResetToken(CallingContext context, String userName) {
+        checkParameter("User", userName);
+        RaptureUser user = getUser(context, userName);
+        if (user == null) {
+            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, adminMessageCatalog.getMessage("NoExistUser", userName)); //$NON-NLS-1$
         }
         // expire token now
         user.setTokenExpirationTime(System.currentTimeMillis());
-        RaptureUserStorage.add(user, context.getUser(), "Cancel password reset token for user " + username); //$NON-NLS-1$
+        RaptureUserStorage.add(user, context.getUser(), "Cancel password reset token for user " + userName); //$NON-NLS-1$
     }
 
     @Override
@@ -440,9 +506,21 @@ public class AdminApiImpl extends KernelBase implements AdminApi {
         RaptureUser user = getUser(context, userName);
         if (user != null) {
             user.setEmailAddress(newEmail);
-            RaptureUserStorage.add(user, context.getUser(), Messages.getString("Admin.UpdateEmail") + userName);
+            RaptureUserStorage.add(user, context.getUser(), adminMessageCatalog.getMessage("UpdateEmail") + userName);
         } else {
-            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, Messages.getString("Admin.NoExistUser")); //$NON-NLS-1$
+            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, adminMessageCatalog.getMessage("NoExistUser", userName)); //$NON-NLS-1$
+        }
+    }
+
+    @Override
+    public void emailUser(CallingContext context, String userName, String emailTemplate, Map<String, Object> templateValues) {
+        checkParameter("User", userName); //$NON-NLS-1$
+        RaptureUser user = getUser(context, userName);
+        if (user != null) {
+            templateValues.put("user", user);
+            Mailer.email(context, emailTemplate, templateValues);
+        } else {
+            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, adminMessageCatalog.getMessage("NoExistUser", userName)); //$NON-NLS-1$
         }
     }
 
@@ -464,12 +542,13 @@ public class AdminApiImpl extends KernelBase implements AdminApi {
     public String runTemplate(CallingContext context, String name, String params) {
         String template = templates.get(name);
         if (template == null) {
-            log.info("Null template execution - " + name + Messages.getString("Admin.NoExist")); //$NON-NLS-1$ //$NON-NLS-2$
+            log.info(adminMessageCatalog.getMessage("NoExist", name)); //$NON-NLS-1$ //$NON-NLS-2$
             return null;
         }
-        log.info(Messages.getString("Admin.RunTemplate") + template + Messages.getString("Admin.Params") + params); //$NON-NLS-1$ //$NON-NLS-2$
+        String args[] = { template, params };
+        log.info(adminMessageCatalog.getMessage("RunTemplate", args).toString()); //$NON-NLS-1$ //$NON-NLS-2$
         String ret = TemplateF.parseTemplate(template, params);
-        log.info(Messages.getString("Admin.TemplateOutput") + ret); //$NON-NLS-1$
+        log.info(adminMessageCatalog.getMessage("TemplateOutput", ret).toString()); //$NON-NLS-1$
         return ret;
     }
 
@@ -499,13 +578,13 @@ public class AdminApiImpl extends KernelBase implements AdminApi {
     @Override
     public void updateRemoteApiKey(CallingContext context, String name, String apiKey) {
         checkParameter(NAME, name);
-        checkParameter("ApiKey", apiKey); //$NON-NLS-1$
+        checkParameter("ApiKey", apiKey); //$NON-NLS-1$    
         RaptureRemote ret = Kernel.INSTANCE.getRemote(name);
         if (ret == null) {
-            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, Messages.getString("Admin.NoFindRemote") + name); //$NON-NLS-1$
+            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, adminMessageCatalog.getMessage("NoFindRemote", name)); //$NON-NLS-1$
         } else {
             ret.setApiKey(apiKey);
-            RaptureRemoteStorage.add(ret, context.getUser(), Messages.getString("Admin.UpdatedApi")); //$NON-NLS-1$
+            RaptureRemoteStorage.add(ret, context.getUser(), adminMessageCatalog.getMessage("UpdatedApi").toString()); //$NON-NLS-1$
         }
     }
 
@@ -633,16 +712,16 @@ public class AdminApiImpl extends KernelBase implements AdminApi {
         log.info("Destroying user: " + userName);
         RaptureUser usr = getUser(context, userName);
         if (usr == null) {
-            String error = "User '" + userName + "' not found.  Cannot destroy";
-            log.error(error);
-            throw RaptureExceptionFactory.create("User '" + userName + "' not found.  Cannot destroy");
-        }
-        if (usr.getInactive()) {
-            String error = "User '" + userName + "' has not been disabled.  Cannot Destroy";
-            log.error(error);
+            MessageFormat error = adminMessageCatalog.getMessage("NoExistUser", userName);
+            log.error(error.toString());
             throw RaptureExceptionFactory.create(error);
         }
-        RaptureUserStorage.deleteByFields(userName, context.getUser(), "Destroying user record");
+        if (usr.getInactive()) {
+            MessageFormat error = adminMessageCatalog.getMessage("UserNotDestroyed", userName);
+            log.error(error.toString());
+            throw RaptureExceptionFactory.create(error);
+        }
+        RaptureUserStorage.deleteByFields(userName, context.getUser(), adminMessageCatalog.getMessage("UserDestroyed", userName).toString());
     }
 
     @Override
@@ -675,9 +754,9 @@ public class AdminApiImpl extends KernelBase implements AdminApi {
     }
 
     @Override
-    public List<String> findGroupNamesByUser(CallingContext context, String username) {
+    public List<String> findGroupNamesByUser(CallingContext context, String userName) {
         List<String> result = Lists.newArrayList();
-        FindGroupsByUserFilter filter = new FindGroupsByUserFilter(username);
+        FindGroupsByUserFilter filter = new FindGroupsByUserFilter(userName);
         List<RaptureEntitlementGroup> groups = RaptureEntitlementGroupStorage.filterAll(filter);
         for (RaptureEntitlementGroup group : groups) {
             result.add(group.getName());
@@ -686,15 +765,15 @@ public class AdminApiImpl extends KernelBase implements AdminApi {
     }
 
     private class FindGroupsByUserFilter implements ObjectFilter<RaptureEntitlementGroup> {
-        private String username;
+        private String userName;
 
-        private FindGroupsByUserFilter(String username) {
-            this.username = username;
+        private FindGroupsByUserFilter(String userName) {
+            this.userName = userName;
         }
 
         @Override
         public boolean shouldInclude(RaptureEntitlementGroup obj) {
-            return obj.getUsers().contains(username);
+            return obj.getUsers().contains(userName);
         }
     }
 }

@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,28 +31,37 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import rapture.common.CallingContext;
 import rapture.common.ChildrenTransferObject;
+import rapture.common.ConnectionInfo;
 import rapture.common.NodeEnum;
 import rapture.common.RaptureFolderInfo;
 import rapture.common.RaptureIdGenConfig;
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
 import rapture.common.api.SysApi;
+import rapture.common.connection.ConnectionInfoConfigurer;
+import rapture.common.connection.MongoConnectionInfoConfigurer;
+import rapture.common.connection.PostgresConnectionInfoConfigurer;
+import rapture.common.connection.ConnectionType;
 import rapture.common.dp.Workflow;
 import rapture.common.exception.RaptureException;
+import rapture.common.exception.RaptureExceptionFactory;
 import rapture.common.impl.jackson.JacksonUtil;
 import rapture.common.model.RaptureEntitlement;
 import rapture.common.model.RaptureEntitlementGroup;
+import rapture.config.MultiValueConfigLoader;
 import rapture.kernel.sys.SysArea;
 import rapture.repo.Repository;
 import rapture.util.IDGenerator;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.google.common.collect.ImmutableSet;
 
 /**
  * Low level config settings manipulation
@@ -61,15 +70,40 @@ import com.google.common.collect.ImmutableSet;
  */
 public class SysApiImpl extends KernelBase implements SysApi {
 
+    private static Map<ConnectionType, ConnectionInfoConfigurer> configurers =
+            ImmutableMap.of(
+                    ConnectionType.MONGODB, new MongoConnectionInfoConfigurer(),
+                    ConnectionType.POSTGRES, new PostgresConnectionInfoConfigurer()
+            );
+
     Repository ephemeralRepo;
     // Exposed For Testing
     Thread cacheThread = null;
     boolean allowExpireThread = true;
     Set<String> caches = new HashSet<>();
+    Long timeToLive = 60 * 60 * 1000L;
+    Long cacheRefresh = 5 * 60 * 1000L;
 
     public SysApiImpl(Kernel raptureKernel) {
         super(raptureKernel);
         ephemeralRepo = getEphemeralRepo();
+        String ttlStr = StringUtils.trimToNull(MultiValueConfigLoader.getConfig("Cache-TimeToLive"));
+        if (ttlStr != null) {
+            try {
+                timeToLive = Long.parseLong(ttlStr);
+            } catch (NumberFormatException e) {
+                log.debug("Cannot parse "+ttlStr+" as long");
+            }
+        }
+
+        String cacheStr = StringUtils.trimToNull(MultiValueConfigLoader.getConfig("Cache-Refresh"));
+        if (cacheStr != null) {
+            try {
+                cacheRefresh = Long.parseLong(cacheStr);
+            } catch (NumberFormatException e) {
+                log.debug("Cannot parse "+cacheStr+" as long");
+            }
+        }
         cacheThread = new Thread(new CacheExpirationThread(ContextFactory.getKernelUser()));
         cacheThread.start();
     }
@@ -282,7 +316,6 @@ public class SysApiImpl extends KernelBase implements SysApi {
     }
 
     // Exposed For Testing
-    static long TIMETOLIVE = 60 * 60 * 1000; // By default cache data for 1 hour
     private static final char SEPARATOR = '_';
     private static final String PENDING = "_pending";
     private static final String WRITTEN = "_written";
@@ -295,13 +328,13 @@ public class SysApiImpl extends KernelBase implements SysApi {
      * @param marker
      * @param recursive
      * @param maximum
-     * @param refresh
+     * @param timeToLive
      * @return
      */
     
     
     @Override
-    public ChildrenTransferObject listByUriPrefix(CallingContext context, String uri, String marker, int depth, Long maximum, Boolean refresh) {
+    public ChildrenTransferObject listByUriPrefix(CallingContext context, String uri, String marker, int depth, Long maximum, Long timeToLive) {
 
         ChildrenTransferObject cto = new ChildrenTransferObject();
         cto.setRemainder(new Long(0));
@@ -313,33 +346,41 @@ public class SysApiImpl extends KernelBase implements SysApi {
         Map<String, RaptureFolderInfo> deleted = new HashMap<>();
         
         String locMarker = marker;
-        Boolean locRefresh = refresh;
         Long locMax = maximum;
+        Long locTTL = (timeToLive > 0) ? timeToLive : this.timeToLive;
+        Boolean refresh = (marker == null); // if marker is null we have to
 
         /**
          * If there are more results than the defined maximum then store the remainder in the cache for quick access next time
          */
         
-        if (marker == null) locRefresh = true; // if marker is null we have to
-
         // Do we already have a partial read? Ensure that the marker is still valid
         if (marker != null) {
             TypeReference<LinkedHashMap<String, RaptureFolderInfo>> typeRef = new TypeReference<LinkedHashMap<String, RaptureFolderInfo>>() {
             };
             String pendingContent = ephemeralRepo.getDocument(marker+PENDING);
+            if (pendingContent != null)
+                System.out.println("Found pending content for "+marker+PENDING);
             String writtenContent = ephemeralRepo.getDocument(marker+WRITTEN);
 
             if ((pendingContent != null) && (writtenContent != null)) {
                 pending = JacksonUtil.objectFromJson(pendingContent, typeRef);
                 written = JacksonUtil.objectFromJson(writtenContent, typeRef);
-            } else {
-                locRefresh = true;
+            }
+            
+            ephemeralRepo.removeDocument(marker+WRITTEN, ContextFactory.getKernelUser().getUser(), "Expired");
+            ephemeralRepo.removeDocument(marker+PENDING, ContextFactory.getKernelUser().getUser(), "Expired");
+            synchronized(caches) {
+                caches.remove(locMarker+PENDING);
+                caches.remove(locMarker+WRITTEN);
             }
         }
+        
+        if (pending.size() == 0) refresh = true;
 
-        // If the refresh flag is set or the marker is null then we need to rescan the children
-        if (locRefresh) {
-            locMarker = IDGenerator.getUUID(20) + SEPARATOR + (System.currentTimeMillis() + TIMETOLIVE);
+        // If the refresh flag is set then rescan the children
+        if (refresh) {
+            locMarker = IDGenerator.getUUID(20) + SEPARATOR + (System.currentTimeMillis() + locTTL);
             children = findByUri(context, uri, depth);
             if (!written.isEmpty()) {
                 for (String child : ImmutableSet.copyOf(written.keySet())) {
@@ -384,9 +425,6 @@ public class SysApiImpl extends KernelBase implements SysApi {
     class CacheExpirationThread implements Runnable {
         CallingContext context = null;
         
-        // Check for expired data every 5 minutes. This could be configurable.
-        private final long EXPIRATION_DELAY = 5*60*1000;
-
         CacheExpirationThread(CallingContext context) {
             super();
             this.context = (context != null) ? context : ContextFactory.getKernelUser();
@@ -424,7 +462,7 @@ public class SysApiImpl extends KernelBase implements SysApi {
                     }
                 }
                 try {
-                    Thread.sleep(EXPIRATION_DELAY);
+                    Thread.sleep(cacheRefresh);
                 } catch (InterruptedException e) {
                     // Used for testing to fake a timeout
                     log.debug("Interrupted\n");
@@ -433,13 +471,54 @@ public class SysApiImpl extends KernelBase implements SysApi {
         }
     }
 
-    @Override
-    public ChildrenTransferObject getChildren(CallingContext context, String raptureURI) {
-        return listByUriPrefix(context, raptureURI, null, 1, 0L, false);
+    public Long getTimeToLive() {
+        return timeToLive;
+    }
+
+    public void setTimeToLive(Long timeToLive) {
+        this.timeToLive = timeToLive;
+    }
+
+    public Long getCacheRefresh() {
+        return cacheRefresh;
+    }
+
+    public void setCacheRefresh(Long cacheRefresh) {
+        this.cacheRefresh = cacheRefresh;
     }
 
     @Override
-    public ChildrenTransferObject getAllChildren(CallingContext context, String raptureURI, String marker, Long maximum, Boolean refresh) {
-        return listByUriPrefix(context, raptureURI, marker, Integer.MAX_VALUE, maximum, refresh);
+    public ChildrenTransferObject getChildren(CallingContext context, String raptureURI) {
+        return listByUriPrefix(context, raptureURI, null, 1, 0L, 0L);
+    }
+
+    @Override
+    public ChildrenTransferObject getAllChildren(CallingContext context, String raptureURI, String marker, Long maximum) {
+        return listByUriPrefix(context, raptureURI, marker, Integer.MAX_VALUE, maximum, 0L);
+    }
+
+
+    @Override
+    public Map<String, ConnectionInfo> getConnectionInfo(CallingContext context, String connectionType) {
+        return getConfigurer(connectionType).getConnectionInfo(context);
+    }
+
+    @Override
+    public void putConnectionInfo(CallingContext context, String connectionType, ConnectionInfo connectionInfo) {
+        getConfigurer(connectionType).putConnectionInfo(context, connectionInfo);
+    }
+
+    @Override
+    public void setConnectionInfo(CallingContext context, String connectionType, ConnectionInfo connectionInfo) {
+        getConfigurer(connectionType).setConnectionInfo(context, connectionInfo);
+    }
+
+    private ConnectionInfoConfigurer getConfigurer(String storeType) {
+        try {
+            ConnectionType type = ConnectionType.valueOf(storeType.toUpperCase());
+            return configurers.get(type);
+        } catch (IllegalArgumentException e) {
+            throw RaptureExceptionFactory.create("Unsupported store type " + storeType);
+        }
     }
 }

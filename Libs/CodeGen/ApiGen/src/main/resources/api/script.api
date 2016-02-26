@@ -21,8 +21,8 @@ api(Script) {
     @public Boolean doesScriptExist(String scriptURI);
 
     [Removes the script from the system.]
-    @entitle=/script/write/$f(scriptURI)
-    @public void deleteScript(String scriptURI);
+    @entitle=/script/write/$f(scriptUri)
+    @public void deleteScript(String scriptUri);
     
     [Retrieves all of the scripts within a authority.]
     @entitle=/script/read/$f(scriptURI)
@@ -31,6 +31,10 @@ api(Script) {
     [Retrieves the contents of a script.]
     @entitle=/script/read/$f(scriptURI)
     @public RaptureScript getScript(String scriptURI);
+
+    [Retrieves the parameter information for a script.]
+    @entitle=/script/read/$f(scriptURI)
+    @public ScriptInterface getInterface(String scriptURI);
    
     [Stores a script in the system using a RaptureScript object. 
      TODO is there really any point in passing the URI? The storage location is based on RaptureScript.
@@ -88,12 +92,12 @@ api(Script) {
     @public RaptureSnippet getSnippet(String snippetURI);
        
     [Returns full pathnames for an entire subtree as a map of path to RFI.]
-    @entitle=/script/read/$f(uriPrefix)
-    @public Map(String,RaptureFolderInfo) listScriptsByUriPrefix(String uriPrefix, int depth);
+    @entitle=/script/read/$f(scriptUri)
+    @public Map(String,RaptureFolderInfo) listScriptsByUriPrefix(String scriptUri, int depth);
 
     [Removes a folder and its contents recursively, including empty subfolders. Returns a list of the scripts and folders removed.]
-    @entitle=/script/write/$f(uriPrefix)
-    @public List(String) deleteScriptsByUriPrefix(String uriPrefix);
+    @entitle=/script/write/$f(scriptUri)
+    @public List(String) deleteScriptsByUriPrefix(String scriptUri);
 
 }
 

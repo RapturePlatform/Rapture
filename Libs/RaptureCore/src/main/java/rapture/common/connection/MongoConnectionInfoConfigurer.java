@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,14 +21,31 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package rapture.log;
+package rapture.common.connection;
+
+import rapture.common.CallingContext;
+import rapture.common.ConnectionInfo;
 
 /**
- * @author bardhi
- * @since 9/17/14.
+ * Created by yanwang on 12/3/15.
  */
-public class LogAppenderNames {
-    public static final String STDOUT = "stdout";
-    public static final String FILE_TEXT = "fileText";
-    public static final String FILE_JSON = "fileJson";
+public class MongoConnectionInfoConfigurer extends ConnectionInfoConfigurer {
+
+    public static int DEFAULT_PORT = 27017;
+
+    @Override
+    public ConnectionType getType() {
+        return ConnectionType.MONGODB;
+    }
+
+    @Override
+    public int getDefaultPort() {
+        return DEFAULT_PORT;
+    }
+
+    public static String getUrl(ConnectionInfo info) {
+        //mongodb://test:test@127.0.0.1/integrationTest
+        return String.format("mongodb://%s:%s@%s:%d/%s", info.getUsername(), info.getPassword(),
+                info.getHost(), info.getPort(), info.getDbName());
+    }
 }

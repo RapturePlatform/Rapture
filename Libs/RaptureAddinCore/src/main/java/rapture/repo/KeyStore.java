@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -54,17 +54,23 @@ public interface KeyStore {
     boolean delete(String key);
 
     boolean delete(List<String> keys);
-    
+
+    boolean deleteUpTo(String key, long millisTimestamp);
+
     // Remove this key store (make it empty)
     boolean dropKeyStore();
 
     String get(String k);
+
+    String get(String k, long millisTimestamp);
 
     List<String> getBatch(List<String> keys);
 
     String getStoreId();
 
     void put(String k, String v);
+
+    void put(String k, long millisTimestamp, String v);
 
     RaptureQueryResult runNativeQuery(String repoType, List<String> queryParams);
 
@@ -115,4 +121,6 @@ public interface KeyStore {
     long getSize();
 
     void setRepoLockHandler(RepoLockHandler repoLockHandler);
+
+    boolean supportsVersionLookupByTime();
 }

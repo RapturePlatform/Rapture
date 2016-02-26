@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -40,10 +40,16 @@ import org.apache.log4j.Logger;
 import rapture.common.BlobContainer;
 import rapture.common.CallingContext;
 import rapture.common.ContentEnvelope;
+import rapture.common.EntitlementSet;
+import rapture.common.DispatchReturn;
+import rapture.common.api.EntitlementApi;
 import rapture.common.exception.RaptNotLoggedInException;
+import rapture.common.hooks.CallName;
+import rapture.common.shared.blob.GetBlobPayload;
 import rapture.kernel.BlobApiImplWrapper;
 import rapture.kernel.ContextFactory;
 import rapture.kernel.Kernel;
+import rapture.kernel.context.ContextValidator;
 import rapture.server.BaseDispatcher;
 
 @MultipartConfig
@@ -54,6 +60,7 @@ public class BlobContentServlet extends BaseServlet {
     private static Logger log = Logger.getLogger(BlobContentServlet.class);
     private String blobRepo;
     private boolean checkCredentials = false;
+    private boolean checkEntitlements = false;
     private String redirect = null;
     private List<String> templateMimeTypes = new ArrayList<String>();
     private String pageTemplate = null;
@@ -69,6 +76,10 @@ public class BlobContentServlet extends BaseServlet {
         String checkCredsString = getServletConfig().getInitParameter("check");
         if (checkCredsString != null) {
             checkCredentials = Boolean.valueOf(checkCredsString);
+        }
+        String checkEntsString = getServletConfig().getInitParameter("entitlements");
+        if (checkEntsString != null) {
+            checkEntitlements = Boolean.valueOf(checkEntsString);
         }
         redirect = getServletConfig().getInitParameter("redirectOnAuthFail");
         String templateCheck = getServletConfig().getInitParameter("templates");
@@ -119,10 +130,28 @@ public class BlobContentServlet extends BaseServlet {
         } else {
             callingContext = ContextFactory.getKernelUser();
         }
-        if(blobPath.startsWith("/t/app/")) {
-            streamTemplatedBlob(resp, blobPath.substring(2), callingContext);
-        } else {
-            streamBlob(resp, blobPath, callingContext, true);
+        
+        if (checkEntitlements) {
+//            String user = callingContext.getUser();
+//            EntitlementApi eapi = Kernel.getEntitlement();
+//            
+            GetBlobPayload requestObj = new GetBlobPayload();
+            requestObj.setContext(callingContext);
+            requestObj.setBlobUri(blobPath);
+            ContextValidator.validateContext(callingContext, EntitlementSet.Blob_getBlob, requestObj); 
+        }
+
+        DispatchReturn response;
+
+        try {
+            if (blobPath.startsWith("/t/app/")) {
+                streamTemplatedBlob(resp, blobPath.substring(2), callingContext);
+            } else {
+                streamBlob(resp, blobPath, callingContext, true);
+            }
+        } catch (Exception e) {
+            response = handleUnexpectedException(e);
+            sendResponseAppropriately(response.getContext(), req, resp, response.getResponse());
         }
     }
 

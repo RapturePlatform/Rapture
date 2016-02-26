@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -57,8 +57,8 @@ public class SheetRepo {
         return store.deleteSheet(sheetName);
     }
 
-    public List<RaptureFolderInfo> listSheetByUriPrefix(String sheetUriPrefix) {
-        return store.listSheetByUriPrefix(sheetUriPrefix);
+    public List<RaptureFolderInfo> listSheetsByUriPrefix(String sheetUriPrefix) {
+        return store.listSheetsByUriPrefix(sheetUriPrefix);
     }
 
     public List<RaptureSheetCell> findCellsByEpoch(String sheetName, int tabId, long epoch) {

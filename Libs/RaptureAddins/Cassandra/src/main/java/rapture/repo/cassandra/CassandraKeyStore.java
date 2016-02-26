@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -62,12 +62,23 @@ public class CassandraKeyStore implements KeyStore {
     private String instance = "default";
     private Map<String, String> config;
     private boolean usesFolderHandling = true;
+    private boolean useVersionedRepoConnection = false;
 
     @Override
     public void setConfig(Map<String, String> config) {
         this.config = config;
-        repoConnection = new AstyanaxRepoConnection(instance, this.config);
+        if (useVersionedRepoConnection) {
+            repoConnection = new AstyanaxVersionedRepoConnection(instance, this.config);
+        }
+        else {
+            repoConnection = new AstyanaxRepoConnection(instance, this.config);
+        }
+
         folderHandler = new CassFolderHandler(repoConnection, repoConnection.getColumnFamilyName());
+    }
+
+    public void setUseVersionedRepoConnection(Boolean useIt) {
+        useVersionedRepoConnection = useIt;
     }
 
     @Override
@@ -100,6 +111,9 @@ public class CassandraKeyStore implements KeyStore {
 
         CassandraKeyStore ret = new CassandraKeyStore();
         ret.setInstanceName(this.instance);
+        if (relation.equals("version") || relation.equals("meta")) {
+            ret.setUseVersionedRepoConnection(true);
+        }
         ret.setConfig(configCopy);
         if (!usesFolderHandling) {
             ret.resetFolderHandling();
@@ -128,16 +142,27 @@ public class CassandraKeyStore implements KeyStore {
     }
 
     @Override
+    public boolean deleteUpTo(String key, long millisTimestamp) {
+        return repoConnection.deleteVersionsUpTo(key, "" + millisTimestamp);
+    }
+
+    @Override
     public boolean dropKeyStore() {
         if (usesFolderHandling) {
             folderHandler.drop();
         }
-        return true;// cass.drop();
+        repoConnection.dropRepo();
+        return true;
     }
 
     @Override
     public String get(String k) {
         return repoConnection.get(k);
+    }
+
+    @Override
+    public String get(String k, long millisTimestamp) {
+        return repoConnection.get(k, Long.toString(millisTimestamp));
     }
 
     @Override
@@ -153,6 +178,14 @@ public class CassandraKeyStore implements KeyStore {
     @Override
     public void put(String k, String v) {
         repoConnection.putData(k, v);
+        if (usesFolderHandling) {
+            folderHandler.registerDocument(k);
+        }
+    }
+
+    @Override
+    public void put(String k, long millisTimestamp, String v) {
+        repoConnection.putData(k, "" + millisTimestamp, v);
         if (usesFolderHandling) {
             folderHandler.registerDocument(k);
         }
@@ -266,5 +299,10 @@ public class CassandraKeyStore implements KeyStore {
     @Override
     public void setRepoLockHandler(RepoLockHandler repoLockHandler) {
 
+    }
+
+    @Override
+    public boolean supportsVersionLookupByTime() {
+        return true;
     }
 }

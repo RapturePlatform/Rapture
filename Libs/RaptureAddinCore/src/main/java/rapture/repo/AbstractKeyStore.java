@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -67,12 +67,22 @@ public abstract class AbstractKeyStore implements KeyStore {
     }
 
     @Override
+    public boolean deleteUpTo(String key, long millisTimestamp) {
+        throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, NOT_IMPLEMENTED);
+    }
+
+    @Override
     public boolean dropKeyStore() {
         return false;
     }
 
     @Override
     public String get(String k) {
+        throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, NOT_IMPLEMENTED);
+    }
+
+    @Override
+    public String get(String k, long millisTimestamp) {
         throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, NOT_IMPLEMENTED);
     }
 
@@ -87,6 +97,11 @@ public abstract class AbstractKeyStore implements KeyStore {
 
     @Override
     public void put(String k, String v) {
+        throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, NOT_IMPLEMENTED);
+    }
+
+    @Override
+    public void put(String k, long millisTimestamp, String v) {
         throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, NOT_IMPLEMENTED);
     }
 
@@ -129,4 +144,8 @@ public abstract class AbstractKeyStore implements KeyStore {
         return val != null && val.equals(value);
     }
 
+    @Override
+    public boolean supportsVersionLookupByTime() {
+        return false;
+    }
 }

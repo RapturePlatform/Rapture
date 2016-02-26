@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -49,6 +49,8 @@ public interface SqlGenerator {
 
     String constructDropTable(String schema, String table);
 
+    String constructListTables(String schema);
+
     String constructDescribeTable(String schema, String tableName);
 
     String constructAddTableColumns(String schema, String table, Map<String, String> columns);
@@ -63,11 +65,17 @@ public interface SqlGenerator {
 
     String constructDropIndex(String schema, String index);
 
+    String constructGetIndexes(String schema, String table);
+
     String constructTableExists(String schema, String table);
 
     String constructDelete(String schema, String table, String where);
 
     String constructCreateTable(DataSource dataSource, String schema, String table, Boolean includeTableData);
+
+    String constructGetPrimaryKey(String schema, String table);
+
+    String constructGetForeignKeys(String schema, String table);
 
     void setCaseConverter(CaseConverter caseConverter);
 

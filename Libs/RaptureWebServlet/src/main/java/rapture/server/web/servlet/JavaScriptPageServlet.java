@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -40,6 +40,7 @@ import org.apache.http.HttpStatus;
 import org.apache.log4j.Logger;
 
 import rapture.common.CallingContext;
+import rapture.common.DispatchReturn;
 import rapture.common.RaptureScript;
 import rapture.common.RaptureURI;
 import rapture.common.exception.RaptNotLoggedInException;
@@ -103,6 +104,7 @@ public class JavaScriptPageServlet extends BaseServlet {
             return;
         }
         // run JavaScript
+        DispatchReturn response;
         try {
             CallingContext context = BaseDispatcher.validateSession(req);
             if (context != null) {
@@ -119,6 +121,9 @@ public class JavaScriptPageServlet extends BaseServlet {
         } catch (RaptNotLoggedInException re) {
             logger.error("Cannot execute script " + script + " : " + re.getMessage());
             resp.sendError(re.getStatus(), re.getMessage());
+        } catch (Exception e) {
+            response = handleUnexpectedException(e);
+            sendResponseAppropriately(response.getContext(), req, resp, response.getResponse());
         }
     }
 

@@ -41,6 +41,11 @@ public class PostgresSqlGenerator extends StandardSqlGenerator {
     }
 
     @Override
+    public String constructGetIndexes(String schema, String table) {
+        return String.format("SELECT indexname, indexdef FROM pg_indexes WHERE schemaname='%s' and tablename='%s'", schema, table);
+    }
+
+    @Override
     protected SqlBuilder getDdlSqlBuilder(final String schema, Platform platform) {
         return new PostgreSqlBuilder(platform) {
             @Override
@@ -65,7 +70,7 @@ public class PostgresSqlGenerator extends StandardSqlGenerator {
 
             /**
              * Creates the auto-increment sequence that is then used in the column.
-             * 
+             *
              * @param table
              *            The table
              * @param column

@@ -40,7 +40,7 @@ api(Doc) {
     
     [Retrieves the content and the meta data associated with a document, including version and user information. If the storage
     does not support metadata, this method returns a dummy object.]
-    @entitle=/data/get/$f(docUri)
+    @entitle=/data/read/$f(docUri)
     @public DocumentWithMeta getDocAndMeta(String docUri);
 
     [Retrieves only the meta data associated with a document, including version and user information. If the storage does not

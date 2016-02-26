@@ -22,12 +22,12 @@ dependencies {
     compile group: 'org.apache.commons', name: 'commons-digester3', version: '3.2'
     compile 'com.timgroup:java-statsd-client:3.0.2'
     compile 'net.redhogs.cronparser:cron-parser:2.8'
-    
+
 }
 
-task buildinfo (type: com.rapture.gradle.bootstrap.plugin.JavaBuildInfoTask) { module_name = 'Core' }
+//task buildinfo (type: com.rapture.gradle.bootstrap.plugin.JavaBuildInfoTask) { module_name = 'Core' }
 
-compileJava.dependsOn('buildinfo')
+//compileJava.dependsOn('buildinfo')
 
 task antlrOutputDir << { mkdir(generateGrammarSource.destinationDir) }
 
@@ -51,7 +51,7 @@ task generateGrammarSource(dependsOn: antlrOutputDir, type: JavaExec) {
     ].flatten()
 }
 
-com.rapture.gradle.bootstrap.plugin.RaptureBootstrapPlugin.addPath(project, "main", "java", generateGrammarSource.antlrGenRootDir)
+addPath(project, "main", "java", generateGrammarSource.antlrGenRootDir)
 
 
 compileJava.dependsOn(":CodeGen:PersistenceGen:genPersistence")

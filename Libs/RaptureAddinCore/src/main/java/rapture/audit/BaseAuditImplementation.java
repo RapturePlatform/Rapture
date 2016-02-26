@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,6 +24,7 @@
 package rapture.audit;
 
 import java.util.Date;
+import java.util.List;
 
 import rapture.common.model.AuditLogEntry;
 import rapture.util.IDGenerator;
@@ -38,6 +39,8 @@ public abstract class BaseAuditImplementation implements AuditLog {
         AuditLogEntry entry = new AuditLogEntry();
         entry.setLevel(level);
         entry.setCategory(category);
+        // entry.setSource(Kernel.getKernel().getAppStyle() + "."
+        // + Kernel.getKernel().getAppId());
         entry.setLogId(getLogId());
         entry.setUser(user);
         entry.setMessage(message);
@@ -52,5 +55,10 @@ public abstract class BaseAuditImplementation implements AuditLog {
 
     protected void setLogId(String logId) {
         this.logId = logId;
+    }
+
+    @Override
+    public List<AuditLogEntry> getRecentUserActivity(String user, int count) {
+        throw new UnsupportedOperationException("not implemented");
     }
 }

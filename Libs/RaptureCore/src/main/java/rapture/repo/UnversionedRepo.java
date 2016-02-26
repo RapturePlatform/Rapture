@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,7 +27,7 @@ import java.util.Map;
 
 import rapture.common.exception.RaptureExceptionFactory;
 import rapture.common.model.DocumentWithMeta;
-import rapture.dsl.dparse.AbsoluteVersion;
+import rapture.dsl.dparse.VersionDirective;
 import rapture.lock.ILockingHandler;
 import rapture.repo.meta.AbstractMetaBasedRepo;
 import rapture.repo.meta.handler.UnversionedMetaHandler;
@@ -53,7 +53,7 @@ public class UnversionedRepo extends AbstractMetaBasedRepo<UnversionedMetaHandle
         throw RaptureExceptionFactory.create("Not supported!");
     }
 
-    @Override protected DocumentWithMeta getVersionedDocumentWithMeta(String docPath, AbsoluteVersion directive) {
+    @Override protected DocumentWithMeta getVersionedDocumentWithMeta(String docPath, VersionDirective directive) {
         throw RaptureExceptionFactory.create("Not supported!");
     }
 }

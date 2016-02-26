@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -88,7 +88,13 @@ public final class KernelExecutor {
                                 }
 
                                 // Now invoke
-                                Object ret = im.invoke(api, callParams.toArray());
+                                Object ret;
+                                try {
+                                    ret = im.invoke(api, callParams.toArray());
+                                } catch (InvocationTargetException e) {
+                                    // TODO Auto-generated catch block
+                                    throw new ReflexException(lineNumber, String.format("Error in Reflex script at line %d. Call to %s.%s failed: %s", lineNumber, apiName, fnName, e.getMessage()), e);
+                                }
                                 ReflexValue retVal = new ReflexNullValue(lineNumber);
                                 if (ret != null) {
                                     retVal = new ReflexValue(convertObject(ret));
@@ -175,6 +181,7 @@ public final class KernelExecutor {
 
     @SuppressWarnings("unchecked")
     public static Map<String, Object> convert(Map<String, Object> asMap) {
+        if (asMap == null) return null;
         Map<String, Object> converted = new LinkedHashMap<String, Object>();
         for (Map.Entry<String, Object> e : asMap.entrySet()) {
             if (e.getValue() instanceof ReflexValue) {
@@ -340,6 +347,13 @@ public final class KernelExecutor {
                 List<String> ret = new ArrayList<String>(inner.size());
                 for (ReflexValue vi : inner) {
                     ret.add(vi.asString());
+                }
+                return ret;
+            } else if (innerType.equals(Double.class)) {
+                List<ReflexValue> inner = v.asList();
+                List<Double> ret = new ArrayList<>(inner.size());
+                for (ReflexValue vi : inner) {
+                    ret.add(vi.asDouble());
                 }
                 return ret;
             } else if (innerType.getClass().isInstance(ParameterizedType.class)) {

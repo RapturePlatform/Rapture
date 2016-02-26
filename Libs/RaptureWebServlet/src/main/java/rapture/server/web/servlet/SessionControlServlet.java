@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,6 @@
 package rapture.server.web.servlet;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,22 +33,20 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpStatus;
 import org.apache.log4j.Logger;
 
-import rapture.common.CallingContext;
 import rapture.common.ErrorWrapper;
 import rapture.common.RaptureScript;
 import rapture.common.RaptureURI;
 import rapture.common.exception.ExceptionToString;
-import rapture.common.exception.RaptNotLoggedInException;
 import rapture.common.exception.RaptureException;
 import rapture.common.exception.RaptureExceptionFactory;
 import rapture.common.impl.jackson.JacksonUtil;
 import rapture.kernel.ContextFactory;
 import rapture.kernel.Kernel;
 import rapture.kernel.script.KernelScript;
-import rapture.server.BaseDispatcher;
 import reflex.ReflexException;
 import reflex.ReflexExecutor;
 
@@ -151,6 +148,8 @@ public class SessionControlServlet extends BaseServlet {
                 log.info("Sending redirect");
                 r.setRedirect(control.getPageRedirection());
                 //resp.sendRedirect(control.getPageRedirection());
+            } else if (!StringUtils.isBlank(control.getMessage())) {
+                r.setMessage(control.getMessage());
             }
             String content = JacksonUtil.jsonFromObject(r);
             log.info("Sending back " + content);

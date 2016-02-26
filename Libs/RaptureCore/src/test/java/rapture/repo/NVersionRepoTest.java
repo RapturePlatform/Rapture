@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -33,10 +33,14 @@ import rapture.common.impl.jackson.JacksonUtil;
 import rapture.common.model.DocumentMetadata;
 import rapture.common.model.DocumentWithMeta;
 import rapture.dsl.dparse.AbsoluteVersion;
+import rapture.dsl.dparse.AsOfTimeDirective;
+import rapture.dsl.dparse.AsOfTimeDirectiveParser;
 import rapture.lock.dummy.DummyLockHandler;
 import rapture.repo.mem.MemKeyStore;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -210,18 +214,33 @@ public class NVersionRepoTest {
         Long created2 = found.getMetaData().getCreatedTimestamp();
         assertEquals(created1, created2);
 
-        AbsoluteVersion directive = new AbsoluteVersion();
-        directive.setVersion(1);
-        found = repo.getDocAndMeta(key, directive);
+        AbsoluteVersion absoluteDirective = new AbsoluteVersion();
+        absoluteDirective.setVersion(1);
+        found = repo.getDocAndMeta(key, absoluteDirective);
         assertDocWithMeta(key, value, user, comment, before, after, found);
         Long created3 = found.getMetaData().getCreatedTimestamp();
         assertEquals(created1, created3);
 
-        directive.setVersion(2);
-        found = repo.getDocAndMeta(key, directive);
+        absoluteDirective.setVersion(2);
+        found = repo.getDocAndMeta(key, absoluteDirective);
         assertDocWithMeta(key, value2, user, comment, before2, after2, found);
         Long created4 = found.getMetaData().getCreatedTimestamp();
         assertEquals(created4, created3);
+
+        SimpleDateFormat asOfTimeFormat = new SimpleDateFormat(AsOfTimeDirectiveParser.AS_OF_TIME_FORMAT_MS);
+
+        AsOfTimeDirective asOfTimeDirective = new AsOfTimeDirective();
+        asOfTimeDirective.setAsOfTime(asOfTimeFormat.format(new Date(after)));
+        found = repo.getDocAndMeta(key, asOfTimeDirective);
+        assertDocWithMeta(key, value, user, comment, before, after, found);
+        Long created5 = found.getMetaData().getCreatedTimestamp();
+        assertEquals(created1, created5);
+
+        asOfTimeDirective.setAsOfTime(asOfTimeFormat.format(new Date(after2)));
+        found = repo.getDocAndMeta(key, asOfTimeDirective);
+        assertDocWithMeta(key, value2, user, comment, before2, after2, found);
+        Long created6 = found.getMetaData().getCreatedTimestamp();
+        assertEquals(created4, created6);
     }
 
     protected long afterAndSleep() throws InterruptedException {

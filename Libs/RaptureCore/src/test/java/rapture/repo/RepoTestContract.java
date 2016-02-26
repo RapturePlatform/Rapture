@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,7 +26,6 @@ package rapture.repo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-
 import rapture.common.CallingContext;
 import rapture.common.RaptureFolderInfo;
 import rapture.common.RaptureURI;
@@ -82,9 +81,10 @@ public abstract class RepoTestContract {
         Kernel.getDoc().putDoc(ctx, REPO_URI1 + "/1", defContent);
         Kernel.getDoc().putDoc(ctx, REPO_URI1 + "/1", defContent2);
 
-        CleanupServiceWithListeners cleanupService = (CleanupServiceWithListeners) FolderCleanupService.getInstance();
+        FolderCleanupService cleanupService = FolderCleanupService.getInstance();
         cleanupListener = new LatchCleanupListener(authorityForUri(REPO_URI3), getUsesCleanupService());
-        cleanupService.addListener(cleanupListener);
+        if (cleanupService instanceof CleanupServiceWithListeners) 
+            ((CleanupServiceWithListeners) cleanupService).addListener(cleanupListener);
     }
 
     @After
@@ -94,8 +94,9 @@ public abstract class RepoTestContract {
                 Kernel.getDoc().deleteDocRepo(ctx, repoUri);
             }
         }
-        CleanupServiceWithListeners cleanupService = (CleanupServiceWithListeners) FolderCleanupService.getInstance();
-        cleanupService.removeListener(cleanupListener);
+        FolderCleanupService cleanupService = FolderCleanupService.getInstance();
+        if (cleanupService instanceof CleanupServiceWithListeners) 
+            ((CleanupServiceWithListeners) cleanupService).removeListener(cleanupListener);
     }
 
     private String authorityForUri(String uri) {
@@ -122,8 +123,12 @@ public abstract class RepoTestContract {
 
         Kernel.getDoc().deleteDocsByUriPrefix(ctx, middle);
 
-        map = Kernel.getDoc().listDocsByUriPrefix(ctx, middle, 0);
-        assertEquals(0, map.size());
+        try {
+            map = Kernel.getDoc().listDocsByUriPrefix(ctx, middle, 0);
+            assertEquals(0, map.size());
+        } catch (Exception e) {
+            // exception is OK because it no longer exists
+        }
         map = Kernel.getDoc().listDocsByUriPrefix(ctx, top, 0);
         assertEquals(2, map.size());
     }
@@ -140,8 +145,12 @@ public abstract class RepoTestContract {
 
         Kernel.getDoc().deleteDocsByUriPrefix(ctx, top);
 
-        map = Kernel.getDoc().listDocsByUriPrefix(ctx, top, 0);
-        assertEquals(0, map.size());
+        try {
+            map = Kernel.getDoc().listDocsByUriPrefix(ctx, top, 0);
+            assertEquals(0, map.size());
+        } catch (Exception e) {
+            // exception is OK because it's been deleted
+        }
     }
 
     @Test

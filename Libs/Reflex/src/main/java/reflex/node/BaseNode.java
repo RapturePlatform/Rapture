@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -37,7 +37,7 @@ import reflex.value.internal.ReflexVoidValue;
 public abstract class BaseNode implements ReflexNode {
 
     private static final Logger log = Logger.getLogger(BaseNode.class);
-
+    protected static boolean disableAudit = true;
     protected String nodeId;
     protected int lineNumber;
     protected IReflexHandler handler;
@@ -77,6 +77,7 @@ public abstract class BaseNode implements ReflexNode {
     }
 
     protected ReflexValue writeAudit(IReflexDebugger debugger, String comment) {
+        if (disableAudit) return new ReflexVoidValue();
         // scope.setPendingComment(comment);
         if (handler.getApi() == null) {
             String errorMessage = "API is null - " + comment;

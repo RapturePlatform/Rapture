@@ -9,7 +9,7 @@ api(Decision) {
     [Returns a list of full display names of the paths below this one. Ideally optimized depending on the repo.]
     @entitle=/decision/read
     @public List(RaptureFolderInfo) getWorkflowChildren(String workflowURI);
- 
+
     [Return a list of full display names of the paths below this one. Ideally optimized depending on the repo.]
     @entitle=/decision/read
     @public List(RaptureFolderInfo) getWorkOrderChildren(String parentPath);
@@ -33,46 +33,30 @@ api(Decision) {
     [Adds a new step to an existing workflow initially containing the specified transitions]
     @entitle=/decision/write/$f(workflowURI)
     @public void addStep(String workflowURI, Step step);
-    
+
     [Removes a step from a workflow.]
     @entitle=/decision/write/$f(workflowURI)
     @public void removeStep(String workflowURI, String stepName);
-    
+
     [Adds a new Transition to a workflow.]
     @entitle=/decision/write/$f(workflowURI)
     @public void addTransition(String workflowURI, String stepName, Transition transition);
-    
+
     [Removes a transition from a workflow.]
     @entitle=/decision/write/$f(workflowURI)
     @public void removeTransition(String workflowURI, String stepName, String transitionName);
-    
+
     [Deletes a workflow.]
     @entitle=/decision/write/$f(workflowURI)
     @public void deleteWorkflow(String workflowURI);
-
-    [Creates a workflow step template]
-    @entitle=/decision/write
-    @public void putWorkflowStepTemplate(WorkflowStepTemplate template);
     
-    [Retrieve a workflow step template]
-    @entitle=/decision/read/$f(workflowStepTemplateURI)
-    @public WorkflowStepTemplate getWorkflowStepTemplate(String workflowStepTemplateURI);
-    
-    [Deletes a workflow step template]
-    @entitle=/decision/write/$f(workflowStepTemplateURI)
-    @public void deleteWorkflowStepTemplate(String workflowStepTemplateURI);
-    
-    [Return a list of full display names of the paths below this one. Ideally optimized depending on the repo.]
-    @entitle=/decision/read
-    @public List(RaptureFolderInfo) getWorflowStepTemplateChildren(String parentPath);
-    
-    [Creates and executes a workflow. 
+    [Creates and executes a workflow.
     If there is a defaultAppStatusUriPattern set for this Workflow then it will be used for the appstatus URI.
     Otherwise, no appstatus will be created.
     TODO make workOrderURI format align with permission checks.]
     @entitle=/decision/execute/$f(workflowURI)
     @public String createWorkOrder(String workflowURI, Map<String, String> argsMap);
-    
+
     [Creates and executes a workflow. Same as createWorkOrder, but the appStatusUriPattern is passed as an explicit argument instead of using the default appStatusUriPattern (if one has been set).
     Note that the app status allows the Workflow and its output to be accessed via the web interface; workflows without an app status are not accessible in this way. ]
     @entitle=/decision/execute/$f(workflowURI)
@@ -82,43 +66,43 @@ api(Decision) {
     was an unexpected problem that caused a WorkOrder to finish or die without releasing the lock.]
     @entitle=/decision/admin
     @public void releaseWorkOrderLock(String workOrderURI);
-    
+
     [Gets the status of a workOrder]
     @entitle=/decision/read/$f(workOrderURI)
     @public WorkOrderStatus getWorkOrderStatus(String workOrderURI);
-    
+
     [Writes an audit entry related to a workOrder. Messages may be INFO or ERROR based on the boolean fourth parameter]
     @entitle=/decision/write/$f(workOrderURI)
     @public void writeWorkflowAuditEntry(String workOrderURI, String message, Boolean error);
-    
+
     [Gets the WorkOrder objects starting on a given day. Orders that carried over from the previous day are not included. ]
     @entitle=/decision/read
     @public List<WorkOrder> getWorkOrdersByDay(Long startTimeInstant);
-    
+
     [Gets the top-level status object associated with the work order]
     @entitle=/decision/read/$f(workOrderURI)
     @public WorkOrder getWorkOrder(String workOrderURI);
-    
+
     [Get the worker]
     @entitle=/decision/read/$f(workOrderURI)
     @public Worker getWorker(String workOrderURI, String workerId);
-    
+
     [Requests cancellation of a work order. This method returns immediately once the cancellation is recorded, but the individual workers may continue for some time before stopping, depending on the type of step being executed.]
     @entitle=/decision/write/$f(workOrderURI)
     @public void cancelWorkOrder(String workOrderURI);
-    
+
     [Resume work order]
     @entitle=/decision/write/$f(workOrderURI)
     @public CreateResponse resumeWorkOrder(String workOrderURI, String resumeStepURI);
-    
+
     [Returns true if CancelWorkOrder was called.]
     @entitle=/decision/read/$f(workOrderURI)
     @public Boolean wasCancelCalled(String workOrderURI);
-    
+
     [Gets details for the cancellation for a workOrder -- or null if not cancelled.]
     @entitle=/decision/read/$f(workOrderURI)
-    @public WorkOrderCancellation getCancellationDetails(String workOrderURI);    
-    
+    @public WorkOrderCancellation getCancellationDetails(String workOrderURI);
+
     [Gets the detailed context information for a work order in progress]
     @entitle=/decision/debug/$f(workOrderURI)
     @public WorkOrderDebug getWorkOrderDebug(String workOrderURI);
@@ -127,12 +111,12 @@ api(Decision) {
     @entitle=/decision/admin
     @public void setWorkOrderIdGenConfig(String config, Boolean force);
 
-    [Sets a literal in the context. The literal value that is stored will be returned after a read. 
+    [Sets a literal in the context. The literal value that is stored will be returned after a read.
     The workerURI is a workOrderURI with the element set to the worker ID.]
     @entitle=/decision/write
     @public void setContextLiteral(String workerURI, String varAlias, String literalValue);
 
-    [Set a literal in the context. This means that whatever is stored will be evaluated before being returned, so it must be a valid expression. 
+    [Set a literal in the context. This means that whatever is stored will be evaluated before being returned, so it must be a valid expression.
     The workerURI is a workOrderURI with the element set to the worker id]
     @entitle=/decision/write
     @public void setContextLink(String workerURI, String varAlias, String expressionValue);

@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -48,6 +48,7 @@ import rapture.common.CallingContext;
 import rapture.common.CallingContextStorage;
 import rapture.common.IEntitlementsContext;
 import rapture.common.InstallableKernel;
+import rapture.common.LicenseInfo;
 import rapture.common.RaptureConstants;
 import rapture.common.RaptureIPWhiteList;
 import rapture.common.RaptureIPWhiteListStorage;
@@ -267,14 +268,10 @@ public enum Kernel {
     }
 
     /**
-     * The bootstrap uses an environment variable to boot up the initial repo
-     * that is used to define the configs - particularly RaptureConfig (used for
-     * users/authorities etc.) and RaptureEphemeral (used for sessions/contexts
-     * etc.)
+     * The bootstrap uses an environment variable to boot up the initial repo that is used to define the configs - particularly RaptureConfig (used for
+     * users/authorities etc.) and RaptureEphemeral (used for sessions/contexts etc.)
      * <p/>
-     * These repositories are installed into the kernel and it is these
-     * repositories that are referred to or passed down to the RaptureKernel
-     * instances
+     * These repositories are installed into the kernel and it is these repositories that are referred to or passed down to the RaptureKernel instances
      *
      * @
      */
@@ -285,9 +282,7 @@ public enum Kernel {
     }
 
     public static void initBootstrap(Map<String, String> templates, Object context, boolean startScheduler) {
-        // Validate license
-       
-        // AT THIS POINT, attempt to load and run a startup script
+         // AT THIS POINT, attempt to load and run a startup script
         // TODO: These strings need to be in a constant
         if (templates != null) {
             for (Map.Entry<String, String> e : templates.entrySet()) {
@@ -317,8 +312,7 @@ public enum Kernel {
     }
 
     /**
-     * TODO For appliance mode if we don't have a TimeServer do we need to start
-     * the ScheduleServer?
+     * TODO For appliance mode if we don't have a TimeServer do we need to start the ScheduleServer?
      */
     private static TimeProcessorThread tThread;
 
@@ -449,12 +443,16 @@ public enum Kernel {
         exchangeChangeManager.registerExchangeListener(Kernel.INSTANCE.pipeline.getTrusted());
     }
 
+    private static LicenseInfo licenseInfo;
+
+    public static LicenseInfo getLicenseInfo() {
+        return licenseInfo;
+    }
 
 
     /**
-     * Check the config for a passed api user to run the kernel as. If so, check
-     * that it is in fact a valid API user, and if it is, set the KernelUser in
-     * the ContextFactory to this user.
+     * Check the config for a passed api user to run the kernel as. If so, check that it is in fact a valid API user, and if it is, set the KernelUser in the
+     * ContextFactory to this user.
      */
     public void validateKernelUser() {
         if (!ConfigLoader.getConf().KernelUser.isEmpty()) {
@@ -541,7 +539,7 @@ public enum Kernel {
      * Run whatever additional scripts are available through this context
      *
      * @param path
-     * @
+     *            @
      */
     public static void runAdditional(Object context, String path) {
         INSTANCE.loadStartupScript(context, path);
@@ -570,10 +568,8 @@ public enum Kernel {
     }
 
     /**
-     * Here we need to look for the ipaddresswhitelist. If present, check this
-     * address against it If not present, everything goes. A separate parameter
-     * "never check" in the kernel can change this behaviour - that will be set
-     * on startup.
+     * Here we need to look for the ipaddresswhitelist. If present, check this address against it If not present, everything goes. A separate parameter
+     * "never check" in the kernel can change this behaviour - that will be set on startup.
      *
      * @param remoteAddr
      * @return
@@ -986,8 +982,7 @@ public enum Kernel {
     }
 
     /**
-     * Register this server to handle messages on exchanges associated with the
-     * given category
+     * Register this server to handle messages on exchanges associated with the given category
      *
      * @param category
      */
@@ -996,13 +991,10 @@ public enum Kernel {
     }
 
     /**
-     * Register this server to handle messages on exchanges associated with the
-     * given category. This differs from {@link #setCategoryMembership(String)}
-     * in what Queue Handlers it allows. This method allows defining custom
-     * handlers, which will override all default handlers. If you wish to handle
-     * some custom mime types or use custom handlers *in addition* to the
-     * default handlers, you currently need to pass in all the default handlers.
-     * It may be worth writing a method that makes this easier.
+     * Register this server to handle messages on exchanges associated with the given category. This differs from {@link #setCategoryMembership(String)} in what
+     * Queue Handlers it allows. This method allows defining custom handlers, which will override all default handlers. If you wish to handle some custom mime
+     * types or use custom handlers *in addition* to the default handlers, you currently need to pass in all the default handlers. It may be worth writing a
+     * method that makes this easier.
      *
      * @param category
      * @param customHandlers
@@ -1016,8 +1008,7 @@ public enum Kernel {
     }
 
     /**
-     * Return the {@link ApiHooksService} object that should be used within
-     * Rapture
+     * Return the {@link ApiHooksService} object that should be used within Rapture
      *
      * @return
      */
@@ -1026,8 +1017,7 @@ public enum Kernel {
     }
 
     /**
-     * Return the RapturePluginClassLoader that should be used for finding
-     * invocables.
+     * Return the RapturePluginClassLoader that should be used for finding invocables.
      */
     public static RapturePluginClassLoader getRapturePluginClassLoader() {
         return rapturePluginClassLoader;

@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -827,7 +827,7 @@ public class DefaultDecisionProcessExecutor implements DecisionProcessExecutor {
             return;
         }
         String workflowLogUri = InvocableUtils.getWorkflowAuditLog(appStatusName, workOrder.getWorkOrderURI(), step.getName());
-        Kernel.getAudit().writeAuditEntry(ContextFactory.getKernelUser(), workflowLogUri, "", 1, step.getName() + " finished");
+        Kernel.getAudit().writeAuditEntry(ContextFactory.getKernelUser(), workflowLogUri, "workorder", 1, step.getName() + " finished");
         String workOrderURI = worker.getWorkOrderURI();
         AppStatusGroup group = getAppStatusGroup(appStatusName, workOrderURI);
         AppStatus appStatus = group.getIdToStatus().get(workOrderURI);
@@ -848,7 +848,7 @@ public class DefaultDecisionProcessExecutor implements DecisionProcessExecutor {
             return;
         }
         String workflowLogUri = InvocableUtils.getWorkflowAuditLog(appStatusName, workOrder.getWorkOrderURI(), step.getName());
-        Kernel.getAudit().writeAuditEntry(ContextFactory.getKernelUser(), workflowLogUri, "", 1, step.getName() + " started");
+        Kernel.getAudit().writeAuditEntry(ContextFactory.getKernelUser(), workflowLogUri, "workorder", 1, step.getName() + " started");
         String workOrderURI = worker.getWorkOrderURI();
         AppStatusGroup group = getAppStatusGroup(appStatusName, workOrderURI);
         AppStatus appStatus = group.getIdToStatus().get(workOrderURI);

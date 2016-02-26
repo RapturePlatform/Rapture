@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -140,7 +140,7 @@ public abstract class AbstractMetaHandler {
 
             versionToReturn = newMetaData.getVersion();
 
-            metaStore.put(latestKey, JacksonUtil.jsonFromObject(newMetaData));
+            addLatestToMetaStore(latestKey, newMetaData);
 
             // Now store the document in the latest, and in the version repo
             // Pass on docPathWithElement to FileDataStore, so it could create sym links
@@ -167,6 +167,10 @@ public abstract class AbstractMetaHandler {
             }
             return versionToReturn;
         }
+    }
+
+    protected void addLatestToMetaStore(String latestKey, DocumentMetadata newMetaData) {
+        metaStore.put(latestKey, JacksonUtil.jsonFromObject(newMetaData));
     }
 
     protected abstract DocumentMetadata createNewMetadata(String user, String comment, String docPath);

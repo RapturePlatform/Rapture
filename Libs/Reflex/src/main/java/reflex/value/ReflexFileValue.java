@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,8 +23,10 @@
  */
 package reflex.value;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 
@@ -39,14 +41,25 @@ import rapture.common.exception.RaptureExceptionFactory;
  */
 public class ReflexFileValue extends ReflexStreamValue {
     private String fileName;
+    private File file = null;
     private String encoding = "UTF-8";
+    FileInputStream fis = null;
 
     public ReflexFileValue(String fileName) {
         this.fileName = fileName;
+        file = new File(fileName);
     }
 
     public String getFileName() {
         return fileName;
+    }
+
+    public String getNodeName() {
+        return file.getName();
+    }
+
+    public String getPathName() {
+        return file.getAbsolutePath();
     }
 
     public String toString() {
@@ -55,18 +68,33 @@ public class ReflexFileValue extends ReflexStreamValue {
 
     @Override
     public InputStream getInputStream() {
+        if (fis != null) {
+            try {
+                fis.close();
+            } catch (IOException e) {
+            }
+            fis = null;
+        }
+            
         try {
-            return new FileInputStream(fileName);
+            fis = new FileInputStream(fileName);
         } catch (FileNotFoundException e) {
             throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, String.format("File %s not found", fileName), e);
         }
+        return fis;
     }
 
-	public void setEncoding(String encoding) {
-		this.encoding = encoding;
-	}
-	
-	public String getEncoding() {
-		return encoding;
-	}
+    @Override
+    protected void finalize() throws Throwable {
+        fis.close();
+        fis = null;
+    }
+
+    public void setEncoding(String encoding) {
+        this.encoding = encoding;
+    }
+
+    public String getEncoding() {
+        return encoding;
+    }
 }

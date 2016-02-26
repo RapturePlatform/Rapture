@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -38,6 +38,7 @@ import rapture.common.model.DocumentMetadata;
 import rapture.common.model.DocumentWithMeta;
 import rapture.dsl.dparse.AbsoluteVersion;
 import rapture.dsl.dparse.BaseDirective;
+import rapture.dsl.dparse.VersionDirective;
 import rapture.index.IndexHandler;
 import rapture.index.IndexProducer;
 import rapture.kernel.Kernel;
@@ -187,18 +188,18 @@ public abstract class AbstractMetaBasedRepo<MH extends AbstractMetaHandler> exte
     public String getDocument(String docPath, BaseDirective directive) {
         if (directive == null) {
             return getDocument(docPath);
-        } else if (isVersioned() && directive instanceof AbsoluteVersion) {
-            return getVersionedDocumentWithMeta(docPath, (AbsoluteVersion) directive).getContent();
+        } else if (isVersioned() && directive instanceof VersionDirective) {
+            return getVersionedDocumentWithMeta(docPath, (VersionDirective) directive).getContent();
         }
         return null;
     }
 
-    protected abstract DocumentWithMeta getVersionedDocumentWithMeta(String docPath, AbsoluteVersion directive);
+    protected abstract DocumentWithMeta getVersionedDocumentWithMeta(String docPath, VersionDirective directive);
 
     @Override
     public DocumentWithMeta getDocAndMeta(String docPath, BaseDirective directive) {
-        if (isVersioned() && directive != null && directive instanceof AbsoluteVersion) {
-            return getVersionedDocumentWithMeta(docPath, (AbsoluteVersion) directive);
+        if (isVersioned() && directive != null && directive instanceof VersionDirective) {
+            return getVersionedDocumentWithMeta(docPath, (VersionDirective) directive);
         } else {
             return metaHandler.getLatestDocAndMeta(docPath);
         }
@@ -211,8 +212,8 @@ public abstract class AbstractMetaBasedRepo<MH extends AbstractMetaHandler> exte
 
     @Override
     public DocumentMetadata getMeta(String docPath, BaseDirective directive) {
-        if (isVersioned() && directive != null && directive instanceof AbsoluteVersion) {
-            return getVersionedDocumentWithMeta(docPath, (AbsoluteVersion) directive).getMetaData();
+        if (isVersioned() && directive != null && directive instanceof VersionDirective) {
+            return getVersionedDocumentWithMeta(docPath, (VersionDirective) directive).getMetaData();
         } else {
             return metaHandler.getLatestMeta(docPath);
         }

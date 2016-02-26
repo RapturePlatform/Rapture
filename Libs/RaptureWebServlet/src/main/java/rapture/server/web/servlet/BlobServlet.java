@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -84,20 +84,28 @@ public class BlobServlet extends BaseServlet {
         }
 
         BlobApiImplWrapper blob = Kernel.getBlob();
-        BlobContainer blobContainer = blob.getBlob(callingContext, BLOB_URI_PREFIX + blobPath);
+        DispatchReturn response;
 
-        if (blobContainer != null) {
-            if (blobContainer.getHeaders() != null) {
-                String contentType = blobContainer.getHeaders().get(ContentEnvelope.CONTENT_TYPE_HEADER);
-                if (contentType != null) {
-                    resp.setContentType(contentType);
+        try {
+            BlobContainer blobContainer = blob.getBlob(callingContext, BLOB_URI_PREFIX + blobPath);
+
+            if (blobContainer != null) {
+                if (blobContainer.getHeaders() != null) {
+                    String contentType = blobContainer.getHeaders().get(ContentEnvelope.CONTENT_TYPE_HEADER);
+                    if (contentType != null) {
+                        resp.setContentType(contentType);
+                    }
                 }
+                resp.setStatus(HttpServletResponse.SC_OK);
+                resp.getOutputStream().write(blobContainer.getContent());
+            } else {
+                resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
             }
-            resp.setStatus(HttpServletResponse.SC_OK);
-            resp.getOutputStream().write(blobContainer.getContent());
-        } else {
-            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        } catch (Exception e){
+            response = handleUnexpectedException(e);
+            sendResponseAppropriately(response.getContext(), req, resp, response.getResponse());
         }
+
     }
 
 }

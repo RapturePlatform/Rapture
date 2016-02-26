@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -39,19 +39,19 @@
 // Test and exercise typeof
 
 assert(typeof(3)=='number');
-assert(typeof(true)=='bool');
+assert(typeof(true)=='boolean');
 assert(typeof('hello')=='string');
 assert(typeof([1,2.0,3])=='list');
 assert(typeof({}) == 'map');
 
 // Some more complex expressions
 
-assert(typeof(1==1) == 'bool');
+assert(typeof(1==1) == 'boolean');
 
 x = 4.9;
 
 assert(typeof(x) == 'number');
-assert(typeof(println('hello')) == 'void');
+assert(typeof(println('hello')) == 'complex');
 
 assert(typeof(size([1,2,3])) == 'number');
 

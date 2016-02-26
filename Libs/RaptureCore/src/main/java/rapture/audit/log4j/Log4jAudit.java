@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -42,8 +42,8 @@ import rapture.common.exception.RaptureExceptionFactory;
 import rapture.common.model.AuditLogEntry;
 import rapture.common.model.audit.Log4jAuditConfig;
 import rapture.common.model.audit.Log4jAuditConfigStorage;
-import rapture.home.RaptureHomeRetriever;
 import rapture.config.LocalConfigService;
+import rapture.home.RaptureHomeRetriever;
 
 public class Log4jAudit extends BaseAuditImplementation {
 
@@ -160,9 +160,9 @@ public class Log4jAudit extends BaseAuditImplementation {
 
     @Override
     public Boolean writeLogData(String category, int level, String message, String user, Map<String, Object> data) {
-        return writeLog(category, level, message + " " + AuditUtil.getStringRepresentation(data), user );
+        return writeLog(category, level, message + " " + AuditUtil.getStringRepresentation(data), user);
     }
-    
+
     @Override
     public List<AuditLogEntry> getEntriesSince(AuditLogEntry when) {
         synchronized (entryCache) {
@@ -174,6 +174,23 @@ public class Log4jAudit extends BaseAuditImplementation {
 
     @Override
     public void setContext(RaptureURI internalURI) {
+    }
+
+    @Override
+    public List<AuditLogEntry> getRecentUserActivity(String user, int count) {
+        int numAdded = 0;
+        List<AuditLogEntry> entries = new ArrayList<>();
+        synchronized (entryCache) {
+            for (AuditLogEntry entry : entryCache) {
+                if (entry.getUser().equalsIgnoreCase(user)) {
+                    entries.add(entry);
+                    if (count > 0 && ++numAdded >= count) {
+                        break;
+                    }
+                }
+            }
+        }
+        return entries;
     }
 
 }

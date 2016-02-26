@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -123,6 +123,11 @@ public abstract class StandardSqlGenerator implements SqlGenerator {
     }
 
     @Override
+    public String constructListTables(String schema) {
+        return String.format("SELECT table_name FROM INFORMATION_SCHEMA.TABLES where table_schema='%s'",
+                makeSqlSafe(schema));
+    }
+    @Override
     public String constructDescribeTable(String schema, String tableName) {
         return String.format(
                 "SELECT column_name, data_type, character_maximum_length FROM INFORMATION_SCHEMA.COLUMNS WHERE table_schema='%s' and table_name='%s'",
@@ -152,6 +157,11 @@ public abstract class StandardSqlGenerator implements SqlGenerator {
     @Override
     public String constructDropIndex(String schema, String index) {
         return String.format("DROP INDEX IF EXISTS %s", getSafeFullName(schema, index));
+    }
+
+    @Override
+    public String constructGetIndexes(String schema, String table) {
+        return String.format("SELECT * FROM INFORMATION_SCHEMA.SYSTEM_INDEXINFO WHERE TABLE_SCHEM='%s' and TABLE_NAME='%s'", schema, table);
     }
 
     String getColumnExpression(String template, List<String> columnNames) {
@@ -246,6 +256,33 @@ public abstract class StandardSqlGenerator implements SqlGenerator {
             }
             throw RaptureExceptionFactory.create(String.format("Failed to find table [%s] in schema [%s]", table, schema));
         }
+    }
+
+    @Override
+    public String constructGetPrimaryKey(String schema, String table) {
+        return String.format("SELECT (SELECT column_name " +
+                        "FROM information_schema.key_column_usage " +
+                        "WHERE table_schema='%s' " +
+                        "AND table_name='%s' " +
+                        "AND constraint_name='%s_pkey') AS column_name",
+                        schema, table, table);
+    }
+
+    @Override
+    public String constructGetForeignKeys(String schema, String table) {
+        return String.format("SELECT kcu.column_name, " +
+                        "ccu.table_name AS foreign_table_name, " +
+                        "ccu.column_name AS foreign_column_name " +
+                        "FROM " +
+                        "information_schema.table_constraints AS tc " +
+                        "JOIN information_schema.key_column_usage AS kcu " +
+                        " ON tc.constraint_name = kcu.constraint_name " +
+                        "JOIN information_schema.constraint_column_usage AS ccu " +
+                        " ON ccu.constraint_name = tc.constraint_name " +
+                        "WHERE constraint_type = 'FOREIGN KEY' " +
+                        "AND tc.table_schema='%s' " +
+                        "AND tc.table_name='%s'",
+                schema, table);
     }
 
     @Override

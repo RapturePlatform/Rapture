@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -274,7 +274,7 @@ public class EntitlementApiImplTest {
         assertFalse("At this point Ozzy should not have access", api.isPermitted(ozzyContext, "doc.putDoc", heavenAndHell));
 
         List<String> deleted = docApi.deleteDocsByUriPrefix(ozzyContext, "document://Black");
-        assertEquals("shoud be two because the doc and its folder", deleted.size(), 2);
+        assertEquals("Deleted one document", deleted.size(), 1);
 
         deleted = docApi.deleteDocsByUriPrefix(ozzyContext, "document://Black");
         assertEquals("Should be zero because we just deleted it", deleted.size(), 0);

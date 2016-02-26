@@ -109,6 +109,13 @@ public class PostgresFolderHandler {
                 if (lastIndex < key.length() - 1) {
                     String child = key.substring(lastIndex + 1, key.length());
                     delete(parent, child);
+
+                    if (getChildren(parent).size() == 0){
+                        lastIndex = parent.lastIndexOf("/");
+                        String parentFolder = parent.substring(lastIndex+1);
+                        String grandParent = StringUtils.prependIfMissing(parent.substring(0, lastIndex), "/");
+                        delete(grandParent, parentFolder);
+                    }
                 } else {
                     log.error(String.format("Cannot delete key ending in slash, bad input: [%s]", key));
                 }

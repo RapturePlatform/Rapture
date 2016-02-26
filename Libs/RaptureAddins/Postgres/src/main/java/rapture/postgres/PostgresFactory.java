@@ -80,7 +80,7 @@ public enum PostgresFactory {
         }
         try {
             return connectionCache.get(instanceName);
-        } catch (ExecutionException e) {
+        } catch (Exception e) {
             if (e.getCause() != null && e.getCause() instanceof RaptureException) {
                 throw (RaptureException) e.getCause();
             } else {

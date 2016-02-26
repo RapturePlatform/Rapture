@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,9 +30,11 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -59,6 +61,7 @@ public enum MultiValueConfigLoader {
 
     private static Logger log = Logger.getLogger(MultiValueConfigLoader.class);
     private Map<String, Map<String, String>> knownAssignments = new HashMap<String, Map<String, String>>();
+    private Map<String, String> knownGlobalDirs = new HashMap<>();
     private Map<String, Boolean> isSeenBeforeMap = new HashMap<String, Boolean>();
     private ValueReader envReader = new EnvironmentValueReader();
     private ValueReader sysPropReader = new SystemPropertyValueReader();
@@ -114,6 +117,18 @@ public enum MultiValueConfigLoader {
         return INSTANCE.getUnderlyingConfig(primary, secondary);
     }
 
+    public static Set<String> getConfigKeys(String primary) {
+        if(!INSTANCE.knownAssignments.containsKey(primary)) {
+            INSTANCE.getUnderlyingConfig(primary, "");
+        }
+        if(INSTANCE.knownAssignments.containsKey(primary)) {
+            return INSTANCE.knownAssignments.get(primary).keySet();
+        } else {
+            log.info("No config found for " + primary);
+            return Collections.emptySet();
+        }
+    }
+
     private void saveUnderlyingConfig(String primary, String secondary, String value) {
         removeFromKnownAssignments(primary, secondary);
         String configFileName = getConfigFileName(primary);
@@ -122,11 +137,18 @@ public enum MultiValueConfigLoader {
         if (appConfigHome != null) {
             configFile = new File(appConfigHome, configFileName);
         } else {
-            String globalConfigHome = ConfigLoader.getGlobalConfigDir();
-            if (globalConfigHome == null) {
-                globalConfigHome = RaptureHomeRetriever.getGlobalConfigHome();
+            String globalConfigHome = null;
+            if(knownGlobalDirs.containsKey(configFileName)) {
+                globalConfigHome = knownGlobalDirs.get(configFileName);
+            } else {
+                // find the global config home
+                ConfigFileReader<Map<Object, Object>> configFileReader = new JavaPropertiesConfigReader(configFileName);
+                configFileReader.findAndRead();
+                globalConfigHome = configFileReader.getGlobalConfigDir();
+                if(globalConfigHome != null) {
+                    knownGlobalDirs.put(configFileName, globalConfigHome);
+                }
             }
-
             if (globalConfigHome != null) {
                 configFile = new File(globalConfigHome, configFileName);
             }
@@ -232,6 +254,7 @@ public enum MultiValueConfigLoader {
                 for (Entry<Object, Object> entry : map.entrySet()) {
                     saveReturn(primary, entry.getKey().toString(), entry.getValue().toString());
                 }
+                knownGlobalDirs.put(configFileName, configFileReader.getGlobalConfigDir());
             }
             setReadFromFile(primary);
         }

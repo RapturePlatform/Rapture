@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,20 +29,18 @@ import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 
-import rapture.common.ErrorWrapper;
+import rapture.common.DispatchReturn;
 import rapture.common.impl.jackson.JacksonUtil;
 import rapture.util.ResourceLoader;
 
@@ -53,7 +51,7 @@ import rapture.util.ResourceLoader;
  * @author alan
  */
 
-public class MenuConfigServlet extends HttpServlet {
+public class MenuConfigServlet extends BaseServlet {
 
 	private String folder;
     private static Logger log = Logger.getLogger(MenuConfigServlet.class);
@@ -76,39 +74,46 @@ public class MenuConfigServlet extends HttpServlet {
 
     @Override
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-    	// Look in configured folder for .menu files, load them as json, merge and then return that
-    	// as a json string
-    	ServletContext context = getServletContext();
-    	Set<String> files = context.getResourcePaths(folder);
-    	log.info("Search for " + folder + " yielded " + files.toString());
-    	
-    	List<Object> configs = new ArrayList<Object>();
-    	for (String f : files) {
-    		log.info("Looking at " + f);
-            InputStream is = context.getResourceAsStream(f);
-            String content = ResourceLoader.getResourceFromInputStream(is);
-            log.info("Content is " + content);
-            List<?> menus = JacksonUtil.objectFromJson(content, List.class);
-            configs.addAll(menus);
-    	}
-    	Collections.sort(configs, new Comparator<Object>() {
+		DispatchReturn response;
 
-			@Override
-			public int compare(Object o1, Object o2) {
-				Map<String, Object> ao1 = (Map<String, Object>) o1;
-				Map<String, Object> ao2 = (Map<String, Object>) o2;
-				if (ao1.containsKey("rank") && ao2.containsKey("rank")) {
-					return (Integer) ao1.get("rank") < (Integer) ao2.get("rank") ? -1 : 1;
-				}
-				return 1;
+		try {
+			// Look in configured folder for .menu files, load them as json, merge and then return that
+			// as a json string
+			ServletContext context = getServletContext();
+			Set<String> files = context.getResourcePaths(folder);
+			log.info("Search for " + folder + " yielded " + files.toString());
+
+			List<Object> configs = new ArrayList<Object>();
+			for (String f : files) {
+				log.info("Looking at " + f);
+				InputStream is = context.getResourceAsStream(f);
+				String content = ResourceLoader.getResourceFromInputStream(is);
+				log.info("Content is " + content);
+				List<?> menus = JacksonUtil.objectFromJson(content, List.class);
+				configs.addAll(menus);
 			}
-    		
-    	});
-    	String mergedContent = JacksonUtil.jsonFromObject(configs);
-    	resp.setStatus(HttpURLConnection.HTTP_OK);
-        resp.setCharacterEncoding("UTF-8");
-        resp.getWriter().append(mergedContent);
-        resp.setContentType("text/plain");
-        resp.flushBuffer();
+			Collections.sort(configs, new Comparator<Object>() {
+
+				@Override
+				public int compare(Object o1, Object o2) {
+					Map<String, Object> ao1 = (Map<String, Object>) o1;
+					Map<String, Object> ao2 = (Map<String, Object>) o2;
+					if (ao1.containsKey("rank") && ao2.containsKey("rank")) {
+						return (Integer) ao1.get("rank") < (Integer) ao2.get("rank") ? -1 : 1;
+					}
+					return 1;
+				}
+
+			});
+			String mergedContent = JacksonUtil.jsonFromObject(configs);
+			resp.setStatus(HttpURLConnection.HTTP_OK);
+			resp.setCharacterEncoding("UTF-8");
+			resp.getWriter().append(mergedContent);
+			resp.setContentType("text/plain");
+			resp.flushBuffer();
+		} catch (Exception e) {
+			response = handleUnexpectedException(e);
+			sendResponseAppropriately(response.getContext(), req, resp, response.getResponse());
+		}
     }
 }

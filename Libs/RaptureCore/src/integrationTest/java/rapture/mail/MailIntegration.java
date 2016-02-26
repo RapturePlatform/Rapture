@@ -12,20 +12,47 @@
  */
 package rapture.mail;
 
-import java.util.Date;
-import java.util.Properties;
+import com.google.common.collect.ImmutableMap;
+import org.junit.Test;
+import rapture.common.CallingContext;
+import rapture.common.model.RaptureUser;
+import rapture.kernel.ContextFactory;
+import rapture.kernel.Kernel;
 
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.PasswordAuthentication;
-import javax.mail.Session;
-import javax.mail.Transport;
+import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-
-import org.junit.Test;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 
 public class MailIntegration {
+
+    @Test
+    public void testMailer() {
+        // create smtp config
+        CallingContext context = ContextFactory.getKernelUser();
+        String area = "CONFIG";
+        String smtpConfig = "{\"host\":\"email-smtp.us-west-2.amazonaws.com\",\"port\":587,\"username\":\"AKIAITJH4OMD772SGJEA\",\"password\":\"AsrWwMMyGHLJbJMEidXPH7b0d/s8/K7b41udMFDZXRlF\",\"from\":\"support@incapturetechnologies.com\"}";
+        Kernel.getSys().writeSystemConfig(context, area, Mailer.SMTP_CONFIG_URL, smtpConfig);
+
+        // create dummy email template
+        String templateName = "DATA_BEING_INSTALLED";
+        String welcomeTemplate = "{\"emailTo\":\"$user.emailAddress$\",\"subject\":\"data being installed $user.username$\",\"msgBody\":\"<html><b>Thanks</b> for registering at $host$. $tutumUrl$. Here is your password reset token $user.passwordResetToken$</html>\"}";
+        String url = Mailer.EMAIL_TEMPLATE_DIR + templateName;
+        Kernel.getSys().writeSystemConfig(context, area, url, welcomeTemplate);
+
+        Kernel.getAdmin().updateUserEmail(context, "rapture", "support@incapturetechnologies.com");
+        RaptureUser user = Kernel.getAdmin().getUser(context, "rapture");
+        Mailer.email(context, templateName, ImmutableMap.of("user", user));
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("host", "http://localhost:8080");
+        map.put("tutumUrl", "http://tutum:8080");
+        Kernel.getAdmin().emailUser(context, "rapture", templateName, map);
+    }
+
     @Test
     public void testMailIntegration() {
         String to = "ukmoore@gmail.com";

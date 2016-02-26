@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,8 +29,10 @@ import java.util.Map;
 import javax.sql.DataSource;
 
 import rapture.common.CallingContext;
+import rapture.common.ForeignKey;
 import rapture.common.StoredProcedureParams;
 import rapture.common.StoredProcedureResponse;
+import rapture.common.TableIndex;
 import rapture.common.TableMeta;
 
 public interface StructuredStore {
@@ -56,6 +58,8 @@ public interface StructuredStore {
     Boolean dropTable(String tableName);
 
     Boolean tableExists(String tableName);
+
+    List<String> getTables();
 
     TableMeta describeTable(String tableName);
 
@@ -91,6 +95,12 @@ public interface StructuredStore {
     Boolean createIndex(String tableName, String indexName, List<String> columnNames);
 
     Boolean dropIndex(String indexName);
+
+    List<TableIndex> getIndexes(String tableName);
+
+    String getPrimaryKey(String tableName);
+
+    List<ForeignKey> getForeignKeys(String tableName);
 
     String getDdl(String tableName, Boolean includeTableData);
 

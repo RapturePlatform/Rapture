@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,6 +27,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import rapture.common.RaptureURI;
+import rapture.common.Scheme;
 import reflex.IReflexHandler;
 import reflex.Scope;
 import reflex.debug.IReflexDebugger;
@@ -81,16 +83,12 @@ public class PullNode extends BaseNode {
             ReflexProcessValue fProc = value.asProcess();
             rVal = fProc.getOutput();
         } else {
-            Map<String, Object> retVal = handler.getDataHandler().pullData(value.asString());
-            if (retVal == null) {
-                rVal = new ReflexNullValue(lineNumber);;
-            } else {
-                rVal = new ReflexValue(MapConverter.convertMap(retVal));
-            }
+            // by default assume a document
+            RaptureURI uri = new RaptureURI(value.asString(), Scheme.DOCUMENT);
+            rVal = handler.getDataHandler().pullData(uri);
         }
         scope.assign(identifier, rVal);
         debugger.stepEnd(this, new ReflexVoidValue(lineNumber), scope);
         return new ReflexVoidValue(lineNumber);
     }
-
 }

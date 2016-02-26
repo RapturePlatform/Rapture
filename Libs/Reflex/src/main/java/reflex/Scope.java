@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -156,7 +156,7 @@ public class Scope {
 
     private boolean dottedAssignMap(ReflexValue existingValue, String[] parts, ReflexValue value) {
         Map<String, Object> mapper = existingValue.asMap();
-        for (int i = 1; i < parts.length - 2; i++) {
+        for (int i = 1; i < parts.length - 1; i++) {
             if (mapper.containsKey(parts[i])) {
                 Object val = mapper.get(parts[i]);
                 if (val instanceof ReflexValue) {
@@ -170,6 +170,14 @@ public class Scope {
                     mapper = (Map<String, Object>) val;
                 }
             } else {
+                if (i != (parts.length - 1)) {
+                    StringBuilder sb = new StringBuilder();
+                    sb.append(parts[0]);
+                    for (int j = 1; j <= i; j++) {
+                        sb.append(".").append(parts[j]);
+                    }
+                    throw new ReflexException(0, "Cannot assign a value to "+sb.toString()+" because it is not declared as a map ");
+                }
                 mapper.put(parts[i], new HashMap<String, Object>());
                 mapper = (Map<String, Object>) mapper.get(parts[i]);
             }

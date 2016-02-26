@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -347,7 +347,6 @@ public class DocApiFileTest extends AbstractFileTest {
         assertEquals(json, content);
 
         docImpl.putDoc(callingContext, repoUri + "/folder1/file2", json);
-        List<String> removedUriss = docImpl.deleteDocsByUriPrefix(callingContext, repoUri + "/folder1/folder2");
 
         // If you delete a folder from a versioned repo the file still remains
         assertTrue(docImpl.docExists(callingContext, repoUri + "/folder1/folder2/file3"));

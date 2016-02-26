@@ -36,7 +36,6 @@ api(Audit) {
    @entitle=/audit/admin
    @public void writeAuditEntryData(String logURI, String category, int level, String message, Map(String, Object) data);
    
-
    [This method retrieves previously registered log entries, given a maximum number of entries to return.]
    @entitle=/audit/admin
    @public List(AuditLogEntry) getRecentLogEntries(String logURI, int count);
@@ -44,5 +43,9 @@ api(Audit) {
    [This method retrieves any entries since a given entry was retrieved. The date of this audit entry is used to determine the start point of the query.]
    @entitle=/audit/main
    @public List(AuditLogEntry) getEntriesSince(String logURI, AuditLogEntry when);
+   
+   [This method retrieves all of the recent API call activity (including login) performed by a user, given a maximum number of entries to return.  A 'count' argument of less than 0 will return everything available.]
+   @entitle=/audit/admin
+   @public List(AuditLogEntry) getRecentUserActivity(String user, int count);
 }
 

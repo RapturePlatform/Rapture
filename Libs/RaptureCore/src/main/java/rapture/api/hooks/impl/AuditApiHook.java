@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -40,7 +40,7 @@ public class AuditApiHook extends AbstractApiHook {
     public void doExecute(HookType hookType, CallingContext context, CallName callName) {
         AuditApiImpl audit = Kernel.getAudit().getTrusted();
         if (audit.doesAuditLogExist(context, RaptureConstants.DEFAULT_AUDIT_URI)) {
-            audit.writeAuditEntry(context, RaptureConstants.DEFAULT_AUDIT_URI, "debug", 0, "User " + context.getUser() + " called " + callName.toString());
+            audit.writeAuditEntry(context, RaptureConstants.DEFAULT_AUDIT_URI, callName.getApiName().toString(), 0, "User " + context.getUser() + " called " + callName.toString());
         } else {
             log.warn("Cannot audit api call, audit log " + RaptureConstants.DEFAULT_AUDIT_URI + " does not exist");
         }

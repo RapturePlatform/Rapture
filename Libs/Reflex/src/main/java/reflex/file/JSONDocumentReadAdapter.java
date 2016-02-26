@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,8 @@ package reflex.file;
 
 import java.util.List;
 
+import com.google.common.net.MediaType;
+
 import rapture.common.impl.jackson.JacksonUtil;
 import reflex.IReflexIOHandler;
 import reflex.node.io.FileReadAdapter;
@@ -44,6 +46,11 @@ public class JSONDocumentReadAdapter implements FileReadAdapter {
         ReflexValue content = ioHandler.getContent(file);
         List<?> ret = JacksonUtil.objectFromJson(content.toString(), List.class);
         return new ReflexValue(ret);
+    }
+
+    @Override
+    public MediaType getMimeType() {
+        return MediaType.JSON_UTF_8;
     }
 
 }

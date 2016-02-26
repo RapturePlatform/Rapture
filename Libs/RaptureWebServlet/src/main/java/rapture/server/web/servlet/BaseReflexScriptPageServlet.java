@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -36,6 +36,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.http.HttpStatus;
 import org.apache.log4j.Logger;
 
@@ -80,7 +81,6 @@ public abstract class BaseReflexScriptPageServlet extends BaseServlet {
             return;
         }
         Map<String, Object> parameterMap = new HashMap<String, Object>();
-
         Map<String, Map<String, Object>> paramSet = new HashMap<>();
         Enumeration<String> e = req.getParameterNames();
         while (e.hasMoreElements()) {
@@ -211,6 +211,7 @@ public abstract class BaseReflexScriptPageServlet extends BaseServlet {
             ew.setStatus(rapEx.getStatus());
             ew.setMessage(rapEx.getMessage());
             ew.setId(rapEx.getId());
+            ew.setStackTrace(ExceptionUtils.getFullStackTrace(re));
 
             sendVerboseError(resp, ew);
         }

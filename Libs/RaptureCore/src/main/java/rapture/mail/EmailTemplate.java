@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,40 +21,37 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package rapture.log;
-
-import org.apache.log4j.Layout;
-
-import uk.org.simonsite.log4j.appender.TimeAndSizeRollingAppender;
+package rapture.mail;
 
 /**
- * @author bardhi
- * @since 9/16/14.
+ * Created by yanwang on 3/19/15.
  */
-public class Log4jAppenderFactory {
-    /**
-     * Creates a TimeAndSizeRollingAppender
-     *
-     * @param appenderName
-     * @param fileName
-     * @param maxFileSize
-     * @param maxBackups
-     * @param layout
-     * @return
-     */
-    public static TimeAndSizeRollingAppender createTSRAppender(String appenderName, String fileName, String maxFileSize, int maxBackups, Layout layout) {
-        TimeAndSizeRollingAppender appender = new TimeAndSizeRollingAppender();
-        appender.setName(appenderName);
-        appender.setLayout(layout);
-        appender.setFile(fileName);
+public class EmailTemplate {
+    private String emailTo;
+    private String subject;
+    private String msgBody;
 
-        appender.setMaxRollFileCount(maxBackups);
-        appender.setMaxFileSize(maxFileSize);
+    public String getEmailTo() {
+        return emailTo;
+    }
 
-        appender.setDatePattern(".yyy-MM-dd");
-        appender.setDateRollEnforced(true);
+    public void setEmailTo(String emailTo) {
+        this.emailTo = emailTo;
+    }
 
-        appender.activateOptions();
-        return appender;
+    public String getSubject() {
+        return subject;
+    }
+
+    public void setSubject(String subject) {
+        this.subject = subject;
+    }
+
+    public String getMsgBody() {
+        return msgBody;
+    }
+
+    public void setMsgBody(String msgBody) {
+        this.msgBody = msgBody;
     }
 }

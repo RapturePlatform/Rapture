@@ -1,32 +1,48 @@
-buildscript {
-    File fromFile = new File(new File(getGradle().getGradleUserHomeDir(), "incapture"), "incapture.gradle");
-    apply from: fromFile.getAbsolutePath();
-}
 
 plugins {
     id "com.github.hierynomus.license" version "0.12.1"
 }
 
-
 license {
-    header = file('LICENSE')
+    header file('./LICENSE')
 }
-apply plugin: 'sonar'
 
 project.version = '3.0.0'
 project.group = 'com.rapture'
 
 subprojects {
-    project.ext.set('raptureBootstrapDisablePlugins', 'false')
-    apply plugin: 'rapture-bootstrap'
+    repositories {
+      mavenLocal()
+      mavenCentral()
+      jcenter()
+      }
+
     apply plugin: 'eclipse'
+    apply plugin: 'java'
+    apply plugin: 'maven'
+    apply plugin: "com.github.hierynomus.license"
+
+    project.ext {
+        generatedMainJava = "$buildDir/generated-sources/main/java"
+        generatedMainRes = "$buildDir/generated-sources/main/resources"
+        generatedTestJava = "$buildDir/generated-sources/test/java"
+        generatedTestRes = "$buildDir/generated-sources/test/resources"
+    }
+
+    addPathFromProperty(project, "main", "java", "generatedMainJava")
+    addPathFromProperty(project, "test", "java", "generatedTestJava")
+    addPathFromProperty(project, "main", "resources", "generatedMainRes")
+    addPathFromProperty(project, "test", "resources", "generatedTestRes")
+
+    license {
+        header rootProject.file('LICENSE')
+    }
 
     project.group = parent.group
     project.version = parent.version
 
     def loggingVersion = '1.6.1'
     def httpVersion = '4.2.2'
-    def incaptureRepo = 'http://release.incapturesolutions.com/repository'
 
     // Include messages/bundle properties files from the java area
 
@@ -52,7 +68,6 @@ subprojects {
             attributes "Implementation-Vendor": "Incapture Technologies"
             attributes "Implementation-Version": project.version
             attributes "Built-By": System.getProperty('user.name')
-            attributes "Built-Date": project.timestamp
         }
     }
 
@@ -79,7 +94,6 @@ subprojects {
         compile 'commons-io:commons-io:2.0'
         compile 'com.fasterxml.jackson.core:jackson-databind:2.5.4'
         compile "log4j:log4j:1.2.17"
-        compile "uk.org.simonsite:log4j-rolling-appender:20131024-2017"
         compile "org.slf4j:jcl-over-slf4j:$loggingVersion"
         compile "org.slf4j:slf4j-api:$loggingVersion"
         compile "org.slf4j:slf4j-log4j12:$loggingVersion"
@@ -90,5 +104,22 @@ subprojects {
         testCompile 'org.powermock:powermock-module-junit4:1.5.1'
         testCompile 'org.powermock:powermock-api-easymock:1.5.1'
         testCompile 'org.easymock:easymock:3.2'
+    }
+
+
+
+}
+
+public static void addPathFromProperty(Project project, String first, String second, String property) {
+    if (property != null && project.hasProperty(property)) {
+        String path = project.ext."$property"
+        addPath(project, first, second, path)
+    }
+}
+
+public static void addPath(Project project, String first, String second, String path) {
+    File file = new File(path)
+    if (project.hasProperty('sourceSets') && project.sourceSets.hasProperty(first) && project.sourceSets."$first".hasProperty(second)) {
+        project.sourceSets."$first"."$second".srcDir path
     }
 }

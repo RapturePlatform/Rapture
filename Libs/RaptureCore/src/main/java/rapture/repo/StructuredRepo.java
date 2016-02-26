@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,8 +24,10 @@
 package rapture.repo;
 
 import rapture.common.CallingContext;
+import rapture.common.ForeignKey;
 import rapture.common.StoredProcedureParams;
 import rapture.common.StoredProcedureResponse;
+import rapture.common.TableIndex;
 import rapture.common.TableMeta;
 import rapture.structured.StructuredStore;
 
@@ -71,6 +73,9 @@ public class StructuredRepo {
         return store.tableExists(tableName);
     }
 
+    public List<String> getTables() {
+        return store.getTables();
+    }
     public TableMeta describeTable(String tableName){
         return store.describeTable(tableName);
     }
@@ -99,6 +104,18 @@ public class StructuredRepo {
 
     public Boolean dropIndex(String indexName){
         return store.dropIndex(indexName);
+    }
+
+    public List<TableIndex> getIndexes(String tablename) {
+        return store.getIndexes(tablename);
+    }
+
+    public String getPrimaryKey(String tableName) {
+        return store.getPrimaryKey(tableName);
+    }
+
+    public List<ForeignKey> getForeignKeys(String tableName) {
+        return store.getForeignKeys(tableName);
     }
 
     public List<Map<String, Object>> selectJoinedRows(List<String> tables, List<String> columnNames, String from, String where, List<String> order, Boolean ascending, int limit){

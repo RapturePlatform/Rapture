@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -33,6 +33,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 
 import rapture.common.CallingContext;
+import rapture.common.DispatchReturn;
 import rapture.common.RaptureFolderInfo;
 import rapture.common.RaptureScript;
 import rapture.common.exception.RaptNotLoggedInException;
@@ -104,11 +105,18 @@ public class MicroServiceServlet extends BaseServlet {
             String val = props.getProperty(key);
             parameterMap.put(key, val);
         }
-  
-        CallingContext context = getCallingContext(req, resp);
-        if (context != null) {
-            process(context, req, resp, parameterMap);
-        }  
+
+        DispatchReturn response;
+
+        try {
+            CallingContext context = getCallingContext(req, resp);
+            if (context != null) {
+                process(context, req, resp, parameterMap);
+            }
+        } catch (Exception ex) {
+            response = handleUnexpectedException(ex);
+            sendResponseAppropriately(response.getContext(), req, resp, response.getResponse());
+        }
     }
     
     @Override
@@ -123,16 +131,23 @@ public class MicroServiceServlet extends BaseServlet {
             parameterMap.put(key, val);
         }
 
-        CallingContext context = getCallingContext(req, resp);
-        if (context != null) {
-            process(context, req, resp, parameterMap);
+        DispatchReturn response;
+
+        try {
+            CallingContext context = getCallingContext(req, resp);
+            if (context != null) {
+                process(context, req, resp, parameterMap);
+            }
+            // Basically either we are in getChildren style mode, particularly if the request does not correspond to a document. If so - return
+            // the children at this point
+            // If we are at a document point we have two modes. One, with the parameter ?info set, implies that we should just return the service
+            // information (the document)
+            // Otherwise we are executing the service, so we need to get and validate (coerce) the parameters, call the script, and then process and return the
+            // return value
+        } catch (Exception ex){
+            response = handleUnexpectedException(ex);
+            sendResponseAppropriately(response.getContext(), req, resp, response.getResponse());
         }
-        // Basically either we are in getChildren style mode, particularly if the request does not correspond to a document. If so - return
-        // the children at this point
-        // If we are at a document point we have two modes. One, with the parameter ?info set, implies that we should just return the service
-        // information (the document)
-        // Otherwise we are executing the service, so we need to get and validate (coerce) the parameters, call the script, and then process and return the
-        // return value
 
     }
 

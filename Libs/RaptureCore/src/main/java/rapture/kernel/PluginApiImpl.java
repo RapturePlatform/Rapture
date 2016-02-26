@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -53,6 +53,7 @@ import rapture.common.RaptureFolderInfo;
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
 import rapture.common.api.PluginApi;
+import rapture.common.api.UserApi;
 import rapture.common.exception.RaptureExceptionFactory;
 import rapture.common.impl.jackson.JacksonUtil;
 import rapture.common.storable.helpers.PluginConfigHelper;
@@ -103,8 +104,6 @@ import rapture.kernel.plugin.StructuredRepoMaker;
 import rapture.kernel.plugin.StructuredTableInstaller;
 import rapture.kernel.plugin.WorkflowEncoder;
 import rapture.kernel.plugin.WorkflowInstaller;
-import rapture.kernel.plugin.WorkflowStepTemplateEncoder;
-import rapture.kernel.plugin.WorkflowStepTemplateInstaller;
 import rapture.plugin.install.PluginSandboxItem;
 import rapture.util.IDGenerator;
 
@@ -137,7 +136,6 @@ public class PluginApiImpl extends KernelBase implements PluginApi {
             .put(Scheme.JAR, new JarEncoder())
             .put(Scheme.ENTITLEMENT, new EntitlementEncoder())
             .put(Scheme.ENTITLEMENTGROUP, new EntitlementGroupEncoder())
-            .put(Scheme.WORKFLOWSTEPTEMPLATE, new WorkflowStepTemplateEncoder())
             .build();
 
     public PluginApiImpl(Kernel raptureKernel) {
@@ -194,7 +192,6 @@ public class PluginApiImpl extends KernelBase implements PluginApi {
             .put(Scheme.ENTITLEMENTGROUP, new EntitlementGroupInstaller()).put(Scheme.LOCK, new LockInstaller())
             .put(Scheme.SNIPPET, new SnippetInstaller()).put(Scheme.RELATIONSHIP, new RelationshipInstaller())
             .put(Scheme.STRUCTURED, new StructuredTableInstaller()).put(Scheme.JAR, new JarInstaller())
-            .put(Scheme.WORKFLOWSTEPTEMPLATE, new WorkflowStepTemplateInstaller())
             .build();
 
     private Map<Scheme, RaptureInstaller> scheme2repoMaker = ImmutableMap.<Scheme, RaptureInstaller> builder()
@@ -235,7 +232,7 @@ public class PluginApiImpl extends KernelBase implements PluginApi {
     private void installItem(CallingContext ctx, PluginTransportItem item) {
         RaptureURI uri = new RaptureURI(item.getUri(), null);
         if (isRepository(uri)) return;
-        log.info("Installing plugin item: " + uri.toString());
+        log.info("Installing plugin item: " + uri.toShortString());
 
         RaptureInstaller installer = isRaw(uri) ? scheme2rawInstaller.get(uri.getScheme()) : scheme2installer.get(uri.getScheme());
         if (installer == null) {
@@ -392,7 +389,7 @@ public class PluginApiImpl extends KernelBase implements PluginApi {
 
     private boolean addFolder(CallingContext context, PluginManifest manifest, RaptureURI uri) {
         boolean flag = false;
-        Map<String, RaptureFolderInfo> map = Kernel.getSys().listByUriPrefix(context, uri.toString(), null, 0, Long.MAX_VALUE, true).getChildren();
+        Map<String, RaptureFolderInfo> map = Kernel.getSys().listByUriPrefix(context, uri.toString(), null, 0, Long.MAX_VALUE, 0L).getChildren();
         List<PluginManifestItem> items = manifest.getContents();
         if (items == null) items = Lists.newArrayList();
         Set<String> orig = Sets.newHashSet();

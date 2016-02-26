@@ -36,6 +36,14 @@ api(Structured) {
     @entitle=/structured/read/$f(tableUri)
     @public Boolean tableExists(String tableUri);
 
+    [get all schemas]
+    @entitle=/structured/read
+    @public List<String> getSchemas();
+
+    [get all tables of a certain schema]
+    @entitle=/structured/read
+    @public List<String> getTables(String repoUri);
+
     [get table description]
     @entitle=/structured/read/$f(tableUri)
     @public Map<String, String> describeTable(String tableUri);
@@ -63,7 +71,11 @@ api(Structured) {
     [remove an index that was previously created on a table]
     @entitle=/structured/admin/$f(tableUri)
     @public void dropIndex(String tableUri, String indexName);
-    
+
+    [get all indexes on a structured table]
+    @entitle=/structured/read/$f(tableUri)
+    @public List<TableIndex> getIndexes(String tableUri);
+
     [retrieve data from multiple tables]
     @entitle=/structured/read
     @public List(Map(String, Object)) selectJoinedRows(List(String) tableUris, List(String) columnNames, String from, String where, List(String) order, Boolean ascending, int limit);
@@ -163,5 +175,14 @@ api(Structured) {
     [Delete a stored procedure with raw SQL]
     @entitle=/structured/admin/$f(procUri)
     @public void dropProcedureUsingSql(String procUri, String rawSql);
+
+    [Get primary key of a table]
+    @entitle=/structured/read/$f(tableUri)
+    @public String getPrimaryKey(String tableUri);
+
+    [Get foreign keys of a table]
+    @entitle=/structured/read/$f(tableUri)
+    @public List(ForeignKey) getForeignKeys(String tableUri);
+
 }
 

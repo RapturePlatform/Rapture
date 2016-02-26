@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,6 +23,8 @@
  */
 package reflex.file;
 
+import com.google.common.net.MediaType;
+
 import reflex.IReflexIOHandler;
 import reflex.node.io.FileReadAdapter;
 import reflex.value.ReflexStreamValue;
@@ -33,6 +35,11 @@ public class DummyFileReadAdapter implements FileReadAdapter {
     @Override
     public ReflexValue readContent(ReflexStreamValue file, IReflexIOHandler ioHandler) {
         return ioHandler.getContent(file);
+    }
+
+    @Override
+    public MediaType getMimeType() {
+        return MediaType.PLAIN_TEXT_UTF_8;
     }
 
 }

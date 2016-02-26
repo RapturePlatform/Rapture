@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,7 +26,7 @@ package rapture.common;
 /**
  * Note that this class is referenced in types.api - any changes to this file should be reflected there.
 **/
-
+@Deprecated
 public class RaptureParameter {
     public String getName() {
         return name;

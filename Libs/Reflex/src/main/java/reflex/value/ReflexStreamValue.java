@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,6 +29,8 @@ import reflex.file.DummyFileReadAdapter;
 import reflex.file.FileReadAdapterFactory;
 import reflex.node.io.FileReadAdapter;
 
+import com.google.common.net.MediaType;
+
 /**
  * A Reflex Stream Value is abstract - it's like a file but we return a stream
  * rather than explicitly being a file.
@@ -45,6 +47,10 @@ public abstract class ReflexStreamValue {
 
     public void setFileReadAdapter(FileReadAdapter fileReadAdapter) {
         this.fileReadAdapter = fileReadAdapter;
+    }
+
+    public MediaType getFileType() {
+        return fileReadAdapter.getMimeType();
     }
 
     public void setFileType(ReflexValue type, String param1, String param2) {

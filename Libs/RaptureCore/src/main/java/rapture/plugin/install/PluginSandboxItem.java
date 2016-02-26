@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,6 +29,7 @@ import static rapture.common.Scheme.DOCUMENT;
 import static rapture.common.Scheme.EVENT;
 import static rapture.common.Scheme.FIELD;
 import static rapture.common.Scheme.IDGEN;
+import static rapture.common.Scheme.JAR;
 import static rapture.common.Scheme.JOB;
 import static rapture.common.Scheme.SCRIPT;
 import static rapture.common.Scheme.SERIES;
@@ -359,6 +360,7 @@ public class PluginSandboxItem {
             .put(".sheet", SHEET)
             .put(".series", SERIES)
             .put(".blob", BLOB)
+            .put(".jar", JAR)
             .put(".rdoc", DOCUMENT)
             .put(".idgen", IDGEN)
             .put(".revent", EVENT)
@@ -370,7 +372,6 @@ public class PluginSandboxItem {
             .put(".snippet", Scheme.SNIPPET)
             .put(".structured", Scheme.STRUCTURED)
             .put(".relationship", Scheme.RELATIONSHIP)
-            .put(".wst", Scheme.WORKFLOWSTEPTEMPLATE)
             .build();
 
     // do not edit this without making matching edits to extractScheme and getExtFromURI
@@ -423,7 +424,8 @@ public class PluginSandboxItem {
         } else {
             download(client, false);
         }
-        out.write(content);
+        if (content != null)
+            out.write(content);
     }
 
     public String getHash() {

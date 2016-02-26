@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -50,8 +50,8 @@ import com.netflix.astyanax.serializers.StringSerializer;
 import com.netflix.astyanax.util.RangeBuilder;
 
 public class AstyanaxRepoConnection extends AstyanaxCassandraBase {
-    private static Logger log = Logger.getLogger(AstyanaxRepoConnection.class);
-    private final KeyNormalizer keyNormalizer;
+    protected static Logger log = Logger.getLogger(AstyanaxRepoConnection.class);
+    protected final KeyNormalizer keyNormalizer;
     private Optional<String> pKeyPrefix; //partition key prefix
 
     public AstyanaxRepoConnection(String instance, Map<String, String> config) {
@@ -74,8 +74,16 @@ public class AstyanaxRepoConnection extends AstyanaxCassandraBase {
     }
 
     public void dropRepo() {
+        dropRepo(columnFamily.getName());
+    }
+
+    public void dropRepo(String columnFam) {
         try {
-            keyspace.dropColumnFamily(columnFamily);
+            keyspace.dropColumnFamily(columnFam);
+            if (keyspace.describeKeyspace().getColumnFamilyList().size() == 0) {
+                // There are no more repositories for this authority, so don't leave it hanging around
+                keyspace.dropKeyspace();
+            }
         } catch (ConnectionException e) {
             log.error(e);
         }
@@ -111,22 +119,32 @@ public class AstyanaxRepoConnection extends AstyanaxCassandraBase {
         return true;
     }
 
-    private static final String DATA_COLUMN_NAME = "data";
+    public boolean deleteVersionsUpTo(String key, String versionColumnName) {
+        throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, messageCatalog.getMessage("NotImplemented"));
+    }
+
+    protected String getVersionColumnName() {
+        // For unversioned, always return "data"
+        return "data";
+    }
 
     public String get(String key) {
+        return get(key, getVersionColumnName());
+    }
+
+    public String get(String key, String versionColumnName) {
         NormalizedKey normalizedKey = keyNormalizer.normalizeKey(key);
         ColumnList<String> result;
         try {
             result = keyspace.prepareQuery(columnFamily).getKey(normalizedKey.get())
-                    .withColumnRange(new RangeBuilder().setStart(DATA_COLUMN_NAME).setEnd(DATA_COLUMN_NAME).setLimit(1).build()).execute().getResult();
+                    .withColumnRange(new RangeBuilder().setStart(versionColumnName).setEnd(versionColumnName).setLimit(1).build()).execute().getResult();
         } catch (ConnectionException ce) {
             throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, messageCatalog.getMessage("DbCommsError"), ce);
         }
         if (!result.isEmpty()) {
-            return result.getColumnByName(DATA_COLUMN_NAME).getStringValue();
+            return result.getColumnByName(versionColumnName).getStringValue();
         }
         return null;
-
     }
     
     public long getRowNumber() {
@@ -151,6 +169,10 @@ public class AstyanaxRepoConnection extends AstyanaxCassandraBase {
         return ret;
     }
 
+    public void putData(String key, String value) {
+        putData(key, getVersionColumnName(), value);
+    }
+
     /**
      * Data is written to the row given by the key name, into the "data" column
      * cell.
@@ -158,14 +180,13 @@ public class AstyanaxRepoConnection extends AstyanaxCassandraBase {
      * @param key
      * @param value
      */
-    public void putData(String key, String value) {
+    public void putData(String key, String versionColumnName, String value) {
         NormalizedKey normalizedKey = keyNormalizer.normalizeKey(key);
         try {
-            keyspace.prepareColumnMutation(columnFamily, normalizedKey.get(), DATA_COLUMN_NAME).putValue(value, null).execute();
+            keyspace.prepareColumnMutation(columnFamily, normalizedKey.get(), versionColumnName).putValue(value, null).execute();
         } catch (ConnectionException ce) {
             throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, messageCatalog.getMessage("DbCommsError"), ce);
         }
-
     }
 
     private int getFolderCount(String cf, String rawPrefix, String childName) {

@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,7 +26,11 @@ package reflex;
 import java.util.List;
 import java.util.Map;
 
+import rapture.common.RaptureURI;
 import rapture.common.api.ScriptingApi;
+import reflex.value.ReflexValue;
+
+import com.google.common.net.MediaType;
 
 /**
  * A ReflexDataHandler is passed by the program invoking the walk, and actions
@@ -39,9 +43,15 @@ import rapture.common.api.ScriptingApi;
 public interface IReflexDataHandler extends ICapability {
     List<Map<String, Object>> batchPullData(List<String> displayNames);
 
+    @Deprecated
     Map<String, Object> pullData(String displayName);
 
+    @Deprecated
     String pushData(String displayName, Map<String, Object> data);
+
+    ReflexValue pullData(RaptureURI displayName);
+
+    void pushData(RaptureURI raptureURI, ReflexValue data, MediaType type);
 
     String rawPushData(String displayName, String content);
 

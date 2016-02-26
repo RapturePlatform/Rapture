@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -39,4 +39,38 @@
 // Date time
 
 println("Now is " + date() + ", time is " + time());
+
+a=date('19990127'); 
+b=date('19990128'); 
+c=date('19990128'); 
+d=date('19990129'); 
+
+assert (b == c);
+assert (b <= c);
+assert (b >= c);
+
+assert (b != a);
+assert (a < b);
+assert (b > a);
+
+assert (b != d);
+assert (d > b);
+assert (b < d);
+
+w=time('00:01:02'); 
+x=time('12:34:56'); 
+y=time('12:34:56'); 
+z=time('23:59:59'); 
+
+assert (x == y);
+assert (x <= y);
+assert (x >= y);
+
+assert (x != w);
+assert (w < x);
+assert (x > w);
+
+assert (x != z);
+assert (z > x);
+assert (x < z);
 

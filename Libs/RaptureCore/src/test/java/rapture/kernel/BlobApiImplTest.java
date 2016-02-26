@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,8 +30,12 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.junit.After;
@@ -186,7 +190,7 @@ public class BlobApiImplTest extends RepoSchemeContractTest {
         super.testPutAndGetContent();
     }
     
-    @Test()
+    @Test
     public void testDeleteBlobRepo() {
         testCreateAndGetRepo();
         blobImpl.deleteBlobRepo(callingContext, blobAuthorityURI);
@@ -199,10 +203,82 @@ public class BlobApiImplTest extends RepoSchemeContractTest {
     }
 
     @Test
-    public void testGetBlobMetaData() {
+    public void testGetBlobMetaData() throws ParseException {
+        Long before = System.currentTimeMillis();
         testPutAndGetBlob();
+        Long after = System.currentTimeMillis();
         Map<String, String> metaData = blobImpl.getBlobMetaData(callingContext, blobURI);
-        assertEquals(metaData.get("Content-Type"), "application/text");
+        assertEquals("application/text", metaData.get("Content-Type"));
+        String writeTime = metaData.get(BlobApiImpl.WRITE_TIME);
+        assertNotNull("writeTime should not be null", writeTime);
+        Date writeTimeDate = new SimpleDateFormat("EEE MMM dd HH:mm:ss.SSS z yyyy", Locale.ENGLISH).parse(writeTime);
+        Long originalWriteTime = writeTimeDate.getTime();
+        assertEquals("writeTime should be same as createdTimestamp", originalWriteTime.toString(), metaData.get(BlobApiImpl.CREATED_TIMESTAMP));
+        assertEquals("writeTime should be same as modifiedTimestamp", originalWriteTime.toString(), metaData.get(BlobApiImpl.MODIFIED_TIMESTAMP));
+        assertTrue("writeTime should be between before and after", before <= originalWriteTime &&  originalWriteTime <= after);
+        assertEquals(callingContext.getUser(), metaData.get(BlobApiImpl.USER));
+
+        blobImpl.putBlob(callingContext, blobURI, SAMPLE_BLOB, "application/text");
+        Long afterUpdate = System.currentTimeMillis();
+        metaData = blobImpl.getBlobMetaData(callingContext, blobURI);
+        Long updateTime = Long.parseLong(metaData.get(BlobApiImpl.MODIFIED_TIMESTAMP));
+        assertEquals("original writeTime should be same as createdTimestamp", originalWriteTime.toString(), metaData.get(BlobApiImpl.CREATED_TIMESTAMP));
+        assertTrue("updateTime should be between after and afterUpdate", after <= updateTime &&  updateTime <= afterUpdate);
+    }
+
+    @Test
+    public void testAddBlobContentMetaData() throws ParseException {
+        Long before = System.currentTimeMillis();
+        testPutAndGetBlob();
+        Long after = System.currentTimeMillis();
+        Map<String, String> metaData = blobImpl.getBlobMetaData(callingContext, blobURI);
+        assertEquals("application/text", metaData.get("Content-Type"));
+        String writeTime = metaData.get(BlobApiImpl.WRITE_TIME);
+        assertNotNull("writeTime should not be null", writeTime);
+        Date writeTimeDate = new SimpleDateFormat("EEE MMM dd HH:mm:ss.SSS z yyyy", Locale.ENGLISH).parse(writeTime);
+        Long originalWriteTime = writeTimeDate.getTime();
+        assertEquals("writeTime should be same as createdTimestamp", originalWriteTime.toString(), metaData.get(BlobApiImpl.CREATED_TIMESTAMP));
+        assertEquals("writeTime should be same as modifiedTimestamp", originalWriteTime.toString(), metaData.get(BlobApiImpl.MODIFIED_TIMESTAMP));
+        assertTrue("writeTime should be between before and after", before <= originalWriteTime &&  originalWriteTime <= after);
+        assertEquals(callingContext.getUser(), metaData.get(BlobApiImpl.USER));
+
+        blobImpl.addBlobContent(callingContext, blobURI, SAMPLE_BLOB);
+        BlobContainer blob = blobImpl.getBlob(callingContext, blobURI);
+        assertEquals("appended blob should be 2 X size of sample blob", (2 * SAMPLE_BLOB.length), blob.getContent().length);
+        Long afterUpdate = System.currentTimeMillis();
+        metaData = blobImpl.getBlobMetaData(callingContext, blobURI);
+        Long updateTime = Long.parseLong(metaData.get(BlobApiImpl.MODIFIED_TIMESTAMP));
+        assertEquals("original writeTime should be same as createdTimestamp", originalWriteTime.toString(), metaData.get(BlobApiImpl.CREATED_TIMESTAMP));
+        assertTrue("updateTime should be between after and afterUpdate", after <= updateTime &&  updateTime <= afterUpdate);
+    }
+
+    @Test
+    public void testAppendToBlobLowerMetaData() throws ParseException {
+        Long before = System.currentTimeMillis();
+        testCreateAndGetRepo();
+        blobImpl.appendToBlobLower(callingContext, blobURI, SAMPLE_BLOB, "application/text");
+        BlobContainer blob = blobImpl.getBlob(callingContext, blobURI);
+        assertArrayEquals(SAMPLE_BLOB, blob.getContent());
+        Long after = System.currentTimeMillis();
+        Map<String, String> metaData = blobImpl.getBlobMetaData(callingContext, blobURI);
+        assertEquals("application/text", metaData.get("Content-Type"));
+        String writeTime = metaData.get(BlobApiImpl.WRITE_TIME);
+        assertNotNull("writeTime should not be null", writeTime);
+        Date writeTimeDate = new SimpleDateFormat("EEE MMM dd HH:mm:ss.SSS z yyyy", Locale.ENGLISH).parse(writeTime);
+        Long originalWriteTime = writeTimeDate.getTime();
+        assertEquals("writeTime should be same as createdTimestamp", originalWriteTime.toString(), metaData.get(BlobApiImpl.CREATED_TIMESTAMP));
+        assertEquals("writeTime should be same as modifiedTimestamp", originalWriteTime.toString(), metaData.get(BlobApiImpl.MODIFIED_TIMESTAMP));
+        assertTrue("writeTime should be between before and after", before <= originalWriteTime &&  originalWriteTime <= after);
+        assertEquals(callingContext.getUser(), metaData.get(BlobApiImpl.USER));
+
+        blobImpl.appendToBlobLower(callingContext, blobURI, SAMPLE_BLOB, "application/text");
+        blob = blobImpl.getBlob(callingContext, blobURI);
+        assertEquals("appended blob should be 2 X size of sample blob", (2 * SAMPLE_BLOB.length), blob.getContent().length);
+        Long afterUpdate = System.currentTimeMillis();
+        metaData = blobImpl.getBlobMetaData(callingContext, blobURI);
+        Long updateTime = Long.parseLong(metaData.get(BlobApiImpl.MODIFIED_TIMESTAMP));
+        assertEquals("original writeTime should be same as createdTimestamp", originalWriteTime.toString(), metaData.get(BlobApiImpl.CREATED_TIMESTAMP));
+        assertTrue("updateTime should be between after and afterUpdate", after <= updateTime &&  updateTime <= afterUpdate);
     }
 
     @Test
@@ -357,12 +433,21 @@ public class BlobApiImplTest extends RepoSchemeContractTest {
         List<String> removed;
         removed = blobImpl.deleteBlobsByUriPrefix(callingContext, uriPrefix+"folder1/folder2/");
         assertEquals(2, removed.size());
+        // List will include the names of folders as well as blobs
         resultsMap = blobImpl.listBlobsByUriPrefix(callingContext, uriPrefix, -1);
         assertEquals(5, resultsMap.size());
+        // Delete will only return the names of the blobs that it deleted.
         removed = blobImpl.deleteBlobsByUriPrefix(callingContext, uriPrefix);
-        assertEquals(5, removed.size());
-        resultsMap = blobImpl.listBlobsByUriPrefix(callingContext, uriPrefix, -1);
-        assertEquals(0, resultsMap.size());
+        assertEquals(4, removed.size());
+        
+        try {
+            System.out.println("uriPrefix: " + uriPrefix);
+            resultsMap = blobImpl.listBlobsByUriPrefix(callingContext, uriPrefix, -1);
+        } catch (RaptureException re) {
+            assertEquals("Blob or blob folder "+uriPrefix.substring(0, uriPrefix.length()-1)+" does not exist", re.getMessage());
+        }
+        
+        
     }
 
 }

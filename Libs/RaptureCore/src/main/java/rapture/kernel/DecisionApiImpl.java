@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -64,9 +64,7 @@ import rapture.common.dp.WorkerExecutionState;
 import rapture.common.dp.WorkerStorage;
 import rapture.common.dp.Workflow;
 import rapture.common.dp.WorkflowHistoricalMetrics;
-import rapture.common.dp.WorkflowStepTemplate;
 import rapture.common.dp.WorkflowStorage;
-import rapture.common.dp.WorkflowStepTemplateStorage;
 import rapture.common.exception.ExceptionToString;
 import rapture.common.exception.RaptureException;
 import rapture.common.exception.RaptureExceptionFactory;
@@ -930,29 +928,4 @@ public class DecisionApiImpl extends KernelBase implements DecisionApi {
         InvocableUtils.writeWorkflowAuditEntry(context, workOrderURI, message, error);
     }
 
-	@Override
-	public void putWorkflowStepTemplate(CallingContext context,
-			WorkflowStepTemplate template) {
-	    WorkflowStepTemplateStorage.add(template, context.getUser(), "Define workflow step template");
-	}
-
-	@Override
-	public WorkflowStepTemplate getWorkflowStepTemplate(CallingContext context,
-			String workflowStepTemplateURI) {
-	    RaptureURI addressURI = new RaptureURI(workflowStepTemplateURI, Scheme.WORKFLOWSTEPTEMPLATE);
-		return WorkflowStepTemplateStorage.readByAddress(addressURI);
-	}
-
-	@Override
-	public void deleteWorkflowStepTemplate(CallingContext context,
-			String workflowStepTemplateURI) {
-		 RaptureURI addressURI = new RaptureURI(workflowStepTemplateURI, Scheme.WORKFLOWSTEPTEMPLATE);
-	        WorkflowStepTemplateStorage.deleteByAddress(addressURI, context.getUser(), "Delete workflow step template");
-	}
-
-	@Override
-	public List<RaptureFolderInfo> getWorflowStepTemplateChildren(
-			CallingContext context, String parentPath) {
-		 return WorkflowStepTemplateStorage.getChildren(parentPath);
-	}
 }

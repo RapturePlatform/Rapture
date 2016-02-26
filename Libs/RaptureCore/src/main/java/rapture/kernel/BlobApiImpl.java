@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,7 +22,6 @@
  * SOFTWARE.
  */
 package rapture.kernel;
-
 import static rapture.common.Scheme.BLOB;
 
 import java.io.ByteArrayInputStream;
@@ -30,7 +29,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -49,15 +50,14 @@ import rapture.common.ContentEnvelope;
 import rapture.common.EntitlementSet;
 import rapture.common.RaptureFolderInfo;
 import rapture.common.RaptureURI;
-import rapture.common.Scheme;
 import rapture.common.api.BlobApi;
 import rapture.common.exception.RaptureException;
 import rapture.common.exception.RaptureExceptionFactory;
 import rapture.common.impl.jackson.JacksonUtil;
 import rapture.common.model.BlobRepoConfig;
 import rapture.common.model.BlobRepoConfigStorage;
-import rapture.common.shared.blob.GetBlobPayload;
-import rapture.common.shared.doc.GetDocPayload;
+import rapture.common.shared.blob.DeleteBlobPayload;
+import rapture.common.shared.blob.ListBlobsByUriPrefixPayload;
 import rapture.kernel.context.ContextValidator;
 import rapture.kernel.schemes.RaptureScheme;
 import rapture.repo.BlobRepo;
@@ -65,8 +65,12 @@ import rapture.repo.BlobRepo;
 import com.google.common.base.Preconditions;
 
 public class BlobApiImpl extends KernelBase implements BlobApi, RaptureScheme {
+    public static final String WRITE_TIME = "writeTime";
+    public static final String MODIFIED_TIMESTAMP = "modifiedTimestamp";
+    public static final String USER = "user";
+    public static final String CREATED_TIMESTAMP = "createdTimestamp";
     private static Logger logger = Logger.getLogger(BlobApiImpl.class);
-    
+
     public BlobApiImpl(Kernel raptureKernel) {
         super(raptureKernel);
     }
@@ -77,7 +81,7 @@ public class BlobApiImpl extends KernelBase implements BlobApi, RaptureScheme {
         checkParameter("Config", config);
         checkParameter("MetaConfig", metaConfig);
 
-        RaptureURI interimUri = new RaptureURI(blobRepoUri, Scheme.BLOB);
+        RaptureURI interimUri = new RaptureURI(blobRepoUri, BLOB);
         String authority = interimUri.getAuthority();
         if ((authority == null) || authority.isEmpty()) {
             throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, apiMessageCatalog.getMessage("NoAuthority")); //$NON-NLS-1$
@@ -102,17 +106,17 @@ public class BlobApiImpl extends KernelBase implements BlobApi, RaptureScheme {
 
     @Override
     public void deleteBlobRepo(CallingContext context, String blobRepoUri) {
-        RaptureURI uri = new RaptureURI(blobRepoUri, Scheme.BLOB);
+        RaptureURI uri = new RaptureURI(blobRepoUri, BLOB);
         try {
             BlobRepo blobRepo = getRepoFromCache(uri.getAuthority());
-     
+
             // Ensure the repo exists
             if (blobRepo != null) {
                 Map<String, RaptureFolderInfo> blobs = this.listBlobsByUriPrefix(context, blobRepoUri, -1);
                 for (Entry<String, RaptureFolderInfo> entry : blobs.entrySet()) {
                     if (!entry.getValue().isFolder()) {
                         // Delete all the blobs!
-                        RaptureURI buri = new RaptureURI(entry.getKey(), Scheme.BLOB);
+                        RaptureURI buri = new RaptureURI(entry.getKey(), BLOB);
                         if (blobRepo.deleteBlob(context, buri)) {
                             deleteMeta(context, buri);
                         }
@@ -124,24 +128,25 @@ public class BlobApiImpl extends KernelBase implements BlobApi, RaptureScheme {
         }
 
         // delete parent directory
-        
+
         BlobRepoConfigStorage.deleteByAddress(uri, context.getUser(), "Remove blob repo");
         removeRepoFromCache(uri.getAuthority());
     }
 
     public void appendToBlobLower(CallingContext context, String blobUri, byte[] content, String contentType) {
-        RaptureURI interimUri = new RaptureURI(blobUri, Scheme.BLOB);
+        RaptureURI interimUri = new RaptureURI(blobUri, BLOB);
         Preconditions.checkNotNull(interimUri);
+        Map<String, String> newMeta = createMetaData(context);
         BlobRepo blobRepo = getRepoFromCache(interimUri.getAuthority());
-        if (blobRepo == null)
-            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, apiMessageCatalog.getMessage("NoSuchRepo", interimUri.toAuthString())); //$NON-NLS-1$
+        if (blobRepo == null) throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST,
+                apiMessageCatalog.getMessage("NoSuchRepo", interimUri.toAuthString())); //$NON-NLS-1$
         Map<String, String> meta = getBlobMetaData(ContextFactory.getKernelUser(), blobUri);
         if (meta.isEmpty()) {
             if (contentType != null) {
                 meta.put(ContentEnvelope.CONTENT_TYPE_HEADER, contentType);
             }
             meta.put(ContentEnvelope.CONTENT_SIZE, Integer.toString(content.length));
-
+            meta.putAll(newMeta);
             putMeta(meta, interimUri, ContextFactory.getKernelUser());
             blobRepo.storeBlob(context, interimUri, true, new ByteArrayInputStream(content));
 
@@ -150,29 +155,45 @@ public class BlobApiImpl extends KernelBase implements BlobApi, RaptureScheme {
         }
     }
 
+    private Map<String, String> createMetaData(CallingContext context) {
+        Map<String, String> meta = new HashMap<>();
+        Long writeTime = System.currentTimeMillis();
+        Date writeTimeDate = new Date(writeTime);
+        SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM dd HH:mm:ss.SSS z yyyy");
+        meta.put(WRITE_TIME, sdf.format(writeTimeDate));
+        meta.put(CREATED_TIMESTAMP, writeTime.toString());
+        meta.put(MODIFIED_TIMESTAMP, writeTime.toString());
+        meta.put(USER, context.getUser());
+        return meta;
+    }
+
     @Override
     public void addBlobContent(CallingContext context, String blobUri, byte[] content) {
-        RaptureURI interimUri = new RaptureURI(blobUri, Scheme.BLOB);
+        RaptureURI interimUri = new RaptureURI(blobUri, BLOB);
         Preconditions.checkNotNull(interimUri);
+        Map<String, String> newMeta = createMetaData(context);
 
         BlobRepo blobRepo = getRepoFromCache(interimUri.getAuthority());
-        if (blobRepo == null)
-            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST,  apiMessageCatalog.getMessage("NoSuchRepo", interimUri.toAuthString())); //$NON-NLS-1$
+        if (blobRepo == null) throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST,
+                apiMessageCatalog.getMessage("NoSuchRepo", interimUri.toAuthString())); //$NON-NLS-1$
 
         blobRepo.storeBlob(context, interimUri, true, new ByteArrayInputStream(content));
-
 
         Map<String, String> meta = getBlobMetaData(context, blobUri);
         String size = meta.get(ContentEnvelope.CONTENT_SIZE);
         long originalSize = Long.valueOf(size);
         originalSize += content.length;
         meta.put(ContentEnvelope.CONTENT_SIZE, "" + originalSize);
+        meta.put(WRITE_TIME, newMeta.get(WRITE_TIME));
+        meta.put(MODIFIED_TIMESTAMP, newMeta.get(MODIFIED_TIMESTAMP));
+        meta.put(USER, newMeta.get(USER));
         putMeta(meta, interimUri, context);
     }
 
     private void lowerStoreBlob(CallingContext context, String blobUri, byte[] content, String contentType, boolean append) {
-        RaptureURI interimUri = new RaptureURI(blobUri, Scheme.BLOB);
+        RaptureURI interimUri = new RaptureURI(blobUri, BLOB);
         Preconditions.checkNotNull(interimUri);
+        Map<String, String> newMeta = createMetaData(context);
 
         if (interimUri.hasAttribute()) {
             logger.debug("interim uri has attribute");
@@ -188,20 +209,24 @@ public class BlobApiImpl extends KernelBase implements BlobApi, RaptureScheme {
             // Kernel.getDoc().getTrusted().putContent(context, {document URI based on interimUri} , {something - possibly the attribute} );
         } else {
             BlobRepo blobRepo = getRepoFromCache(interimUri.getAuthority());
-            if (blobRepo == null)
-                throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST,  apiMessageCatalog.getMessage("NoSuchRepo", interimUri.toAuthString())); //$NON-NLS-1$
+            if (blobRepo == null) throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST,
+                    apiMessageCatalog.getMessage("NoSuchRepo", interimUri.toAuthString())); //$NON-NLS-1$
             // if file store, pass on docPathWithElement
             // since element contains local file path, which could be used to create sym link
             // A cleaner solution should be in place after RAP-3587
-
+            Map<String, String> attributes = getBlobMetaData(context, blobUri);
+            if (attributes.isEmpty()) {
+                attributes.put(CREATED_TIMESTAMP, newMeta.get(CREATED_TIMESTAMP));
+            }
             boolean isStored = blobRepo.storeBlob(context, interimUri, append, new ByteArrayInputStream(content));
 
-
             if (isStored) {
-                Map<String, String> attributes = new HashMap<String, String>();
                 if (contentType != null) {
                     attributes.put(ContentEnvelope.CONTENT_TYPE_HEADER, contentType);
                 }
+                attributes.put(WRITE_TIME, newMeta.get(WRITE_TIME));
+                attributes.put(MODIFIED_TIMESTAMP, newMeta.get(MODIFIED_TIMESTAMP));
+                attributes.put(USER, newMeta.get(USER));
                 attributes.put(ContentEnvelope.CONTENT_SIZE, Integer.toString(content.length));
                 putMeta(attributes, interimUri, context);
             }
@@ -220,7 +245,7 @@ public class BlobApiImpl extends KernelBase implements BlobApi, RaptureScheme {
 
         // TODO: Ben - push this up to the wrapper - the this class should
         // implement the Trusted API.
-        RaptureURI interimUri = new RaptureURI(blobUri, Scheme.BLOB);
+        RaptureURI interimUri = new RaptureURI(blobUri, BLOB);
         if (interimUri.hasAttribute()) {
             // TODO: Ben - This is messy, and shouldn't really be used, throw an
             // exception here?
@@ -234,13 +259,17 @@ public class BlobApiImpl extends KernelBase implements BlobApi, RaptureScheme {
         } else {
             BlobRepo blobRepo = getRepoFromCache(interimUri.getAuthority());
             if (blobRepo == null) {
-                throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST,  apiMessageCatalog.getMessage("NoSuchRepo", interimUri.toAuthString())); //$NON-NLS-1$
+                throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, apiMessageCatalog.getMessage("NoSuchRepo", interimUri.toAuthString())); //$NON-NLS-1$
             }
 
             try (InputStream in = blobRepo.getBlob(context, interimUri)) {
                 if (in != null) {
                     retVal.setContent(IOUtils.toByteArray(in));
-                    retVal.setHeaders(getBlobMetaData(context, blobUri));
+                    Map<String, String> metaData = getBlobMetaData(context, blobUri);
+                    Map<String, String> headers = new HashMap<>();
+                    headers.put(ContentEnvelope.CONTENT_SIZE, metaData.get(ContentEnvelope.CONTENT_SIZE));
+                    headers.put(ContentEnvelope.CONTENT_TYPE_HEADER, metaData.get(ContentEnvelope.CONTENT_TYPE_HEADER));
+                    retVal.setHeaders(headers);
                     return retVal;
                 } else {
                     return null;
@@ -254,7 +283,7 @@ public class BlobApiImpl extends KernelBase implements BlobApi, RaptureScheme {
 
     @Override
     public void deleteBlob(CallingContext context, String raptureURIString) {
-        RaptureURI blobURI = new RaptureURI(raptureURIString, Scheme.BLOB);
+        RaptureURI blobURI = new RaptureURI(raptureURIString, BLOB);
         BlobRepo blobRepo = getRepoFromCache(blobURI.getAuthority());
 
         // Has the repo been deleted?
@@ -282,7 +311,7 @@ public class BlobApiImpl extends KernelBase implements BlobApi, RaptureScheme {
         RaptureURI interimUri = new RaptureURI(blobMetaUri, BLOB);
         BlobRepo repo = getRepoFromCache(interimUri.getAuthority());
         if (repo == null) {
-            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST,  apiMessageCatalog.getMessage("NoSuchRepo", interimUri.toAuthString())); //$NON-NLS-1$
+            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, apiMessageCatalog.getMessage("NoSuchRepo", interimUri.toAuthString())); //$NON-NLS-1$
         }
         String attributesString = repo.getMeta(interimUri.getDocPath());
         if (attributesString != null) {
@@ -322,14 +351,16 @@ public class BlobApiImpl extends KernelBase implements BlobApi, RaptureScheme {
                 putBlob(context, raptureUri.toString(), blobContainer.getContent(), blobContainer.getHeaders()
                         .get(ContentEnvelope.CONTENT_TYPE_HEADER));
             } else {
-                throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, apiMessageCatalog.getMessage("ErrorGettingBlobType", content.getClass().getCanonicalName()));
+                throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR,
+                        apiMessageCatalog.getMessage("ErrorGettingBlobType", content.getClass().getCanonicalName()));
             }
         } else {
             if (content instanceof BlobRepoConfig) {
                 BlobRepoConfig rbc = (BlobRepoConfig) content;
                 createBlobRepo(context, raptureUri.toString(), rbc.getConfig(), rbc.getMetaConfig());
             } else {
-                throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, apiMessageCatalog.getMessage("ErrorGettingBlobType", content.getClass().getCanonicalName()));
+                throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR,
+                        apiMessageCatalog.getMessage("ErrorGettingBlobType", content.getClass().getCanonicalName()));
             }
         }
     }
@@ -367,7 +398,7 @@ public class BlobApiImpl extends KernelBase implements BlobApi, RaptureScheme {
 
     @Override
     public BlobRepoConfig getBlobRepoConfig(CallingContext context, String blobRepoUri) {
-        RaptureURI uri = new RaptureURI(blobRepoUri, Scheme.BLOB);
+        RaptureURI uri = new RaptureURI(blobRepoUri, BLOB);
         if (uri.hasDocPath()) {
             throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, apiMessageCatalog.getMessage("NoDocPath", blobRepoUri)); //$NON-NLS-1$
         }
@@ -386,9 +417,8 @@ public class BlobApiImpl extends KernelBase implements BlobApi, RaptureScheme {
         // But listBlobsByUriPrefix could be slow for a large number of blobs too.
 
         /***
-         * try { RaptureURI uri = new RaptureURI(seriesUri, Scheme.BLOB); String respectMah = uri.getAuthority(); for (String rfi : listBlobsByUriPrefix
-         * (context,
-         * respectMah).keySet()) { if (rfi.equals(seriesUri)) return true; } return false; } catch (Exception e) { return false; }
+         * try { RaptureURI uri = new RaptureURI(seriesUri, BLOB); String respectMah = uri.getAuthority(); for (String rfi : listBlobsByUriPrefix
+         * (context, respectMah).keySet()) { if (rfi.equals(seriesUri)) return true; } return false; } catch (Exception e) { return false; }
          ***/
         try {
             return (getBlob(context, blobUri) != null);
@@ -407,10 +437,6 @@ public class BlobApiImpl extends KernelBase implements BlobApi, RaptureScheme {
         if (authority.isEmpty()) {
             --depth;
             try {
-                GetDocPayload requestObj = new GetDocPayload();
-                requestObj.setContext(context);
-                ContextValidator.validateContext(context, EntitlementSet.Blob_getBlobRepoConfigs, requestObj);
-
                 List<BlobRepoConfig> configs = getBlobRepoConfigs(context);
                 for (BlobRepoConfig config : configs) {
                     authority = config.getAuthority();
@@ -436,7 +462,7 @@ public class BlobApiImpl extends KernelBase implements BlobApi, RaptureScheme {
         BlobRepo repo = getRepoFromCache(internalUri.getAuthority());
         Boolean getAll = false;
         if (repo == null) {
-            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST,  apiMessageCatalog.getMessage("NoSuchRepo", internalUri.toAuthString())); //$NON-NLS-1$
+            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, apiMessageCatalog.getMessage("NoSuchRepo", internalUri.toAuthString())); //$NON-NLS-1$
         }
         String parentDocPath = internalUri.getDocPath() == null ? "" : internalUri.getDocPath();
         int startDepth = StringUtils.countMatches(parentDocPath, "/");
@@ -456,26 +482,37 @@ public class BlobApiImpl extends KernelBase implements BlobApi, RaptureScheme {
             boolean top = currParentDocPath.isEmpty();
             // Make sure that you have permission to read the folder.
             try {
-                GetDocPayload requestObj = new GetDocPayload();
+                ListBlobsByUriPrefixPayload requestObj = new ListBlobsByUriPrefixPayload();
                 requestObj.setContext(context);
-                requestObj.setDocUri(currParentDocPath);
-                ContextValidator.validateContext(context, EntitlementSet.Blob_getBlob, requestObj);
-
-                List<RaptureFolderInfo> children = repo.listMetaByUriPrefix(currParentDocPath);
-
-                for (RaptureFolderInfo child : children) {
-                    String childDocPath = currParentDocPath + (top ? "" : "/") + child.getName();
-                    if (child.getName().isEmpty()) continue;
-                    String childUri = Scheme.BLOB + "://" + authority + "/" + childDocPath + (child.isFolder() ? "/" : "");
-                    ret.put(childUri, child);
-                    if (child.isFolder()) {
-                        parentsStack.push(childDocPath);
-                    }
-                }
+                requestObj.setBlobUri(currParentDocPath);
+                ContextValidator.validateContext(context, EntitlementSet.Blob_listBlobsByUriPrefix, requestObj);
             } catch (RaptureException e) {
                 // permission denied
                 log.debug("No read permission on folder " + currParentDocPath);
+                continue;
             }
+            
+
+                List<RaptureFolderInfo> children = repo.listMetaByUriPrefix(currParentDocPath);
+                if ((children == null) || (children.isEmpty()) && (currDepth==0) && (internalUri.hasDocPath())) {
+                    //System.out.println("hello....inside BlobApiImpl new code..");
+                    //System.err.println("RaptureException thrown...");
+                    throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, apiMessageCatalog.getMessage("NoSuchBlob", internalUri.toString())); //$NON-NLS-1$
+                }
+                
+                else {
+
+                    for (RaptureFolderInfo child : children) {
+                        String childDocPath = currParentDocPath + (top ? "" : "/") + child.getName();
+                        if (child.getName().isEmpty()) continue;
+                        String childUri = BLOB + "://" + authority + "/" + childDocPath + (child.isFolder() ? "/" : "");
+                        ret.put(childUri, child);
+                        if (child.isFolder()) {
+                            parentsStack.push(childDocPath);
+                        }
+                    }
+                }
+            
             if (top) startDepth--; // special case
         }
         return ret;
@@ -486,26 +523,30 @@ public class BlobApiImpl extends KernelBase implements BlobApi, RaptureScheme {
     }
 
     private void removeRepoFromCache(String authority) {
-        Kernel.getRepoCacheManager().removeRepo(Scheme.BLOB.toString(), authority);
+        Kernel.getRepoCacheManager().removeRepo(BLOB.toString(), authority);
     }
-
+    
+    @Override
     public List<String> deleteBlobsByUriPrefix(CallingContext context, String uriPrefix) {
         Map<String, RaptureFolderInfo> docs = listBlobsByUriPrefix(context, uriPrefix, Integer.MAX_VALUE);
         List<String> folders = new ArrayList<>();
         Set<String> notEmpty = new HashSet<>();
         List<String> removed = new ArrayList<>();
 
+        DeleteBlobPayload requestObj = new DeleteBlobPayload();
+        requestObj.setContext(context);
+
+        folders.add(uriPrefix.endsWith("/") ? uriPrefix : uriPrefix + "/");
         for (Map.Entry<String, RaptureFolderInfo> entry : docs.entrySet()) {
             String uri = entry.getKey();
             boolean isFolder = entry.getValue().isFolder();
             try {
-                GetBlobPayload requestObj = new GetBlobPayload();
-                requestObj.setContext(context);
                 requestObj.setBlobUri(uri);
-                ContextValidator.validateContext(context, EntitlementSet.Blob_deleteBlob, requestObj);
-                if (isFolder)
+                if (isFolder) {
+                    ContextValidator.validateContext(context, EntitlementSet.Blob_deleteBlobsByUriPrefix, requestObj);
                     folders.add(0, uri.substring(0, uri.length() - 1));
-                else {
+                } else {
+                    ContextValidator.validateContext(context, EntitlementSet.Blob_deleteBlob, requestObj);
                     deleteBlob(context, uri);
                     removed.add(uri);
                 }
@@ -524,7 +565,6 @@ public class BlobApiImpl extends KernelBase implements BlobApi, RaptureScheme {
         for (String uri : folders) {
             if (notEmpty.contains(uri)) continue;
             deleteBlob(context, uri);
-            removed.add(uri);
         }
         return removed;
     }

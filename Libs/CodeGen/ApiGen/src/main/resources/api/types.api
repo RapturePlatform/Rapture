@@ -4,6 +4,7 @@ type ErrorWrapper(@package=rapture.common) {
     String id;
     Integer status;
     String message;
+    String stackTrace;
 }
 
 [A return value from a native query.]
@@ -24,6 +25,17 @@ type RaptureDNCursor(@package=rapture.common) {
 	List<String> displayNames;
 	String continueContext;
 	boolean finished = false;
+}
+
+[Defines a connection info]
+type ConnectionInfo(@package=rapture.common) {
+    String host;
+    int port;
+    String username;
+    String password;
+    String dbName;
+    String instanceName;
+    Map(String, Object) options;
 }
 
 [Defines a BlobRepository.]
@@ -341,6 +353,8 @@ type RaptureUser(@package=rapture.common.model) {
     Boolean hasRoot = false;
     String passwordResetToken;
     Long tokenExpirationTime;
+    String registrationToken;
+    Boolean verified = true;
 }
 
 []
@@ -868,10 +882,23 @@ type RaptureFolderInfo(@package=rapture.common) {
 	boolean folder;
 }
 
-[Parameters that should be passed to a script.]
+[Parameters that should be passed to a script. Deprecated]
 type RaptureParameter(@package=rapture.common) {
 	String name;
 	RaptureParameterType parameterType;
+}
+
+[Script input and output metadata.]
+type ScriptInterface(@package=rapture.common) {
+	Map<String, ScriptParameter> inputs;
+	Map<String, ScriptParameter> outputs;
+}
+
+[Metadata for an script parameter.]
+type ScriptParameter(@package=rapture.common) {
+	RaptureParameterType parameterType;
+	String description;
+	Object defaultValue;
 }
 
 [The status of the link between two jobs.]
@@ -958,6 +985,21 @@ type StructuredTable(@package=rapture.column) {
 @Bean
 type TableMeta(@package=rapture.common) {
     Map<String, String> rows;
+}
+
+[A table index]
+@Bean
+type TableIndex(@package=rapture.common) {
+    String name;
+    List<String> columns;
+}
+
+[A foreign key]
+@Bean
+type ForeignKey(@package=rapture.common) {
+    String column;
+    String foreignTable;
+    String foreignColumn;
 }
 
 [Configuration info for a repository that stores series data.]
@@ -1072,20 +1114,6 @@ type Step(@package=rapture.common.dp) {
     List<Transition> transitions = new ArrayList<Transition>();
     String categoryOverride; //category associated with this step, if it overrides the workflow category
     Integer softTimeout = -1;
-}
-
-
-[A workflow step template]
-@Storable(storagePath : {workflowStepTemplateURI}, prefix="dp/workflowStepTemplate")
-@Addressable(scheme = WORKFLOWSTEPTEMPLATE(false))
-@Cacheable
-type WorkflowStepTemplate(@package=rapture.common.dp) {
-    WorkflowStepTemplateURI workflowStepTemplateURI;
-    String description; // some common name of which this is a step template for
-    String executable; // What is the executable for the newly created step
-    List<String> inputVariables; // What view contexts need to be set for this to run?
-    List<String> outputVariables; // What view contexts does this step set?
-    List<String> outputTransitionNames; // What are the possible output transitions for this step
 }
 
 [Each time a Workflow is executed, the execution is identified by a matching WorkOrder. A WorkOrderURI may be qualified with an id (index) of a particular Worker, e.g. workorder://myProj/myFlow#0]

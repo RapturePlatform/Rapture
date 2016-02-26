@@ -1,7 +1,5 @@
 jar.manifest.attributes "Implementation-Title" : "PersistenceGen"
 
-import com.incapture.rapgen.GenPersistence
-
 dependencies {
     compile project(":CodeGen:CodeGenLib")
     compile project(":CodeGen:PersistenceGenLib")
@@ -24,3 +22,48 @@ task genAll(description: "Generate all apis", group: taskGroup) << {
 
 genAll.dependsOn "genPersistence"
 genPersistence.dependsOn "compileJava"
+
+class GenPersistence extends DefaultTask {
+
+    def mainApiFile
+
+    @OutputDirectory
+    File destFilesDir
+
+    public GenPersistence() {
+        inputs.dir project.sourceSets.main.runtimeClasspath
+    }
+
+    @TaskAction
+    void genPersistence() {
+
+        if (mainApiFile == null) {
+            throw new RuntimeException("mainApiFile must be defined")
+        }
+
+        def destFilesPath = destFilesDir.absolutePath;
+
+
+        def execOptions = {
+            description "Generate persistence library for Storables"
+            main = "com.incapture.rapgen.persistence.GenPersistence"
+            classpath = project.sourceSets.main.runtimeClasspath
+
+            args = [
+                    '-mainApiFile',
+                    mainApiFile,
+                    '-l',
+                    'Java',
+                    '-o',
+                    "$destFilesPath",
+                    '-g',
+                    getGenType()
+            ]
+        }
+        project.javaexec(execOptions)
+    }
+
+    String getGenType() {
+        return 'API';
+    }
+}

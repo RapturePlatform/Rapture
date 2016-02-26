@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -49,7 +49,6 @@ import rapture.common.SeriesPoint;
 import rapture.common.SeriesRepoConfig;
 import rapture.common.api.SeriesApi;
 import rapture.common.exception.RaptureException;
-import rapture.common.model.DocumentRepoConfig;
 import rapture.series.SeriesFactory;
 
 public class SeriesApiFileTest extends AbstractFileTest {
@@ -95,13 +94,12 @@ public class SeriesApiFileTest extends AbstractFileTest {
         assertTrue(seriesImpl.seriesExists(callingContext, seriesURI));
     }
 
-
     @Test
     public void testIllegalRepoPaths() {
         String repo = "series://";
         try {
             seriesImpl.createSeriesRepo(ContextFactory.getKernelUser(), repo, "SREP {} using MEMORY {}");
-            fail(repo+ " is not a valid Repo URI");
+            fail(repo + " is not a valid Repo URI");
         } catch (RaptureException e) {
             assertEquals("Cannot create a repository without an authority", e.getMessage());
         }
@@ -119,12 +117,12 @@ public class SeriesApiFileTest extends AbstractFileTest {
         }
         try {
             seriesImpl.createSeriesRepo(ContextFactory.getKernelUser(), "document://x/x", "SREP {} using MEMORY {}");
-            fail(repo+"x/x is not a valid URI");
+            fail(repo + "x/x is not a valid URI");
         } catch (RaptureException e) {
             assertEquals("A Repository URI may not have a document path component", e.getMessage());
         }
     }
-    
+
     @Test
     public void testThatWhichShouldNotBe() {
         String dummyAuthorityURI = "series://dummy";
@@ -326,9 +324,19 @@ public class SeriesApiFileTest extends AbstractFileTest {
         ensureSeries(seriesAuthorityURI, "die/series");
         ensureSeries(seriesAuthorityURI, "nested/die/series");
         ensureSeries(seriesAuthorityURI, "die/nested/series");
-        seriesImpl.deleteSeriesByUriPrefix(callingContext, seriesAuthorityURI + "/die");
-        seriesImpl.deleteSeriesByUriPrefix(callingContext, seriesAuthorityURI + "/die");
-        seriesImpl.deleteSeriesByUriPrefix(callingContext, seriesAuthorityURI + "/die");
+
+        Map<String, RaptureFolderInfo> resultsMap;
+        resultsMap = seriesImpl.listSeriesByUriPrefix(callingContext, seriesAuthorityURI, 0);
+        assertEquals(10, resultsMap.size());
+
+        List<String> removed = seriesImpl.deleteSeriesByUriPrefix(callingContext, seriesAuthorityURI + "/die");
+        assertEquals(2, removed.size());
+        removed = seriesImpl.deleteSeriesByUriPrefix(callingContext, seriesAuthorityURI + "/die");
+        assertEquals(0, removed.size());
+
+        resultsMap = seriesImpl.listSeriesByUriPrefix(callingContext, seriesAuthorityURI, 0);
+        // SeriesApi doesn't delete empty folders
+        assertEquals(8, resultsMap.size());
     }
 
     private void ensureSeries(String repo, String name) {
@@ -398,13 +406,14 @@ public class SeriesApiFileTest extends AbstractFileTest {
     @Test
     public void testListByUriPrefix() {
         CallingContext callingContext = getCallingContext();
-        for (SeriesRepoConfig src : seriesImpl.getSeriesRepoConfigs(callingContext)) try {
-            seriesImpl.deleteSeriesRepo(callingContext, src.getAddressURI().toString());
-        } catch (Exception e) {}
-        
+        for (SeriesRepoConfig src : seriesImpl.getSeriesRepoConfigs(callingContext))
+            try {
+                seriesImpl.deleteSeriesRepo(callingContext, src.getAddressURI().toString());
+            } catch (Exception e) {
+            }
+
         List<SeriesRepoConfig> legacy = seriesImpl.getSeriesRepoConfigs(callingContext);
         ensureRepo(seriesAuthorityURI);
-        
 
         String uriPrefix = seriesAuthorityURI + "/uriFragment/";
         ensureRepo(seriesAuthorityURI);
@@ -448,63 +457,60 @@ public class SeriesApiFileTest extends AbstractFileTest {
         assertEquals(1, resultsMap.size());
         String str = resultsMap.keySet().toArray(new String[1])[0];
         assertEquals(uriPrefix, str);
-        
-        resultsMap = seriesImpl.listSeriesByUriPrefix(callingContext,  "series://", 1);
-        assertEquals(legacy.size()+1, resultsMap.size());
-        resultsMap = seriesImpl.listSeriesByUriPrefix(callingContext,  "series://", 2);
-        assertEquals(legacy.size()+2, resultsMap.size());
-        resultsMap = seriesImpl.listSeriesByUriPrefix(callingContext,  "series://", 3);
-        assertEquals(legacy.size()+5, resultsMap.size());
-        resultsMap = seriesImpl.listSeriesByUriPrefix(callingContext,  "series://", 4);
-        assertEquals(legacy.size()+8, resultsMap.size());
-        resultsMap = seriesImpl.listSeriesByUriPrefix(callingContext,  "series://", 5);
-        assertEquals(legacy.size()+10, resultsMap.size());
-        resultsMap = seriesImpl.listSeriesByUriPrefix(callingContext,  "series://", 6);
-        assertEquals(legacy.size()+10, resultsMap.size());
-        resultsMap = seriesImpl.listSeriesByUriPrefix(callingContext,  "series://", 0);
-        assertEquals(legacy.size()+10, resultsMap.size());
-        resultsMap = seriesImpl.listSeriesByUriPrefix(callingContext,  "series://", -1);
-        assertEquals(legacy.size()+10, resultsMap.size());
-        
+
+        resultsMap = seriesImpl.listSeriesByUriPrefix(callingContext, "series://", 1);
+        assertEquals(legacy.size() + 1, resultsMap.size());
+        resultsMap = seriesImpl.listSeriesByUriPrefix(callingContext, "series://", 2);
+        assertEquals(legacy.size() + 2, resultsMap.size());
+        resultsMap = seriesImpl.listSeriesByUriPrefix(callingContext, "series://", 3);
+        assertEquals(legacy.size() + 5, resultsMap.size());
+        resultsMap = seriesImpl.listSeriesByUriPrefix(callingContext, "series://", 4);
+        assertEquals(legacy.size() + 8, resultsMap.size());
+        resultsMap = seriesImpl.listSeriesByUriPrefix(callingContext, "series://", 5);
+        assertEquals(legacy.size() + 10, resultsMap.size());
+        resultsMap = seriesImpl.listSeriesByUriPrefix(callingContext, "series://", 6);
+        assertEquals(legacy.size() + 10, resultsMap.size());
+        resultsMap = seriesImpl.listSeriesByUriPrefix(callingContext, "series://", 0);
+        assertEquals(legacy.size() + 10, resultsMap.size());
+        resultsMap = seriesImpl.listSeriesByUriPrefix(callingContext, "series://", -1);
+        assertEquals(legacy.size() + 10, resultsMap.size());
+
     }
-    @Test 
+
+    @Test
     public void testListByPrefix() {
         String fileRepo = "//fileBasedSeriesRepo";
         String memRepo = "//memoryBasedSeriesRepo";
         SeriesApi api = Kernel.getSeries();
 
-        if (api.seriesRepoExists(callingContext, fileRepo))
-            api.deleteSeriesRepo(callingContext, fileRepo);
-        if (api.seriesRepoExists(callingContext, memRepo))
-            api.deleteSeriesRepo(callingContext, memRepo);
-        
+        if (api.seriesRepoExists(callingContext, fileRepo)) api.deleteSeriesRepo(callingContext, fileRepo);
+        if (api.seriesRepoExists(callingContext, memRepo)) api.deleteSeriesRepo(callingContext, memRepo);
+
         api.createSeriesRepo(callingContext, memRepo, "SREP {} USING MEMORY { }");
-        api.createSeriesRepo(callingContext, fileRepo, "SREP {} USING FILE { prefix=\"/tmp/" +  auth + "\"}");
-        
+        api.createSeriesRepo(callingContext, fileRepo, "SREP {} USING FILE { prefix=\"/tmp/" + auth + "\"}");
+
         ensureSeries(memRepo, "foo/bar/baz");
         ensureSeries(fileRepo, "foo/bar/baz");
-        
-        Map<String, RaptureFolderInfo> memList = api.listSeriesByUriPrefix(callingContext, memRepo+"/foo", -1);
-        Map<String, RaptureFolderInfo> fileList = api.listSeriesByUriPrefix(callingContext, fileRepo+"/foo", -1);
-        
+
+        Map<String, RaptureFolderInfo> memList = api.listSeriesByUriPrefix(callingContext, memRepo + "/foo", -1);
+        Map<String, RaptureFolderInfo> fileList = api.listSeriesByUriPrefix(callingContext, fileRepo + "/foo", -1);
+
         assertEquals(memList.size(), fileList.size());
-        
+
         for (String mem : memList.keySet()) {
             String file = mem.replaceAll(memRepo, fileRepo);
             assertEquals(memList.get(mem).getName(), fileList.get(file).getName());
             assertEquals(memList.get(mem).isFolder(), fileList.get(file).isFolder());
         }
 
-        if (api.seriesRepoExists(callingContext, fileRepo))
-            api.deleteSeriesRepo(callingContext, fileRepo);
-        if (api.seriesRepoExists(callingContext, memRepo))
-            api.deleteSeriesRepo(callingContext, memRepo);
+        if (api.seriesRepoExists(callingContext, fileRepo)) api.deleteSeriesRepo(callingContext, fileRepo);
+        if (api.seriesRepoExists(callingContext, memRepo)) api.deleteSeriesRepo(callingContext, memRepo);
     }
-    
+
     @Test
     public void testRAP3643() {
         // RAP-3643 - Create Series Store errors and creates a malformed/unremovable repo (Series API)
-                
+
         try {
             SeriesFactory.createStore(new RaptureURI("series://bogus"), "SREP { } using FILE { x=\"y\" } ");
         } catch (RaptureException e) {
@@ -513,7 +519,5 @@ public class SeriesApiFileTest extends AbstractFileTest {
         // this should be OK
         SeriesFactory.createStore(new RaptureURI("series://bogus"), "SREP { } using FILE { prefix=\"y\" } ");
     }
-
-    
 
 }

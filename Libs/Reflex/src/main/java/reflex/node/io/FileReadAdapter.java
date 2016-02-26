@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,11 +27,14 @@ import reflex.IReflexIOHandler;
 import reflex.value.ReflexStreamValue;
 import reflex.value.ReflexValue;
 
+import com.google.common.net.MediaType;
+
 /*
  * Used to adapt a line from a file into something else.
  */
 public interface FileReadAdapter {
 
     ReflexValue readContent(ReflexStreamValue fVal, IReflexIOHandler ioHandler);
+    MediaType getMimeType();
 
 }

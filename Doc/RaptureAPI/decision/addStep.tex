@@ -1,0 +1,55 @@
+The \verb+addStep+ call appends the passed in step to the workflow definition. This is
+a call that is often used when defining a workflow for the first time, along with \verb+addTransition+.
+
+The call \verb+putWorkflow+ is used to create the initial skeleton for the workflow.
+
+The \verb+Step+ parameter is a complex structure that has the following fields.
+
+
+
+
+\begin{table}[h]
+\begin{center}
+\begin{tabular}{r l p{8cm}}
+  Field & Type & Description \\
+  \hline
+  name & string & The name of this step in the workflow. Used in transition references and the "startStep" field of a workflow.\\
+  description & string & A description of this workflow. Used in user interfaces.\\
+  executable & string & The task that will be executed as part of this step. (See below) \\
+  view & map(string, string) & The view for this step -- the variables associated with this step. (See below).\\
+  transitions & list(transitions) &  The transitions for this step. (See below).\\
+  categoryOverride & string & If the step can only be executed on a certain group of \Rapture servers, this defines that group.\\
+  softTimeout & integer & An indiciation as to how long (in seconds) the step is expected to run.\\
+\end{tabular}
+\end{center}
+\end{table}
+
+\subsubsection{Step Executable}
+The step executable field of the \verb+Step+ type defines the underlying program that will be run
+when this step is executed. It is a uri where the scheme can be one of the folllowing:
+
+\begin{table}[h]
+\begin{center}
+\begin{tabular}{l p{6cm}}
+  Scheme + Example & Description \\
+  \hline
+  \verb+script://test/one+ & Runs the \Reflex script referenced with the variables in the table below set. \\
+  \verb+dp_java_invocable://myclass+ & Instantiate the java class \verb+rapture.dp.invocable.myclass+ which implements the \verb+AbstractInvocable+ interface. \\
+  \verb+workflow://other/two+ & Spawns and switches to the attached workflow. The return value from the workflow is the return value of the step.\\
+\end{tabular}
+\end{center}
+\end{table}
+
+\begin{table}[h]
+\begin{center}
+\begin{tabular}{r p{10cm}}
+  Variable Name & Meaning \\
+  \hline
+  \verb+$DP_WORK_ORDER_URI+ & The uri of the work order \\
+  \verb+$DP_WORKER_URI+ & The uri of the worker \\
+  \verb+$DP_WORKER_ID+ & The worker id \\
+  \verb+$DP_STEP_NAME+ & The step name being executed \\
+  \verb+$DP_STEP_START_TIME+ & The step start time \\
+\end{tabular}
+\end{center}
+\end{table}

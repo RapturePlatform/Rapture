@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -37,6 +37,8 @@ public class ReflexValue implements Comparable<ReflexValue> {
 
     private Object value;
     private ReflexValueType valueType;
+    
+    String NOTNULL = "Argument to ReflexValue cannot be null. Use ReflexNullValue";
 
     public enum Internal {
         NULL,
@@ -132,7 +134,7 @@ public class ReflexValue implements Comparable<ReflexValue> {
 
     public ReflexValue(int lineNumber, List<ReflexValue> v) {
         if (v == null) {
-            throw new ReflexException(lineNumber, "v == null");
+            throw new ReflexException(lineNumber, NOTNULL);
         } else {
             setValue(v);
         }
@@ -140,7 +142,7 @@ public class ReflexValue implements Comparable<ReflexValue> {
 
     public ReflexValue(int lineNumber, Object v) {
         if (v == null) {
-            throw new ReflexException(lineNumber, "v == null");
+            throw new ReflexException(lineNumber, NOTNULL);
         } else if (v instanceof ReflexValue) {
             // If we're including a value in a value, just include the value. If
             // that makes sense.
@@ -287,12 +289,27 @@ public class ReflexValue implements Comparable<ReflexValue> {
 
     @SuppressWarnings("unchecked")
     public List<ReflexValue> asList() {
-        switch (valueType) {
-            case LIST:
-                return (List<ReflexValue>) value;
-            default:
-                return null;
+        if (valueType != ReflexValueType.LIST) return null;
+    
+        // It's possible for objects other than ReflexValues to get into the list.
+        List<ReflexValue> retList = (List<ReflexValue>) value;
+
+        boolean isPure = true;
+        for (Object o : retList) {
+            if (!(o instanceof ReflexValue)) {
+                isPure = false;
+                break;
+            }
         }
+
+        if (!isPure) {
+            retList = new ArrayList<>();
+            for (Object o : (List<Object>) value) {
+                retList.add((o instanceof ReflexValue) ? (ReflexValue) o : new ReflexValue(o));
+            }
+            value = retList;
+        }
+        return retList;
     }
 
     public Long asLong() {
@@ -454,9 +471,14 @@ public class ReflexValue implements Comparable<ReflexValue> {
         if (this.isNumber() && that.isNumber()) {
             double diff = Math.abs(this.asDouble() - that.asDouble());
             return diff < 0.00000000001;
+        } else if (this.isDate() && that.isDate()) {
+            return this.asDate().equals(that);
+        } else if (this.isTime() && that.isTime()) {
+            return this.asTime().equals(that);
         } else if (this.isList() && that.isList()) {
             return compareTwoLists(this.asList(), that.asList());
         } else {
+            
             return this.value.equals(that.value);
         }
     }
@@ -554,7 +576,8 @@ public class ReflexValue implements Comparable<ReflexValue> {
 
     @JsonIgnore
     public boolean isDate() {
-        return valueType == ReflexValueType.DATE;
+        boolean b = valueType == ReflexValueType.DATE;
+        return b;
     }
 
     @JsonIgnore

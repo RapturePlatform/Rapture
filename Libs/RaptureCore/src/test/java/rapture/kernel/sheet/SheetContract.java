@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -454,28 +454,28 @@ public abstract class SheetContract {
         sheetRepo.createSheet("a/b/1");
         sheetRepo.createSheet("a/b/2");
         sheetRepo.createSheet("a/c/1");
-        List<RaptureFolderInfo> level1 = sheetRepo.listSheetByUriPrefix("");
+        List<RaptureFolderInfo> level1 = sheetRepo.listSheetsByUriPrefix("");
         assertEquals(2,  level1.size());
         
-        List<RaptureFolderInfo> level2 = sheetRepo.listSheetByUriPrefix("a/");
+        List<RaptureFolderInfo> level2 = sheetRepo.listSheetsByUriPrefix("a/");
         assertEquals(2, level2.size());
         
-        List<RaptureFolderInfo> level3 = sheetRepo.listSheetByUriPrefix("a/b/");
+        List<RaptureFolderInfo> level3 = sheetRepo.listSheetsByUriPrefix("a/b/");
         assertEquals(2, level3.size());
         
-        List<RaptureFolderInfo> level3c = sheetRepo.listSheetByUriPrefix("a/c/");
+        List<RaptureFolderInfo> level3c = sheetRepo.listSheetsByUriPrefix("a/c/");
         assertEquals(1, level3c.size());
         assertEquals("1", level3c.get(0).getName());
         assertEquals(false, level3c.get(0).isFolder());
 
 
         sheetRepo.createSheet("b/c/1");
-        List<RaptureFolderInfo> b = sheetRepo.listSheetByUriPrefix("b/");
+        List<RaptureFolderInfo> b = sheetRepo.listSheetsByUriPrefix("b/");
         assertEquals(1, b.size());
         assertEquals("c", b.get(0).getName());
         assertEquals(true, b.get(0).isFolder());
 
-        List<RaptureFolderInfo> bc = sheetRepo.listSheetByUriPrefix("b/c/");
+        List<RaptureFolderInfo> bc = sheetRepo.listSheetsByUriPrefix("b/c/");
         assertEquals(1, bc.size());
         assertEquals("1", bc.get(0).getName());
         assertEquals(false, bc.get(0).isFolder());

@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,14 +30,13 @@ import rapture.common.exception.RaptureExceptionFactory;
 import rapture.common.impl.jackson.JacksonUtil;
 import rapture.common.model.DocumentMetadata;
 import rapture.common.model.DocumentWithMeta;
+import rapture.dsl.dparse.AsOfTimeDirectiveParser;
 import rapture.index.IndexProducer;
 import rapture.repo.KeyStore;
 import rapture.repo.Messages;
 import rapture.repo.RepoUtil;
 
 import java.net.HttpURLConnection;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -52,9 +51,6 @@ import java.util.Map;
  * @author amkimian
  */
 public class VersionedMetaHandler extends AbstractMetaHandler {
-    public static final String AS_OF_TIME_FORMAT = "yyyyMMdd'T'HHmmss";
-    public static final String AS_OF_TIME_FORMAT_TZ = AS_OF_TIME_FORMAT + "Z";
-
     private static final int INITIAL_VERSION = 1;
     private KeyStore versionStore;
 
@@ -82,17 +78,38 @@ public class VersionedMetaHandler extends AbstractMetaHandler {
     protected void addToVersionStore(String docPath, String value, DocumentMetadata newMetaData) {
         String versionKey = createVersionKey(docPath, newMetaData.getVersion());
         String newMetadataJson = JacksonUtil.jsonFromObject(newMetaData);
-        metaStore.put(versionKey, newMetadataJson);
-        versionStore.put(versionKey, value);
+
+        if (supportsVersionLookupByTime()) {
+            // Make sure all the timestamps agree with each other.
+            long timestamp = newMetaData.getModifiedTimestamp();
+            metaStore.put(versionKey, timestamp, newMetadataJson);
+            versionStore.put(versionKey, timestamp, value);
+        }
+        else {
+            metaStore.put(versionKey, newMetadataJson);
+            versionStore.put(versionKey, value);
+        }
     }
 
     private String createVersionKey(String key, int version) {
-        return key + "?" + version;
+        if (supportsVersionLookupByTime()) {
+            // The version is indicated in a separate field in Cassandra
+            return key;
+        }
+        else {
+            return key + "?" + version;
+        }
     }
 
     @Override
     protected String createLatestKey(String docPath) {
-        return docPath + "?latest";
+        if (supportsVersionLookupByTime()) {
+            // The version is indicated in a separate field in Cassandra
+            return docPath;
+        }
+        else {
+            return docPath + "?latest";
+        }
     }
 
     @Override
@@ -116,11 +133,28 @@ public class VersionedMetaHandler extends AbstractMetaHandler {
 
     }
 
+    @Override
+    protected void addLatestToMetaStore(String latestKey, DocumentMetadata newMetaData) {
+        // We don't need an extra copy with the ?latest key in timestamp repos.
+        if (!supportsVersionLookupByTime()) {
+            metaStore.put(latestKey, JacksonUtil.jsonFromObject(newMetaData));
+        }
+    }
+
     protected DocumentMetadata createDeletionMeta(String user, String key) {
         return createMetadataFromLatest(user, "Deleted", key, true, INITIAL_VERSION, true);
     }
 
     public DocumentWithMeta getDocumentWithMeta(String key, int version) {
+        if (supportsVersionLookupByTime()) {
+            return getDocumentWithMetaFromTimestampRepo(key, version);
+        }
+        else {
+            return getDocumentWithMetaFromStandardRepo(key, version);
+        }
+    }
+
+    protected DocumentWithMeta getDocumentWithMetaFromStandardRepo(String key, int version) {
         String versionKey = createVersionKey(key, version);
         String content = versionStore.get(versionKey);
         DocumentWithMeta md = new DocumentWithMeta();
@@ -128,6 +162,62 @@ public class VersionedMetaHandler extends AbstractMetaHandler {
         md.setContent(content);
         md.setMetaData(getMetaFromVersionKey(versionKey));
         return md;
+    }
+
+    protected DocumentWithMeta getDocumentWithMetaFromTimestampRepo(String key, int version) {
+        // Figure out what timestamp to look for by brute forcing it for the metadata lookup,
+        // then use that timestamp to fetch the data directly for that version.
+        DocumentMetadata metadata = getMetaFromTimestampRepo(key, version);
+        String content = versionStore.get(key, metadata.getModifiedTimestamp());
+
+        DocumentWithMeta md = new DocumentWithMeta();
+        md.setDisplayName(key);
+        md.setContent(content);
+        md.setMetaData(metadata);
+        return md;
+    }
+
+    protected DocumentMetadata getMetaFromTimestampRepo(String key, int version) {
+        DocumentMetadata meta = getLatestMeta(key);
+
+        while (meta != null && meta.getVersion() > version) {
+            int numVersionsBack = meta.getVersion() - version;
+            long maxPossibleTimestamp = meta.getModifiedTimestamp() - numVersionsBack;
+            meta = getMetaAtTimestamp(key, maxPossibleTimestamp);
+        }
+
+        return meta;
+    }
+
+    public DocumentWithMeta getDocumentWithMeta(String key, long millisTimeStamp) {
+        if (!supportsVersionLookupByTime()) {
+            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR,
+                    new MessageFormat(Messages.getString("MetaBasedRepo.NotSupported")));
+        }
+
+        String content = versionStore.get(key, millisTimeStamp);
+        if (content == null) {
+            return null;
+        }
+
+        DocumentWithMeta md = new DocumentWithMeta();
+        md.setDisplayName(key);
+        md.setContent(content);
+        md.setMetaData(getMetaAtTimestamp(key, millisTimeStamp));
+        return md;
+    }
+
+    public DocumentMetadata getMetaAtTimestamp(String key, long millisTimeStamp) {
+        if (!supportsVersionLookupByTime()) {
+            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR,
+                    new MessageFormat(Messages.getString("MetaBasedRepo.NotSupported")));
+        }
+
+        String metaData = metaStore.get(key, millisTimeStamp);
+        if (metaData != null) {
+            return JacksonUtil.objectFromJson(metaData, DocumentMetadata.class);
+        }
+        return null;
     }
 
     public List<DocumentWithMeta> getDocAndMetas(List<RaptureURI> uris) {
@@ -168,6 +258,7 @@ public class VersionedMetaHandler extends AbstractMetaHandler {
 
         List<Integer> latestPositionList = new ArrayList<Integer>(latestKeys.keySet());
         List<String> latestContents = documentStore.getBatch(new ArrayList<String>(latestKeys.values()));
+
         List<String> latestMeta = metaStore.getBatch(latestKeysWithVersion);
         constructDocumentWithMetaList(ret, uris, latestPositionList, latestContents, latestMeta);
 
@@ -224,48 +315,29 @@ public class VersionedMetaHandler extends AbstractMetaHandler {
         return true;
     }
 
+    // delete versions older than cutoffMillis (lastModifiedTimestamp <= cutoffMillis)
+    public boolean deleteOldVersions(String docUri, long cutoffMillis) {
+        metaStore.deleteUpTo(docUri, cutoffMillis);
+        versionStore.deleteUpTo(docUri, cutoffMillis);
+        return true;
+    }
+
     @Override
     protected DocumentMetadata createNewMetadata(String user, String comment, String docPath) {
         return createMetadataFromLatest(user, comment, docPath, false, INITIAL_VERSION, true);
     }
 
     public Integer getVersionNumberAsOfTime(String docUri, String asOfTime) {
-        // modifiedTimestamp is in milliseconds, but the user only supplies whole second precision.
-        // Use the less precise measure to avoid the situation where the user supplies the exact datetime
-        // a document was created/modified and we say it didn't exist yet because it was created a few
-        // milliseconds later.
-        long asOfTimeUnix;
-
-        if (asOfTime.matches("t\\d+")) {
-            asOfTimeUnix = Long.parseLong(asOfTime.substring(1));
-        }
-        else {
-            String fmt = null;
-            if (asOfTime.indexOf('-') > -1) {
-                fmt = AS_OF_TIME_FORMAT_TZ;
-            }
-            else {
-                fmt = AS_OF_TIME_FORMAT;
-            }
-
-            SimpleDateFormat format = new SimpleDateFormat(fmt);
-            try {
-                asOfTimeUnix = format.parse(asOfTime).getTime() / 1000L;
-            }
-            catch (ParseException e) {
-                String[] parameters = {asOfTime, AS_OF_TIME_FORMAT};
-                throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST,
-                        new MessageFormat(Messages.getString("UserInput.InvalidDatetimeFormat"), parameters));
-            }
-        }
+        AsOfTimeDirectiveParser parser = new AsOfTimeDirectiveParser(asOfTime);
+        long asOfTimeMillis = parser.getMillisTimestamp();
 
         DocumentMetadata metadata = getLatestMeta(docUri);
-        if (metadata.getCreatedTimestamp() / 1000L > asOfTimeUnix) {
+        if (metadata.getCreatedTimestamp() > asOfTimeMillis) {
             return null;
         }
 
         int version = metadata.getVersion();
-        while (metadata != null && metadata.getModifiedTimestamp() / 1000L > asOfTimeUnix) {
+        while (metadata != null && metadata.getModifiedTimestamp() > asOfTimeMillis) {
             version--;
             if (version < 1) {
                 // Shouldn't happen because we checked for this above, but...
@@ -282,5 +354,9 @@ public class VersionedMetaHandler extends AbstractMetaHandler {
         }
 
         return version;
+    }
+
+    public boolean supportsVersionLookupByTime() {
+       return versionStore.supportsVersionLookupByTime();
     }
 }

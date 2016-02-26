@@ -1,7 +1,5 @@
 jar.manifest.attributes "Implementation-Title" : "ApiGen"
 
-import com.incapture.rapgen.GenApi
-
 dependencies {
     compile project(":CodeGen:CodeGenLib")
 }
@@ -96,4 +94,74 @@ genAll.dependsOn("compileJava")
 
 task packagePython << {
 	println "packagePython task is no longer necessary. This action is now done by build in PythonLib"
+}
+
+public class GenApi extends DefaultTask {
+
+    String mainApiFile
+    String language
+
+    def mainClassName = "com.incapture.rapgen.GenApi"
+
+    @Optional @InputDirectory
+    File codeSamplesJava
+
+    @Optional @OutputDirectory
+    File kernelDestDir
+    @OutputDirectory
+    File apiDestDir
+
+    public GenApi() {
+        inputs.dir project.sourceSets.main.runtimeClasspath
+        inputs.dir project.file("src/main/resources")
+    }
+
+    @TaskAction
+    void genApi() {
+        if (mainApiFile == null) {
+            throw new RuntimeException("mainApiFile must be defined")
+        }
+        def kernelDestPath;
+        def apiDestPath;
+        if (kernelDestDir != null) {
+            kernelDestPath = kernelDestDir.absolutePath;
+            apiDestPath = apiDestDir.absolutePath;
+        } else {
+            kernelDestPath = new File(apiDestDir, language).absolutePath;
+            apiDestPath = new File(apiDestDir, language).absolutePath;
+        }
+
+        println(String.format("kernelDestPath=%s, apiDestPath=%s", kernelDestPath, apiDestPath))
+
+        def javaArgs = [
+                '-mainApiFile',
+                mainApiFile,
+                '-l',
+                language,
+                '-o',
+                kernelDestPath,
+                '-a',
+                apiDestPath,
+                '-g',
+                getGenType()
+        ]
+
+        if (codeSamplesJava != null) {
+            javaArgs.add('--codeSamplesJava')
+            javaArgs.add(codeSamplesJava)
+        }
+
+        def execOptions = {
+            description "Generate API for ${language}"
+            main = mainClassName
+            classpath = project.sourceSets.main.runtimeClasspath
+            args = javaArgs
+        }
+
+        project.javaexec(execOptions)
+    }
+
+    String getGenType() {
+        return 'API';
+    }
 }

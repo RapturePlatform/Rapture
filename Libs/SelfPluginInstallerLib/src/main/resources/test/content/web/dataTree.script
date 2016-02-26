@@ -13,7 +13,7 @@ if prefix == "/" do
 else do
   children = #doc.findDocsByUriPrefix(prefix, 1);
 
-  rfis = []
+  rfis = [];
   for each in keys(children) do
     rfis += children[each];
   end

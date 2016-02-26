@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,25 +23,19 @@
  */
 package rapture.kernel.alert.email;
 
-import java.util.Properties;
-
-import javax.mail.Authenticator;
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.PasswordAuthentication;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
-
 import org.apache.log4j.Logger;
-
 import rapture.common.impl.jackson.JacksonUtil;
 import rapture.event.RaptureAlertEvent;
 import rapture.kernel.ContextFactory;
 import rapture.kernel.Kernel;
 import rapture.kernel.alert.EventAlerter;
-import rapture.kernel.alert.email.template.EmailTemplate;
+import rapture.mail.EmailTemplate;
+import rapture.mail.SMTPConfig;
+
+import javax.mail.*;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+import java.util.Properties;
 
 public class EmailAlerter implements EventAlerter {
     public static final String TYPE = "EMAIL";
@@ -49,7 +43,7 @@ public class EmailAlerter implements EventAlerter {
     private static final Logger logger = Logger.getLogger(EmailAlerter.class);
     private static final String CONFIG_URI = "dp/alert/config/email";
     private static final String TEMPLATE_URI = "dp/alert/template/email/";
-    private static final EmailConfig EMAIL_CONFIG = getEmailConfig();
+    private static final SMTPConfig EMAIL_CONFIG = getEmailConfig();
 
     private EmailTemplate emailTemplate;
 
@@ -97,8 +91,8 @@ public class EmailAlerter implements EventAlerter {
         });
     }
 
-    private static EmailConfig getEmailConfig() {
+    private static SMTPConfig getEmailConfig() {
         String configString = Kernel.getSys().retrieveSystemConfig(ContextFactory.getKernelUser(), "CONFIG", CONFIG_URI);
-        return JacksonUtil.objectFromJson(configString, EmailConfig.class);
+        return JacksonUtil.objectFromJson(configString, SMTPConfig.class);
     }
 }

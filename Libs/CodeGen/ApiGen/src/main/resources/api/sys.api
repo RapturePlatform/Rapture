@@ -27,14 +27,15 @@ api(Sys) {
     depth indicates the number of levels to retrieve data for.
     If maximum > 0 then cap the number of entries returned
     
-    if refresh is false and there are more results than the defined maximum then store the remainder in the cache for quick access next time
+    if there are more results than the defined maximum then store the remainder in the cache for quick access next time.
+    The cache will expire after timeToLive milliseconds. If a zero or negative value is supplied then the configured default will be used.
           
      If refresh is true and there are more results than the defined maximum then keep track of the values that have been returned.
      On the next call re-read the tree and return only new entries. 
      This is much slower than without refresh because the tree is re-read each time. ]
      
     @entitle=/repo/read
-    @public ChildrenTransferObject listByUriPrefix(String raptureURI, String marker, int depth, Long maximum, Boolean refresh);
+    @public ChildrenTransferObject listByUriPrefix(String raptureURI, String marker, int depth, Long maximum, Long millisUntilCacheExpiry);
     
     [Retrieve all the immediate children of a URI]
     @entitle=/repo/read
@@ -48,11 +49,23 @@ api(Sys) {
      This is slower than without refresh because the tree is re-read each time.]
 
     @entitle=/repo/read
-    @public ChildrenTransferObject getAllChildren(String raptureURI, String marker, Long maximum, Boolean refresh);
+    @public ChildrenTransferObject getAllChildren(String raptureURI, String marker, Long maximum);
     
     [Determine whether the URI references an object, a folder, both or neither]
     @entitle=/repo/read
     @public NodeEnum getFolderInfo(String raptureURI);
-   
+
+    [Gets connection info of given connection type.]
+    @entitle=/repo/read
+    @public Map(String, ConnectionInfo) getConnectionInfo(String connectionType);
+
+    [Puts connection info of an instance.]
+    @entitle=/repo/write
+    @public void putConnectionInfo(String connectionType, ConnectionInfo connectionInfo);
+
+    [Sets connection info of an instance.]
+    @entitle=/repo/write
+    @public void setConnectionInfo(String connectionType, ConnectionInfo connectionInfo);
+
 }
 

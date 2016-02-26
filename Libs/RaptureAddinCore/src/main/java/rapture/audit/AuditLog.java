@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -45,10 +45,11 @@ public interface AuditLog {
     Boolean writeLog(String category, int level, String message, String user);
 
     Boolean writeLogData(String category, int level, String message, String user, Map<String, Object> data);
-    
+
     List<AuditLogEntry> getEntriesSince(AuditLogEntry when);
 
     void setContext(RaptureURI internalURI);
 
+    List<AuditLogEntry> getRecentUserActivity(String user, int count);
 
 }

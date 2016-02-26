@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -50,8 +50,8 @@ import rapture.common.model.DocumentMetadata;
 import rapture.common.model.DocumentRepoConfig;
 import rapture.common.model.DocumentWithMeta;
 import rapture.common.version.ApiVersion;
+import rapture.dsl.dparse.AsOfTimeDirectiveParser;
 import rapture.kernel.schemes.RepoSchemeContractTest;
-import rapture.repo.meta.handler.VersionedMetaHandler;
 
 public class DocApiImplTest extends RepoSchemeContractTest {
 
@@ -107,12 +107,45 @@ public class DocApiImplTest extends RepoSchemeContractTest {
     private long[] putVersionsOfDocInRepo(String docUri, int numVersions, int microsecondsBetween) throws InterruptedException {
         long[] versionTimes = new long[numVersions];
         for (int i = 0; i < numVersions; i++) {
-            versionTimes[i] = System.currentTimeMillis();
-            String jsonContent = "{ \"time\" : \"" + versionTimes[i] + "\" }";
+            String jsonContent = "{ \"version\" : \"" + (i + 1) + "\" }";
             api.putDoc(ContextFactory.getKernelUser(), docUri, jsonContent);
+            DocumentMetadata meta = api.getDocMeta(ContextFactory.getKernelUser(), docUri);
+            versionTimes[i] = meta.getModifiedTimestamp();
             Thread.sleep(microsecondsBetween);
         }
         return versionTimes;
+    }
+
+    @Test
+    public void testListNonexistentAuthority() {
+        CallingContext ctx = ContextFactory.getKernelUser();
+        String authority = "document://For_Testing_"+System.currentTimeMillis();
+        try {
+            api.listDocsByUriPrefix(ctx, authority, 0);
+            fail("Exception expected");
+        } catch (RaptureException re) {
+            assertEquals("Repository "+authority+" does not exist", re.getMessage());
+        }
+    }
+    
+    @Test
+    public void testNonExistentFolderListDocsByUriPrefix() {
+        CallingContext ctx = ContextFactory.getKernelUser();
+        String docUri = "document://test."+System.currentTimeMillis();
+        
+        for (DocumentRepoConfig drc : api.getDocRepoConfigs(ctx)) {
+            api.deleteDocRepo(ctx, drc.getAddressURI().toString());
+        }
+        api.createDocRepo(ctx, docUri, "REP {} USING MEMORY {}");
+        String uri = docUri+"/testFolder/fish/face";
+        try{
+            api.listDocsByUriPrefix(ctx, uri, -1);
+            fail("Exception expected");
+        } catch (RaptureException re) {
+            assertEquals("Document or folder " +uri+ " does not exist", re.getMessage());
+        }
+        
+        
     }
 
     @Test
@@ -123,16 +156,16 @@ public class DocApiImplTest extends RepoSchemeContractTest {
         int numVersions = 3;
         int microsecondsBetween = 2;
 
-        long[] versionTimes = putVersionsOfDocInRepo(docUri, numVersions, microsecondsBetween);
+        putVersionsOfDocInRepo(docUri, numVersions, microsecondsBetween);
 
         for (int i = 0; i < numVersions; i++) {
-            String versionedDocUri = docUri + "@" + (i+1);
+            String versionedDocUri = docUri + "@" + (i + 1);
             DocumentWithMeta documentWithMeta = api.getDocAndMeta(ctx, versionedDocUri);
             String docContent = documentWithMeta.getContent();
             DocumentMetadata docMeta = documentWithMeta.getMetaData();
 
-            assertTrue("Doc content should contain expected data for version.", docContent.matches(".*" + versionTimes[i] + ".*"));
-            assertEquals("Meta data should reflect expected version.", i+1, (long) docMeta.getVersion());
+            assertTrue("Doc content should contain expected data for version.", docContent.matches(".*" + (i + 1) + ".*"));
+            assertEquals("Meta data should reflect expected version.", i + 1, (long) docMeta.getVersion());
 
             assertEquals("Doc content should be the same from getDocAndMeta and getDoc.", docContent, api.getDoc(ctx, versionedDocUri));
             assertEquals("Meta data should be the same from getDocAndMeta and getDocMeta.", docMeta, api.getDocMeta(ctx, versionedDocUri));
@@ -148,46 +181,45 @@ public class DocApiImplTest extends RepoSchemeContractTest {
         String docUri = repoUri + "/mydoc";
         int numVersions = 3;
 
-        // Need enough time between versions to distinguish them from each other at the whole second level of precision.
-        int microsecondsBetween = 2000;
+        int microsecondsBetween = 2;
 
         long[] versionTimes = putVersionsOfDocInRepo(docUri, numVersions, microsecondsBetween);
         for (int i = 0; i < numVersions; i++) {
             doTestAllAsOfTimeURIVariants(docUri, versionTimes[i], i + 1, "Exact time version was submitted should return that version");
         }
 
-        doTestAllAsOfTimeURIVariants(docUri, versionTimes[numVersions - 1] + 1000, numVersions,
+        doTestAllAsOfTimeURIVariants(docUri, versionTimes[numVersions - 1] + 1, numVersions,
                 "With AsOfTime later than last version, get last version");
-        doTestAllAsOfTimeURIVariants(docUri, versionTimes[numVersions - 1] - 1000, numVersions - 1,
+        doTestAllAsOfTimeURIVariants(docUri, versionTimes[numVersions - 1] - 1, numVersions - 1,
                 "With AsOfTime between two versions, get earlier version");
 
         try {
-            doTestAllAsOfTimeURIVariants(docUri, versionTimes[0] - 1000, 0, "");
+            doTestAllAsOfTimeURIVariants(docUri, versionTimes[0] - 1, 0, "");
             fail("Should have gotten exception trying to get version from before doc existed.");
+        } catch (RaptureException e) {
         }
-        catch (RaptureException e) { }
 
         api.archiveRepoDocs(ctx, docUri, 2, versionTimes[2], true);
 
         try {
-            doTestAllAsOfTimeURIVariants(docUri, versionTimes[0] + 1000, 0, "");
+            doTestAllAsOfTimeURIVariants(docUri, versionTimes[0] + 1, 0, "");
             fail("Should have gotten exception trying to get version that has been deleted.");
+        } catch (RaptureException e) {
         }
-        catch (RaptureException e) { }
 
         api.deleteDocRepo(ctx, repoUri);
     }
 
     protected void doTestAllAsOfTimeURIVariants(String docUri, long milliseconds, int expectedVersion, String testMessage) {
-        // Test all three variants of an AsOfTime url for a given point in time
-        SimpleDateFormat dateFormatWithTZ = new SimpleDateFormat(VersionedMetaHandler.AS_OF_TIME_FORMAT_TZ);
-        SimpleDateFormat dateFormatWithoutTZ = new SimpleDateFormat(VersionedMetaHandler.AS_OF_TIME_FORMAT);
-        long timestamp = milliseconds / 1000;
+        // Test all three millisecond variants of an AsOfTime url for a given point in time.
+        // (Testing variants with whole second precision is a bit problematic here, let's leave that to other tests.)
+        SimpleDateFormat dateFormatWithTZ = new SimpleDateFormat(AsOfTimeDirectiveParser.AS_OF_TIME_FORMAT_MS_TZ);
+        SimpleDateFormat dateFormatWithoutTZ = new SimpleDateFormat(AsOfTimeDirectiveParser.AS_OF_TIME_FORMAT_MS);
 
         Date versionDate = new Date(milliseconds);
-        String datetimeUri   = docUri + "@" + dateFormatWithoutTZ.format(versionDate);
+        String datetimeUri = docUri + "@" + dateFormatWithoutTZ.format(versionDate);
         String datetimeUriTZ = docUri + "@" + dateFormatWithTZ.format(versionDate);
-        String timestampUri  = docUri + "@t" + timestamp;
+        String timestampUri = docUri + "@t" + milliseconds;
 
         assertEquals(testMessage, expectedVersion, (long) api.getDocMeta(ContextFactory.getKernelUser(), datetimeUri).getVersion());
         assertEquals(testMessage, expectedVersion, (long) api.getDocMeta(ContextFactory.getKernelUser(), datetimeUriTZ).getVersion());
@@ -208,19 +240,19 @@ public class DocApiImplTest extends RepoSchemeContractTest {
             api.createDocRepo(ContextFactory.getKernelUser(), "", "REP {} using MEMORY {}");
             fail("URI cannot be null or empty");
         } catch (RaptureException e) {
-             assertEquals("Argument Repository URI cannot be null or empty", e.getMessage());
+            assertEquals("Argument Repository URI cannot be null or empty", e.getMessage());
         }
         try {
             api.createDocRepo(ContextFactory.getKernelUser(), null, "REP {} using MEMORY {}");
             fail("URI cannot be null or empty");
         } catch (RaptureException e) {
-             assertEquals("Argument Repository URI cannot be null or empty", e.getMessage());
+            assertEquals("Argument Repository URI cannot be null or empty", e.getMessage());
         }
         try {
             api.createDocRepo(ContextFactory.getKernelUser(), docPath, "REP {} using MEMORY {}");
             fail("Document repository Uri can't have a doc path component");
         } catch (RaptureException e) {
-             assertEquals("A Repository URI may not have a document path component", e.getMessage());
+            assertEquals("A Repository URI may not have a document path component", e.getMessage());
         }
     }
 

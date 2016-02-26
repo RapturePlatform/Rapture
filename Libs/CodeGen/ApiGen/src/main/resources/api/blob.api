@@ -53,12 +53,12 @@ api(Blob) {
    @public Map(String,String) getBlobMetaData(String blobUri);
 
    [Returns full pathnames for an entire subtree as a map of the path to RFI.]
-   @entitle=/data/list/$f(uriPrefix)
-   @public Map(String,RaptureFolderInfo) listBlobsByUriPrefix(String uriPrefix, int depth);
+   @entitle=/data/list/$f(blobUri)
+   @public Map(String,RaptureFolderInfo) listBlobsByUriPrefix(String blobUri, int depth);
 
    [Removes a folder and its contents recursively, including empty subfolders. Validates entitlement on individual blobs and folders. Returns a list of the blobs and folders removed.]
-   @entitle=/data/write/$f(uriPrefix)
-   @public List(String) deleteBlobsByUriPrefix(String uriPrefix);
+   @entitle=/data/write/$f(blobUri)
+   @public List(String) deleteBlobsByUriPrefix(String blobUri);
 
 
 }

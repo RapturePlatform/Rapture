@@ -17,6 +17,8 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.sql.DataSource;
 
@@ -26,9 +28,12 @@ import org.springframework.jdbc.support.DatabaseMetaDataCallback;
 import org.springframework.jdbc.support.JdbcUtils;
 import org.springframework.jdbc.support.MetaDataAccessException;
 
+import rapture.common.connection.ConnectionType;
+import rapture.common.connection.PostgresConnectionInfoConfigurer;
 import rapture.common.exception.ExceptionToString;
 import rapture.common.exception.RaptureExceptionFactory;
-import rapture.config.MultiValueConfigLoader;
+import rapture.kernel.ContextFactory;
+import rapture.kernel.Kernel;
 import rapture.postgres.connection.DataSourceMonitor;
 import rapture.repo.jdbc.TransactionAwareDataSource;
 import rapture.repo.postgres.PostgresSanitizer;
@@ -42,6 +47,18 @@ import com.mchange.v2.c3p0.ComboPooledDataSource;
  */
 public class ConnectionCacheLoader extends CacheLoader<String, ConnectionInfo> {
     private static final Logger log = Logger.getLogger(ConnectionCacheLoader.class);
+
+    public static final Map<String, Integer> DEFAULT_OPTIONS = new HashMap<>();
+    static {
+        DEFAULT_OPTIONS.put("initialPoolSize", 10);
+        DEFAULT_OPTIONS.put("minPoolSize", 10);
+        DEFAULT_OPTIONS.put("maxPoolSize", 50);
+        DEFAULT_OPTIONS.put("maxIdleTimeExcessConnections", 600);
+        DEFAULT_OPTIONS.put("maxStatements", 10);
+        DEFAULT_OPTIONS.put("statementCacheNumDeferredCloseThreads", 0);
+        DEFAULT_OPTIONS.put("idleConnectionTestPeriod", 600);
+    }
+
     private final DataSourceMonitor monitor;
 
     public ConnectionCacheLoader(DataSourceMonitor monitor) {
@@ -58,33 +75,38 @@ public class ConnectionCacheLoader extends CacheLoader<String, ConnectionInfo> {
     }
 
     private TransactionAwareDataSource createDataSource(String instanceName) {
-        String url = getConfig(instanceName, "url");
-        String user = getConfig(instanceName, "user");
-        validateConfig(url, user);
-        log.info("Host is " + url);
+        rapture.common.ConnectionInfo info = Kernel.getSys().getConnectionInfo(
+                ContextFactory.getKernelUser(),
+                ConnectionType.POSTGRES.toString()
+                ).get(instanceName);
+        if(info == null) {
+            throw RaptureExceptionFactory.create("Postgres instance is not defined: " + instanceName);
+        }
+        log.info("connection info = " + info);
         try {
-            return createFromConfig(url, user, instanceName);
+            return createFromConfig(instanceName, info);
         } catch (PropertyVetoException e) {
             throw RaptureExceptionFactory.create("Connection to Postgres failed: " + ExceptionToString.format(e));
         }
     }
 
-    private String getConfig(String instanceName, String property) {
-        return MultiValueConfigLoader.getConfig(String.format("POSTGRES-%s.%s", instanceName, property));
-    }
-
     private static final String DRIVER_CLASS = "org.postgresql.Driver";
     private static final int DEFAULT_CHECKOUT_TIMEOUT = 3000; // milliseconds
 
-    private TransactionAwareDataSource createFromConfig(String url, String user, String instanceName) throws PropertyVetoException {
-        
+    private TransactionAwareDataSource createFromConfig(String instanceName, rapture.common.ConnectionInfo info) throws PropertyVetoException {
+
+        String url = PostgresConnectionInfoConfigurer.getUrl(info);
+        String user = info.getUsername();
+        validateConfig(url, user);
+        log.info("Host is " + url);
+
         ComboPooledDataSource dataSource = new ComboPooledDataSource();
         dataSource.setDataSourceName(createDataSourceName(instanceName));
         dataSource.setDriverClass(DRIVER_CLASS); // loads the jdbc driver
         dataSource.setJdbcUrl(url);
         dataSource.setUser(user);
         dataSource.setCheckoutTimeout(DEFAULT_CHECKOUT_TIMEOUT);
-        String password = getConfig(instanceName, "password");
+        String password = info.getPassword();
         if (!StringUtils.isBlank(password)) {
             dataSource.setPassword(password);
         } else {
@@ -92,33 +114,41 @@ public class ConnectionCacheLoader extends CacheLoader<String, ConnectionInfo> {
         }
 
         // pool size configuration
-        dataSource.setInitialPoolSize(getConfigInt(instanceName, "initialPoolSize"));
-        dataSource.setMinPoolSize(getConfigInt(instanceName, "minPoolSize"));
-        dataSource.setMaxPoolSize(getConfigInt(instanceName, "maxPoolSize"));
-        dataSource.setMaxIdleTimeExcessConnections(getConfigInt(instanceName, "maxIdleTimeExcessConnections"));
+        dataSource.setInitialPoolSize(getOptionAsInt(info, "initialPoolSize"));
+        dataSource.setMinPoolSize(getOptionAsInt(info, "minPoolSize"));
+        dataSource.setMaxPoolSize(getOptionAsInt(info, "maxPoolSize"));
+        dataSource.setMaxIdleTimeExcessConnections(getOptionAsInt(info, "maxIdleTimeExcessConnections"));
 
         // statement size configuration
-        dataSource.setMaxStatements(getConfigInt(instanceName, "maxStatements"));
-        dataSource.setStatementCacheNumDeferredCloseThreads(getConfigInt(instanceName, "statementCacheNumDeferredCloseThreads"));
+        dataSource.setMaxStatements(getOptionAsInt(info, "maxStatements"));
+        dataSource.setStatementCacheNumDeferredCloseThreads(getOptionAsInt(info, "statementCacheNumDeferredCloseThreads"));
 
         // connection testing
-        dataSource.setIdleConnectionTestPeriod(getConfigInt(instanceName, "idleConnectionTestPeriod"));
-        dataSource.setTestConnectionOnCheckin(Boolean.valueOf(getConfig(instanceName, "testConnectionOnCheckin")));
+        dataSource.setIdleConnectionTestPeriod(getOptionAsInt(info, "idleConnectionTestPeriod"));
+        boolean testConnectionOnCheckin = true;
+        if(info.getOption("testConnectionOnCheckin") != null) {
+            testConnectionOnCheckin = (boolean) info.getOption("testConnectionOnCheckin");
+        }
+        dataSource.setTestConnectionOnCheckin(testConnectionOnCheckin);
 
         monitor.monitor(dataSource);
-        
+
         try {
             Connection connection = DriverManager.getConnection(url, user, password);
             connection.close();
         } catch (SQLException e) {
             throw RaptureExceptionFactory.create(ExceptionToString.format(e));
         }
-        
+
         return new TransactionAwareDataSource(dataSource);
     }
 
-    private int getConfigInt(String instanceName, String minPoolSize) {
-        return Integer.parseInt(getConfig(instanceName, minPoolSize));
+    private int getOptionAsInt(rapture.common.ConnectionInfo info, String key) {
+        if(info.getOption(key) != null) {
+            return (int) info.getOption(key);
+        } else {
+            return DEFAULT_OPTIONS.get(key);
+        }
     }
 
     private String createDataSourceName(String instanceName) {

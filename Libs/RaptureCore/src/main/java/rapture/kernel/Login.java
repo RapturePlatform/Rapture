@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,8 +23,11 @@
  */
 package rapture.kernel;
 
+import java.net.HttpURLConnection;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+
 import rapture.common.CallingContext;
 import rapture.common.RaptureConstants;
 import rapture.common.exception.RaptureException;
@@ -39,8 +42,6 @@ import rapture.common.version.ApiVersion;
 import rapture.common.version.ApiVersionComparator;
 import rapture.server.ServerApiVersion;
 import rapture.util.IDGenerator;
-
-import java.net.HttpURLConnection;
 
 public class Login extends KernelBase {
 
@@ -79,8 +80,8 @@ public class Login extends KernelBase {
         String documentName = "session/" + context;
         String content;
         if (!ApiVersionComparator.INSTANCE.isCompatible(clientApiVersion)) {
-            String message = String
-                    .format("Client API Version (%s) does not match server API Version (%s)", clientApiVersion, ServerApiVersion.getApiVersion());
+            String message = String.format("Client API Version (%s) does not match server API Version (%s)", clientApiVersion,
+                    ServerApiVersion.getApiVersion());
             throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, message);
         }
 
@@ -94,6 +95,10 @@ public class Login extends KernelBase {
         if (username.equals(savedContext.getUser())) {
             if (userAccount.getInactive()) {
                 String message = "Cannot login as an inactive user";
+                throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_UNAUTHORIZED, message);
+            }
+            if (!userAccount.getVerified()) {
+                String message = "This account has not yet been verified. Please check your email at "+userAccount.getEmailAddress()+" for the verification link.-";
                 throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_UNAUTHORIZED, message);
             }
             if (userAccount.getApiKey()) {
@@ -116,6 +121,10 @@ public class Login extends KernelBase {
         }
         getEphemeralRepo().addToStage(RaptureConstants.OFFICIAL_STAGE, documentName, JacksonUtil.jsonFromObject(savedContext), false);
         getEphemeralRepo().commitStage(RaptureConstants.OFFICIAL_STAGE, "admin", "session validation");
+
+        // user has successfully logged in, lets write it to the audit logs
+        Kernel.getAudit().getTrusted().writeAuditEntry(savedContext, RaptureConstants.DEFAULT_AUDIT_URI, "login", 0,
+                String.format("User [%s] has logged in", username));
 
         long endFunctionTime = System.currentTimeMillis();
         Kernel.getMetricsService().recordTimeDifference("apiMetrics.loginApi.checkLogin.fullFunctionTime.succeeded", (endFunctionTime - functionStartTime));
@@ -218,6 +227,17 @@ public class Login extends KernelBase {
         Kernel.getMetricsService().recordTimeDifference("apiMetrics.loginApi.login.fullFunctionTime.succeeded", (endFunctionTime - functionStartTime));
 
         return returnContext;
+    }
+
+    public String createRegistrationToken(String username) {
+        long functionStartTime = System.currentTimeMillis();
+
+        CallingContext context = ContextFactory.getKernelUser();
+        String token = Kernel.getAdmin().createRegistrationToken(context, username);
+
+        long endFunctionTime = System.currentTimeMillis();
+        Kernel.getMetricsService().recordTimeDifference("apiMetrics.loginApi.login.fullFunctionTime.succeeded", (endFunctionTime - functionStartTime));
+        return token;
     }
 
     public String createPasswordResetToken(String username) {

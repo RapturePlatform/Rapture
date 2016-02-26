@@ -38,6 +38,7 @@ import rapture.config.MultiValueConfigLoader;
  */
 public class DataSourceMonitor {
     private static final Logger log = Logger.getLogger(DataSourceMonitor.class);
+    private static final int DEFAULT_MONITOR_FREQUENCY = 300;
 
     private ScheduledExecutorService executor;
     private List<PooledDataSource> dataSources;
@@ -60,7 +61,7 @@ public class DataSourceMonitor {
     }
 
     private int getMonitoringFrequency() {
-        return Integer.parseInt(MultiValueConfigLoader.getConfig("POSTGRES-monitoringFrequency"));
+        return DEFAULT_MONITOR_FREQUENCY;
     }
 
     public void monitor(final PooledDataSource dataSource) {

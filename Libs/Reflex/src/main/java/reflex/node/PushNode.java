@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,21 +23,34 @@
  */
 package reflex.node;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.log4j.Logger;
+
+import rapture.common.RaptureURI;
+import rapture.common.Scheme;
+import rapture.common.exception.RaptureException;
 import reflex.IReflexHandler;
 import reflex.ReflexException;
 import reflex.Scope;
 import reflex.debug.IReflexDebugger;
+import reflex.value.ReflexByteArrayValue;
+import reflex.value.ReflexStreamValue;
 import reflex.value.ReflexValue;
 import reflex.value.internal.ReflexVoidValue;
+
+import com.google.common.net.MediaType;
 
 public class PushNode extends BaseNode {
     private ReflexNode toSaveNode;
     private ReflexNode location;
 
+    private static Logger logger = Logger.getLogger(PushNode.class);
+    
     public PushNode(int lineNumber, IReflexHandler handler, Scope s, ReflexNode value, ReflexNode location) {
         super(lineNumber, handler, s);
         this.toSaveNode = value;
@@ -84,15 +97,40 @@ public class PushNode extends BaseNode {
             handler.getIOHandler().writeFile(value.asFile(), toSave.asObject().toString());
         } else if (value.isArchive()) {
             handler.getIOHandler().writeArchiveEntry(value.asArchive(), toSave);
-        } else {
-//        	System.out.println("Saving a map");
-//        	String uri = value.toString();
-//       	String content = JacksonUtil.jsonFromObject(KernelExecutor.convert(toSave.asMap()));
-//        	System.out.println("Content is " + content);
-//        	handler.getApi().getDoc().putDoc(uri, content);
-            handler.getDataHandler().pushData(value.toString(), KernelExecutor.convert(toSave.asMap()));
-            String comment = this.getScope().getAndUsePendingComment();
-            writeAudit(debugger, (comment == null ? "Wrote document" : comment) + " " + value.toString());
+        } else {            
+            RaptureURI ruri = new RaptureURI(value.toString(), Scheme.DOCUMENT);
+            MediaType metadata = null;
+            if (toSave.isStreamBased()) {
+                // For stream based data source read the contents before pushing
+                // Do it here because the DataHandler doesn't have/need the IOHandler
+                // For Blob we could do it at the lower level since we push raw bytes
+                
+                ReflexStreamValue stream = toSave.asStream();
+                if (ruri.getScheme() == Scheme.BLOB) {
+                    try {
+                        byte[] byteArray = IOUtils.toByteArray(stream.getInputStream());
+                        toSave = new ReflexValue(new ReflexByteArrayValue(byteArray));
+                        metadata = stream.getFileType();
+                    } catch (IOException e) {
+                        logger.warn("Cannot read "+stream, e);
+                    }
+                } else {
+                    toSave = stream.getFileReadAdapter().readContent(stream, handler.getIOHandler());
+                }
+            }
+
+            try {
+                handler.getDataHandler().pushData(ruri, toSave, metadata);
+            } catch (ReflexException e) {
+                e.setLineNumber(getLineNumber());
+                throw e;
+            }
+            try {
+                String comment = this.getScope().getAndUsePendingComment();
+                writeAudit(debugger, (comment == null ? "Wrote document" : comment) + " " + value.toString());
+            } catch (RaptureException e) {
+                logger.info("Unable to write to audit log - check entitlements", e);
+            }
         }
         debugger.stepEnd(this, new ReflexVoidValue(lineNumber), scope);
         return new ReflexVoidValue(lineNumber);

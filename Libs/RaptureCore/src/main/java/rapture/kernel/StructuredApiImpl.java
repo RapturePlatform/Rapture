@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,11 +29,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Lists;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import com.google.common.collect.ImmutableList;
 
+import rapture.common.ForeignKey;
 import rapture.common.StoredProcedureParams;
 import rapture.common.StoredProcedureResponse;
 import rapture.common.CallingContext;
@@ -41,11 +44,14 @@ import rapture.common.RaptureURI;
 import rapture.common.Scheme;
 import rapture.common.StructuredRepoConfig;
 import rapture.common.StructuredRepoConfigStorage;
+import rapture.common.TableIndex;
 import rapture.common.api.StructuredApi;
 import rapture.common.exception.RaptureExceptionFactory;
 import rapture.repo.StructuredRepo;
 import rapture.structured.DefaultValidator;
 import rapture.structured.Validator;
+
+import javax.annotation.Nullable;
 
 public class StructuredApiImpl extends KernelBase implements StructuredApi {
 
@@ -183,6 +189,27 @@ public class StructuredApiImpl extends KernelBase implements StructuredApi {
     }
 
     @Override
+    public List<String> getSchemas(CallingContext context) {
+        List<StructuredRepoConfig> configs = getStructuredRepoConfigs(context);
+        return Lists.transform(configs, new Function<StructuredRepoConfig, String>() {
+            @Nullable
+            @Override
+            public String apply(StructuredRepoConfig structuredRepoConfig) {
+                return structuredRepoConfig.getAuthority();
+            }
+        });
+    }
+
+    @Override
+    public List<String> getTables(CallingContext context, String repoURI) {
+        RaptureURI uri = new RaptureURI(repoURI, Scheme.STRUCTURED);
+        if (uri.hasDocPath()) {
+            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, apiMessageCatalog.getMessage("NoDocPath", repoURI)); //$NON-NLS-1$
+        }
+        return getRepoOrFail(uri.getAuthority()).getTables();
+    }
+
+    @Override
     public Map<String, String> describeTable(CallingContext context, String tableUri) {
         RaptureURI uri = new RaptureURI(tableUri, Scheme.STRUCTURED);
         return getRepoOrFail(uri.getAuthority()).describeTable(uri.getDocPath()).getRows();
@@ -266,6 +293,27 @@ public class StructuredApiImpl extends KernelBase implements StructuredApi {
             TransactionManager.transactionFailed(getTxId(context));
             throw RaptureExceptionFactory.create(e.getMessage(), e.getCause());
         }
+    }
+
+    @Override
+    public List<TableIndex> getIndexes(CallingContext context, String tableUri) {
+        RaptureURI uri = new RaptureURI(tableUri, Scheme.STRUCTURED);
+        StructuredRepo repo = getRepoOrFail(uri.getAuthority());
+        return repo.getIndexes(uri.getDocPath());
+    }
+
+    @Override
+    public String getPrimaryKey(CallingContext context, String tableUri) {
+        RaptureURI uri = new RaptureURI(tableUri, Scheme.STRUCTURED);
+        StructuredRepo repo = getRepoOrFail(uri.getAuthority());
+        return repo.getPrimaryKey(uri.getDocPath());
+    }
+
+    @Override
+    public List<ForeignKey> getForeignKeys(CallingContext context, String tableUri) {
+        RaptureURI uri = new RaptureURI(tableUri, Scheme.STRUCTURED);
+        StructuredRepo repo = getRepoOrFail(uri.getAuthority());
+        return repo.getForeignKeys(uri.getDocPath());
     }
 
     @Override

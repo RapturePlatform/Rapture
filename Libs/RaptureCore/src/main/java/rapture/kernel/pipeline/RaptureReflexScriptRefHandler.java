@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -55,13 +55,16 @@ public class RaptureReflexScriptRefHandler implements QueueHandler {
     @Override
     public boolean handleMessage(String tag, String routing, String contentType, RapturePipelineTask task) {
         String content = task.getContent();
-        log.info("Attempting to run linked Reflex Script");
         try {
             statusManager.startRunning(task);
             final MimeReflexScriptRef info = JacksonUtil.objectFromJson(content, MimeReflexScriptRef.class);
-
             RaptureScript script = Kernel.getScript().getScript(ContextFactory.getKernelUser(), info.getScriptURI());
-
+            if (script == null) {
+                log.warn("Unable to access script "+info.getScriptURI());
+                return false;
+            }
+            
+            log.info("Attempting to run linked Reflex Script");
             ReflexRaptureScript reflex = new ReflexRaptureScript();
             PipelineReflexSuspendHandler suspendHandler = new PipelineReflexSuspendHandler();
             TaskReflexOutputHandler outputHandler = new TaskReflexOutputHandler(task);

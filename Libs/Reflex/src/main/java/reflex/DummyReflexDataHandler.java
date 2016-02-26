@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,7 +28,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import rapture.common.RaptureURI;
 import rapture.common.api.ScriptingApi;
+import reflex.value.ReflexValue;
+
+import com.google.common.net.MediaType;
 
 public class DummyReflexDataHandler implements IReflexDataHandler {
 
@@ -42,6 +46,15 @@ public class DummyReflexDataHandler implements IReflexDataHandler {
         Map<String, Object> ret = new HashMap<String, Object>();
         ret.put("_id", displayName);
         return ret;
+    }
+    
+    @Override
+    public ReflexValue pullData(RaptureURI displayName) {
+        return new ReflexValue(pullData(displayName.toString()));
+    }
+
+    @Override
+    public void pushData(RaptureURI displayName, ReflexValue data, MediaType type) {
     }
 
     @Override
