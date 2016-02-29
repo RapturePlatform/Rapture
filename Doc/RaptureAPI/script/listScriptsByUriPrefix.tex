@@ -1,10 +1,10 @@
-The \verb+listEventsByUriPrefix+ call is normally used by user interfaces that wish
-to present a browser type interface on the event repository. The call returns all events
+The \verb+listScriptsByUriPrefix+ call is normally used by user interfaces that wish
+to present a browser type interface on the script repository. The call returns all scripts
 and "sub folders" (to a given depth) below a given point in the hierarchy implied
 by the naming conventions used in uris. Typically an interface will use \verb+/+ as
-the initial prefix and then append onto that prefix the names of either events
-or folders for further \verb+listEvents+ type calls or \verb+getEvent+ if the location
-maps to a real event.
+the initial prefix and then append onto that prefix the names of either documents
+or folders for further \verb+listScripts+ type calls or \verb+getScript+ if the location
+maps to a real script.
 
 The \verb+RaptureFolderInfo+ structure returned by this call is described below:
 

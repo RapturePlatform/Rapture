@@ -1,0 +1,6 @@
+The \verb+addEventScript+ call is used to add a \Reflex script to be executed when an event fires.
+
+When the event is fired the script execution is placed on the internal pipeline queue so that the script
+execution is scheduled alongside any other tasks running as part of workflows. The category of the task is set to
+ALPHA which implies that any "general" \Rapture server running the default configuration could pick up this script and
+execute it.

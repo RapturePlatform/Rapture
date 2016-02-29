@@ -5,17 +5,17 @@ capabilities and underlying implementation of the repository.
 
 The typical configuration string for a versioned repository backed by MongoDB is reproduced below:
 
-\begin{verbatim}
+\begin{Verbatim}
 NREP {} USING MONGODB { prefix = 'test' }
-\end{verbatim}
+\end{Verbatim}
 
 The general form of the configuration is:
 
-\begin{verbatim}
+\begin{Verbatim}
 [type of document repo] { [ document repo config] }
      USING [underlying implementation] { [ config ]}
      [ ON [ instance] ]
-\end{verbatim}
+\end{Verbatim}
 
 The first part, the type of the document repo, can be either \verb+NREP+ or \verb+REP+. The former
 indicates that a versioned repository should be created, the latter that an unversioned repository

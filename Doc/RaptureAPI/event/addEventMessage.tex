@@ -1,0 +1,6 @@
+The \verb+addEventMessage+ call adds the act of sending a message down a pipeline when the event is fired. The name parameter is a unique name within this
+event which can be used to remove this association by the \verb+deleteEventMessage+ call.
+
+The act of firing an event message involves publishing a message that contains two map fields --
+the \verb+context+ is the passed context from the event firing (e.g. the associatedURI of the event) and
+\verb+params+ which is the settings added by this api call.

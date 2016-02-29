@@ -1,0 +1,5 @@
+The \verb+createREPLSession+ (and associated REPL calls) are used to manage a "Read Evaluate Print Loop" for
+the \Reflex scripting language. The idea is that this call returns a string handle that can be
+associated with a user -- this handle stores the variable scope and any procedure declarations. As
+users type in their \Reflex snippets in a UI the \verb+evaluateREPL+ call is used to update the context for this
+session and to return some text which can be displayed on a terminal.

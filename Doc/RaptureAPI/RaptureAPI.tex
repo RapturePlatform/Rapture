@@ -20,8 +20,40 @@
 \usepackage{graphicx}
 \usepackage{hyperref}
 \usepackage{varioref}
+\usepackage{fancyvrb}
+\usepackage[T1]{fontenc}
+\usepackage{moreverb}
+\usepackage{paralist}
+\usepackage{arev}
+\usepackage{tikz}
+\usetikzlibrary{positioning,shapes.symbols,shapes.multipart,shapes.misc,shadows,arrows,decorations.pathmorphing,decorations.pathreplacing,backgrounds,positioning,fit,petri,chains,mindmap}
 
-\newcommand{\myTitle}{ RaptureAPI\xspace}
+\tikzset{
+	inner sep=2mm,bend angle=45,
+	ewd/.style={rectangle split, rectangle split parts=2,draw=black,fill=green!20,thick,drop shadow},
+	external/.style={circle,draw=black,fill=blue!20,thick,circular drop shadow},
+	internal/.style={circle,draw=black,fill=green!20,thick,circular drop shadow},
+	client/.style={rounded rectangle,draw=black,fill=red!20,thick,drop shadow},
+	server/.style={rounded rectangle,draw=black,fill=green!20,thick,drop shadow},
+	appserver/.style={rounded rectangle,draw=black,fill=yellow!20,thick,drop shadow},
+	yround/.style={rounded rectangle,draw=black,fill=yellow!20,thick,drop shadow},
+	api/.style={circle,draw=black,fill=yellow!20,thick,circular drop shadow},
+	lab/.style={circle,draw=black,thin,inner sep=2pt,outer sep=3pt,fill=orange!10},
+	main/.style={rounded rectangle,draw=black,fill=blue!20,thick,drop shadow},
+	highlight/.style={rounded rectangle,draw=black,fill=yellow!20,thick,drop shadow},
+	ctx/.style={rounded rectangle,draw=black,fill=green!20,thick,drop shadow},
+	qtop/.style={rectangle,draw=black,fill=green!20,thick},
+	qbot/.style={rectangle,draw=black,fill=blue!20,thick},
+	desc/.style={rectangle,draw=white},
+	pre/.style={->,shorten <=1pt,>=triangle 60,thin},
+	post/.style={<-,shorten >=1pt,>=triangle 60,thin},
+	line/.style={thin},
+	both/.style={<->,shorten >=1pt,>=triangle 60,thin},
+	fog/.style={cloud,draw=black,fill=orange!40,thick,drop shadow},
+	fogclient/.style={cloud,draw=black,fill=blue!40,thick,drop shadow}
+}
+
+\newcommand{\myTitle}{ Rapture - API and Scripting\xspace}
 \newcommand{\myClient}{\xspace}
 \newcommand{\myName}{Alan Moore\xspace}
 \newcommand{\myTime}{February 12, 2016\xspace}
@@ -290,23 +322,25 @@ will be described and then the detailed API calls will follow.
 \input{Series}
 \input{Script}
 \input{Decision}
-\input{Admin}
-\input{User}
-\input{Index}
+%\input{Admin}
+%\input{User}
+%\input{Index}
 \input{Event}
-\input{Entitlement}
-\input{Environment}
-\input{Lock}
-\input{IdGen}
-\input{Activity}
-\input{Async}
-\input{Audit}
-\input{Bootstrap}
-\input{Sys}
-\input{Structured}
-\input{Schedule}
-\input{Jar}
-\input{Plugin}
+%\input{Entitlement}
+%\input{Environment}
+%\input{Lock}
+%\input{IdGen}
+%\input{Activity}
+%\input{Async}
+%\input{Audit}
+%\input{Bootstrap}
+%\input{Sys}
+%\input{Structured}
+%%\input{Schedule}
+%\input{Jar}
+%\input{Plugin}
+
+\input{reflexContent}
 
 %*******************************************************
 % Disclaimer

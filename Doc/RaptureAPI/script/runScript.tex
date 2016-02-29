@@ -1,0 +1,6 @@
+The \verb+runScript+ executes a script on the \Rapture server. The parameters for the execution, passed
+by this call, are simply transferred to the context of the executing script. It is up to the script itself to
+interpret those parameters as it sees fit. The \verb+RaptureParameter+ entries set up with \verb+setScriptParameters+ or
+\verb+putRawScript+ are simply guidelines for a UI.
+
+The return value of this call is the return value of the execution of the script -- whatever it \verb+returns+.

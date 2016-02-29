@@ -1,0 +1,48 @@
+The \verb+getScript+ retrieves a script previously created by \verb+createScript+.
+
+The return value is complex and contains the following fields:
+
+\begin{table}[h]
+\begin{center}
+\begin{tabular}{r l p{8cm}}
+  Field & Type & Description \\
+  \hline
+  name & string & The name of this script.\\
+  script & string & The body of the script.\\
+  language & RaptureScriptLanguage & In all cases REFLEX \\
+  purpose & RaptureScriptPurpose & In most cases PROGRAM.\\
+  authority & string &  Unused.\\
+  parameters & List(RaptureParameter) & The parameters this script expects.\\
+\end{tabular}
+\end{center}
+\end{table}
+
+The \verb+RaptureParameter+ type, used to define a parameter that the script could expect
+and for the use in UI builders contains the following fields:
+
+\begin{table}[h]
+\begin{center}
+\begin{tabular}{r l p{6cm}}
+  Field & Type & Description \\
+  \hline
+  name & string & The name of this parameter.\\
+  parameterType & RaptureParameterType & The expected type of this parameter (see below).\\
+\end{tabular}
+\end{center}
+\end{table}
+
+The RaptureParameterType can have the following values.
+
+\begin{table}[h]
+\begin{center}
+\begin{tabular}{r p{10cm}}
+  Type & Meaning \\
+  \hline
+  STRING & A string of characters.\\
+  NUMBER & A number.\\
+  DATE & Something (usually a string) that can be parsed to a date/time value.\\
+  MAP & A key/value map.\\
+  LIST & A list of values.\\
+\end{tabular}
+\end{center}
+\end{table}

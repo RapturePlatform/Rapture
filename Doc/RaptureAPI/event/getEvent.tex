@@ -1,0 +1,17 @@
+The \verb+getEvent+ call returns all of the associations attached to the event.
+
+The return value is complex structure that contains sets of the associations by category:
+
+\begin{table}[h]
+\begin{center}
+\begin{tabular}{r l p{6cm}}
+  Field & Type & Description \\
+  \hline
+  uriFullPath & string & The full uri of this event.\\
+  scripts & set(RaptureEventScript) & all of the scripts attached to this event.\\
+  messages & set(RaptureEventMessage) & all of the message attached to this event.\\
+  notifications & set(RaptureEventNotification) & all of the notifications attached to this event.\\
+  workflows & set(RaptureEventWorkflow) & all of the workflows attached to this event.\\  
+\end{tabular}
+\end{center}
+\end{table}

@@ -1,0 +1,16 @@
+Events in \Rapture are coordination points. You attach activities to events -- run a script, execute a workflow or send a message.
+When the event is "fired" (usually through an API call). There are some events which are managed internally by \Rapture - in particular whenever a
+document is updated in a repository an event will be fired that can be attached to by a user.
+
+When an event is fired a context is supplied -- and this can be used by the items attached to the event to control their behavior.
+
+\subsection{System Data Update}
+Whenever a document is updated in a repository an event with the name formed from the repository name prepended onto the
+string "/data/update" will be fired with the context containing two fields:
+
+The \verb+associatedURI+ field will contain the URI of the document being saved.
+
+The \verb+version+ field will contain the version number of the \emph{just saved} document.
+
+So for instance, if the document \verb+//test/one/two+ is updated from version 4 to version 5 the event
+\verb+//test/data/update+ will be fired with \verb+associatedURI+ set to \verb+//test/one/two+ and \verb+version+ set to 5.

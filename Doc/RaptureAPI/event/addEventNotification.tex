@@ -1,0 +1,4 @@
+The \verb+addEventNotification+ call is used to add a hook to publish a \Rapture notification when an event is fired.
+
+The implementation of the event firing simply calls the Notification API \verb+publishNotification+ call with the message being a json
+representation of the event message. The event message is described as part of the \verb+addEventMessage+ call.
