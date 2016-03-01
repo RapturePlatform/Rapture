@@ -13,6 +13,22 @@ api(Index) {
     @entitle=/admin/index/write
     @public void deleteIndex(String indexUri);
     
+    [Creates a table, somewhere to store a rowset]
+    @entitle=/admin/index/write
+    @public TableConfig createTable(String tableUri, String config);
+  
+    [Removes a table.]
+    @entitle=/admin/index/write
+    @public void deleteTable(String tableUri);
+    
+    [Retrieve the config for a table]
+    @entitle=/admin/index/read
+    @public TableConfig getTable(String indexURI);
+    
+    [Query a table]
+    @entitle=/admin/index/read
+	@public List(TableRecord) queryTable(String indexURI, TableQuery query);
+    
     [findIndex uses a simple structure of the form SELECT (DISTINCT) field (,field...) WHERE condition (,condition...) (ORDER BY field (DESC) )
     Example: SELECT DISTINCT foo, bar WHERE baz = "wibble" ORDER BY foo]
     @entitle=/admin/index/read

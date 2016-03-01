@@ -25,12 +25,18 @@ package rapture.kernel;
 
 import static rapture.common.Scheme.DOCUMENT;
 
+import java.util.List;
+
 import org.apache.log4j.Logger;
 
 import rapture.common.CallingContext;
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
+import rapture.common.TableConfig;
+import rapture.common.TableConfigStorage;
+import rapture.common.TableQuery;
 import rapture.common.TableQueryResult;
+import rapture.common.TableRecord;
 import rapture.common.api.IndexApi;
 import rapture.common.model.IndexConfig;
 import rapture.common.model.IndexConfigStorage;
@@ -75,6 +81,37 @@ public class IndexApiImpl extends KernelBase implements IndexApi {
         RaptureURI internalUri = new RaptureURI(indexUri, DOCUMENT);
         Repository repository = getKernel().getRepo(internalUri.getAuthority());
         return repository.findIndex(query);
+    }
+    
+    @Override
+    public TableConfig createTable(CallingContext context, String indexURI, String config) {
+
+        RaptureURI internalURI = new RaptureURI(indexURI, Scheme.TABLE);
+        TableConfig newP = new TableConfig();
+        newP.setName(internalURI.getDocPath());
+        newP.setAuthority(internalURI.getAuthority());
+        newP.setConfig(config);
+        TableConfigStorage.add(newP, context.getUser(), "Created index config");
+        return newP;
+    }
+
+    @Override
+    public void deleteTable(CallingContext context, String indexURI) {
+        TableConfigStorage.deleteByAddress(new RaptureURI(indexURI), context.getUser(), "Remove table");
+    }
+
+    @Override
+    public List<TableRecord> queryTable(CallingContext context, String indexURI, TableQuery query) {
+        IndexHandler indexHandler = getIndexHandler(indexURI);
+        return indexHandler.queryTable(query);
+    }
+
+    
+    @Override
+    public TableConfig getTable(CallingContext context, String indexURI) {
+
+        RaptureURI internalURI = new RaptureURI(indexURI, Scheme.TABLE);
+        return TableConfigStorage.readByAddress(internalURI);
     }
     
     private IndexCache indexCache = new IndexCache();

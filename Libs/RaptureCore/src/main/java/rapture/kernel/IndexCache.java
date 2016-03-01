@@ -48,11 +48,10 @@ public class IndexCache {
     }
 
     public IndexHandler getIndex(String indexURI) {
-
         if (indexCache.containsKey(indexURI)) {
             return indexCache.get(indexURI);
         } else {
-            log.debug("Index " + indexURI + " not cached, loading config");
+            log.info("Index " + indexURI + " not cached, loading config");
             try {
                 IndexHandler index = IndexFactory.getIndex(indexURI);
                 indexCache.put(indexURI, index);

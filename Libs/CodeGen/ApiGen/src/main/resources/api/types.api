@@ -827,6 +827,33 @@ type Activity(@package=rapture.common) {
 	ActivityStatus status;
 }
 
+[Holds the config info for a Rapture table, as described in the table API.]
+@Addressable(scheme = TABLE(false))
+@Storable(storagePath : {authority, name}, prefix="table")
+type TableConfig(@package=rapture.common) {
+   String name;
+   String config;
+   String authority;
+}
+
+[Describes a table object.]
+type TableRecord(@package=rapture.common) {
+	String keyName;
+	Map(String, Object) fields;
+	String content;
+}
+
+[Describes a query made against a table.]
+type TableQuery(@package=rapture.common) {
+	List(TableSelect) fieldTests;
+	List(String) fieldReturns;
+	List(TableColumnSort) sortFields;
+	int skip;
+	int limit;
+}
+
+
+
 [An activity.]
 @Deprecated("use Activity")
 @Storable(storagePath : {id}, prefix="activity", repoName=EPHEMERAL_REPO)

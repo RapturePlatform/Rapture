@@ -26,6 +26,7 @@ package rapture.table;
 import rapture.common.RaptureTableConfig;
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
+import rapture.common.TableConfig;
 import rapture.common.exception.ExceptionToString;
 import rapture.common.exception.RaptureException;
 import rapture.common.exception.RaptureExceptionFactory;
@@ -125,7 +126,8 @@ public class IndexFactory {
     }
 
     public static IndexHandler getIndex(String indexURI) {
-        IndexConfig config = Kernel.getIndex().getIndex(ContextFactory.getKernelUser(), indexURI);
+        TableConfig config = Kernel.getIndex().getTable(ContextFactory.getKernelUser(), indexURI);
+        log.info("Table config is " + config);
         RaptureURI internalURI = new RaptureURI(indexURI, Scheme.INDEX);
         log.debug("Table index for " + internalURI.getDocPath() + " is " + config.getConfig());
         return createIndex(config.getConfig());

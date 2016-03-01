@@ -1,5 +1,4 @@
 version = '3.0.0'
-adjustVersion.execute()
 
 apply plugin: 'application'
 
@@ -49,7 +48,7 @@ dependencies {
     compile 'org.apache.tomcat:tomcat-jasper-el:7.0.39'
     compile 'org.apache.tomcat:tomcat-jsp-api:7.0.39'
 
-    exploded "com.rapture:ExplodedDeps:$project.platformVersion"
+//    exploded "com.rapture:ExplodedDeps:$project.platformVersion"
 }
 
 mainClassName = "rapture.server.RaptureWebServer"

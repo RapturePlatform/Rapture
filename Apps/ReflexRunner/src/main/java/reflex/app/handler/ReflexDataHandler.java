@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -39,16 +39,13 @@ import rapture.common.model.DocumentWithMeta;
 import rapture.common.uri.URIParser;
 import rapture.util.StringUtil;
 import rapture.util.TypeUtil;
-import reflex.IReflexDataHandler;
+import reflex.AbstractReflexDataHandler;
 
-public class ReflexDataHandler implements IReflexDataHandler {
+public class ReflexDataHandler extends AbstractReflexDataHandler {
     private static Logger log = Logger.getLogger(ReflexDataHandler.class);
-    private ScriptingApi api;
-    private ScriptingApi originalApi;
     
     public ReflexDataHandler(ScriptClient scriptClient) {
-        this.api = scriptClient;
-        this.originalApi = scriptClient;
+        super(scriptClient);
     }
 
     @Override

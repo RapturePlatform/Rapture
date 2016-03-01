@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -75,10 +75,8 @@ import rapture.plugin.validators.IdGenValidator;
 import rapture.plugin.validators.JobValidator;
 import rapture.plugin.validators.LockValidator;
 import rapture.plugin.validators.Note;
-import rapture.plugin.validators.RelationshipValidator;
 import rapture.plugin.validators.ScriptValidator;
 import rapture.plugin.validators.SeriesValidator;
-import rapture.plugin.validators.SheetValidator;
 import rapture.plugin.validators.SnippetValidator;
 import rapture.plugin.validators.WorkflowValidator;
 
@@ -409,17 +407,11 @@ public class PluginShell {
             case LOCK:
                 LockValidator.getValidator().validate(content, uri, errors);
                 break;
-            case RELATIONSHIP:
-                RelationshipValidator.getValidator().validate(content, uri, errors);
-                break;
             case SCRIPT:
                 ScriptValidator.getValidator().validate(content, uri, errors);
                 break;
             case SERIES:
                 SeriesValidator.getValidator().validate(content, uri, errors);
-                break;
-            case SHEET:
-                SheetValidator.getValidator().validate(content, uri, errors);
                 break;
             case SNIPPET:
                 SnippetValidator.getValidator().validate(content, uri, errors);

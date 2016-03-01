@@ -23,11 +23,13 @@
  */
 package rapture.kernel.pipeline;
 
+import org.apache.log4j.Logger;
+
 import rapture.common.CallingContext;
 import rapture.index.IndexHandler;
 import rapture.kernel.ContextFactory;
 import rapture.kernel.Kernel;
-
+import rapture.table.IndexFactory;
 import rapture.config.ConfigLoader;
 
 /**
@@ -36,6 +38,7 @@ import rapture.config.ConfigLoader;
  */
 public class PipelineIndexHelper {
     private static final String indexUri;
+    private static Logger log = Logger.getLogger(PipelineIndexHelper.class);
 
     static {
         final String authority = "pipelinetaskstatus";
@@ -44,7 +47,9 @@ public class PipelineIndexHelper {
 
     public static void ensureIndexExists() {
         CallingContext ctx = ContextFactory.getKernelUser();
-        Kernel.getIndex().createIndex(ctx, indexUri, ConfigLoader.getConf().DefaultPipelineTaskStatus);
+        String status = ConfigLoader.getConf().DefaultPipelineTaskStatus;
+        log.info("Creating index with config " + status);
+        Kernel.getIndex().createTable(ctx, indexUri, status);
     }
 
     public static IndexHandler createIndexHandler() {

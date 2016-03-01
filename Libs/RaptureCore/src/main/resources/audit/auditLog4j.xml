@@ -30,26 +30,24 @@
 <log4j:configuration>
 
 	<appender name="auditError"
-		class="uk.org.simonsite.log4j.appender.TimeAndSizeRollingAppender">
-		<param name="File" value="${LOG_DIR_PATH}/important.log" />
-		<param name="MaxRollFileCount" value="5" />
-		<param name="MaxFileSize" value="100MB" />
-		<param name="DatePattern" value="'.'yyyy-MM-dd" />
-		<param name="DateRollEnforced" value="true" />
-		<param name="Threshold" value="ERROR" />
+		class="org.apache.log4j.RollingFileAppender">
+		<param name="file" value="${LOG_DIR_PATH}/important.log" />
+		<param name="append" value="true"/>
+		<rollingPolicy class="org.apache.log4j.rolling.TimeBasedRollingPolicy">
+                        <param name="FileNamePattern" value="${LOG_DIR_PATH}/important.%d.log.gz" />
+        </rollingPolicy>
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern" value="%d{ABSOLUTE} %5p [%t] (%F:%L) - %m%n" />
 		</layout>
 	</appender>
 
 	<appender name="auditWarn"
-		class="uk.org.simonsite.log4j.appender.TimeAndSizeRollingAppender">
-		<param name="File" value="${LOG_DIR_PATH}/warn.log" />
-		<param name="MaxRollFileCount" value="5" />
-		<param name="MaxFileSize" value="100MB" />
-		<param name="DatePattern" value="'.'yyyy-MM-dd" />
-		<param name="DateRollEnforced" value="true" />
-		<param name="Threshold" value="warn" />
+		class="org.apache.log4j.RollingFileAppender">
+		<param name="file" value="${LOG_DIR_PATH}/warn.log" />
+		<param name="append" value="true"/>
+		<rollingPolicy class="org.apache.log4j.rolling.TimeBasedRollingPolicy">
+                        <param name="FileNamePattern" value="${LOG_DIR_PATH}/warn.%d.log.gz" />
+        </rollingPolicy>
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern" value="%d{ABSOLUTE} %5p [%t] (%F:%L) - %m%n" />
 		</layout>
@@ -60,12 +58,12 @@
 	</appender>
 
 	<appender name="auditOther"
-		class="uk.org.simonsite.log4j.appender.TimeAndSizeRollingAppender">
-		<param name="File" value="${LOG_DIR_PATH}/other.log" />
-		<param name="MaxRollFileCount" value="5" />
-		<param name="MaxFileSize" value="100MB" />
-		<param name="DatePattern" value="'.'yyyy-MM-dd" />
-		<param name="DateRollEnforced" value="true" />
+		class="org.apache.log4j.RollingFileAppender">
+		<param name="file" value="${LOG_DIR_PATH}/other.log" />
+		<param name="append" value="true"/>
+		<rollingPolicy class="org.apache.log4j.rolling.TimeBasedRollingPolicy">
+                        <param name="FileNamePattern" value="${LOG_DIR_PATH}/other.%d.log.gz" />
+        </rollingPolicy>
 		<param name="Threshold" value="DEBUG" />
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern" value="%d{ABSOLUTE} %5p [%t] (%F:%L) - %m%n" />

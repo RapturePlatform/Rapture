@@ -1139,6 +1139,44 @@
 \end{verbatim}
 
 \rule{15cm}{2pt}
+\section{TableConfig}
+\label{type:TableConfig}
+
+\begin{verbatim}
+   type TableConfig {
+          String   name
+          String   config
+          String   authority
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\section{TableRecord}
+\label{type:TableRecord}
+
+\begin{verbatim}
+   type TableRecord {
+          String   keyName
+          Map(String, Object)   fields
+          String   content
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\section{TableQuery}
+\label{type:TableQuery}
+
+\begin{verbatim}
+   type TableQuery {
+          List(TableSelect)   fieldTests
+          List(String)   fieldReturns
+          List(TableColumnSort)   sortFields
+          int   skip
+          int   limit
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
 \section{RaptureActivity}
 \label{type:RaptureActivity}
 

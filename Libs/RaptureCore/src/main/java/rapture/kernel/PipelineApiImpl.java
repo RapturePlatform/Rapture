@@ -77,6 +77,7 @@ public class PipelineApiImpl extends KernelBase implements PipelineApi, RaptureM
 
     public PipelineApiImpl(Kernel raptureKernel) {
         super(raptureKernel);
+        log.info("Ensure index exists");
         PipelineIndexHelper.ensureIndexExists();
         taskStatusManager = new PipelineTaskStatusManager();
     }

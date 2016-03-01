@@ -5,9 +5,12 @@ import org.gradle.api.tasks.bundling.Zip
 
 import sun.security.util.Resources_de;
 
-buildscript {
-    File fromFile = new File(new File(getGradle().getGradleUserHomeDir(), "incapture"), "incapture.gradle");
-    apply from : fromFile.getAbsolutePath();
+plugins {
+    id "com.github.hierynomus.license" version "0.12.1"
+}
+
+license {
+    header file('./LICENSE')
 }
 
 apply plugin: "sonar"
@@ -16,22 +19,30 @@ project.group = 'com.rapture'
 
 ext { platformVersion = '3.0.0' }
 
-project.ext.set('raptureBootstrapDisablePlugins', 'true')
-apply plugin: 'rapture-bootstrap'
-
 
 subprojects {
-    project.ext.set('raptureBootstrapDisablePlugins', 'false')
-    apply plugin: 'rapture-bootstrap'
 
     project.group = parent.group
 
-    task buildinfo (type: com.rapture.gradle.bootstrap.plugin.JavaBuildInfoTask) { module_name = project.name }
+    apply plugin: 'eclipse'
+    apply plugin: 'java'
+    apply plugin: 'application'
+    apply plugin: 'maven'
+    apply plugin: "com.github.hierynomus.license"
+
+    license {
+        header rootProject.file('LICENSE')
+    }
+
+    repositories {
+      mavenLocal()
+      mavenCentral()
+      jcenter()
+      }
 
     def loggingVersion = '1.6.1'
     def httpVersion = '4.2.2'
     def jacksonVersion = '1.9.2'
-    def incaptureRepo = 'http://release.incapturesolutions.com/repository'
 
     task copyProps(type:Copy) {
         from 'src/main/java'
@@ -41,8 +52,6 @@ subprojects {
 
     compileJava {
         dependsOn copyProps
-        dependsOn buildinfo
-        source buildinfo.dir_name
     }
 
     test {
@@ -96,7 +105,6 @@ subprojects {
             manifest {
                 attributes "Implementation-Vendor" : "Incapture Technologies"
                 attributes "Built-By" : System.getProperty('user.name')
-                attributes "Built-Date" : parent.timestamp
             }
         }
 
