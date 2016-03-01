@@ -63,7 +63,7 @@ public abstract class BaseDispatcher {
     public static String getContextIdFromRequest(HttpServletRequest req) {
         Cookie[] cookies = req.getCookies();
         if (cookies == null || cookies.length == 0) {
-            log.info("No cookies sent");
+            //log.info("No cookies sent");
         } else {
             for (Cookie c : cookies) {
                 if (c.getName().equals("raptureContext")) {
