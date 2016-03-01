@@ -67,24 +67,12 @@ public class RapturePullNode extends BaseNode {
 			// Return all the elements of the series as a sparse matrix
 			retVal = getSeriesMatrix(uriVal.asString(), optionsVal);
 			break;
-		case SHEET:
-			// Return all of the cell values as a sparse matrix
-			retVal = getSheetMatrix(uriVal.asString(), optionsVal);
 		default:
 			break;
 		}
 
 		debugger.stepEnd(this, retVal, scope);
 		return retVal;
-	}
-
-	private ReflexValue getSheetMatrix(String displayName, ReflexValue optionsVal) {
-		ReflexSparseMatrixValue smv = new ReflexSparseMatrixValue(2);
-		List<RaptureSheetCell> cells = handler.getApi().getSheet().findCellsByEpoch(displayName, 0, 0L);
-		for(RaptureSheetCell cell : cells) {
-			smv.set(new ReflexValue(cell.getRow()), new ReflexValue(cell.getColumn()), new ReflexValue(cell.getData()));
-		}
-		return new ReflexValue(smv);
 	}
 
 	private ReflexValue getSeriesMatrix(String displayName, ReflexValue optionsVal) {

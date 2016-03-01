@@ -25,7 +25,6 @@ package rapture.kernel.script;
 
 import rapture.common.CallingContext;
 import rapture.common.InstallableKernel;
-import rapture.common.api.ScriptSysApi;
 import rapture.common.api.ScriptUserApi;
 import rapture.common.api.ScriptingApi;
 import rapture.common.impl.jackson.JacksonUtil;
@@ -41,7 +40,6 @@ public class KernelScript implements IRaptureScriptHelper, IRaptureKernelScriptH
     private final ScriptBootstrap bootstrap;
     private final ScriptEntitlement entitlement;
     private final ScriptIdGen idgen;
-    private final ScriptTable table;
     private final ScriptIndex index;
     private final ScriptScript script;
     private final ScriptUser user;
@@ -49,7 +47,6 @@ public class KernelScript implements IRaptureScriptHelper, IRaptureKernelScriptH
     private final ScriptLock lock;
     private final ScriptEvent event;
     private final ScriptAudit audit;
-    private final ScriptMailbox mailbox;
     private final ScriptFields fields;
     private final ScriptPlugin plugin;
     private final ScriptPipeline pipeline;
@@ -58,16 +55,11 @@ public class KernelScript implements IRaptureScriptHelper, IRaptureKernelScriptH
     private final ScriptRunner runner;
     private final ScriptNotification notification;
     private final ScriptSeries series;
-    private final ScriptSheet sheet;
     private final ScriptBlob blob;
     private final ScriptJar jar;
     private final ScriptDecision decision;
-    @Deprecated
-    private final ScriptRepo repo;
     private final ScriptDoc doc;
-    private final ScriptRelationship relationship;
     private final ScriptEnvironment environment;
-    private final ScriptQuestion question;
     private final ScriptStructured structured;
 
     public KernelScript() {
@@ -77,7 +69,6 @@ public class KernelScript implements IRaptureScriptHelper, IRaptureKernelScriptH
         bootstrap = new ScriptBootstrap(Kernel.getBootstrap());
         entitlement = new ScriptEntitlement(Kernel.getEntitlement());
         idgen = new ScriptIdGen(Kernel.getIdGen());
-        table = new ScriptTable(Kernel.getTable());
         index = new ScriptIndex(Kernel.getIndex());
         script = new ScriptScript(Kernel.getScript());
         user = new ScriptUser(Kernel.getUser());
@@ -85,7 +76,6 @@ public class KernelScript implements IRaptureScriptHelper, IRaptureKernelScriptH
         lock = new ScriptLock(Kernel.getLock());
         event = new ScriptEvent(Kernel.getEvent());
         audit = new ScriptAudit(Kernel.getAudit());
-        mailbox = new ScriptMailbox(Kernel.getMailbox());
         fields = new ScriptFields(Kernel.getFields());
         plugin = new ScriptPlugin(Kernel.getPlugin());
         pipeline = new ScriptPipeline(Kernel.getPipeline());
@@ -94,24 +84,16 @@ public class KernelScript implements IRaptureScriptHelper, IRaptureKernelScriptH
         runner = new ScriptRunner(Kernel.getRunner());
         notification = new ScriptNotification(Kernel.getNotification());
         series = new ScriptSeries(Kernel.getSeries());
-        sheet = new ScriptSheet(Kernel.getSheet());
         blob = new ScriptBlob(Kernel.getBlob());
         jar = new ScriptJar(Kernel.getJar());
         decision = new ScriptDecision(Kernel.getDecision());
-        repo = new ScriptRepo(Kernel.getRepo());
         doc = new ScriptDoc(Kernel.getDoc());
-        relationship = new ScriptRelationship(Kernel.getRelationship());
         environment = new ScriptEnvironment(Kernel.getEnvironment());
-        question = new ScriptQuestion(Kernel.getQuestion());
         structured = new ScriptStructured(Kernel.getStructured());
     }
 
     public Login getLogin() {
         return login;
-    }
-
-    public ScriptQuestion getQuestion() {
-        return question;
     }
 
     public ScriptAdmin getAdmin() {
@@ -147,10 +129,6 @@ public class KernelScript implements IRaptureScriptHelper, IRaptureKernelScriptH
         return idgen;
     }
 
-    public ScriptTable getTable() {
-        return table;
-    }
-
     public ScriptIndex getIndex() {
         return index;
     }
@@ -161,10 +139,6 @@ public class KernelScript implements IRaptureScriptHelper, IRaptureKernelScriptH
 
     public ScriptPlugin getPlugin() {
         return plugin;
-    }
-
-    public ScriptMailbox getMailbox() {
-        return mailbox;
     }
 
     @Override
@@ -221,10 +195,6 @@ public class KernelScript implements IRaptureScriptHelper, IRaptureKernelScriptH
         return series;
     }
 
-    public ScriptSheet getSheet() {
-        return sheet;
-    }
-
     private CallingContext ctx;
 
     @Override
@@ -235,7 +205,6 @@ public class KernelScript implements IRaptureScriptHelper, IRaptureKernelScriptH
         getBootstrap().setCallingContext(ctx);
         getEntitlement().setCallingContext(ctx);
         getIdGen().setCallingContext(ctx);
-        getTable().setCallingContext(ctx);
         getIndex().setCallingContext(ctx);
         getScript().setCallingContext(ctx);
         getUser().setCallingContext(ctx);
@@ -243,7 +212,6 @@ public class KernelScript implements IRaptureScriptHelper, IRaptureKernelScriptH
         getLock().setCallingContext(ctx);
         getEvent().setCallingContext(ctx);
         getAudit().setCallingContext(ctx);
-        getMailbox().setCallingContext(ctx);
         getFields().setCallingContext(ctx);
         getPipeline().setCallingContext(ctx);
         getAsync().setCallingContext(ctx);
@@ -251,12 +219,9 @@ public class KernelScript implements IRaptureScriptHelper, IRaptureKernelScriptH
         getRunner().setCallingContext(ctx);
         getNotification().setCallingContext(ctx);
         getSeries().setCallingContext(ctx);
-        getSheet().setCallingContext(ctx);
         getBlob().setCallingContext(ctx);
         getDecision().setCallingContext(ctx);
-        getRepo().setCallingContext(ctx);
         getDoc().setCallingContext(ctx);
-        getRelationship().setCallingContext(ctx);
         getEnvironment().setCallingContext(ctx);
         getPlugin().setCallingContext(ctx);
         getStructured().setCallingContext(ctx);
@@ -288,19 +253,8 @@ public class KernelScript implements IRaptureScriptHelper, IRaptureKernelScriptH
     }
 
     @Override
-    @Deprecated
-    public ScriptRepo getRepo() {
-        return repo;
-    }
-
-    @Override
     public ScriptDoc getDoc() {
         return doc;
-    }
-
-    @Override
-    public ScriptRelationship getRelationship() {
-        return relationship;
     }
 
     @Override

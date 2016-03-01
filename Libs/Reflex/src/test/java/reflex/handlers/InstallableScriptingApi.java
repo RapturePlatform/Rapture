@@ -29,32 +29,26 @@ import rapture.common.api.ScriptAdminApi;
 import rapture.common.api.ScriptAsyncApi;
 import rapture.common.api.ScriptAuditApi;
 import rapture.common.api.ScriptBlobApi;
-import rapture.common.api.ScriptJarApi;
 import rapture.common.api.ScriptBootstrapApi;
 import rapture.common.api.ScriptDecisionApi;
 import rapture.common.api.ScriptDocApi;
 import rapture.common.api.ScriptEntitlementApi;
 import rapture.common.api.ScriptEnvironmentApi;
 import rapture.common.api.ScriptEventApi;
-import rapture.common.api.ScriptPluginApi;
 import rapture.common.api.ScriptFieldsApi;
 import rapture.common.api.ScriptIdGenApi;
 import rapture.common.api.ScriptIndexApi;
+import rapture.common.api.ScriptJarApi;
 import rapture.common.api.ScriptLockApi;
-import rapture.common.api.ScriptMailboxApi;
 import rapture.common.api.ScriptNotificationApi;
 import rapture.common.api.ScriptPipelineApi;
-import rapture.common.api.ScriptQuestionApi;
-import rapture.common.api.ScriptRelationshipApi;
-import rapture.common.api.ScriptRepoApi;
+import rapture.common.api.ScriptPluginApi;
 import rapture.common.api.ScriptRunnerApi;
 import rapture.common.api.ScriptScheduleApi;
 import rapture.common.api.ScriptScriptApi;
 import rapture.common.api.ScriptSeriesApi;
-import rapture.common.api.ScriptSheetApi;
 import rapture.common.api.ScriptStructuredApi;
 import rapture.common.api.ScriptSysApi;
-import rapture.common.api.ScriptTableApi;
 import rapture.common.api.ScriptUserApi;
 import rapture.common.api.ScriptingApi;
 
@@ -137,11 +131,6 @@ public class InstallableScriptingApi implements ScriptingApi {
         return null;
     }
 
-    @Override
-    public ScriptMailboxApi getMailbox() {
-        // TODO Auto-generated method stub
-        return null;
-    }
 
     @Override
     public ScriptFieldsApi getFields() {
@@ -161,11 +150,6 @@ public class InstallableScriptingApi implements ScriptingApi {
         return null;
     }
 
-    @Override
-    public ScriptSheetApi getSheet() {
-        // TODO Auto-generated method stub
-        return null;
-    }
 
     @Override
     public ScriptPluginApi getPlugin() {
@@ -209,11 +193,6 @@ public class InstallableScriptingApi implements ScriptingApi {
         return null;
     }
 
-    @Override
-    public ScriptRepoApi getRepo() {
-        // TODO Auto-generated method stub
-        return null;
-    }
 
     @Override
     public ScriptDocApi getDoc() {
@@ -221,22 +200,12 @@ public class InstallableScriptingApi implements ScriptingApi {
         return null;
     }
 
-    @Override
-    public ScriptRelationshipApi getRelationship() {
-        // TODO Auto-generated method stub
-        return null;
-    }
 
     @Override
     public InstallableKernel getInstalledKernel(String name) {
         return new TestSDK();
     }
 
-	@Override
-	public ScriptTableApi getTable() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
     @Override
     public ScriptEnvironmentApi getEnvironment() {
@@ -244,11 +213,6 @@ public class InstallableScriptingApi implements ScriptingApi {
         return null;
     }
 
-    @Override
-    public ScriptQuestionApi getQuestion() {
-        // TODO Auto-generated method stub
-        return null;
-    }
 
     @Override
     public String getEndPoint() {

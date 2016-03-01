@@ -64,7 +64,7 @@ public class HooksConfigTest {
         ArrayList<HookType> hookTypes = Lists.newArrayList(HookType.PRE, HookType.POST);
         ArrayList<String> includes = Lists.newArrayList(CallName.Admin_addIPToWhiteList.toString(), CallName.Admin_addIPToWhiteList.getApiName().toString()
                 + ".*");
-        ArrayList<String> excludes = Lists.newArrayList(CallName.Admin_addRemote.toString() + ".*", ApiName.Admin.toString() + ".*");
+        ArrayList<String> excludes = Lists.newArrayList(ApiName.Admin.toString() + ".*");
         SingleHookConfig hookConfig = HookFactory.INSTANCE.createConfig(hook, id, hookTypes, includes, excludes);
         HooksConfigHelper.registerHook(hooksConfig, hookConfig);
 

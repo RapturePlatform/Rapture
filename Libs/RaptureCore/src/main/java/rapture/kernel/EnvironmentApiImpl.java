@@ -23,20 +23,17 @@
  */
 package rapture.kernel;
 
+import java.util.List;
+
+import org.apache.log4j.Logger;
+
 import rapture.common.CallingContext;
-import rapture.common.LicenseInfo;
 import rapture.common.api.EnvironmentApi;
-import rapture.common.model.RaptureNetwork;
-import rapture.common.model.RaptureNetworkStorage;
 import rapture.common.model.RaptureServerInfo;
 import rapture.common.model.RaptureServerInfoStorage;
 import rapture.common.model.RaptureServerStatus;
 import rapture.common.model.RaptureServerStatusStorage;
 import rapture.config.MultiValueConfigLoader;
-
-import java.util.List;
-
-import org.apache.log4j.Logger;
 
 public class EnvironmentApiImpl extends KernelBase implements EnvironmentApi {
     private static Logger log = Logger.getLogger(EnvironmentApiImpl.class);
@@ -45,23 +42,7 @@ public class EnvironmentApiImpl extends KernelBase implements EnvironmentApi {
         super(raptureKernel);
     }
 
-    @Override
-    public RaptureNetwork getNetworkInfo(CallingContext context) {
-        List<RaptureNetwork> ret = RaptureNetworkStorage.readAll();
-        if (ret.size() > 0) {
-            return ret.get(0);
-        } else {
-            return null;
-        }
-    }
-
-    @Override
-    public RaptureNetwork setNetworkInfo(CallingContext context, RaptureNetwork network) {
-        log.info("Setting network info " + network.getNetworkName());
-        RaptureNetworkStorage.add(network, context.getUser(), "Updated Rapture Network information");
-        return network;
-    }
-
+ 
     @Override
     public RaptureServerInfo getThisServer(CallingContext context) {
         String serverId = MultiValueConfigLoader.getConfig("ENVIRONMENT-id");

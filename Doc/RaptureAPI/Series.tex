@@ -1,6 +1,8 @@
 \chapter{Series API}
+\index{Series API}
 \input{series/info}
 \subsection{CreateSeriesRepo}
+\index{CreateSeriesRepo}
 \label{Api:CreateSeriesRepo}
 \begin{verbatim}
    void createSeriesRepo (
@@ -16,6 +18,7 @@
 
 \rule{15cm}{2pt}
 \subsection{SeriesRepoExists}
+\index{SeriesRepoExists}
 \label{Api:SeriesRepoExists}
 \begin{verbatim}
    boolean seriesRepoExists (
@@ -30,6 +33,7 @@
 
 \rule{15cm}{2pt}
 \subsection{SeriesExists}
+\index{SeriesExists}
 \label{Api:SeriesExists}
 \begin{verbatim}
    boolean seriesExists (
@@ -44,6 +48,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetSeriesRepoConfig}
+\index{GetSeriesRepoConfig}
 \label{Api:GetSeriesRepoConfig}
 \begin{verbatim}
    SeriesRepoConfig getSeriesRepoConfig (
@@ -58,6 +63,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetSeriesRepoConfigs}
+\index{GetSeriesRepoConfigs}
 \label{Api:GetSeriesRepoConfigs}
 \begin{verbatim}
    List<SeriesRepoConfig> getSeriesRepoConfigs (
@@ -71,6 +77,7 @@
 
 \rule{15cm}{2pt}
 \subsection{DeleteSeriesRepo}
+\index{DeleteSeriesRepo}
 \label{Api:DeleteSeriesRepo}
 \begin{verbatim}
    void deleteSeriesRepo (
@@ -85,20 +92,22 @@
 
 \rule{15cm}{2pt}
 \subsection{DeleteSeries}
+\index{DeleteSeries}
 \label{Api:DeleteSeries}
 \begin{verbatim}
    void deleteSeries (
-           String    seriesRepoUri
+           String    seriesUri
    )
 \end{verbatim}
 %\begin{lstlisting}[language=reflex]
-%ret = #series.deleteSeries(seriesRepoUri);
+%ret = #series.deleteSeries(seriesUri);
 %\end{lstlisting}
 \input{series/deleteSeries}
 
 
 \rule{15cm}{2pt}
 \subsection{DeleteSeriesByUriPrefix}
+\index{DeleteSeriesByUriPrefix}
 \label{Api:DeleteSeriesByUriPrefix}
 \begin{verbatim}
    List<String> deleteSeriesByUriPrefix (
@@ -113,6 +122,7 @@
 
 \rule{15cm}{2pt}
 \subsection{AddDoubleToSeries}
+\index{AddDoubleToSeries}
 \label{Api:AddDoubleToSeries}
 \begin{verbatim}
    void addDoubleToSeries (
@@ -129,6 +139,7 @@
 
 \rule{15cm}{2pt}
 \subsection{AddLongToSeries}
+\index{AddLongToSeries}
 \label{Api:AddLongToSeries}
 \begin{verbatim}
    void addLongToSeries (
@@ -145,6 +156,7 @@
 
 \rule{15cm}{2pt}
 \subsection{AddStringToSeries}
+\index{AddStringToSeries}
 \label{Api:AddStringToSeries}
 \begin{verbatim}
    void addStringToSeries (
@@ -161,6 +173,7 @@
 
 \rule{15cm}{2pt}
 \subsection{AddStructureToSeries}
+\index{AddStructureToSeries}
 \label{Api:AddStructureToSeries}
 \begin{verbatim}
    void addStructureToSeries (
@@ -177,6 +190,7 @@
 
 \rule{15cm}{2pt}
 \subsection{AddDoublesToSeries}
+\index{AddDoublesToSeries}
 \label{Api:AddDoublesToSeries}
 \begin{verbatim}
    void addDoublesToSeries (
@@ -193,6 +207,7 @@
 
 \rule{15cm}{2pt}
 \subsection{AddLongsToSeries}
+\index{AddLongsToSeries}
 \label{Api:AddLongsToSeries}
 \begin{verbatim}
    void addLongsToSeries (
@@ -209,6 +224,7 @@
 
 \rule{15cm}{2pt}
 \subsection{AddStringsToSeries}
+\index{AddStringsToSeries}
 \label{Api:AddStringsToSeries}
 \begin{verbatim}
    void addStringsToSeries (
@@ -225,6 +241,7 @@
 
 \rule{15cm}{2pt}
 \subsection{AddStructuresToSeries}
+\index{AddStructuresToSeries}
 \label{Api:AddStructuresToSeries}
 \begin{verbatim}
    void addStructuresToSeries (
@@ -241,6 +258,7 @@
 
 \rule{15cm}{2pt}
 \subsection{DeletePointsFromSeriesByPointKey}
+\index{DeletePointsFromSeriesByPointKey}
 \label{Api:DeletePointsFromSeriesByPointKey}
 \begin{verbatim}
    void deletePointsFromSeriesByPointKey (
@@ -256,6 +274,7 @@
 
 \rule{15cm}{2pt}
 \subsection{DeletePointsFromSeries}
+\index{DeletePointsFromSeries}
 \label{Api:DeletePointsFromSeries}
 \begin{verbatim}
    void deletePointsFromSeries (
@@ -270,6 +289,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetLastPoint}
+\index{GetLastPoint}
 \label{Api:GetLastPoint}
 \begin{verbatim}
    SeriesPoint getLastPoint (
@@ -284,6 +304,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetPoints}
+\index{GetPoints}
 \label{Api:GetPoints}
 \begin{verbatim}
    List<SeriesPoint> getPoints (
@@ -298,6 +319,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetPointsAfter}
+\index{GetPointsAfter}
 \label{Api:GetPointsAfter}
 \begin{verbatim}
    List<SeriesPoint> getPointsAfter (
@@ -314,6 +336,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetPointsAfterReverse}
+\index{GetPointsAfterReverse}
 \label{Api:GetPointsAfterReverse}
 \begin{verbatim}
    List<SeriesPoint> getPointsAfterReverse (
@@ -330,6 +353,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetPointsInRange}
+\index{GetPointsInRange}
 \label{Api:GetPointsInRange}
 \begin{verbatim}
    List<SeriesPoint> getPointsInRange (
@@ -347,6 +371,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetPointsAsDoubles}
+\index{GetPointsAsDoubles}
 \label{Api:GetPointsAsDoubles}
 \begin{verbatim}
    List<SeriesDouble> getPointsAsDoubles (
@@ -361,6 +386,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetPointsAfterAsDoubles}
+\index{GetPointsAfterAsDoubles}
 \label{Api:GetPointsAfterAsDoubles}
 \begin{verbatim}
    List<SeriesDouble> getPointsAfterAsDoubles (
@@ -377,6 +403,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetPointsInRangeAsDoubles}
+\index{GetPointsInRangeAsDoubles}
 \label{Api:GetPointsInRangeAsDoubles}
 \begin{verbatim}
    List<SeriesDouble> getPointsInRangeAsDoubles (
@@ -394,6 +421,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetPointsAsStrings}
+\index{GetPointsAsStrings}
 \label{Api:GetPointsAsStrings}
 \begin{verbatim}
    List<SeriesString> getPointsAsStrings (
@@ -408,6 +436,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetPointsAfterAsStrings}
+\index{GetPointsAfterAsStrings}
 \label{Api:GetPointsAfterAsStrings}
 \begin{verbatim}
    List<SeriesString> getPointsAfterAsStrings (
@@ -424,6 +453,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetPointsInRangeAsStrings}
+\index{GetPointsInRangeAsStrings}
 \label{Api:GetPointsInRangeAsStrings}
 \begin{verbatim}
    List<SeriesString> getPointsInRangeAsStrings (
@@ -441,6 +471,7 @@
 
 \rule{15cm}{2pt}
 \subsection{RunSeriesScript}
+\index{RunSeriesScript}
 \label{Api:RunSeriesScript}
 \begin{verbatim}
    List<SeriesPoint> runSeriesScript (
@@ -456,6 +487,7 @@
 
 \rule{15cm}{2pt}
 \subsection{RunSeriesScriptQuiet}
+\index{RunSeriesScriptQuiet}
 \label{Api:RunSeriesScriptQuiet}
 \begin{verbatim}
    void runSeriesScriptQuiet (
@@ -471,15 +503,16 @@
 
 \rule{15cm}{2pt}
 \subsection{ListSeriesByUriPrefix}
+\index{ListSeriesByUriPrefix}
 \label{Api:ListSeriesByUriPrefix}
 \begin{verbatim}
    Map<String,RaptureFolderInfo> listSeriesByUriPrefix (
-           String    uriPrefix
+           String    seriesUri
            int    depth
    )
 \end{verbatim}
 %\begin{lstlisting}[language=reflex]
-%ret = #series.listSeriesByUriPrefix(uriPrefix,depth);
+%ret = #series.listSeriesByUriPrefix(seriesUri,depth);
 %\end{lstlisting}
 \input{series/listSeriesByUriPrefix}
 

@@ -25,7 +25,6 @@ package rapture.kernel;
 
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -72,7 +71,6 @@ import rapture.dsl.dparse.AsOfTimeDirective;
 import rapture.dsl.dparse.BaseDirective;
 import rapture.index.IndexHandler;
 import rapture.kernel.context.ContextValidator;
-import rapture.kernel.relationship.RelationshipHelper;
 import rapture.kernel.schemes.RaptureScheme;
 import rapture.repo.NVersionedRepo;
 import rapture.repo.Repository;
@@ -417,7 +415,6 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
         }
 
         BaseDirective baseDirective = getDirective(internalUri, repository);
-        RelationshipHelper.createRelationship(context, internalUri.toString(), "get", null);
         return repository.getDocument(internalUri.getDocPath(), baseDirective);
     }
 
@@ -637,7 +634,6 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
                 content = content.replace("#" + UserApiImpl.AUTOID, newId);
             }
 
-            RelationshipHelper.createRelationship(context, internalUri.toString(), "put", null);
             Kernel.getStackContainer().pushStack(context, internalUri.toString());
 
             int versionNumber = -1;
@@ -679,8 +675,8 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
         ReflexValue value = rs.runProgram(context, walker, null, extraVals);
         log.debug("Value is " + value.toString());
 
-        IndexHandler indexHandler = Kernel.getTable().getTrusted()
-                .getIndexHandler(RaptureURI.builder(Scheme.TABLE, authority).docPath(indexScriptPair.getIndex()).asString());
+        IndexHandler indexHandler = Kernel.getIndex().getTrusted()
+                .getIndexHandler(RaptureURI.builder(Scheme.INDEX, authority).docPath(indexScriptPair.getIndex()).asString());
         if (value.isMap()) {
             Map<String, Object> entries = value.asMap();
             for (Map.Entry<String, Object> entryVals : entries.entrySet()) {

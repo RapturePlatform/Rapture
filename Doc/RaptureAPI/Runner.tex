@@ -1,6 +1,8 @@
 \chapter{Runner API}
+\index{Runner API}
 \input{runner/info}
 \subsection{CreateServerGroup}
+\index{CreateServerGroup}
 \label{Api:CreateServerGroup}
 \begin{verbatim}
    RaptureServerGroup createServerGroup (
@@ -16,6 +18,7 @@
 
 \rule{15cm}{2pt}
 \subsection{DeleteServerGroup}
+\index{DeleteServerGroup}
 \label{Api:DeleteServerGroup}
 \begin{verbatim}
    void deleteServerGroup (
@@ -30,6 +33,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetAllServerGroups}
+\index{GetAllServerGroups}
 \label{Api:GetAllServerGroups}
 \begin{verbatim}
    List<RaptureServerGroup> getAllServerGroups (
@@ -43,6 +47,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetAllApplicationDefinitions}
+\index{GetAllApplicationDefinitions}
 \label{Api:GetAllApplicationDefinitions}
 \begin{verbatim}
    List<RaptureApplicationDefinition> getAllApplicationDefinitions (
@@ -56,6 +61,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetAllLibraryDefinitions}
+\index{GetAllLibraryDefinitions}
 \label{Api:GetAllLibraryDefinitions}
 \begin{verbatim}
    List<RaptureLibraryDefinition> getAllLibraryDefinitions (
@@ -69,6 +75,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetAllApplicationInstances}
+\index{GetAllApplicationInstances}
 \label{Api:GetAllApplicationInstances}
 \begin{verbatim}
    List<RaptureApplicationInstance> getAllApplicationInstances (
@@ -82,6 +89,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetServerGroup}
+\index{GetServerGroup}
 \label{Api:GetServerGroup}
 \begin{verbatim}
    RaptureServerGroup getServerGroup (
@@ -96,6 +104,7 @@
 
 \rule{15cm}{2pt}
 \subsection{AddGroupInclusion}
+\index{AddGroupInclusion}
 \label{Api:AddGroupInclusion}
 \begin{verbatim}
    RaptureServerGroup addGroupInclusion (
@@ -111,6 +120,7 @@
 
 \rule{15cm}{2pt}
 \subsection{RemoveGroupInclusion}
+\index{RemoveGroupInclusion}
 \label{Api:RemoveGroupInclusion}
 \begin{verbatim}
    RaptureServerGroup removeGroupInclusion (
@@ -126,6 +136,7 @@
 
 \rule{15cm}{2pt}
 \subsection{AddGroupExclusion}
+\index{AddGroupExclusion}
 \label{Api:AddGroupExclusion}
 \begin{verbatim}
    RaptureServerGroup addGroupExclusion (
@@ -141,6 +152,7 @@
 
 \rule{15cm}{2pt}
 \subsection{RemoveGroupExclusion}
+\index{RemoveGroupExclusion}
 \label{Api:RemoveGroupExclusion}
 \begin{verbatim}
    RaptureServerGroup removeGroupExclusion (
@@ -156,6 +168,7 @@
 
 \rule{15cm}{2pt}
 \subsection{RemoveGroupEntry}
+\index{RemoveGroupEntry}
 \label{Api:RemoveGroupEntry}
 \begin{verbatim}
    RaptureServerGroup removeGroupEntry (
@@ -171,6 +184,7 @@
 
 \rule{15cm}{2pt}
 \subsection{CreateApplicationDefinition}
+\index{CreateApplicationDefinition}
 \label{Api:CreateApplicationDefinition}
 \begin{verbatim}
    RaptureApplicationDefinition createApplicationDefinition (
@@ -187,6 +201,7 @@
 
 \rule{15cm}{2pt}
 \subsection{DeleteApplicationDefinition}
+\index{DeleteApplicationDefinition}
 \label{Api:DeleteApplicationDefinition}
 \begin{verbatim}
    void deleteApplicationDefinition (
@@ -201,6 +216,7 @@
 
 \rule{15cm}{2pt}
 \subsection{UpdateApplicationVersion}
+\index{UpdateApplicationVersion}
 \label{Api:UpdateApplicationVersion}
 \begin{verbatim}
    RaptureApplicationDefinition updateApplicationVersion (
@@ -216,6 +232,7 @@
 
 \rule{15cm}{2pt}
 \subsection{CreateLibraryDefinition}
+\index{CreateLibraryDefinition}
 \label{Api:CreateLibraryDefinition}
 \begin{verbatim}
    RaptureLibraryDefinition createLibraryDefinition (
@@ -232,6 +249,7 @@
 
 \rule{15cm}{2pt}
 \subsection{DeleteLibraryDefinition}
+\index{DeleteLibraryDefinition}
 \label{Api:DeleteLibraryDefinition}
 \begin{verbatim}
    void deleteLibraryDefinition (
@@ -246,6 +264,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetLibraryDefinition}
+\index{GetLibraryDefinition}
 \label{Api:GetLibraryDefinition}
 \begin{verbatim}
    RaptureLibraryDefinition getLibraryDefinition (
@@ -260,6 +279,7 @@
 
 \rule{15cm}{2pt}
 \subsection{UpdateLibraryVersion}
+\index{UpdateLibraryVersion}
 \label{Api:UpdateLibraryVersion}
 \begin{verbatim}
    RaptureLibraryDefinition updateLibraryVersion (
@@ -275,6 +295,7 @@
 
 \rule{15cm}{2pt}
 \subsection{AddLibraryToGroup}
+\index{AddLibraryToGroup}
 \label{Api:AddLibraryToGroup}
 \begin{verbatim}
    RaptureServerGroup addLibraryToGroup (
@@ -290,6 +311,7 @@
 
 \rule{15cm}{2pt}
 \subsection{RemoveLibraryFromGroup}
+\index{RemoveLibraryFromGroup}
 \label{Api:RemoveLibraryFromGroup}
 \begin{verbatim}
    RaptureServerGroup removeLibraryFromGroup (
@@ -305,6 +327,7 @@
 
 \rule{15cm}{2pt}
 \subsection{CreateApplicationInstance}
+\index{CreateApplicationInstance}
 \label{Api:CreateApplicationInstance}
 \begin{verbatim}
    RaptureApplicationInstance createApplicationInstance (
@@ -326,6 +349,7 @@
 
 \rule{15cm}{2pt}
 \subsection{RunApplication}
+\index{RunApplication}
 \label{Api:RunApplication}
 \begin{verbatim}
    RaptureApplicationStatus runApplication (
@@ -343,6 +367,7 @@
 
 \rule{15cm}{2pt}
 \subsection{RunCustomApplication}
+\index{RunCustomApplication}
 \label{Api:RunCustomApplication}
 \begin{verbatim}
    RaptureApplicationStatus runCustomApplication (
@@ -361,6 +386,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetApplicationStatus}
+\index{GetApplicationStatus}
 \label{Api:GetApplicationStatus}
 \begin{verbatim}
    RaptureApplicationStatus getApplicationStatus (
@@ -375,6 +401,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetApplicationStatuses}
+\index{GetApplicationStatuses}
 \label{Api:GetApplicationStatuses}
 \begin{verbatim}
    List<RaptureApplicationStatus> getApplicationStatuses (
@@ -389,6 +416,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetApplicationStatusDates}
+\index{GetApplicationStatusDates}
 \label{Api:GetApplicationStatusDates}
 \begin{verbatim}
    List<String> getApplicationStatusDates (
@@ -402,6 +430,7 @@
 
 \rule{15cm}{2pt}
 \subsection{ArchiveApplicationStatuses}
+\index{ArchiveApplicationStatuses}
 \label{Api:ArchiveApplicationStatuses}
 \begin{verbatim}
    void archiveApplicationStatuses (
@@ -415,6 +444,7 @@
 
 \rule{15cm}{2pt}
 \subsection{ChangeApplicationStatus}
+\index{ChangeApplicationStatus}
 \label{Api:ChangeApplicationStatus}
 \begin{verbatim}
    RaptureApplicationStatus changeApplicationStatus (
@@ -431,6 +461,7 @@
 
 \rule{15cm}{2pt}
 \subsection{RecordStatusMessages}
+\index{RecordStatusMessages}
 \label{Api:RecordStatusMessages}
 \begin{verbatim}
    void recordStatusMessages (
@@ -446,6 +477,7 @@
 
 \rule{15cm}{2pt}
 \subsection{TerminateApplication}
+\index{TerminateApplication}
 \label{Api:TerminateApplication}
 \begin{verbatim}
    RaptureApplicationStatus terminateApplication (
@@ -461,6 +493,7 @@
 
 \rule{15cm}{2pt}
 \subsection{DeleteApplicationInstance}
+\index{DeleteApplicationInstance}
 \label{Api:DeleteApplicationInstance}
 \begin{verbatim}
    void deleteApplicationInstance (
@@ -476,6 +509,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetApplicationInstance}
+\index{GetApplicationInstance}
 \label{Api:GetApplicationInstance}
 \begin{verbatim}
    RaptureApplicationInstance getApplicationInstance (
@@ -491,6 +525,7 @@
 
 \rule{15cm}{2pt}
 \subsection{UpdateStatus}
+\index{UpdateStatus}
 \label{Api:UpdateStatus}
 \begin{verbatim}
    void updateStatus (
@@ -509,6 +544,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetApplicationsForServerGroup}
+\index{GetApplicationsForServerGroup}
 \label{Api:GetApplicationsForServerGroup}
 \begin{verbatim}
    List<String> getApplicationsForServerGroup (
@@ -523,6 +559,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetApplicationsForServer}
+\index{GetApplicationsForServer}
 \label{Api:GetApplicationsForServer}
 \begin{verbatim}
    List<RaptureApplicationInstance> getApplicationsForServer (
@@ -537,6 +574,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetApplicationDefinition}
+\index{GetApplicationDefinition}
 \label{Api:GetApplicationDefinition}
 \begin{verbatim}
    RaptureApplicationDefinition getApplicationDefinition (
@@ -551,6 +589,7 @@
 
 \rule{15cm}{2pt}
 \subsection{SetRunnerConfig}
+\index{SetRunnerConfig}
 \label{Api:SetRunnerConfig}
 \begin{verbatim}
    void setRunnerConfig (
@@ -566,6 +605,7 @@
 
 \rule{15cm}{2pt}
 \subsection{DeleteRunnerConfig}
+\index{DeleteRunnerConfig}
 \label{Api:DeleteRunnerConfig}
 \begin{verbatim}
    void deleteRunnerConfig (
@@ -580,6 +620,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetRunnerConfig}
+\index{GetRunnerConfig}
 \label{Api:GetRunnerConfig}
 \begin{verbatim}
    RaptureRunnerConfig getRunnerConfig (
@@ -593,6 +634,7 @@
 
 \rule{15cm}{2pt}
 \subsection{RecordRunnerStatus}
+\index{RecordRunnerStatus}
 \label{Api:RecordRunnerStatus}
 \begin{verbatim}
    void recordRunnerStatus (
@@ -611,6 +653,7 @@
 
 \rule{15cm}{2pt}
 \subsection{RecordInstanceCapabilities}
+\index{RecordInstanceCapabilities}
 \label{Api:RecordInstanceCapabilities}
 \begin{verbatim}
    void recordInstanceCapabilities (
@@ -627,6 +670,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetCapabilities}
+\index{GetCapabilities}
 \label{Api:GetCapabilities}
 \begin{verbatim}
    Map<String,RaptureInstanceCapabilities> getCapabilities (
@@ -642,6 +686,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetRunnerServers}
+\index{GetRunnerServers}
 \label{Api:GetRunnerServers}
 \begin{verbatim}
    List<String> getRunnerServers (
@@ -655,6 +700,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetRunnerStatus}
+\index{GetRunnerStatus}
 \label{Api:GetRunnerStatus}
 \begin{verbatim}
    RaptureRunnerStatus getRunnerStatus (
@@ -669,6 +715,7 @@
 
 \rule{15cm}{2pt}
 \subsection{CleanRunnerStatus}
+\index{CleanRunnerStatus}
 \label{Api:CleanRunnerStatus}
 \begin{verbatim}
    void cleanRunnerStatus (
@@ -683,6 +730,7 @@
 
 \rule{15cm}{2pt}
 \subsection{MarkForRestart}
+\index{MarkForRestart}
 \label{Api:MarkForRestart}
 \begin{verbatim}
    void markForRestart (

@@ -52,8 +52,6 @@ import rapture.common.LicenseInfo;
 import rapture.common.RaptureConstants;
 import rapture.common.RaptureIPWhiteList;
 import rapture.common.RaptureIPWhiteListStorage;
-import rapture.common.RaptureRemote;
-import rapture.common.RaptureRemoteStorage;
 import rapture.common.RaptureScript;
 import rapture.common.RaptureURI;
 import rapture.common.api.NotificationApi;
@@ -68,7 +66,6 @@ import rapture.common.model.RaptureEntitlement;
 import rapture.common.model.RaptureEntitlementGroup;
 import rapture.common.model.RaptureEntitlementGroupStorage;
 import rapture.common.model.RaptureEntitlementStorage;
-import rapture.common.model.RaptureNetwork;
 import rapture.common.model.RaptureServerInfo;
 import rapture.common.model.RaptureServerStatus;
 import rapture.common.model.RaptureServerStatusStorage;
@@ -76,7 +73,6 @@ import rapture.common.model.RaptureUser;
 import rapture.common.model.RaptureUserStorage;
 import rapture.config.ConfigLoader;
 import rapture.dsl.entparser.ParseEntitlementPath;
-import rapture.event.generator.TimeProcessorThread;
 import rapture.exchange.QueueHandler;
 import rapture.index.IndexHandler;
 import rapture.kernel.cache.KernelCaches;
@@ -138,10 +134,6 @@ public enum Kernel {
         return INSTANCE.jar;
     }
 
-    public static SheetApiImplWrapper getSheet() {
-        return INSTANCE.sheet;
-    }
-
     public static BootstrapApiImplWrapper getBootstrap() {
         return INSTANCE.bootstrap;
     }
@@ -162,10 +154,6 @@ public enum Kernel {
         return INSTANCE.idgen;
     }
 
-    public static TableApiImplWrapper getTable() {
-        return INSTANCE.table;
-    }
-
     public static IndexApiImplWrapper getIndex() {
         return INSTANCE.index;
     }
@@ -182,9 +170,6 @@ public enum Kernel {
         return INSTANCE.login;
     }
 
-    public static MailboxApiImplWrapper getMailbox() {
-        return INSTANCE.mailbox;
-    }
 
     public static ScheduleApiImplWrapper getSchedule() {
         return INSTANCE.schedule;
@@ -230,25 +215,14 @@ public enum Kernel {
         return INSTANCE.decision;
     }
 
-    @Deprecated
-    public static RepoApiImplWrapper getRepo() {
-        return INSTANCE.repo;
-    }
 
     public static DocApiImplWrapper getDoc() {
         return INSTANCE.doc;
     }
 
-    public static RelationshipApiImplWrapper getRelationship() {
-        return INSTANCE.relationship;
-    }
 
     public static EnvironmentApiImplWrapper getEnvironment() {
         return INSTANCE.environment;
-    }
-
-    public static QuestionApiImplWrapper getQuestion() {
-        return INSTANCE.question;
     }
 
     public static StructuredApiImplWrapper getStructured() {
@@ -292,8 +266,6 @@ public enum Kernel {
         }
         // Ensure we have a machine ID
         setupMachineID();
-        // Ensure network setup
-        setupNetworkInfo();
 
         INSTANCE.loadStartupScript(INSTANCE, "/coreStartup/");
         if (context != null) {
@@ -303,26 +275,10 @@ public enum Kernel {
         INSTANCE.startMonitor();
         DefaultEntitlementCreator.ensureEntitlementSetup(getEntitlement());
 
-        if (getEnvironment().getApplianceMode(ContextFactory.getKernelUser())) {
-            startApplianceMode();
-        }
-
         // populate an initial server status
         setupServerStatus();
     }
 
-    /**
-     * TODO For appliance mode if we don't have a TimeServer do we need to start the ScheduleServer?
-     */
-    private static TimeProcessorThread tThread;
-
-    private static void startApplianceMode() {
-        // INSTANCE.startScheduler();
-
-        log.info("Starting time processor thread");
-        tThread = new TimeProcessorThread();
-        tThread.start();
-    }
 
     private static void setupMachineID() {
         RaptureServerInfo info = INSTANCE.environment.getThisServer(ContextFactory.getKernelUser());
@@ -338,19 +294,6 @@ public enum Kernel {
         }
     }
 
-    private static void setupNetworkInfo() {
-        RaptureNetwork network = INSTANCE.environment.getNetworkInfo(ContextFactory.getKernelUser());
-        if (network == null) {
-            log.info("No Rapture Network found, creating one");
-            network = new RaptureNetwork();
-            network.setNetworkId(IDGenerator.getUUID());
-            network.setNetworkName("Rapture");
-            log.info("Saving network as " + network.getNetworkId());
-            INSTANCE.environment.setNetworkInfo(ContextFactory.getKernelUser(), network);
-        } else {
-            log.info(String.format("This environment is part of Network %s ( %s )", network.getNetworkId(), network.getNetworkName()));
-        }
-    }
 
     private static void setupServerStatus() {
         RaptureServerStatus status = new RaptureServerStatus();
@@ -492,7 +435,6 @@ public enum Kernel {
     private UserApiImplWrapper user;
     private ActivityApiImplWrapper activity;
     private AdminApiImplWrapper admin;
-    private TableApiImplWrapper table;
     private IndexApiImplWrapper index;
     private BootstrapApiImplWrapper bootstrap;
     private ScriptApiImplWrapper script;
@@ -502,12 +444,10 @@ public enum Kernel {
     private LockApiImplWrapper lock;
     private EventApiImplWrapper event;
     private AuditApiImplWrapper audit;
-    private MailboxApiImplWrapper mailbox;
     private FieldsApiImplWrapper fields;
     private JarApiImplWrapper jar;
     private BlobApiImplWrapper blob;
 
-    private SheetApiImplWrapper sheet;
 
     private PluginApiImplWrapper plugin;
     private PipelineApiImplWrapper pipeline;
@@ -517,12 +457,8 @@ public enum Kernel {
     private NotificationApiImplWrapper notification;
     private SeriesApiImplWrapper series;
     private DecisionApiImplWrapper decision;
-    @Deprecated
-    private RepoApiImplWrapper repo;
     private DocApiImplWrapper doc;
-    private RelationshipApiImplWrapper relationship;
     private EnvironmentApiImplWrapper environment;
-    private QuestionApiImplWrapper question;
     private StructuredApiImplWrapper structured;
     private MetricsService metricsService = MetricsFactory.createDummyService(); // initialize to a dummy service initially, as this is not nullable
     private LogManagerConnection logManagerConnection;
@@ -641,10 +577,6 @@ public enum Kernel {
         auditLogCache.reset(logURI);
     }
 
-    public RaptureRemote getRemote(String remoteId) {
-        return RaptureRemoteStorage.readByFields(remoteId);
-    }
-
     // get sys or document repo, for historical reasons
     public Repository getRepo(String name) {
         return repoCacheManager.getRepo(name);
@@ -754,8 +686,6 @@ public enum Kernel {
             kernelApis.add(activity);
             admin = new AdminApiImplWrapper(this);
             kernelApis.add(admin);
-            table = new TableApiImplWrapper(this);
-            kernelApis.add(table);
             index = new IndexApiImplWrapper(this);
             kernelApis.add(index);
             script = new ScriptApiImplWrapper(this);
@@ -774,16 +704,12 @@ public enum Kernel {
             kernelApis.add(event);
             audit = new AuditApiImplWrapper(this);
             kernelApis.add(audit);
-            mailbox = new MailboxApiImplWrapper(this);
-            kernelApis.add(mailbox);
             fields = new FieldsApiImplWrapper(this);
             kernelApis.add(fields);
             blob = new BlobApiImplWrapper(this);
             kernelApis.add(blob);
             jar = new JarApiImplWrapper(this);
             kernelApis.add(jar);
-            sheet = new SheetApiImplWrapper(this);
-            kernelApis.add(sheet);
             plugin = new PluginApiImplWrapper(this);
             kernelApis.add(plugin);
             pipeline = new PipelineApiImplWrapper(this);
@@ -800,16 +726,10 @@ public enum Kernel {
             kernelApis.add(decision);
             user = new UserApiImplWrapper(this);
             kernelApis.add(user);
-            repo = new RepoApiImplWrapper(this);
-            kernelApis.add(repo);
             doc = new DocApiImplWrapper(this);
             kernelApis.add(doc);
-            relationship = new RelationshipApiImplWrapper(this);
-            kernelApis.add(relationship);
             environment = new EnvironmentApiImplWrapper(this);
             kernelApis.add(environment);
-            question = new QuestionApiImplWrapper(this);
-            kernelApis.add(question);
             structured = new StructuredApiImplWrapper(this);
             kernelApis.add(structured);
 

@@ -1,6 +1,8 @@
 \chapter{User API}
+\index{User API}
 \input{user/info}
 \subsection{GetWhoAmI}
+\index{GetWhoAmI}
 \label{Api:GetWhoAmI}
 \begin{verbatim}
    RaptureUser getWhoAmI (
@@ -14,6 +16,7 @@
 
 \rule{15cm}{2pt}
 \subsection{LogoutUser}
+\index{LogoutUser}
 \label{Api:LogoutUser}
 \begin{verbatim}
    void logoutUser (
@@ -27,6 +30,7 @@
 
 \rule{15cm}{2pt}
 \subsection{StorePreference}
+\index{StorePreference}
 \label{Api:StorePreference}
 \begin{verbatim}
    void storePreference (
@@ -43,6 +47,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetPreference}
+\index{GetPreference}
 \label{Api:GetPreference}
 \begin{verbatim}
    String getPreference (
@@ -58,6 +63,7 @@
 
 \rule{15cm}{2pt}
 \subsection{RemovePreference}
+\index{RemovePreference}
 \label{Api:RemovePreference}
 \begin{verbatim}
    void removePreference (
@@ -73,6 +79,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetPreferenceCategories}
+\index{GetPreferenceCategories}
 \label{Api:GetPreferenceCategories}
 \begin{verbatim}
    List<String> getPreferenceCategories (
@@ -86,6 +93,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetPreferencesInCategory}
+\index{GetPreferencesInCategory}
 \label{Api:GetPreferencesInCategory}
 \begin{verbatim}
    List<String> getPreferencesInCategory (
@@ -100,6 +108,7 @@
 
 \rule{15cm}{2pt}
 \subsection{UpdateMyDescription}
+\index{UpdateMyDescription}
 \label{Api:UpdateMyDescription}
 \begin{verbatim}
    RaptureUser updateMyDescription (
@@ -114,6 +123,7 @@
 
 \rule{15cm}{2pt}
 \subsection{ChangeMyPassword}
+\index{ChangeMyPassword}
 \label{Api:ChangeMyPassword}
 \begin{verbatim}
    RaptureUser changeMyPassword (
@@ -129,6 +139,7 @@
 
 \rule{15cm}{2pt}
 \subsection{ChangeMyEmail}
+\index{ChangeMyEmail}
 \label{Api:ChangeMyEmail}
 \begin{verbatim}
    RaptureUser changeMyEmail (
@@ -143,6 +154,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetServerApiVersion}
+\index{GetServerApiVersion}
 \label{Api:GetServerApiVersion}
 \begin{verbatim}
    ApiVersion getServerApiVersion (
@@ -155,59 +167,8 @@
 
 
 \rule{15cm}{2pt}
-\subsection{RunFilterCubeView}
-\label{Api:RunFilterCubeView}
-\begin{verbatim}
-   RaptureCubeResult runFilterCubeView (
-           String    typeURI
-           String    scriptURI
-           String    filterParams
-           String    groupFields
-           String    columnFields
-   )
-\end{verbatim}
-%\begin{lstlisting}[language=reflex]
-%ret = #user.runFilterCubeView(typeURI,scriptURI,filterParams,groupFields,columnFields);
-%\end{lstlisting}
-\input{user/runFilterCubeView}
-
-
-\rule{15cm}{2pt}
-\subsection{RunNativeQuery}
-\label{Api:RunNativeQuery}
-\begin{verbatim}
-   RaptureQueryResult runNativeQuery (
-           String    typeURI
-           String    repoType
-           List<String>    queryParams
-   )
-\end{verbatim}
-%\begin{lstlisting}[language=reflex]
-%ret = #user.runNativeQuery(typeURI,repoType,queryParams);
-%\end{lstlisting}
-\input{user/runNativeQuery}
-
-
-\rule{15cm}{2pt}
-\subsection{RunNativeFilterCubeView}
-\label{Api:RunNativeFilterCubeView}
-\begin{verbatim}
-   RaptureCubeResult runNativeFilterCubeView (
-           String    typeURI
-           String    repoType
-           List<String>    queryParams
-           String    groupFields
-           String    columnFields
-   )
-\end{verbatim}
-%\begin{lstlisting}[language=reflex]
-%ret = #user.runNativeFilterCubeView(typeURI,repoType,queryParams,groupFields,columnFields);
-%\end{lstlisting}
-\input{user/runNativeFilterCubeView}
-
-
-\rule{15cm}{2pt}
 \subsection{IsPermitted}
+\index{IsPermitted}
 \label{Api:IsPermitted}
 \begin{verbatim}
    boolean isPermitted (

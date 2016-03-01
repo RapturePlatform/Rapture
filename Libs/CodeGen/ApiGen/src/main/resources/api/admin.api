@@ -25,14 +25,6 @@ api(Admin) {
     @entitle=/admin/main
     @public List(CallingContext) getSessionsForUser(String user);
 
-    [ A type that is using a versioned repository will be able to use tags - these are fixed points in time 
-    (that are invariant) that reflect what the repository looked like when the tag was created. 
-    For example a tag could be assigned to a repository that marks the end of day view for a repository. 
-    Any changes made after this tag was created will be accessible in the normal perspective but will not be associated with the tag. 
-    This method returns all of the tags associated with this type in the given authority.]
-    @entitle=/admin/main
-    @public List(String) getTags(String raptureURI);
-
     [This method removes a user from this Rapture system. The user is removed from all entitlement groups also. The actual
     user definition is retained and marked as inactive (so the user cannot login). This is because the user may still be 
     referenced in audit trails and the change history in type repositories.]
@@ -97,39 +89,6 @@ api(Admin) {
     @entitle=/admin/main
     @public void updateUserEmail(String userName, String newEmail);
     
-    [This method lists the remotes created on this system (the connections this system may make to other systems).]
-    @entitle=/admin/main
-    @public List(RaptureRemote) getRemotes();
-
-    [Remotes are used to connect one Rapture cloud environment to another. Each remote manages a connection to another Rapture cloud
-    through the http api. This method adds a new remote to this system. 
-    The apikey is the login name of a user on the remote cloud with adequate entitlements to push and pull the
-    data to be synchronized or accessed via the remote. The description can be any text to help the human administrators tell clouds apart.
-    The url is the http end point of the remote system.]
-    @entitle=/admin/main
-    @public RaptureRemote addRemote(String name, String description, String url, String apiKey, String optP);
-
-    [This method deletes a previously created remote.]
-    @entitle=/admin/main
-    @public void deleteRemote(String name);
-
-    [This method updates the user api key used by a given remote. This is an api key for the remote system, not this Rapture system.]
-    @entitle=/admin/main
-    @public void updateRemoteApiKey(String name, String apiKey);
-
-    [A remote has been defined it can be used to synchronize one repository with another. This method defines how one (local) repository is connected to a remote type. 
-    The binding is made between the combination of a authority, repository and perspective from one system to another. The previously defines remote will hand the 
-    synchronization work.]
-    @entitle=/admin/main
-    @public void setRemote(String raptureURI, String remote, String remoteURI);
-
-    [This method reverses a previously defined association between two repositories]
-    @entitle=/admin/main
-    @public void clearRemote(String raptureURI);
-
-    [If this type has a remote defined, use it to sync this repository with that of the other.]
-    @entitle=/admin/main
-    @public void pullRemote(String raptureURI);
 
    /*
     * Templates
@@ -163,10 +122,6 @@ api(Admin) {
    [Use this method to return the IP white list]
    @entitle=/admin/main
    @public List(String) getIPWhiteList();
-
-   [This method runs a batch script at the target site]
-   @entitle=/admin/main
-   @public String runBatchScript(String script);
 
    [This method retrieves all of the registered users in the system]
    @entitle=/admin/main

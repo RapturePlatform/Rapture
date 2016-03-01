@@ -1,6 +1,8 @@
 \chapter{Admin API}
+\index{Admin API}
 \input{admin/info}
 \subsection{GetSystemProperties}
+\index{GetSystemProperties}
 \label{Api:GetSystemProperties}
 \begin{verbatim}
    Map<String,String> getSystemProperties (
@@ -15,6 +17,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetRepoConfig}
+\index{GetRepoConfig}
 \label{Api:GetRepoConfig}
 \begin{verbatim}
    List<RepoConfig> getRepoConfig (
@@ -28,6 +31,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetSessionsForUser}
+\index{GetSessionsForUser}
 \label{Api:GetSessionsForUser}
 \begin{verbatim}
    List<CallingContext> getSessionsForUser (
@@ -41,21 +45,8 @@
 
 
 \rule{15cm}{2pt}
-\subsection{GetTags}
-\label{Api:GetTags}
-\begin{verbatim}
-   List<String> getTags (
-           String    raptureURI
-   )
-\end{verbatim}
-%\begin{lstlisting}[language=reflex]
-%ret = #admin.getTags(raptureURI);
-%\end{lstlisting}
-\input{admin/getTags}
-
-
-\rule{15cm}{2pt}
 \subsection{DeleteUser}
+\index{DeleteUser}
 \label{Api:DeleteUser}
 \begin{verbatim}
    void deleteUser (
@@ -70,6 +61,7 @@
 
 \rule{15cm}{2pt}
 \subsection{DestroyUser}
+\index{DestroyUser}
 \label{Api:DestroyUser}
 \begin{verbatim}
    void destroyUser (
@@ -84,6 +76,7 @@
 
 \rule{15cm}{2pt}
 \subsection{RestoreUser}
+\index{RestoreUser}
 \label{Api:RestoreUser}
 \begin{verbatim}
    void restoreUser (
@@ -98,6 +91,7 @@
 
 \rule{15cm}{2pt}
 \subsection{AddUser}
+\index{AddUser}
 \label{Api:AddUser}
 \begin{verbatim}
    void addUser (
@@ -114,7 +108,24 @@
 
 
 \rule{15cm}{2pt}
+\subsection{VerifyUser}
+\index{VerifyUser}
+\label{Api:VerifyUser}
+\begin{verbatim}
+   boolean verifyUser (
+           String    userName
+           String    token
+   )
+\end{verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #admin.verifyUser(userName,token);
+%\end{lstlisting}
+\input{admin/verifyUser}
+
+
+\rule{15cm}{2pt}
 \subsection{DoesUserExist}
+\index{DoesUserExist}
 \label{Api:DoesUserExist}
 \begin{verbatim}
    boolean doesUserExist (
@@ -129,6 +140,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetUser}
+\index{GetUser}
 \label{Api:GetUser}
 \begin{verbatim}
    RaptureUser getUser (
@@ -143,6 +155,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GenerateApiUser}
+\index{GenerateApiUser}
 \label{Api:GenerateApiUser}
 \begin{verbatim}
    RaptureUser generateApiUser (
@@ -158,6 +171,7 @@
 
 \rule{15cm}{2pt}
 \subsection{ResetUserPassword}
+\index{ResetUserPassword}
 \label{Api:ResetUserPassword}
 \begin{verbatim}
    void resetUserPassword (
@@ -173,6 +187,7 @@
 
 \rule{15cm}{2pt}
 \subsection{CreatePasswordResetToken}
+\index{CreatePasswordResetToken}
 \label{Api:CreatePasswordResetToken}
 \begin{verbatim}
    String createPasswordResetToken (
@@ -186,7 +201,23 @@
 
 
 \rule{15cm}{2pt}
+\subsection{CreateRegistrationToken}
+\index{CreateRegistrationToken}
+\label{Api:CreateRegistrationToken}
+\begin{verbatim}
+   String createRegistrationToken (
+           String    username
+   )
+\end{verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #admin.createRegistrationToken(username);
+%\end{lstlisting}
+\input{admin/createRegistrationToken}
+
+
+\rule{15cm}{2pt}
 \subsection{CancelPasswordResetToken}
+\index{CancelPasswordResetToken}
 \label{Api:CancelPasswordResetToken}
 \begin{verbatim}
    void cancelPasswordResetToken (
@@ -200,7 +231,25 @@
 
 
 \rule{15cm}{2pt}
+\subsection{EmailUser}
+\index{EmailUser}
+\label{Api:EmailUser}
+\begin{verbatim}
+   void emailUser (
+           String    userName
+           String    emailTemplate
+           Map<String,Object>    templateValues
+   )
+\end{verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #admin.emailUser(userName,emailTemplate,templateValues);
+%\end{lstlisting}
+\input{admin/emailUser}
+
+
+\rule{15cm}{2pt}
 \subsection{UpdateUserEmail}
+\index{UpdateUserEmail}
 \label{Api:UpdateUserEmail}
 \begin{verbatim}
    void updateUserEmail (
@@ -215,111 +264,8 @@
 
 
 \rule{15cm}{2pt}
-\subsection{GetRemotes}
-\label{Api:GetRemotes}
-\begin{verbatim}
-   List<RaptureRemote> getRemotes (
-   )
-\end{verbatim}
-%\begin{lstlisting}[language=reflex]
-%ret = #admin.getRemotes();
-%\end{lstlisting}
-\input{admin/getRemotes}
-
-
-\rule{15cm}{2pt}
-\subsection{AddRemote}
-\label{Api:AddRemote}
-\begin{verbatim}
-   RaptureRemote addRemote (
-           String    name
-           String    description
-           String    url
-           String    apiKey
-           String    optP
-   )
-\end{verbatim}
-%\begin{lstlisting}[language=reflex]
-%ret = #admin.addRemote(name,description,url,apiKey,optP);
-%\end{lstlisting}
-\input{admin/addRemote}
-
-
-\rule{15cm}{2pt}
-\subsection{DeleteRemote}
-\label{Api:DeleteRemote}
-\begin{verbatim}
-   void deleteRemote (
-           String    name
-   )
-\end{verbatim}
-%\begin{lstlisting}[language=reflex]
-%ret = #admin.deleteRemote(name);
-%\end{lstlisting}
-\input{admin/deleteRemote}
-
-
-\rule{15cm}{2pt}
-\subsection{UpdateRemoteApiKey}
-\label{Api:UpdateRemoteApiKey}
-\begin{verbatim}
-   void updateRemoteApiKey (
-           String    name
-           String    apiKey
-   )
-\end{verbatim}
-%\begin{lstlisting}[language=reflex]
-%ret = #admin.updateRemoteApiKey(name,apiKey);
-%\end{lstlisting}
-\input{admin/updateRemoteApiKey}
-
-
-\rule{15cm}{2pt}
-\subsection{SetRemote}
-\label{Api:SetRemote}
-\begin{verbatim}
-   void setRemote (
-           String    raptureURI
-           String    remote
-           String    remoteURI
-   )
-\end{verbatim}
-%\begin{lstlisting}[language=reflex]
-%ret = #admin.setRemote(raptureURI,remote,remoteURI);
-%\end{lstlisting}
-\input{admin/setRemote}
-
-
-\rule{15cm}{2pt}
-\subsection{ClearRemote}
-\label{Api:ClearRemote}
-\begin{verbatim}
-   void clearRemote (
-           String    raptureURI
-   )
-\end{verbatim}
-%\begin{lstlisting}[language=reflex]
-%ret = #admin.clearRemote(raptureURI);
-%\end{lstlisting}
-\input{admin/clearRemote}
-
-
-\rule{15cm}{2pt}
-\subsection{PullRemote}
-\label{Api:PullRemote}
-\begin{verbatim}
-   void pullRemote (
-           String    raptureURI
-   )
-\end{verbatim}
-%\begin{lstlisting}[language=reflex]
-%ret = #admin.pullRemote(raptureURI);
-%\end{lstlisting}
-\input{admin/pullRemote}
-
-
-\rule{15cm}{2pt}
 \subsection{AddTemplate}
+\index{AddTemplate}
 \label{Api:AddTemplate}
 \begin{verbatim}
    void addTemplate (
@@ -336,6 +282,7 @@
 
 \rule{15cm}{2pt}
 \subsection{RunTemplate}
+\index{RunTemplate}
 \label{Api:RunTemplate}
 \begin{verbatim}
    String runTemplate (
@@ -351,6 +298,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetTemplate}
+\index{GetTemplate}
 \label{Api:GetTemplate}
 \begin{verbatim}
    String getTemplate (
@@ -365,6 +313,7 @@
 
 \rule{15cm}{2pt}
 \subsection{CopyDocumentRepo}
+\index{CopyDocumentRepo}
 \label{Api:CopyDocumentRepo}
 \begin{verbatim}
    void copyDocumentRepo (
@@ -381,6 +330,7 @@
 
 \rule{15cm}{2pt}
 \subsection{AddIPToWhiteList}
+\index{AddIPToWhiteList}
 \label{Api:AddIPToWhiteList}
 \begin{verbatim}
    void addIPToWhiteList (
@@ -395,6 +345,7 @@
 
 \rule{15cm}{2pt}
 \subsection{RemoveIPFromWhiteList}
+\index{RemoveIPFromWhiteList}
 \label{Api:RemoveIPFromWhiteList}
 \begin{verbatim}
    void removeIPFromWhiteList (
@@ -409,6 +360,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetIPWhiteList}
+\index{GetIPWhiteList}
 \label{Api:GetIPWhiteList}
 \begin{verbatim}
    List<String> getIPWhiteList (
@@ -421,21 +373,8 @@
 
 
 \rule{15cm}{2pt}
-\subsection{RunBatchScript}
-\label{Api:RunBatchScript}
-\begin{verbatim}
-   String runBatchScript (
-           String    script
-   )
-\end{verbatim}
-%\begin{lstlisting}[language=reflex]
-%ret = #admin.runBatchScript(script);
-%\end{lstlisting}
-\input{admin/runBatchScript}
-
-
-\rule{15cm}{2pt}
 \subsection{GetAllUsers}
+\index{GetAllUsers}
 \label{Api:GetAllUsers}
 \begin{verbatim}
    List<RaptureUser> getAllUsers (
@@ -449,6 +388,7 @@
 
 \rule{15cm}{2pt}
 \subsection{InitiateTypeConversion}
+\index{InitiateTypeConversion}
 \label{Api:InitiateTypeConversion}
 \begin{verbatim}
    void initiateTypeConversion (
@@ -465,6 +405,7 @@
 
 \rule{15cm}{2pt}
 \subsection{PutArchiveConfig}
+\index{PutArchiveConfig}
 \label{Api:PutArchiveConfig}
 \begin{verbatim}
    void putArchiveConfig (
@@ -480,6 +421,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetArchiveConfig}
+\index{GetArchiveConfig}
 \label{Api:GetArchiveConfig}
 \begin{verbatim}
    TypeArchiveConfig getArchiveConfig (
@@ -494,6 +436,7 @@
 
 \rule{15cm}{2pt}
 \subsection{DeleteArchiveConfig}
+\index{DeleteArchiveConfig}
 \label{Api:DeleteArchiveConfig}
 \begin{verbatim}
    void deleteArchiveConfig (
@@ -508,6 +451,7 @@
 
 \rule{15cm}{2pt}
 \subsection{Ping}
+\index{Ping}
 \label{Api:Ping}
 \begin{verbatim}
    boolean ping (
@@ -521,6 +465,7 @@
 
 \rule{15cm}{2pt}
 \subsection{AddMetadata}
+\index{AddMetadata}
 \label{Api:AddMetadata}
 \begin{verbatim}
    void addMetadata (
@@ -536,6 +481,7 @@
 
 \rule{15cm}{2pt}
 \subsection{SetMOTD}
+\index{SetMOTD}
 \label{Api:SetMOTD}
 \begin{verbatim}
    void setMOTD (
@@ -550,6 +496,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetMOTD}
+\index{GetMOTD}
 \label{Api:GetMOTD}
 \begin{verbatim}
    String getMOTD (
@@ -563,6 +510,7 @@
 
 \rule{15cm}{2pt}
 \subsection{SetEnvironmentName}
+\index{SetEnvironmentName}
 \label{Api:SetEnvironmentName}
 \begin{verbatim}
    void setEnvironmentName (
@@ -577,6 +525,7 @@
 
 \rule{15cm}{2pt}
 \subsection{SetEnvironmentProperties}
+\index{SetEnvironmentProperties}
 \label{Api:SetEnvironmentProperties}
 \begin{verbatim}
    void setEnvironmentProperties (
@@ -591,6 +540,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetEnvironmentName}
+\index{GetEnvironmentName}
 \label{Api:GetEnvironmentName}
 \begin{verbatim}
    String getEnvironmentName (
@@ -604,6 +554,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetEnvironmentProperties}
+\index{GetEnvironmentProperties}
 \label{Api:GetEnvironmentProperties}
 \begin{verbatim}
    Map<String,String> getEnvironmentProperties (
@@ -617,6 +568,7 @@
 
 \rule{15cm}{2pt}
 \subsection{Encode}
+\index{Encode}
 \label{Api:Encode}
 \begin{verbatim}
    String encode (
@@ -631,6 +583,7 @@
 
 \rule{15cm}{2pt}
 \subsection{CreateURI}
+\index{CreateURI}
 \label{Api:CreateURI}
 \begin{verbatim}
    String createURI (
@@ -646,6 +599,7 @@
 
 \rule{15cm}{2pt}
 \subsection{CreateMultipartURI}
+\index{CreateMultipartURI}
 \label{Api:CreateMultipartURI}
 \begin{verbatim}
    String createMultipartURI (
@@ -660,6 +614,7 @@
 
 \rule{15cm}{2pt}
 \subsection{Decode}
+\index{Decode}
 \label{Api:Decode}
 \begin{verbatim}
    String decode (
@@ -674,6 +629,7 @@
 
 \rule{15cm}{2pt}
 \subsection{FindGroupNamesByUser}
+\index{FindGroupNamesByUser}
 \label{Api:FindGroupNamesByUser}
 \begin{verbatim}
    List<String> findGroupNamesByUser (

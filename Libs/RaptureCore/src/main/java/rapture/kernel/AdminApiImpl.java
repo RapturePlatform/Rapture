@@ -53,8 +53,6 @@ import rapture.common.Messages;
 import rapture.common.RaptureConstants;
 import rapture.common.RaptureIPWhiteList;
 import rapture.common.RaptureIPWhiteListStorage;
-import rapture.common.RaptureRemote;
-import rapture.common.RaptureRemoteStorage;
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
 import rapture.common.TypeArchiveConfig;
@@ -132,21 +130,6 @@ public class AdminApiImpl extends KernelBase implements AdminApi {
     }
 
     @Override
-    public RaptureRemote addRemote(CallingContext context, String name, String description, String url, String apiKey, String optPass) {
-        checkParameter(NAME, name);
-        checkParameter("Url", url); //$NON-NLS-1$
-        checkParameter("ApiKey", apiKey); //$NON-NLS-1$
-        RaptureRemote ret = new RaptureRemote();
-        ret.setName(name);
-        ret.setDescription(description);
-        ret.setUrl(url);
-        ret.setApiKey(apiKey);
-        ret.setOptionalPass(optPass);
-        RaptureRemoteStorage.add(ret, context.getUser(), adminMessageCatalog.getMessage("AddRemote").toString()); //$NON-NLS-1$
-        return ret;
-    }
-
-    @Override
     public void addTemplate(CallingContext context, String name, String template, Boolean overwrite) {
         if (templates.containsKey(name) && !templates.get(name).isEmpty() && !overwrite) {
             log.info(adminMessageCatalog.getMessage("NoOverwriteTemplate", name)); //$NON-NLS-1$
@@ -177,17 +160,7 @@ public class AdminApiImpl extends KernelBase implements AdminApi {
         }
     }
 
-    @Override
-    public void clearRemote(CallingContext context, String raptureURIString) {
-        RaptureURI internalURI = new RaptureURI(raptureURIString, Scheme.DOCUMENT);
-        if (internalURI.hasDocPath()) {
-            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, apiMessageCatalog.getMessage("NoDocPath", internalURI.toShortString())); //$NON-NLS-1$
-        }
-        checkParameter(AUTHORITYNAME, internalURI.getAuthority());
-        Repository repository = getKernel().getRepo(internalURI.getAuthority()); //$NON-NLS-1$
-        repository.clearRemote();
-    }
-
+ 
     /**
      * Clone the data from the src type to the target
      */
@@ -285,10 +258,7 @@ public class AdminApiImpl extends KernelBase implements AdminApi {
         return wlist.getIpWhiteList();
     }
 
-    @Override
-    public List<RaptureRemote> getRemotes(CallingContext context) {
-        return RaptureRemoteStorage.readAll();
-    }
+ 
 
     /**
      * @return @
@@ -351,13 +321,7 @@ public class AdminApiImpl extends KernelBase implements AdminApi {
         return ret;
     }
 
-    @Override
-    public List<String> getTags(CallingContext context, String raptureURIString) {
-        RaptureURI internalURI = new RaptureURI(raptureURIString, Scheme.DOCUMENT);
-        checkParameter(NAME, internalURI.getDocPath());
-        Repository repository = getKernel().getRepo(internalURI.getFullPath()); //$NON-NLS-1$
-        return repository.getTags();
-    }
+  
 
     @Override
     public String getTemplate(CallingContext context, String name) {
@@ -368,32 +332,7 @@ public class AdminApiImpl extends KernelBase implements AdminApi {
         log.error(adminMessageCatalog.getMessage("CouldNotLoadDoc", name).toString());
     }
 
-    @Override
-    public void pullRemote(CallingContext context, String raptureURIString) {
-        RaptureURI internalURI = new RaptureURI(raptureURIString, Scheme.DOCUMENT);
-        if (internalURI.hasDocPath()) {
-            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, apiMessageCatalog.getMessage("NoDocPath", internalURI.toShortString())); //$NON-NLS-1$
-        }
-        checkParameter(NAME, internalURI.getDocPath());
-
-        log.info(adminMessageCatalog.getMessage("PullPerspective", new String[] { internalURI.getDocPath(), internalURI.getAuthority() })); //$NON-NLS-1$
-
-        // NOW this is the fun one
-        // Here are the steps
-        // (1) Look at the local, does it have a remote defined? If
-        // so, what is the latest commit known about
-        // for that remote?
-        // (2) Make a remote call to retrieve the commits up to that commit from
-        // the RemoteLink
-        // (3) For each commit, look at all of the references, retrieve them
-        // from the remote and persist them
-        // into the repo.
-        // (4) Update the local perspective to point at the latest commit, and
-        // update the Remote commit to point at that.
-
-        getKernel().getRepo(internalURI.getFullPath()); //$NON-NLS-1$
-    }
-
+ 
     @Override
     public void removeIPFromWhiteList(CallingContext context, String ipAddress) {
         RaptureIPWhiteList wlist = RaptureIPWhiteListStorage.readByFields();
@@ -401,11 +340,7 @@ public class AdminApiImpl extends KernelBase implements AdminApi {
         RaptureIPWhiteListStorage.add(wlist, context.getUser(), adminMessageCatalog.getMessage("RemoveWhiteList", ipAddress).toString()); //$NON-NLS-1$
     }
 
-    @Override
-    public void deleteRemote(CallingContext context, String name) {
-        RaptureRemoteStorage.deleteByFields(name, context.getUser(), adminMessageCatalog.getMessage("RemoveRemote", name).toString()); //$NON-NLS-1$ //$NON-NLS-2$
-    }
-
+  
     @Override
     public void resetUserPassword(CallingContext context, String userName, String newHashPassword) {
         checkParameter("User", userName); //$NON-NLS-1$
@@ -524,19 +459,7 @@ public class AdminApiImpl extends KernelBase implements AdminApi {
         }
     }
 
-    @Override
-    public String runBatchScript(CallingContext context, String script) {
-        ScriptParser parser = new ScriptParser(new ContextCommandExecutor(context));
-        ByteArrayOutputStream so = new ByteArrayOutputStream();
-        try {
-            parser.parseScript(new StringReader(script), so);
-        } catch (IOException e) {
-            RaptureException raptException = RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, "Error running batch script");
-            log.error(RaptureExceptionFormatter.getExceptionMessage(raptException, e));
-            throw raptException;
-        }
-        return so.toString();
-    }
+ 
 
     @Override
     public String runTemplate(CallingContext context, String name, String params) {
@@ -552,41 +475,6 @@ public class AdminApiImpl extends KernelBase implements AdminApi {
         return ret;
     }
 
-    /**
-     * This method is used to setup a link between a local repo and a remote one. The remoteName
-     */
-    @Override
-    public void setRemote(CallingContext context, String raptureURIString, String remote, String remoteURIString) {
-        RaptureURI internalURI = new RaptureURI(raptureURIString, Scheme.DOCUMENT);
-        if (internalURI.hasDocPath()) {
-            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, apiMessageCatalog.getMessage("NoDocPath", internalURI.toShortString())); //$NON-NLS-1$
-        }
-        checkParameter(NAME, internalURI.getAuthority());
-        checkParameter("Remote", remote); //$NON-NLS-1$
-        RaptureURI remoteURI = new RaptureURI(raptureURIString, Scheme.DOCUMENT);
-        if (remoteURI.hasDocPath()) {
-            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, apiMessageCatalog.getMessage("NoDocPath", remoteURI.toShortString())); //$NON-NLS-1$
-        }
-        checkParameter(NAME, remoteURI.getAuthority());
-
-        // This is set in the repo
-        Repository repository = getKernel().getRepo(internalURI.getAuthority()); //$NON-NLS-1$
-        repository.setRemote(remote, remoteURI.getAuthority());
-        Kernel.typeChanged(internalURI);
-    }
-
-    @Override
-    public void updateRemoteApiKey(CallingContext context, String name, String apiKey) {
-        checkParameter(NAME, name);
-        checkParameter("ApiKey", apiKey); //$NON-NLS-1$    
-        RaptureRemote ret = Kernel.INSTANCE.getRemote(name);
-        if (ret == null) {
-            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, adminMessageCatalog.getMessage("NoFindRemote", name)); //$NON-NLS-1$
-        } else {
-            ret.setApiKey(apiKey);
-            RaptureRemoteStorage.add(ret, context.getUser(), adminMessageCatalog.getMessage("UpdatedApi").toString()); //$NON-NLS-1$
-        }
-    }
 
     @Override
     public List<RaptureUser> getAllUsers(CallingContext context) {

@@ -7,6 +7,7 @@ param(name, type) ::= <<
 // The entry for a single function
 docApiEntry(apitype, ret, name, apiparams, paramNames, doc, ent) ::= <<
 \subsection{<name; format="upcase">}
+\index{<name; format="upcase">}
 \label{Api:<name; format="upcase">}
 \begin{verbatim}
    <ret> <name> (
@@ -23,6 +24,7 @@ docApiEntry(apitype, ret, name, apiparams, paramNames, doc, ent) ::= <<
 >>
 docApiList(apitype, apis, doc) ::= <<
 \chapter{<apitype> API}
+\index{<apitype> API}
 \input{<apitype; format="lower">/info}
 <apis; separator="\n">
 >>

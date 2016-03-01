@@ -23,6 +23,27 @@
  */
 package rapture.kernel;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.http.HttpStatus;
+import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDate;
+import org.joda.time.Period;
+
 import rapture.common.AppStatus;
 import rapture.common.AppStatusGroup;
 import rapture.common.AppStatusGroupStorage;
@@ -81,31 +102,9 @@ import rapture.kernel.dp.DpDebugReader;
 import rapture.kernel.dp.ExecutionContextUtil;
 import rapture.kernel.dp.StepRecordUtil;
 import rapture.kernel.dp.WorkflowValidator;
-import rapture.kernel.relationship.RelationshipHelper;
 import rapture.log.management.LogManagerConnection;
 import rapture.log.management.LogReadException;
 import rapture.log.management.SessionExpiredException;
-
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.http.HttpStatus;
-import org.apache.log4j.Logger;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.joda.time.LocalDate;
-import org.joda.time.Period;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.base.Optional;
@@ -275,7 +274,6 @@ public class DecisionApiImpl extends KernelBase implements DecisionApi {
         Workflow workflow = getWorkflowNotNull(context, workflowUri);
         String startStep = workflowUri.hasElement() ? workflowUri.getElement() : workflow.getStartStep();
 
-        RelationshipHelper.createRelationship(context, workflowUri.toString(), "invoke", null);
         Kernel.getStackContainer().pushStack(context, workflowUri.toString());
 
         Map<String, String> contextMap = setupContextMap(workflow.getExpectedArguments(), argsMap);
@@ -323,7 +321,6 @@ public class DecisionApiImpl extends KernelBase implements DecisionApi {
             return ret;
         } else {
             RaptureURI workOrderURI = new RaptureURI(response.getAcquiredURI());
-            RelationshipHelper.createRelationship(context, workOrderURI.toString(), "create", null);
             Kernel.getStackContainer().pushStack(context, workOrderURI.toString());
 
             // Register the separate pieces

@@ -69,8 +69,6 @@ import rapture.common.dp.WorkerExecutionState;
 import rapture.common.dp.WorkerStorage;
 import rapture.common.dp.Workflow;
 import rapture.common.dp.WorkflowStorage;
-import rapture.common.dp.question.QCallback;
-import rapture.common.dp.question.QCallbackStorage;
 import rapture.common.event.DPEventConstants;
 import rapture.common.event.EventConstants;
 import rapture.common.exception.RaptureException;
@@ -480,26 +478,7 @@ public class DefaultDecisionProcessExecutor implements DecisionProcessExecutor {
         markAsFinished(workOrder, worker, WorkerExecutionState.ERROR, Optional.of(e));
     }
 
-    /**
-     * make a UUID and durably bind it to the specified worker
-     * 
-     * @param workerURI
-     *            a workOrder uri qualified with #workerID
-     * @return the UUID
-     */
-    private String makeCallback(String workerURI) {
-        int index = workerURI.indexOf('#');
-        int lastIndex = workerURI.lastIndexOf('#');
-        if (index < 0) log.error("Unqualified URI passed to makeCallback");
-        if (index != lastIndex) log.error("Doubly qualified URI passed to makeCallback");
 
-        String uuid = UUID.randomUUID().toString();
-        QCallback callback = new QCallback();
-        callback.setUuid(uuid);
-        callback.setWorkerURI(workerURI);
-        QCallbackStorage.add(callback, ContextFactory.getKernelUser().getUser(), "register");
-        return uuid;
-    }
 
     private void markAsFinished(final WorkOrder workOrder, final Worker worker, WorkerExecutionState status, Optional<RaptureException> re) {
         // If non-null, worker parent to wake after we release the lock.
@@ -895,9 +874,6 @@ public class DefaultDecisionProcessExecutor implements DecisionProcessExecutor {
             int limit = getTimeLimit(step, flow);
 
             switch (executableUri.getScheme()) {
-                case QTEMPLATE:
-                    Kernel.getQuestion().getTrusted().askWorkflowQuestion(ctx, executable, worker.getWorkOrderURI(), makeCallback(workerURI));
-                    return SUSPEND;
                 case SCRIPT:
                     String workerAuditUri = InvocableUtils.getWorkflowAuditUri(worker);
                     RaptureScript script = Kernel.getScript().getScript(ctx, executable);

@@ -77,9 +77,6 @@ public class HookFilterTest {
         assertEquals(1, hooks.size());
         assertTrue(hooks.get(0) instanceof AuditApiHook);
 
-        hooks = hookFilter.filter(allHooksConfig, HookType.PRE, context, CallName.Admin_addRemote);
-        assertEquals(0, hooks.size());
-
         hooks = hookFilter.filter(allHooksConfig, HookType.PRE, context, CallName.Admin_addTemplate);
         assertEquals(1, hooks.size());
         assertTrue(hooks.get(0) instanceof AuditApiHook);

@@ -31,7 +31,6 @@ import org.apache.log4j.Logger;
 
 import rapture.common.RapturePipelineTask;
 import rapture.common.mime.MimeDecisionProcessAdvance;
-import rapture.common.mime.MimeDecisionProcessAnswer;
 import rapture.common.mime.MimeDocumentIndexRebuild;
 import rapture.common.mime.MimeIndexRebuild;
 import rapture.common.mime.MimeRaptureDocument;
@@ -41,7 +40,6 @@ import rapture.common.mime.MimeReflexScriptResume;
 import rapture.common.mime.MimeScheduleReflexScriptRef;
 import rapture.exchange.QueueHandler;
 import rapture.kernel.dp.RaptureDecisionProcessAdvanceHandler;
-import rapture.kernel.dp.RaptureDecisionProcessAnswerHandler;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -76,7 +74,6 @@ public class PipelineQueueHandler implements QueueHandler {
         setupMap.put(MimeReflexScriptResume.getMimeType(), new RaptureReflexScriptResumeHandler());
         setupMap.put(MimeScheduleReflexScriptRef.getMimeType(), new RaptureScheduleReflexScriptRefHandler());
         setupMap.put(MimeDecisionProcessAdvance.getMimeType(), new RaptureDecisionProcessAdvanceHandler());
-        setupMap.put(MimeDecisionProcessAnswer.getMimeType(), new RaptureDecisionProcessAnswerHandler());
         setupMap.put("application/vnd.rapture.event.alert", new RaptureAlertHandler());
         defaultHandlers = Collections.unmodifiableMap(setupMap);
     }

@@ -53,19 +53,6 @@ api(User) {
     @entitle=/everyone
     @public ApiVersion getServerApiVersion();  
     
-    []
-    @entitle=/user/read
-    @public RaptureCubeResult runFilterCubeView(String typeURI, String scriptURI, String filterParams, String groupFields, String columnFields);
-
-    []
-    @entitle=/user/read
-    @public RaptureQueryResult runNativeQuery(String typeURI, String repoType, List(String) queryParams);
-
-    [Very much like a filter cube view, except that the initial content is taken from a native query executed against a REP repository instead of running through the view
-    sub system.]
-    @entitle=/user/read
-    @public RaptureCubeResult runNativeFilterCubeView(String typeURI, String repoType, List(String) queryParams, String groupFields, String columnFields);
-
     [A method to check whether the current user is allowed to make the API call. Useful for the UI so that it can determine whether or not to show a particular item.]
     @entitle=/everyone
     @public Boolean isPermitted(String apiCall, String callParam);

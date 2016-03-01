@@ -45,7 +45,6 @@ public class ScriptClient implements ScriptingApi {
     private final HttpBootstrapApi bootstrap;
     private final HttpEntitlementApi entitlement;
     private final HttpIdGenApi idgen;
-    private final HttpTableApi table;
     private final HttpIndexApi index;
     private final HttpScriptApi script;
     private final HttpUserApi user;
@@ -53,7 +52,6 @@ public class ScriptClient implements ScriptingApi {
     private final HttpLockApi lock;
     private final HttpEventApi event;
     private final HttpAuditApi audit;
-    private final HttpMailboxApi mailbox;
     private final HttpFieldsApi fields;
     private final HttpPluginApi plugin;
     private final HttpPipelineApi pipeline;
@@ -63,14 +61,10 @@ public class ScriptClient implements ScriptingApi {
     private final HttpNotificationApi notification;
     private final HttpBlobApi blob;
     private final HttpJarApi jar;
-    private final HttpRepoApi repo;
-    private final HttpSheetApi sheet;
     private final HttpSeriesApi series;
     private final HttpDocApi doc;
     private final HttpDecisionApi decision;
-    private final HttpRelationshipApi relationship;
     private final HttpEnvironmentApi environment;
-    private final HttpQuestionApi question;
     private final HttpLoginApi login;
     private final HttpStructuredApi structured;
 
@@ -81,7 +75,6 @@ public class ScriptClient implements ScriptingApi {
         bootstrap = new HttpBootstrapApi(loginApi);
         entitlement = new HttpEntitlementApi(loginApi);
         idgen = new HttpIdGenApi(loginApi);
-        table = new HttpTableApi(loginApi);
         index = new HttpIndexApi(loginApi);
         script = new HttpScriptApi(loginApi);
         user = new HttpUserApi(loginApi);
@@ -89,7 +82,6 @@ public class ScriptClient implements ScriptingApi {
         lock = new HttpLockApi(loginApi);
         event = new HttpEventApi(loginApi);
         audit = new HttpAuditApi(loginApi);
-        mailbox = new HttpMailboxApi(loginApi);
         fields = new HttpFieldsApi(loginApi);
         plugin = new HttpPluginApi(loginApi);
         pipeline = new HttpPipelineApi(loginApi);
@@ -99,23 +91,15 @@ public class ScriptClient implements ScriptingApi {
         notification = new HttpNotificationApi(loginApi);
         blob = new HttpBlobApi(loginApi);
         jar = new HttpJarApi(loginApi);
-        repo = new HttpRepoApi(loginApi);
-        sheet = new HttpSheetApi(loginApi);
         series = new HttpSeriesApi(loginApi);
         doc = new HttpDocApi(loginApi);
         decision = new HttpDecisionApi(loginApi);
-        relationship = new HttpRelationshipApi(loginApi);
         environment = new HttpEnvironmentApi(loginApi);
-        question = new HttpQuestionApi(loginApi);
         structured = new HttpStructuredApi(loginApi);
     }
 
     public HttpLoginApi getLogin() {
         return login;
-    }
-
-    public HttpQuestionApi getQuestion() {
-        return question;
     }
 
     @Override
@@ -155,9 +139,6 @@ public class ScriptClient implements ScriptingApi {
         return plugin;
     }
 
-    public HttpTableApi getTable() {
-        return table;
-    }
 
     public HttpIndexApi getIndex() {
         return index;
@@ -167,9 +148,6 @@ public class ScriptClient implements ScriptingApi {
         return lock;
     }
 
-    public HttpMailboxApi getMailbox() {
-        return mailbox;
-    }
 
     public HttpScheduleApi getSchedule() {
         return schedule;
@@ -211,13 +189,6 @@ public class ScriptClient implements ScriptingApi {
         return jar;
     }
 
-    public HttpRepoApi getRepo() {
-        return repo;
-    }
-
-    public HttpSheetApi getSheet() {
-        return sheet;
-    }
 
     public HttpSeriesApi getSeries() {
         return series;
@@ -234,10 +205,6 @@ public class ScriptClient implements ScriptingApi {
     @Override
     public HttpDecisionApi getDecision() {
         return decision;
-    }
-
-    public HttpRelationshipApi getRelationship() {
-        return relationship;
     }
 
     public HttpStructuredApi getStructured() {

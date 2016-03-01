@@ -183,7 +183,6 @@ public class SysApiImpl extends KernelBase implements SysApi {
     private static final String docParent = Scheme.DOCUMENT + ":" + root;
     private static final String scriptParent = Scheme.SCRIPT + ":" + root;
     private static final String seriesParent = Scheme.SERIES + ":" + root;
-    private static final String sheetParent = Scheme.SHEET + ":" + root;
     private static final String flowParent = Scheme.WORKFLOW + ":" + root;
     private static final String entParent = Scheme.ENTITLEMENT + ":" + root;
     private static final String entGrpParent = Scheme.ENTITLEMENTGROUP + ":" + root;
@@ -208,7 +207,6 @@ public class SysApiImpl extends KernelBase implements SysApi {
         ret.add(jobParent);
         ret.add(scriptParent);
         ret.add(seriesParent);
-        ret.add(sheetParent);
         // Currently can't list users
         // ret.add(userParent);
         return ret;
@@ -290,8 +288,6 @@ public class SysApiImpl extends KernelBase implements SysApi {
             children = Kernel.getScript().listScriptsByUriPrefix(context, uri, depth);
         } else if (uri.startsWith(Scheme.SERIES.toString())) {
             children = Kernel.getSeries().listSeriesByUriPrefix(context, uri, depth);
-        } else if (uri.startsWith(Scheme.SHEET.toString())) {
-            children = Kernel.getSheet().listSheetsByUriPrefix(context, uri, depth);
         } else if (uri.startsWith(Scheme.WORKFLOW.toString())) {
             List<Workflow> flows = Kernel.getDecision().getAllWorkflows(context);
             for (Workflow flow : flows) {

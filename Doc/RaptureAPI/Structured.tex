@@ -1,6 +1,8 @@
 \chapter{Structured API}
+\index{Structured API}
 \input{structured/info}
 \subsection{CreateStructuredRepo}
+\index{CreateStructuredRepo}
 \label{Api:CreateStructuredRepo}
 \begin{verbatim}
    void createStructuredRepo (
@@ -16,6 +18,7 @@
 
 \rule{15cm}{2pt}
 \subsection{DeleteStructuredRepo}
+\index{DeleteStructuredRepo}
 \label{Api:DeleteStructuredRepo}
 \begin{verbatim}
    void deleteStructuredRepo (
@@ -30,6 +33,7 @@
 
 \rule{15cm}{2pt}
 \subsection{StructuredRepoExists}
+\index{StructuredRepoExists}
 \label{Api:StructuredRepoExists}
 \begin{verbatim}
    boolean structuredRepoExists (
@@ -44,6 +48,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetStructuredRepoConfig}
+\index{GetStructuredRepoConfig}
 \label{Api:GetStructuredRepoConfig}
 \begin{verbatim}
    StructuredRepoConfig getStructuredRepoConfig (
@@ -58,6 +63,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetStructuredRepoConfigs}
+\index{GetStructuredRepoConfigs}
 \label{Api:GetStructuredRepoConfigs}
 \begin{verbatim}
    List<StructuredRepoConfig> getStructuredRepoConfigs (
@@ -71,6 +77,7 @@
 
 \rule{15cm}{2pt}
 \subsection{CreateTableUsingSql}
+\index{CreateTableUsingSql}
 \label{Api:CreateTableUsingSql}
 \begin{verbatim}
    void createTableUsingSql (
@@ -86,6 +93,7 @@
 
 \rule{15cm}{2pt}
 \subsection{CreateTable}
+\index{CreateTable}
 \label{Api:CreateTable}
 \begin{verbatim}
    void createTable (
@@ -101,6 +109,7 @@
 
 \rule{15cm}{2pt}
 \subsection{DropTable}
+\index{DropTable}
 \label{Api:DropTable}
 \begin{verbatim}
    void dropTable (
@@ -115,6 +124,7 @@
 
 \rule{15cm}{2pt}
 \subsection{TableExists}
+\index{TableExists}
 \label{Api:TableExists}
 \begin{verbatim}
    boolean tableExists (
@@ -128,7 +138,37 @@
 
 
 \rule{15cm}{2pt}
+\subsection{GetSchemas}
+\index{GetSchemas}
+\label{Api:GetSchemas}
+\begin{verbatim}
+   List<String> getSchemas (
+   )
+\end{verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #structured.getSchemas();
+%\end{lstlisting}
+\input{structured/getSchemas}
+
+
+\rule{15cm}{2pt}
+\subsection{GetTables}
+\index{GetTables}
+\label{Api:GetTables}
+\begin{verbatim}
+   List<String> getTables (
+           String    repoUri
+   )
+\end{verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #structured.getTables(repoUri);
+%\end{lstlisting}
+\input{structured/getTables}
+
+
+\rule{15cm}{2pt}
 \subsection{DescribeTable}
+\index{DescribeTable}
 \label{Api:DescribeTable}
 \begin{verbatim}
    Map<String,String> describeTable (
@@ -143,6 +183,7 @@
 
 \rule{15cm}{2pt}
 \subsection{AddTableColumns}
+\index{AddTableColumns}
 \label{Api:AddTableColumns}
 \begin{verbatim}
    void addTableColumns (
@@ -158,6 +199,7 @@
 
 \rule{15cm}{2pt}
 \subsection{DeleteTableColumns}
+\index{DeleteTableColumns}
 \label{Api:DeleteTableColumns}
 \begin{verbatim}
    void deleteTableColumns (
@@ -173,6 +215,7 @@
 
 \rule{15cm}{2pt}
 \subsection{UpdateTableColumns}
+\index{UpdateTableColumns}
 \label{Api:UpdateTableColumns}
 \begin{verbatim}
    void updateTableColumns (
@@ -188,6 +231,7 @@
 
 \rule{15cm}{2pt}
 \subsection{RenameTableColumns}
+\index{RenameTableColumns}
 \label{Api:RenameTableColumns}
 \begin{verbatim}
    void renameTableColumns (
@@ -203,6 +247,7 @@
 
 \rule{15cm}{2pt}
 \subsection{CreateIndex}
+\index{CreateIndex}
 \label{Api:CreateIndex}
 \begin{verbatim}
    void createIndex (
@@ -219,6 +264,7 @@
 
 \rule{15cm}{2pt}
 \subsection{DropIndex}
+\index{DropIndex}
 \label{Api:DropIndex}
 \begin{verbatim}
    void dropIndex (
@@ -233,7 +279,23 @@
 
 
 \rule{15cm}{2pt}
+\subsection{GetIndexes}
+\index{GetIndexes}
+\label{Api:GetIndexes}
+\begin{verbatim}
+   List<TableIndex> getIndexes (
+           String    tableUri
+   )
+\end{verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #structured.getIndexes(tableUri);
+%\end{lstlisting}
+\input{structured/getIndexes}
+
+
+\rule{15cm}{2pt}
 \subsection{SelectJoinedRows}
+\index{SelectJoinedRows}
 \label{Api:SelectJoinedRows}
 \begin{verbatim}
    List<Map<String,Object>> selectJoinedRows (
@@ -254,6 +316,7 @@
 
 \rule{15cm}{2pt}
 \subsection{SelectUsingSql}
+\index{SelectUsingSql}
 \label{Api:SelectUsingSql}
 \begin{verbatim}
    List<Map<String,Object>> selectUsingSql (
@@ -269,6 +332,7 @@
 
 \rule{15cm}{2pt}
 \subsection{SelectRows}
+\index{SelectRows}
 \label{Api:SelectRows}
 \begin{verbatim}
    List<Map<String,Object>> selectRows (
@@ -288,6 +352,7 @@
 
 \rule{15cm}{2pt}
 \subsection{InsertUsingSql}
+\index{InsertUsingSql}
 \label{Api:InsertUsingSql}
 \begin{verbatim}
    void insertUsingSql (
@@ -303,6 +368,7 @@
 
 \rule{15cm}{2pt}
 \subsection{InsertRow}
+\index{InsertRow}
 \label{Api:InsertRow}
 \begin{verbatim}
    void insertRow (
@@ -318,6 +384,7 @@
 
 \rule{15cm}{2pt}
 \subsection{InsertRows}
+\index{InsertRows}
 \label{Api:InsertRows}
 \begin{verbatim}
    void insertRows (
@@ -333,6 +400,7 @@
 
 \rule{15cm}{2pt}
 \subsection{DeleteUsingSql}
+\index{DeleteUsingSql}
 \label{Api:DeleteUsingSql}
 \begin{verbatim}
    void deleteUsingSql (
@@ -348,6 +416,7 @@
 
 \rule{15cm}{2pt}
 \subsection{DeleteRows}
+\index{DeleteRows}
 \label{Api:DeleteRows}
 \begin{verbatim}
    void deleteRows (
@@ -363,6 +432,7 @@
 
 \rule{15cm}{2pt}
 \subsection{UpdateUsingSql}
+\index{UpdateUsingSql}
 \label{Api:UpdateUsingSql}
 \begin{verbatim}
    void updateUsingSql (
@@ -378,6 +448,7 @@
 
 \rule{15cm}{2pt}
 \subsection{UpdateRows}
+\index{UpdateRows}
 \label{Api:UpdateRows}
 \begin{verbatim}
    void updateRows (
@@ -394,6 +465,7 @@
 
 \rule{15cm}{2pt}
 \subsection{Begin}
+\index{Begin}
 \label{Api:Begin}
 \begin{verbatim}
    boolean begin (
@@ -407,6 +479,7 @@
 
 \rule{15cm}{2pt}
 \subsection{Commit}
+\index{Commit}
 \label{Api:Commit}
 \begin{verbatim}
    boolean commit (
@@ -420,6 +493,7 @@
 
 \rule{15cm}{2pt}
 \subsection{Rollback}
+\index{Rollback}
 \label{Api:Rollback}
 \begin{verbatim}
    boolean rollback (
@@ -433,6 +507,7 @@
 
 \rule{15cm}{2pt}
 \subsection{Abort}
+\index{Abort}
 \label{Api:Abort}
 \begin{verbatim}
    boolean abort (
@@ -447,6 +522,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetTransactions}
+\index{GetTransactions}
 \label{Api:GetTransactions}
 \begin{verbatim}
    List<String> getTransactions (
@@ -460,6 +536,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetDdl}
+\index{GetDdl}
 \label{Api:GetDdl}
 \begin{verbatim}
    String getDdl (
@@ -475,6 +552,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetCursorUsingSql}
+\index{GetCursorUsingSql}
 \label{Api:GetCursorUsingSql}
 \begin{verbatim}
    String getCursorUsingSql (
@@ -490,6 +568,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetCursor}
+\index{GetCursor}
 \label{Api:GetCursor}
 \begin{verbatim}
    String getCursor (
@@ -509,6 +588,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetCursorForJoin}
+\index{GetCursorForJoin}
 \label{Api:GetCursorForJoin}
 \begin{verbatim}
    String getCursorForJoin (
@@ -529,6 +609,7 @@
 
 \rule{15cm}{2pt}
 \subsection{Next}
+\index{Next}
 \label{Api:Next}
 \begin{verbatim}
    List<Map<String,Object>> next (
@@ -545,6 +626,7 @@
 
 \rule{15cm}{2pt}
 \subsection{Previous}
+\index{Previous}
 \label{Api:Previous}
 \begin{verbatim}
    List<Map<String,Object>> previous (
@@ -561,6 +643,7 @@
 
 \rule{15cm}{2pt}
 \subsection{CloseCursor}
+\index{CloseCursor}
 \label{Api:CloseCursor}
 \begin{verbatim}
    void closeCursor (
@@ -576,6 +659,7 @@
 
 \rule{15cm}{2pt}
 \subsection{CreateProcedureCallUsingSql}
+\index{CreateProcedureCallUsingSql}
 \label{Api:CreateProcedureCallUsingSql}
 \begin{verbatim}
    void createProcedureCallUsingSql (
@@ -591,6 +675,7 @@
 
 \rule{15cm}{2pt}
 \subsection{CallProcedure}
+\index{CallProcedure}
 \label{Api:CallProcedure}
 \begin{verbatim}
    StoredProcedureResponse callProcedure (
@@ -606,6 +691,7 @@
 
 \rule{15cm}{2pt}
 \subsection{DropProcedureUsingSql}
+\index{DropProcedureUsingSql}
 \label{Api:DropProcedureUsingSql}
 \begin{verbatim}
    void dropProcedureUsingSql (
@@ -617,6 +703,36 @@
 %ret = #structured.dropProcedureUsingSql(procUri,rawSql);
 %\end{lstlisting}
 \input{structured/dropProcedureUsingSql}
+
+
+\rule{15cm}{2pt}
+\subsection{GetPrimaryKey}
+\index{GetPrimaryKey}
+\label{Api:GetPrimaryKey}
+\begin{verbatim}
+   String getPrimaryKey (
+           String    tableUri
+   )
+\end{verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #structured.getPrimaryKey(tableUri);
+%\end{lstlisting}
+\input{structured/getPrimaryKey}
+
+
+\rule{15cm}{2pt}
+\subsection{GetForeignKeys}
+\index{GetForeignKeys}
+\label{Api:GetForeignKeys}
+\begin{verbatim}
+   List<ForeignKey> getForeignKeys (
+           String    tableUri
+   )
+\end{verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #structured.getForeignKeys(tableUri);
+%\end{lstlisting}
+\input{structured/getForeignKeys}
 
 
 \rule{15cm}{2pt}

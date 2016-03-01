@@ -40,7 +40,6 @@ public class RepoCacheManager {
     private BlobRepoCache blobRepoCache;
     private DocRepoCache docRepoCache;
     private SeriesRepoCache seriesRepoCache;
-    private SheetRepoCache sheetRepoCache;
     private StructuredRepoCache structuredRepoCache;
 
     public RepoCacheManager() {
@@ -48,7 +47,6 @@ public class RepoCacheManager {
         blobRepoCache = new BlobRepoCache();
         docRepoCache = new DocRepoCache();
         seriesRepoCache = new SeriesRepoCache();
-        sheetRepoCache = new SheetRepoCache();
         structuredRepoCache = new StructuredRepoCache();
     }
 
@@ -97,11 +95,7 @@ public class RepoCacheManager {
         return seriesRepoCache.getRepo(authority);
     }
 
-    public SheetRepo getSheetRepo(String authority) {
-        return sheetRepoCache.getRepo(authority);
-    }
-
-    public StructuredRepo getStructuredRepo(String authority) {
+     public StructuredRepo getStructuredRepo(String authority) {
         return structuredRepoCache.getRepo(authority);
     }
 
@@ -127,8 +121,6 @@ public class RepoCacheManager {
             docRepoCache.removeRepo(authority);
         } else if (Scheme.SERIES.toString().equalsIgnoreCase(type)) {
             seriesRepoCache.removeRepo(authority);
-        } else if (Scheme.SHEET.toString().equalsIgnoreCase(type)) {
-            sheetRepoCache.removeRepo(authority);
         } else if (Scheme.STRUCTURED.toString().equalsIgnoreCase(type)) {
             structuredRepoCache.removeRepo(authority);
         }
@@ -143,7 +135,6 @@ public class RepoCacheManager {
         blobRepoCache = null;
         docRepoCache = null;
         seriesRepoCache = null;
-        sheetRepoCache = null;
         structuredRepoCache = null;
     }
 }

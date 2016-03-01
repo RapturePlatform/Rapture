@@ -42,10 +42,9 @@ import rapture.common.api.DecisionApi;
 import rapture.common.api.DocApi;
 import rapture.common.api.ScriptApi;
 import rapture.common.api.SeriesApi;
-import rapture.common.api.SheetApi;
+import rapture.config.RaptureConfig;
 import rapture.kernel.ContextFactory;
 import rapture.kernel.Kernel;
-import rapture.config.RaptureConfig;
 
 public class CheckPrerequisiteStepTest {
 
@@ -58,12 +57,10 @@ public class CheckPrerequisiteStepTest {
     BlobApi bapi;
     DocApi docapi = null;
     ScriptApi scrapi;
-    SheetApi shapi;
     SeriesApi serapi;
 
     private static final String BLOB_USING_MEMORY = "BLOB {} USING MEMORY {}";
     private static final String REPO_USING_MEMORY = "REP {} USING MEMORY {}";
-    private static final String SHEET_USING_MEMORY = "SHEET {} using MEMORY {prefix=\"foo\"}";
     private static final String SERIES_USING_MEMORY = "SREP {} using MEMORY { }";
     private static final String blobAuthorityURI = "blob://foo/";
     private static final String blobURI = blobAuthorityURI + "bar";
@@ -79,14 +76,12 @@ public class CheckPrerequisiteStepTest {
         bapi = Kernel.getBlob();
         docapi = Kernel.getDoc();
         scrapi = Kernel.getScript();
-        shapi = Kernel.getSheet();
         serapi = Kernel.getSeries();
 
         context = ContextFactory.getKernelUser();
         Kernel.getAudit().createAuditLog(context, new RaptureURI(RaptureConstants.DEFAULT_AUDIT_URI, Scheme.LOG).getAuthority(), "LOG {} using MEMORY {}");
         Kernel.getLock().createLockManager(ContextFactory.getKernelUser(), "lock://kernel", "LOCKING USING DUMMY {}", "");
 
-        if (!shapi.sheetRepoExists(context, "//datacapture")) shapi.createSheetRepo(context, "//datacapture", SHEET_USING_MEMORY);
         if (!serapi.seriesRepoExists(context, "//monty")) serapi.createSeriesRepo(context, "//monty", SERIES_USING_MEMORY);
 
         if (!bapi.blobRepoExists(context, "//sys.blob")) bapi.createBlobRepo(context, "//sys.blob", BLOB_USING_MEMORY, REPO_USING_MEMORY);

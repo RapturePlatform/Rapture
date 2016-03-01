@@ -7,6 +7,7 @@
           String   id
           Integer   status
           String   message
+          String   stackTrace
    }
 \end{verbatim}
 
@@ -21,27 +22,18 @@
 \end{verbatim}
 
 \rule{15cm}{2pt}
-\section{RaptureCubeResult}
-\label{type:RaptureCubeResult}
+\section{ConnectionInfo}
+\label{type:ConnectionInfo}
 
 \begin{verbatim}
-   type RaptureCubeResult {
-          List<String>   groupNames
-          List<String>   columnNames
-          List<RaptureCubeRow>   rows
-   }
-\end{verbatim}
-
-\rule{15cm}{2pt}
-\section{RaptureDNCursor}
-\label{type:RaptureDNCursor}
-
-\begin{verbatim}
-   type RaptureDNCursor {
-          String   authority
-          List<String>   displayNames
-          String   continueContext
-          boolean   finished
+   type ConnectionInfo {
+          String   host
+          int   port
+          String   username
+          String   password
+          String   dbName
+          String   instanceName
+          Map(String, Object)   options
    }
 \end{verbatim}
 
@@ -55,21 +47,6 @@
           String   config
           String   authority
           String   metaConfig
-   }
-\end{verbatim}
-
-\rule{15cm}{2pt}
-\section{RaptureMailMessage}
-\label{type:RaptureMailMessage}
-
-\begin{verbatim}
-   type RaptureMailMessage {
-          String   id
-          String   authority
-          String   documentPath
-          String   content
-          Date   when
-          String   user
    }
 \end{verbatim}
 
@@ -128,57 +105,6 @@
    type AuditLogConfig {
           String   name
           String   config
-   }
-\end{verbatim}
-
-\rule{15cm}{2pt}
-\section{CommitObject}
-\label{type:CommitObject}
-
-\begin{verbatim}
-   type CommitObject {
-          String   treeRef
-          String   user
-          Date   when
-          String   comment
-          String   changes
-          List(String)   docReferences
-          List(String)   treeReferences
-   }
-\end{verbatim}
-
-\rule{15cm}{2pt}
-\section{DocumentObject}
-\label{type:DocumentObject}
-
-\begin{verbatim}
-   type DocumentObject {
-          JsonContent   content
-   }
-\end{verbatim}
-
-\rule{15cm}{2pt}
-\section{TreeObject}
-\label{type:TreeObject}
-
-\begin{verbatim}
-   type TreeObject {
-          Map(String, String)   trees
-          List(DocumentBagReference)   documents
-   }
-\end{verbatim}
-
-\rule{15cm}{2pt}
-\section{RaptureRemote}
-\label{type:RaptureRemote}
-
-\begin{verbatim}
-   type RaptureRemote {
-          String   name
-          String   description
-          String   url
-          String   apiKey
-          String   optionalPass
    }
 \end{verbatim}
 
@@ -366,18 +292,6 @@
 \end{verbatim}
 
 \rule{15cm}{2pt}
-\section{RaptureFullTextIndexConfig}
-\label{type:RaptureFullTextIndexConfig}
-
-\begin{verbatim}
-   type RaptureFullTextIndexConfig {
-          String   name
-          String   config
-          String   authority
-   }
-\end{verbatim}
-
-\rule{15cm}{2pt}
 \section{RepoConfig}
 \label{type:RepoConfig}
 
@@ -453,22 +367,6 @@
 \end{verbatim}
 
 \rule{15cm}{2pt}
-\section{RaptureCommit}
-\label{type:RaptureCommit}
-
-\begin{verbatim}
-   type RaptureCommit {
-          String   who
-          Date   when
-          String   comment
-          String   changes
-          String   reference
-          List(String)   docReferences
-          List(String)   treeReferences
-   }
-\end{verbatim}
-
-\rule{15cm}{2pt}
 \section{RaptureUser}
 \label{type:RaptureUser}
 
@@ -485,33 +383,8 @@
           Boolean   hasRoot
           String   passwordResetToken
           Long   tokenExpirationTime
-   }
-\end{verbatim}
-
-\rule{15cm}{2pt}
-\section{RaptureView}
-\label{type:RaptureView}
-
-\begin{verbatim}
-   type RaptureView {
-          String   authority
-          String   viewName
-          String   mapFn
-          String   filterFn
-          List<String>   parameterNames
-          List<String>   columnNames
-   }
-\end{verbatim}
-
-\rule{15cm}{2pt}
-\section{RaptureViewResult}
-\label{type:RaptureViewResult}
-
-\begin{verbatim}
-   type RaptureViewResult {
-          List(String)   columnNames
-          List(List(Object))   rows
-          List(Object)   currentRow
+          String   registrationToken
+          Boolean   verified
    }
 \end{verbatim}
 
@@ -536,18 +409,6 @@
           String   name
           Set<String>   users
           String   dynamicEntitlementClassName
-   }
-\end{verbatim}
-
-\rule{15cm}{2pt}
-\section{RaptureOperation}
-\label{type:RaptureOperation}
-
-\begin{verbatim}
-   type RaptureOperation {
-          String   opName
-          String   paramDef
-          String   scriptName
    }
 \end{verbatim}
 
@@ -598,17 +459,6 @@
           Long   status
           String   statusMessage
           Date   lastSeen
-   }
-\end{verbatim}
-
-\rule{15cm}{2pt}
-\section{RaptureNetwork}
-\label{type:RaptureNetwork}
-
-\begin{verbatim}
-   type RaptureNetwork {
-          String   networkId
-          String   networkName
    }
 \end{verbatim}
 
@@ -713,18 +563,6 @@
           String   splashLocation
           String   jarFile
           String   mainClass
-   }
-\end{verbatim}
-
-\rule{15cm}{2pt}
-\section{TimeProcessorStatus}
-\label{type:TimeProcessorStatus}
-
-\begin{verbatim}
-   type TimeProcessorStatus {
-          String   network
-          Long   when
-          String   processingServer
    }
 \end{verbatim}
 
@@ -1226,6 +1064,29 @@
 \end{verbatim}
 
 \rule{15cm}{2pt}
+\section{ScriptInterface}
+\label{type:ScriptInterface}
+
+\begin{verbatim}
+   type ScriptInterface {
+          Map<String, ScriptParameter>   inputs
+          Map<String, ScriptParameter>   outputs
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\section{ScriptParameter}
+\label{type:ScriptParameter}
+
+\begin{verbatim}
+   type ScriptParameter {
+          RaptureParameterType   parameterType
+          String   description
+          Object   defaultValue
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
 \section{JobLinkStatus}
 \label{type:JobLinkStatus}
 
@@ -1340,6 +1201,29 @@
 \begin{verbatim}
    type TableMeta {
           Map<String, String>   rows
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\section{TableIndex}
+\label{type:TableIndex}
+
+\begin{verbatim}
+   type TableIndex {
+          String   name
+          List<String>   columns
+   }
+\end{verbatim}
+
+\rule{15cm}{2pt}
+\section{ForeignKey}
+\label{type:ForeignKey}
+
+\begin{verbatim}
+   type ForeignKey {
+          String   column
+          String   foreignTable
+          String   foreignColumn
    }
 \end{verbatim}
 
@@ -1481,21 +1365,6 @@
           List<Transition>   transitions
           String   categoryOverride
           Integer   softTimeout
-   }
-\end{verbatim}
-
-\rule{15cm}{2pt}
-\section{WorkflowStepTemplate}
-\label{type:WorkflowStepTemplate}
-
-\begin{verbatim}
-   type WorkflowStepTemplate {
-          WorkflowStepTemplateURI   workflowStepTemplateURI
-          String   description
-          String   executable
-          List<String>   inputVariables
-          List<String>   outputVariables
-          List<String>   outputTransitionNames
    }
 \end{verbatim}
 
@@ -1796,90 +1665,6 @@
 \end{verbatim}
 
 \rule{15cm}{2pt}
-\section{QTemplate}
-\label{type:QTemplate}
-
-\begin{verbatim}
-   type QTemplate {
-          QTemplateURI   qtemplateURI
-          List(UserURI)   quorum
-          AnswerRule   rule
-          String   prompt
-          List(String)   options
-          List(QDetail)   form
-          List(String)   reports
-          Long   timeout
-   }
-\end{verbatim}
-
-\rule{15cm}{2pt}
-\section{QCallback}
-\label{type:QCallback}
-
-\begin{verbatim}
-   type QCallback {
-          String   uuid
-          WorkOrderURI   workerURI
-   }
-\end{verbatim}
-
-\rule{15cm}{2pt}
-\section{Question}
-\label{type:Question}
-
-\begin{verbatim}
-   type Question {
-          QuestionURI   questionURI
-          QTemplateURI   qtemplateURI
-          String   answer
-          String   priority
-          Map(String, String)   mapping
-          ReplyProgress   progress
-   }
-\end{verbatim}
-
-\rule{15cm}{2pt}
-\section{QNotification}
-\label{type:QNotification}
-
-\begin{verbatim}
-   type QNotification {
-          QNotificationURI   qnotificationURI
-          String   addressee
-          QuestionURI   questionURI
-          Map(String, Object)   formData
-          String   response
-          ReplyProgress   progress
-          Long   whenAsked
-          Long   deadline
-   }
-\end{verbatim}
-
-\rule{15cm}{2pt}
-\section{QDetail}
-\label{type:QDetail}
-
-\begin{verbatim}
-   type QDetail {
-          String   prompt
-          String   kind
-   }
-\end{verbatim}
-
-\rule{15cm}{2pt}
-\section{QuestionSearch}
-\label{type:QuestionSearch}
-
-\begin{verbatim}
-   type QuestionSearch {
-          String   user
-          ReplyProgress   progress
-          String   sortOrder
-          Long   timeStamp
-   }
-\end{verbatim}
-
-\rule{15cm}{2pt}
 \section{ApiVersion}
 \label{type:ApiVersion}
 
@@ -1930,133 +1715,6 @@
 \end{verbatim}
 
 \rule{15cm}{2pt}
-\section{SheetRepoConfig}
-\label{type:SheetRepoConfig}
-
-\begin{verbatim}
-   type SheetRepoConfig {
-          String   description
-          String   config
-          String   authority
-   }
-\end{verbatim}
-
-\rule{15cm}{2pt}
-\section{RaptureSheet}
-\label{type:RaptureSheet}
-
-\begin{verbatim}
-   type RaptureSheet {
-          String   authority
-          String   name
-   }
-\end{verbatim}
-
-\rule{15cm}{2pt}
-\section{RaptureSheetCell}
-\label{type:RaptureSheetCell}
-
-\begin{verbatim}
-   type RaptureSheetCell {
-          int   row
-          int   column
-          String   data
-          Long   epoch
-   }
-\end{verbatim}
-
-\rule{15cm}{2pt}
-\section{RaptureSheetDisplayCell}
-\label{type:RaptureSheetDisplayCell}
-
-\begin{verbatim}
-   type RaptureSheetDisplayCell {
-          String   data
-          String   style
-   }
-\end{verbatim}
-
-\rule{15cm}{2pt}
-\section{SheetAndMeta}
-\label{type:SheetAndMeta}
-
-\begin{verbatim}
-   type SheetAndMeta {
-          List(List(RaptureSheetDisplayCell))   cells
-          List(RaptureSheetStyle)   styles
-   }
-\end{verbatim}
-
-\rule{15cm}{2pt}
-\section{RaptureSheetStatus}
-\label{type:RaptureSheetStatus}
-
-\begin{verbatim}
-   type RaptureSheetStatus {
-          List(RaptureSheetCell)   cells
-          Long   epoch
-   }
-\end{verbatim}
-
-\rule{15cm}{2pt}
-\section{RaptureSheetStyle}
-\label{type:RaptureSheetStyle}
-
-\begin{verbatim}
-   type RaptureSheetStyle {
-          String   name
-          String   numberFormatString
-          RaptureSheetStyleWeight   weight
-          RaptureSheetStyleAlignment   alignment
-          RaptureSheetStyleColor   color
-          RaptureSheetStyleSize   size
-          RaptureSheetStyleNumberFormat   numberFormat
-   }
-\end{verbatim}
-
-\rule{15cm}{2pt}
-\section{RaptureSheetScript}
-\label{type:RaptureSheetScript}
-
-\begin{verbatim}
-   type RaptureSheetScript {
-          String   name
-          String   description
-          String   script
-          boolean   autoRun
-          int   intervalInSeconds
-          Date   lastRun
-   }
-\end{verbatim}
-
-\rule{15cm}{2pt}
-\section{RaptureSheetRange}
-\label{type:RaptureSheetRange}
-
-\begin{verbatim}
-   type RaptureSheetRange {
-          String   name
-          int   startRow
-          int   endRow
-          int   startColumn
-          int   endColumn
-   }
-\end{verbatim}
-
-\rule{15cm}{2pt}
-\section{RaptureSheetNote}
-\label{type:RaptureSheetNote}
-
-\begin{verbatim}
-   type RaptureSheetNote {
-          String   id
-          String   note
-          String   who
-          Date   when
-   }
-\end{verbatim}
-
-\rule{15cm}{2pt}
 \section{LicenseInfo}
 \label{type:LicenseInfo}
 
@@ -2099,61 +1757,6 @@
           List(String)   columnNames
           List(String)   columnTypes
           List(List(Object))   rows
-   }
-\end{verbatim}
-
-\rule{15cm}{2pt}
-\section{RaptureRelation}
-\label{type:RaptureRelation}
-
-\begin{verbatim}
-   type RaptureRelation {
-          String   uri
-          List<RaptureRelationship>   outgoingRelationships
-          List<RaptureRelationship>   incomingRelationships
-          RaptureURI   targetURI
-   }
-\end{verbatim}
-
-\rule{15cm}{2pt}
-\section{RaptureRelationship}
-\label{type:RaptureRelationship}
-
-\begin{verbatim}
-   type RaptureRelationship {
-          RaptureURI   fromURI
-          RaptureURI   toURI
-          String   label
-          Long   createDateUTC
-          String   user
-          Map(String,String)   properties
-          RaptureURI   uri
-          UUID   uuid
-   }
-\end{verbatim}
-
-\rule{15cm}{2pt}
-\section{RaptureRelationshipRegion}
-\label{type:RaptureRelationshipRegion}
-
-\begin{verbatim}
-   type RaptureRelationshipRegion {
-          RaptureURI   centerNode
-          Long   depth
-          List<RaptureURI>   nodes
-          List<RaptureRelationship>   relationships
-   }
-\end{verbatim}
-
-\rule{15cm}{2pt}
-\section{RelationshipRepoConfig}
-\label{type:RelationshipRepoConfig}
-
-\begin{verbatim}
-   type RelationshipRepoConfig {
-          String   description
-          String   config
-          String   authority
    }
 \end{verbatim}
 

@@ -67,9 +67,6 @@ public class RapturePushNode extends BaseNode {
 			// Return all the elements of the series as a sparse matrix
 			putSeriesMatrix(uriVal.asString(), val);
 			break;
-		case SHEET:
-			// Return all of the cell values as a sparse matrix
-			putSheetMatrix(uriVal.asString(), val, options != null ? options.evaluate(debugger, scope) : null);
 		default:
 			break;
 		}
@@ -78,45 +75,6 @@ public class RapturePushNode extends BaseNode {
 		return retVal;
 	}
 
-	@SuppressWarnings("unchecked")
-    private void putSheetMatrix(String displayName, ReflexValue value, ReflexValue optionsVal) {
-	    // Need to handle the ordering here of rows and columns. Ideally first
-	    // come first out
-	    // Also, if the value has a [attr] in front of it, split that out - that's
-	    // style.
-	    // Do we really want row/column indexes, or ordered indexes and a start point?
-	    
-	    int startRow = 0;
-	    int startColumn = 0;
-		ReflexSparseMatrixValue smv = value.asMatrix();
-		List<ReflexValue> columnOrder = smv.getColumnOrder();
-		if (optionsVal != null) {
-		    if (optionsVal.isMap()) {
-		        Map<String, Object> v = optionsVal.asMap();
-		        if (v.containsKey("columns")) {
-		            Object x = v.get("columns");
-		            columnOrder = (List<ReflexValue>) x;
-		        }
-		    }
-		}
-		for(ReflexValue row : smv.getRowOrder()) {
-		    for(ReflexValue col : columnOrder) {
-		        ReflexValue v = smv.get(row, col);
-		        String val = v.asString();
-		        if (val.startsWith("[")) {
-		            int nextIndex = val.indexOf(']');
-		            String style = val.substring(1,nextIndex);
-		            System.out.println("Style is " + style);
-		            val = val.substring(nextIndex+1);
-	                handler.getApi().getSheet().setSheetCell(displayName, startRow, startColumn, style, 1);
-		        }
-		        handler.getApi().getSheet().setSheetCell(displayName, startRow, startColumn, val, 0);
-		        startColumn++;
-		    }
-		    startColumn = 0;
-		    startRow++;
-		}
-	}
 
 	private void putSeriesMatrix(String displayName, ReflexValue value) {
 		ReflexSparseMatrixValue smv = value.asMatrix();

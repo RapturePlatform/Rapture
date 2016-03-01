@@ -44,10 +44,10 @@ public class PipelineIndexHelper {
 
     public static void ensureIndexExists() {
         CallingContext ctx = ContextFactory.getKernelUser();
-        Kernel.getTable().createTable(ctx, indexUri, ConfigLoader.getConf().DefaultPipelineTaskStatus);
+        Kernel.getIndex().createIndex(ctx, indexUri, ConfigLoader.getConf().DefaultPipelineTaskStatus);
     }
 
     public static IndexHandler createIndexHandler() {
-        return Kernel.getTable().getTrusted().getIndexHandler(indexUri);
+        return Kernel.getIndex().getTrusted().getIndexHandler(indexUri);
     }
 }

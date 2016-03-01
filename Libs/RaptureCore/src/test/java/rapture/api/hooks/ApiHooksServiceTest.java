@@ -92,9 +92,7 @@ public class ApiHooksServiceTest {
         apiHooksService = new ApiHooksService();
         apiHooksService.configure(hooksConfig);
         context = ContextFactory.getKernelUser();
-        callName = CallName.Admin_addRemote;
-        apiHooksService.pre(context, callName);
-
+ 
         entries2 = audit.getRecentLogEntries(context, RaptureConstants.DEFAULT_AUDIT_URI, 10);
         assertTrue(entries2.size() >= entries.size());
     }

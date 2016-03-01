@@ -53,7 +53,6 @@ import rapture.common.RaptureFolderInfo;
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
 import rapture.common.api.PluginApi;
-import rapture.common.api.UserApi;
 import rapture.common.exception.RaptureExceptionFactory;
 import rapture.common.impl.jackson.JacksonUtil;
 import rapture.common.storable.helpers.PluginConfigHelper;
@@ -83,10 +82,6 @@ import rapture.kernel.plugin.RaptureEncoder;
 import rapture.kernel.plugin.RaptureInstaller;
 import rapture.kernel.plugin.RawBlobInstaller;
 import rapture.kernel.plugin.RawScriptInstaller;
-import rapture.kernel.plugin.RawSheetInstaller;
-import rapture.kernel.plugin.RelationshipEncoder;
-import rapture.kernel.plugin.RelationshipInstaller;
-import rapture.kernel.plugin.RelationshipRepoMaker;
 import rapture.kernel.plugin.ScheduleEncoder;
 import rapture.kernel.plugin.ScheduleInstaller;
 import rapture.kernel.plugin.ScriptEncoder;
@@ -94,9 +89,6 @@ import rapture.kernel.plugin.ScriptInstaller;
 import rapture.kernel.plugin.SeriesEncoder;
 import rapture.kernel.plugin.SeriesInstaller;
 import rapture.kernel.plugin.SeriesRepoMaker;
-import rapture.kernel.plugin.SheetEncoder;
-import rapture.kernel.plugin.SheetInstaller;
-import rapture.kernel.plugin.SheetRepoMaker;
 import rapture.kernel.plugin.SnippetEncoder;
 import rapture.kernel.plugin.SnippetInstaller;
 import rapture.kernel.plugin.StructuredEncoder;
@@ -122,7 +114,6 @@ public class PluginApiImpl extends KernelBase implements PluginApi {
             .put(Scheme.SERIES, new SeriesEncoder())
             .put(Scheme.IDGEN, new IdGenEncoder())
             .put(Scheme.SCRIPT, new ScriptEncoder())
-            .put(Scheme.SHEET, new SheetEncoder())
             .put(Scheme.JOB, new ScheduleEncoder())
             .put(Scheme.DOCUMENT, new DocumentEncoder())
             .put(Scheme.FIELD, new FieldEncoder())
@@ -132,7 +123,6 @@ public class PluginApiImpl extends KernelBase implements PluginApi {
             .put(Scheme.LOCK, new LockEncoder())
             .put(Scheme.SNIPPET, new SnippetEncoder())
             .put(Scheme.STRUCTURED, new StructuredEncoder())
-            .put(Scheme.RELATIONSHIP, new RelationshipEncoder())
             .put(Scheme.JAR, new JarEncoder())
             .put(Scheme.ENTITLEMENT, new EntitlementEncoder())
             .put(Scheme.ENTITLEMENTGROUP, new EntitlementGroupEncoder())
@@ -184,29 +174,27 @@ public class PluginApiImpl extends KernelBase implements PluginApi {
 
     private Map<Scheme, RaptureInstaller> scheme2installer = ImmutableMap.<Scheme, RaptureInstaller> builder()
             .put(Scheme.BLOB, new BlobInstaller()).put(Scheme.SERIES, new SeriesInstaller())
-            .put(Scheme.SCRIPT, new ScriptInstaller()).put(Scheme.SHEET, new SheetInstaller())
+            .put(Scheme.SCRIPT, new ScriptInstaller())
             .put(Scheme.JOB, new ScheduleInstaller()).put(Scheme.DOCUMENT, new DocumentInstaller())
             .put(Scheme.EVENT, new EventInstaller()).put(Scheme.FIELD, new FieldInstaller())
             .put(Scheme.IDGEN, new IdGenInstaller()).put(Scheme.TABLE, new IndexInstaller())
             .put(Scheme.WORKFLOW, new WorkflowInstaller()).put(Scheme.ENTITLEMENT, new EntitlementInstaller())
             .put(Scheme.ENTITLEMENTGROUP, new EntitlementGroupInstaller()).put(Scheme.LOCK, new LockInstaller())
-            .put(Scheme.SNIPPET, new SnippetInstaller()).put(Scheme.RELATIONSHIP, new RelationshipInstaller())
+            .put(Scheme.SNIPPET, new SnippetInstaller())
             .put(Scheme.STRUCTURED, new StructuredTableInstaller()).put(Scheme.JAR, new JarInstaller())
             .build();
 
     private Map<Scheme, RaptureInstaller> scheme2repoMaker = ImmutableMap.<Scheme, RaptureInstaller> builder()
-            .put(Scheme.BLOB, new BlobRepoMaker()).put(Scheme.SHEET, new SheetRepoMaker())
+            .put(Scheme.BLOB, new BlobRepoMaker())
             .put(Scheme.SERIES, new SeriesRepoMaker()).put(Scheme.DOCUMENT, new DocumentRepoMaker())
-            .put(Scheme.RELATIONSHIP, new RelationshipRepoMaker())
             .put(Scheme.STRUCTURED, new StructuredRepoMaker())
             .build();
 
     private Map<Scheme, RaptureInstaller> scheme2rawInstaller = ImmutableMap.of(
             Scheme.BLOB, new RawBlobInstaller(),
-            Scheme.SCRIPT, new RawScriptInstaller(),
-            Scheme.SHEET, new RawSheetInstaller());
+            Scheme.SCRIPT, new RawScriptInstaller());
 
-    private static final ImmutableSet<Scheme> repoSet = ImmutableSet.of(Scheme.BLOB, Scheme.DOCUMENT, Scheme.SERIES, Scheme.SHEET, Scheme.STRUCTURED);
+    private static final ImmutableSet<Scheme> repoSet = ImmutableSet.of(Scheme.BLOB, Scheme.DOCUMENT, Scheme.SERIES, Scheme.STRUCTURED);
 
     public static boolean isRepository(RaptureURI uri) {
         String path = uri.getDocPath();
@@ -380,7 +368,6 @@ public class PluginApiImpl extends KernelBase implements PluginApi {
             flag = addFolder(context, manifest, uri);
         } else {
             flag = addFolder(context, manifest, new RaptureURI(uriS, Scheme.SERIES));
-            flag |= addFolder(context, manifest, new RaptureURI(uriS, Scheme.SHEET));
             flag |= addFolder(context, manifest, new RaptureURI(uriS, Scheme.DOCUMENT));
             flag |= addFolder(context, manifest, new RaptureURI(uriS, Scheme.BLOB));
         }

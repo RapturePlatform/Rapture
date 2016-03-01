@@ -166,9 +166,6 @@ public class CheckPrerequisiteStep extends AbstractInvocable {
                         case DOCUMENT:
                             uriExists = Kernel.getDoc().docExists(ctx, datedUri);
                             break;
-                        case SHEET:
-                            uriExists = Kernel.getSheet().sheetExists(ctx, datedUri);
-                            break;
                         default:
                             log.warn("Unexpected URI type : " + uri);
                             return false;

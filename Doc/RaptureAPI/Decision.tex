@@ -1,6 +1,8 @@
 \chapter{Decision API}
+\index{Decision API}
 \input{decision/info}
 \subsection{GetAllWorkflows}
+\index{GetAllWorkflows}
 \label{Api:GetAllWorkflows}
 \begin{verbatim}
    List<Workflow> getAllWorkflows (
@@ -14,6 +16,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetWorkflowChildren}
+\index{GetWorkflowChildren}
 \label{Api:GetWorkflowChildren}
 \begin{verbatim}
    List<RaptureFolderInfo> getWorkflowChildren (
@@ -28,6 +31,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetWorkOrderChildren}
+\index{GetWorkOrderChildren}
 \label{Api:GetWorkOrderChildren}
 \begin{verbatim}
    List<RaptureFolderInfo> getWorkOrderChildren (
@@ -42,6 +46,7 @@
 
 \rule{15cm}{2pt}
 \subsection{PutWorkflow}
+\index{PutWorkflow}
 \label{Api:PutWorkflow}
 \begin{verbatim}
    void putWorkflow (
@@ -56,6 +61,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetWorkflow}
+\index{GetWorkflow}
 \label{Api:GetWorkflow}
 \begin{verbatim}
    Workflow getWorkflow (
@@ -70,6 +76,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetWorkflowStep}
+\index{GetWorkflowStep}
 \label{Api:GetWorkflowStep}
 \begin{verbatim}
    Step getWorkflowStep (
@@ -84,6 +91,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetStepCategory}
+\index{GetStepCategory}
 \label{Api:GetStepCategory}
 \begin{verbatim}
    String getStepCategory (
@@ -98,6 +106,7 @@
 
 \rule{15cm}{2pt}
 \subsection{AddStep}
+\index{AddStep}
 \label{Api:AddStep}
 \begin{verbatim}
    void addStep (
@@ -113,6 +122,7 @@
 
 \rule{15cm}{2pt}
 \subsection{RemoveStep}
+\index{RemoveStep}
 \label{Api:RemoveStep}
 \begin{verbatim}
    void removeStep (
@@ -128,6 +138,7 @@
 
 \rule{15cm}{2pt}
 \subsection{AddTransition}
+\index{AddTransition}
 \label{Api:AddTransition}
 \begin{verbatim}
    void addTransition (
@@ -144,6 +155,7 @@
 
 \rule{15cm}{2pt}
 \subsection{RemoveTransition}
+\index{RemoveTransition}
 \label{Api:RemoveTransition}
 \begin{verbatim}
    void removeTransition (
@@ -160,6 +172,7 @@
 
 \rule{15cm}{2pt}
 \subsection{DeleteWorkflow}
+\index{DeleteWorkflow}
 \label{Api:DeleteWorkflow}
 \begin{verbatim}
    void deleteWorkflow (
@@ -173,63 +186,8 @@
 
 
 \rule{15cm}{2pt}
-\subsection{PutWorkflowStepTemplate}
-\label{Api:PutWorkflowStepTemplate}
-\begin{verbatim}
-   void putWorkflowStepTemplate (
-           WorkflowStepTemplate    template
-   )
-\end{verbatim}
-%\begin{lstlisting}[language=reflex]
-%ret = #decision.putWorkflowStepTemplate(template);
-%\end{lstlisting}
-\input{decision/putWorkflowStepTemplate}
-
-
-\rule{15cm}{2pt}
-\subsection{GetWorkflowStepTemplate}
-\label{Api:GetWorkflowStepTemplate}
-\begin{verbatim}
-   WorkflowStepTemplate getWorkflowStepTemplate (
-           String    workflowStepTemplateURI
-   )
-\end{verbatim}
-%\begin{lstlisting}[language=reflex]
-%ret = #decision.getWorkflowStepTemplate(workflowStepTemplateURI);
-%\end{lstlisting}
-\input{decision/getWorkflowStepTemplate}
-
-
-\rule{15cm}{2pt}
-\subsection{DeleteWorkflowStepTemplate}
-\label{Api:DeleteWorkflowStepTemplate}
-\begin{verbatim}
-   void deleteWorkflowStepTemplate (
-           String    workflowStepTemplateURI
-   )
-\end{verbatim}
-%\begin{lstlisting}[language=reflex]
-%ret = #decision.deleteWorkflowStepTemplate(workflowStepTemplateURI);
-%\end{lstlisting}
-\input{decision/deleteWorkflowStepTemplate}
-
-
-\rule{15cm}{2pt}
-\subsection{GetWorflowStepTemplateChildren}
-\label{Api:GetWorflowStepTemplateChildren}
-\begin{verbatim}
-   List<RaptureFolderInfo> getWorflowStepTemplateChildren (
-           String    parentPath
-   )
-\end{verbatim}
-%\begin{lstlisting}[language=reflex]
-%ret = #decision.getWorflowStepTemplateChildren(parentPath);
-%\end{lstlisting}
-\input{decision/getWorflowStepTemplateChildren}
-
-
-\rule{15cm}{2pt}
 \subsection{CreateWorkOrder}
+\index{CreateWorkOrder}
 \label{Api:CreateWorkOrder}
 \begin{verbatim}
    String createWorkOrder (
@@ -245,6 +203,7 @@
 
 \rule{15cm}{2pt}
 \subsection{CreateWorkOrderP}
+\index{CreateWorkOrderP}
 \label{Api:CreateWorkOrderP}
 \begin{verbatim}
    CreateResponse createWorkOrderP (
@@ -261,6 +220,7 @@
 
 \rule{15cm}{2pt}
 \subsection{ReleaseWorkOrderLock}
+\index{ReleaseWorkOrderLock}
 \label{Api:ReleaseWorkOrderLock}
 \begin{verbatim}
    void releaseWorkOrderLock (
@@ -275,6 +235,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetWorkOrderStatus}
+\index{GetWorkOrderStatus}
 \label{Api:GetWorkOrderStatus}
 \begin{verbatim}
    WorkOrderStatus getWorkOrderStatus (
@@ -289,6 +250,7 @@
 
 \rule{15cm}{2pt}
 \subsection{WriteWorkflowAuditEntry}
+\index{WriteWorkflowAuditEntry}
 \label{Api:WriteWorkflowAuditEntry}
 \begin{verbatim}
    void writeWorkflowAuditEntry (
@@ -305,6 +267,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetWorkOrdersByDay}
+\index{GetWorkOrdersByDay}
 \label{Api:GetWorkOrdersByDay}
 \begin{verbatim}
    List<WorkOrder> getWorkOrdersByDay (
@@ -319,6 +282,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetWorkOrder}
+\index{GetWorkOrder}
 \label{Api:GetWorkOrder}
 \begin{verbatim}
    WorkOrder getWorkOrder (
@@ -333,6 +297,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetWorker}
+\index{GetWorker}
 \label{Api:GetWorker}
 \begin{verbatim}
    Worker getWorker (
@@ -348,6 +313,7 @@
 
 \rule{15cm}{2pt}
 \subsection{CancelWorkOrder}
+\index{CancelWorkOrder}
 \label{Api:CancelWorkOrder}
 \begin{verbatim}
    void cancelWorkOrder (
@@ -362,6 +328,7 @@
 
 \rule{15cm}{2pt}
 \subsection{ResumeWorkOrder}
+\index{ResumeWorkOrder}
 \label{Api:ResumeWorkOrder}
 \begin{verbatim}
    CreateResponse resumeWorkOrder (
@@ -377,6 +344,7 @@
 
 \rule{15cm}{2pt}
 \subsection{WasCancelCalled}
+\index{WasCancelCalled}
 \label{Api:WasCancelCalled}
 \begin{verbatim}
    boolean wasCancelCalled (
@@ -391,6 +359,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetCancellationDetails}
+\index{GetCancellationDetails}
 \label{Api:GetCancellationDetails}
 \begin{verbatim}
    WorkOrderCancellation getCancellationDetails (
@@ -405,6 +374,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetWorkOrderDebug}
+\index{GetWorkOrderDebug}
 \label{Api:GetWorkOrderDebug}
 \begin{verbatim}
    WorkOrderDebug getWorkOrderDebug (
@@ -419,6 +389,7 @@
 
 \rule{15cm}{2pt}
 \subsection{SetWorkOrderIdGenConfig}
+\index{SetWorkOrderIdGenConfig}
 \label{Api:SetWorkOrderIdGenConfig}
 \begin{verbatim}
    void setWorkOrderIdGenConfig (
@@ -434,6 +405,7 @@
 
 \rule{15cm}{2pt}
 \subsection{SetContextLiteral}
+\index{SetContextLiteral}
 \label{Api:SetContextLiteral}
 \begin{verbatim}
    void setContextLiteral (
@@ -450,6 +422,7 @@
 
 \rule{15cm}{2pt}
 \subsection{SetContextLink}
+\index{SetContextLink}
 \label{Api:SetContextLink}
 \begin{verbatim}
    void setContextLink (
@@ -466,6 +439,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetContextValue}
+\index{GetContextValue}
 \label{Api:GetContextValue}
 \begin{verbatim}
    String getContextValue (
@@ -481,6 +455,7 @@
 
 \rule{15cm}{2pt}
 \subsection{AddErrorToContext}
+\index{AddErrorToContext}
 \label{Api:AddErrorToContext}
 \begin{verbatim}
    void addErrorToContext (
@@ -496,6 +471,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetErrorsFromContext}
+\index{GetErrorsFromContext}
 \label{Api:GetErrorsFromContext}
 \begin{verbatim}
    List<ErrorWrapper> getErrorsFromContext (
@@ -510,6 +486,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetExceptionInfo}
+\index{GetExceptionInfo}
 \label{Api:GetExceptionInfo}
 \begin{verbatim}
    List<ErrorWrapper> getExceptionInfo (
@@ -524,6 +501,7 @@
 
 \rule{15cm}{2pt}
 \subsection{ReportStepProgress}
+\index{ReportStepProgress}
 \label{Api:ReportStepProgress}
 \begin{verbatim}
    void reportStepProgress (
@@ -542,6 +520,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetAppStatuses}
+\index{GetAppStatuses}
 \label{Api:GetAppStatuses}
 \begin{verbatim}
    List<AppStatus> getAppStatuses (
@@ -556,6 +535,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetAppStatusDetails}
+\index{GetAppStatusDetails}
 \label{Api:GetAppStatusDetails}
 \begin{verbatim}
    List<AppStatusDetails> getAppStatusDetails (
@@ -571,6 +551,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetMonthlyMetrics}
+\index{GetMonthlyMetrics}
 \label{Api:GetMonthlyMetrics}
 \begin{verbatim}
    WorkflowHistoricalMetrics getMonthlyMetrics (
@@ -588,6 +569,7 @@
 
 \rule{15cm}{2pt}
 \subsection{QueryLogs}
+\index{QueryLogs}
 \label{Api:QueryLogs}
 \begin{verbatim}
    LogQueryResponse queryLogs (

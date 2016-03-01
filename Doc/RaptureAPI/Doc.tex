@@ -1,6 +1,8 @@
 \chapter{Doc API}
+\index{Doc API}
 \input{doc/info}
 \subsection{ValidateDocRepo}
+\index{ValidateDocRepo}
 \label{Api:ValidateDocRepo}
 \begin{verbatim}
    boolean validateDocRepo (
@@ -15,6 +17,7 @@
 
 \rule{15cm}{2pt}
 \subsection{CreateDocRepo}
+\index{CreateDocRepo}
 \label{Api:CreateDocRepo}
 \begin{verbatim}
    void createDocRepo (
@@ -30,6 +33,7 @@
 
 \rule{15cm}{2pt}
 \subsection{DocRepoExists}
+\index{DocRepoExists}
 \label{Api:DocRepoExists}
 \begin{verbatim}
    boolean docRepoExists (
@@ -44,6 +48,7 @@
 
 \rule{15cm}{2pt}
 \subsection{DocExists}
+\index{DocExists}
 \label{Api:DocExists}
 \begin{verbatim}
    boolean docExists (
@@ -58,6 +63,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetDocRepoConfig}
+\index{GetDocRepoConfig}
 \label{Api:GetDocRepoConfig}
 \begin{verbatim}
    DocumentRepoConfig getDocRepoConfig (
@@ -72,6 +78,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetDocRepoStatus}
+\index{GetDocRepoStatus}
 \label{Api:GetDocRepoStatus}
 \begin{verbatim}
    Map<String,String> getDocRepoStatus (
@@ -86,6 +93,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetDocRepoConfigs}
+\index{GetDocRepoConfigs}
 \label{Api:GetDocRepoConfigs}
 \begin{verbatim}
    List<DocumentRepoConfig> getDocRepoConfigs (
@@ -99,6 +107,7 @@
 
 \rule{15cm}{2pt}
 \subsection{DeleteDocRepo}
+\index{DeleteDocRepo}
 \label{Api:DeleteDocRepo}
 \begin{verbatim}
    void deleteDocRepo (
@@ -113,6 +122,7 @@
 
 \rule{15cm}{2pt}
 \subsection{ArchiveRepoDocs}
+\index{ArchiveRepoDocs}
 \label{Api:ArchiveRepoDocs}
 \begin{verbatim}
    void archiveRepoDocs (
@@ -130,6 +140,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetDocAndMeta}
+\index{GetDocAndMeta}
 \label{Api:GetDocAndMeta}
 \begin{verbatim}
    DocumentWithMeta getDocAndMeta (
@@ -144,6 +155,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetDocMeta}
+\index{GetDocMeta}
 \label{Api:GetDocMeta}
 \begin{verbatim}
    DocumentMetadata getDocMeta (
@@ -158,6 +170,7 @@
 
 \rule{15cm}{2pt}
 \subsection{RevertDoc}
+\index{RevertDoc}
 \label{Api:RevertDoc}
 \begin{verbatim}
    DocumentWithMeta revertDoc (
@@ -172,6 +185,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetDoc}
+\index{GetDoc}
 \label{Api:GetDoc}
 \begin{verbatim}
    String getDoc (
@@ -186,6 +200,7 @@
 
 \rule{15cm}{2pt}
 \subsection{PutDoc}
+\index{PutDoc}
 \label{Api:PutDoc}
 \begin{verbatim}
    String putDoc (
@@ -201,6 +216,7 @@
 
 \rule{15cm}{2pt}
 \subsection{PutDocWithVersion}
+\index{PutDocWithVersion}
 \label{Api:PutDocWithVersion}
 \begin{verbatim}
    boolean putDocWithVersion (
@@ -217,6 +233,7 @@
 
 \rule{15cm}{2pt}
 \subsection{PutDocWithEventContext}
+\index{PutDocWithEventContext}
 \label{Api:PutDocWithEventContext}
 \begin{verbatim}
    DocWriteHandle putDocWithEventContext (
@@ -233,6 +250,7 @@
 
 \rule{15cm}{2pt}
 \subsection{DeleteDoc}
+\index{DeleteDoc}
 \label{Api:DeleteDoc}
 \begin{verbatim}
    boolean deleteDoc (
@@ -247,6 +265,7 @@
 
 \rule{15cm}{2pt}
 \subsection{RenameDoc}
+\index{RenameDoc}
 \label{Api:RenameDoc}
 \begin{verbatim}
    String renameDoc (
@@ -262,6 +281,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetDocs}
+\index{GetDocs}
 \label{Api:GetDocs}
 \begin{verbatim}
    Map<String,String> getDocs (
@@ -276,6 +296,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetDocAndMetas}
+\index{GetDocAndMetas}
 \label{Api:GetDocAndMetas}
 \begin{verbatim}
    List<DocumentWithMeta> getDocAndMetas (
@@ -290,6 +311,7 @@
 
 \rule{15cm}{2pt}
 \subsection{DocsExist}
+\index{DocsExist}
 \label{Api:DocsExist}
 \begin{verbatim}
    List<boolean> docsExist (
@@ -304,6 +326,7 @@
 
 \rule{15cm}{2pt}
 \subsection{PutDocs}
+\index{PutDocs}
 \label{Api:PutDocs}
 \begin{verbatim}
    List<Object> putDocs (
@@ -319,6 +342,7 @@
 
 \rule{15cm}{2pt}
 \subsection{RenameDocs}
+\index{RenameDocs}
 \label{Api:RenameDocs}
 \begin{verbatim}
    List<String> renameDocs (
@@ -336,6 +360,7 @@
 
 \rule{15cm}{2pt}
 \subsection{DeleteDocsByUriPrefix}
+\index{DeleteDocsByUriPrefix}
 \label{Api:DeleteDocsByUriPrefix}
 \begin{verbatim}
    List<String> deleteDocsByUriPrefix (
@@ -350,6 +375,7 @@
 
 \rule{15cm}{2pt}
 \subsection{ListDocsByUriPrefix}
+\index{ListDocsByUriPrefix}
 \label{Api:ListDocsByUriPrefix}
 \begin{verbatim}
    Map<String,RaptureFolderInfo> listDocsByUriPrefix (
@@ -365,6 +391,7 @@
 
 \rule{15cm}{2pt}
 \subsection{SetDocAttribute}
+\index{SetDocAttribute}
 \label{Api:SetDocAttribute}
 \begin{verbatim}
    boolean setDocAttribute (
@@ -380,6 +407,7 @@
 
 \rule{15cm}{2pt}
 \subsection{SetDocAttributes}
+\index{SetDocAttributes}
 \label{Api:SetDocAttributes}
 \begin{verbatim}
    Map<String,boolean> setDocAttributes (
@@ -396,6 +424,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetDocAttribute}
+\index{GetDocAttribute}
 \label{Api:GetDocAttribute}
 \begin{verbatim}
    XferDocumentAttribute getDocAttribute (
@@ -410,6 +439,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetDocAttributes}
+\index{GetDocAttributes}
 \label{Api:GetDocAttributes}
 \begin{verbatim}
    List<XferDocumentAttribute> getDocAttributes (
@@ -424,6 +454,7 @@
 
 \rule{15cm}{2pt}
 \subsection{DeleteDocAttribute}
+\index{DeleteDocAttribute}
 \label{Api:DeleteDocAttribute}
 \begin{verbatim}
    boolean deleteDocAttribute (
@@ -438,6 +469,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetDocRepoIdGenUri}
+\index{GetDocRepoIdGenUri}
 \label{Api:GetDocRepoIdGenUri}
 \begin{verbatim}
    String getDocRepoIdGenUri (
@@ -452,6 +484,7 @@
 
 \rule{15cm}{2pt}
 \subsection{SetDocRepoIdGenConfig}
+\index{SetDocRepoIdGenConfig}
 \label{Api:SetDocRepoIdGenConfig}
 \begin{verbatim}
    DocumentRepoConfig setDocRepoIdGenConfig (
@@ -467,6 +500,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetDocRepoIdGenConfig}
+\index{GetDocRepoIdGenConfig}
 \label{Api:GetDocRepoIdGenConfig}
 \begin{verbatim}
    RaptureIdGenConfig getDocRepoIdGenConfig (

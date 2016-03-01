@@ -1,6 +1,8 @@
 \chapter{Script API}
+\index{Script API}
 \input{script/info}
 \subsection{CreateScript}
+\index{CreateScript}
 \label{Api:CreateScript}
 \begin{verbatim}
    RaptureScript createScript (
@@ -18,6 +20,7 @@
 
 \rule{15cm}{2pt}
 \subsection{CreateScriptLink}
+\index{CreateScriptLink}
 \label{Api:CreateScriptLink}
 \begin{verbatim}
    void createScriptLink (
@@ -33,6 +36,7 @@
 
 \rule{15cm}{2pt}
 \subsection{RemoveScriptLink}
+\index{RemoveScriptLink}
 \label{Api:RemoveScriptLink}
 \begin{verbatim}
    void removeScriptLink (
@@ -47,6 +51,7 @@
 
 \rule{15cm}{2pt}
 \subsection{SetScriptParameters}
+\index{SetScriptParameters}
 \label{Api:SetScriptParameters}
 \begin{verbatim}
    RaptureScript setScriptParameters (
@@ -62,6 +67,7 @@
 
 \rule{15cm}{2pt}
 \subsection{DoesScriptExist}
+\index{DoesScriptExist}
 \label{Api:DoesScriptExist}
 \begin{verbatim}
    boolean doesScriptExist (
@@ -76,20 +82,22 @@
 
 \rule{15cm}{2pt}
 \subsection{DeleteScript}
+\index{DeleteScript}
 \label{Api:DeleteScript}
 \begin{verbatim}
    void deleteScript (
-           String    scriptURI
+           String    scriptUri
    )
 \end{verbatim}
 %\begin{lstlisting}[language=reflex]
-%ret = #script.deleteScript(scriptURI);
+%ret = #script.deleteScript(scriptUri);
 %\end{lstlisting}
 \input{script/deleteScript}
 
 
 \rule{15cm}{2pt}
 \subsection{GetScriptNames}
+\index{GetScriptNames}
 \label{Api:GetScriptNames}
 \begin{verbatim}
    List<String> getScriptNames (
@@ -104,6 +112,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetScript}
+\index{GetScript}
 \label{Api:GetScript}
 \begin{verbatim}
    RaptureScript getScript (
@@ -117,7 +126,23 @@
 
 
 \rule{15cm}{2pt}
+\subsection{GetInterface}
+\index{GetInterface}
+\label{Api:GetInterface}
+\begin{verbatim}
+   ScriptInterface getInterface (
+           String    scriptURI
+   )
+\end{verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #script.getInterface(scriptURI);
+%\end{lstlisting}
+\input{script/getInterface}
+
+
+\rule{15cm}{2pt}
 \subsection{PutScript}
+\index{PutScript}
 \label{Api:PutScript}
 \begin{verbatim}
    RaptureScript putScript (
@@ -133,6 +158,7 @@
 
 \rule{15cm}{2pt}
 \subsection{PutRawScript}
+\index{PutRawScript}
 \label{Api:PutRawScript}
 \begin{verbatim}
    RaptureScript putRawScript (
@@ -152,6 +178,7 @@
 
 \rule{15cm}{2pt}
 \subsection{RunScript}
+\index{RunScript}
 \label{Api:RunScript}
 \begin{verbatim}
    String runScript (
@@ -167,6 +194,7 @@
 
 \rule{15cm}{2pt}
 \subsection{RunScriptExtended}
+\index{RunScriptExtended}
 \label{Api:RunScriptExtended}
 \begin{verbatim}
    ScriptResult runScriptExtended (
@@ -182,6 +210,7 @@
 
 \rule{15cm}{2pt}
 \subsection{CheckScript}
+\index{CheckScript}
 \label{Api:CheckScript}
 \begin{verbatim}
    String checkScript (
@@ -196,6 +225,7 @@
 
 \rule{15cm}{2pt}
 \subsection{CreateREPLSession}
+\index{CreateREPLSession}
 \label{Api:CreateREPLSession}
 \begin{verbatim}
    String createREPLSession (
@@ -209,6 +239,7 @@
 
 \rule{15cm}{2pt}
 \subsection{DestroyREPLSession}
+\index{DestroyREPLSession}
 \label{Api:DestroyREPLSession}
 \begin{verbatim}
    void destroyREPLSession (
@@ -223,6 +254,7 @@
 
 \rule{15cm}{2pt}
 \subsection{EvaluateREPL}
+\index{EvaluateREPL}
 \label{Api:EvaluateREPL}
 \begin{verbatim}
    String evaluateREPL (
@@ -238,6 +270,7 @@
 
 \rule{15cm}{2pt}
 \subsection{ArchiveOldREPLSessions}
+\index{ArchiveOldREPLSessions}
 \label{Api:ArchiveOldREPLSessions}
 \begin{verbatim}
    void archiveOldREPLSessions (
@@ -252,6 +285,7 @@
 
 \rule{15cm}{2pt}
 \subsection{CreateSnippet}
+\index{CreateSnippet}
 \label{Api:CreateSnippet}
 \begin{verbatim}
    RaptureSnippet createSnippet (
@@ -267,6 +301,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetSnippetChildren}
+\index{GetSnippetChildren}
 \label{Api:GetSnippetChildren}
 \begin{verbatim}
    List<RaptureFolderInfo> getSnippetChildren (
@@ -281,6 +316,7 @@
 
 \rule{15cm}{2pt}
 \subsection{DeleteSnippet}
+\index{DeleteSnippet}
 \label{Api:DeleteSnippet}
 \begin{verbatim}
    void deleteSnippet (
@@ -295,6 +331,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetSnippet}
+\index{GetSnippet}
 \label{Api:GetSnippet}
 \begin{verbatim}
    RaptureSnippet getSnippet (
@@ -309,29 +346,31 @@
 
 \rule{15cm}{2pt}
 \subsection{ListScriptsByUriPrefix}
+\index{ListScriptsByUriPrefix}
 \label{Api:ListScriptsByUriPrefix}
 \begin{verbatim}
    Map<String,RaptureFolderInfo> listScriptsByUriPrefix (
-           String    uriPrefix
+           String    scriptUri
            int    depth
    )
 \end{verbatim}
 %\begin{lstlisting}[language=reflex]
-%ret = #script.listScriptsByUriPrefix(uriPrefix,depth);
+%ret = #script.listScriptsByUriPrefix(scriptUri,depth);
 %\end{lstlisting}
 \input{script/listScriptsByUriPrefix}
 
 
 \rule{15cm}{2pt}
 \subsection{DeleteScriptsByUriPrefix}
+\index{DeleteScriptsByUriPrefix}
 \label{Api:DeleteScriptsByUriPrefix}
 \begin{verbatim}
    List<String> deleteScriptsByUriPrefix (
-           String    uriPrefix
+           String    scriptUri
    )
 \end{verbatim}
 %\begin{lstlisting}[language=reflex]
-%ret = #script.deleteScriptsByUriPrefix(uriPrefix);
+%ret = #script.deleteScriptsByUriPrefix(scriptUri);
 %\end{lstlisting}
 \input{script/deleteScriptsByUriPrefix}
 

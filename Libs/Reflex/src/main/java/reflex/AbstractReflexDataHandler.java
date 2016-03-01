@@ -34,7 +34,6 @@ import org.apache.log4j.Logger;
 import rapture.common.BlobContainer;
 import rapture.common.RaptureURI;
 import rapture.common.SeriesPoint;
-import rapture.common.SheetAndMeta;
 import rapture.common.api.ScriptingApi;
 import rapture.common.impl.jackson.JacksonUtil;
 import reflex.node.KernelExecutor;
@@ -70,11 +69,6 @@ public abstract class AbstractReflexDataHandler implements IReflexDataHandler {
                 ReflexValue retSeries = new ReflexValue(series);
                 return retSeries;
 
-            case SHEET:
-                SheetAndMeta sheet = api.getSheet().getSheetAndMeta(uri.toString());
-                ReflexValue retSheet = new ReflexValue(sheet.getCells());
-                return retSheet;
-
             case BLOB:
                 BlobContainer blobContainer = api.getBlob().getBlob(uri.toString());
                 if (blobContainer == null) return null;
@@ -108,23 +102,6 @@ public abstract class AbstractReflexDataHandler implements IReflexDataHandler {
     public void pushData(RaptureURI uri, ReflexValue data, MediaType metadata) {
         String uriStr = uri.toString(); // sigh
         switch (uri.getScheme()) {
-            case SHEET:
-                // SheetApi shap = Kernel.;
-                List<ReflexValue> rows = data.asList();
-                if (rows == null) throw new ReflexException(-1, "Cannot write " + data.getTypeAsString() + " to " + uri);
-                if (!api.getSheet().sheetExists(uriStr)) api.getSheet().createSheet(uriStr);
-                int row = 0;
-                for (ReflexValue rv : rows) {
-                    if (rv != null) {
-                        List<ReflexValue> columns = ((ReflexValue) rv).asList();
-                        int column = 0;
-                        for (ReflexValue col : columns) {
-                            api.getSheet().setSheetCell(uriStr, row, column++, col.asString(), 0);
-                        }
-                    }
-                    row++;
-                }
-                break;
 
             case SERIES:
                 List<ReflexValue> series = data.asList();

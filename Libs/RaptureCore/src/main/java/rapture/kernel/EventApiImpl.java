@@ -51,7 +51,6 @@ import rapture.common.model.RunEventHandle;
 import rapture.common.pipeline.PipelineConstants;
 import rapture.idgen.SystemIdGens;
 import rapture.kernel.pipeline.TaskSubmitter;
-import rapture.kernel.relationship.RelationshipHelper;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
@@ -190,9 +189,7 @@ public class EventApiImpl extends KernelBase implements EventApi {
 
                 }
             }
-            if (didAnythingFire) {
-                RelationshipHelper.createRelationship(context, eUri.toString(), "fire", null);
-            }
+
             Kernel.getStackContainer().popStack(context);
             Kernel.getActivity().finishActivity(context, activityId, "Fired Event");
             handle.setDidRun(didAnythingFire);

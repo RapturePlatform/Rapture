@@ -35,7 +35,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.Stack;
 
-import org.antlr.runtime.RecognitionException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -67,7 +66,6 @@ import rapture.common.exception.RaptureExceptionFactory;
 import rapture.common.shared.script.DeleteScriptPayload;
 import rapture.common.shared.script.GetScriptPayload;
 import rapture.kernel.context.ContextValidator;
-import rapture.kernel.relationship.RelationshipHelper;
 import rapture.script.IActivityInfo;
 import rapture.script.IRaptureScript;
 import rapture.script.ScriptFactory;
@@ -237,7 +235,6 @@ public class ScriptApiImpl extends KernelBase implements ScriptApi {
             throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, String.format("Script %s does not exists in repository", scriptURI));
         }
         final RaptureURI internalURI = new RaptureURI(scriptURI, Scheme.SCRIPT);
-        RelationshipHelper.createRelationship(context, internalURI.toString(), "run", null);
         Kernel.getStackContainer().pushStack(context, internalURI.toString());
 
         IRaptureScript scriptContext = ScriptFactory.getScript(script);

@@ -34,6 +34,7 @@ import rapture.common.TableQueryResult;
 import rapture.common.api.IndexApi;
 import rapture.common.model.IndexConfig;
 import rapture.common.model.IndexConfigStorage;
+import rapture.index.IndexHandler;
 import rapture.repo.Repository;
 
 public class IndexApiImpl extends KernelBase implements IndexApi {
@@ -75,5 +76,10 @@ public class IndexApiImpl extends KernelBase implements IndexApi {
         Repository repository = getKernel().getRepo(internalUri.getAuthority());
         return repository.findIndex(query);
     }
+    
+    private IndexCache indexCache = new IndexCache();
 
+    public IndexHandler getIndexHandler(String indexURI) {
+    	        return indexCache.getIndex(indexURI);
+    }
 }

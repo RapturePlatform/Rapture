@@ -2,13 +2,6 @@
 Although one topology for a Rapture network is a collection of homogeneous servers sharing the same data and messaging infrastructure, an alternate topology would be a collection of heterogeneous servers connected together through synchronization. A server in this topology is considered an "appliance" - it is essentially a Rapture network with one member. In this configuration the Rapture kernel needs to handle tasks that are normally performed by other servers. Appliance Mode can be enabled or disabled as necessary.]
 
 api(Environment) {
-  [Retrieves the unique identifier and name for this Rapture instance.]
-  @entitle=/env/common
-  @public RaptureNetwork getNetworkInfo();
-  
-  [Applies network information matching the passed parameter to the current instance of the Rapture network.]
-  @entitle=/env/admin
-  @public RaptureNetwork setNetworkInfo(RaptureNetwork network);
   
   [Retrieves the unique identifier and name for this Rapture server instance.]
   @entitle=/env/common

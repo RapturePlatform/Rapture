@@ -1,6 +1,8 @@
 \chapter{Audit API}
+\index{Audit API}
 \input{audit/info}
 \subsection{Setup}
+\index{Setup}
 \label{Api:Setup}
 \begin{verbatim}
    void setup (
@@ -15,6 +17,7 @@
 
 \rule{15cm}{2pt}
 \subsection{CreateAuditLog}
+\index{CreateAuditLog}
 \label{Api:CreateAuditLog}
 \begin{verbatim}
    void createAuditLog (
@@ -30,6 +33,7 @@
 
 \rule{15cm}{2pt}
 \subsection{DoesAuditLogExist}
+\index{DoesAuditLogExist}
 \label{Api:DoesAuditLogExist}
 \begin{verbatim}
    boolean doesAuditLogExist (
@@ -44,6 +48,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetChildren}
+\index{GetChildren}
 \label{Api:GetChildren}
 \begin{verbatim}
    List<RaptureFolderInfo> getChildren (
@@ -58,6 +63,7 @@
 
 \rule{15cm}{2pt}
 \subsection{DeleteAuditLog}
+\index{DeleteAuditLog}
 \label{Api:DeleteAuditLog}
 \begin{verbatim}
    void deleteAuditLog (
@@ -72,6 +78,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetAuditLog}
+\index{GetAuditLog}
 \label{Api:GetAuditLog}
 \begin{verbatim}
    AuditLogConfig getAuditLog (
@@ -86,6 +93,7 @@
 
 \rule{15cm}{2pt}
 \subsection{WriteAuditEntry}
+\index{WriteAuditEntry}
 \label{Api:WriteAuditEntry}
 \begin{verbatim}
    void writeAuditEntry (
@@ -103,6 +111,7 @@
 
 \rule{15cm}{2pt}
 \subsection{WriteAuditEntryData}
+\index{WriteAuditEntryData}
 \label{Api:WriteAuditEntryData}
 \begin{verbatim}
    void writeAuditEntryData (
@@ -121,6 +130,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetRecentLogEntries}
+\index{GetRecentLogEntries}
 \label{Api:GetRecentLogEntries}
 \begin{verbatim}
    List<AuditLogEntry> getRecentLogEntries (
@@ -136,6 +146,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetEntriesSince}
+\index{GetEntriesSince}
 \label{Api:GetEntriesSince}
 \begin{verbatim}
    List<AuditLogEntry> getEntriesSince (
@@ -147,6 +158,22 @@
 %ret = #audit.getEntriesSince(logURI,when);
 %\end{lstlisting}
 \input{audit/getEntriesSince}
+
+
+\rule{15cm}{2pt}
+\subsection{GetRecentUserActivity}
+\index{GetRecentUserActivity}
+\label{Api:GetRecentUserActivity}
+\begin{verbatim}
+   List<AuditLogEntry> getRecentUserActivity (
+           String    user
+           int    count
+   )
+\end{verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #audit.getRecentUserActivity(user,count);
+%\end{lstlisting}
+\input{audit/getRecentUserActivity}
 
 
 \rule{15cm}{2pt}

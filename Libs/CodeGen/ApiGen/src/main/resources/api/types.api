@@ -12,20 +12,6 @@ type RaptureQueryResult(@package=rapture.common) {
 	List<JsonContent> rows;
 }
 
-[This is the result of a FilterCubeView.]
-type RaptureCubeResult(@package=rapture.common) {
-	List<String> groupNames;
-	List<String> columnNames;
-	List<RaptureCubeRow> rows;
-}
-
-[Defines a displayNameQuery cursor.]
-type RaptureDNCursor(@package=rapture.common) {
-	String authority;
-	List<String> displayNames;
-	String continueContext;
-	boolean finished = false;
-}
 
 [Defines a connection info]
 type ConnectionInfo(@package=rapture.common) {
@@ -48,17 +34,6 @@ type BlobRepoConfig(@package=rapture.common.model) {
   String metaConfig;
 }
 
-[ This is a mailbox message, usually posted by an external user.]
-@Addressable(scheme = MAILBOX(false))
-@Storable(storagePath : {authority, documentPath, id}, prefix="mail/message", repoName=MAIL_REPO)
-type RaptureMailMessage(@package=rapture.common.model) {
-   String id;
-   String authority;
-   String documentPath;
-   String content;
-   Date when;
-   String user;
-}
 
 [ A RaptureField is the definition of a concept in Rapture, referenced within a type or a series of types.]
 @Addressable(scheme = FIELD(false))
@@ -103,37 +78,6 @@ type AuditLogConfig(@package=rapture.common) {
     String config;
 }
 
-[Describes an object that can be committed to version history.]
-type CommitObject(@package=rapture.common.repo) {
-    String treeRef;
-    String user;
-    Date when;
-    String comment;
-    String changes;
-    List(String) docReferences;
-    List(String) treeReferences;
-}
-
-[Defines a document object.]
-type DocumentObject(@package=rapture.common.repo) {
-    JsonContent content;
-}
-
-[Defines a tree object.]
-type TreeObject(@package=rapture.common.repo) {
-    Map(String, String) trees;
-    List(DocumentBagReference) documents;
-}
-
-[Defines a remote instance of Rapture.]
-@Storable(storagePath : {name}, prefix="remote")
-type RaptureRemote(@package=rapture.common) {
-    String name;
-    String description;
-    String url;
-    String apiKey;
-    String optionalPass;
-}
 
 [This is a write handle returned after a write (update, delete, insert) operation to a document. It contains information about the document]
 @Bean
@@ -266,13 +210,6 @@ type RaptureSearchResult(@package=rapture.common) {
    String displayName;
 }
 
-[Holds the config info for a Rapture index.]
-@Storable(storagePath : {authority, name}, prefix="fulltextindex")
-type RaptureFullTextIndexConfig(@package=rapture.common) {
-   String name;
-   String config;
-   String authority;
-}
 
 [Holds the config info for a repository.]
 @Storable(storagePath : {"sys", name}, separator=".", prefix="repo/config", repoName=BOOTSTRAP_REPO)
@@ -326,16 +263,6 @@ type RaptureDocConfig(@package=rapture.common.model) {
    String config;
 }
 
-[Stores info about a specific change made to a repository.]
-type RaptureCommit(@package=rapture.common.model) {
-   String who;
-   Date when;
-   String comment;
-   String changes;
-   String reference;
-   List(String) docReferences;
-   List(String) treeReferences;
-}
 
 [Defines a user account for the Rapture system.]
 @Storable(storagePath : {username}, prefix="sys.user", repoName=SETTINGS_REPO)
@@ -357,23 +284,6 @@ type RaptureUser(@package=rapture.common.model) {
     Boolean verified = true;
 }
 
-[]
-@Storable(storagePath : {authority, viewName}, prefix="view")
-type RaptureView(@package=rapture.common.model) {
-   String authority;
-   String viewName;
-   String mapFn;
-   String filterFn;
-   List<String> parameterNames;
-   List<String> columnNames;
-}
-
-[]
-type RaptureViewResult(@package=rapture.common.model) {
-   List(String) columnNames;
-   List(List(Object)) rows;
-   List(Object) currentRow;
-}
 
 [The base object used by the entitlements API.]
 @Addressable(scheme = ENTITLEMENT(true))
@@ -395,12 +305,6 @@ type RaptureEntitlementGroup(@package=rapture.common.model) {
    String dynamicEntitlementClassName;
 }
 
-[Describes the main object used by the Operation API.]
-type RaptureOperation(@package=rapture.common.model) {
-    String opName;
-    String paramDef;
-    String scriptName;
-}
 
 [Describes the main object used by the Event API.]
 @Addressable(scheme = EVENT(false))
@@ -440,13 +344,6 @@ type RaptureServerStatus(@package=rapture.common.model) {
    Date lastSeen = new Date();
 }
 
-[Holds basic information about the network that Rapture can access. ]
-@Addressable(scheme = NETWORK(false))
-@Storable(storagePath : {networkId}, prefix="environment/network")
-type RaptureNetwork(@package=rapture.common.model) {
-   String networkId;
-   String networkName;
-}
 
 [Holds config information for the main object used by the Plugin API.]
 @Addressable(scheme = PLUGIN(false))
@@ -520,15 +417,6 @@ type AppConfig(@package=rapture.common) {
 	String splashLocation;
 	String jarFile;
 	String mainClass;
-}
-
-[Records when and where an event (such as a recurring task) was processed.]
-@Storable(storagePath : {network}, prefix="timeprocessor", repoName=EPHEMERAL_REPO)
-@Deprecated("TimeServer is superseded by ScheduleServer")
-type TimeProcessorStatus(@package=rapture.common) {
-	String network;
-	Long when;
-	String processingServer;
 }
 
 [Contains information about an active instance of a hosted app.]
@@ -1340,74 +1228,6 @@ type WorkflowBasedSemaphoreConfig(@package=rapture.common.dp) {
 }
 
 
-// ----------------------
-// QUESTION API TYPES
-// ----------------------
-[Template data for a Question object, as defined in the Question API.]
-@Storable(storagePath : {qtemplateURI}, prefix="dp/qtemplate")
-@Addressable(scheme = QTEMPLATE(false))
-@Cacheable
-type QTemplate(@package = rapture.common.dp.question) {
-    QTemplateURI qtemplateURI;
-    List(UserURI) quorum; // should include users and groups
-    AnswerRule rule; // FIRST, MAJORITY, PLURALITY, ...
-    String prompt;
-    List(String) options; // e.g. { "Yes", "No", "Cancel" }    
-    List(QDetail) form; // fill in the blanks question list the blanks with prompts here
-    List(String) reports; // ignored for now
-    Long timeout;		// Default timeout value. Can be overridden.
-}
-
-[Callback information for a question object.]
-@Storable(storagePath : { uuid })
-type QCallback(@package = rapture.common.dp.question) {
-    String uuid;
-    WorkOrderURI workerURI; // should be qualified with #workerId
-}
-
-[Main data for a Question API object.]
-@Storable(storagePath : {questionURI}, prefix="dp/question")
-@Addressable(scheme = QUESTION(false))
-type Question(@package = rapture.common.dp.question) {
-    QuestionURI questionURI;
-    QTemplateURI qtemplateURI;
-    String answer;
-    String priority;
-    Map(String, String) mapping;
-    ReplyProgress progress; // UNSTARTED, STARTED, FINISHED
-}
-
-[Used when notifications are needed for question objects.]
-@Storable(storagePath: {qnotificationURI}, prefix="dp/qnotification")
-@Addressable(scheme = QNOTIFICATION(false))
-@Indexable(name: "default", fields: {qnotificationURI, addressee, progress})
-type QNotification(@package = rapture.common.dp.question) {
-    QNotificationURI qnotificationURI;
-    String addressee;
-    QuestionURI questionURI;
-    Map(String, Object) formData;
-    String response;
-    ReplyProgress progress; // UNSTARTED, STARTED, FINISHED
-    Long whenAsked;			
-    Long deadline;			// At what point should this notification be discarded;
-}
-
-[Additional detail for a question object.]
-@Bean
-type QDetail(@package = rapture.common.dp.question) {
-    String prompt;
-    String kind; // this is the t y p e of the data, but t y p e is a reserved word
-}
-
-[Contains search results for questions.]
-@Bean
-type QuestionSearch(@package = rapture.common.dp.question) {
-    //expect this to grow
-    String user; // the user or group that's being asked
-    ReplyProgress progress;
-    String sortOrder;
-    Long timeStamp;
-}
 
 //-----------------------
 
@@ -1442,86 +1262,6 @@ type BlobContainer(@package=rapture.common) {
 	ByteArray content;
 }
 
-[Describes a sheet repository. Refer to the Sheet API for additional details.]
-@Addressable(scheme = SHEET(true))
-@Storable(storagePath : {authority}, prefix="sheet")
-type SheetRepoConfig(@package=rapture.common) {
-    String description;
-    String config;
-    String authority;
-}
-
-[Describes a single Rapture sheet. Refer to the Sheet API for additional details.]
-type RaptureSheet(@package=rapture.common) {
-    String authority;
-    String name;
-}
-
-[Data for one cell in a sheet. Refer to the Sheet API for additional details.]
-type RaptureSheetCell(@package=rapture.common) {
-    int row;
-    int column;
-    String data;
-    Long epoch;
-}
-
-[Data for how to display a given cell. Refer to the Sheet API for additional details.]
-@Bean
-type RaptureSheetDisplayCell(@package=rapture.common) {
-    String data;
-    String style;
-}
-
-[Data for how to display a list of cells. Refer to the Sheet API for additional details.]
-@Bean
-type SheetAndMeta(@package=rapture.common) {
-    List(List(RaptureSheetDisplayCell)) cells;
-    List(RaptureSheetStyle) styles;
-}
-
-[Used for determining the updates since a fixed point in time (the epoch field).]
-type RaptureSheetStatus(@package=rapture.common) {
-    List(RaptureSheetCell) cells;
-    Long epoch;
-}
-
-[Stores CSS information for cells in a Rapture sheet.]
-type RaptureSheetStyle(@package=rapture.common) {
-    String name;
-    String numberFormatString;
-    RaptureSheetStyleWeight weight;
-    RaptureSheetStyleAlignment alignment;
-    RaptureSheetStyleColor color;
-    RaptureSheetStyleSize size;
-    RaptureSheetStyleNumberFormat numberFormat;
-}
-
-[A Reflex script stored within a sheet and able to reference the current sheet.]
-type RaptureSheetScript(@package=rapture.common) {
-    String name;
-    String description;
-    String script;
-    boolean autoRun;
-    int intervalInSeconds;
-    Date lastRun;
-}
-
-[Specifies any range of cells within one sheet.]
-type RaptureSheetRange(@package=rapture.common) {
-	String name;
-	int startRow;
-	int endRow;
-	int startColumn;
-	int endColumn;
-}
-
-[A note that can be attached to a sheet.]
-type RaptureSheetNote(@package=rapture.common) {
-	String id;
-	String note;
-	String who;
-	Date when;
-}
 
 [Determines whether the license of the current instance of Rapture is valid.]
 @Bean    
@@ -1550,45 +1290,6 @@ type TableQueryResult(@package=rapture.common) {
 	List(List(Object)) rows;
 }
 
-[Describes outgoing and incoming Rapture Relationships, as described in the Relationship API.]
-@Storable(storagePath : {uri}, prefix="relation")
-type RaptureRelation(@package=rapture.common) {
-    String uri;
-    List<RaptureRelationship> outgoingRelationships = new ArrayList<RaptureRelationship>();
-    List<RaptureRelationship> incomingRelationships = new ArrayList<RaptureRelationship>();
-    RaptureURI targetURI;
-}
-
-[The main object in the Relationship API.]
-@Addressable(scheme = RELATIONSHIP(true))
-type RaptureRelationship(@package=rapture.common) {
-    RaptureURI fromURI;
-    RaptureURI toURI;
-    String label;
-    Long createDateUTC = System.currentTimeMillis();
-    String user;
-    Map(String,String) properties;
-    RaptureURI uri;
-    UUID uuid = UUID.randomUUID();
-}
-
-[Describes a cluster of relationship nodes with an arbitrary central node.]
-@Bean
-type RaptureRelationshipRegion(@package=rapture.common) {
-	RaptureURI centerNode;
-	Long depth;
-	List<RaptureURI> nodes;
-	List<RaptureRelationship> relationships;
-}
-
-[Config information for a repository for relationships.]
-@Addressable(scheme = RELATIONSHIP(true))
-@Storable(storagePath : {authority}, prefix="relationship/repoconf")
-type RelationshipRepoConfig(@package=rapture.common.model) {
-    String description;
-	String config;
-	String authority;
-}
 
 []
 @Addressable(scheme = INDEX(false))

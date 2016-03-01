@@ -1,6 +1,8 @@
 \chapter{Blob API}
+\index{Blob API}
 \input{blob/info}
 \subsection{CreateBlobRepo}
+\index{CreateBlobRepo}
 \label{Api:CreateBlobRepo}
 \begin{verbatim}
    void createBlobRepo (
@@ -17,6 +19,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetBlobRepoConfig}
+\index{GetBlobRepoConfig}
 \label{Api:GetBlobRepoConfig}
 \begin{verbatim}
    BlobRepoConfig getBlobRepoConfig (
@@ -31,6 +34,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetBlobRepoConfigs}
+\index{GetBlobRepoConfigs}
 \label{Api:GetBlobRepoConfigs}
 \begin{verbatim}
    List<BlobRepoConfig> getBlobRepoConfigs (
@@ -44,6 +48,7 @@
 
 \rule{15cm}{2pt}
 \subsection{DeleteBlobRepo}
+\index{DeleteBlobRepo}
 \label{Api:DeleteBlobRepo}
 \begin{verbatim}
    void deleteBlobRepo (
@@ -58,6 +63,7 @@
 
 \rule{15cm}{2pt}
 \subsection{BlobRepoExists}
+\index{BlobRepoExists}
 \label{Api:BlobRepoExists}
 \begin{verbatim}
    boolean blobRepoExists (
@@ -72,6 +78,7 @@
 
 \rule{15cm}{2pt}
 \subsection{BlobExists}
+\index{BlobExists}
 \label{Api:BlobExists}
 \begin{verbatim}
    boolean blobExists (
@@ -86,6 +93,7 @@
 
 \rule{15cm}{2pt}
 \subsection{AddBlobContent}
+\index{AddBlobContent}
 \label{Api:AddBlobContent}
 \begin{verbatim}
    void addBlobContent (
@@ -101,6 +109,7 @@
 
 \rule{15cm}{2pt}
 \subsection{PutBlob}
+\index{PutBlob}
 \label{Api:PutBlob}
 \begin{verbatim}
    void putBlob (
@@ -117,6 +126,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetBlob}
+\index{GetBlob}
 \label{Api:GetBlob}
 \begin{verbatim}
    BlobContainer getBlob (
@@ -131,6 +141,7 @@
 
 \rule{15cm}{2pt}
 \subsection{DeleteBlob}
+\index{DeleteBlob}
 \label{Api:DeleteBlob}
 \begin{verbatim}
    void deleteBlob (
@@ -145,6 +156,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetBlobSize}
+\index{GetBlobSize}
 \label{Api:GetBlobSize}
 \begin{verbatim}
    Long getBlobSize (
@@ -159,6 +171,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetBlobMetaData}
+\index{GetBlobMetaData}
 \label{Api:GetBlobMetaData}
 \begin{verbatim}
    Map<String,String> getBlobMetaData (
@@ -173,29 +186,31 @@
 
 \rule{15cm}{2pt}
 \subsection{ListBlobsByUriPrefix}
+\index{ListBlobsByUriPrefix}
 \label{Api:ListBlobsByUriPrefix}
 \begin{verbatim}
    Map<String,RaptureFolderInfo> listBlobsByUriPrefix (
-           String    uriPrefix
+           String    blobUri
            int    depth
    )
 \end{verbatim}
 %\begin{lstlisting}[language=reflex]
-%ret = #blob.listBlobsByUriPrefix(uriPrefix,depth);
+%ret = #blob.listBlobsByUriPrefix(blobUri,depth);
 %\end{lstlisting}
 \input{blob/listBlobsByUriPrefix}
 
 
 \rule{15cm}{2pt}
 \subsection{DeleteBlobsByUriPrefix}
+\index{DeleteBlobsByUriPrefix}
 \label{Api:DeleteBlobsByUriPrefix}
 \begin{verbatim}
    List<String> deleteBlobsByUriPrefix (
-           String    uriPrefix
+           String    blobUri
    )
 \end{verbatim}
 %\begin{lstlisting}[language=reflex]
-%ret = #blob.deleteBlobsByUriPrefix(uriPrefix);
+%ret = #blob.deleteBlobsByUriPrefix(blobUri);
 %\end{lstlisting}
 \input{blob/deleteBlobsByUriPrefix}
 

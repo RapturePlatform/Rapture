@@ -1,33 +1,8 @@
 \chapter{Environment API}
+\index{Environment API}
 \input{environment/info}
-\subsection{GetNetworkInfo}
-\label{Api:GetNetworkInfo}
-\begin{verbatim}
-   RaptureNetwork getNetworkInfo (
-   )
-\end{verbatim}
-%\begin{lstlisting}[language=reflex]
-%ret = #environment.getNetworkInfo();
-%\end{lstlisting}
-\input{environment/getNetworkInfo}
-
-
-\rule{15cm}{2pt}
-\subsection{SetNetworkInfo}
-\label{Api:SetNetworkInfo}
-\begin{verbatim}
-   RaptureNetwork setNetworkInfo (
-           RaptureNetwork    network
-   )
-\end{verbatim}
-%\begin{lstlisting}[language=reflex]
-%ret = #environment.setNetworkInfo(network);
-%\end{lstlisting}
-\input{environment/setNetworkInfo}
-
-
-\rule{15cm}{2pt}
 \subsection{GetThisServer}
+\index{GetThisServer}
 \label{Api:GetThisServer}
 \begin{verbatim}
    RaptureServerInfo getThisServer (
@@ -41,6 +16,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetServers}
+\index{GetServers}
 \label{Api:GetServers}
 \begin{verbatim}
    List<RaptureServerInfo> getServers (
@@ -54,6 +30,7 @@
 
 \rule{15cm}{2pt}
 \subsection{SetThisServer}
+\index{SetThisServer}
 \label{Api:SetThisServer}
 \begin{verbatim}
    RaptureServerInfo setThisServer (
@@ -68,6 +45,7 @@
 
 \rule{15cm}{2pt}
 \subsection{SetApplianceMode}
+\index{SetApplianceMode}
 \label{Api:SetApplianceMode}
 \begin{verbatim}
    void setApplianceMode (
@@ -82,6 +60,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetApplianceMode}
+\index{GetApplianceMode}
 \label{Api:GetApplianceMode}
 \begin{verbatim}
    boolean getApplianceMode (
@@ -95,6 +74,7 @@
 
 \rule{15cm}{2pt}
 \subsection{GetServerStatus}
+\index{GetServerStatus}
 \label{Api:GetServerStatus}
 \begin{verbatim}
    List<RaptureServerStatus> getServerStatus (

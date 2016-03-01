@@ -33,7 +33,6 @@ import static rapture.common.Scheme.JAR;
 import static rapture.common.Scheme.JOB;
 import static rapture.common.Scheme.SCRIPT;
 import static rapture.common.Scheme.SERIES;
-import static rapture.common.Scheme.SHEET;
 import static rapture.common.Scheme.TABLE;
 import static rapture.common.Scheme.WORKFLOW;
 
@@ -181,8 +180,6 @@ public class PluginSandboxItem {
         switch (uri.getScheme()) {
             case BLOB:
                 return ".bits";
-            case SHEET:
-                return ".csv";
             case SCRIPT:
                 return "jjs".equals(uri.getAttribute()) ? ".jjs" : ".rfx";
             default:
@@ -253,9 +250,6 @@ public class PluginSandboxItem {
                     break;
                 case SCRIPT:
                     attr = schemeName.equals(".jjs") ? "jjs" : "raw";
-                    break;
-                case SHEET:
-                    attr = "csv";
                     break;
                 default:
                     throw new Error("Severe: Unhandled scheme in raw2scheme map"); // can only happen if a bad checkin is made
@@ -357,7 +351,6 @@ public class PluginSandboxItem {
 
     public static final BiMap<String, Scheme> ext2scheme = ImmutableBiMap.<String, Scheme> builder()
             .put(".script", SCRIPT)
-            .put(".sheet", SHEET)
             .put(".series", SERIES)
             .put(".blob", BLOB)
             .put(".jar", JAR)
@@ -371,12 +364,11 @@ public class PluginSandboxItem {
             .put(".lock", Scheme.LOCK)
             .put(".snippet", Scheme.SNIPPET)
             .put(".structured", Scheme.STRUCTURED)
-            .put(".relationship", Scheme.RELATIONSHIP)
             .build();
 
     // do not edit this without making matching edits to extractScheme and getExtFromURI
     // .jjs is extension for server side javascript
-    public static final Map<String, Scheme> raw2scheme = ImmutableMap.of(".rfx", SCRIPT, ".jjs", SCRIPT, ".bits", BLOB, ".csv", SHEET);
+    public static final Map<String, Scheme> raw2scheme = ImmutableMap.of(".rfx", SCRIPT, ".jjs", SCRIPT, ".bits", BLOB);
 
     private static boolean isContent(RaptureURI uri) {
         return ext2scheme.containsValue(uri.getScheme());
