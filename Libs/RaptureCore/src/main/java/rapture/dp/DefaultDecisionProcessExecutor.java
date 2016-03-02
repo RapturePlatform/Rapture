@@ -827,11 +827,7 @@ public class DefaultDecisionProcessExecutor implements DecisionProcessExecutor {
             return;
         }
         String workflowLogUri = InvocableUtils.getWorkflowAuditLog(appStatusName, workOrder.getWorkOrderURI(), step.getName());
-<<<<<<< HEAD
-        Kernel.getAudit().writeAuditEntry(ContextFactory.getKernelUser(), workflowLogUri, "workorder", 1, step.getName() + " started");
-=======
         Kernel.getAudit().writeAuditEntry(ContextFactory.getKernelUser(), workflowLogUri, "workflow", 1, step.getName() + " started");
->>>>>>> a287a8d7bf3c5f5129555e1300d8dac8ac1ea59a
         String workOrderURI = worker.getWorkOrderURI();
         AppStatusGroup group = getAppStatusGroup(appStatusName, workOrderURI);
         AppStatus appStatus = group.getIdToStatus().get(workOrderURI);
