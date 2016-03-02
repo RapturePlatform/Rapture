@@ -17,7 +17,7 @@ apply plugin: "sonar"
 
 project.group = 'net.rapture'
 
-ext { platformVersion = '3.0.0' }
+ext { platformVersion = '3.0.1' }
 
 
 subprojects {
@@ -38,6 +38,9 @@ subprojects {
       mavenLocal()
       mavenCentral()
       jcenter()
+      maven {
+        url "https://oss.sonatype.org/content/repositories/releases/"
+      }
       }
 
     def loggingVersion = '1.6.1'

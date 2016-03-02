@@ -16,7 +16,7 @@ license {
     header file('./LICENSE')
 }
 
-project.version = '3.0.0'
+project.version = '3.0.1'
 project.group = 'net.rapture'
 
 subprojects {
@@ -172,6 +172,10 @@ uploadArchives {
             beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
             // Target repository
             repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                authentication(userName: ossrhUser, password: ossrhPassword)
+            }
+
+            snapshotRepository( url: "https://oss.sonatype.org/content/repositories/snapshots/") {
                 authentication(userName: ossrhUser, password: ossrhPassword)
             }
             pom.project {
