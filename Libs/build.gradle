@@ -182,7 +182,7 @@ uploadArchives {
                 name project.name
                 description project.description
                 packaging 'jar'
-                url 'https://github.com/your/project'
+                url 'https://github.com/RapturePlatform/Rapture.git'
 
                 scm {
                     connection 'scm:git:https://github.com/RapturePlatform/Rapture.git'
