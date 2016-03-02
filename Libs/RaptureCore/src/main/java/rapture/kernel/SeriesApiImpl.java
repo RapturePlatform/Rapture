@@ -586,8 +586,8 @@ public class SeriesApiImpl extends KernelBase implements SeriesApi {
             String parentUri = seriesURI.substring(0, lastSlash);
             String name = seriesURI.substring(lastSlash + 1, seriesURI.length());
 
-            log.info("parentUri: " + parentUri);
-            log.info("seriesUri: " + seriesURI);
+            log.debug("parentUri: " + parentUri);
+            log.debug("seriesUri: " + seriesURI);
             for (RaptureFolderInfo folder : listSeriesByUriPrefix(context, parentUri, 1).values()) {
                 if (folder.getName().equals(name)) {
                     return true;
@@ -600,10 +600,16 @@ public class SeriesApiImpl extends KernelBase implements SeriesApi {
         }
     }
 
-    @Override
     public void deleteSeries(CallingContext context, String seriesURI) {
         RaptureURI uri = new RaptureURI(seriesURI, Scheme.SERIES);
         SeriesRepo repository = getRepoOrFail(uri);
-        repository.deletePointsFromSeries(uri.getDocPath());
+        repository.deleteSeries(uri.getDocPath());
+    }
+
+    @Override
+    public void createSeries(CallingContext context, String seriesURI) {
+        RaptureURI uri = new RaptureURI(seriesURI, Scheme.SERIES);
+        SeriesRepo repository = getRepoOrFail(uri);
+        repository.createSeries(uri.getDocPath());
     }
 }

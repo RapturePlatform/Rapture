@@ -443,4 +443,15 @@ public class FileSeriesStore implements SeriesStore {
         }
         return null;
     }
+    
+    @Override
+    public void createSeries(String key) {
+        writeSeries(key, new ArrayList<SeriesValue>());
+    }
+
+    @Override
+    public void deleteSeries(String key) {
+        unregisterKey(key);
+        deletePointsFromSeries(key);
+    }
 }

@@ -298,4 +298,16 @@ public class MemorySeriesStore implements SeriesStore {
         if (isFolder) childrenRepo.dropFolderEntry(key);
         childrenRepo.dropFileEntry(key);
     }
+    
+    @Override
+    public void createSeries(String key) {
+    	getOrMakeSeries(key);
+    }
+
+    @Override
+    public void deleteSeries(String key) {
+        unregisterKey(key);
+        deletePointsFromSeries(key);
+    }
+
 }
