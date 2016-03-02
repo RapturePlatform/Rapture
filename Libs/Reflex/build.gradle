@@ -23,6 +23,7 @@ task antlrOutputDir << {
 task generateGrammarSource(dependsOn: antlrOutputDir, type: JavaExec) {
      description = 'Generates Java sources from Antlr3 grammars.'
      convention.destinationDir = "$buildDir/generated-sources/antlr/reflex"
+     convention.antlrGenRootDir = "$buildDir/generated-sources/antlr3/";
      def antlrSource = 'src/main/antlr3'
 
      inputs.dir(fileTree(antlrSource))
@@ -34,6 +35,8 @@ task generateGrammarSource(dependsOn: antlrOutputDir, type: JavaExec) {
      classpath = configurations.antlr3
      args = ["-o", "${destinationDir}", grammars.files].flatten()
 }
+
+addPath(project, "main", "java", generateGrammarSource.antlrGenRootDir)
 
 task copyReflexProps(type:Copy) {
        from generateGrammarSource.destinationDir
@@ -47,7 +50,7 @@ sourceSets {
      	java { srcDir "$buildDir/generated-sources/antlr" }
 	}
 }
-    
+
 compileJava {
      dependsOn copyReflexProps
      source generateGrammarSource.destinationDir

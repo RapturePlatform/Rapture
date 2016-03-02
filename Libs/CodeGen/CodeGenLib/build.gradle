@@ -17,6 +17,7 @@ task antlrOutputDir << { mkdir(generateGrammarSource.destinationDir) }
 task generateGrammarSource(dependsOn: antlrOutputDir, type: JavaExec) {
     description = 'Generates Java sources from Antlr3 grammars.'
     convention.destinationDir = "$buildDir/generated-sources/antlr/com/incapture/rapgen"
+    convention.antlrGenRootDir = "$buildDir/generated-sources/antlr/";
     def antlrSource = 'src/main/antlr3'
 
     inputs.dir file(antlrSource)
@@ -33,6 +34,8 @@ task generateGrammarSource(dependsOn: antlrOutputDir, type: JavaExec) {
     ].flatten()
 }
 
+addPath(project, "main", "java", generateGrammarSource.antlrGenRootDir)
+
 compileJava {
     dependsOn generateGrammarSource
     source generateGrammarSource.destinationDir
@@ -41,4 +44,3 @@ compileJava {
 test {
     include 'com/incapture/**'
 }
-
