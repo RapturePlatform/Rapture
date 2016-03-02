@@ -160,4 +160,12 @@ public class SeriesRepo {
     public SeriesValue getLastPoint(String key) {
         return store.getLastPoint(key);
     }
+    
+	public void createSeries(String key) {
+		store.createSeries(key);
+	}
+
+	public void deleteSeries(String key) {
+		store.deleteSeries(key);
+	}
 }

@@ -234,4 +234,15 @@ public class CassandraSeriesStore implements SeriesStore {
         List<SeriesValue> points = getPointsAfterReverse(key, "", 1);
         return points.isEmpty() ? null : points.get(0);
     }
+    
+    @Override
+    public void createSeries(String key) {
+        cass.registerKey(key);
+    }
+    
+    @Override
+    public void deleteSeries(String key) {
+        unregisterKey(key);
+        deletePointsFromSeries(key);
+    }
 }

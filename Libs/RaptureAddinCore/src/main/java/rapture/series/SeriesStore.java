@@ -104,4 +104,8 @@ public interface SeriesStore {
     void unregisterKey(String key, boolean isFolder);
 
     SeriesValue getLastPoint(String key);
+    
+    void createSeries(String key);
+
+    void deleteSeries(String key);
 }

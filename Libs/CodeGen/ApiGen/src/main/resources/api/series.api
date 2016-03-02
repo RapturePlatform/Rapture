@@ -6,6 +6,10 @@ api(Series) {
    @entitle=/repo/write
    @public void createSeriesRepo(String seriesRepoUri, String config);
    
+   [Creates an empty series.]
+   @entitle=/repo/write
+   @public void createSeries(String seriesUri);
+   
    [Check for the existence of a given repository]
    @entitle=/repo/list
    @public Boolean seriesRepoExists(String seriesRepoUri);

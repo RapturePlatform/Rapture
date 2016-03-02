@@ -472,4 +472,15 @@ public class MongoSeriesStore implements SeriesStore {
         };
         return wrapper.doAction();
     }
+    
+	@Override
+	public void createSeries(String key) {
+		registerKey(key);
+	}
+
+	@Override
+	public void deleteSeries(String key) {
+		unregisterKey(key);
+		deletePointsFromSeries(key);
+	}
 }

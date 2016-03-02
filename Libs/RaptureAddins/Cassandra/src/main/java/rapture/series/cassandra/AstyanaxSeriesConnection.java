@@ -215,7 +215,7 @@ public class AstyanaxSeriesConnection extends AstyanaxCassandraBase {
         }
     };
 
-    private void registerKey(String key) {
+    void registerKey(String key) {
         if (DIRECTORY_KEY.equals(key) || ChildKeyUtil.isRowKey(key)) {
             return;
         } else try {
