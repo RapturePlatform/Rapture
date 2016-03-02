@@ -15,7 +15,7 @@ license {
 
 apply plugin: "sonar"
 
-project.group = 'com.rapture'
+project.group = 'net.rapture'
 
 ext { platformVersion = '3.0.0' }
 
@@ -122,9 +122,9 @@ subprojects {
     }
 
     dependencies {
-        compile "com.rapture:RaptureAppConfig:$project.platformVersion"
-        compile "com.rapture:RaptureAPI:$project.platformVersion"
-        compile "com.rapture:Reflex:$project.platformVersion"
+        compile "net.rapture:RaptureAppConfig:$project.platformVersion"
+        compile "net.rapture:RaptureAPI:$project.platformVersion"
+        compile "net.rapture:Reflex:$project.platformVersion"
         compile 'log4j:log4j:1.2.14'
         compile "org.slf4j:jcl-over-slf4j:$loggingVersion"
         compile "org.slf4j:slf4j-api:$loggingVersion"

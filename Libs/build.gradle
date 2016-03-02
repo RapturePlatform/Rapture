@@ -1,4 +1,13 @@
 
+buildscript {
+  repositories {
+    mavenCentral()
+  }
+  dependencies {
+    classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.5.3"
+  }
+}
+
 plugins {
     id "com.github.hierynomus.license" version "0.12.1"
 }
@@ -8,7 +17,7 @@ license {
 }
 
 project.version = '3.0.0'
-project.group = 'com.rapture'
+project.group = 'net.rapture'
 
 subprojects {
     repositories {
@@ -122,4 +131,83 @@ public static void addPath(Project project, String first, String second, String 
     if (project.hasProperty('sourceSets') && project.sourceSets.hasProperty(first) && project.sourceSets."$first".hasProperty(second)) {
         project.sourceSets."$first"."$second".srcDir path
     }
+}
+
+
+
+apply plugin: 'io.codearte.nexus-staging'
+
+
+    subprojects {
+
+        task javadocJar(type: Jar) {
+            classifier = 'javadoc'
+            from javadoc
+        }
+
+        task sourcesJar(type: Jar) {
+            classifier = 'sources'
+            from sourceSets.main.allSource
+        }
+
+        artifacts {
+            archives javadocJar, sourcesJar
+        }
+    }
+
+    allprojects {
+        apply plugin: 'signing'
+        apply plugin: 'maven'
+
+        // Signature of artifacts
+        signing {
+            sign configurations.archives
+        }
+
+        // OSSRH publication
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            // POM signature
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+            // Target repository
+            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                authentication(userName: ossrhUser, password: ossrhPassword)
+            }
+            pom.project {
+                name project.name
+                description project.description
+                packaging 'jar'
+                url 'https://github.com/your/project'
+
+                scm {
+                    connection 'scm:git:https://github.com/RapturePlatform/Rapture.git'
+                    developerConnection 'scm:git:git@github.com:RapturePlatform/Rapture.git'
+                    url 'https://github.com/RapturePlatform/Rapture.git'
+                }
+
+                licenses {
+                    license {
+                        name 'The MIT License (MIT)'
+                        url 'http://opensource.org/licenses/MIT'
+                        distribution 'repo'
+                    }
+                }
+                developers {
+                            developer {
+                                id = 'ukmoore'
+                                name = 'Alan Moore'
+                                email = 'alan.moore@incapturetechnologies.com'
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+    }
+
+nexusStaging {
+    username = ossrhUser
+    password = ossrhPassword
 }

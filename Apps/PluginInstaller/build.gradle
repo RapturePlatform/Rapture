@@ -7,12 +7,12 @@ jar.manifest.attributes "Implementation-Version" : version
 
 dependencies {
     compile 'jline:jline:2.7'
-    compile "com.rapture:PluginInstallerLib:$project.platformVersion"
-    compile "com.rapture:RaptureCore:$project.platformVersion"
-    compile "com.rapture:RaptureAddinCore:$project.platformVersion"
-    compile "com.rapture:MongoDb:$project.platformVersion"
-    compile "com.rapture:RabbitMQ:$project.platformVersion"
-    compile "com.rapture:Cassandra:$project.platformVersion"
+    compile "net.rapture:PluginInstallerLib:$project.platformVersion"
+    compile "net.rapture:RaptureCore:$project.platformVersion"
+    compile "net.rapture:RaptureAddinCore:$project.platformVersion"
+    compile "net.rapture:MongoDb:$project.platformVersion"
+    compile "net.rapture:RabbitMQ:$project.platformVersion"
+    compile "net.rapture:Cassandra:$project.platformVersion"
 }
 
 mainClassName = "rapture.plugin.install.PluginShell"
