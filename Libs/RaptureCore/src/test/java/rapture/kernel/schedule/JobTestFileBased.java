@@ -285,8 +285,9 @@ public class JobTestFileBased {
 
     @Test
     public void test_Exec() throws InterruptedException {
-        String job1 = "//testExec/job1";
-        String job2 = "//testExec/job2";
+        String job1 = "//testExec/job1" + System.currentTimeMillis();
+        Thread.sleep(200);
+        String job2 = "//testExec/job2" + System.currentTimeMillis();
         RaptureURI job1URI = new RaptureURI(job1, Scheme.JOB);
         RaptureURI job2URI = new RaptureURI(job2, Scheme.JOB);
 
@@ -400,7 +401,7 @@ public class JobTestFileBased {
 
         CallingContext context = ContextFactory.getKernelUser();
 
-        String jobURI = new RaptureURI("//testUpcomingAndTTL/A", Scheme.JOB).toString();
+        String jobURI = new RaptureURI("//testUpcomingAndTTL/A"+System.currentTimeMillis(), Scheme.JOB).toString();
         Map<String, String> jobParams = Collections.emptyMap();
         String timeZone = DateTimeZone.getDefault().getID();
         DateTime nextScheduledDt = new DateTime().plusMinutes(5);

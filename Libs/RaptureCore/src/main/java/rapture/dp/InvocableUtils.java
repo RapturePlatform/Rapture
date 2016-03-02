@@ -46,7 +46,7 @@ import rapture.util.RaptureURLCoder;
 
 /**
  * Class containing some common utility type calls that java invocables can use
- * 
+ *
  * @author alanmoore
  */
 public class InvocableUtils {
@@ -62,7 +62,7 @@ public class InvocableUtils {
             String currStep = steps.get(steps.size() - 1).getName();
             String auditUri = getWorkflowAuditLog(appStatusURI, worker.getWorkOrderURI(), currStep);
             logger.debug(String.format("audit uri is %s, appStatus uri %s", auditUri, appStatusURI));
-            Kernel.getAudit().writeAuditEntry(ctx, auditUri, error ? "ERROR" : "workorder", error ? 2 : 1, message);
+            Kernel.getAudit().writeAuditEntry(ctx, auditUri, error ? "ERROR" : "workflow", error ? 2 : 1, message);
         } else {
             logger.info("No app status, cannot write audit entry: " + message);
         }

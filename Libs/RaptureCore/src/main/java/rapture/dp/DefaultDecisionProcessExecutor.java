@@ -99,7 +99,7 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 /**
  * Default implementation that submits steps sequentially to the pipeline. Steps are picked up and acted upon and this is repeated until the process has
  * completed.
- * 
+ *
  * @author dukenguyen
  */
 public class DefaultDecisionProcessExecutor implements DecisionProcessExecutor {
@@ -157,7 +157,7 @@ public class DefaultDecisionProcessExecutor implements DecisionProcessExecutor {
 
     /**
      * Create a new RapturePipelineTask with the WorkOrder as content and dump it on the pipeline with the associated priority
-     * 
+     *
      * @param worker
      *            - WorkOrder to json-ify and place on pipeline for listeners to pickup
      * @param category
@@ -302,7 +302,7 @@ public class DefaultDecisionProcessExecutor implements DecisionProcessExecutor {
 
     /**
      * Adjust a fully-qualified workflow uri that has a step e.g. //xyz/x#step1 and change the step to a different step
-     * 
+     *
      * @param originalStepURI
      *            - the uri to change
      * @param targetStepName
@@ -806,7 +806,7 @@ public class DefaultDecisionProcessExecutor implements DecisionProcessExecutor {
             return;
         }
         String workflowLogUri = InvocableUtils.getWorkflowAuditLog(appStatusName, workOrder.getWorkOrderURI(), step.getName());
-        Kernel.getAudit().writeAuditEntry(ContextFactory.getKernelUser(), workflowLogUri, "workorder", 1, step.getName() + " finished");
+        Kernel.getAudit().writeAuditEntry(ContextFactory.getKernelUser(), workflowLogUri, "workflow", 1, step.getName() + " finished");
         String workOrderURI = worker.getWorkOrderURI();
         AppStatusGroup group = getAppStatusGroup(appStatusName, workOrderURI);
         AppStatus appStatus = group.getIdToStatus().get(workOrderURI);
@@ -817,7 +817,7 @@ public class DefaultDecisionProcessExecutor implements DecisionProcessExecutor {
 
     /**
      * If the worker view overlay contains DP_APP_STATUS_URI then that is a URI we should write or update a {@link AppStatus} document.
-     * 
+     *
      * @param worker
      * @param step
      */
@@ -827,7 +827,11 @@ public class DefaultDecisionProcessExecutor implements DecisionProcessExecutor {
             return;
         }
         String workflowLogUri = InvocableUtils.getWorkflowAuditLog(appStatusName, workOrder.getWorkOrderURI(), step.getName());
+<<<<<<< HEAD
         Kernel.getAudit().writeAuditEntry(ContextFactory.getKernelUser(), workflowLogUri, "workorder", 1, step.getName() + " started");
+=======
+        Kernel.getAudit().writeAuditEntry(ContextFactory.getKernelUser(), workflowLogUri, "workflow", 1, step.getName() + " started");
+>>>>>>> a287a8d7bf3c5f5129555e1300d8dac8ac1ea59a
         String workOrderURI = worker.getWorkOrderURI();
         AppStatusGroup group = getAppStatusGroup(appStatusName, workOrderURI);
         AppStatus appStatus = group.getIdToStatus().get(workOrderURI);
@@ -840,7 +844,7 @@ public class DefaultDecisionProcessExecutor implements DecisionProcessExecutor {
      * Given a uri that points to something that can be executable, execute that URI. These currently include reflex scripts and questions. The return value of
      * the executable should represent the next transition in the workflow. If null is returned, the workflow is assumed to be in a BLOCKED state. This would be
      * the case for a question, for example.
-     * 
+     *
      * @param step
      * @param flow
      * @param worker
@@ -945,7 +949,7 @@ public class DefaultDecisionProcessExecutor implements DecisionProcessExecutor {
 
     /**
      * Save the worker after each step (i.e. the updated stack)
-     * 
+     *
      * @param worker
      *            - The current {@link Worker} that reflects an execution status of the Workflow
      */
