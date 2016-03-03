@@ -607,9 +607,8 @@ public class SeriesApiImpl extends KernelBase implements SeriesApi {
         repository.deleteSeries(uri.getDocPath());
     }
 
-
     @Override
-        public void createSeries(CallingContext context, String seriesURI) {
+    public void createSeries(CallingContext context, String seriesURI) {
         RaptureURI uri = new RaptureURI(seriesURI, Scheme.SERIES);
         SeriesRepo repository = getRepoOrFail(uri);
         repository.createSeries(uri.getDocPath());
