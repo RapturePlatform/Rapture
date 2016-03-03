@@ -156,16 +156,16 @@ apply plugin: 'io.codearte.nexus-staging'
     }
 
     allprojects {
-        apply plugin: 'signing'
-        apply plugin: 'maven'
+       apply plugin: 'maven'
 
-        // Signature of artifacts
+if (hasProperty('ossrhUser')) {
+        apply plugin: 'signing'
+          // Signature of artifacts
         signing {
             sign configurations.archives
         }
 
-if (hasProperty('ossrhUser')) {
-        // OSSRH publication
+       // OSSRH publication
 uploadArchives {
     repositories {
         mavenDeployer {
