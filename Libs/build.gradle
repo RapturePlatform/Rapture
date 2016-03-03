@@ -164,6 +164,7 @@ apply plugin: 'io.codearte.nexus-staging'
             sign configurations.archives
         }
 
+if (hasProperty('ossrhUser')) {
         // OSSRH publication
 uploadArchives {
     repositories {
@@ -209,9 +210,12 @@ uploadArchives {
             }
         }
 
+}
     }
 
+if (hasProperty('ossrhUser')) {
 nexusStaging {
     username = ossrhUser
     password = ossrhPassword
+}
 }
