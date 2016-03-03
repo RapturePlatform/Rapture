@@ -140,7 +140,9 @@ apply plugin: 'io.codearte.nexus-staging'
 
     subprojects {
 
-if (hasProperty('ossrhUser')) {
+       javadoc {
+          failOnError = false
+       }
         task javadocJar(type: Jar) {
             classifier = 'javadoc'
             from javadoc
@@ -155,7 +157,6 @@ if (hasProperty('ossrhUser')) {
             archives javadocJar, sourcesJar
         }
     }
-}
 
     allprojects {
        apply plugin: 'maven'
