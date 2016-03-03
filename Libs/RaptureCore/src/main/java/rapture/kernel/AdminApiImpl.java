@@ -95,10 +95,10 @@ public class AdminApiImpl extends KernelBase implements AdminApi {
 
     private Map<String, String> templates = new HashMap<String, String>();
     Messages adminMessageCatalog;
-    
+
     public AdminApiImpl(Kernel raptureKernel) {
         super(raptureKernel);
-        
+
         adminMessageCatalog = new Messages("Admin");
 
         // Update templates from the command line (Environment and Defines)
@@ -145,7 +145,7 @@ public class AdminApiImpl extends KernelBase implements AdminApi {
         RaptureUser usr = getUser(context, userName);
         if (usr == null) {
             String iAm = context.getUser();
-            // High-level audit log message. 
+            // High-level audit log message.
             Kernel.getAudit().writeAuditEntry(context, RaptureConstants.DEFAULT_AUDIT_URI, "admin", 2, "New user "+userName+" added by "+iAm);
             usr = new RaptureUser();
             usr.setUsername(userName);
@@ -160,7 +160,7 @@ public class AdminApiImpl extends KernelBase implements AdminApi {
         }
     }
 
- 
+
     /**
      * Clone the data from the src type to the target
      */
@@ -258,7 +258,7 @@ public class AdminApiImpl extends KernelBase implements AdminApi {
         return wlist.getIpWhiteList();
     }
 
- 
+
 
     /**
      * @return @
@@ -321,7 +321,7 @@ public class AdminApiImpl extends KernelBase implements AdminApi {
         return ret;
     }
 
-  
+
 
     @Override
     public String getTemplate(CallingContext context, String name) {
@@ -332,7 +332,7 @@ public class AdminApiImpl extends KernelBase implements AdminApi {
         log.error(adminMessageCatalog.getMessage("CouldNotLoadDoc", name).toString());
     }
 
- 
+
     @Override
     public void removeIPFromWhiteList(CallingContext context, String ipAddress) {
         RaptureIPWhiteList wlist = RaptureIPWhiteListStorage.readByFields();
@@ -340,7 +340,7 @@ public class AdminApiImpl extends KernelBase implements AdminApi {
         RaptureIPWhiteListStorage.add(wlist, context.getUser(), adminMessageCatalog.getMessage("RemoveWhiteList", ipAddress).toString()); //$NON-NLS-1$
     }
 
-  
+
     @Override
     public void resetUserPassword(CallingContext context, String userName, String newHashPassword) {
         checkParameter("User", userName); //$NON-NLS-1$
@@ -459,7 +459,7 @@ public class AdminApiImpl extends KernelBase implements AdminApi {
         }
     }
 
- 
+
 
     @Override
     public String runTemplate(CallingContext context, String name, String params) {

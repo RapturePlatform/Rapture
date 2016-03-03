@@ -1,0 +1,4 @@
+\Rapture is a hierarchical set of repositories, and this method returns the config of the top most level - that used
+for general config and temporary (transient) values such as sessions. In clustered mode these configs would
+be referencing shared storage, and in test mode they would normally refer to in-memory versions of the config.
+The manipulation of the top level config can be performed through the Bootstrap API.
