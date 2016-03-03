@@ -45,6 +45,7 @@ subprojects {
 
     license {
         header rootProject.file('LICENSE')
+        ignoreFailures = true
     }
 
     project.group = parent.group
