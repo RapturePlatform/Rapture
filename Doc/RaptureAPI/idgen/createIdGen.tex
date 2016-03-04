@@ -1,0 +1,61 @@
+The \verb+createIdGen+ call is used to define an ID generator source.
+
+The typical configuration string for a locking provider backed by MongoDB is reproduced below:
+
+\begin{Verbatim}
+IDGEN { initial="1",
+        base="36",
+        length="8",
+        prefix="ID" } USING MONGODB { prefix = 'test' }
+\end{Verbatim}
+
+The general form of the configuration is:
+
+\begin{Verbatim}
+IDGEN { config }
+     USING [underlying implementation] { [ config ]}
+     [ ON [ instance] ]
+\end{Verbatim}
+
+The first part of the configuration defines the way in which the provider will generate ids. The fields
+and the meanings are reproduced below:
+
+\begin{table}[h]
+\begin{center}
+\begin{tabular}{r l p{8cm}}
+  Field & Example & Description \\
+  \hline
+  initial & 1 & The id number of the first id to be produced by this provider. \\
+  base & 36 & The base of the number system to be used by the provider. Base 36 implies letters and digits. \\
+  length & 8 & The width of the id. The id will be padded with zeroes to this length. \\
+  prefix & ID & The id will be prefixed with this string. \\
+\end{tabular}
+\end{center}
+\end{table}
+
+As an example, this producer configuration would produce the following ids:
+
+\begin{Verbatim}
+  ID00000199
+  ID0000019A
+  ID0000019B
+\end{Verbatim}
+
+The second part of the configuration string defines the underlying implementation and its configuration. In
+most cases the configuration associated with the implementation has a \verb+prefix+ parameter that is used to
+define a table or a collection or a prefix for such entities in the underlying storage. The underlying implementation
+defines what lower level software is used to host the data managed by \Rapture. The following table shows the current
+implementations:
+
+\begin{table}[h]
+\begin{center}
+\begin{tabular}{r l p{8cm}}
+  Keyword & Underlying & Configuration \\
+  \hline
+  MONGODB & MongoDb & The prefix parameter defines the name of the collections used by this repository. To avoid
+  conflict this is usually a function of the name of the \Rapture repository. \\
+  CASSANDRA & Cassandra & The prefix parameter defines the name of the collections used by this repository. To avoid
+  conflict this is usually a function of the name of the \Rapture repository. \\
+\end{tabular}
+\end{center}
+\end{table}

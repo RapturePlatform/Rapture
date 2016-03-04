@@ -9,13 +9,16 @@
            String    managerUri
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/lock
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #lock.getLockManagerConfigs(managerUri);
 %\end{lstlisting}
 \input{lock/getLockManagerConfigs}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{CreateLockManager}
 \index{CreateLockManager}
 \label{Api:CreateLockManager}
@@ -26,13 +29,16 @@
            String    pathPosition
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/lock
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #lock.createLockManager(managerUri,config,pathPosition);
 %\end{lstlisting}
 \input{lock/createLockManager}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{LockManagerExists}
 \index{LockManagerExists}
 \label{Api:LockManagerExists}
@@ -41,13 +47,16 @@
            String    managerUri
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/lock
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #lock.lockManagerExists(managerUri);
 %\end{lstlisting}
 \input{lock/lockManagerExists}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{GetLockManagerConfig}
 \index{GetLockManagerConfig}
 \label{Api:GetLockManagerConfig}
@@ -56,13 +65,16 @@
            String    managerUri
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/lock/$f(managerUri)
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #lock.getLockManagerConfig(managerUri);
 %\end{lstlisting}
 \input{lock/getLockManagerConfig}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{DeleteLockManager}
 \index{DeleteLockManager}
 \label{Api:DeleteLockManager}
@@ -71,13 +83,16 @@
            String    managerUri
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/lock/$f(managerUri)
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #lock.deleteLockManager(managerUri);
 %\end{lstlisting}
 \input{lock/deleteLockManager}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{AcquireLock}
 \index{AcquireLock}
 \label{Api:AcquireLock}
@@ -89,13 +104,16 @@
            long    secondsToKeep
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/lock/$f(managerUri)
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #lock.acquireLock(managerUri,lockName,secondsToWait,secondsToKeep);
 %\end{lstlisting}
 \input{lock/acquireLock}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{ReleaseLock}
 \index{ReleaseLock}
 \label{Api:ReleaseLock}
@@ -106,13 +124,16 @@
            LockHandle    lockHandle
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/lock/$f(managerUri)
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #lock.releaseLock(managerUri,lockName,lockHandle);
 %\end{lstlisting}
 \input{lock/releaseLock}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{ForceReleaseLock}
 \index{ForceReleaseLock}
 \label{Api:ForceReleaseLock}
@@ -122,10 +143,13 @@
            String    lockName
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/lock/$f(managerUri)
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #lock.forceReleaseLock(managerUri,lockName);
 %\end{lstlisting}
 \input{lock/forceReleaseLock}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}

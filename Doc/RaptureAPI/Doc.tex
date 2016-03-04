@@ -9,13 +9,16 @@
            String    docRepoUri
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /repo/write
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #doc.validateDocRepo(docRepoUri);
 %\end{lstlisting}
 \input{doc/validateDocRepo}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{CreateDocRepo}
 \index{CreateDocRepo}
 \label{Api:CreateDocRepo}
@@ -25,13 +28,16 @@
            String    config
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /repo/write
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #doc.createDocRepo(docRepoUri,config);
 %\end{lstlisting}
 \input{doc/createDocRepo}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{DocRepoExists}
 \index{DocRepoExists}
 \label{Api:DocRepoExists}
@@ -40,13 +46,16 @@
            String    docRepoUri
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /repo/list
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #doc.docRepoExists(docRepoUri);
 %\end{lstlisting}
 \input{doc/docRepoExists}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{DocExists}
 \index{DocExists}
 \label{Api:DocExists}
@@ -55,13 +64,16 @@
            String    docUri
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /repo/list
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #doc.docExists(docUri);
 %\end{lstlisting}
 \input{doc/docExists}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{GetDocRepoConfig}
 \index{GetDocRepoConfig}
 \label{Api:GetDocRepoConfig}
@@ -70,13 +82,16 @@
            String    docRepoUri
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /repo/read
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #doc.getDocRepoConfig(docRepoUri);
 %\end{lstlisting}
 \input{doc/getDocRepoConfig}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{GetDocRepoStatus}
 \index{GetDocRepoStatus}
 \label{Api:GetDocRepoStatus}
@@ -85,13 +100,16 @@
            String    docRepoUri
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /repo/read
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #doc.getDocRepoStatus(docRepoUri);
 %\end{lstlisting}
 \input{doc/getDocRepoStatus}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{GetDocRepoConfigs}
 \index{GetDocRepoConfigs}
 \label{Api:GetDocRepoConfigs}
@@ -99,13 +117,16 @@
    List<DocumentRepoConfig> getDocRepoConfigs (
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /repo/read
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #doc.getDocRepoConfigs();
 %\end{lstlisting}
 \input{doc/getDocRepoConfigs}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{DeleteDocRepo}
 \index{DeleteDocRepo}
 \label{Api:DeleteDocRepo}
@@ -114,13 +135,16 @@
            String    docRepoUri
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /repo/write
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #doc.deleteDocRepo(docRepoUri);
 %\end{lstlisting}
 \input{doc/deleteDocRepo}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{ArchiveRepoDocs}
 \index{ArchiveRepoDocs}
 \label{Api:ArchiveRepoDocs}
@@ -132,13 +156,16 @@
            boolean    ensureVersionLimit
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /repo/write
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #doc.archiveRepoDocs(docRepoUri,versionLimit,timeLimit,ensureVersionLimit);
 %\end{lstlisting}
 \input{doc/archiveRepoDocs}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{GetDocAndMeta}
 \index{GetDocAndMeta}
 \label{Api:GetDocAndMeta}
@@ -147,13 +174,16 @@
            String    docUri
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /data/read/$f(docUri)
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #doc.getDocAndMeta(docUri);
 %\end{lstlisting}
 \input{doc/getDocAndMeta}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{GetDocMeta}
 \index{GetDocMeta}
 \label{Api:GetDocMeta}
@@ -162,13 +192,16 @@
            String    docUri
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /data/list/$f(docUri)
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #doc.getDocMeta(docUri);
 %\end{lstlisting}
 \input{doc/getDocMeta}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{RevertDoc}
 \index{RevertDoc}
 \label{Api:RevertDoc}
@@ -177,13 +210,16 @@
            String    docUri
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /data/write/$f(docUri)
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #doc.revertDoc(docUri);
 %\end{lstlisting}
 \input{doc/revertDoc}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{GetDoc}
 \index{GetDoc}
 \label{Api:GetDoc}
@@ -192,13 +228,16 @@
            String    docUri
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /data/read/$f(docUri)
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #doc.getDoc(docUri);
 %\end{lstlisting}
 \input{doc/getDoc}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{PutDoc}
 \index{PutDoc}
 \label{Api:PutDoc}
@@ -208,13 +247,16 @@
            String    content
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /data/write/$f(docUri)
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #doc.putDoc(docUri,content);
 %\end{lstlisting}
 \input{doc/putDoc}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{PutDocWithVersion}
 \index{PutDocWithVersion}
 \label{Api:PutDocWithVersion}
@@ -225,13 +267,16 @@
            int    currentVersion
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /data/write/$f(docUri)
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #doc.putDocWithVersion(docUri,content,currentVersion);
 %\end{lstlisting}
 \input{doc/putDocWithVersion}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{PutDocWithEventContext}
 \index{PutDocWithEventContext}
 \label{Api:PutDocWithEventContext}
@@ -242,13 +287,16 @@
            Map<String,String>    eventContext
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /data/write/$f(docUri)
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #doc.putDocWithEventContext(docUri,content,eventContext);
 %\end{lstlisting}
 \input{doc/putDocWithEventContext}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{DeleteDoc}
 \index{DeleteDoc}
 \label{Api:DeleteDoc}
@@ -257,13 +305,16 @@
            String    docUri
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /data/write/$f(docUri)
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #doc.deleteDoc(docUri);
 %\end{lstlisting}
 \input{doc/deleteDoc}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{RenameDoc}
 \index{RenameDoc}
 \label{Api:RenameDoc}
@@ -273,13 +324,16 @@
            String    toDocUri
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /data/write/$f(fromDocUri)
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #doc.renameDoc(fromDocUri,toDocUri);
 %\end{lstlisting}
 \input{doc/renameDoc}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{GetDocs}
 \index{GetDocs}
 \label{Api:GetDocs}
@@ -288,13 +342,16 @@
            List<String>    docUris
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /data/batch
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #doc.getDocs(docUris);
 %\end{lstlisting}
 \input{doc/getDocs}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{GetDocAndMetas}
 \index{GetDocAndMetas}
 \label{Api:GetDocAndMetas}
@@ -303,13 +360,16 @@
            List<String>    docUris
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /data/batch
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #doc.getDocAndMetas(docUris);
 %\end{lstlisting}
 \input{doc/getDocAndMetas}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{DocsExist}
 \index{DocsExist}
 \label{Api:DocsExist}
@@ -318,13 +378,16 @@
            List<String>    docUris
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /data/batch
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #doc.docsExist(docUris);
 %\end{lstlisting}
 \input{doc/docsExist}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{PutDocs}
 \index{PutDocs}
 \label{Api:PutDocs}
@@ -334,13 +397,16 @@
            List<String>    contents
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /data/batch
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #doc.putDocs(docUris,contents);
 %\end{lstlisting}
 \input{doc/putDocs}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{RenameDocs}
 \index{RenameDocs}
 \label{Api:RenameDocs}
@@ -352,13 +418,16 @@
            List<String>    toDocUris
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /data/batch
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #doc.renameDocs(authority,comment,fromDocUris,toDocUris);
 %\end{lstlisting}
 \input{doc/renameDocs}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{DeleteDocsByUriPrefix}
 \index{DeleteDocsByUriPrefix}
 \label{Api:DeleteDocsByUriPrefix}
@@ -367,13 +436,16 @@
            String    docUri
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /data/write/$f(docUri)
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #doc.deleteDocsByUriPrefix(docUri);
 %\end{lstlisting}
 \input{doc/deleteDocsByUriPrefix}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{ListDocsByUriPrefix}
 \index{ListDocsByUriPrefix}
 \label{Api:ListDocsByUriPrefix}
@@ -383,13 +455,16 @@
            int    depth
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /data/read/$f(docUri)
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #doc.listDocsByUriPrefix(docUri,depth);
 %\end{lstlisting}
 \input{doc/listDocsByUriPrefix}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{SetDocAttribute}
 \index{SetDocAttribute}
 \label{Api:SetDocAttribute}
@@ -399,13 +474,16 @@
            String    value
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /data/write/$f(attributeUri)
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #doc.setDocAttribute(attributeUri,value);
 %\end{lstlisting}
 \input{doc/setDocAttribute}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{SetDocAttributes}
 \index{SetDocAttributes}
 \label{Api:SetDocAttributes}
@@ -416,13 +494,16 @@
            List<String>    values
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /data/write/$f(attributeUri)
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #doc.setDocAttributes(attributeUri,keys,values);
 %\end{lstlisting}
 \input{doc/setDocAttributes}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{GetDocAttribute}
 \index{GetDocAttribute}
 \label{Api:GetDocAttribute}
@@ -431,13 +512,16 @@
            String    attributeUri
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /data/read/$f(attributeUri)
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #doc.getDocAttribute(attributeUri);
 %\end{lstlisting}
 \input{doc/getDocAttribute}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{GetDocAttributes}
 \index{GetDocAttributes}
 \label{Api:GetDocAttributes}
@@ -446,13 +530,16 @@
            String    attributeUri
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /data/read/$f(attributeUri)
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #doc.getDocAttributes(attributeUri);
 %\end{lstlisting}
 \input{doc/getDocAttributes}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{DeleteDocAttribute}
 \index{DeleteDocAttribute}
 \label{Api:DeleteDocAttribute}
@@ -461,13 +548,16 @@
            String    attributeUri
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /data/write/$f(attributeUri)
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #doc.deleteDocAttribute(attributeUri);
 %\end{lstlisting}
 \input{doc/deleteDocAttribute}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{GetDocRepoIdGenUri}
 \index{GetDocRepoIdGenUri}
 \label{Api:GetDocRepoIdGenUri}
@@ -476,13 +566,16 @@
            String    docRepoUri
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/idgen
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #doc.getDocRepoIdGenUri(docRepoUri);
 %\end{lstlisting}
 \input{doc/getDocRepoIdGenUri}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{SetDocRepoIdGenConfig}
 \index{SetDocRepoIdGenConfig}
 \label{Api:SetDocRepoIdGenConfig}
@@ -492,13 +585,16 @@
            String    idGenConfig
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/idgen
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #doc.setDocRepoIdGenConfig(docRepoUri,idGenConfig);
 %\end{lstlisting}
 \input{doc/setDocRepoIdGenConfig}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{GetDocRepoIdGenConfig}
 \index{GetDocRepoIdGenConfig}
 \label{Api:GetDocRepoIdGenConfig}
@@ -507,10 +603,13 @@
            String    docRepoUri
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/idgen
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #doc.getDocRepoIdGenConfig(docRepoUri);
 %\end{lstlisting}
 \input{doc/getDocRepoIdGenConfig}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}

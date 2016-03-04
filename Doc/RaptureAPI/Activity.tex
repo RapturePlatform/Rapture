@@ -12,13 +12,16 @@
            Long    max
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /activity/write
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #activity.createActivity(description,message,progress,max);
 %\end{lstlisting}
 \input{activity/createActivity}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{UpdateActivity}
 \index{UpdateActivity}
 \label{Api:UpdateActivity}
@@ -30,13 +33,16 @@
            Long    max
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /activity/write
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #activity.updateActivity(activityId,message,progress,max);
 %\end{lstlisting}
 \input{activity/updateActivity}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{FinishActivity}
 \index{FinishActivity}
 \label{Api:FinishActivity}
@@ -46,13 +52,16 @@
            String    message
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /activity/write
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #activity.finishActivity(activityId,message);
 %\end{lstlisting}
 \input{activity/finishActivity}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{RequestAbortActivity}
 \index{RequestAbortActivity}
 \label{Api:RequestAbortActivity}
@@ -62,13 +71,16 @@
            String    message
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /activity/write
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #activity.requestAbortActivity(activityId,message);
 %\end{lstlisting}
 \input{activity/requestAbortActivity}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{QueryByExpiryTime}
 \index{QueryByExpiryTime}
 \label{Api:QueryByExpiryTime}
@@ -79,13 +91,16 @@
            Long    lastSeen
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /activity/read
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #activity.queryByExpiryTime(nextBatchId,batchSize,lastSeen);
 %\end{lstlisting}
 \input{activity/queryByExpiryTime}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{GetById}
 \index{GetById}
 \label{Api:GetById}
@@ -94,10 +109,13 @@
            String    activityId
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /activity/read
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #activity.getById(activityId);
 %\end{lstlisting}
 \input{activity/getById}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}

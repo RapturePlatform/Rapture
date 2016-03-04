@@ -9,13 +9,16 @@
            List<String>    keys
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #admin.getSystemProperties(keys);
 %\end{lstlisting}
 \input{admin/getSystemProperties}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{GetRepoConfig}
 \index{GetRepoConfig}
 \label{Api:GetRepoConfig}
@@ -23,13 +26,16 @@
    List<RepoConfig> getRepoConfig (
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #admin.getRepoConfig();
 %\end{lstlisting}
 \input{admin/getRepoConfig}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{GetSessionsForUser}
 \index{GetSessionsForUser}
 \label{Api:GetSessionsForUser}
@@ -38,13 +44,16 @@
            String    user
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #admin.getSessionsForUser(user);
 %\end{lstlisting}
 \input{admin/getSessionsForUser}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{DeleteUser}
 \index{DeleteUser}
 \label{Api:DeleteUser}
@@ -53,13 +62,16 @@
            String    userName
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #admin.deleteUser(userName);
 %\end{lstlisting}
 \input{admin/deleteUser}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{DestroyUser}
 \index{DestroyUser}
 \label{Api:DestroyUser}
@@ -68,13 +80,16 @@
            String    userName
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #admin.destroyUser(userName);
 %\end{lstlisting}
 \input{admin/destroyUser}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{RestoreUser}
 \index{RestoreUser}
 \label{Api:RestoreUser}
@@ -83,13 +98,16 @@
            String    userName
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #admin.restoreUser(userName);
 %\end{lstlisting}
 \input{admin/restoreUser}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{AddUser}
 \index{AddUser}
 \label{Api:AddUser}
@@ -101,13 +119,16 @@
            String    email
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #admin.addUser(userName,description,hashPassword,email);
 %\end{lstlisting}
 \input{admin/addUser}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{VerifyUser}
 \index{VerifyUser}
 \label{Api:VerifyUser}
@@ -117,13 +138,16 @@
            String    token
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #admin.verifyUser(userName,token);
 %\end{lstlisting}
 \input{admin/verifyUser}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{DoesUserExist}
 \index{DoesUserExist}
 \label{Api:DoesUserExist}
@@ -132,13 +156,16 @@
            String    userName
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #admin.doesUserExist(userName);
 %\end{lstlisting}
 \input{admin/doesUserExist}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{GetUser}
 \index{GetUser}
 \label{Api:GetUser}
@@ -147,13 +174,16 @@
            String    userName
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #admin.getUser(userName);
 %\end{lstlisting}
 \input{admin/getUser}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{GenerateApiUser}
 \index{GenerateApiUser}
 \label{Api:GenerateApiUser}
@@ -163,13 +193,16 @@
            String    description
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #admin.generateApiUser(prefix,description);
 %\end{lstlisting}
 \input{admin/generateApiUser}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{ResetUserPassword}
 \index{ResetUserPassword}
 \label{Api:ResetUserPassword}
@@ -179,13 +212,16 @@
            String    newHashPassword
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #admin.resetUserPassword(userName,newHashPassword);
 %\end{lstlisting}
 \input{admin/resetUserPassword}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{CreatePasswordResetToken}
 \index{CreatePasswordResetToken}
 \label{Api:CreatePasswordResetToken}
@@ -194,13 +230,16 @@
            String    username
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #admin.createPasswordResetToken(username);
 %\end{lstlisting}
 \input{admin/createPasswordResetToken}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{CreateRegistrationToken}
 \index{CreateRegistrationToken}
 \label{Api:CreateRegistrationToken}
@@ -209,13 +248,16 @@
            String    username
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #admin.createRegistrationToken(username);
 %\end{lstlisting}
 \input{admin/createRegistrationToken}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{CancelPasswordResetToken}
 \index{CancelPasswordResetToken}
 \label{Api:CancelPasswordResetToken}
@@ -224,13 +266,16 @@
            String    username
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #admin.cancelPasswordResetToken(username);
 %\end{lstlisting}
 \input{admin/cancelPasswordResetToken}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{EmailUser}
 \index{EmailUser}
 \label{Api:EmailUser}
@@ -241,13 +286,16 @@
            Map<String,Object>    templateValues
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #admin.emailUser(userName,emailTemplate,templateValues);
 %\end{lstlisting}
 \input{admin/emailUser}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{UpdateUserEmail}
 \index{UpdateUserEmail}
 \label{Api:UpdateUserEmail}
@@ -257,13 +305,16 @@
            String    newEmail
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #admin.updateUserEmail(userName,newEmail);
 %\end{lstlisting}
 \input{admin/updateUserEmail}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{AddTemplate}
 \index{AddTemplate}
 \label{Api:AddTemplate}
@@ -274,13 +325,16 @@
            boolean    overwrite
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #admin.addTemplate(name,template,overwrite);
 %\end{lstlisting}
 \input{admin/addTemplate}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{RunTemplate}
 \index{RunTemplate}
 \label{Api:RunTemplate}
@@ -290,13 +344,16 @@
            String    parameters
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #admin.runTemplate(name,parameters);
 %\end{lstlisting}
 \input{admin/runTemplate}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{GetTemplate}
 \index{GetTemplate}
 \label{Api:GetTemplate}
@@ -305,13 +362,16 @@
            String    name
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #admin.getTemplate(name);
 %\end{lstlisting}
 \input{admin/getTemplate}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{CopyDocumentRepo}
 \index{CopyDocumentRepo}
 \label{Api:CopyDocumentRepo}
@@ -322,13 +382,16 @@
            boolean    wipe
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #admin.copyDocumentRepo(srcAuthority,targAuthority,wipe);
 %\end{lstlisting}
 \input{admin/copyDocumentRepo}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{AddIPToWhiteList}
 \index{AddIPToWhiteList}
 \label{Api:AddIPToWhiteList}
@@ -337,13 +400,16 @@
            String    ipAddress
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #admin.addIPToWhiteList(ipAddress);
 %\end{lstlisting}
 \input{admin/addIPToWhiteList}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{RemoveIPFromWhiteList}
 \index{RemoveIPFromWhiteList}
 \label{Api:RemoveIPFromWhiteList}
@@ -352,13 +418,16 @@
            String    ipAddress
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #admin.removeIPFromWhiteList(ipAddress);
 %\end{lstlisting}
 \input{admin/removeIPFromWhiteList}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{GetIPWhiteList}
 \index{GetIPWhiteList}
 \label{Api:GetIPWhiteList}
@@ -366,13 +435,16 @@
    List<String> getIPWhiteList (
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #admin.getIPWhiteList();
 %\end{lstlisting}
 \input{admin/getIPWhiteList}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{GetAllUsers}
 \index{GetAllUsers}
 \label{Api:GetAllUsers}
@@ -380,13 +452,16 @@
    List<RaptureUser> getAllUsers (
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #admin.getAllUsers();
 %\end{lstlisting}
 \input{admin/getAllUsers}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{InitiateTypeConversion}
 \index{InitiateTypeConversion}
 \label{Api:InitiateTypeConversion}
@@ -397,13 +472,16 @@
            int    versionsToKeep
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #admin.initiateTypeConversion(raptureURI,newConfig,versionsToKeep);
 %\end{lstlisting}
 \input{admin/initiateTypeConversion}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{PutArchiveConfig}
 \index{PutArchiveConfig}
 \label{Api:PutArchiveConfig}
@@ -413,13 +491,16 @@
            TypeArchiveConfig    config
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #admin.putArchiveConfig(raptureURI,config);
 %\end{lstlisting}
 \input{admin/putArchiveConfig}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{GetArchiveConfig}
 \index{GetArchiveConfig}
 \label{Api:GetArchiveConfig}
@@ -428,13 +509,16 @@
            String    raptureURI
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #admin.getArchiveConfig(raptureURI);
 %\end{lstlisting}
 \input{admin/getArchiveConfig}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{DeleteArchiveConfig}
 \index{DeleteArchiveConfig}
 \label{Api:DeleteArchiveConfig}
@@ -443,13 +527,16 @@
            String    raptureURI
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #admin.deleteArchiveConfig(raptureURI);
 %\end{lstlisting}
 \input{admin/deleteArchiveConfig}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{Ping}
 \index{Ping}
 \label{Api:Ping}
@@ -457,13 +544,16 @@
    boolean ping (
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #admin.ping();
 %\end{lstlisting}
 \input{admin/ping}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{AddMetadata}
 \index{AddMetadata}
 \label{Api:AddMetadata}
@@ -473,13 +563,16 @@
            boolean    overwrite
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #admin.addMetadata(values,overwrite);
 %\end{lstlisting}
 \input{admin/addMetadata}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{SetMOTD}
 \index{SetMOTD}
 \label{Api:SetMOTD}
@@ -488,13 +581,16 @@
            String    message
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #admin.setMOTD(message);
 %\end{lstlisting}
 \input{admin/setMOTD}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{GetMOTD}
 \index{GetMOTD}
 \label{Api:GetMOTD}
@@ -502,13 +598,16 @@
    String getMOTD (
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /everyone
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #admin.getMOTD();
 %\end{lstlisting}
 \input{admin/getMOTD}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{SetEnvironmentName}
 \index{SetEnvironmentName}
 \label{Api:SetEnvironmentName}
@@ -517,13 +616,16 @@
            String    name
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #admin.setEnvironmentName(name);
 %\end{lstlisting}
 \input{admin/setEnvironmentName}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{SetEnvironmentProperties}
 \index{SetEnvironmentProperties}
 \label{Api:SetEnvironmentProperties}
@@ -532,13 +634,16 @@
            Map<String,String>    properties
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #admin.setEnvironmentProperties(properties);
 %\end{lstlisting}
 \input{admin/setEnvironmentProperties}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{GetEnvironmentName}
 \index{GetEnvironmentName}
 \label{Api:GetEnvironmentName}
@@ -546,13 +651,16 @@
    String getEnvironmentName (
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #admin.getEnvironmentName();
 %\end{lstlisting}
 \input{admin/getEnvironmentName}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{GetEnvironmentProperties}
 \index{GetEnvironmentProperties}
 \label{Api:GetEnvironmentProperties}
@@ -560,13 +668,16 @@
    Map<String,String> getEnvironmentProperties (
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #admin.getEnvironmentProperties();
 %\end{lstlisting}
 \input{admin/getEnvironmentProperties}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{Encode}
 \index{Encode}
 \label{Api:Encode}
@@ -575,13 +686,16 @@
            String    toEncode
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #admin.encode(toEncode);
 %\end{lstlisting}
 \input{admin/encode}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{CreateURI}
 \index{CreateURI}
 \label{Api:CreateURI}
@@ -591,13 +705,16 @@
            String    leaf
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #admin.createURI(path,leaf);
 %\end{lstlisting}
 \input{admin/createURI}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{CreateMultipartURI}
 \index{CreateMultipartURI}
 \label{Api:CreateMultipartURI}
@@ -606,13 +723,16 @@
            List<String>    elements
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #admin.createMultipartURI(elements);
 %\end{lstlisting}
 \input{admin/createMultipartURI}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{Decode}
 \index{Decode}
 \label{Api:Decode}
@@ -621,13 +741,16 @@
            String    encoded
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #admin.decode(encoded);
 %\end{lstlisting}
 \input{admin/decode}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{FindGroupNamesByUser}
 \index{FindGroupNamesByUser}
 \label{Api:FindGroupNamesByUser}
@@ -636,10 +759,13 @@
            String    username
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #admin.findGroupNamesByUser(username);
 %\end{lstlisting}
 \input{admin/findGroupNamesByUser}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}

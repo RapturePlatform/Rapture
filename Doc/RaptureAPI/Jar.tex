@@ -9,13 +9,16 @@
            String    jarUri
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /data/list/$f(jarUri)
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #jar.jarExists(jarUri);
 %\end{lstlisting}
 \input{jar/jarExists}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{PutJar}
 \index{PutJar}
 \label{Api:PutJar}
@@ -25,13 +28,16 @@
            byte[]    jarContent
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /data/write/$f(jarUri)
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #jar.putJar(jarUri,jarContent);
 %\end{lstlisting}
 \input{jar/putJar}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{GetJar}
 \index{GetJar}
 \label{Api:GetJar}
@@ -40,13 +46,16 @@
            String    jarUri
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /data/read/$f(jarUri)
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #jar.getJar(jarUri);
 %\end{lstlisting}
 \input{jar/getJar}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{DeleteJar}
 \index{DeleteJar}
 \label{Api:DeleteJar}
@@ -55,13 +64,16 @@
            String    jarUri
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /data/write/$f(jarUri)
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #jar.deleteJar(jarUri);
 %\end{lstlisting}
 \input{jar/deleteJar}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{GetJarSize}
 \index{GetJarSize}
 \label{Api:GetJarSize}
@@ -70,13 +82,16 @@
            String    jarUri
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /data/list/$f(jarUri)
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #jar.getJarSize(jarUri);
 %\end{lstlisting}
 \input{jar/getJarSize}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{GetJarMetaData}
 \index{GetJarMetaData}
 \label{Api:GetJarMetaData}
@@ -85,13 +100,16 @@
            String    jarUri
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /data/list/$f(jarUri)
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #jar.getJarMetaData(jarUri);
 %\end{lstlisting}
 \input{jar/getJarMetaData}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{ListJarsByUriPrefix}
 \index{ListJarsByUriPrefix}
 \label{Api:ListJarsByUriPrefix}
@@ -101,13 +119,16 @@
            int    depth
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /data/list/$f(uriPrefix)
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #jar.listJarsByUriPrefix(uriPrefix,depth);
 %\end{lstlisting}
 \input{jar/listJarsByUriPrefix}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{JarIsEnabled}
 \index{JarIsEnabled}
 \label{Api:JarIsEnabled}
@@ -116,13 +137,16 @@
            String    jarUri
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /data/list/$f(jarUri)
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #jar.jarIsEnabled(jarUri);
 %\end{lstlisting}
 \input{jar/jarIsEnabled}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{EnableJar}
 \index{EnableJar}
 \label{Api:EnableJar}
@@ -131,13 +155,16 @@
            String    jarUri
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/jar
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #jar.enableJar(jarUri);
 %\end{lstlisting}
 \input{jar/enableJar}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{DisableJar}
 \index{DisableJar}
 \label{Api:DisableJar}
@@ -146,10 +173,13 @@
            String    jarUri
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/jar
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #jar.disableJar(jarUri);
 %\end{lstlisting}
 \input{jar/disableJar}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}

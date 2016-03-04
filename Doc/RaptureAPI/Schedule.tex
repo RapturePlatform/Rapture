@@ -15,13 +15,16 @@
            boolean    autoActivate
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/schedule
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #schedule.createJob(jobURI,description,scriptURI,cronExpression,timeZone,jobParams,autoActivate);
 %\end{lstlisting}
 \input{schedule/createJob}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{CreateWorkflowJob}
 \index{CreateWorkflowJob}
 \label{Api:CreateWorkflowJob}
@@ -38,13 +41,16 @@
            String    appStatusNamePattern
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/schedule
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #schedule.createWorkflowJob(jobURI,description,workflowURI,cronExpression,timeZone,jobParams,autoActivate,maxRuntimeMinutes,appStatusNamePattern);
 %\end{lstlisting}
 \input{schedule/createWorkflowJob}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{ActivateJob}
 \index{ActivateJob}
 \label{Api:ActivateJob}
@@ -54,13 +60,16 @@
            Map<String,String>    extraParams
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/schedule
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #schedule.activateJob(jobURI,extraParams);
 %\end{lstlisting}
 \input{schedule/activateJob}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{DeactivateJob}
 \index{DeactivateJob}
 \label{Api:DeactivateJob}
@@ -69,13 +78,16 @@
            String    jobURI
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/schedule
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #schedule.deactivateJob(jobURI);
 %\end{lstlisting}
 \input{schedule/deactivateJob}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{RetrieveJob}
 \index{RetrieveJob}
 \label{Api:RetrieveJob}
@@ -84,13 +96,16 @@
            String    jobURI
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/schedule
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #schedule.retrieveJob(jobURI);
 %\end{lstlisting}
 \input{schedule/retrieveJob}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{RetrieveJobs}
 \index{RetrieveJobs}
 \label{Api:RetrieveJobs}
@@ -99,13 +114,16 @@
            String    uriPrefix
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/schedule
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #schedule.retrieveJobs(uriPrefix);
 %\end{lstlisting}
 \input{schedule/retrieveJobs}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{RunJobNow}
 \index{RunJobNow}
 \label{Api:RunJobNow}
@@ -115,13 +133,16 @@
            Map<String,String>    extraParams
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/schedule
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #schedule.runJobNow(jobURI,extraParams);
 %\end{lstlisting}
 \input{schedule/runJobNow}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{ResetJob}
 \index{ResetJob}
 \label{Api:ResetJob}
@@ -130,13 +151,16 @@
            String    jobURI
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/schedule
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #schedule.resetJob(jobURI);
 %\end{lstlisting}
 \input{schedule/resetJob}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{RetrieveJobExec}
 \index{RetrieveJobExec}
 \label{Api:RetrieveJobExec}
@@ -146,13 +170,16 @@
            Long    execTime
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/schedule
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #schedule.retrieveJobExec(jobURI,execTime);
 %\end{lstlisting}
 \input{schedule/retrieveJobExec}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{DeleteJob}
 \index{DeleteJob}
 \label{Api:DeleteJob}
@@ -161,13 +188,16 @@
            String    jobURI
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/schedule
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #schedule.deleteJob(jobURI);
 %\end{lstlisting}
 \input{schedule/deleteJob}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{GetJobs}
 \index{GetJobs}
 \label{Api:GetJobs}
@@ -175,13 +205,16 @@
    List<String> getJobs (
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/schedule
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #schedule.getJobs();
 %\end{lstlisting}
 \input{schedule/getJobs}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{GetUpcomingJobs}
 \index{GetUpcomingJobs}
 \label{Api:GetUpcomingJobs}
@@ -189,13 +222,16 @@
    List<RaptureJobExec> getUpcomingJobs (
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/schedule
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #schedule.getUpcomingJobs();
 %\end{lstlisting}
 \input{schedule/getUpcomingJobs}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{GetWorkflowExecsStatus}
 \index{GetWorkflowExecsStatus}
 \label{Api:GetWorkflowExecsStatus}
@@ -203,13 +239,16 @@
    WorkflowExecsStatus getWorkflowExecsStatus (
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/schedule
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #schedule.getWorkflowExecsStatus();
 %\end{lstlisting}
 \input{schedule/getWorkflowExecsStatus}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{AckJobError}
 \index{AckJobError}
 \label{Api:AckJobError}
@@ -220,13 +259,16 @@
            String    jobErrorType
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/schedule
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #schedule.ackJobError(jobURI,execTime,jobErrorType);
 %\end{lstlisting}
 \input{schedule/ackJobError}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{GetNextExec}
 \index{GetNextExec}
 \label{Api:GetNextExec}
@@ -235,13 +277,16 @@
            String    jobURI
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/schedule
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #schedule.getNextExec(jobURI);
 %\end{lstlisting}
 \input{schedule/getNextExec}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{GetJobExecs}
 \index{GetJobExecs}
 \label{Api:GetJobExecs}
@@ -253,13 +298,16 @@
            boolean    reversed
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/schedule
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #schedule.getJobExecs(jobURI,start,count,reversed);
 %\end{lstlisting}
 \input{schedule/getJobExecs}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{BatchGetJobExecs}
 \index{BatchGetJobExecs}
 \label{Api:BatchGetJobExecs}
@@ -271,13 +319,16 @@
            boolean    reversed
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/schedule
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #schedule.batchGetJobExecs(jobURI,start,count,reversed);
 %\end{lstlisting}
 \input{schedule/batchGetJobExecs}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{IsJobReadyToRun}
 \index{IsJobReadyToRun}
 \label{Api:IsJobReadyToRun}
@@ -286,13 +337,16 @@
            String    toJobURI
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/schedule
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #schedule.isJobReadyToRun(toJobURI);
 %\end{lstlisting}
 \input{schedule/isJobReadyToRun}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{GetCurrentWeekTimeRecords}
 \index{GetCurrentWeekTimeRecords}
 \label{Api:GetCurrentWeekTimeRecords}
@@ -301,13 +355,16 @@
            int    weekOffsetfromNow
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/schedule
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #schedule.getCurrentWeekTimeRecords(weekOffsetfromNow);
 %\end{lstlisting}
 \input{schedule/getCurrentWeekTimeRecords}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{GetCurrentDayJobs}
 \index{GetCurrentDayJobs}
 \label{Api:GetCurrentDayJobs}
@@ -315,10 +372,13 @@
    List<TimedEventRecord> getCurrentDayJobs (
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/schedule
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #schedule.getCurrentDayJobs();
 %\end{lstlisting}
 \input{schedule/getCurrentDayJobs}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}

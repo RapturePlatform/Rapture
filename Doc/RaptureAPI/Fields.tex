@@ -10,13 +10,16 @@
            int    depth
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/field
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #fields.listFieldsByUriPrefix(authority,depth);
 %\end{lstlisting}
 \input{fields/listFieldsByUriPrefix}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{GetField}
 \index{GetField}
 \label{Api:GetField}
@@ -25,13 +28,16 @@
            String    fieldUri
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/field
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #fields.getField(fieldUri);
 %\end{lstlisting}
 \input{fields/getField}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{PutField}
 \index{PutField}
 \label{Api:PutField}
@@ -40,13 +46,16 @@
            RaptureField    field
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/field
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #fields.putField(field);
 %\end{lstlisting}
 \input{fields/putField}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{FieldExists}
 \index{FieldExists}
 \label{Api:FieldExists}
@@ -55,13 +64,16 @@
            String    fieldUri
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/field
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #fields.fieldExists(fieldUri);
 %\end{lstlisting}
 \input{fields/fieldExists}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{DeleteField}
 \index{DeleteField}
 \label{Api:DeleteField}
@@ -70,13 +82,16 @@
            String    fieldUri
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/field
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #fields.deleteField(fieldUri);
 %\end{lstlisting}
 \input{fields/deleteField}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{GetDocumentFields}
 \index{GetDocumentFields}
 \label{Api:GetDocumentFields}
@@ -86,13 +101,16 @@
            List<String>    fields
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /user/field/$f(docURI)
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #fields.getDocumentFields(docURI,fields);
 %\end{lstlisting}
 \input{fields/getDocumentFields}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{PutDocumentAndGetDocumentFields}
 \index{PutDocumentAndGetDocumentFields}
 \label{Api:PutDocumentAndGetDocumentFields}
@@ -103,10 +121,13 @@
            List<String>    fields
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /user/field/$f(docURI)
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #fields.putDocumentAndGetDocumentFields(docURI,content,fields);
 %\end{lstlisting}
 \input{fields/putDocumentAndGetDocumentFields}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}

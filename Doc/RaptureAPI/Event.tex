@@ -9,13 +9,16 @@
            String    eventUri
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /event/admin
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #event.getEvent(eventUri);
 %\end{lstlisting}
 \input{event/getEvent}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{PutEvent}
 \index{PutEvent}
 \label{Api:PutEvent}
@@ -24,13 +27,16 @@
            RaptureEvent    event
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /event/admin
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #event.putEvent(event);
 %\end{lstlisting}
 \input{event/putEvent}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{DeleteEvent}
 \index{DeleteEvent}
 \label{Api:DeleteEvent}
@@ -39,13 +45,16 @@
            String    eventUri
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /event/admin
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #event.deleteEvent(eventUri);
 %\end{lstlisting}
 \input{event/deleteEvent}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{ListEventsByUriPrefix}
 \index{ListEventsByUriPrefix}
 \label{Api:ListEventsByUriPrefix}
@@ -54,13 +63,16 @@
            String    eventUriPrefix
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /user/get
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #event.listEventsByUriPrefix(eventUriPrefix);
 %\end{lstlisting}
 \input{event/listEventsByUriPrefix}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{AddEventScript}
 \index{AddEventScript}
 \label{Api:AddEventScript}
@@ -71,13 +83,16 @@
            boolean    performOnce
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /event/admin
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #event.addEventScript(eventUri,scriptUri,performOnce);
 %\end{lstlisting}
 \input{event/addEventScript}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{DeleteEventScript}
 \index{DeleteEventScript}
 \label{Api:DeleteEventScript}
@@ -87,13 +102,16 @@
            String    scriptUri
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /event/admin
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #event.deleteEventScript(eventUri,scriptUri);
 %\end{lstlisting}
 \input{event/deleteEventScript}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{AddEventMessage}
 \index{AddEventMessage}
 \label{Api:AddEventMessage}
@@ -105,13 +123,16 @@
            Map<String,String>    params
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /event/admin
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #event.addEventMessage(eventUri,name,pipeline,params);
 %\end{lstlisting}
 \input{event/addEventMessage}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{DeleteEventMessage}
 \index{DeleteEventMessage}
 \label{Api:DeleteEventMessage}
@@ -121,13 +142,16 @@
            String    name
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /event/admin
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #event.deleteEventMessage(eventUri,name);
 %\end{lstlisting}
 \input{event/deleteEventMessage}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{AddEventNotification}
 \index{AddEventNotification}
 \label{Api:AddEventNotification}
@@ -139,13 +163,16 @@
            Map<String,String>    params
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /event/admin
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #event.addEventNotification(eventUri,name,notification,params);
 %\end{lstlisting}
 \input{event/addEventNotification}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{DeleteEventNotification}
 \index{DeleteEventNotification}
 \label{Api:DeleteEventNotification}
@@ -155,13 +182,16 @@
            String    name
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /event/admin
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #event.deleteEventNotification(eventUri,name);
 %\end{lstlisting}
 \input{event/deleteEventNotification}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{AddEventWorkflow}
 \index{AddEventWorkflow}
 \label{Api:AddEventWorkflow}
@@ -173,13 +203,16 @@
            Map<String,String>    params
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /event/admin
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #event.addEventWorkflow(eventUri,name,workflowUri,params);
 %\end{lstlisting}
 \input{event/addEventWorkflow}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{DeleteEventWorkflow}
 \index{DeleteEventWorkflow}
 \label{Api:DeleteEventWorkflow}
@@ -189,13 +222,16 @@
            String    name
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /event/admin
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #event.deleteEventWorkflow(eventUri,name);
 %\end{lstlisting}
 \input{event/deleteEventWorkflow}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{RunEvent}
 \index{RunEvent}
 \label{Api:RunEvent}
@@ -206,13 +242,16 @@
            String    eventContext
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /event/admin
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #event.runEvent(eventUri,associatedUri,eventContext);
 %\end{lstlisting}
 \input{event/runEvent}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{RunEventWithContext}
 \index{RunEventWithContext}
 \label{Api:RunEventWithContext}
@@ -223,13 +262,16 @@
            Map<String,String>    eventContextMap
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /event/admin
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #event.runEventWithContext(eventUri,associatedUri,eventContextMap);
 %\end{lstlisting}
 \input{event/runEventWithContext}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{EventExists}
 \index{EventExists}
 \label{Api:EventExists}
@@ -238,13 +280,16 @@
            String    eventUri
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /event/admin
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #event.eventExists(eventUri);
 %\end{lstlisting}
 \input{event/eventExists}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{DeleteEventsByUriPrefix}
 \index{DeleteEventsByUriPrefix}
 \label{Api:DeleteEventsByUriPrefix}
@@ -253,10 +298,13 @@
            String    uriPrefix
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /data/write/$f(uriPrefix)
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #event.deleteEventsByUriPrefix(uriPrefix);
 %\end{lstlisting}
 \input{event/deleteEventsByUriPrefix}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}

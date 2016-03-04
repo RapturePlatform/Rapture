@@ -1,0 +1,6 @@
+This call is used to acquire a lock. The lock is "hosted" by a lock manager and has a path within that manager. Other parameters determine
+how long the api call should block until returning with a failed attempt to lock. Another parameter
+defines the default amount of time this lock will be held for before being auto released.
+
+If the call is successful a \verb+LockHandle+ is returned that can be used in the \verb+releaseLock+ call. If a lock is stuck the \verb+forceReleaseLock+ call can be used
+to remove it.

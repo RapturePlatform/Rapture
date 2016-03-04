@@ -1,0 +1,43 @@
+The Entitlements API manages entitlements in \Rapture. All API calls in \Rapture can be guarded using
+entitlements that are defined through this API. Each API call definition has an entitlement check string and
+permissions to access that entitlement can be assigned to entitlement groups. Users can be assigned to entitlement groups.
+
+Whenever an API call is made in \Rapture the user associated with that call is checked using the groups they belong to
+and whether those groups have that entitlement permission.
+
+Some entitlements on APIs are "parameterized". As an example the document API call \verb+getDoc+ has the entitlement path:
+
+\begin{Verbatim}
+  /data/read/$f(docUri)
+\end{Verbatim}
+
+The \verb+$f(docUri)+ part of that entitlement path is replaced with the \verb+docUri+ parameter passed to the call.
+So a request to :
+
+\begin{Verbatim}
+    putDoc('//test/one/two', ...);
+\end{Verbatim}
+
+would result in an entitlement check for \verb+/data/read/test/one/two+.
+
+The entitlement check code for this path works as follows:
+
+\begin{enumerate}
+  \item{check for an entitlement of \verb+/data/read/test/one/two+.}
+  \item{check for an entitlement of \verb+/data/read/test/one+.}
+  \item{check for an entitlement of \verb+/data/read/test+.}
+  \item{check for an entitlement of \verb+/data/read+.}
+  \item{check for an entitlement of \verb+/data+.}
+\end{enumerate}
+
+If any match the following check is performed and no other checks are made:
+
+\begin{enumerate}
+  \item{load entitlement}
+  \item{for each group in entitlement, check for user membership}
+\end{enumerate}
+
+If the user is in any group that is in an entitlement the permission is granted. A null
+entitlement (an empty) is normally defined as "all access granted".
+
+The methods in the entitlement api are concerned with managing groups (sets of users) and entitlements (sets of groups).
