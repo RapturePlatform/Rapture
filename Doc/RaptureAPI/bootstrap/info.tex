@@ -1,0 +1,52 @@
+The Bootstrap API manages the configuration of the repositories that are used to store
+configuration and settings information in \Rapture.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\node[external](Bootstrap) { Bootstrap     };
+\node[api] (Settings) [below=of Bootstrap] { Settings}
+   edge [post] (Bootstrap);
+\node[api] (Config) [left=of Settings] { Configuration }
+   edge [post, bend left=45] (Bootstrap);
+\node[api] (Ephem) [right=of Settings] { Ephemeral }
+   edge [post,bend right=45]  (Bootstrap);
+\node[ctx] (Sessions) [ below=of Ephem] { Sessions }
+      edge [line] (Ephem);
+\node[ctx] (Users) [ below=of Settings] { Users }
+   edge [line] (Settings);
+\node[ctx] (Repos) [ below=of Config] { Repos }
+   edge [line] (Config);
+\node[ctx] (Workflows) [ below=of Repos] { Workflows }
+      edge [line] (Repos);
+\node[ctx] (D1) [ below=of Workflows] { ... }
+      edge [line] (Workflows);
+\node[ctx] (D2) [ below=of Users] { ... }
+      edge [line] (Users);
+\node[ctx] (D1) [ below=of Sessions] { ... }
+      edge [line] (Sessions);
+\end{tikzpicture}
+\caption { Bootstrap and configuration repositories }
+\end{figure}
+
+When a \Rapture environment starts it initially looks for the "bootstrap" repository. The configuration for
+this repository (as defined in the \verb+createDocRepo+ call in the document API) is stated in the
+configuration file/resource for \Rapture called \verb+rapture.cfg+. This file is usually on the classpath of
+a \Rapture environment and it needs to be identical on all \Rapture servers.
+
+The bootstrap repo contains three documents - these documents define the configuration of three other
+document repositories. The configuration repo contains all of the definitions of entities within \Rapture --
+repositories, workflows, schedules, audit logs and the like. When you create a document repository for your use \Rapture
+stores the definition of that configuration in this repository.
+
+The settings repository contains information about users. When you create a user in \Rapture the definition of that
+user is stored in the settings repository.
+
+Finally the ephemeral repository is used to store cached or temporary data. Typically this contains the session information needed
+when a user logs into \Rapture.
+
+This two stage approach to defining the locations of configurations gives a developer (the designer of a \Rapture environment) the
+ability to differentiate between the underlying technology used to store configuration data. For example the ephemeral repository could
+be hosted on a \verb+REDIS+ based repository, the settings on \verb+Postgres+ (and be versioned) and the configuration on \verb+MongoDB+.
+
+The contents of these repositories can be navigated and accessed at the lower level through the Sys API.
