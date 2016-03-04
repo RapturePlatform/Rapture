@@ -32,6 +32,7 @@ import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.io.InputStream;
 
 import org.apache.log4j.Logger;
 
@@ -63,6 +64,17 @@ public final class JacksonUtil {
     }
 
     public static Map<String, Object> getMapFromJson(String json) {
+        try {
+            JsonFactory factory = new JsonFactory();
+            TypeReference<LinkedHashMap<String, Object>> typeRef = new TypeReference<LinkedHashMap<String, Object>>() {
+            };
+            return DEFAULT_MAPPER.<LinkedHashMap<String, Object>>readValue(factory.createJsonParser(json), typeRef);
+        } catch (IOException e) {
+            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, "Error parsing json content " + json, e);
+        }
+    }
+
+    public static Map<String, Object> getMapFromJson(InputStream json) {
         try {
             JsonFactory factory = new JsonFactory();
             TypeReference<LinkedHashMap<String, Object>> typeRef = new TypeReference<LinkedHashMap<String, Object>>() {

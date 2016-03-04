@@ -14,13 +14,16 @@ docApiEntry(apitype, ret, name, apiparams, paramNames, doc, ent) ::= <<
       <apiparams; separator="\n">
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: <ent>
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #<apitype; format="lower">.<name>(<paramNames; separator=",">);
 %\end{lstlisting}
 \input{<apitype; format="lower">/<name>}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 >>
 docApiList(apitype, apis, doc) ::= <<
 \chapter{<apitype> API}
@@ -36,6 +39,7 @@ docTypeField(name, type) ::= <<
 docTypeDef(name, fields, doc) ::= <<
 \section{<name; format="upcase">}
 \label{type:<name; format="upcase">}
+\index{<name; format="upcase">}
 
 \begin{verbatim}
    type <name> {
@@ -43,7 +47,7 @@ docTypeDef(name, fields, doc) ::= <<
    }
 \end{verbatim}
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 >>
 
 docTypes(types) ::= <<

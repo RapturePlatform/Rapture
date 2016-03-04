@@ -1,0 +1,7 @@
+The Lock API is used to manage lock providers (or managers). A lock manager can be used to coordinate a locking
+activity between multiple servers, processes or threads in \Rapture. In general once a lock provider has been created
+any process can acquire a named lock through that provider and hold it for a certain amount of time. The lock can either
+auto-release after a timeout or be manually released through another api call. If another process attempts to acquire the same lock
+it can block until the lock is available.
+
+Lock providers are implemented on underlying systems - usually the same systems that provide storage. The definition of the Lock Manager wires the connection between a named provider and its implementation.

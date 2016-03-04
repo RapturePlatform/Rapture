@@ -12,13 +12,16 @@
            String    script
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /script/write/$f(scriptURI)
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #script.createScript(scriptURI,language,purpose,script);
 %\end{lstlisting}
 \input{script/createScript}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{CreateScriptLink}
 \index{CreateScriptLink}
 \label{Api:CreateScriptLink}
@@ -28,13 +31,16 @@
            String    toScriptURI
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /script/write/$f(fromScriptURI)
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #script.createScriptLink(fromScriptURI,toScriptURI);
 %\end{lstlisting}
 \input{script/createScriptLink}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{RemoveScriptLink}
 \index{RemoveScriptLink}
 \label{Api:RemoveScriptLink}
@@ -43,13 +49,16 @@
            String    fromScriptURI
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /script/write/$f(fromScriptURI)
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #script.removeScriptLink(fromScriptURI);
 %\end{lstlisting}
 \input{script/removeScriptLink}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{SetScriptParameters}
 \index{SetScriptParameters}
 \label{Api:SetScriptParameters}
@@ -59,13 +68,16 @@
            List<RaptureParameter>    parameters
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /script/write/$f(scriptURI)
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #script.setScriptParameters(scriptURI,parameters);
 %\end{lstlisting}
 \input{script/setScriptParameters}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{DoesScriptExist}
 \index{DoesScriptExist}
 \label{Api:DoesScriptExist}
@@ -74,13 +86,16 @@
            String    scriptURI
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /script/read/$f(scriptURI)
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #script.doesScriptExist(scriptURI);
 %\end{lstlisting}
 \input{script/doesScriptExist}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{DeleteScript}
 \index{DeleteScript}
 \label{Api:DeleteScript}
@@ -89,13 +104,16 @@
            String    scriptUri
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /script/write/$f(scriptUri)
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #script.deleteScript(scriptUri);
 %\end{lstlisting}
 \input{script/deleteScript}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{GetScriptNames}
 \index{GetScriptNames}
 \label{Api:GetScriptNames}
@@ -104,13 +122,16 @@
            String    scriptURI
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /script/read/$f(scriptURI)
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #script.getScriptNames(scriptURI);
 %\end{lstlisting}
 \input{script/getScriptNames}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{GetScript}
 \index{GetScript}
 \label{Api:GetScript}
@@ -119,13 +140,16 @@
            String    scriptURI
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /script/read/$f(scriptURI)
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #script.getScript(scriptURI);
 %\end{lstlisting}
 \input{script/getScript}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{GetInterface}
 \index{GetInterface}
 \label{Api:GetInterface}
@@ -134,13 +158,16 @@
            String    scriptURI
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /script/read/$f(scriptURI)
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #script.getInterface(scriptURI);
 %\end{lstlisting}
 \input{script/getInterface}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{PutScript}
 \index{PutScript}
 \label{Api:PutScript}
@@ -150,13 +177,16 @@
            RaptureScript    script
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /script/write/$f(scriptURI)
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #script.putScript(scriptURI,script);
 %\end{lstlisting}
 \input{script/putScript}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{PutRawScript}
 \index{PutRawScript}
 \label{Api:PutRawScript}
@@ -170,13 +200,16 @@
            List<String>    param_names
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /script/write/$f(scriptURI)
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #script.putRawScript(scriptURI,content,language,purpose,param_types,param_names);
 %\end{lstlisting}
 \input{script/putRawScript}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{RunScript}
 \index{RunScript}
 \label{Api:RunScript}
@@ -186,13 +219,16 @@
            Map<String,String>    parameters
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /script/exec/$f(scriptURI)
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #script.runScript(scriptURI,parameters);
 %\end{lstlisting}
 \input{script/runScript}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{RunScriptExtended}
 \index{RunScriptExtended}
 \label{Api:RunScriptExtended}
@@ -202,13 +238,16 @@
            Map<String,String>    parameters
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /script/exec/$f(scriptURI)
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #script.runScriptExtended(scriptURI,parameters);
 %\end{lstlisting}
 \input{script/runScriptExtended}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{CheckScript}
 \index{CheckScript}
 \label{Api:CheckScript}
@@ -217,13 +256,16 @@
            String    scriptURI
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /script/read/$f(scriptURI)
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #script.checkScript(scriptURI);
 %\end{lstlisting}
 \input{script/checkScript}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{CreateREPLSession}
 \index{CreateREPLSession}
 \label{Api:CreateREPLSession}
@@ -231,13 +273,16 @@
    String createREPLSession (
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /script/exec
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #script.createREPLSession();
 %\end{lstlisting}
 \input{script/createREPLSession}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{DestroyREPLSession}
 \index{DestroyREPLSession}
 \label{Api:DestroyREPLSession}
@@ -246,13 +291,16 @@
            String    sessionId
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /script/exec
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #script.destroyREPLSession(sessionId);
 %\end{lstlisting}
 \input{script/destroyREPLSession}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{EvaluateREPL}
 \index{EvaluateREPL}
 \label{Api:EvaluateREPL}
@@ -262,13 +310,16 @@
            String    line
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /script/exec
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #script.evaluateREPL(sessionId,line);
 %\end{lstlisting}
 \input{script/evaluateREPL}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{ArchiveOldREPLSessions}
 \index{ArchiveOldREPLSessions}
 \label{Api:ArchiveOldREPLSessions}
@@ -277,13 +328,16 @@
            Long    ageInMinutes
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/script
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #script.archiveOldREPLSessions(ageInMinutes);
 %\end{lstlisting}
 \input{script/archiveOldREPLSessions}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{CreateSnippet}
 \index{CreateSnippet}
 \label{Api:CreateSnippet}
@@ -293,13 +347,16 @@
            String    snippet
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/snippet
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #script.createSnippet(snippetURI,snippet);
 %\end{lstlisting}
 \input{script/createSnippet}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{GetSnippetChildren}
 \index{GetSnippetChildren}
 \label{Api:GetSnippetChildren}
@@ -308,13 +365,16 @@
            String    prefix
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/snippet
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #script.getSnippetChildren(prefix);
 %\end{lstlisting}
 \input{script/getSnippetChildren}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{DeleteSnippet}
 \index{DeleteSnippet}
 \label{Api:DeleteSnippet}
@@ -323,13 +383,16 @@
            String    snippetURI
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/snippet
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #script.deleteSnippet(snippetURI);
 %\end{lstlisting}
 \input{script/deleteSnippet}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{GetSnippet}
 \index{GetSnippet}
 \label{Api:GetSnippet}
@@ -338,13 +401,16 @@
            String    snippetURI
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/snippet
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #script.getSnippet(snippetURI);
 %\end{lstlisting}
 \input{script/getSnippet}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{ListScriptsByUriPrefix}
 \index{ListScriptsByUriPrefix}
 \label{Api:ListScriptsByUriPrefix}
@@ -354,13 +420,16 @@
            int    depth
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /script/read/$f(scriptUri)
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #script.listScriptsByUriPrefix(scriptUri,depth);
 %\end{lstlisting}
 \input{script/listScriptsByUriPrefix}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{DeleteScriptsByUriPrefix}
 \index{DeleteScriptsByUriPrefix}
 \label{Api:DeleteScriptsByUriPrefix}
@@ -369,10 +438,13 @@
            String    scriptUri
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /script/write/$f(scriptUri)
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #script.deleteScriptsByUriPrefix(scriptUri);
 %\end{lstlisting}
 \input{script/deleteScriptsByUriPrefix}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}

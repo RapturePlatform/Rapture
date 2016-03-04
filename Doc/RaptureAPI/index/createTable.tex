@@ -1,0 +1,39 @@
+A table in \Rapture is simply a low level representation of a queryable table and is used
+internally in \Rapture server applications. You cannot add data to a table through the \Rapture API.
+
+The \verb+createTable+ call is used to define a table and its associated storage on \Rapture. The format
+of the configuration string is very similar to that used by document, blob and series repositories. It is
+best demonstrated with an example:
+
+\begin{Verbatim}
+TABLE {} USING MONGODB { prefix = 'test' }
+\end{Verbatim}
+
+The general form of the configuration is:
+
+\begin{Verbatim}
+TABLE { }
+     USING [underlying implementation] { [ config ]}
+     [ ON [ instance] ]
+\end{Verbatim}
+
+The second part of the configuration string defines the underlying implementation and its configuration. In
+most cases the configuration associated with the implementation has a \verb+prefix+ parameter that is used to
+define a table or a collection or a prefix for such entities in the underlying storage. The underlying implementation
+defines what lower level software is used to host the data managed by \Rapture. The following table shows the current
+implementations:
+
+\begin{table}[h]
+\begin{center}
+\begin{tabular}{r l p{8cm}}
+  Keyword & Underlying & Configuration \\
+  \hline
+  MONGODB & MongoDb & The prefix parameter defines the name of the collections used by this repository. To avoid
+  conflict this is usually a function of the name of the \Rapture repository. \\
+  CASSANDRA & Cassandra & The prefix parameter defines the name of the collections used by this repository. To avoid
+  conflict this is usually a function of the name of the \Rapture repository. \\
+  POSTGRES & PostgresSql &  The prefix parameter defines the name of the tables used by this repository. To avoid
+  conflict this is usually a function of the name of the \Rapture repository. \\
+\end{tabular}
+\end{center}
+\end{table}

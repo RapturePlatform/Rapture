@@ -10,13 +10,16 @@
            String    path
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/root
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #sys.retrieveSystemConfig(area,path);
 %\end{lstlisting}
 \input{sys/retrieveSystemConfig}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{WriteSystemConfig}
 \index{WriteSystemConfig}
 \label{Api:WriteSystemConfig}
@@ -27,13 +30,16 @@
            String    content
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/root
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #sys.writeSystemConfig(area,path,content);
 %\end{lstlisting}
 \input{sys/writeSystemConfig}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{RemoveSystemConfig}
 \index{RemoveSystemConfig}
 \label{Api:RemoveSystemConfig}
@@ -43,13 +49,16 @@
            String    path
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/root
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #sys.removeSystemConfig(area,path);
 %\end{lstlisting}
 \input{sys/removeSystemConfig}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{GetSystemFolders}
 \index{GetSystemFolders}
 \label{Api:GetSystemFolders}
@@ -59,13 +68,16 @@
            String    path
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/root
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #sys.getSystemFolders(area,path);
 %\end{lstlisting}
 \input{sys/getSystemFolders}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{GetAllTopLevelRepos}
 \index{GetAllTopLevelRepos}
 \label{Api:GetAllTopLevelRepos}
@@ -73,13 +85,16 @@
    List<String> getAllTopLevelRepos (
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /repo/read
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #sys.getAllTopLevelRepos();
 %\end{lstlisting}
 \input{sys/getAllTopLevelRepos}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{ListByUriPrefix}
 \index{ListByUriPrefix}
 \label{Api:ListByUriPrefix}
@@ -92,13 +107,16 @@
            Long    millisUntilCacheExpiry
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /repo/read
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #sys.listByUriPrefix(raptureURI,marker,depth,maximum,millisUntilCacheExpiry);
 %\end{lstlisting}
 \input{sys/listByUriPrefix}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{GetChildren}
 \index{GetChildren}
 \label{Api:GetChildren}
@@ -107,13 +125,16 @@
            String    raptureURI
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /repo/read
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #sys.getChildren(raptureURI);
 %\end{lstlisting}
 \input{sys/getChildren}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{GetAllChildren}
 \index{GetAllChildren}
 \label{Api:GetAllChildren}
@@ -124,13 +145,16 @@
            Long    maximum
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /repo/read
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #sys.getAllChildren(raptureURI,marker,maximum);
 %\end{lstlisting}
 \input{sys/getAllChildren}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{GetFolderInfo}
 \index{GetFolderInfo}
 \label{Api:GetFolderInfo}
@@ -139,13 +163,16 @@
            String    raptureURI
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /repo/read
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #sys.getFolderInfo(raptureURI);
 %\end{lstlisting}
 \input{sys/getFolderInfo}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{GetConnectionInfo}
 \index{GetConnectionInfo}
 \label{Api:GetConnectionInfo}
@@ -154,13 +181,16 @@
            String    connectionType
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /repo/read
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #sys.getConnectionInfo(connectionType);
 %\end{lstlisting}
 \input{sys/getConnectionInfo}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{PutConnectionInfo}
 \index{PutConnectionInfo}
 \label{Api:PutConnectionInfo}
@@ -170,13 +200,16 @@
            ConnectionInfo    connectionInfo
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /repo/write
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #sys.putConnectionInfo(connectionType,connectionInfo);
 %\end{lstlisting}
 \input{sys/putConnectionInfo}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{SetConnectionInfo}
 \index{SetConnectionInfo}
 \label{Api:SetConnectionInfo}
@@ -186,10 +219,13 @@
            ConnectionInfo    connectionInfo
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /repo/write
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #sys.setConnectionInfo(connectionType,connectionInfo);
 %\end{lstlisting}
 \input{sys/setConnectionInfo}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}

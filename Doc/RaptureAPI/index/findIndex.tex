@@ -1,0 +1,14 @@
+The \verb+findIndex+ call is used to find data in a \Rapture index. The query string is a SQL like
+string that is best illustrated with an example:
+
+\begin{Verbatim}
+  SELECT endTime,
+         startTime,
+         priority,
+         workOrderURI WHERE workOrderURI="ABC123"
+\end{Verbatim}
+
+As can be seen it is similar to SQL except that the "table" is not specified - it is provided
+as the indexURI to the API call.
+
+The return value is a result set structure.

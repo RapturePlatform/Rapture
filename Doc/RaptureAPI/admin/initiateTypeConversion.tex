@@ -1,0 +1,4 @@
+This method kicks off a process that will migrate a DocumentRepo to an alternate config. A temporary type will be created with the new config,
+ the old type will be locked for modifications and then all of the documents in the existing type will be copied to the new type, with the metadata intact.
+ Optionally a number of historical versions will be kept if the source repository (and target) support it. Once all of the data has been copied the config
+ attached to each type will be swapped and the type released for access. The temporary type will then be dropped.

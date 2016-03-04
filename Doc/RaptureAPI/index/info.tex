@@ -1,0 +1,48 @@
+The Index API is used in \Rapture to manage alternate ways to find data. Most of the
+\Rapture repositories have a key/value approach to managing data - if you know the key (the uri) then
+you can find the data. An index is the means by which you can
+store additional information that you can query in a more relational way to find data in \Rapture.
+
+An index in \Rapture is always associated with a document repository, and the index itself is stored
+in the same underlying system as that repository. The uri of an index must match the uri of a document repository.
+
+The configuration of an index is something that defines the columns that will form the index (both queryable values and those returned in a result set) and
+the means for setting the values in that index. The data can either come from the URI of the written document or the content.
+
+A typical example of a configuration string is reproduced below.
+
+\begin{Verbatim}
+   //docTest --> field1($0) string, field2(test) string
+\end{Verbatim}
+
+In this example the first entry in the index "field1" is of type "string" and is mapped to \verb+$0+ which
+is a directive that means the first entry in the URI of the document (after the repository name).
+
+The second entry in this index "field2" is also of type "string" but is mapped to the field value in the document written
+with the key "test". A dotted separator convention is used to index more deeply nested fields. Numbers can be used for array values
+to indicate a particular index of that array.
+
+With this example, an attempt to write the following document:
+
+\begin{Verbatim}
+   //docTest/one/two
+
+   {
+      "test" : "hello"
+   }
+\end{Verbatim}
+
+would result in a new entry in the index containing the following values:
+
+\begin{table}[h]
+\begin{center}
+\begin{tabular}{r l l}
+  Rowid & field1 & field2 \\
+  \hline
+  \verb+//docTest/one/two+ & one & hello \\
+\end{tabular}
+\end{center}
+\end{table}
+
+The index management is wired directly into the \verb+putContent+ implementation of the
+document API. It also handles deletions and version modifications.

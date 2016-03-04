@@ -8,13 +8,16 @@
    RaptureUser getWhoAmI (
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /everyone
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #user.getWhoAmI();
 %\end{lstlisting}
 \input{user/getWhoAmI}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{LogoutUser}
 \index{LogoutUser}
 \label{Api:LogoutUser}
@@ -22,13 +25,16 @@
    void logoutUser (
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /everyone
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #user.logoutUser();
 %\end{lstlisting}
 \input{user/logoutUser}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{StorePreference}
 \index{StorePreference}
 \label{Api:StorePreference}
@@ -39,13 +45,16 @@
            String    content
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /user/preferences
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #user.storePreference(category,name,content);
 %\end{lstlisting}
 \input{user/storePreference}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{GetPreference}
 \index{GetPreference}
 \label{Api:GetPreference}
@@ -55,13 +64,16 @@
            String    name
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /user/preferences
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #user.getPreference(category,name);
 %\end{lstlisting}
 \input{user/getPreference}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{RemovePreference}
 \index{RemovePreference}
 \label{Api:RemovePreference}
@@ -71,13 +83,16 @@
            String    name
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /user/preferences
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #user.removePreference(category,name);
 %\end{lstlisting}
 \input{user/removePreference}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{GetPreferenceCategories}
 \index{GetPreferenceCategories}
 \label{Api:GetPreferenceCategories}
@@ -85,13 +100,16 @@
    List<String> getPreferenceCategories (
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /user/preferences
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #user.getPreferenceCategories();
 %\end{lstlisting}
 \input{user/getPreferenceCategories}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{GetPreferencesInCategory}
 \index{GetPreferencesInCategory}
 \label{Api:GetPreferencesInCategory}
@@ -100,13 +118,16 @@
            String    category
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /user/preferences
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #user.getPreferencesInCategory(category);
 %\end{lstlisting}
 \input{user/getPreferencesInCategory}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{UpdateMyDescription}
 \index{UpdateMyDescription}
 \label{Api:UpdateMyDescription}
@@ -115,13 +136,16 @@
            String    description
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /everyone
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #user.updateMyDescription(description);
 %\end{lstlisting}
 \input{user/updateMyDescription}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{ChangeMyPassword}
 \index{ChangeMyPassword}
 \label{Api:ChangeMyPassword}
@@ -131,13 +155,16 @@
            String    newHashPassword
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /everyone
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #user.changeMyPassword(oldHashPassword,newHashPassword);
 %\end{lstlisting}
 \input{user/changeMyPassword}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{ChangeMyEmail}
 \index{ChangeMyEmail}
 \label{Api:ChangeMyEmail}
@@ -146,13 +173,16 @@
            String    newAddress
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /everyone
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #user.changeMyEmail(newAddress);
 %\end{lstlisting}
 \input{user/changeMyEmail}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{GetServerApiVersion}
 \index{GetServerApiVersion}
 \label{Api:GetServerApiVersion}
@@ -160,13 +190,16 @@
    ApiVersion getServerApiVersion (
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /everyone
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #user.getServerApiVersion();
 %\end{lstlisting}
 \input{user/getServerApiVersion}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{IsPermitted}
 \index{IsPermitted}
 \label{Api:IsPermitted}
@@ -176,10 +209,13 @@
            String    callParam
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /everyone
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #user.isPermitted(apiCall,callParam);
 %\end{lstlisting}
 \input{user/isPermitted}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}

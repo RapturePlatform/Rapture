@@ -8,13 +8,16 @@
    List<RaptureNotificationConfig> getNotificationManagerConfigs (
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/notification
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #notification.getNotificationManagerConfigs();
 %\end{lstlisting}
 \input{notification/getNotificationManagerConfigs}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{ListNotificationsByUriPrefix}
 \index{ListNotificationsByUriPrefix}
 \label{Api:ListNotificationsByUriPrefix}
@@ -23,13 +26,16 @@
            String    uriPrefix
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /user/get
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #notification.listNotificationsByUriPrefix(uriPrefix);
 %\end{lstlisting}
 \input{notification/listNotificationsByUriPrefix}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{FindNotificationManagerConfigsByPurpose}
 \index{FindNotificationManagerConfigsByPurpose}
 \label{Api:FindNotificationManagerConfigsByPurpose}
@@ -38,13 +44,16 @@
            String    purpose
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/notification
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #notification.findNotificationManagerConfigsByPurpose(purpose);
 %\end{lstlisting}
 \input{notification/findNotificationManagerConfigsByPurpose}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{CreateNotificationManager}
 \index{CreateNotificationManager}
 \label{Api:CreateNotificationManager}
@@ -55,13 +64,16 @@
            String    purpose
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/notification
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #notification.createNotificationManager(notificationManagerUri,config,purpose);
 %\end{lstlisting}
 \input{notification/createNotificationManager}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{NotificationManagerExists}
 \index{NotificationManagerExists}
 \label{Api:NotificationManagerExists}
@@ -70,13 +82,16 @@
            String    notificationManagerUri
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/notification
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #notification.notificationManagerExists(notificationManagerUri);
 %\end{lstlisting}
 \input{notification/notificationManagerExists}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{GetNotificationManagerConfig}
 \index{GetNotificationManagerConfig}
 \label{Api:GetNotificationManagerConfig}
@@ -85,13 +100,16 @@
            String    notificationManagerUri
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/notification
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #notification.getNotificationManagerConfig(notificationManagerUri);
 %\end{lstlisting}
 \input{notification/getNotificationManagerConfig}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{DeleteNotificationManager}
 \index{DeleteNotificationManager}
 \label{Api:DeleteNotificationManager}
@@ -100,13 +118,16 @@
            String    notificationManagerUri
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/notification
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #notification.deleteNotificationManager(notificationManagerUri);
 %\end{lstlisting}
 \input{notification/deleteNotificationManager}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{GetLatestNotificationEpoch}
 \index{GetLatestNotificationEpoch}
 \label{Api:GetLatestNotificationEpoch}
@@ -115,13 +136,16 @@
            String    notificationManagerUri
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /user/notification
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #notification.getLatestNotificationEpoch(notificationManagerUri);
 %\end{lstlisting}
 \input{notification/getLatestNotificationEpoch}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{PublishNotification}
 \index{PublishNotification}
 \label{Api:PublishNotification}
@@ -133,13 +157,16 @@
            String    contentType
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /user/notification
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #notification.publishNotification(notificationManagerUri,referenceId,content,contentType);
 %\end{lstlisting}
 \input{notification/publishNotification}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{FindNotificationsAfterEpoch}
 \index{FindNotificationsAfterEpoch}
 \label{Api:FindNotificationsAfterEpoch}
@@ -149,13 +176,16 @@
            Long    epoch
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/notification
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #notification.findNotificationsAfterEpoch(notificationManagerUri,epoch);
 %\end{lstlisting}
 \input{notification/findNotificationsAfterEpoch}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{GetNotification}
 \index{GetNotification}
 \label{Api:GetNotification}
@@ -165,10 +195,13 @@
            String    id
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /admin/notification
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #notification.getNotification(notificationUri,id);
 %\end{lstlisting}
 \input{notification/getNotification}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}

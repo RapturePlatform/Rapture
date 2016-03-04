@@ -1,0 +1,3 @@
+This function adds values to the metadata field of the \verb+CallingContext+. It's used to hold values specific to this connection. 
+Since it's set by the caller the values cannot be considered entirely trusted, and private or secure data such as passwords shouldn't be stored in here.
+If overwrite is false and an entry already exists then an exception should be thrown

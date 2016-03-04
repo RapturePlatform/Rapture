@@ -10,13 +10,34 @@
            String    config
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /repo/write
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #series.createSeriesRepo(seriesRepoUri,config);
 %\end{lstlisting}
 \input{series/createSeriesRepo}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
+\subsection{CreateSeries}
+\index{CreateSeries}
+\label{Api:CreateSeries}
+\begin{verbatim}
+   void createSeries (
+           String    seriesUri
+   )
+\end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /repo/write
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #series.createSeries(seriesUri);
+%\end{lstlisting}
+\input{series/createSeries}
+
+
+\rule{12cm}{2pt}
 \subsection{SeriesRepoExists}
 \index{SeriesRepoExists}
 \label{Api:SeriesRepoExists}
@@ -25,13 +46,16 @@
            String    seriesRepoUri
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /repo/list
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #series.seriesRepoExists(seriesRepoUri);
 %\end{lstlisting}
 \input{series/seriesRepoExists}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{SeriesExists}
 \index{SeriesExists}
 \label{Api:SeriesExists}
@@ -40,13 +64,16 @@
            String    seriesUri
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /repo/list
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #series.seriesExists(seriesUri);
 %\end{lstlisting}
 \input{series/seriesExists}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{GetSeriesRepoConfig}
 \index{GetSeriesRepoConfig}
 \label{Api:GetSeriesRepoConfig}
@@ -55,13 +82,16 @@
            String    seriesRepoUri
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /repo/read
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #series.getSeriesRepoConfig(seriesRepoUri);
 %\end{lstlisting}
 \input{series/getSeriesRepoConfig}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{GetSeriesRepoConfigs}
 \index{GetSeriesRepoConfigs}
 \label{Api:GetSeriesRepoConfigs}
@@ -69,13 +99,16 @@
    List<SeriesRepoConfig> getSeriesRepoConfigs (
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /repo/read
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #series.getSeriesRepoConfigs();
 %\end{lstlisting}
 \input{series/getSeriesRepoConfigs}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{DeleteSeriesRepo}
 \index{DeleteSeriesRepo}
 \label{Api:DeleteSeriesRepo}
@@ -84,13 +117,16 @@
            String    seriesRepoUri
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /repo/write
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #series.deleteSeriesRepo(seriesRepoUri);
 %\end{lstlisting}
 \input{series/deleteSeriesRepo}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{DeleteSeries}
 \index{DeleteSeries}
 \label{Api:DeleteSeries}
@@ -99,13 +135,16 @@
            String    seriesUri
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /data/write/$f(seriesUri)
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #series.deleteSeries(seriesUri);
 %\end{lstlisting}
 \input{series/deleteSeries}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{DeleteSeriesByUriPrefix}
 \index{DeleteSeriesByUriPrefix}
 \label{Api:DeleteSeriesByUriPrefix}
@@ -114,13 +153,16 @@
            String    seriesUri
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /data/write/$f(seriesUri)
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #series.deleteSeriesByUriPrefix(seriesUri);
 %\end{lstlisting}
 \input{series/deleteSeriesByUriPrefix}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{AddDoubleToSeries}
 \index{AddDoubleToSeries}
 \label{Api:AddDoubleToSeries}
@@ -131,13 +173,16 @@
            double    pointValue
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /data/write/$f(seriesUri)
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #series.addDoubleToSeries(seriesUri,pointKey,pointValue);
 %\end{lstlisting}
 \input{series/addDoubleToSeries}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{AddLongToSeries}
 \index{AddLongToSeries}
 \label{Api:AddLongToSeries}
@@ -148,13 +193,16 @@
            Long    pointValue
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /data/write/$f(seriesUri)
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #series.addLongToSeries(seriesUri,pointKey,pointValue);
 %\end{lstlisting}
 \input{series/addLongToSeries}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{AddStringToSeries}
 \index{AddStringToSeries}
 \label{Api:AddStringToSeries}
@@ -165,13 +213,16 @@
            String    pointValue
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /data/write/$f(seriesUri)
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #series.addStringToSeries(seriesUri,pointKey,pointValue);
 %\end{lstlisting}
 \input{series/addStringToSeries}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{AddStructureToSeries}
 \index{AddStructureToSeries}
 \label{Api:AddStructureToSeries}
@@ -182,13 +233,16 @@
            String    pointValue
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /data/write/$f(seriesUri)
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #series.addStructureToSeries(seriesUri,pointKey,pointValue);
 %\end{lstlisting}
 \input{series/addStructureToSeries}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{AddDoublesToSeries}
 \index{AddDoublesToSeries}
 \label{Api:AddDoublesToSeries}
@@ -199,13 +253,16 @@
            List<double>    pointValues
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /data/write/$f(seriesUri)
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #series.addDoublesToSeries(seriesUri,pointKeys,pointValues);
 %\end{lstlisting}
 \input{series/addDoublesToSeries}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{AddLongsToSeries}
 \index{AddLongsToSeries}
 \label{Api:AddLongsToSeries}
@@ -216,13 +273,16 @@
            List<Long>    pointValues
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /data/write/$f(seriesUri)
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #series.addLongsToSeries(seriesUri,pointKeys,pointValues);
 %\end{lstlisting}
 \input{series/addLongsToSeries}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{AddStringsToSeries}
 \index{AddStringsToSeries}
 \label{Api:AddStringsToSeries}
@@ -233,13 +293,16 @@
            List<String>    pointValues
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /data/write/$f(seriesUri)
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #series.addStringsToSeries(seriesUri,pointKeys,pointValues);
 %\end{lstlisting}
 \input{series/addStringsToSeries}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{AddStructuresToSeries}
 \index{AddStructuresToSeries}
 \label{Api:AddStructuresToSeries}
@@ -250,13 +313,16 @@
            List<String>    pointValues
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /data/write/$f(seriesUri)
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #series.addStructuresToSeries(seriesUri,pointKeys,pointValues);
 %\end{lstlisting}
 \input{series/addStructuresToSeries}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{DeletePointsFromSeriesByPointKey}
 \index{DeletePointsFromSeriesByPointKey}
 \label{Api:DeletePointsFromSeriesByPointKey}
@@ -266,13 +332,16 @@
            List<String>    pointKeys
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /data/write/$f(seriesUri)
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #series.deletePointsFromSeriesByPointKey(seriesUri,pointKeys);
 %\end{lstlisting}
 \input{series/deletePointsFromSeriesByPointKey}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{DeletePointsFromSeries}
 \index{DeletePointsFromSeries}
 \label{Api:DeletePointsFromSeries}
@@ -281,13 +350,16 @@
            String    seriesUri
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /data/write/$f(seriesUri)
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #series.deletePointsFromSeries(seriesUri);
 %\end{lstlisting}
 \input{series/deletePointsFromSeries}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{GetLastPoint}
 \index{GetLastPoint}
 \label{Api:GetLastPoint}
@@ -296,13 +368,16 @@
            String    seriesUri
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /data/read/$f(seriesUri)
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #series.getLastPoint(seriesUri);
 %\end{lstlisting}
 \input{series/getLastPoint}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{GetPoints}
 \index{GetPoints}
 \label{Api:GetPoints}
@@ -311,13 +386,16 @@
            String    seriesUri
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /data/read/$f(seriesUri)
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #series.getPoints(seriesUri);
 %\end{lstlisting}
 \input{series/getPoints}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{GetPointsAfter}
 \index{GetPointsAfter}
 \label{Api:GetPointsAfter}
@@ -328,13 +406,16 @@
            int    maxNumber
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /data/read/$f(seriesUri)
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #series.getPointsAfter(seriesUri,startColumn,maxNumber);
 %\end{lstlisting}
 \input{series/getPointsAfter}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{GetPointsAfterReverse}
 \index{GetPointsAfterReverse}
 \label{Api:GetPointsAfterReverse}
@@ -345,13 +426,16 @@
            int    maxNumber
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /data/read/$f(seriesUri)
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #series.getPointsAfterReverse(seriesUri,startColumn,maxNumber);
 %\end{lstlisting}
 \input{series/getPointsAfterReverse}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{GetPointsInRange}
 \index{GetPointsInRange}
 \label{Api:GetPointsInRange}
@@ -363,13 +447,16 @@
            int    maxNumber
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /data/read/$f(seriesUri)
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #series.getPointsInRange(seriesUri,startColumn,endColumn,maxNumber);
 %\end{lstlisting}
 \input{series/getPointsInRange}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{GetPointsAsDoubles}
 \index{GetPointsAsDoubles}
 \label{Api:GetPointsAsDoubles}
@@ -378,13 +465,16 @@
            String    seriesUri
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /data/read/$f(seriesUri)
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #series.getPointsAsDoubles(seriesUri);
 %\end{lstlisting}
 \input{series/getPointsAsDoubles}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{GetPointsAfterAsDoubles}
 \index{GetPointsAfterAsDoubles}
 \label{Api:GetPointsAfterAsDoubles}
@@ -395,13 +485,16 @@
            int    maxNumber
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /data/read/$f(seriesUri)
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #series.getPointsAfterAsDoubles(seriesUri,startColumn,maxNumber);
 %\end{lstlisting}
 \input{series/getPointsAfterAsDoubles}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{GetPointsInRangeAsDoubles}
 \index{GetPointsInRangeAsDoubles}
 \label{Api:GetPointsInRangeAsDoubles}
@@ -413,13 +506,16 @@
            int    maxNumber
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /data/read/$f(seriesUri)
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #series.getPointsInRangeAsDoubles(seriesUri,startColumn,endColumn,maxNumber);
 %\end{lstlisting}
 \input{series/getPointsInRangeAsDoubles}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{GetPointsAsStrings}
 \index{GetPointsAsStrings}
 \label{Api:GetPointsAsStrings}
@@ -428,13 +524,16 @@
            String    seriesUri
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /data/read/$f(seriesUri)
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #series.getPointsAsStrings(seriesUri);
 %\end{lstlisting}
 \input{series/getPointsAsStrings}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{GetPointsAfterAsStrings}
 \index{GetPointsAfterAsStrings}
 \label{Api:GetPointsAfterAsStrings}
@@ -445,13 +544,16 @@
            int    maxNumber
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /data/read/$f(seriesUri)
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #series.getPointsAfterAsStrings(seriesUri,startColumn,maxNumber);
 %\end{lstlisting}
 \input{series/getPointsAfterAsStrings}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{GetPointsInRangeAsStrings}
 \index{GetPointsInRangeAsStrings}
 \label{Api:GetPointsInRangeAsStrings}
@@ -463,13 +565,16 @@
            int    maxNumber
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /data/read/$f(seriesUri)
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #series.getPointsInRangeAsStrings(seriesUri,startColumn,endColumn,maxNumber);
 %\end{lstlisting}
 \input{series/getPointsInRangeAsStrings}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{RunSeriesScript}
 \index{RunSeriesScript}
 \label{Api:RunSeriesScript}
@@ -479,13 +584,16 @@
            List<String>    arguments
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /data/user
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #series.runSeriesScript(scriptContent,arguments);
 %\end{lstlisting}
 \input{series/runSeriesScript}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{RunSeriesScriptQuiet}
 \index{RunSeriesScriptQuiet}
 \label{Api:RunSeriesScriptQuiet}
@@ -495,13 +603,16 @@
            List<String>    arguments
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /data/user
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #series.runSeriesScriptQuiet(scriptContent,arguments);
 %\end{lstlisting}
 \input{series/runSeriesScriptQuiet}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
 \subsection{ListSeriesByUriPrefix}
 \index{ListSeriesByUriPrefix}
 \label{Api:ListSeriesByUriPrefix}
@@ -511,10 +622,13 @@
            int    depth
    )
 \end{verbatim}
+\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+  Entitlement: /data/read/$f(seriesUri)
+\end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #series.listSeriesByUriPrefix(seriesUri,depth);
 %\end{lstlisting}
 \input{series/listSeriesByUriPrefix}
 
 
-\rule{15cm}{2pt}
+\rule{12cm}{2pt}
