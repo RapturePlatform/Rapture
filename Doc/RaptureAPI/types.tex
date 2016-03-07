@@ -3,32 +3,32 @@
 \label{type:ErrorWrapper}
 \index{ErrorWrapper}
 
-\begin{verbatim}
+\begin{Verbatim}
    type ErrorWrapper {
           String   id
           Integer   status
           String   message
           String   stackTrace
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{RaptureQueryResult}
 \label{type:RaptureQueryResult}
 \index{RaptureQueryResult}
 
-\begin{verbatim}
+\begin{Verbatim}
    type RaptureQueryResult {
           List<JsonContent>   rows
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{ConnectionInfo}
 \label{type:ConnectionInfo}
 \index{ConnectionInfo}
 
-\begin{verbatim}
+\begin{Verbatim}
    type ConnectionInfo {
           String   host
           int   port
@@ -38,28 +38,28 @@
           String   instanceName
           Map(String, Object)   options
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{BlobRepoConfig}
 \label{type:BlobRepoConfig}
 \index{BlobRepoConfig}
 
-\begin{verbatim}
+\begin{Verbatim}
    type BlobRepoConfig {
           String   description
           String   config
           String   authority
           String   metaConfig
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{RaptureField}
 \label{type:RaptureField}
 \index{RaptureField}
 
-\begin{verbatim}
+\begin{Verbatim}
    type RaptureField {
           String   authority
           String   category
@@ -71,14 +71,14 @@
           List<RaptureFieldBand>   bands
           Set<RaptureFieldPath>   fieldPaths
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{AuditLogEntry}
 \label{type:AuditLogEntry}
 \index{AuditLogEntry}
 
-\begin{verbatim}
+\begin{Verbatim}
    type AuditLogEntry {
           String   category
           String   entryId
@@ -89,52 +89,52 @@
           String   user
           Date   when
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{Log4jAuditConfig}
 \label{type:Log4jAuditConfig}
 \index{Log4jAuditConfig}
 
-\begin{verbatim}
+\begin{Verbatim}
    type Log4jAuditConfig {
           String   serverName
           String   logDirPath
           String   xml
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{AuditLogConfig}
 \label{type:AuditLogConfig}
 \index{AuditLogConfig}
 
-\begin{verbatim}
+\begin{Verbatim}
    type AuditLogConfig {
           String   name
           String   config
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{DocWriteHandle}
 \label{type:DocWriteHandle}
 \index{DocWriteHandle}
 
-\begin{verbatim}
+\begin{Verbatim}
    type DocWriteHandle {
           Boolean   isSuccess
           RaptureURI   documentURI
           RunEventHandle   eventHandle
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{RaptureScript}
 \label{type:RaptureScript}
 \index{RaptureScript}
 
-\begin{verbatim}
+\begin{Verbatim}
    type RaptureScript {
           String   name
           String   script
@@ -143,39 +143,39 @@
           String   authority
           List(RaptureParameter)   parameters
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{RaptureSnippet}
 \label{type:RaptureSnippet}
 \index{RaptureSnippet}
 
-\begin{verbatim}
+\begin{Verbatim}
    type RaptureSnippet {
           String   name
           String   authority
           String   snippet
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{REPLVariable}
 \label{type:REPLVariable}
 \index{REPLVariable}
 
-\begin{verbatim}
+\begin{Verbatim}
    type REPLVariable {
           String   name
           String   serializedVar
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{ReflexREPLSession}
 \label{type:ReflexREPLSession}
 \index{ReflexREPLSession}
 
-\begin{verbatim}
+\begin{Verbatim}
    type ReflexREPLSession {
           String   id
           List(REPLVariable)   vars
@@ -183,25 +183,25 @@
           List(String)   functionDecls
           Date   lastSeen
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{RaptureScriptLanguage}
 \label{type:RaptureScriptLanguage}
 \index{RaptureScriptLanguage}
 
-\begin{verbatim}
+\begin{Verbatim}
    type RaptureScriptLanguage {
           String   REFLEX
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{RaptureScriptPurpose}
 \label{type:RaptureScriptPurpose}
 \index{RaptureScriptPurpose}
 
-\begin{verbatim}
+\begin{Verbatim}
    type RaptureScriptPurpose {
           String   INDEXGENERATOR
           String   MAP
@@ -210,128 +210,128 @@
           String   PROGRAM
           String   LINK
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{RaptureLockConfig}
 \label{type:RaptureLockConfig}
 \index{RaptureLockConfig}
 
-\begin{verbatim}
+\begin{Verbatim}
    type RaptureLockConfig {
           String   name
           String   config
           String   authority
           String   pathPosition
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{LockHandle}
 \label{type:LockHandle}
 \index{LockHandle}
 
-\begin{verbatim}
+\begin{Verbatim}
    type LockHandle {
           String   lockName
           String   handle
           String   lockHolder
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{SemaphoreLock}
 \label{type:SemaphoreLock}
 \index{SemaphoreLock}
 
-\begin{verbatim}
+\begin{Verbatim}
    type SemaphoreLock {
           String   lockKey
           Set<RaptureURI>   stakeholderURIs
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{CreateResponse}
 \label{type:CreateResponse}
 \index{CreateResponse}
 
-\begin{verbatim}
+\begin{Verbatim}
    type CreateResponse {
           Boolean   isCreated
           RaptureURI   uri
           String   message
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{SemaphoreAcquireResponse}
 \label{type:SemaphoreAcquireResponse}
 \index{SemaphoreAcquireResponse}
 
-\begin{verbatim}
+\begin{Verbatim}
    type SemaphoreAcquireResponse {
           Boolean   isAcquired
           RaptureURI   acquiredURI
           Set<RaptureURI>   existingStakeholderURIs
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{RaptureIdGenConfig}
 \label{type:RaptureIdGenConfig}
 \index{RaptureIdGenConfig}
 
-\begin{verbatim}
+\begin{Verbatim}
    type RaptureIdGenConfig {
           String   name
           String   config
           String   authority
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{RaptureTableConfig}
 \label{type:RaptureTableConfig}
 \index{RaptureTableConfig}
 
-\begin{verbatim}
+\begin{Verbatim}
    type RaptureTableConfig {
           String   name
           String   config
           String   authority
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{RaptureSearchResult}
 \label{type:RaptureSearchResult}
 \index{RaptureSearchResult}
 
-\begin{verbatim}
+\begin{Verbatim}
    type RaptureSearchResult {
           String   displayName
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{RepoConfig}
 \label{type:RepoConfig}
 \index{RepoConfig}
 
-\begin{verbatim}
+\begin{Verbatim}
    type RepoConfig {
           String   name
           String   config
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{CallingContext}
 \label{type:CallingContext}
 \index{CallingContext}
 
-\begin{verbatim}
+\begin{Verbatim}
    type CallingContext {
           String   user
           String   context
@@ -339,37 +339,37 @@
           Map<String, String>   metadata
           Boolean   valid
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{RaptureContextInfo}
 \label{type:RaptureContextInfo}
 \index{RaptureContextInfo}
 
-\begin{verbatim}
+\begin{Verbatim}
    type RaptureContextInfo {
           String   sessionId
           String   authority
           String   perspective
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{RaptureAuthority}
 \label{type:RaptureAuthority}
 \index{RaptureAuthority}
 
-\begin{verbatim}
+\begin{Verbatim}
    type RaptureAuthority {
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{DocumentRepoConfig}
 \label{type:DocumentRepoConfig}
 \index{DocumentRepoConfig}
 
-\begin{verbatim}
+\begin{Verbatim}
    type DocumentRepoConfig {
           String   description
           String   config
@@ -381,26 +381,26 @@
           String   updateQueue
           RaptureDocConfig   documentRepo
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{RaptureDocConfig}
 \label{type:RaptureDocConfig}
 \index{RaptureDocConfig}
 
-\begin{verbatim}
+\begin{Verbatim}
    type RaptureDocConfig {
           String   authority
           String   config
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{RaptureUser}
 \label{type:RaptureUser}
 \index{RaptureUser}
 
-\begin{verbatim}
+\begin{Verbatim}
    type RaptureUser {
           String   username
           String   userId
@@ -416,40 +416,40 @@
           String   registrationToken
           Boolean   verified
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{RaptureEntitlement}
 \label{type:RaptureEntitlement}
 \index{RaptureEntitlement}
 
-\begin{verbatim}
+\begin{Verbatim}
    type RaptureEntitlement {
           String   name
           EntitlementType   entType
           Set<String>   groups
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{RaptureEntitlementGroup}
 \label{type:RaptureEntitlementGroup}
 \index{RaptureEntitlementGroup}
 
-\begin{verbatim}
+\begin{Verbatim}
    type RaptureEntitlementGroup {
           String   name
           Set<String>   users
           String   dynamicEntitlementClassName
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{RaptureEvent}
 \label{type:RaptureEvent}
 \index{RaptureEvent}
 
-\begin{verbatim}
+\begin{Verbatim}
    type RaptureEvent {
           String   uriFullPath
           Set(RaptureEventScript)   scripts
@@ -457,67 +457,67 @@
           Set(RaptureEventNotification)   notifications
           Set(RaptureEventWorkflow)   workflows
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{RunEventHandle}
 \label{type:RunEventHandle}
 \index{RunEventHandle}
 
-\begin{verbatim}
+\begin{Verbatim}
    type RunEventHandle {
           RaptureURI   eventUri
           String   eventId
           Boolean   didRun
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{RaptureServerInfo}
 \label{type:RaptureServerInfo}
 \index{RaptureServerInfo}
 
-\begin{verbatim}
+\begin{Verbatim}
    type RaptureServerInfo {
           String   serverId
           String   name
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{RaptureServerStatus}
 \label{type:RaptureServerStatus}
 \index{RaptureServerStatus}
 
-\begin{verbatim}
+\begin{Verbatim}
    type RaptureServerStatus {
           String   serverId
           Long   status
           String   statusMessage
           Date   lastSeen
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{PluginConfig}
 \label{type:PluginConfig}
 \index{PluginConfig}
 
-\begin{verbatim}
+\begin{Verbatim}
    type PluginConfig {
           Map(String, PluginVersion)   depends
           String   description
           String   plugin
           PluginVersion   version
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{PluginManifest}
 \label{type:PluginManifest}
 \index{PluginManifest}
 
-\begin{verbatim}
+\begin{Verbatim}
    type PluginManifest {
           List(PluginManifestItem)   contents
           Map(String, PluginVersion)   depends
@@ -525,77 +525,77 @@
           String   plugin
           PluginVersion   version
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{PluginManifestItem}
 \label{type:PluginManifestItem}
 \index{PluginManifestItem}
 
-\begin{verbatim}
+\begin{Verbatim}
    type PluginManifestItem {
           String   uri
           String   hash
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{PluginTransportItem}
 \label{type:PluginTransportItem}
 \index{PluginTransportItem}
 
-\begin{verbatim}
+\begin{Verbatim}
    type PluginTransportItem {
           String   uri
           ByteArray   content
           String   hash
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{PluginVersion}
 \label{type:PluginVersion}
 \index{PluginVersion}
 
-\begin{verbatim}
+\begin{Verbatim}
    type PluginVersion {
           int   major
           int   minor
           int   release
           long   timestamp
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{Jar}
 \label{type:Jar}
 \index{Jar}
 
-\begin{verbatim}
+\begin{Verbatim}
    type Jar {
           String   description
           String   authority
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{AppRepoSettings}
 \label{type:AppRepoSettings}
 \index{AppRepoSettings}
 
-\begin{verbatim}
+\begin{Verbatim}
    type AppRepoSettings {
           String   codeBase
           String   raptureBase
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{AppConfig}
 \label{type:AppConfig}
 \index{AppConfig}
 
-\begin{verbatim}
+\begin{Verbatim}
    type AppConfig {
           String   name
           String   title
@@ -608,14 +608,14 @@
           String   jarFile
           String   mainClass
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{AppInstanceConfig}
 \label{type:AppInstanceConfig}
 \index{AppInstanceConfig}
 
-\begin{verbatim}
+\begin{Verbatim}
    type AppInstanceConfig {
           String   name
           String   appConfig
@@ -623,28 +623,28 @@
           Map(String, String)   properties
           String   apiKey
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{RaptureExchange}
 \label{type:RaptureExchange}
 \index{RaptureExchange}
 
-\begin{verbatim}
+\begin{Verbatim}
    type RaptureExchange {
           String   domain
           String   name
           RaptureExchangeType   exchangeType
           List(RaptureExchangeQueue)   queueBindings
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{RapturePipelineTask}
 \label{type:RapturePipelineTask}
 \index{RapturePipelineTask}
 
-\begin{verbatim}
+\begin{Verbatim}
    type RapturePipelineTask {
           PipelineTaskStatus   status
           PipelineTaskType   taskType
@@ -655,63 +655,63 @@
           String   contentType
           Long   epoch
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{ServerCategory}
 \label{type:ServerCategory}
 \index{ServerCategory}
 
-\begin{verbatim}
+\begin{Verbatim}
    type ServerCategory {
           String   name
           String   description
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{CategoryQueueBindings}
 \label{type:CategoryQueueBindings}
 \index{CategoryQueueBindings}
 
-\begin{verbatim}
+\begin{Verbatim}
    type CategoryQueueBindings {
           String   name
           Map(String, Set(String))   bindings
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{ExchangeDomain}
 \label{type:ExchangeDomain}
 \index{ExchangeDomain}
 
-\begin{verbatim}
+\begin{Verbatim}
    type ExchangeDomain {
           String   name
           String   config
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{TableRecord}
 \label{type:TableRecord}
 \index{TableRecord}
 
-\begin{verbatim}
+\begin{Verbatim}
    type TableRecord {
           String   keyName
           Map(String, Object)   fields
           String   content
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{TableQuery}
 \label{type:TableQuery}
 \index{TableQuery}
 
-\begin{verbatim}
+\begin{Verbatim}
    type TableQuery {
           List(TableSelect)   fieldTests
           List(String)   fieldReturns
@@ -719,14 +719,14 @@
           int   skip
           int   limit
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{DocumentMetadata}
 \label{type:DocumentMetadata}
 \index{DocumentMetadata}
 
-\begin{verbatim}
+\begin{Verbatim}
    type DocumentMetadata {
           Integer   version
           Date   writeTime
@@ -736,40 +736,40 @@
           String   comment
           Boolean   deleted
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{DocumentWithMeta}
 \label{type:DocumentWithMeta}
 \index{DocumentWithMeta}
 
-\begin{verbatim}
+\begin{Verbatim}
    type DocumentWithMeta {
           String   displayName
           DocumentMetadata   metaData
           String   content
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{XferDocumentAttribute}
 \label{type:XferDocumentAttribute}
 \index{XferDocumentAttribute}
 
-\begin{verbatim}
+\begin{Verbatim}
    type XferDocumentAttribute {
           String   attributeType
           String   key
           String   value
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{PipelineTaskStatus}
 \label{type:PipelineTaskStatus}
 \index{PipelineTaskStatus}
 
-\begin{verbatim}
+\begin{Verbatim}
    type PipelineTaskStatus {
           PipelineTaskState   currentState
           String   taskId
@@ -780,14 +780,14 @@
           int   suspensionCount
           List(String)   output
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{RaptureJob}
 \label{type:RaptureJob}
 \index{RaptureJob}
 
-\begin{verbatim}
+\begin{Verbatim}
    type RaptureJob {
           JobURI   jobURI
           String   description
@@ -801,14 +801,14 @@
           Integer   maxRuntimeMinutes
           String   appStatusNamePattern
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{RaptureJobExec}
 \label{type:RaptureJobExec}
 \index{RaptureJobExec}
 
-\begin{verbatim}
+\begin{Verbatim}
    type RaptureJobExec {
           JobURI   jobURI
           JobType   jobType
@@ -817,45 +817,45 @@
           Map<String, String>   passedParams
           String   execDetails
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{WorkflowJobDetails}
 \label{type:WorkflowJobDetails}
 \index{WorkflowJobDetails}
 
-\begin{verbatim}
+\begin{Verbatim}
    type WorkflowJobDetails {
           String   workOrderURI
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{UpcomingJobExec}
 \label{type:UpcomingJobExec}
 \index{UpcomingJobExec}
 
-\begin{verbatim}
+\begin{Verbatim}
    type UpcomingJobExec {
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{LastJobExec}
 \label{type:LastJobExec}
 \index{LastJobExec}
 
-\begin{verbatim}
+\begin{Verbatim}
    type LastJobExec {
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{WorkflowJobExecDetails}
 \label{type:WorkflowJobExecDetails}
 \index{WorkflowJobExecDetails}
 
-\begin{verbatim}
+\begin{Verbatim}
    type WorkflowJobExecDetails {
           JobURI   jobURI
           Map<String, String>   parameters
@@ -873,14 +873,14 @@
           String   notes
           JobErrorAck   errorAck
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{JobErrorAck}
 \label{type:JobErrorAck}
 \index{JobErrorAck}
 
-\begin{verbatim}
+\begin{Verbatim}
    type JobErrorAck {
           JobURI   jobURI
           Long   execTime
@@ -888,53 +888,53 @@
           Long   timestamp
           String   user
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{WorkflowExecsStatus}
 \label{type:WorkflowExecsStatus}
 \index{WorkflowExecsStatus}
 
-\begin{verbatim}
+\begin{Verbatim}
    type WorkflowExecsStatus {
           List<WorkflowJobExecDetails>   failed
           List<WorkflowJobExecDetails>   ok
           List<WorkflowJobExecDetails>   overrun
           List<WorkflowJobExecDetails>   success
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{WorkflowGridLayout}
 \label{type:WorkflowGridLayout}
 \index{WorkflowGridLayout}
 
-\begin{verbatim}
+\begin{Verbatim}
    type WorkflowGridLayout {
           String   workflowURI
           List(WorkflowColumnLayout)   columns
           List(WorkflowArrowLayout)   arrows
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{WorkflowColumnLayout}
 \label{type:WorkflowColumnLayout}
 \index{WorkflowColumnLayout}
 
-\begin{verbatim}
+\begin{Verbatim}
    type WorkflowColumnLayout {
           Integer   columnNumber
           List(WorkflowBoxLayout)   boxes
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{WorkflowBoxLayout}
 \label{type:WorkflowBoxLayout}
 \index{WorkflowBoxLayout}
 
-\begin{verbatim}
+\begin{Verbatim}
    type WorkflowBoxLayout {
           Integer   gx
           Integer   gy
@@ -944,14 +944,14 @@
           Integer   offsetX
           Integer   offsetY
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{WorkflowArrowLayout}
 \label{type:WorkflowArrowLayout}
 \index{WorkflowArrowLayout}
 
-\begin{verbatim}
+\begin{Verbatim}
    type WorkflowArrowLayout {
           String   name
           String   fromBoxName
@@ -959,14 +959,14 @@
           Integer   offsetX
           Integer   offsetY
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{RaptureServerGroup}
 \label{type:RaptureServerGroup}
 \index{RaptureServerGroup}
 
-\begin{verbatim}
+\begin{Verbatim}
    type RaptureServerGroup {
           String   name
           String   description
@@ -975,40 +975,40 @@
           Set(String)   exclusions
           Set(String)   libraries
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{RaptureApplicationDefinition}
 \label{type:RaptureApplicationDefinition}
 \index{RaptureApplicationDefinition}
 
-\begin{verbatim}
+\begin{Verbatim}
    type RaptureApplicationDefinition {
           String   name
           String   description
           String   version
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{RaptureLibraryDefinition}
 \label{type:RaptureLibraryDefinition}
 \index{RaptureLibraryDefinition}
 
-\begin{verbatim}
+\begin{Verbatim}
    type RaptureLibraryDefinition {
           String   name
           String   description
           String   version
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{RaptureApplicationInstance}
 \label{type:RaptureApplicationInstance}
 \index{RaptureApplicationInstance}
 
-\begin{verbatim}
+\begin{Verbatim}
    type RaptureApplicationInstance {
           String   name
           String   appName
@@ -1024,14 +1024,14 @@
           String   status
           Date   lastStateChange
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{RaptureRunnerInstanceStatus}
 \label{type:RaptureRunnerInstanceStatus}
 \index{RaptureRunnerInstanceStatus}
 
-\begin{verbatim}
+\begin{Verbatim}
    type RaptureRunnerInstanceStatus {
           String   serverGroup
           String   appInstance
@@ -1040,75 +1040,75 @@
           Date   lastSeen
           Boolean   needsRestart
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{RaptureInstanceCapabilities}
 \label{type:RaptureInstanceCapabilities}
 \index{RaptureInstanceCapabilities}
 
-\begin{verbatim}
+\begin{Verbatim}
    type RaptureInstanceCapabilities {
           String   server
           String   instanceName
           Map<String, Object>   capabilities
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{RaptureRunnerStatus}
 \label{type:RaptureRunnerStatus}
 \index{RaptureRunnerStatus}
 
-\begin{verbatim}
+\begin{Verbatim}
    type RaptureRunnerStatus {
           String   serverName
           Map<String, RaptureRunnerInstanceStatus>   statusByInstanceName
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{RaptureRunnerConfig}
 \label{type:RaptureRunnerConfig}
 \index{RaptureRunnerConfig}
 
-\begin{verbatim}
+\begin{Verbatim}
    type RaptureRunnerConfig {
           Map(String, String)   config
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{RaptureNotificationConfig}
 \label{type:RaptureNotificationConfig}
 \index{RaptureNotificationConfig}
 
-\begin{verbatim}
+\begin{Verbatim}
    type RaptureNotificationConfig {
           String   name
           String   config
           String   purpose
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{NotificationResult}
 \label{type:NotificationResult}
 \index{NotificationResult}
 
-\begin{verbatim}
+\begin{Verbatim}
    type NotificationResult {
           Long   currentEpoch
           List(String)   references
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{NotificationInfo}
 \label{type:NotificationInfo}
 \index{NotificationInfo}
 
-\begin{verbatim}
+\begin{Verbatim}
    type NotificationInfo {
           String   id
           String   content
@@ -1118,102 +1118,102 @@
           String   contentType
           String   who
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{RaptureFolderInfo}
 \label{type:RaptureFolderInfo}
 \index{RaptureFolderInfo}
 
-\begin{verbatim}
+\begin{Verbatim}
    type RaptureFolderInfo {
           String   name
           boolean   folder
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{RaptureParameter}
 \label{type:RaptureParameter}
 \index{RaptureParameter}
 
-\begin{verbatim}
+\begin{Verbatim}
    type RaptureParameter {
           String   name
           RaptureParameterType   parameterType
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{ScriptInterface}
 \label{type:ScriptInterface}
 \index{ScriptInterface}
 
-\begin{verbatim}
+\begin{Verbatim}
    type ScriptInterface {
           Map<String, ScriptParameter>   inputs
           Map<String, ScriptParameter>   outputs
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{ScriptParameter}
 \label{type:ScriptParameter}
 \index{ScriptParameter}
 
-\begin{verbatim}
+\begin{Verbatim}
    type ScriptParameter {
           RaptureParameterType   parameterType
           String   description
           Object   defaultValue
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{JobLinkStatus}
 \label{type:JobLinkStatus}
 \index{JobLinkStatus}
 
-\begin{verbatim}
+\begin{Verbatim}
    type JobLinkStatus {
           String   from
           String   to
           Integer   level
           Date   lastChange
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{JobLink}
 \label{type:JobLink}
 \index{JobLink}
 
-\begin{verbatim}
+\begin{Verbatim}
    type JobLink {
           String   from
           String   to
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{ActivityQueryResponse}
 \label{type:ActivityQueryResponse}
 \index{ActivityQueryResponse}
 
-\begin{verbatim}
+\begin{Verbatim}
    type ActivityQueryResponse {
           Boolean   isLast
           String   nextBatchId
           List<Activity>   activities
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{Activity}
 \label{type:Activity}
 \index{Activity}
 
-\begin{verbatim}
+\begin{Verbatim}
    type Activity {
           String   id
           String   description
@@ -1223,40 +1223,40 @@
           Long   lastSeen
           ActivityStatus   status
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{TableConfig}
 \label{type:TableConfig}
 \index{TableConfig}
 
-\begin{verbatim}
+\begin{Verbatim}
    type TableConfig {
           String   name
           String   config
           String   authority
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{TableRecord}
 \label{type:TableRecord}
 \index{TableRecord}
 
-\begin{verbatim}
+\begin{Verbatim}
    type TableRecord {
           String   keyName
           Map(String, Object)   fields
           String   content
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{TableQuery}
 \label{type:TableQuery}
 \index{TableQuery}
 
-\begin{verbatim}
+\begin{Verbatim}
    type TableQuery {
           List(TableSelect)   fieldTests
           List(String)   fieldReturns
@@ -1264,14 +1264,14 @@
           int   skip
           int   limit
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{RaptureActivity}
 \label{type:RaptureActivity}
 \index{RaptureActivity}
 
-\begin{verbatim}
+\begin{Verbatim}
    type RaptureActivity {
           String   id
           String   otherId
@@ -1283,91 +1283,91 @@
           Long   expiresAt
           Boolean   finished
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{StructuredRepoConfig}
 \label{type:StructuredRepoConfig}
 \index{StructuredRepoConfig}
 
-\begin{verbatim}
+\begin{Verbatim}
    type StructuredRepoConfig {
           String   description
           String   config
           String   authority
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{StructuredColumn}
 \label{type:StructuredColumn}
 \index{StructuredColumn}
 
-\begin{verbatim}
+\begin{Verbatim}
    type StructuredColumn {
           String   name
           String   nativeName
           String   raptureType
           String   nativeType
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{StructuredTable}
 \label{type:StructuredTable}
 \index{StructuredTable}
 
-\begin{verbatim}
+\begin{Verbatim}
    type StructuredTable {
           String   authority
           String   name
           String   nativeName
           List(StructuredColumn)   columns
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{TableMeta}
 \label{type:TableMeta}
 \index{TableMeta}
 
-\begin{verbatim}
+\begin{Verbatim}
    type TableMeta {
           Map<String, String>   rows
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{TableIndex}
 \label{type:TableIndex}
 \index{TableIndex}
 
-\begin{verbatim}
+\begin{Verbatim}
    type TableIndex {
           String   name
           List<String>   columns
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{ForeignKey}
 \label{type:ForeignKey}
 \index{ForeignKey}
 
-\begin{verbatim}
+\begin{Verbatim}
    type ForeignKey {
           String   column
           String   foreignTable
           String   foreignColumn
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{SeriesRepoConfig}
 \label{type:SeriesRepoConfig}
 \index{SeriesRepoConfig}
 
-\begin{verbatim}
+\begin{Verbatim}
    type SeriesRepoConfig {
           String   description
           String   config
@@ -1375,50 +1375,50 @@
           String   seriesName
           String   sampleColumn
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{SeriesPoint}
 \label{type:SeriesPoint}
 \index{SeriesPoint}
 
-\begin{verbatim}
+\begin{Verbatim}
    type SeriesPoint {
           String   column
           String   value
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{SeriesDouble}
 \label{type:SeriesDouble}
 \index{SeriesDouble}
 
-\begin{verbatim}
+\begin{Verbatim}
    type SeriesDouble {
           String   columns
           Double   values
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{SeriesString}
 \label{type:SeriesString}
 \index{SeriesString}
 
-\begin{verbatim}
+\begin{Verbatim}
    type SeriesString {
           String   columns
           String   values
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{TypeArchiveConfig}
 \label{type:TypeArchiveConfig}
 \index{TypeArchiveConfig}
 
-\begin{verbatim}
+\begin{Verbatim}
    type TypeArchiveConfig {
           String   authority
           String   typeName
@@ -1427,14 +1427,14 @@
           Long   versionsToKeep
           Long   timeRangeToKeepInDays
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{Workflow}
 \label{type:Workflow}
 \index{Workflow}
 
-\begin{verbatim}
+\begin{Verbatim}
    type Workflow {
           WorkflowURI   workflowURI
           SemaphoreType   semaphoreType
@@ -1446,63 +1446,63 @@
           List<ExpectedArgument>   expectedArguments
           String   defaultAppStatusNamePattern
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{ExpectedArgument}
 \label{type:ExpectedArgument}
 \index{ExpectedArgument}
 
-\begin{verbatim}
+\begin{Verbatim}
    type ExpectedArgument {
           String   name
           Boolean   isRequired
           String   defaultValue
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{PassedArgument}
 \label{type:PassedArgument}
 \index{PassedArgument}
 
-\begin{verbatim}
+\begin{Verbatim}
    type PassedArgument {
           String   name
           String   value
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{WorkOrderArguments}
 \label{type:WorkOrderArguments}
 \index{WorkOrderArguments}
 
-\begin{verbatim}
+\begin{Verbatim}
    type WorkOrderArguments {
           WorkOrderURI   workOrderURI
           List<PassedArgument>   arguments
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{Transition}
 \label{type:Transition}
 \index{Transition}
 
-\begin{verbatim}
+\begin{Verbatim}
    type Transition {
           String   name
           String   targetStep
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{Step}
 \label{type:Step}
 \index{Step}
 
-\begin{verbatim}
+\begin{Verbatim}
    type Step {
           String   name
           String   description
@@ -1512,14 +1512,14 @@
           String   categoryOverride
           Integer   softTimeout
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{WorkOrder}
 \label{type:WorkOrder}
 \index{WorkOrder}
 
-\begin{verbatim}
+\begin{Verbatim}
    type WorkOrder {
           WorkOrderURI   workOrderURI
           WorkflowURI   workflowURI
@@ -1532,26 +1532,26 @@
           String   semaphoreConfig
           WorkOrderExecutionState   status
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{WorkOrderInitialArgsHash}
 \label{type:WorkOrderInitialArgsHash}
 \index{WorkOrderInitialArgsHash}
 
-\begin{verbatim}
+\begin{Verbatim}
    type WorkOrderInitialArgsHash {
           WorkOrderURI   workOrderURI
           String   hashValue
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{WorkflowHistoricalMetrics}
 \label{type:WorkflowHistoricalMetrics}
 \index{WorkflowHistoricalMetrics}
 
-\begin{verbatim}
+\begin{Verbatim}
    type WorkflowHistoricalMetrics {
           Double   workflowAverage
           Double   jobAverage
@@ -1560,91 +1560,91 @@
           String   jobMetricName
           String   argsHashMetricName
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{ExecutionContext}
 \label{type:ExecutionContext}
 \index{ExecutionContext}
 
-\begin{verbatim}
+\begin{Verbatim}
    type ExecutionContext {
           WorkOrderURI   workOrderURI
           Map<String, String>   data
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{ExecutionContextField}
 \label{type:ExecutionContextField}
 \index{ExecutionContextField}
 
-\begin{verbatim}
+\begin{Verbatim}
    type ExecutionContextField {
           WorkOrderURI   workOrderURI
           String   varName
           String   value
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{WorkOrderStatus}
 \label{type:WorkOrderStatus}
 \index{WorkOrderStatus}
 
-\begin{verbatim}
+\begin{Verbatim}
    type WorkOrderStatus {
           List<String>   workerIds
           WorkOrderExecutionState   status
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{AppStatusGroup}
 \label{type:AppStatusGroup}
 \index{AppStatusGroup}
 
-\begin{verbatim}
+\begin{Verbatim}
    type AppStatusGroup {
           String   name
           Map<WorkOrderURI, AppStatus>   idToStatus
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{AppStatus}
 \label{type:AppStatus}
 \index{AppStatus}
 
-\begin{verbatim}
+\begin{Verbatim}
    type AppStatus {
           String   name
           WorkOrderURI   workOrderURI
           WorkOrderExecutionState   overallStatus
           Long   lastUpdated
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{StepExecutionRecord}
 \label{type:StepExecutionRecord}
 \index{StepExecutionRecord}
 
-\begin{verbatim}
+\begin{Verbatim}
    type StepExecutionRecord {
           WorkflowURI   stepURI
           Long   time
           String   hostname
           StepExecutionRecordType   recordType
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{StepRecord}
 \label{type:StepRecord}
 \index{StepRecord}
 
-\begin{verbatim}
+\begin{Verbatim}
    type StepRecord {
           WorkflowURI   stepURI
           String   name
@@ -1656,53 +1656,53 @@
           ErrorWrapper   exceptionInfo
           String   activityId
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{StepRecordsWrapper}
 \label{type:StepRecordsWrapper}
 \index{StepRecordsWrapper}
 
-\begin{verbatim}
+\begin{Verbatim}
    type StepRecordsWrapper {
           WorkOrderURI   workOrderURI
           String   workerId
           List<StepRecord>   stepRecords
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{AppStatusDetails}
 \label{type:AppStatusDetails}
 \index{AppStatusDetails}
 
-\begin{verbatim}
+\begin{Verbatim}
    type AppStatusDetails {
           AppStatus   appStatus
           Map<String, List<StepRecord>>   workerIdToSteps
           String   logURI
           Map<String, String>   extraContextValues
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{WorkOrderCancellation}
 \label{type:WorkOrderCancellation}
 \index{WorkOrderCancellation}
 
-\begin{verbatim}
+\begin{Verbatim}
    type WorkOrderCancellation {
           WorkOrderURI   workOrderURI
           Long   time
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{Worker}
 \label{type:Worker}
 \index{Worker}
 
-\begin{verbatim}
+\begin{Verbatim}
    type Worker {
           WorkOrderURI   workOrderURI
           String   id
@@ -1725,27 +1725,27 @@
           ErrorWrapper   exceptionInfo
           String   myActivityId
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{JoinCountdown}
 \label{type:JoinCountdown}
 \index{JoinCountdown}
 
-\begin{verbatim}
+\begin{Verbatim}
    type JoinCountdown {
           Integer   waitCount
           String   parentId
           String   workOrderURI
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{WorkOrderSearch}
 \label{type:WorkOrderSearch}
 \index{WorkOrderSearch}
 
-\begin{verbatim}
+\begin{Verbatim}
    type WorkOrderSearch {
           WorkerExecutionState   status
           List<WorkOrderURI>   workOrderURIs
@@ -1754,14 +1754,14 @@
           Long   endTimeBegin
           Long   endTimeEnd
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{WorkOrderDebug}
 \label{type:WorkOrderDebug}
 \index{WorkOrderDebug}
 
-\begin{verbatim}
+\begin{Verbatim}
    type WorkOrderDebug {
           WorkOrder   order
           List<WorkerDebug>   workerDebugs
@@ -1771,86 +1771,86 @@
           String   argsHashValue
           String   parentJobURI
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{WorkerDebug}
 \label{type:WorkerDebug}
 \index{WorkerDebug}
 
-\begin{verbatim}
+\begin{Verbatim}
    type WorkerDebug {
           Worker   worker
           List<StepRecordDebug>   stepRecordDebugs
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{StepRecordDebug}
 \label{type:StepRecordDebug}
 \index{StepRecordDebug}
 
-\begin{verbatim}
+\begin{Verbatim}
    type StepRecordDebug {
           StepRecord   stepRecord
           Activity   activity
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{JavaInvocable}
 \label{type:JavaInvocable}
 \index{JavaInvocable}
 
-\begin{verbatim}
+\begin{Verbatim}
    type JavaInvocable {
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{PropertyBasedSemaphoreConfig}
 \label{type:PropertyBasedSemaphoreConfig}
 \index{PropertyBasedSemaphoreConfig}
 
-\begin{verbatim}
+\begin{Verbatim}
    type PropertyBasedSemaphoreConfig {
           Integer   maxAllowed
           Integer   timeout
           String   propertyName
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{WorkflowBasedSemaphoreConfig}
 \label{type:WorkflowBasedSemaphoreConfig}
 \index{WorkflowBasedSemaphoreConfig}
 
-\begin{verbatim}
+\begin{Verbatim}
    type WorkflowBasedSemaphoreConfig {
           Integer   maxAllowed
           Integer   timeout
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{ApiVersion}
 \label{type:ApiVersion}
 \index{ApiVersion}
 
-\begin{verbatim}
+\begin{Verbatim}
    type ApiVersion {
           String   major
           String   minor
           String   micro
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{TimedEventRecord}
 \label{type:TimedEventRecord}
 \index{TimedEventRecord}
 
-\begin{verbatim}
+\begin{Verbatim}
    type TimedEventRecord {
           String   eventName
           String   eventContext
@@ -1858,102 +1858,102 @@
           Date   end
           String   infoContext
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{ContentEnvelope}
 \label{type:ContentEnvelope}
 \index{ContentEnvelope}
 
-\begin{verbatim}
+\begin{Verbatim}
    type ContentEnvelope {
           Map(String, String)   headers
           Object   content
           String   contentType
           String   raptureURI
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{BlobContainer}
 \label{type:BlobContainer}
 \index{BlobContainer}
 
-\begin{verbatim}
+\begin{Verbatim}
    type BlobContainer {
           Map(String, String)   headers
           ByteArray   content
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{LicenseInfo}
 \label{type:LicenseInfo}
 \index{LicenseInfo}
 
-\begin{verbatim}
+\begin{Verbatim}
    type LicenseInfo {
           String   companyName
           String   salt
           Boolean   developer
           Long   expirationTimestamp
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{RaptureSheetRow}
 \label{type:RaptureSheetRow}
 \index{RaptureSheetRow}
 
-\begin{verbatim}
+\begin{Verbatim}
    type RaptureSheetRow {
           List(RaptureSheetCell)   cells
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{ScriptResult}
 \label{type:ScriptResult}
 \index{ScriptResult}
 
-\begin{verbatim}
+\begin{Verbatim}
    type ScriptResult {
           String   returnValue
           List(String)   output
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{TableQueryResult}
 \label{type:TableQueryResult}
 \index{TableQueryResult}
 
-\begin{verbatim}
+\begin{Verbatim}
    type TableQueryResult {
           List(String)   columnNames
           List(String)   columnTypes
           List(List(Object))   rows
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{IndexConfig}
 \label{type:IndexConfig}
 \index{IndexConfig}
 
-\begin{verbatim}
+\begin{Verbatim}
    type IndexConfig {
           String   name
           String   config
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{RaptureApplicationStatusStep}
 \label{type:RaptureApplicationStatusStep}
 \index{RaptureApplicationStatusStep}
 
-\begin{verbatim}
+\begin{Verbatim}
    type RaptureApplicationStatusStep {
           String   INITIATED
           String   PICKEDUP
@@ -1963,14 +1963,14 @@
           String   COMPLETED
           String   FAILED
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{RaptureApplicationStatus}
 \label{type:RaptureApplicationStatus}
 \index{RaptureApplicationStatus}
 
-\begin{verbatim}
+\begin{Verbatim}
    type RaptureApplicationStatus {
           String   appName
           String   theDate
@@ -1982,62 +1982,62 @@
           Map(String, String)   inputConfig
           Map(String, String)   outputConfig
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{HooksConfig}
 \label{type:HooksConfig}
 \index{HooksConfig}
 
-\begin{verbatim}
+\begin{Verbatim}
    type HooksConfig {
           Map(String, SingleHookConfig)   idToHook
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{RaptureIPWhiteList}
 \label{type:RaptureIPWhiteList}
 \index{RaptureIPWhiteList}
 
-\begin{verbatim}
+\begin{Verbatim}
    type RaptureIPWhiteList {
           List<String>   ipWhiteList
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{EnvironmentInfo}
 \label{type:EnvironmentInfo}
 \index{EnvironmentInfo}
 
-\begin{verbatim}
+\begin{Verbatim}
    type EnvironmentInfo {
           String   name
           String   motd
           Map(String, String)   properties
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{TimerStartRecord}
 \label{type:TimerStartRecord}
 \index{TimerStartRecord}
 
-\begin{verbatim}
+\begin{Verbatim}
    type TimerStartRecord {
           String   id
           String   metricName
           Long   timestamp
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{LogMessage}
 \label{type:LogMessage}
 \index{LogMessage}
 
-\begin{verbatim}
+\begin{Verbatim}
    type LogMessage {
           Long   timestamp
           String   host
@@ -2052,52 +2052,52 @@
           String   rfxScript
           String   stepName
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{LogQueryResponse}
 \label{type:LogQueryResponse}
 \index{LogQueryResponse}
 
-\begin{verbatim}
+\begin{Verbatim}
    type LogQueryResponse {
           Boolean   isLast
           String   nextBatchId
           List<LogMessage>   messages
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{StoredProcedureResponse}
 \label{type:StoredProcedureResponse}
 \index{StoredProcedureResponse}
 
-\begin{verbatim}
+\begin{Verbatim}
    type StoredProcedureResponse {
           Boolean   callSuccessful
           Map<String, Object>   singleValueReturn
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{StoredProcedureParams}
 \label{type:StoredProcedureParams}
 \index{StoredProcedureParams}
 
-\begin{verbatim}
+\begin{Verbatim}
    type StoredProcedureParams {
           Map<String, Object>   inParams
           Map<String, Integer>   outParams
           Map<String, Object>   inOutParams
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{ChildrenTransferObject}
 \label{type:ChildrenTransferObject}
 \index{ChildrenTransferObject}
 
-\begin{verbatim}
+\begin{Verbatim}
    type ChildrenTransferObject {
           String   parentURI
           Map<String,RaptureFolderInfo>   children
@@ -2105,17 +2105,17 @@
           String   indexMark
           Long   remainder
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 \section{StructuredRow}
 \label{type:StructuredRow}
 \index{StructuredRow}
 
-\begin{verbatim}
+\begin{Verbatim}
    type StructuredRow {
           Map<String,Object>   columns
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}

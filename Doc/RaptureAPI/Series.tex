@@ -4,13 +4,13 @@
 \subsection{CreateSeriesRepo}
 \index{CreateSeriesRepo}
 \label{Api:CreateSeriesRepo}
-\begin{verbatim}
+\begin{Verbatim}
    void createSeriesRepo (
            String    seriesRepoUri
            String    config
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /repo/write
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -23,12 +23,12 @@
 \subsection{CreateSeries}
 \index{CreateSeries}
 \label{Api:CreateSeries}
-\begin{verbatim}
+\begin{Verbatim}
    void createSeries (
            String    seriesUri
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /repo/write
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -41,12 +41,12 @@
 \subsection{SeriesRepoExists}
 \index{SeriesRepoExists}
 \label{Api:SeriesRepoExists}
-\begin{verbatim}
+\begin{Verbatim}
    boolean seriesRepoExists (
            String    seriesRepoUri
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /repo/list
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -59,12 +59,12 @@
 \subsection{SeriesExists}
 \index{SeriesExists}
 \label{Api:SeriesExists}
-\begin{verbatim}
+\begin{Verbatim}
    boolean seriesExists (
            String    seriesUri
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /repo/list
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -77,12 +77,12 @@
 \subsection{GetSeriesRepoConfig}
 \index{GetSeriesRepoConfig}
 \label{Api:GetSeriesRepoConfig}
-\begin{verbatim}
+\begin{Verbatim}
    SeriesRepoConfig getSeriesRepoConfig (
            String    seriesRepoUri
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /repo/read
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -95,11 +95,11 @@
 \subsection{GetSeriesRepoConfigs}
 \index{GetSeriesRepoConfigs}
 \label{Api:GetSeriesRepoConfigs}
-\begin{verbatim}
+\begin{Verbatim}
    List<SeriesRepoConfig> getSeriesRepoConfigs (
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /repo/read
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -112,12 +112,12 @@
 \subsection{DeleteSeriesRepo}
 \index{DeleteSeriesRepo}
 \label{Api:DeleteSeriesRepo}
-\begin{verbatim}
+\begin{Verbatim}
    void deleteSeriesRepo (
            String    seriesRepoUri
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /repo/write
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -130,12 +130,12 @@
 \subsection{DeleteSeries}
 \index{DeleteSeries}
 \label{Api:DeleteSeries}
-\begin{verbatim}
+\begin{Verbatim}
    void deleteSeries (
            String    seriesUri
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/write/$f(seriesUri)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -148,12 +148,12 @@
 \subsection{DeleteSeriesByUriPrefix}
 \index{DeleteSeriesByUriPrefix}
 \label{Api:DeleteSeriesByUriPrefix}
-\begin{verbatim}
+\begin{Verbatim}
    List<String> deleteSeriesByUriPrefix (
            String    seriesUri
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/write/$f(seriesUri)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -166,14 +166,14 @@
 \subsection{AddDoubleToSeries}
 \index{AddDoubleToSeries}
 \label{Api:AddDoubleToSeries}
-\begin{verbatim}
+\begin{Verbatim}
    void addDoubleToSeries (
            String    seriesUri
            String    pointKey
            double    pointValue
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/write/$f(seriesUri)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -186,14 +186,14 @@
 \subsection{AddLongToSeries}
 \index{AddLongToSeries}
 \label{Api:AddLongToSeries}
-\begin{verbatim}
+\begin{Verbatim}
    void addLongToSeries (
            String    seriesUri
            String    pointKey
            Long    pointValue
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/write/$f(seriesUri)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -206,14 +206,14 @@
 \subsection{AddStringToSeries}
 \index{AddStringToSeries}
 \label{Api:AddStringToSeries}
-\begin{verbatim}
+\begin{Verbatim}
    void addStringToSeries (
            String    seriesUri
            String    pointKey
            String    pointValue
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/write/$f(seriesUri)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -226,14 +226,14 @@
 \subsection{AddStructureToSeries}
 \index{AddStructureToSeries}
 \label{Api:AddStructureToSeries}
-\begin{verbatim}
+\begin{Verbatim}
    void addStructureToSeries (
            String    seriesUri
            String    pointKey
            String    pointValue
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/write/$f(seriesUri)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -246,14 +246,14 @@
 \subsection{AddDoublesToSeries}
 \index{AddDoublesToSeries}
 \label{Api:AddDoublesToSeries}
-\begin{verbatim}
+\begin{Verbatim}
    void addDoublesToSeries (
            String    seriesUri
            List<String>    pointKeys
            List<double>    pointValues
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/write/$f(seriesUri)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -266,14 +266,14 @@
 \subsection{AddLongsToSeries}
 \index{AddLongsToSeries}
 \label{Api:AddLongsToSeries}
-\begin{verbatim}
+\begin{Verbatim}
    void addLongsToSeries (
            String    seriesUri
            List<String>    pointKeys
            List<Long>    pointValues
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/write/$f(seriesUri)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -286,14 +286,14 @@
 \subsection{AddStringsToSeries}
 \index{AddStringsToSeries}
 \label{Api:AddStringsToSeries}
-\begin{verbatim}
+\begin{Verbatim}
    void addStringsToSeries (
            String    seriesUri
            List<String>    pointKeys
            List<String>    pointValues
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/write/$f(seriesUri)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -306,14 +306,14 @@
 \subsection{AddStructuresToSeries}
 \index{AddStructuresToSeries}
 \label{Api:AddStructuresToSeries}
-\begin{verbatim}
+\begin{Verbatim}
    void addStructuresToSeries (
            String    seriesUri
            List<String>    pointKeys
            List<String>    pointValues
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/write/$f(seriesUri)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -326,13 +326,13 @@
 \subsection{DeletePointsFromSeriesByPointKey}
 \index{DeletePointsFromSeriesByPointKey}
 \label{Api:DeletePointsFromSeriesByPointKey}
-\begin{verbatim}
+\begin{Verbatim}
    void deletePointsFromSeriesByPointKey (
            String    seriesUri
            List<String>    pointKeys
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/write/$f(seriesUri)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -345,12 +345,12 @@
 \subsection{DeletePointsFromSeries}
 \index{DeletePointsFromSeries}
 \label{Api:DeletePointsFromSeries}
-\begin{verbatim}
+\begin{Verbatim}
    void deletePointsFromSeries (
            String    seriesUri
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/write/$f(seriesUri)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -363,12 +363,12 @@
 \subsection{GetLastPoint}
 \index{GetLastPoint}
 \label{Api:GetLastPoint}
-\begin{verbatim}
+\begin{Verbatim}
    SeriesPoint getLastPoint (
            String    seriesUri
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/read/$f(seriesUri)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -381,12 +381,12 @@
 \subsection{GetPoints}
 \index{GetPoints}
 \label{Api:GetPoints}
-\begin{verbatim}
+\begin{Verbatim}
    List<SeriesPoint> getPoints (
            String    seriesUri
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/read/$f(seriesUri)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -399,14 +399,14 @@
 \subsection{GetPointsAfter}
 \index{GetPointsAfter}
 \label{Api:GetPointsAfter}
-\begin{verbatim}
+\begin{Verbatim}
    List<SeriesPoint> getPointsAfter (
            String    seriesUri
            String    startColumn
            int    maxNumber
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/read/$f(seriesUri)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -419,14 +419,14 @@
 \subsection{GetPointsAfterReverse}
 \index{GetPointsAfterReverse}
 \label{Api:GetPointsAfterReverse}
-\begin{verbatim}
+\begin{Verbatim}
    List<SeriesPoint> getPointsAfterReverse (
            String    seriesUri
            String    startColumn
            int    maxNumber
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/read/$f(seriesUri)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -439,15 +439,15 @@
 \subsection{GetPointsInRange}
 \index{GetPointsInRange}
 \label{Api:GetPointsInRange}
-\begin{verbatim}
+\begin{Verbatim}
    List<SeriesPoint> getPointsInRange (
            String    seriesUri
            String    startColumn
            String    endColumn
            int    maxNumber
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/read/$f(seriesUri)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -460,12 +460,12 @@
 \subsection{GetPointsAsDoubles}
 \index{GetPointsAsDoubles}
 \label{Api:GetPointsAsDoubles}
-\begin{verbatim}
+\begin{Verbatim}
    List<SeriesDouble> getPointsAsDoubles (
            String    seriesUri
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/read/$f(seriesUri)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -478,14 +478,14 @@
 \subsection{GetPointsAfterAsDoubles}
 \index{GetPointsAfterAsDoubles}
 \label{Api:GetPointsAfterAsDoubles}
-\begin{verbatim}
+\begin{Verbatim}
    List<SeriesDouble> getPointsAfterAsDoubles (
            String    seriesUri
            String    startColumn
            int    maxNumber
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/read/$f(seriesUri)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -498,15 +498,15 @@
 \subsection{GetPointsInRangeAsDoubles}
 \index{GetPointsInRangeAsDoubles}
 \label{Api:GetPointsInRangeAsDoubles}
-\begin{verbatim}
+\begin{Verbatim}
    List<SeriesDouble> getPointsInRangeAsDoubles (
            String    seriesUri
            String    startColumn
            String    endColumn
            int    maxNumber
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/read/$f(seriesUri)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -519,12 +519,12 @@
 \subsection{GetPointsAsStrings}
 \index{GetPointsAsStrings}
 \label{Api:GetPointsAsStrings}
-\begin{verbatim}
+\begin{Verbatim}
    List<SeriesString> getPointsAsStrings (
            String    seriesUri
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/read/$f(seriesUri)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -537,14 +537,14 @@
 \subsection{GetPointsAfterAsStrings}
 \index{GetPointsAfterAsStrings}
 \label{Api:GetPointsAfterAsStrings}
-\begin{verbatim}
+\begin{Verbatim}
    List<SeriesString> getPointsAfterAsStrings (
            String    seriesUri
            String    startColumn
            int    maxNumber
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/read/$f(seriesUri)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -557,15 +557,15 @@
 \subsection{GetPointsInRangeAsStrings}
 \index{GetPointsInRangeAsStrings}
 \label{Api:GetPointsInRangeAsStrings}
-\begin{verbatim}
+\begin{Verbatim}
    List<SeriesString> getPointsInRangeAsStrings (
            String    seriesUri
            String    startColumn
            String    endColumn
            int    maxNumber
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/read/$f(seriesUri)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -578,13 +578,13 @@
 \subsection{RunSeriesScript}
 \index{RunSeriesScript}
 \label{Api:RunSeriesScript}
-\begin{verbatim}
+\begin{Verbatim}
    List<SeriesPoint> runSeriesScript (
            String    scriptContent
            List<String>    arguments
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/user
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -597,13 +597,13 @@
 \subsection{RunSeriesScriptQuiet}
 \index{RunSeriesScriptQuiet}
 \label{Api:RunSeriesScriptQuiet}
-\begin{verbatim}
+\begin{Verbatim}
    void runSeriesScriptQuiet (
            String    scriptContent
            List<String>    arguments
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/user
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -616,13 +616,13 @@
 \subsection{ListSeriesByUriPrefix}
 \index{ListSeriesByUriPrefix}
 \label{Api:ListSeriesByUriPrefix}
-\begin{verbatim}
+\begin{Verbatim}
    Map<String,RaptureFolderInfo> listSeriesByUriPrefix (
            String    seriesUri
            int    depth
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/read/$f(seriesUri)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]

@@ -4,11 +4,11 @@
 \subsection{GetWhoAmI}
 \index{GetWhoAmI}
 \label{Api:GetWhoAmI}
-\begin{verbatim}
+\begin{Verbatim}
    RaptureUser getWhoAmI (
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /everyone
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -21,11 +21,11 @@
 \subsection{LogoutUser}
 \index{LogoutUser}
 \label{Api:LogoutUser}
-\begin{verbatim}
+\begin{Verbatim}
    void logoutUser (
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /everyone
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -38,14 +38,14 @@
 \subsection{StorePreference}
 \index{StorePreference}
 \label{Api:StorePreference}
-\begin{verbatim}
+\begin{Verbatim}
    void storePreference (
            String    category
            String    name
            String    content
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /user/preferences
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -58,13 +58,13 @@
 \subsection{GetPreference}
 \index{GetPreference}
 \label{Api:GetPreference}
-\begin{verbatim}
+\begin{Verbatim}
    String getPreference (
            String    category
            String    name
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /user/preferences
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -77,13 +77,13 @@
 \subsection{RemovePreference}
 \index{RemovePreference}
 \label{Api:RemovePreference}
-\begin{verbatim}
+\begin{Verbatim}
    void removePreference (
            String    category
            String    name
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /user/preferences
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -96,11 +96,11 @@
 \subsection{GetPreferenceCategories}
 \index{GetPreferenceCategories}
 \label{Api:GetPreferenceCategories}
-\begin{verbatim}
+\begin{Verbatim}
    List<String> getPreferenceCategories (
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /user/preferences
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -113,12 +113,12 @@
 \subsection{GetPreferencesInCategory}
 \index{GetPreferencesInCategory}
 \label{Api:GetPreferencesInCategory}
-\begin{verbatim}
+\begin{Verbatim}
    List<String> getPreferencesInCategory (
            String    category
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /user/preferences
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -131,12 +131,12 @@
 \subsection{UpdateMyDescription}
 \index{UpdateMyDescription}
 \label{Api:UpdateMyDescription}
-\begin{verbatim}
+\begin{Verbatim}
    RaptureUser updateMyDescription (
            String    description
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /everyone
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -149,13 +149,13 @@
 \subsection{ChangeMyPassword}
 \index{ChangeMyPassword}
 \label{Api:ChangeMyPassword}
-\begin{verbatim}
+\begin{Verbatim}
    RaptureUser changeMyPassword (
            String    oldHashPassword
            String    newHashPassword
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /everyone
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -168,12 +168,12 @@
 \subsection{ChangeMyEmail}
 \index{ChangeMyEmail}
 \label{Api:ChangeMyEmail}
-\begin{verbatim}
+\begin{Verbatim}
    RaptureUser changeMyEmail (
            String    newAddress
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /everyone
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -186,11 +186,11 @@
 \subsection{GetServerApiVersion}
 \index{GetServerApiVersion}
 \label{Api:GetServerApiVersion}
-\begin{verbatim}
+\begin{Verbatim}
    ApiVersion getServerApiVersion (
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /everyone
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -203,13 +203,13 @@
 \subsection{IsPermitted}
 \index{IsPermitted}
 \label{Api:IsPermitted}
-\begin{verbatim}
+\begin{Verbatim}
    boolean isPermitted (
            String    apiCall
            String    callParam
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /everyone
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
