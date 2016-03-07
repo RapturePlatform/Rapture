@@ -17,7 +17,7 @@ apply plugin: "sonar"
 
 project.group = 'net.rapture'
 
-ext { platformVersion = '3.0.1' }
+ext { platformVersion = '3.0.2' }
 
 
 subprojects {

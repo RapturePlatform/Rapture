@@ -16,7 +16,7 @@ license {
     header file('./LICENSE')
 }
 
-project.version = '3.0.1'
+project.version = '3.0.2'
 project.group = 'net.rapture'
 
 subprojects {

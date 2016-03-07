@@ -1,0 +1,66 @@
+Plugins in \Rapture are installable items that can be released to a \Rapture environment in
+a consistent way. There are three parts to the Plugin API.
+
+The first part relates to retrieving information about what is actually installed, and what items were installed with each
+plugin. These are used by operator consoles and are informational.
+
+The second part relates to installing an actual plugin. These calls are typically used by a specific
+client side application "PluginInstaller" or a self installing library that uses the "SelfPluginInstallerLib". Plugins
+defined in this way are jar archives that have a very specific structure. Typically a developer lays out this structure
+in the file system and then uses a build process to package this information up into a jar file which can then be used with
+the PluginInstaller application.
+
+\section{File layout of a plugin}
+
+A sample layout of a plugin "on disk" is reproduced below:
+
+\begin{Verbatim}
+  -- src/main/resources
+     - PLUGIN
+        - plugin.txt
+        - content
+          - testRepo
+             - .rdoc
+             someContent.rdoc
+          - myscripts
+             - test.script
+\end{Verbatim}
+
+The mandatory aspects of a plugin are the concept of a PLUGIN folder in the resources within
+which is a plugin.txt file. This file has a specific format, an example is reproduced below:
+
+\begin{Verbatim}
+  {
+     "depends":{},
+     "description":"Curtis Web Core",
+     "plugin":"CurtisWebCore",
+     "version":{
+     		"major":1,
+     		"minor":1,
+     		"release":32,
+     		"timestamp":99999999999999
+     }
+  }
+\end{Verbatim}
+
+Most of these fields are self describing - the "plugin" field is the unique reference (uri) of this
+plugin and the version section defines the version \emph{of this plugin}. The description is for operators
+and the depends field can contain a map of other plugins and their version numbers required.
+
+The content folder contains information and definitions for content and configuration that this plugin defines. The
+file name extension defines what the plugin installer will do for this item.
+
+\begin{table}[H]
+\begin{center}
+\begin{tabular}{r l p{8cm}}
+  Keyword & Underlying & Configuration \\
+  \hline
+  MONGODB & MongoDb & The prefix parameter defines the name of the collections used by this repository. To avoid
+  conflict this is usually a function of the name of the \Rapture repository. \\
+  CASSANDRA & Cassandra & The prefix parameter defines the name of the collections used by this repository. To avoid
+  conflict this is usually a function of the name of the \Rapture repository. \\
+  POSTGRES & PostgresSql &  The prefix parameter defines the name of the tables used by this repository. To avoid
+  conflict this is usually a function of the name of the \Rapture repository. \\
+\end{tabular}
+\end{center}
+\end{table}
