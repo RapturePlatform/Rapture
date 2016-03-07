@@ -1,0 +1,9 @@
+The Structured API is used to manage interactions with external relational databases. The set
+of API calls matches most of those provided through a standard JDBC style interface except that where
+possible the calls rely on URIs to either define consistent access points to data or to define consistent
+techniques for updating that data.
+
+There are two ways to use this API. The first is to manage interaction with a private (to \Rapture) database
+for the purpose of an internal application. Many of the more management API calls are provided for this purpose. The
+second is for interaction with an existing external database that is maintained external to the \Rapture system. The data style
+calls are more relevant for this access -- the management api calls would likely fail to execute due to authorization restrictions.

@@ -1,0 +1,34 @@
+The \verb+createStructuredRepo+ defines a structured repository in \Rapture. The underlying connection
+to a data environment (as needed by the sql drivers) is defined using the \verb+setConnectionInfo+ call. This call is used
+to associated a structured repository uri with a connection and implementation.
+
+The typical configuration string for a Postgres database is reproduced below:
+
+\begin{Verbatim}
+STRUCTURED {} USING POSTGRES { } ON sample
+\end{Verbatim}
+
+The general form of the configuration is:
+
+\begin{Verbatim}
+STRUCTURED { }
+     USING [underlying implementation] { [ config ]}
+     [ ON [ instance] ]
+\end{Verbatim}
+
+The \verb+instance+ part of the configuration is defined in the connection settings. As an example:
+
+\begin{Verbatim}
+  info = {};
+  info.host = 'postgres';
+  info.port = 5432;
+  info.username = 'rapture';
+  info.password = 'rapture';
+  info.dbName = 'raptureSample';
+  info.instanceName = 'sample';
+
+  #sys.setConnectionInfo("sample", info);
+
+  #structured.createStructuredRepo('//sample',
+     'STRUCTURED {} USING POSTGRES ON sample');
+\end{Verbatim}
