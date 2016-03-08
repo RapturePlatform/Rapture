@@ -73,7 +73,7 @@ public class ParameterValueReader implements ValueReader {
                 line = new PosixParser().parse(options, args);
             }
             if (line.hasOption(parameter)) {
-                value = line.getOptionValue(parameter);
+                value = line.getOptionValue(parameter,""); //Adding the second param (defaultValue) handles the scenario of an option with no argument. 
             }
         } catch (ParseException e) {
             log.debug("cannot parse command line options " + e.getMessage());
