@@ -4,12 +4,12 @@
 \subsection{RemoveServerCategory}
 \index{RemoveServerCategory}
 \label{Api:RemoveServerCategory}
-\begin{verbatim}
+\begin{Verbatim}
    void removeServerCategory (
            String    category
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -22,11 +22,11 @@
 \subsection{GetServerCategories}
 \index{GetServerCategories}
 \label{Api:GetServerCategories}
-\begin{verbatim}
+\begin{Verbatim}
    List<String> getServerCategories (
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -39,12 +39,12 @@
 \subsection{GetBoundExchanges}
 \index{GetBoundExchanges}
 \label{Api:GetBoundExchanges}
-\begin{verbatim}
+\begin{Verbatim}
    List<CategoryQueueBindings> getBoundExchanges (
            String    category
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -57,12 +57,12 @@
 \subsection{DeregisterPipelineExchange}
 \index{DeregisterPipelineExchange}
 \label{Api:DeregisterPipelineExchange}
-\begin{verbatim}
+\begin{Verbatim}
    void deregisterPipelineExchange (
            String    name
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -75,11 +75,11 @@
 \subsection{GetExchanges}
 \index{GetExchanges}
 \label{Api:GetExchanges}
-\begin{verbatim}
+\begin{Verbatim}
    List<String> getExchanges (
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -92,12 +92,12 @@
 \subsection{GetExchange}
 \index{GetExchange}
 \label{Api:GetExchange}
-\begin{verbatim}
+\begin{Verbatim}
    RaptureExchange getExchange (
            String    name
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -110,12 +110,12 @@
 \subsection{PublishMessageToCategory}
 \index{PublishMessageToCategory}
 \label{Api:PublishMessageToCategory}
-\begin{verbatim}
+\begin{Verbatim}
    void publishMessageToCategory (
            RapturePipelineTask    task
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -128,12 +128,12 @@
 \subsection{BroadcastMessageToCategory}
 \index{BroadcastMessageToCategory}
 \label{Api:BroadcastMessageToCategory}
-\begin{verbatim}
+\begin{Verbatim}
    void broadcastMessageToCategory (
            RapturePipelineTask    task
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -146,12 +146,12 @@
 \subsection{BroadcastMessageToAll}
 \index{BroadcastMessageToAll}
 \label{Api:BroadcastMessageToAll}
-\begin{verbatim}
+\begin{Verbatim}
    void broadcastMessageToAll (
            RapturePipelineTask    task
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -164,12 +164,12 @@
 \subsection{GetStatus}
 \index{GetStatus}
 \label{Api:GetStatus}
-\begin{verbatim}
+\begin{Verbatim}
    PipelineTaskStatus getStatus (
            String    taskId
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -182,12 +182,12 @@
 \subsection{QueryTasks}
 \index{QueryTasks}
 \label{Api:QueryTasks}
-\begin{verbatim}
+\begin{Verbatim}
    List<RapturePipelineTask> queryTasks (
            String    query
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -200,12 +200,12 @@
 \subsection{QueryTasksOld}
 \index{QueryTasksOld}
 \label{Api:QueryTasksOld}
-\begin{verbatim}
+\begin{Verbatim}
    List<RapturePipelineTask> queryTasksOld (
            TableQuery    query
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -218,11 +218,11 @@
 \subsection{GetLatestTaskEpoch}
 \index{GetLatestTaskEpoch}
 \label{Api:GetLatestTaskEpoch}
-\begin{verbatim}
+\begin{Verbatim}
    Long getLatestTaskEpoch (
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -235,12 +235,12 @@
 \subsection{DrainPipeline}
 \index{DrainPipeline}
 \label{Api:DrainPipeline}
-\begin{verbatim}
+\begin{Verbatim}
    void drainPipeline (
            String    exchange
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -253,13 +253,13 @@
 \subsection{RegisterExchangeDomain}
 \index{RegisterExchangeDomain}
 \label{Api:RegisterExchangeDomain}
-\begin{verbatim}
+\begin{Verbatim}
    void registerExchangeDomain (
            String    domainURI
            String    config
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -272,12 +272,12 @@
 \subsection{DeregisterExchangeDomain}
 \index{DeregisterExchangeDomain}
 \label{Api:DeregisterExchangeDomain}
-\begin{verbatim}
+\begin{Verbatim}
    void deregisterExchangeDomain (
            String    domainURI
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -290,11 +290,11 @@
 \subsection{GetExchangeDomains}
 \index{GetExchangeDomains}
 \label{Api:GetExchangeDomains}
-\begin{verbatim}
+\begin{Verbatim}
    List<String> getExchangeDomains (
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -307,12 +307,12 @@
 \subsection{SetupStandardCategory}
 \index{SetupStandardCategory}
 \label{Api:SetupStandardCategory}
-\begin{verbatim}
+\begin{Verbatim}
    void setupStandardCategory (
            String    category
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -325,15 +325,15 @@
 \subsection{MakeRPC}
 \index{MakeRPC}
 \label{Api:MakeRPC}
-\begin{verbatim}
+\begin{Verbatim}
    Map<String,Object> makeRPC (
            String    queueName
            String    fnName
            Map<String,Object>    params
            Long    timeoutInSeconds
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /user/call
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -346,13 +346,13 @@
 \subsection{CreateTopicExchange}
 \index{CreateTopicExchange}
 \label{Api:CreateTopicExchange}
-\begin{verbatim}
+\begin{Verbatim}
    void createTopicExchange (
            String    domain
            String    exchange
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -365,15 +365,15 @@
 \subsection{PublishTopicMessage}
 \index{PublishTopicMessage}
 \label{Api:PublishTopicMessage}
-\begin{verbatim}
+\begin{Verbatim}
    void publishTopicMessage (
            String    domain
            String    exchange
            String    topic
            String    message
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]

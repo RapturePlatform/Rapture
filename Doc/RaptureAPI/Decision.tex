@@ -4,11 +4,11 @@
 \subsection{GetAllWorkflows}
 \index{GetAllWorkflows}
 \label{Api:GetAllWorkflows}
-\begin{verbatim}
+\begin{Verbatim}
    List<Workflow> getAllWorkflows (
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /decision/read
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -21,12 +21,12 @@
 \subsection{GetWorkflowChildren}
 \index{GetWorkflowChildren}
 \label{Api:GetWorkflowChildren}
-\begin{verbatim}
+\begin{Verbatim}
    List<RaptureFolderInfo> getWorkflowChildren (
            String    workflowURI
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /decision/read
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -39,12 +39,12 @@
 \subsection{GetWorkOrderChildren}
 \index{GetWorkOrderChildren}
 \label{Api:GetWorkOrderChildren}
-\begin{verbatim}
+\begin{Verbatim}
    List<RaptureFolderInfo> getWorkOrderChildren (
            String    parentPath
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /decision/read
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -57,12 +57,12 @@
 \subsection{PutWorkflow}
 \index{PutWorkflow}
 \label{Api:PutWorkflow}
-\begin{verbatim}
+\begin{Verbatim}
    void putWorkflow (
            Workflow    workflow
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /decision/write
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -75,12 +75,12 @@
 \subsection{GetWorkflow}
 \index{GetWorkflow}
 \label{Api:GetWorkflow}
-\begin{verbatim}
+\begin{Verbatim}
    Workflow getWorkflow (
            String    workflowURI
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /decision/read/$f(workflowURI)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -93,12 +93,12 @@
 \subsection{GetWorkflowStep}
 \index{GetWorkflowStep}
 \label{Api:GetWorkflowStep}
-\begin{verbatim}
+\begin{Verbatim}
    Step getWorkflowStep (
            String    stepURI
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /decision/read/$f(stepURI)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -111,12 +111,12 @@
 \subsection{GetStepCategory}
 \index{GetStepCategory}
 \label{Api:GetStepCategory}
-\begin{verbatim}
+\begin{Verbatim}
    String getStepCategory (
            String    stepURI
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /decision/read/$f(stepURI)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -129,13 +129,13 @@
 \subsection{AddStep}
 \index{AddStep}
 \label{Api:AddStep}
-\begin{verbatim}
+\begin{Verbatim}
    void addStep (
            String    workflowURI
            Step    step
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /decision/write/$f(workflowURI)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -148,13 +148,13 @@
 \subsection{RemoveStep}
 \index{RemoveStep}
 \label{Api:RemoveStep}
-\begin{verbatim}
+\begin{Verbatim}
    void removeStep (
            String    workflowURI
            String    stepName
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /decision/write/$f(workflowURI)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -167,14 +167,14 @@
 \subsection{AddTransition}
 \index{AddTransition}
 \label{Api:AddTransition}
-\begin{verbatim}
+\begin{Verbatim}
    void addTransition (
            String    workflowURI
            String    stepName
            Transition    transition
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /decision/write/$f(workflowURI)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -187,14 +187,14 @@
 \subsection{RemoveTransition}
 \index{RemoveTransition}
 \label{Api:RemoveTransition}
-\begin{verbatim}
+\begin{Verbatim}
    void removeTransition (
            String    workflowURI
            String    stepName
            String    transitionName
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /decision/write/$f(workflowURI)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -207,12 +207,12 @@
 \subsection{DeleteWorkflow}
 \index{DeleteWorkflow}
 \label{Api:DeleteWorkflow}
-\begin{verbatim}
+\begin{Verbatim}
    void deleteWorkflow (
            String    workflowURI
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /decision/write/$f(workflowURI)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -225,13 +225,13 @@
 \subsection{CreateWorkOrder}
 \index{CreateWorkOrder}
 \label{Api:CreateWorkOrder}
-\begin{verbatim}
+\begin{Verbatim}
    String createWorkOrder (
            String    workflowURI
            Map<String,String>    argsMap
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /decision/execute/$f(workflowURI)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -244,14 +244,14 @@
 \subsection{CreateWorkOrderP}
 \index{CreateWorkOrderP}
 \label{Api:CreateWorkOrderP}
-\begin{verbatim}
+\begin{Verbatim}
    CreateResponse createWorkOrderP (
            String    workflowURI
            Map<String,String>    argsMap
            String    appStatusUriPattern
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /decision/execute/$f(workflowURI)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -264,12 +264,12 @@
 \subsection{ReleaseWorkOrderLock}
 \index{ReleaseWorkOrderLock}
 \label{Api:ReleaseWorkOrderLock}
-\begin{verbatim}
+\begin{Verbatim}
    void releaseWorkOrderLock (
            String    workOrderURI
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /decision/admin
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -282,12 +282,12 @@
 \subsection{GetWorkOrderStatus}
 \index{GetWorkOrderStatus}
 \label{Api:GetWorkOrderStatus}
-\begin{verbatim}
+\begin{Verbatim}
    WorkOrderStatus getWorkOrderStatus (
            String    workOrderURI
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /decision/read/$f(workOrderURI)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -300,14 +300,14 @@
 \subsection{WriteWorkflowAuditEntry}
 \index{WriteWorkflowAuditEntry}
 \label{Api:WriteWorkflowAuditEntry}
-\begin{verbatim}
+\begin{Verbatim}
    void writeWorkflowAuditEntry (
            String    workOrderURI
            String    message
            boolean    error
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /decision/write/$f(workOrderURI)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -320,12 +320,12 @@
 \subsection{GetWorkOrdersByDay}
 \index{GetWorkOrdersByDay}
 \label{Api:GetWorkOrdersByDay}
-\begin{verbatim}
+\begin{Verbatim}
    List<WorkOrder> getWorkOrdersByDay (
            Long    startTimeInstant
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /decision/read
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -338,12 +338,12 @@
 \subsection{GetWorkOrder}
 \index{GetWorkOrder}
 \label{Api:GetWorkOrder}
-\begin{verbatim}
+\begin{Verbatim}
    WorkOrder getWorkOrder (
            String    workOrderURI
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /decision/read/$f(workOrderURI)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -356,13 +356,13 @@
 \subsection{GetWorker}
 \index{GetWorker}
 \label{Api:GetWorker}
-\begin{verbatim}
+\begin{Verbatim}
    Worker getWorker (
            String    workOrderURI
            String    workerId
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /decision/read/$f(workOrderURI)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -375,12 +375,12 @@
 \subsection{CancelWorkOrder}
 \index{CancelWorkOrder}
 \label{Api:CancelWorkOrder}
-\begin{verbatim}
+\begin{Verbatim}
    void cancelWorkOrder (
            String    workOrderURI
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /decision/write/$f(workOrderURI)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -393,13 +393,13 @@
 \subsection{ResumeWorkOrder}
 \index{ResumeWorkOrder}
 \label{Api:ResumeWorkOrder}
-\begin{verbatim}
+\begin{Verbatim}
    CreateResponse resumeWorkOrder (
            String    workOrderURI
            String    resumeStepURI
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /decision/write/$f(workOrderURI)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -412,12 +412,12 @@
 \subsection{WasCancelCalled}
 \index{WasCancelCalled}
 \label{Api:WasCancelCalled}
-\begin{verbatim}
+\begin{Verbatim}
    boolean wasCancelCalled (
            String    workOrderURI
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /decision/read/$f(workOrderURI)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -430,12 +430,12 @@
 \subsection{GetCancellationDetails}
 \index{GetCancellationDetails}
 \label{Api:GetCancellationDetails}
-\begin{verbatim}
+\begin{Verbatim}
    WorkOrderCancellation getCancellationDetails (
            String    workOrderURI
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /decision/read/$f(workOrderURI)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -448,12 +448,12 @@
 \subsection{GetWorkOrderDebug}
 \index{GetWorkOrderDebug}
 \label{Api:GetWorkOrderDebug}
-\begin{verbatim}
+\begin{Verbatim}
    WorkOrderDebug getWorkOrderDebug (
            String    workOrderURI
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /decision/debug/$f(workOrderURI)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -466,13 +466,13 @@
 \subsection{SetWorkOrderIdGenConfig}
 \index{SetWorkOrderIdGenConfig}
 \label{Api:SetWorkOrderIdGenConfig}
-\begin{verbatim}
+\begin{Verbatim}
    void setWorkOrderIdGenConfig (
            String    config
            boolean    force
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /decision/admin
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -485,14 +485,14 @@
 \subsection{SetContextLiteral}
 \index{SetContextLiteral}
 \label{Api:SetContextLiteral}
-\begin{verbatim}
+\begin{Verbatim}
    void setContextLiteral (
            String    workerURI
            String    varAlias
            String    literalValue
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /decision/write
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -505,14 +505,14 @@
 \subsection{SetContextLink}
 \index{SetContextLink}
 \label{Api:SetContextLink}
-\begin{verbatim}
+\begin{Verbatim}
    void setContextLink (
            String    workerURI
            String    varAlias
            String    expressionValue
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /decision/write
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -525,13 +525,13 @@
 \subsection{GetContextValue}
 \index{GetContextValue}
 \label{Api:GetContextValue}
-\begin{verbatim}
+\begin{Verbatim}
    String getContextValue (
            String    workerURI
            String    varAlias
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /decision/read
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -544,13 +544,13 @@
 \subsection{AddErrorToContext}
 \index{AddErrorToContext}
 \label{Api:AddErrorToContext}
-\begin{verbatim}
+\begin{Verbatim}
    void addErrorToContext (
            String    workerURI
            ErrorWrapper    errorWrapper
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /decision/write
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -563,12 +563,12 @@
 \subsection{GetErrorsFromContext}
 \index{GetErrorsFromContext}
 \label{Api:GetErrorsFromContext}
-\begin{verbatim}
+\begin{Verbatim}
    List<ErrorWrapper> getErrorsFromContext (
            String    workerURI
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /decision/read
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -581,12 +581,12 @@
 \subsection{GetExceptionInfo}
 \index{GetExceptionInfo}
 \label{Api:GetExceptionInfo}
-\begin{verbatim}
+\begin{Verbatim}
    List<ErrorWrapper> getExceptionInfo (
            String    workOrderURI
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /decision/read
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -599,7 +599,7 @@
 \subsection{ReportStepProgress}
 \index{ReportStepProgress}
 \label{Api:ReportStepProgress}
-\begin{verbatim}
+\begin{Verbatim}
    void reportStepProgress (
            String    workerURI
            Long    stepStartTime
@@ -607,8 +607,8 @@
            Long    progress
            Long    max
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /decision/read
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -621,12 +621,12 @@
 \subsection{GetAppStatuses}
 \index{GetAppStatuses}
 \label{Api:GetAppStatuses}
-\begin{verbatim}
+\begin{Verbatim}
    List<AppStatus> getAppStatuses (
            String    prefix
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /decision/read
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -639,13 +639,13 @@
 \subsection{GetAppStatusDetails}
 \index{GetAppStatusDetails}
 \label{Api:GetAppStatusDetails}
-\begin{verbatim}
+\begin{Verbatim}
    List<AppStatusDetails> getAppStatusDetails (
            String    prefix
            List<String>    extraContextValues
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /decision/read
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -658,15 +658,15 @@
 \subsection{GetMonthlyMetrics}
 \index{GetMonthlyMetrics}
 \label{Api:GetMonthlyMetrics}
-\begin{verbatim}
+\begin{Verbatim}
    WorkflowHistoricalMetrics getMonthlyMetrics (
            String    workflowURI
            String    jobURI
            String    argsHashValue
            String    state
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /decision/read
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -679,7 +679,7 @@
 \subsection{QueryLogs}
 \index{QueryLogs}
 \label{Api:QueryLogs}
-\begin{verbatim}
+\begin{Verbatim}
    LogQueryResponse queryLogs (
            String    workOrderURI
            Long    startTime
@@ -690,8 +690,8 @@
            String    stepName
            String    stepStartTime
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /decision/read
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]

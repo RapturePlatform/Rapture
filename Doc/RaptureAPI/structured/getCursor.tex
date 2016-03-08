@@ -1,0 +1,32 @@
+The \verb+getCursor+ call executes a query against a table that will return a cursor that can be paged through. Such an
+object can then be used with the \verb+next+ and \verb+previous+ calls and closed with \verb+closeCursor+.
+
+\begin{table}[H]
+\begin{center}
+\begin{tabular}{r p{10cm}}
+  Field & Purpose \\
+  \hline
+  table & This is simply a full tableUris used in the select. \\
+  columnNames & This lists the column names that will be returned as part of this call. The column names should be prefixed with the table name. \\
+  where & A suitable WHERE clause if required. \\
+  order & Which columns should be used to order the results. \\
+  ascending & Whether the order should be ascending (true) or descending (false). \\
+  limit & The maximum number of rows that will be returned. \\
+\end{tabular}
+\end{center}
+\end{table}
+
+\begin{Verbatim}
+  table = '//test/one';
+  columns = [ 'firstname', 'lastname'];
+  where = "lastname LIKE 'Mo%'";
+  order = [ 'firstname' ];
+  ascending = true;
+  limit = 100;
+
+  c = #structured.getCursor(table,
+      columns, where, order, ascending, limit);
+  v = #structure.next(table, c, 10);
+  #structure.closeCursor(table, c);
+  println(v);
+\end{Verbatim}

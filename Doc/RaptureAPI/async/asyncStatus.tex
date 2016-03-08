@@ -1,0 +1,9 @@
+The \verb+asyncStatus+ call returns the current status of the task returned by either
+\verb+asyncReflexScript+ or \verb+asyncReflexReference+ calls.
+
+The \verb+workOrderStatus+ return type simply contains the list of internal worker ids
+(which in this case should be of length 1, depending on the \Reflex script itself) and
+the current status of this async request.
+
+Given the workerId the appropriate Decision API calls can be invoked for more detailed
+analysis.

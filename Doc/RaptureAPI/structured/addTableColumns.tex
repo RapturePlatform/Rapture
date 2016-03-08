@@ -1,0 +1,13 @@
+The \verb+addTableColumns+ is used to add a set of columns to a table in a structured database. The table is defined
+by a tableURI.
+
+The columns parameter defines the name and type of each column. The type field is what you would
+normal use in a \verb+ALTER TABLE+ or \verb+CREATE TABLE+ type call. As an example:
+
+\begin{Verbatim}
+  columns = {};
+  columns.firstname = 'varchar(255)';
+  columns.lastname = 'varchar(255)';
+
+  #structured.addTableColumns('//test/table', columns);
+\end{Verbatim}

@@ -4,13 +4,13 @@
 \subsection{ListFieldsByUriPrefix}
 \index{ListFieldsByUriPrefix}
 \label{Api:ListFieldsByUriPrefix}
-\begin{verbatim}
+\begin{Verbatim}
    Map<String,RaptureFolderInfo> listFieldsByUriPrefix (
            String    authority
            int    depth
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/field
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -23,12 +23,12 @@
 \subsection{GetField}
 \index{GetField}
 \label{Api:GetField}
-\begin{verbatim}
+\begin{Verbatim}
    RaptureField getField (
            String    fieldUri
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/field
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -41,12 +41,12 @@
 \subsection{PutField}
 \index{PutField}
 \label{Api:PutField}
-\begin{verbatim}
+\begin{Verbatim}
    void putField (
            RaptureField    field
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/field
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -59,12 +59,12 @@
 \subsection{FieldExists}
 \index{FieldExists}
 \label{Api:FieldExists}
-\begin{verbatim}
+\begin{Verbatim}
    boolean fieldExists (
            String    fieldUri
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/field
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -77,12 +77,12 @@
 \subsection{DeleteField}
 \index{DeleteField}
 \label{Api:DeleteField}
-\begin{verbatim}
+\begin{Verbatim}
    void deleteField (
            String    fieldUri
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/field
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -95,13 +95,13 @@
 \subsection{GetDocumentFields}
 \index{GetDocumentFields}
 \label{Api:GetDocumentFields}
-\begin{verbatim}
+\begin{Verbatim}
    List<String> getDocumentFields (
            String    docURI
            List<String>    fields
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /user/field/$f(docURI)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -114,14 +114,14 @@
 \subsection{PutDocumentAndGetDocumentFields}
 \index{PutDocumentAndGetDocumentFields}
 \label{Api:PutDocumentAndGetDocumentFields}
-\begin{verbatim}
+\begin{Verbatim}
    List<String> putDocumentAndGetDocumentFields (
            String    docURI
            String    content
            List<String>    fields
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /user/field/$f(docURI)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]

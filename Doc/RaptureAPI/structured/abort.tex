@@ -1,0 +1,4 @@
+The \verb+abort+ API call is used to rollback an existing transaction. The transaction will usually
+be initiated using the \verb+begin+ call. When the \verb+begin+ call is made it both returns a transaction id and
+associates that transaction id with the calling context. The \verb+rollback+ call is identical to the \verb+abort+ call except
+that the \verb+rollback+ call retrieves the transaction id from the calling context.

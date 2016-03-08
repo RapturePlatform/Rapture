@@ -40,7 +40,7 @@ public class ReflexStdOutHandler implements IReflexOutputHandler {
 
     @Override
     public void printOutput(String text) {
-        System.out.println(text);
+        System.out.print(text);
     }
 
     @Override
