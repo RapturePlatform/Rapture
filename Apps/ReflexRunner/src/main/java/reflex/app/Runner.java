@@ -31,17 +31,13 @@ import java.util.Map;
 
 import jline.console.ConsoleReader;
 
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
-import org.apache.commons.cli.PosixParser;
 import org.apache.log4j.Logger;
 
 import rapture.common.client.HttpLoginApi;
 import rapture.common.client.ScriptClient;
 import rapture.common.client.SimpleCredentialsProvider;
 import rapture.common.exception.RaptureException;
+import rapture.config.ParameterValueReader;
 import rapture.module.AddinLoader;
 import rapture.util.StringUtil;
 import reflex.DefaultReflexIOHandler;
@@ -59,68 +55,79 @@ public class Runner {
      * @throws IOException
      */
     public static void main(String[] args) throws IOException {
+        
+        if(args.length == 0){
+            showProgramUsage();
+            System.exit(0);
+        }
+        
         ConsoleReader reader = new ConsoleReader();
         PrintWriter out = new PrintWriter(reader.getOutput());
-        out.println("ReflexRunner");
-        out.flush();
-        Options options = new Options();
-        options.addOption("r", true, "Rapture URL");
-        options.addOption("u", true, "User");
-        options.addOption("p", true, "Password");
-        options.addOption("f", true, "Script file");
-        options.addOption("d", false, "Debug");
-        options.addOption("v", false, "Show in window");
-        options.addOption("i", false, "Instrument");
-        options.addOption("param", true, "Parameters to pass script");
-
-        CommandLineParser parser = new PosixParser();
+        log.info("-------------------------------");
+        log.info("ReflexRunner started");
+        ParameterValueReader pvr = new ParameterValueReader(args);
+        pvr.addMapping("r", true, "Rapture URL", "RAPTURE_HOST", "Rapture-Home");
+        pvr.addMapping("u", true, "User", "RAPTURE_USER", "Rapture-User");
+        pvr.addMapping("p", true, "Password", "RAPTURE_PASSWORD", "Rapture-Password");
+        pvr.addMapping("f", true, "Script file", null, null);
+        pvr.addMapping("d", false, "Debug", null, null);
+        pvr.addMapping("i", false, "Instrument", null, null);
+        pvr.addMapping("params", true, "Parameters to pass script", null, null);
+  
         try {
-            CommandLine cmd = parser.parse(options, args);
             // Log onto Rapture, pass the script context to
             // Reflex and Run the reflex script
             // Now lets go
 
-            String password = "";
-            String user = "";
-            if (!cmd.hasOption('u')) {
+            String rapture = pvr.getValue("r");
+            if (rapture == null) {
+                log.error("Rapture URL is undefined. Specify a URL using -r or set environment variable RAPTURE_HOST.");
+                System.exit(1);
+            }
+            
+            String user = pvr.getValue("u");
+            String password = pvr.getValue("p");
+            if (user == null) {
                 user = reader.readLine("User: ");
             } else {
-                user = cmd.getOptionValue('u');
-                out.println("User: " + user);
+                log.info("User: " + user);
             }
-            if (!cmd.hasOption('p')) {
+            if (password == null) {
                 password = reader.readLine("Password: ", '*');
             } else {
-                password = cmd.getOptionValue('p');
-                out.println("Password: ******");
+                log.info("Password: ******");
             }
 
             // Load Modules
             AddinLoader.loadAddins();
 
-            HttpLoginApi loginApi = new HttpLoginApi(cmd.getOptionValue('r'), new SimpleCredentialsProvider(user, password));
-            out.println("Logging in...");
-            out.flush();
+            HttpLoginApi loginApi = new HttpLoginApi(rapture, new SimpleCredentialsProvider(user, password));
             loginApi.login();
-            out.println("Done...");
+            log.info("Logged into " + rapture);
             ScriptClient sc = new ScriptClient(loginApi);
 
             Map<String, Object> params = null;
-            if (cmd.hasOption("param")) {
-                String optionString = cmd.getOptionValue("param");
+            String optionString = pvr.getValue("params");
+            if (optionString != null) {
                 params = StringUtil.getMapFromString(optionString);
+                log.debug("Loaded params: " + params.toString());
             }
             IReflexHandler handler = new ReflexHandler(sc, false);
             // Get program from -f
             String program;
-            boolean instrument = cmd.hasOption('i');
-            boolean debug = cmd.hasOption('d');
+            boolean instrument = (pvr.getValue("i") != null);
+            boolean debug = (pvr.getValue("d") != null);
             IReflexDebugger debugger = null;
             InstrumentDebugger idebugger = null;
+            if(instrument && debug) {
+                log.error("-d and -i cannot be used at same time.");
+                System.exit(2);
+            }
             if (debug) {
                 debugger = new ReflexRunnerDebugger(handler, reader, out);
+                log.info("Debugger switched on.");
             }
-            if (instrument && !debug) {
+            if (instrument) {
                 idebugger = new InstrumentDebugger();
                 debugger = idebugger;
             }
@@ -128,33 +135,57 @@ public class Runner {
                 debugger = new NullDebugger();
             }
             try {
-                out.println("Loading program...");
-                program = DefaultReflexIOHandler.getStreamAsString(new FileInputStream(cmd.getOptionValue('f')));
-                if (instrument) {
-                    idebugger.setProgram(program);
-                }
-                out.println("Done...");
-                out.println("Running program...");
-                out.println("-------------------");
-                out.flush();
-                Object ret = ReflexExecutor.runReflexProgram(program, handler, params, debugger);
-                out.println("-------------------");
-                out.println("Return from program is " + ret.toString());
-                if (instrument) {
-                    idebugger.getInstrumenter().log();
+                String filename = pvr.getValue("f");
+                if (filename == null) {
+                    log.error("Read from stdin currently not supported. Use:  -f filename");
+                } else {
+                    program = DefaultReflexIOHandler.getStreamAsString(new FileInputStream(filename));
+                    if (instrument) {
+                        idebugger.setProgram(program);
+                        log.info("Code Instrumention switched on.");
+                    }
+                    log.info("Running script: " + filename);
+                    log.info("Output from script: ");
+                    Object ret = ReflexExecutor.runReflexProgram(program, handler, params, debugger);
+                    log.info("Return from script: " + ret.toString());
+                    log.info("Script execution finished.");
+                    if (instrument) {
+                        log.info("Instrumentation output:");
+                        System.out.println(idebugger.getInstrumenter().getInstrumentLogs());
+                    }
                 }
             } catch (FileNotFoundException e) {
                 log.error(e.getMessage());
             }
-
-        } catch (ParseException e) {
-            out.println("Parse error on command line options - " + e.getMessage());
-            out.flush();
-            System.exit(0);
         } catch (RaptureException e) {
-            out.println("Error during setup activity - " + e.getMessage());
+            log.error("Error during setup activity - " + e.getMessage());
+        } finally {
+            log.info("-------------------------------");
         }
-        out.flush();
     }
-
+    
+    private static void showProgramUsage(){
+        System.out.println("Overview:");
+        System.out.println("    ReflexRunner is a Java command line tool that will read and execute a local reflex script against a remote Rapture instance.");
+        System.out.println("CLI Usage:");
+        System.out.println("    ReflexRunner [-r Rapture API URL] [-u Rapture username] [-p Rapture password] [-f Script file] [-params Script parameters] [-d Debug] [-i Instrument]");
+        System.out.println("Examples:");
+        System.out.println("    * Execute a script with a parameter     : ReflexRunner -r http://localhost:8665/rapture -f myScript.rfx -param x=1");
+        System.out.println("    * Execute a script with 2 parameters    : ReflexRunner -r http://localhost:8665/rapture -f myScript.rfx -param x=1,y=abc");
+        System.out.println("    * Execute a script with instrumentation : ReflexRunner -r http://localhost:8665/rapture -f myScript.rfx -i");
+        System.out.println("Usage notes:");
+        System.out.println("    * -r and -f are mandatory parameters");
+        System.out.println("    * User name and password will be prompted for if not set using switches or environment variables");
+        System.out.println("    * Cannot use -i and -d switches at the same time");
+        System.out.println("    * Parameter input format is a comma seperated list of: <variable name>=<variable value>");
+        System.out.println("Supported environment variables:");
+        System.out.println("    * RAPTURE_HOST sets -r");
+        System.out.println("    * RAPTURE_USER sets -u");
+        System.out.println("    * RAPTURE_PASSWORD sets -p");
+        System.out.println("Exit codes:");
+        System.out.println("    * 0: No parameters passed.");
+        System.out.println("    * 1: Rapture URL (-r) parameter or environment variable is missing");
+        System.out.println("    * 2: Switches -d and -i cannot be used at same time");
+    }
+    
 }
