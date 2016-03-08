@@ -160,7 +160,7 @@ public class PostgresDocHandler {
 
     public long getSize() {
         String sql = "SELECT pg_total_relation_size(:table_name);";
-        return namedJdbcTemplate.queryForObject(sql, new MapSqlParameterSource("table_name", "public." + tableName), Integer.class);
+        return (long) namedJdbcTemplate.queryForObject(sql, new MapSqlParameterSource("table_name", "public." + tableName), Integer.class);
     }
 
     public void visitKeys(String prefix, final StoreKeyVisitor iStoreKeyVisitor) {
