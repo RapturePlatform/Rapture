@@ -58,10 +58,12 @@ public class MatchesNode extends BaseNode {
         Matcher m = p.matcher(strToCheck.asString());
         ReflexValue ret = new ReflexNullValue();
         List<ReflexValue> retInfo = new ArrayList<ReflexValue>();
-       while(m.find()) {
-                retInfo.add(new ReflexValue(m.group()));
+        while(m.find()) {
+        	for (int group = 0; group < m.groupCount(); group++) {
+                retInfo.add(new ReflexValue(m.group(group)));
             }
-            ret = new ReflexValue(retInfo);
+        }
+        ret = new ReflexValue(retInfo);
 
         debugger.stepEnd(this, ret, scope);
         return ret;

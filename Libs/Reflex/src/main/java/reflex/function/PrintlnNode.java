@@ -45,7 +45,7 @@ public class PrintlnNode extends PrintNode {
         } else {
             handler.getOutputHandler().printOutput("");
         }
-        // handler.getDataHandler().printOutput("\n");
+        handler.getOutputHandler().printOutput("\n");
         debugger.stepEnd(this, new ReflexVoidValue(lineNumber), scope);
         return new ReflexVoidValue();
     }
