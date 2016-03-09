@@ -2,7 +2,6 @@ package reflex;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.util.Map;
 
@@ -11,10 +10,13 @@ import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.CommonTreeNodeStream;
+import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.Logger;
+import org.apache.log4j.spi.LoggingEvent;
 import org.junit.Test;
 
 import rapture.common.api.ScriptingApi;
+import reflex.node.MatchNode;
 import reflex.node.ReflexNode;
 import reflex.util.InstrumentDebugger;
 import reflex.value.ReflexValue;
@@ -33,6 +35,70 @@ public class MatchTest {
 		assertEquals("Success", output);
 	}
 	
+	@Test
+	public void variousMatches() throws RecognitionException {
+		String program = "for ident in [1, 2, 3, 4, 5, 6, 7, 8, 9] do \n"+
+							" match ident do \n"+
+							"  is > 6 do \n"+
+							"    println(\"greater than 6\"); \n"+
+							"  end \n"+
+							"  is == 2+2 \n"+
+							"  is == 3+1 \n"+
+							"  is == 16/4 \n"+
+							"    do \n"+
+							"      println(\"We get it. It's 4\"); \n"+
+							"    end \n"+
+							"  is <= 4 do \n"+
+							"    println(\"less than 5\"); \n"+
+							"  end \n"+
+							"  is == 4 do \n"+
+							"    println(\"fail\"); \n"+
+							"  end \n"+
+							"  is == 5 do \n"+
+							"   println(\"It's 5\"); \n"+
+							"  end \n"+
+							"  otherwise do \n"+
+							"    println(\"must be 6\"); \n"+
+							"  end \n"+
+							" end \n"+
+							"end \n" +
+							"println('Success');\n";
+
+		String output = runScript(program, null);
+		assertTrue(output.contains("We get it. It's 4"));
+		assertTrue(output.contains("less than 5"));
+		assertTrue(output.contains("must be 6"));
+		assertTrue(output.contains("greater than 6"));
+		assertTrue(output.contains("less than 5"));
+		assertTrue(!output.contains("fail"));
+	}
+	
+	@Test
+	public void assignIsNotLegal() throws RecognitionException {
+		String program = "ident = 5;\n" + "match ident do\n" + "is = 5 do\n" + "println('Fail');\n"
+				+ "end\n" + "end";
+
+		String output = runScriptCatchingExceptions(program, null);
+		assertTrue(output, output.contains("Assignment found where comparator expected"));
+	}
+	
+	@Test
+	public void noMatch() throws RecognitionException {
+		String program = "ident = 5;\n" + "match ident do\n" + "is == 7 do\n" + "println('Fail');\n"
+				+ "end\n" + "end";
+		String output = runScriptCatchingExceptions(program, null);
+		assertTrue(output, output.contains("Warning: Match had no matches and no default"));
+	}
+	
+	@Test
+	public void exclaimIsNotLegal() throws RecognitionException {
+		String program = "ident = 5;\n" + "match ident do\n" + "is ! 5 do\n" + "println('Fail');\n"
+				+ "end\n" + "end";
+
+		String output = runScriptCatchingExceptions(program, null);
+		assertTrue(output, output.contains("Comparator expected"));
+	}
+		
 	public String runScript(String program, Map<String, Object> injectedVars)
 			throws RecognitionException, ReflexParseException {
 		StringBuilder sb = new StringBuilder();
@@ -90,6 +156,23 @@ public class MatchTest {
 		StringBuilder sb = new StringBuilder();
 		StringBuilder lexerError = new StringBuilder();
 		StringBuilder parserError = new StringBuilder();
+		StringBuilder logs = new StringBuilder();
+		
+		Logger.getLogger(MatchNode.class).addAppender(new AppenderSkeleton() {
+			@Override
+			public void close() {				
+			}
+
+			@Override
+			public boolean requiresLayout() {
+				return false;
+			}
+
+			@Override
+			protected void append(LoggingEvent event) {
+				logs.append(event.getMessage().toString());
+			};
+		});
 
 		try {
 			ReflexLexer lexer = new ReflexLexer() {
@@ -155,6 +238,8 @@ public class MatchTest {
 		sb.append(lexerError.toString()).append("\n");
 		sb.append("-----\n");
 		sb.append(parserError.toString()).append("\n");
+		sb.append("-----\n");
+		sb.append(logs.toString()).append("\n");
 		return sb.toString();
 	}
 }

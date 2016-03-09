@@ -568,6 +568,8 @@ otherwise
 
 comparator 
   : Is (x=Equals | x=NEquals | x=GTEquals | x=LTEquals | x=GT | x=LT) expression
+  | Is Assign { wibble("Assignment found where comparator expected", input, $Is) }? expression 
+  | Is (Or | And | Excl | Add | Subtract | Multiply | Divide | Modulus) { wibble("Comparator expected", input, $Is) }? expression 
   ;
 
 // SWITCH requires constants as case values

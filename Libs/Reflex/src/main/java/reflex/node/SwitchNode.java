@@ -99,7 +99,7 @@ public class SwitchNode extends BaseNode {
         if (action != null) {
         	ret = action.evaluate(debugger, scope);
         } else {
-        	System.err.println("Warning: Switch had no matches and no default");
+        	log.warn("Warning: Switch had no matches and no default");
         }
 
         debugger.stepEnd(this, ret, scope);

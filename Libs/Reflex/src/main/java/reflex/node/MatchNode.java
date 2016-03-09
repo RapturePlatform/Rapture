@@ -80,7 +80,7 @@ public class MatchNode extends BaseNode {
         if (Match != null) {
         	ret = Match.evaluate(debugger, scope);
         } else {
-        	System.err.println("Warning: Match had no matches and no default");
+        	log.warn("Warning: Match had no matches and no default");
         }
 
         debugger.stepEnd(this, ret, scope);
