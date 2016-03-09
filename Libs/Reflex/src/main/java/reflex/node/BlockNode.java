@@ -34,7 +34,7 @@ import reflex.value.internal.ReflexVoidValue;
 
 public class BlockNode extends BaseNode {
 
-    private List<ReflexNode> statements;
+	private List<ReflexNode> statements;
     private ReflexNode returnStatement;
 
     public BlockNode(int lineNumber, IReflexHandler handler, Scope s) {

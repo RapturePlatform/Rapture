@@ -69,6 +69,11 @@ public class ReflexTest extends ResourceBasedTest {
     }
 
     @Test
+    public void testSwitch() throws RecognitionException {
+        runTestFor("/switch.rfx");
+    }
+
+    @Test
     public void testTypeOf() throws RecognitionException {
         runTestFor("/typeof.rfx");
     }

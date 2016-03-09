@@ -16,6 +16,7 @@ import reflex.importer.*;
 import reflex.debug.*;
 import reflex.util.function.LanguageRegistry;
 import reflex.util.*;
+import reflex.value.ReflexValue;
 }
 
 @members {
@@ -122,11 +123,72 @@ statement returns [ReflexNode node]
   |  continueStatement { node = $continueStatement.node; }
   |  functionCall { node = $functionCall.node; }
   |  throwStatement { node = $throwStatement.node; }
+  |  matchStatement { node = $matchStatement.node; }
+  |  switchStatement { node = $switchStatement.node; }
   |  ifStatement { node = $ifStatement.node; }
   |  forStatement { node = $forStatement.node;}
   |  pforStatement { node = $pforStatement.node; }
   |  whileStatement { node = $whileStatement.node; }
   |  guardedStatement { node = $guardedStatement.node; }
+  ;
+  
+variant returns [ReflexNode node]
+@init {
+    CommonTree ahead = (CommonTree) input.LT(1);
+    int line = ahead.getToken().getLine();
+}
+  :  Integer { node = AtomNode.getIntegerAtom(line, handler, currentScope, $Integer.text); }
+  |  Number { node = new AtomNode(line, handler, currentScope, Double.parseDouble($Number.text)); }
+  |  String { node = AtomNode.getStringAtom(line, handler, currentScope, $String.text); }
+  |  Long { node = new AtomNode(line, handler, currentScope, java.lang.Long.parseLong($Long.text)); }
+  |  Bool { node = new AtomNode(line, handler, currentScope, Boolean.parseBoolean($Bool.text)); }
+  ;
+   
+switchStatement returns [ReflexNode node]
+@init  {
+  CommonTree ahead = (CommonTree) input.LT(1);
+  int line = ahead.getToken().getLine();
+  SwitchNode switchNode = new SwitchNode(line, handler, currentScope);
+  node = switchNode;
+}
+  : SWITCH switchValue=expression 
+     (CASE (caseValue=variant | DEFAULT { caseValue = null; }) caseBlock=block { switchNode.addCase($caseValue.node, $caseBlock.node); } )*
+ 		{ switchNode.setSwitchValue($switchValue.node); }
+  ;
+
+matchStatement returns [ReflexNode node]
+@init  {
+  CommonTree ahead = (CommonTree) input.LT(1);
+  int line = ahead.getToken().getLine();
+  MatchNode matchNode = new MatchNode(line, handler, currentScope);
+  node = matchNode;
+}
+  : MATCH matchValue=expression actions[$matchValue.node, matchNode]* otherwise[$matchValue.node, matchNode]?
+  ;
+
+actions[ReflexNode exp, MatchNode matchNode]
+  : comp=comparator[exp]+ block { matchNode.addCase($comp.node, $block.node); }
+  ;
+  
+comparator [ReflexNode exp] returns [ReflexNode node]
+@init {
+    CommonTree ahead = (CommonTree) input.LT(1);
+    int line = ahead.getToken().getLine();
+}
+  :  Is Equals rhs=expression { node = new EqualsNode(line, handler, currentScope, $exp, $rhs.node); }
+  |  Is NEquals rhs=expression { node = new NotEqualsNode(line,handler, currentScope, $exp, $rhs.node); }
+  |  Is GTEquals rhs=expression { node = new GTEqualsNode(line, handler, currentScope, $exp, $rhs.node); }
+  |  Is LTEquals rhs=expression { node = new LTEqualsNode(line, handler, currentScope, $exp, $rhs.node); }
+  |  Is GT rhs=expression { node = new GTNode(line, handler, currentScope, $exp, $rhs.node); }
+  |  Is LT rhs=expression { node = new LTNode(line, handler, currentScope, $exp, $rhs.node); }
+  ;
+
+otherwise[ReflexNode exp, MatchNode matchNode]
+@init {
+    CommonTree ahead = (CommonTree) input.LT(1);
+    int line = ahead.getToken().getLine();
+}
+  : OTHERWISE block { matchNode.addCase(new AtomNode(line, handler, currentScope, new ReflexValue(line, Boolean.TRUE)), $block.node); }
   ;
 
 assignment returns [ReflexNode node]
@@ -328,7 +390,6 @@ ifStatement returns [ReflexNode node]
        (^(EXP b2=block)           {ifNode.addChoice(new AtomNode(line, handler, currentScope, true),$b2.node);})?
      )
   ;
-
 
 forStatement returns [ReflexNode node]
 @init {

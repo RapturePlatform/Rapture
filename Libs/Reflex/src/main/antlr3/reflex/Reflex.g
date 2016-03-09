@@ -55,6 +55,12 @@ tokens {
   IMPORTPARAMS;
   EXPORT;
   PATCH;
+  MATCH;
+  IS;
+  OTHERWISE;
+  SWITCH;
+  CASE;
+  DEFAULT;
 }
 
 @parser::header{
@@ -72,6 +78,7 @@ package reflex;
 }
 
 @lexer::members {
+	public static Stack<String> alias = new Stack<String>();
     public IReflexScriptHandler dataHandler = new DummyReflexScriptHandler();
 
     private boolean syntaxOnly = false;
@@ -161,49 +168,24 @@ package reflex;
        return token;
      }
 
-    public static String getBetterParseError(RecognitionException e) {
-        StringBuilder sb = new StringBuilder();
-        CommonToken token = (CommonToken) e.token;
-	if (token == null) {
-	    sb.append("Exception ");
-	    String message = e.getMessage();
-	    if (message != null) {
-		sb.append(message);
-	    } else {
-		sb.append("of type ").append(e.getClass().getCanonicalName());
-	    }
-	    sb.append(" on line ").append(e.line).append("\n");
-	    String[] lines = e.input.toString().split("\n");
-	    int lineNum = e.line - 1;
-	    sb.append(lines[lineNum++]).append("\n");
-            for (int i = 0; i < e.charPositionInLine; i++) sb.append("-");
-	    sb.append("^\n");
-	    if (lineNum < lines.length) sb.append(lines[lineNum++]).append("\n");
-	    if (lineNum < lines.length) sb.append(lines[lineNum++]).append("\n");
-	} else {
-	    String[] badLine = token.getInputStream().substring(token.getStartIndex() - e.charPositionInLine, token.getStopIndex() + 256).split("\n");
-
-	    sb.append("Error while parsing: \n").append(badLine[0]).append("\n");
-	    for (int i = 0; i < e.charPositionInLine; i++) sb.append("-");
-	    for (int i = 0; i < token.getText().length(); i++) sb.append("^");
-	    sb.append("\n");
-	    if (badLine.length > 1) sb.append(badLine[1]).append("\n");
-	    if (badLine.length > 2) sb.append(badLine[2]).append("\n");
-	    sb.append("Error at token ").append(token.getText());
-	    sb.append(" on line ").append(e.line).append("\n");
-	}
-	Throwable cause = e.getCause();
-	if (cause != null) {
-	    sb.append("Caused by ").append(cause.getMessage()).append("\n");
-	}
-	return sb.toString();
-    }
-
     @Override
     public void reportError(RecognitionException e) {
-        emitErrorMessage(getBetterParseError(e));
+        emitErrorMessage(ErrorHandler.getParserExceptionDetails(e));
         super.reportError(e);
     }
+    
+    @Override
+    public void recover(RecognitionException e) {
+        super.recover(e);
+    }
+    
+  public boolean wibble(String error, IntStream input, boolean ignorable) throws ReflexRecognitionException {
+	ReflexRecognitionException rre = new ReflexRecognitionException(error, input, ignorable);
+	if (ignorable) emitErrorMessage(ErrorHandler.getParserExceptionDetails(rre));
+	else throw rre;
+	return ignorable;
+  }
+    
 }
 
 @lexer::rulecatch {
@@ -344,7 +326,16 @@ package reflex;
 
   @Override
   public void reportError(RecognitionException e) {
+      emitErrorMessage(ErrorHandler.getParserExceptionDetails(e));
       super.reportError(e);
+  }
+  
+  public boolean wibble(String error, IntStream input, Token previous) throws ReflexRecognitionException {	
+	CommonToken t = (CommonToken) ((TokenStream) input).LT(-1);
+	int length = t.getStartIndex() - ((CommonToken)previous).getStopIndex();
+	int start = previous.getCharPositionInLine() + 2 + ((CommonToken)previous).getStopIndex() - ((CommonToken)previous).getStartIndex();
+	emitErrorMessage(error+" at token "+t.getText()+" "+ErrorHandler.displayError(t.getInputStream(), previous.getLine(), start, length));
+	return false;
   }
 }
 
@@ -384,6 +375,8 @@ statement
   |  throwStatement ';' -> throwStatement
   |  breakStatement ';' -> breakStatement
   |  continueStatement ';' -> continueStatement
+  |  matchStatement
+  |  switchStatement
   |  ifStatement
   |  forStatement
   |  pforStatement
@@ -391,9 +384,6 @@ statement
   |  guardedStatement
   |  exportStatement
   ;
-  catch [RecognitionException e] {
-      throw new ReflexParseException(e, getErrorMessage(e, this.getTokenNames()));
-  }
 
 exportStatement
 @after {
@@ -562,14 +552,44 @@ func2
                                   -> ^({token("KERNEL_CALL", KERNEL_CALL, $KernelIdentifier.getLine())} KernelIdentifier exprList?)
   ;
 
+// MATCH allows expressions as case values
 
-// So really we should have
-// if x do
-//    something
-// end else do
-//    something else
-// end
+matchStatement
+  :  Match expression Do actions* otherwise? End -> MATCH expression actions* otherwise?
+  ;
+  
+actions
+  : comparator+ Do block End	-> comparator+ block
+  ;
 
+otherwise
+  : Otherwise Do block End	-> OTHERWISE block
+  ;
+
+comparator 
+  : Is (x=Equals | x=NEquals | x=GTEquals | x=LTEquals | x=GT | x=LT) expression
+  ;
+
+// SWITCH requires constants as case values
+
+switchStatement
+  :  Switch expression Do caseStatement* End -> SWITCH expression caseStatement* 
+  ;
+  
+caseStatement 
+  : Case variant Do block End		-> CASE variant block
+  | Default Do block End			-> CASE DEFAULT block
+  | Case (QuotedString | expression) {wibble(ReflexLexer.alias.peek()+" found where constant expected.", input, $Case)}?
+  ;
+  
+variant
+  :  Integer
+  |  Number 
+  |  String
+  |  Long
+  |  Bool
+  ;
+  
 ifStatement
   :  ifStat elseIfStat* elseStat? End? -> ^(IF[$ifStat.start] ifStat elseIfStat* elseStat?)
   ;
@@ -666,6 +686,12 @@ exprList
   ;
 
 expression
+@init{
+  ReflexLexer.alias.push("Expression");
+}
+@after {
+  ReflexLexer.alias.pop();
+}
   :  condExpr
   ;
 
@@ -719,16 +745,14 @@ sparsematrix
   ;
 
 atom
-  :  Number
-  |  Integer
+  :  Integer
   |  Long
+  |  Number
   |  Bool
   |  Null
   |  sparsematrix
   |  lookup
   ;
-
-
 
 list
   :  '[' exprList? ']' -> ^(LIST exprList?)
@@ -860,6 +884,12 @@ Matches  : 'matches';
 Split    : 'split';
 
 Def      : 'def';
+Match    : 'match';
+Is       : 'is';
+Otherwise: 'otherwise';
+Switch   : 'switch';
+Case     : 'case';
+Default  : 'default';
 If       : 'if';
 Else     : 'else';
 Return   : 'return';
@@ -870,7 +900,12 @@ To       : 'to';
 OBrace   : '{';
 CBrace   : '}';
 Do       : 'do';
-End      : 'end';
+
+// Without this a semicolon after end causes really unhelpful error messages
+End      : 'end'
+         | 'end' {wibble("Unexpected semicolon", input, true)}? SColon
+         ;
+
 In       : 'in';
 Null     : 'null';
 New      : 'new';
@@ -923,17 +958,18 @@ Patch    : '<-->';
 PullVal  : '<--';
 PushVal  : '-->';
 
-
 Bool
   :  'true'
   |  'false'
   ;
 
-Integer
+Integer 
 @after {
-  setText(getText().substring(0,getText().length()-1));
-}
-  :  Int 'I'
+  String tx = getText();
+  if (tx.endsWith("I")) setText(tx.substring(0, tx.length()-1));
+}  
+  : Int
+  | Int 'I' 
   ;
 
 Long
@@ -944,8 +980,7 @@ Long
   ;
 
 Number
-  :  Int
-  |  Int '.' Digit (Digit)*
+  :  Int '.' Digit (Digit)*
   ;
 
 PackageIdentifier
@@ -977,7 +1012,13 @@ DottedIdentifier
 
 
 QuotedString
-@init{StringBuilder lBuf = new StringBuilder();}
+@init{
+  StringBuilder lBuf = new StringBuilder();
+  alias.push("Quoted String");
+}
+@after {
+  alias.pop();
+}
     :
            '"'
            ( escaped=ESC {lBuf.append(getText());} |
