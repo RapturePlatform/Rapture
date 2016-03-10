@@ -1,13 +1,13 @@
 \chapter{Notification API}
 \index{Notification API}
 \input{notification/info}
-\subsection{GetNotificationManagerConfigs}
+\section{GetNotificationManagerConfigs}
 \index{GetNotificationManagerConfigs}
 \label{Api:GetNotificationManagerConfigs}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    List<RaptureNotificationConfig> getNotificationManagerConfigs (
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/notification
 \end{Verbatim}
@@ -18,14 +18,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{ListNotificationsByUriPrefix}
+\section{ListNotificationsByUriPrefix}
 \index{ListNotificationsByUriPrefix}
 \label{Api:ListNotificationsByUriPrefix}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    List<RaptureFolderInfo> listNotificationsByUriPrefix (
            String    uriPrefix
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /user/get
 \end{Verbatim}
@@ -36,14 +36,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{FindNotificationManagerConfigsByPurpose}
+\section{FindNotificationManagerConfigsByPurpose}
 \index{FindNotificationManagerConfigsByPurpose}
 \label{Api:FindNotificationManagerConfigsByPurpose}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    List<RaptureNotificationConfig> findNotificationManagerConfigsByPurpose (
            String    purpose
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/notification
 \end{Verbatim}
@@ -54,16 +54,16 @@
 
 
 \rule{12cm}{2pt}
-\subsection{CreateNotificationManager}
+\section{CreateNotificationManager}
 \index{CreateNotificationManager}
 \label{Api:CreateNotificationManager}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    RaptureNotificationConfig createNotificationManager (
            String    notificationManagerUri
            String    config
            String    purpose
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/notification
 \end{Verbatim}
@@ -74,14 +74,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{NotificationManagerExists}
+\section{NotificationManagerExists}
 \index{NotificationManagerExists}
 \label{Api:NotificationManagerExists}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    boolean notificationManagerExists (
            String    notificationManagerUri
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/notification
 \end{Verbatim}
@@ -92,14 +92,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetNotificationManagerConfig}
+\section{GetNotificationManagerConfig}
 \index{GetNotificationManagerConfig}
 \label{Api:GetNotificationManagerConfig}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    RaptureNotificationConfig getNotificationManagerConfig (
            String    notificationManagerUri
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/notification
 \end{Verbatim}
@@ -110,14 +110,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{DeleteNotificationManager}
+\section{DeleteNotificationManager}
 \index{DeleteNotificationManager}
 \label{Api:DeleteNotificationManager}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void deleteNotificationManager (
            String    notificationManagerUri
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/notification
 \end{Verbatim}
@@ -128,14 +128,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetLatestNotificationEpoch}
+\section{GetLatestNotificationEpoch}
 \index{GetLatestNotificationEpoch}
 \label{Api:GetLatestNotificationEpoch}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    Long getLatestNotificationEpoch (
            String    notificationManagerUri
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /user/notification
 \end{Verbatim}
@@ -146,17 +146,17 @@
 
 
 \rule{12cm}{2pt}
-\subsection{PublishNotification}
+\section{PublishNotification}
 \index{PublishNotification}
 \label{Api:PublishNotification}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    String publishNotification (
            String    notificationManagerUri
            String    referenceId
            String    content
            String    contentType
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /user/notification
 \end{Verbatim}
@@ -167,15 +167,15 @@
 
 
 \rule{12cm}{2pt}
-\subsection{FindNotificationsAfterEpoch}
+\section{FindNotificationsAfterEpoch}
 \index{FindNotificationsAfterEpoch}
 \label{Api:FindNotificationsAfterEpoch}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    NotificationResult findNotificationsAfterEpoch (
            String    notificationManagerUri
            Long    epoch
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/notification
 \end{Verbatim}
@@ -186,15 +186,15 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetNotification}
+\section{GetNotification}
 \index{GetNotification}
 \label{Api:GetNotification}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    NotificationInfo getNotification (
            String    notificationUri
            String    id
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/notification
 \end{Verbatim}

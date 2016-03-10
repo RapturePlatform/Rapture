@@ -36,9 +36,9 @@ import reflex.calendar.CalendarHandler;
 
 /**
  * A wrapper around a Date/Time value that is a first class type in Reflex
- * 
+ *
  * @author amkimian
- * 
+ *
  */
 public class ReflexDateValue {
 

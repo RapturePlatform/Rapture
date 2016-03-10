@@ -1,15 +1,15 @@
 \chapter{Runner API}
 \index{Runner API}
 \input{runner/info}
-\subsection{CreateServerGroup}
+\section{CreateServerGroup}
 \index{CreateServerGroup}
 \label{Api:CreateServerGroup}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    RaptureServerGroup createServerGroup (
            String    name
            String    description
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -20,14 +20,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{DeleteServerGroup}
+\section{DeleteServerGroup}
 \index{DeleteServerGroup}
 \label{Api:DeleteServerGroup}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void deleteServerGroup (
            String    name
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -38,13 +38,13 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetAllServerGroups}
+\section{GetAllServerGroups}
 \index{GetAllServerGroups}
 \label{Api:GetAllServerGroups}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    List<RaptureServerGroup> getAllServerGroups (
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -55,13 +55,13 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetAllApplicationDefinitions}
+\section{GetAllApplicationDefinitions}
 \index{GetAllApplicationDefinitions}
 \label{Api:GetAllApplicationDefinitions}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    List<RaptureApplicationDefinition> getAllApplicationDefinitions (
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -72,13 +72,13 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetAllLibraryDefinitions}
+\section{GetAllLibraryDefinitions}
 \index{GetAllLibraryDefinitions}
 \label{Api:GetAllLibraryDefinitions}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    List<RaptureLibraryDefinition> getAllLibraryDefinitions (
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -89,13 +89,13 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetAllApplicationInstances}
+\section{GetAllApplicationInstances}
 \index{GetAllApplicationInstances}
 \label{Api:GetAllApplicationInstances}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    List<RaptureApplicationInstance> getAllApplicationInstances (
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -106,14 +106,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetServerGroup}
+\section{GetServerGroup}
 \index{GetServerGroup}
 \label{Api:GetServerGroup}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    RaptureServerGroup getServerGroup (
            String    name
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -124,15 +124,15 @@
 
 
 \rule{12cm}{2pt}
-\subsection{AddGroupInclusion}
+\section{AddGroupInclusion}
 \index{AddGroupInclusion}
 \label{Api:AddGroupInclusion}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    RaptureServerGroup addGroupInclusion (
            String    name
            String    inclusion
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -143,15 +143,15 @@
 
 
 \rule{12cm}{2pt}
-\subsection{RemoveGroupInclusion}
+\section{RemoveGroupInclusion}
 \index{RemoveGroupInclusion}
 \label{Api:RemoveGroupInclusion}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    RaptureServerGroup removeGroupInclusion (
            String    name
            String    inclusion
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -162,15 +162,15 @@
 
 
 \rule{12cm}{2pt}
-\subsection{AddGroupExclusion}
+\section{AddGroupExclusion}
 \index{AddGroupExclusion}
 \label{Api:AddGroupExclusion}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    RaptureServerGroup addGroupExclusion (
            String    name
            String    exclusion
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -181,15 +181,15 @@
 
 
 \rule{12cm}{2pt}
-\subsection{RemoveGroupExclusion}
+\section{RemoveGroupExclusion}
 \index{RemoveGroupExclusion}
 \label{Api:RemoveGroupExclusion}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    RaptureServerGroup removeGroupExclusion (
            String    name
            String    exclusion
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -200,15 +200,15 @@
 
 
 \rule{12cm}{2pt}
-\subsection{RemoveGroupEntry}
+\section{RemoveGroupEntry}
 \index{RemoveGroupEntry}
 \label{Api:RemoveGroupEntry}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    RaptureServerGroup removeGroupEntry (
            String    name
            String    entry
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -219,16 +219,16 @@
 
 
 \rule{12cm}{2pt}
-\subsection{CreateApplicationDefinition}
+\section{CreateApplicationDefinition}
 \index{CreateApplicationDefinition}
 \label{Api:CreateApplicationDefinition}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    RaptureApplicationDefinition createApplicationDefinition (
            String    name
            String    ver
            String    description
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -239,14 +239,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{DeleteApplicationDefinition}
+\section{DeleteApplicationDefinition}
 \index{DeleteApplicationDefinition}
 \label{Api:DeleteApplicationDefinition}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void deleteApplicationDefinition (
            String    name
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -257,15 +257,15 @@
 
 
 \rule{12cm}{2pt}
-\subsection{UpdateApplicationVersion}
+\section{UpdateApplicationVersion}
 \index{UpdateApplicationVersion}
 \label{Api:UpdateApplicationVersion}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    RaptureApplicationDefinition updateApplicationVersion (
            String    name
            String    ver
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -276,16 +276,16 @@
 
 
 \rule{12cm}{2pt}
-\subsection{CreateLibraryDefinition}
+\section{CreateLibraryDefinition}
 \index{CreateLibraryDefinition}
 \label{Api:CreateLibraryDefinition}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    RaptureLibraryDefinition createLibraryDefinition (
            String    name
            String    ver
            String    description
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -296,14 +296,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{DeleteLibraryDefinition}
+\section{DeleteLibraryDefinition}
 \index{DeleteLibraryDefinition}
 \label{Api:DeleteLibraryDefinition}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void deleteLibraryDefinition (
            String    name
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -314,14 +314,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetLibraryDefinition}
+\section{GetLibraryDefinition}
 \index{GetLibraryDefinition}
 \label{Api:GetLibraryDefinition}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    RaptureLibraryDefinition getLibraryDefinition (
            String    name
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -332,15 +332,15 @@
 
 
 \rule{12cm}{2pt}
-\subsection{UpdateLibraryVersion}
+\section{UpdateLibraryVersion}
 \index{UpdateLibraryVersion}
 \label{Api:UpdateLibraryVersion}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    RaptureLibraryDefinition updateLibraryVersion (
            String    name
            String    ver
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -351,15 +351,15 @@
 
 
 \rule{12cm}{2pt}
-\subsection{AddLibraryToGroup}
+\section{AddLibraryToGroup}
 \index{AddLibraryToGroup}
 \label{Api:AddLibraryToGroup}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    RaptureServerGroup addLibraryToGroup (
            String    serverGroup
            String    libraryName
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -370,15 +370,15 @@
 
 
 \rule{12cm}{2pt}
-\subsection{RemoveLibraryFromGroup}
+\section{RemoveLibraryFromGroup}
 \index{RemoveLibraryFromGroup}
 \label{Api:RemoveLibraryFromGroup}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    RaptureServerGroup removeLibraryFromGroup (
            String    serverGroup
            String    libraryName
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -389,10 +389,10 @@
 
 
 \rule{12cm}{2pt}
-\subsection{CreateApplicationInstance}
+\section{CreateApplicationInstance}
 \index{CreateApplicationInstance}
 \label{Api:CreateApplicationInstance}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    RaptureApplicationInstance createApplicationInstance (
            String    name
            String    description
@@ -403,7 +403,7 @@
            String    parameters
            String    apiUser
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -414,17 +414,17 @@
 
 
 \rule{12cm}{2pt}
-\subsection{RunApplication}
+\section{RunApplication}
 \index{RunApplication}
 \label{Api:RunApplication}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    RaptureApplicationStatus runApplication (
            String    appName
            String    queueName
            Map<String,String>    parameterInput
            Map<String,String>    parameterOutput
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -435,10 +435,10 @@
 
 
 \rule{12cm}{2pt}
-\subsection{RunCustomApplication}
+\section{RunCustomApplication}
 \index{RunCustomApplication}
 \label{Api:RunCustomApplication}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    RaptureApplicationStatus runCustomApplication (
            String    appName
            String    queueName
@@ -446,7 +446,7 @@
            Map<String,String>    parameterOutput
            String    customApplicationPath
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -457,14 +457,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetApplicationStatus}
+\section{GetApplicationStatus}
 \index{GetApplicationStatus}
 \label{Api:GetApplicationStatus}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    RaptureApplicationStatus getApplicationStatus (
            String    applicationStatusURI
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -475,14 +475,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetApplicationStatuses}
+\section{GetApplicationStatuses}
 \index{GetApplicationStatuses}
 \label{Api:GetApplicationStatuses}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    List<RaptureApplicationStatus> getApplicationStatuses (
            String    date
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -493,13 +493,13 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetApplicationStatusDates}
+\section{GetApplicationStatusDates}
 \index{GetApplicationStatusDates}
 \label{Api:GetApplicationStatusDates}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    List<String> getApplicationStatusDates (
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -510,13 +510,13 @@
 
 
 \rule{12cm}{2pt}
-\subsection{ArchiveApplicationStatuses}
+\section{ArchiveApplicationStatuses}
 \index{ArchiveApplicationStatuses}
 \label{Api:ArchiveApplicationStatuses}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void archiveApplicationStatuses (
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -527,16 +527,16 @@
 
 
 \rule{12cm}{2pt}
-\subsection{ChangeApplicationStatus}
+\section{ChangeApplicationStatus}
 \index{ChangeApplicationStatus}
 \label{Api:ChangeApplicationStatus}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    RaptureApplicationStatus changeApplicationStatus (
            String    applicationStatusURI
            RaptureApplicationStatusStep    statusCode
            String    message
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -547,15 +547,15 @@
 
 
 \rule{12cm}{2pt}
-\subsection{RecordStatusMessages}
+\section{RecordStatusMessages}
 \index{RecordStatusMessages}
 \label{Api:RecordStatusMessages}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void recordStatusMessages (
            String    applicationStatusURI
            List<String>    messages
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -566,15 +566,15 @@
 
 
 \rule{12cm}{2pt}
-\subsection{TerminateApplication}
+\section{TerminateApplication}
 \index{TerminateApplication}
 \label{Api:TerminateApplication}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    RaptureApplicationStatus terminateApplication (
            String    applicationStatusURI
            String    reasonMessage
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -585,15 +585,15 @@
 
 
 \rule{12cm}{2pt}
-\subsection{DeleteApplicationInstance}
+\section{DeleteApplicationInstance}
 \index{DeleteApplicationInstance}
 \label{Api:DeleteApplicationInstance}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void deleteApplicationInstance (
            String    name
            String    serverGroup
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -604,15 +604,15 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetApplicationInstance}
+\section{GetApplicationInstance}
 \index{GetApplicationInstance}
 \label{Api:GetApplicationInstance}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    RaptureApplicationInstance getApplicationInstance (
            String    name
            String    serverGroup
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -623,10 +623,10 @@
 
 
 \rule{12cm}{2pt}
-\subsection{UpdateStatus}
+\section{UpdateStatus}
 \index{UpdateStatus}
 \label{Api:UpdateStatus}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void updateStatus (
            String    name
            String    serverGroup
@@ -634,7 +634,7 @@
            String    status
            boolean    finished
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -645,14 +645,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetApplicationsForServerGroup}
+\section{GetApplicationsForServerGroup}
 \index{GetApplicationsForServerGroup}
 \label{Api:GetApplicationsForServerGroup}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    List<String> getApplicationsForServerGroup (
            String    serverGroup
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -663,14 +663,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetApplicationsForServer}
+\section{GetApplicationsForServer}
 \index{GetApplicationsForServer}
 \label{Api:GetApplicationsForServer}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    List<RaptureApplicationInstance> getApplicationsForServer (
            String    serverName
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -681,14 +681,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetApplicationDefinition}
+\section{GetApplicationDefinition}
 \index{GetApplicationDefinition}
 \label{Api:GetApplicationDefinition}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    RaptureApplicationDefinition getApplicationDefinition (
            String    name
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -699,15 +699,15 @@
 
 
 \rule{12cm}{2pt}
-\subsection{SetRunnerConfig}
+\section{SetRunnerConfig}
 \index{SetRunnerConfig}
 \label{Api:SetRunnerConfig}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void setRunnerConfig (
            String    name
            String    value
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -718,14 +718,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{DeleteRunnerConfig}
+\section{DeleteRunnerConfig}
 \index{DeleteRunnerConfig}
 \label{Api:DeleteRunnerConfig}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void deleteRunnerConfig (
            String    name
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -736,13 +736,13 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetRunnerConfig}
+\section{GetRunnerConfig}
 \index{GetRunnerConfig}
 \label{Api:GetRunnerConfig}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    RaptureRunnerConfig getRunnerConfig (
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -753,10 +753,10 @@
 
 
 \rule{12cm}{2pt}
-\subsection{RecordRunnerStatus}
+\section{RecordRunnerStatus}
 \index{RecordRunnerStatus}
 \label{Api:RecordRunnerStatus}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void recordRunnerStatus (
            String    serverName
            String    serverGroup
@@ -764,7 +764,7 @@
            String    appName
            String    status
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -775,16 +775,16 @@
 
 
 \rule{12cm}{2pt}
-\subsection{RecordInstanceCapabilities}
+\section{RecordInstanceCapabilities}
 \index{RecordInstanceCapabilities}
 \label{Api:RecordInstanceCapabilities}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void recordInstanceCapabilities (
            String    serverName
            String    instanceName
            Map<String,Object>    capabilities
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -795,15 +795,15 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetCapabilities}
+\section{GetCapabilities}
 \index{GetCapabilities}
 \label{Api:GetCapabilities}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    Map<String,RaptureInstanceCapabilities> getCapabilities (
            String    serverName
            List<String>    instanceNames
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -814,13 +814,13 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetRunnerServers}
+\section{GetRunnerServers}
 \index{GetRunnerServers}
 \label{Api:GetRunnerServers}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    List<String> getRunnerServers (
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -831,14 +831,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetRunnerStatus}
+\section{GetRunnerStatus}
 \index{GetRunnerStatus}
 \label{Api:GetRunnerStatus}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    RaptureRunnerStatus getRunnerStatus (
            String    serverName
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -849,14 +849,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{CleanRunnerStatus}
+\section{CleanRunnerStatus}
 \index{CleanRunnerStatus}
 \label{Api:CleanRunnerStatus}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void cleanRunnerStatus (
            int    ageInMinutes
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -867,15 +867,15 @@
 
 
 \rule{12cm}{2pt}
-\subsection{MarkForRestart}
+\section{MarkForRestart}
 \index{MarkForRestart}
 \label{Api:MarkForRestart}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void markForRestart (
            String    serverName
            String    name
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}

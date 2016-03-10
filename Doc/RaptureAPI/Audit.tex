@@ -1,14 +1,14 @@
 \chapter{Audit API}
 \index{Audit API}
 \input{audit/info}
-\subsection{Setup}
+\section{Setup}
 \index{Setup}
 \label{Api:Setup}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void setup (
            boolean    force
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /audit/admin
 \end{Verbatim}
@@ -19,15 +19,15 @@
 
 
 \rule{12cm}{2pt}
-\subsection{CreateAuditLog}
+\section{CreateAuditLog}
 \index{CreateAuditLog}
 \label{Api:CreateAuditLog}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void createAuditLog (
            String    name
            String    config
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /audit/admin
 \end{Verbatim}
@@ -38,14 +38,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{DoesAuditLogExist}
+\section{DoesAuditLogExist}
 \index{DoesAuditLogExist}
 \label{Api:DoesAuditLogExist}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    boolean doesAuditLogExist (
            String    logURI
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /audit/main
 \end{Verbatim}
@@ -56,14 +56,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetChildren}
+\section{GetChildren}
 \index{GetChildren}
 \label{Api:GetChildren}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    List<RaptureFolderInfo> getChildren (
            String    prefix
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /audit/main
 \end{Verbatim}
@@ -74,14 +74,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{DeleteAuditLog}
+\section{DeleteAuditLog}
 \index{DeleteAuditLog}
 \label{Api:DeleteAuditLog}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void deleteAuditLog (
            String    logURI
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /audit/admin
 \end{Verbatim}
@@ -92,14 +92,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetAuditLog}
+\section{GetAuditLog}
 \index{GetAuditLog}
 \label{Api:GetAuditLog}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    AuditLogConfig getAuditLog (
            String    logURI
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /audit/admin
 \end{Verbatim}
@@ -110,17 +110,17 @@
 
 
 \rule{12cm}{2pt}
-\subsection{WriteAuditEntry}
+\section{WriteAuditEntry}
 \index{WriteAuditEntry}
 \label{Api:WriteAuditEntry}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void writeAuditEntry (
            String    logURI
            String    category
            int    level
            String    message
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /audit/admin
 \end{Verbatim}
@@ -131,10 +131,10 @@
 
 
 \rule{12cm}{2pt}
-\subsection{WriteAuditEntryData}
+\section{WriteAuditEntryData}
 \index{WriteAuditEntryData}
 \label{Api:WriteAuditEntryData}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void writeAuditEntryData (
            String    logURI
            String    category
@@ -142,7 +142,7 @@
            String    message
            Map<String,Object>    data
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /audit/admin
 \end{Verbatim}
@@ -153,15 +153,15 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetRecentLogEntries}
+\section{GetRecentLogEntries}
 \index{GetRecentLogEntries}
 \label{Api:GetRecentLogEntries}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    List<AuditLogEntry> getRecentLogEntries (
            String    logURI
            int    count
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /audit/admin
 \end{Verbatim}
@@ -172,15 +172,15 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetEntriesSince}
+\section{GetEntriesSince}
 \index{GetEntriesSince}
 \label{Api:GetEntriesSince}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    List<AuditLogEntry> getEntriesSince (
            String    logURI
            AuditLogEntry    when
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /audit/main
 \end{Verbatim}
@@ -191,15 +191,15 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetRecentUserActivity}
+\section{GetRecentUserActivity}
 \index{GetRecentUserActivity}
 \label{Api:GetRecentUserActivity}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    List<AuditLogEntry> getRecentUserActivity (
            String    user
            int    count
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /audit/admin
 \end{Verbatim}

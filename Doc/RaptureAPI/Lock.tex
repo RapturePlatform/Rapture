@@ -1,14 +1,14 @@
 \chapter{Lock API}
 \index{Lock API}
 \input{lock/info}
-\subsection{GetLockManagerConfigs}
+\section{GetLockManagerConfigs}
 \index{GetLockManagerConfigs}
 \label{Api:GetLockManagerConfigs}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    List<RaptureLockConfig> getLockManagerConfigs (
            String    managerUri
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/lock
 \end{Verbatim}
@@ -19,16 +19,16 @@
 
 
 \rule{12cm}{2pt}
-\subsection{CreateLockManager}
+\section{CreateLockManager}
 \index{CreateLockManager}
 \label{Api:CreateLockManager}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    RaptureLockConfig createLockManager (
            String    managerUri
            String    config
            String    pathPosition
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/lock
 \end{Verbatim}
@@ -39,14 +39,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{LockManagerExists}
+\section{LockManagerExists}
 \index{LockManagerExists}
 \label{Api:LockManagerExists}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    boolean lockManagerExists (
            String    managerUri
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/lock
 \end{Verbatim}
@@ -57,14 +57,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetLockManagerConfig}
+\section{GetLockManagerConfig}
 \index{GetLockManagerConfig}
 \label{Api:GetLockManagerConfig}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    RaptureLockConfig getLockManagerConfig (
            String    managerUri
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/lock/$f(managerUri)
 \end{Verbatim}
@@ -75,14 +75,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{DeleteLockManager}
+\section{DeleteLockManager}
 \index{DeleteLockManager}
 \label{Api:DeleteLockManager}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void deleteLockManager (
            String    managerUri
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/lock/$f(managerUri)
 \end{Verbatim}
@@ -93,17 +93,17 @@
 
 
 \rule{12cm}{2pt}
-\subsection{AcquireLock}
+\section{AcquireLock}
 \index{AcquireLock}
 \label{Api:AcquireLock}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    LockHandle acquireLock (
            String    managerUri
            String    lockName
            long    secondsToWait
            long    secondsToKeep
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/lock/$f(managerUri)
 \end{Verbatim}
@@ -114,16 +114,16 @@
 
 
 \rule{12cm}{2pt}
-\subsection{ReleaseLock}
+\section{ReleaseLock}
 \index{ReleaseLock}
 \label{Api:ReleaseLock}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    boolean releaseLock (
            String    managerUri
            String    lockName
            LockHandle    lockHandle
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/lock/$f(managerUri)
 \end{Verbatim}
@@ -134,15 +134,15 @@
 
 
 \rule{12cm}{2pt}
-\subsection{ForceReleaseLock}
+\section{ForceReleaseLock}
 \index{ForceReleaseLock}
 \label{Api:ForceReleaseLock}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void forceReleaseLock (
            String    managerUri
            String    lockName
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/lock/$f(managerUri)
 \end{Verbatim}

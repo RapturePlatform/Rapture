@@ -1,13 +1,13 @@
 \chapter{Environment API}
 \index{Environment API}
 \input{environment/info}
-\subsection{GetThisServer}
+\section{GetThisServer}
 \index{GetThisServer}
 \label{Api:GetThisServer}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    RaptureServerInfo getThisServer (
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /env/common
 \end{Verbatim}
@@ -18,13 +18,13 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetServers}
+\section{GetServers}
 \index{GetServers}
 \label{Api:GetServers}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    List<RaptureServerInfo> getServers (
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /env/common
 \end{Verbatim}
@@ -35,14 +35,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{SetThisServer}
+\section{SetThisServer}
 \index{SetThisServer}
 \label{Api:SetThisServer}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    RaptureServerInfo setThisServer (
            RaptureServerInfo    info
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /env/admin
 \end{Verbatim}
@@ -53,14 +53,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{SetApplianceMode}
+\section{SetApplianceMode}
 \index{SetApplianceMode}
 \label{Api:SetApplianceMode}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void setApplianceMode (
            boolean    mode
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /env/admin
 \end{Verbatim}
@@ -71,13 +71,13 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetApplianceMode}
+\section{GetApplianceMode}
 \index{GetApplianceMode}
 \label{Api:GetApplianceMode}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    boolean getApplianceMode (
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /env/common
 \end{Verbatim}
@@ -88,13 +88,13 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetServerStatus}
+\section{GetServerStatus}
 \index{GetServerStatus}
 \label{Api:GetServerStatus}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    List<RaptureServerStatus> getServerStatus (
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /env/common
 \end{Verbatim}
