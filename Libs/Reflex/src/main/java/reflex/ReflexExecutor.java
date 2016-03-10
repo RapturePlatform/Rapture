@@ -27,9 +27,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.antlr.runtime.ANTLRStringStream;
+import org.antlr.runtime.CharStream;
 import org.antlr.runtime.CommonToken;
 import org.antlr.runtime.CommonTokenStream;
+import org.antlr.runtime.IntStream;
 import org.antlr.runtime.RecognitionException;
+import org.antlr.runtime.TokenStream;
 import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.CommonTreeNodeStream;
 
@@ -181,29 +184,8 @@ public class ReflexExecutor {
         }
     }
     
-    // Not sure if this belongs here or not
     public static String getParserExceptionDetails(RecognitionException e) {
-        StringBuilder sb = new StringBuilder();
-        CommonToken token = (CommonToken) e.token;
-        
-        String[] lines = token.getInputStream().substring(0, token.getInputStream().size() - 1).split("\n");
-        
-        sb.append("Error at token ").append(token.getText()).append(" on line ").append(e.line).append(" while parsing: \n");
-        
-        int start = Math.max(0, token.getLine() -5);
-        int end = Math.min(lines.length, token.getLine() +5);
-        int badline = token.getLine() -1;
-        
-        for (int i = start; i < end; i++) {
-            sb.append(String.format("%5d: %s\n", i+1, lines[i]));
-            if (i == badline) {
-                for (int j = 0; j < e.charPositionInLine+7; j++) sb.append(" ");
-                for (int j = 0; j < token.getText().length(); j++) sb.append("^");
-                sb.append("\n");
-            }
-        }
-        
-        return sb.toString();
+        return ErrorHandler.getParserExceptionDetails(e);
     }
 
     public static Object runReflexProgram(String program, IReflexHandler handler, Map<String, Object> injectedVars, IReflexDebugger iReflexDebugger) {

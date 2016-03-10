@@ -1,7 +1,0 @@
-// return appliance state
-
-state = {};
-status = #environment.getApplianceMode();
-state['status'] = status;
-println(json(state));
-
