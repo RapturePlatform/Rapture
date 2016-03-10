@@ -277,4 +277,11 @@ public class Scope {
     public Scope getGlobalScope() {
         return globalScope;
     }
+
+	@Override
+	public String toString() {
+		return "Scope [assignOnce=" + assignOnce + ", scopeName=" + scopeName + ", parent=" + parent + ", globalScope="
+				+ globalScope + ", constantScope=" + constantScope + ", pendingComment=" + pendingComment
+				+ ", variables=" + variables + "]";
+	}
 }

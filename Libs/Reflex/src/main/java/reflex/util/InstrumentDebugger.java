@@ -65,7 +65,7 @@ public class InstrumentDebugger implements IReflexDebugger {
 
     @Override
     public void recordMessage(String message) {
-        // Does nothing
+        System.out.println("+++ "+message);
     }
 
 }
