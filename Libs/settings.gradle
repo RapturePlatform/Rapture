@@ -3,6 +3,7 @@ include "CodeGen:CodeGenLib", "CodeGen:ApiGen", "CodeGen:PersistenceGen", "CodeG
 include "CodeGen:PythonLib"
 include "RaptureAddins:MongoDb","RaptureAddins:RabbitMQ","RaptureAddins:Cassandra"
 include "RaptureAddins:Postgres", "RaptureAddins:JDBC"
+include "RaptureAddins:ElasticSearch"
 include "RaptureWebServlet"
 include "RaptureCommon"
 include "PluginInstallerLib", "SelfPluginInstallerLib"
