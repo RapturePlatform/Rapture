@@ -1,0 +1,173 @@
+Plugins in \Rapture are installable items that can be released to a \Rapture environment in
+a consistent way. There are three parts to the Plugin API.
+
+The first part relates to retrieving information about what is actually installed, and what items were installed with each
+plugin. These are used by operator consoles and are informational.
+
+The second part relates to installing an actual plugin. These calls are typically used by a specific
+client side application "PluginInstaller" or a self installing library that uses the "SelfPluginInstallerLib". Plugins
+defined in this way are jar archives that have a very specific structure. Typically a developer lays out this structure
+in the file system and then uses a build process to package this information up into a jar file which can then be used with
+the PluginInstaller application.
+
+\section{File layout of a plugin}
+
+A sample layout of a plugin "on disk" is reproduced below:
+
+\begin{Verbatim}
+  -- src/main/resources
+     - PLUGIN
+        - plugin.txt
+        - content
+          - testRepo
+             - .rdoc
+             someContent.rdoc
+          - myscripts
+             - test.script
+\end{Verbatim}
+
+The mandatory aspects of a plugin are the concept of a PLUGIN folder in the resources within
+which is a plugin.txt file. This file has a specific format, an example is reproduced below:
+
+\begin{Verbatim}
+  {
+     "depends":{},
+     "description":"Curtis Web Core",
+     "plugin":"CurtisWebCore",
+     "version":{
+     		"major":1,
+     		"minor":1,
+     		"release":32,
+     		"timestamp":99999999999999
+     }
+  }
+\end{Verbatim}
+
+Most of these fields are self describing - the "plugin" field is the unique reference (uri) of this
+plugin and the version section defines the version \emph{of this plugin}. The description is for operators
+and the depends field can contain a map of other plugins and their version numbers required.
+
+\section{Plugin file types}
+
+The content folder contains information and definitions for content and configuration that this plugin defines. The
+file name extension defines what the plugin installer will do for this item.
+
+\begin{table}[H]
+\begin{center}
+\begin{tabular}{r p{10cm}}
+  Extension & Purpose \\
+  \hline
+  script & Defines a \Reflex script. The full uri of the script is formed from this file's location in the content directory.\\
+  series & Defines set of points in a series (if fully named) or the definition of a series repository. In the latter case the .series file
+     must be at the 2nd top level folder in the content folder - the name of the folder is the name of the repository in \Rapture. \\
+  blob & Defines a blob in a blob repository or the definition of a blob repository (if the file is .blob). Note that files that are not in
+    the list of extensions in this table are treated as blobs, with the mime type inferred from the extension of the file. \\
+  rdoc & Defines a document in a document repository \emph{or} the definition of a document repository (if no name specified). \\
+  idgen & Defines an idgenerator. The name of the generator is defined by the top level folder, the contents is the configuration of an ID generator.\\
+  revent & Defines a rapture event. The content of the file is a RaptureEvent structure (as json). \\
+  table & Defines a rapture table. The name of the table is the enclosing folder. \\
+  job & Defines a schedule job. \\
+  workflow & Defines a workflow. \\
+  lock & Defines a lock manager. \\
+  structured & Defines a structure store reference. \\
+\end{tabular}
+\end{center}
+\end{table}
+
+In all cases for these files where the content drives the definition of something in \Rapture, the content is
+a json formatted document that is the equivalent of serializing the result of the appropriate "get" call for that entity.
+
+For example, the document "getDocRepoConfig" call returns a "DocumentRepoConfig" which has a complex structure of
+information about the description, document repo configuration and so on. In a file format this will look as follows:
+
+\begin{Verbatim}
+  {
+    "authority":"curtis.menu",
+    "strictCheck":true,
+    "indexes":[],
+    "fullTextIndexes":[],
+    "documentRepo":
+       {
+          "authority":"curtis.menu",
+          "config":"NREP {} USING MONGODB { prefix=\"curtis.menu\" }"
+       }
+  }
+\end{Verbatim}
+
+To obtain the format for this you could also use the following \Reflex code:
+
+\begin{Verbatim}
+   config = #document.getDocRepoConfig('//curtis.menu');
+   println(json(config));
+\end{Verbatim}
+
+The same technique can be used with other entity types.
+
+\section{Plugin Build Process}
+To build a plugin that has the resource configuration reproduced above the following
+\emph{gradle} build process is recommended:
+
+\begin{Verbatim}[fontsize=\footnotesize]
+  raptureVersion = "3.0.0"
+
+  apply plugin: 'application'
+
+  dependencies {
+          compile "net.rapture:SelfPluginInstallerLib:$raptureVersion"
+  }
+
+  mainClassName = "rapture.plugin.app.SelfInstaller"
+
+  task fatJar(type: Jar) {
+       manifest {
+          attributes 'Implementation-Title' : 'Plugin self installer',
+                     'Implementation-Version' : '1.0.0',
+                     'Main-Class' : mainClassName
+      }
+      baseName = project.name
+      from {
+          configurations.compile.collect {
+               it.isDirectory() ? it : zipTree(it) }
+      } with jar
+  }
+
+  fatJar.dependsOn(compileJava)
+
+\end{Verbatim}
+
+This (simplified) build script uses the \Rapture open source SelfInstaller library which contains
+a main entry point that can be used to install the plugin into a \Rapture environment.
+
+Running \verb+gradle fatJar+ will create a single jar that can be invoked with 'java -jar' along with
+the following command line options to connect it to a \Rapture environment. The self installer will use
+the Plugin API described here to install the components registered in this Plugin.
+
+\begin{table}[H]
+\begin{center}
+\begin{tabular}{r l p{10cm}}
+  Extension & Purpose \\
+  \hline
+  \verb+--host+ & The \Rapture host to connect to. \\
+  \verb+--user+ & The \Rapture user to connect as. \\
+  \verb+--password+ & The \Rapture password to use for that user. \\
+  \verb+--overlay+ & What overlay to use (optional) (see below). \\
+\end{tabular}
+\end{center}
+\end{table}
+
+\section{Plugin overlays}
+A plugin file can contain other sections in addition to the "content" folder described above. These are known
+as overlays and this can be used to combine the "default" content folder with a given overlay. Overlays are used
+to perhaps define slightly different configuration documents for a development environment to a production environment -- in this case
+the documents describing production changes would be specified in a "prod" folder - the sub contents following the same format
+in style as the content folder. If this folder exists then passing \verb+--overlay prod+ to an installer would instruct the installer
+to apply the content folder first, and then overlay the prod folder onto that, creating a merged view of what should be
+installed for this plugin on this environment.
+
+\section{Creating plugins from existing content}
+The Plugin API contains calls that can be used when a \Rapture environment has existing content and configuration that needs to be captured in plugin format.
+
+The basic approach is to first create a manifest (\Verb+createManifest+) and then add items to that manifest using the \Verb+add+ calls.
+The version of the plugin needs to be set using \Verb+setManifestVersion+ and then the complete plugin is exported using \Verb+exportPlugin+. The content generated
+is then of a form that can be installed using the PluginInstaller tool on a different environment, or extracted to be copied into a more
+traditional Plugin project described above.

@@ -4,15 +4,15 @@
 \subsection{CreateScript}
 \index{CreateScript}
 \label{Api:CreateScript}
-\begin{verbatim}
+\begin{Verbatim}
    RaptureScript createScript (
            String    scriptURI
            RaptureScriptLanguage    language
            RaptureScriptPurpose    purpose
            String    script
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /script/write/$f(scriptURI)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -25,13 +25,13 @@
 \subsection{CreateScriptLink}
 \index{CreateScriptLink}
 \label{Api:CreateScriptLink}
-\begin{verbatim}
+\begin{Verbatim}
    void createScriptLink (
            String    fromScriptURI
            String    toScriptURI
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /script/write/$f(fromScriptURI)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -44,12 +44,12 @@
 \subsection{RemoveScriptLink}
 \index{RemoveScriptLink}
 \label{Api:RemoveScriptLink}
-\begin{verbatim}
+\begin{Verbatim}
    void removeScriptLink (
            String    fromScriptURI
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /script/write/$f(fromScriptURI)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -62,13 +62,13 @@
 \subsection{SetScriptParameters}
 \index{SetScriptParameters}
 \label{Api:SetScriptParameters}
-\begin{verbatim}
+\begin{Verbatim}
    RaptureScript setScriptParameters (
            String    scriptURI
            List<RaptureParameter>    parameters
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /script/write/$f(scriptURI)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -81,12 +81,12 @@
 \subsection{DoesScriptExist}
 \index{DoesScriptExist}
 \label{Api:DoesScriptExist}
-\begin{verbatim}
+\begin{Verbatim}
    boolean doesScriptExist (
            String    scriptURI
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /script/read/$f(scriptURI)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -99,12 +99,12 @@
 \subsection{DeleteScript}
 \index{DeleteScript}
 \label{Api:DeleteScript}
-\begin{verbatim}
+\begin{Verbatim}
    void deleteScript (
            String    scriptUri
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /script/write/$f(scriptUri)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -117,12 +117,12 @@
 \subsection{GetScriptNames}
 \index{GetScriptNames}
 \label{Api:GetScriptNames}
-\begin{verbatim}
+\begin{Verbatim}
    List<String> getScriptNames (
            String    scriptURI
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /script/read/$f(scriptURI)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -135,12 +135,12 @@
 \subsection{GetScript}
 \index{GetScript}
 \label{Api:GetScript}
-\begin{verbatim}
+\begin{Verbatim}
    RaptureScript getScript (
            String    scriptURI
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /script/read/$f(scriptURI)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -153,12 +153,12 @@
 \subsection{GetInterface}
 \index{GetInterface}
 \label{Api:GetInterface}
-\begin{verbatim}
+\begin{Verbatim}
    ScriptInterface getInterface (
            String    scriptURI
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /script/read/$f(scriptURI)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -171,13 +171,13 @@
 \subsection{PutScript}
 \index{PutScript}
 \label{Api:PutScript}
-\begin{verbatim}
+\begin{Verbatim}
    RaptureScript putScript (
            String    scriptURI
            RaptureScript    script
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /script/write/$f(scriptURI)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -190,7 +190,7 @@
 \subsection{PutRawScript}
 \index{PutRawScript}
 \label{Api:PutRawScript}
-\begin{verbatim}
+\begin{Verbatim}
    RaptureScript putRawScript (
            String    scriptURI
            String    content
@@ -199,8 +199,8 @@
            List<String>    param_types
            List<String>    param_names
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /script/write/$f(scriptURI)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -213,13 +213,13 @@
 \subsection{RunScript}
 \index{RunScript}
 \label{Api:RunScript}
-\begin{verbatim}
+\begin{Verbatim}
    String runScript (
            String    scriptURI
            Map<String,String>    parameters
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /script/exec/$f(scriptURI)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -232,13 +232,13 @@
 \subsection{RunScriptExtended}
 \index{RunScriptExtended}
 \label{Api:RunScriptExtended}
-\begin{verbatim}
+\begin{Verbatim}
    ScriptResult runScriptExtended (
            String    scriptURI
            Map<String,String>    parameters
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /script/exec/$f(scriptURI)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -251,12 +251,12 @@
 \subsection{CheckScript}
 \index{CheckScript}
 \label{Api:CheckScript}
-\begin{verbatim}
+\begin{Verbatim}
    String checkScript (
            String    scriptURI
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /script/read/$f(scriptURI)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -269,11 +269,11 @@
 \subsection{CreateREPLSession}
 \index{CreateREPLSession}
 \label{Api:CreateREPLSession}
-\begin{verbatim}
+\begin{Verbatim}
    String createREPLSession (
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /script/exec
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -286,12 +286,12 @@
 \subsection{DestroyREPLSession}
 \index{DestroyREPLSession}
 \label{Api:DestroyREPLSession}
-\begin{verbatim}
+\begin{Verbatim}
    void destroyREPLSession (
            String    sessionId
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /script/exec
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -304,13 +304,13 @@
 \subsection{EvaluateREPL}
 \index{EvaluateREPL}
 \label{Api:EvaluateREPL}
-\begin{verbatim}
+\begin{Verbatim}
    String evaluateREPL (
            String    sessionId
            String    line
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /script/exec
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -323,12 +323,12 @@
 \subsection{ArchiveOldREPLSessions}
 \index{ArchiveOldREPLSessions}
 \label{Api:ArchiveOldREPLSessions}
-\begin{verbatim}
+\begin{Verbatim}
    void archiveOldREPLSessions (
            Long    ageInMinutes
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/script
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -341,13 +341,13 @@
 \subsection{CreateSnippet}
 \index{CreateSnippet}
 \label{Api:CreateSnippet}
-\begin{verbatim}
+\begin{Verbatim}
    RaptureSnippet createSnippet (
            String    snippetURI
            String    snippet
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/snippet
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -360,12 +360,12 @@
 \subsection{GetSnippetChildren}
 \index{GetSnippetChildren}
 \label{Api:GetSnippetChildren}
-\begin{verbatim}
+\begin{Verbatim}
    List<RaptureFolderInfo> getSnippetChildren (
            String    prefix
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/snippet
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -378,12 +378,12 @@
 \subsection{DeleteSnippet}
 \index{DeleteSnippet}
 \label{Api:DeleteSnippet}
-\begin{verbatim}
+\begin{Verbatim}
    void deleteSnippet (
            String    snippetURI
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/snippet
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -396,12 +396,12 @@
 \subsection{GetSnippet}
 \index{GetSnippet}
 \label{Api:GetSnippet}
-\begin{verbatim}
+\begin{Verbatim}
    RaptureSnippet getSnippet (
            String    snippetURI
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/snippet
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -414,13 +414,13 @@
 \subsection{ListScriptsByUriPrefix}
 \index{ListScriptsByUriPrefix}
 \label{Api:ListScriptsByUriPrefix}
-\begin{verbatim}
+\begin{Verbatim}
    Map<String,RaptureFolderInfo> listScriptsByUriPrefix (
            String    scriptUri
            int    depth
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /script/read/$f(scriptUri)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -433,12 +433,12 @@
 \subsection{DeleteScriptsByUriPrefix}
 \index{DeleteScriptsByUriPrefix}
 \label{Api:DeleteScriptsByUriPrefix}
-\begin{verbatim}
+\begin{Verbatim}
    List<String> deleteScriptsByUriPrefix (
            String    scriptUri
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /script/write/$f(scriptUri)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]

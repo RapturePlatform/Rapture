@@ -1,0 +1,22 @@
+The \verb+renameTableColumns+ calls alters the name of a set of a columns. The key in the passed parameter is the
+current column name, the value is the new column name.
+
+As an example consider the following \Reflex script.
+
+\begin{Verbatim}
+  columns = {};
+  columns.id = 'int';
+  columns.firstname = 'varchar(255)';
+  columns.lastname = 'varchar(255)';
+  columns.age = 'int';
+
+  #structured.createTable('//test/table', columns);
+
+  // Now rename
+
+  renameMap = {};
+  renameMap.firstname = 'first';
+  renameMap.lastname = 'last';
+  #structured.renameTableColumns('//test/table', renameMap);
+
+\end{Verbatim}

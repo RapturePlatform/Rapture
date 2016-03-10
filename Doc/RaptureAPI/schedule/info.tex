@@ -1,0 +1,21 @@
+The Schedule API is used to manage the scheduling system of \Rapture. If a schedule server is running
+in \Rapture it will look for upcoming jobs and ask other \Rapture servers to execute those jobs when they are due.
+
+Jobs in \Rapture can either be scripts or workflows. Their schedule is defined by a cron type expression which can
+be further controlled with a time zone parameter. If the job (according to its schedule) should be run and it is
+activated a message is placed on the internal \Rapture pipeline for that job to be executed. A server in \Rapture
+monitoring that pipeline (most \Rapture servers do this) can pick up this request and execute the job.
+
+A job can also be marked as auto activate -- with this configuration the job will be initially set to be "activated" and therefore
+will be run when its time based criteria is met. If the job is running it will not be rescheduled but once the execution
+has completed the job will be activated once more and will run at its next scheduled time.
+
+Jobs that are manually activated will not be scheduled until the activate job API call is called. This technique can be used to
+schedule a job when some other external activity is valid or complete.
+
+Jobs may not necessarily run at the exact time of their schedule -- the request to run the job is made at the time
+scheduled but depending on the load of the system and the availability of resources the request may be queued behind other requests
+and be delayed.
+
+The API calls in this section have two purposes -- the first is in the definition and control of jobs, the second is a set
+of UI convenience API calls that can be used to populate a calendar of jobs.

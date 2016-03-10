@@ -600,6 +600,7 @@ public class SeriesApiImpl extends KernelBase implements SeriesApi {
         }
     }
 
+    @Override
     public void deleteSeries(CallingContext context, String seriesURI) {
         RaptureURI uri = new RaptureURI(seriesURI, Scheme.SERIES);
         SeriesRepo repository = getRepoOrFail(uri);

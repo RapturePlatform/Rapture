@@ -1,0 +1,4 @@
+The \verb+writeSystemConfig+ call updates the configuration at the path specified. This is a dangerous call to make -- the
+correct approach is to use the most appropriate API call for removing an element in \Rapture (e.g. \verb+deleteDocRepo+ followed by \verb+createDocRepo+). Using this call will
+not do any ancilliary tasks that are perhaps required by the entity in \Rapture -- it just updates the configuration. You would probably have to
+restart all \Rapture instances for any changes to be noticed by other servers.

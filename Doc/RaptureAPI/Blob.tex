@@ -4,14 +4,14 @@
 \subsection{CreateBlobRepo}
 \index{CreateBlobRepo}
 \label{Api:CreateBlobRepo}
-\begin{verbatim}
+\begin{Verbatim}
    void createBlobRepo (
            String    blobRepoUri
            String    config
            String    metaConfig
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /repo/write
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -24,12 +24,12 @@
 \subsection{GetBlobRepoConfig}
 \index{GetBlobRepoConfig}
 \label{Api:GetBlobRepoConfig}
-\begin{verbatim}
+\begin{Verbatim}
    BlobRepoConfig getBlobRepoConfig (
            String    blobRepoUri
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /repo/read
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -42,11 +42,11 @@
 \subsection{GetBlobRepoConfigs}
 \index{GetBlobRepoConfigs}
 \label{Api:GetBlobRepoConfigs}
-\begin{verbatim}
+\begin{Verbatim}
    List<BlobRepoConfig> getBlobRepoConfigs (
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /repo/read
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -59,12 +59,12 @@
 \subsection{DeleteBlobRepo}
 \index{DeleteBlobRepo}
 \label{Api:DeleteBlobRepo}
-\begin{verbatim}
+\begin{Verbatim}
    void deleteBlobRepo (
            String    repoUri
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /repo/write
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -77,12 +77,12 @@
 \subsection{BlobRepoExists}
 \index{BlobRepoExists}
 \label{Api:BlobRepoExists}
-\begin{verbatim}
+\begin{Verbatim}
    boolean blobRepoExists (
            String    repoUri
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /repo/list
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -95,12 +95,12 @@
 \subsection{BlobExists}
 \index{BlobExists}
 \label{Api:BlobExists}
-\begin{verbatim}
+\begin{Verbatim}
    boolean blobExists (
            String    blobUri
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/list/$f(blobUri)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -113,13 +113,13 @@
 \subsection{AddBlobContent}
 \index{AddBlobContent}
 \label{Api:AddBlobContent}
-\begin{verbatim}
+\begin{Verbatim}
    void addBlobContent (
            String    blobUri
            byte[]    content
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/write/$f(blobUri)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -132,14 +132,14 @@
 \subsection{PutBlob}
 \index{PutBlob}
 \label{Api:PutBlob}
-\begin{verbatim}
+\begin{Verbatim}
    void putBlob (
            String    blobUri
            byte[]    content
            String    contentType
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/write/$f(blobUri)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -152,12 +152,12 @@
 \subsection{GetBlob}
 \index{GetBlob}
 \label{Api:GetBlob}
-\begin{verbatim}
+\begin{Verbatim}
    BlobContainer getBlob (
            String    blobUri
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/read/$f(blobUri)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -170,12 +170,12 @@
 \subsection{DeleteBlob}
 \index{DeleteBlob}
 \label{Api:DeleteBlob}
-\begin{verbatim}
+\begin{Verbatim}
    void deleteBlob (
            String    blobUri
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/write/$f(blobUri)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -188,12 +188,12 @@
 \subsection{GetBlobSize}
 \index{GetBlobSize}
 \label{Api:GetBlobSize}
-\begin{verbatim}
+\begin{Verbatim}
    Long getBlobSize (
            String    blobUri
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/list/$f(blobUri)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -206,12 +206,12 @@
 \subsection{GetBlobMetaData}
 \index{GetBlobMetaData}
 \label{Api:GetBlobMetaData}
-\begin{verbatim}
+\begin{Verbatim}
    Map<String,String> getBlobMetaData (
            String    blobUri
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/list/$f(blobUri)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -224,13 +224,13 @@
 \subsection{ListBlobsByUriPrefix}
 \index{ListBlobsByUriPrefix}
 \label{Api:ListBlobsByUriPrefix}
-\begin{verbatim}
+\begin{Verbatim}
    Map<String,RaptureFolderInfo> listBlobsByUriPrefix (
            String    blobUri
            int    depth
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/list/$f(blobUri)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -243,12 +243,12 @@
 \subsection{DeleteBlobsByUriPrefix}
 \index{DeleteBlobsByUriPrefix}
 \label{Api:DeleteBlobsByUriPrefix}
-\begin{verbatim}
+\begin{Verbatim}
    List<String> deleteBlobsByUriPrefix (
            String    blobUri
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/write/$f(blobUri)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]

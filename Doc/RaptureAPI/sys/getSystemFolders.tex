@@ -1,0 +1,18 @@
+The \verb+getSystemFolders+ call is used to return the configuration documents and folders managed in the system respositories.
+
+The area parameter reflects a general area withn the system, as enumerated by the \verb+getAllTopLevelRepos+ call. The path will start at
+"/" and then subsequent calls can append onto that prefix the value of any folders returned by this call. The concepts returned by this call
+can also represent configuration documents -- their contents can be retrieved using the \verb+retrieveSystemConfig+ call.
+
+The \verb+RaptureFolderInfo+ structure returned by this call is described below:
+
+\begin{table}[ht]
+\begin{center}
+\begin{tabular}{r l p{8cm}}
+  Field & Type & Description \\
+  \hline
+  name & String & The name of this element. \\
+  folder & Boolean & Whether the name refers to a document or a sub-folder \\
+\end{tabular}
+\end{center}
+\end{table}

@@ -1,0 +1,22 @@
+The \verb+createWorkflowJob+ call can be used to define a workflow job in \Rapture. A workflow job will execute
+a workflow according to the schedule provided in the cron expression and the time zone.
+
+The parameters to the call are described in the table below:
+
+\begin{table}[H]
+\begin{center}
+\begin{tabular}{r l p{4cm}}
+  Parameter & Example & Description \\
+  \hline
+  jobURI &  \verb+//test/one+ & The unique name of this job \\
+  description  & test job & A description of this job \\
+  workflowURI  & \verb+//runme+ & The workflow to run \\
+  cronExpression  & \verb+ * * 3 10 * *+ & The cron expression that defines when this script should run \\
+  timeZone &  Americas/New York & The time zone of the job \\
+  jobParams &  \verb+param -> one+ & The parameters that should be passed to the script \\
+  autoActivate &  true & Whether the job will always run according to the schedule \\
+  maxRuntimeMinutes &  10 & How long the job is expected to execute for. \\
+  appStatusNamePattern & runJob & If the logs for this workflow are to be combined, what should be the unique name of this log.\\
+\end{tabular}
+\end{center}
+\end{table}

@@ -1,0 +1,9 @@
+The \verb+asyncReflexScript+ call instructs \Rapture to invoke a \Reflex script asynchronously.
+
+The script itself is passed as the first parameter to this call, unlike the \verb+asyncReflexReference+ call which
+takes a script URI.
+
+The second parameter is used to pass parameters to this invocation. The script is run using the calling context
+of the user that invoked this API call.
+
+The return value is a status id (handle) that can be used with the \verb+asyncStatus+ call.

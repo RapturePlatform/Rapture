@@ -4,12 +4,12 @@
 \subsection{JarExists}
 \index{JarExists}
 \label{Api:JarExists}
-\begin{verbatim}
+\begin{Verbatim}
    boolean jarExists (
            String    jarUri
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/list/$f(jarUri)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -22,13 +22,13 @@
 \subsection{PutJar}
 \index{PutJar}
 \label{Api:PutJar}
-\begin{verbatim}
+\begin{Verbatim}
    void putJar (
            String    jarUri
            byte[]    jarContent
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/write/$f(jarUri)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -41,12 +41,12 @@
 \subsection{GetJar}
 \index{GetJar}
 \label{Api:GetJar}
-\begin{verbatim}
+\begin{Verbatim}
    BlobContainer getJar (
            String    jarUri
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/read/$f(jarUri)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -59,12 +59,12 @@
 \subsection{DeleteJar}
 \index{DeleteJar}
 \label{Api:DeleteJar}
-\begin{verbatim}
+\begin{Verbatim}
    void deleteJar (
            String    jarUri
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/write/$f(jarUri)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -77,12 +77,12 @@
 \subsection{GetJarSize}
 \index{GetJarSize}
 \label{Api:GetJarSize}
-\begin{verbatim}
+\begin{Verbatim}
    Long getJarSize (
            String    jarUri
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/list/$f(jarUri)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -95,12 +95,12 @@
 \subsection{GetJarMetaData}
 \index{GetJarMetaData}
 \label{Api:GetJarMetaData}
-\begin{verbatim}
+\begin{Verbatim}
    Map<String,String> getJarMetaData (
            String    jarUri
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/list/$f(jarUri)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -113,13 +113,13 @@
 \subsection{ListJarsByUriPrefix}
 \index{ListJarsByUriPrefix}
 \label{Api:ListJarsByUriPrefix}
-\begin{verbatim}
+\begin{Verbatim}
    Map<String,RaptureFolderInfo> listJarsByUriPrefix (
            String    uriPrefix
            int    depth
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/list/$f(uriPrefix)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -132,12 +132,12 @@
 \subsection{JarIsEnabled}
 \index{JarIsEnabled}
 \label{Api:JarIsEnabled}
-\begin{verbatim}
+\begin{Verbatim}
    boolean jarIsEnabled (
            String    jarUri
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/list/$f(jarUri)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -150,12 +150,12 @@
 \subsection{EnableJar}
 \index{EnableJar}
 \label{Api:EnableJar}
-\begin{verbatim}
+\begin{Verbatim}
    void enableJar (
            String    jarUri
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/jar
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -168,12 +168,12 @@
 \subsection{DisableJar}
 \index{DisableJar}
 \label{Api:DisableJar}
-\begin{verbatim}
+\begin{Verbatim}
    void disableJar (
            String    jarUri
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/jar
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
