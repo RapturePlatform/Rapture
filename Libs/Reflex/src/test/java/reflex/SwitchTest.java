@@ -121,6 +121,52 @@ public class SwitchTest {
 
 	}
 	
+	@Test
+	public void multipleMatches() throws RecognitionException {
+		String program = "for ident in [0, 1, 2, 3, 4, 4.5, 5, 6, 7, 8, 9, 'fish', \"banana\", true, false] do \n" +
+		" switch ident do\n" +
+		"  default do \n" +
+		"    println(ident+\" is neither odd nor even\");\n" +
+		"  end\n" +
+		"  case 1\n" +
+		"  case 3\n" +
+		"  case 5\n" +
+		"  case 7\n" +
+		"  case 9 do\n" +
+		"      println(ident+\" is odd\");\n" +
+		"    end\n" +
+		"  case 2\n" +
+		"  case 4\n" +
+		"  case 6\n" +
+		"  case 8 do\n" +
+		"    println(ident+\" is even\");\n" +
+		"  end\n" +
+		" end\n" +
+		"end\n";
+		
+		String output = runScript(program, null);
+		assertEquals(6, output.split("is odd").length);
+		assertEquals(5, output.split("is even").length);
+		assertEquals(7, output.split("is neither").length);
+	}
+
+	@Test
+	public void simpleMultiMatches() throws RecognitionException {
+		String program = "ident = 1;\n" +
+		" switch ident do\n" +
+		"  case 1\n" +
+		"  case 3 do\n" +
+		"      println(ident+\" is odd\");\n" +
+		"    end\n" +
+		"end\n";
+		
+		String output = runScript(program, null);
+		assertEquals(6, output.split("is odd").length);
+		assertEquals(5, output.split("is even").length);
+		assertEquals(7, output.split("is neither").length);
+	}
+
+
 	public String runScript(String program, Map<String, Object> injectedVars)
 			throws RecognitionException, ReflexParseException {
 		StringBuilder sb = new StringBuilder();

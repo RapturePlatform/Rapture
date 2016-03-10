@@ -74,6 +74,35 @@ public class MatchTest {
 	}
 	
 	@Test
+	public void multipleMatches() throws RecognitionException {
+		String program = "for ident in [0, 1, 2, 3, 4, 4.5, 5, 6, 7, 8, 9, 'fish', \"banana\", true, false] do \n" +
+		" match ident do\n" +
+		"  is == 1\n" +
+		"  is == 3\n" +
+		"  is == 5\n" +
+		"  is == 7\n" +
+		"  is == 9 do\n" +
+		"    println(ident+\" is odd\");\n" +
+		"  end\n" +
+		"  is == 2\n" +
+		"  is == 4\n" +
+		"  is == 6\n" +
+		"  is == 8 do\n" +
+		"    println(ident+\" is even\");\n" +
+		"  end\n" +
+		"  otherwise do \n" +
+		"    println(ident+\" is neither odd nor even\");\n" +
+		"  end\n" +
+		" end\n" +
+		"end\n";
+		
+		String output = runScript(program, null);
+		assertEquals(6, output.split("is odd").length);
+		assertEquals(5, output.split("is even").length);
+		assertEquals(7, output.split("is neither").length);
+	}
+
+	@Test
 	public void assignIsNotLegal() throws RecognitionException {
 		String program = "ident = 5;\n" + "match ident do\n" + "is = 5 do\n" + "println('Fail');\n"
 				+ "end\n" + "end";

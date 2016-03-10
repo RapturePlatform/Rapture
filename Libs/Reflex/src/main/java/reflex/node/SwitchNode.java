@@ -87,6 +87,7 @@ public class SwitchNode extends BaseNode {
 	        	if (switchVal.equals(node)) {
 	        		log.debug("+++ MATCH "+node+" ");
 	        		action = (BlockNode)entry.getValue();
+	        		break;
 	        	}
         	}
         }

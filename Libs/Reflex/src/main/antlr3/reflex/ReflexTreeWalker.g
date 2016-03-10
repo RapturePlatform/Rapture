@@ -142,8 +142,9 @@ variant returns [ReflexNode node]
   |  String { node = AtomNode.getStringAtom(line, handler, currentScope, $String.text); }
   |  Long { node = new AtomNode(line, handler, currentScope, java.lang.Long.parseLong($Long.text)); }
   |  Bool { node = new AtomNode(line, handler, currentScope, Boolean.parseBoolean($Bool.text)); }
+  |  Default { node = null; }
   ;
-   
+
 switchStatement returns [ReflexNode node]
 @init  {
   CommonTree ahead = (CommonTree) input.LT(1);
@@ -151,11 +152,17 @@ switchStatement returns [ReflexNode node]
   SwitchNode switchNode = new SwitchNode(line, handler, currentScope);
   node = switchNode;
 }
-  : SWITCH switchValue=expression 
-     (CASE (caseValue=variant | DEFAULT { caseValue = null; }) caseBlock=block { switchNode.addCase($caseValue.node, $caseBlock.node); } )*
- 		{ switchNode.setSwitchValue($switchValue.node); }
+  :  SWITCH expression { switchNode.setSwitchValue($expression.node); } caseStatement[switchNode]+
   ;
-
+  
+caseStatement [SwitchNode switchNode]
+@init  {
+  List<ReflexNode> caseNodes = new ArrayList<>();
+}
+  : (v=variant { caseNodes.add(v); })+ block { for (ReflexNode caseNode : caseNodes) switchNode.addCase(caseNode, $block.node); }
+  ;
+  
+  
 matchStatement returns [ReflexNode node]
 @init  {
   CommonTree ahead = (CommonTree) input.LT(1);
@@ -167,7 +174,10 @@ matchStatement returns [ReflexNode node]
   ;
 
 actions[ReflexNode exp, MatchNode matchNode]
-  : comp=comparator[exp]+ block { matchNode.addCase($comp.node, $block.node); }
+@init  {
+  List<ReflexNode> compNodes = new ArrayList<>();
+}
+  : (comp=comparator[exp] { compNodes.add(comp); })+ block { for (ReflexNode compNode : compNodes) matchNode.addCase(compNode, $block.node); }
   ;
   
 comparator [ReflexNode exp] returns [ReflexNode node]

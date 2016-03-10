@@ -567,7 +567,7 @@ otherwise
   ;
 
 comparator 
-  : Is (x=Equals | x=NEquals | x=GTEquals | x=LTEquals | x=GT | x=LT) expression
+  : Is (Equals | NEquals | GTEquals | LTEquals | GT | LT) expression
   | Is Assign { wibble("Assignment found where comparator expected", input, $Is) }? expression 
   | Is (Or | And | Excl | Add | Subtract | Multiply | Divide | Modulus) { wibble("Comparator expected", input, $Is) }? expression 
   ;
@@ -575,21 +575,22 @@ comparator
 // SWITCH requires constants as case values
 
 switchStatement
-  :  Switch expression Do caseStatement* End -> SWITCH expression caseStatement* 
+  :  Switch expression Do caseStatement+ End -> SWITCH expression caseStatement+
   ;
   
 caseStatement 
-  : Case variant Do block End		-> CASE variant block
-  | Default Do block End			-> CASE DEFAULT block
-  | Case (QuotedString | expression) {wibble(ReflexLexer.alias.peek()+" found where constant expected.", input, $Case)}?
+  : variant+ Do block End -> variant+ block
   ;
   
 variant
-  :  Integer
-  |  Number 
-  |  String
-  |  Long
-  |  Bool
+  :  Case Integer -> Integer
+  |  Case Number -> Number
+  |  Case String -> String
+  |  Case Long -> Long
+  |  Case Bool -> Bool
+  |  Default
+  |  Case QuotedString {wibble("Quoted String found where constant expected. Use single quotes.", input, $Case)}?
+  |  Case expression {wibble("Expression found where constant expected.", input, $Case)}?
   ;
   
 ifStatement
