@@ -304,36 +304,12 @@
 		<url-pattern>/jar/*</url-pattern>
 	</servlet-mapping>
 	<servlet>
-		<servlet-name>QUESTION</servlet-name>
-		<servlet-class>rapture.server.web.servlet.QuestionServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>QUESTION</servlet-name>
-		<url-pattern>/question/*</url-pattern>
-	</servlet-mapping>
-	<servlet>
-		<servlet-name>RELATIONSHIP</servlet-name>
-		<servlet-class>rapture.server.web.servlet.RelationshipServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>RELATIONSHIP</servlet-name>
-		<url-pattern>/relationship/*</url-pattern>
-	</servlet-mapping>
-	<servlet>
 		<servlet-name>REPO</servlet-name>
 		<servlet-class>rapture.server.web.servlet.RepoServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>REPO</servlet-name>
 		<url-pattern>/repo/*</url-pattern>
-	</servlet-mapping>
-	<servlet>
-		<servlet-name>SHEET</servlet-name>
-		<servlet-class>rapture.server.web.servlet.SheetServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>SHEET</servlet-name>
-		<url-pattern>/sheet/*</url-pattern>
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>STRUCTURED</servlet-name>
