@@ -40,7 +40,12 @@ public class MatchNode extends BaseNode {
     private static Logger log = Logger.getLogger(MatchNode.class);
 
 	private Map<ReflexNode, ReflexNode> cases = new LinkedHashMap<>();
+	private ReflexNode matchValue = null;
 	
+	public void setMatchValue(ReflexNode matchValue) {
+		this.matchValue = matchValue;
+	}
+
 	public MatchNode(int lineNumber, IReflexHandler handler, Scope scope) {
         super(lineNumber, handler, scope);
     }
@@ -61,8 +66,9 @@ public class MatchNode extends BaseNode {
     @Override
     public ReflexValue evaluate(IReflexDebugger debugger, Scope scope) {
         debugger.stepStart(this, scope);
-        ReflexValue ret = new ReflexVoidValue();
-                BlockNode Match = null;
+        
+        ReflexValue ret = matchValue.evaluate(debugger, scope);
+        BlockNode match = null;
         
         for (Entry<ReflexNode, ReflexNode> entry : cases.entrySet()) {
         	ReflexNode node = entry.getKey();
@@ -70,15 +76,15 @@ public class MatchNode extends BaseNode {
         		ReflexValue value = entry.getKey().evaluate(debugger, scope);
         		if (value.asBoolean()) {
 	        		log.debug("+++ MATCH "+value+" ");
-	        		Match = (BlockNode)entry.getValue();
+	        		match = (BlockNode)entry.getValue();
 	        		break;
 	        	}
         	}
         }
 
         // execute block here
-        if (Match != null) {
-        	ret = Match.evaluate(debugger, scope);
+        if (match != null) {
+        	ret = match.evaluate(debugger, scope);
         } else {
         	log.warn("Warning: Match had no matches and no default");
         }

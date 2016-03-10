@@ -36,6 +36,16 @@ public class MatchTest {
 	}
 	
 	@Test
+	public void testAsClause() throws RecognitionException {
+		String program = "i = 5;\n" + "match 2*i as j do\n" + "is > 9 do\n" + "println(j);\n"
+				+ "end\n" + "is < 10 do\n" + "println('Fail');\n" + "end\n" + "otherwise do\n" + "println('Fail');\n"
+				+ "end\n" + "end";
+
+		String output = runScript(program, null);
+		assertEquals("10.0", output);
+	}
+	
+	@Test
 	public void variousMatches() throws RecognitionException {
 		String program = "for ident in [1, 2, 3, 4, 5, 6, 7, 8, 9] do \n"+
 							" match ident do \n"+
@@ -75,23 +85,23 @@ public class MatchTest {
 	
 	@Test
 	public void multipleMatches() throws RecognitionException {
-		String program = "for ident in [0, 1, 2, 3, 4, 4.5, 5, 6, 7, 8, 9, 'fish', \"banana\", true, false] do \n" +
-		" match ident do\n" +
+		String program = "for foo in [0, 1, 2, 3, 4, 4.5, 5, 6, 7, 8, 9, 'fish', \"banana\", true, false] do \n" +
+		" match foo as bar do\n" +
 		"  is == 1\n" +
 		"  is == 3\n" +
 		"  is == 5\n" +
 		"  is == 7\n" +
 		"  is == 9 do\n" +
-		"    println(ident+\" is odd\");\n" +
+		"    println(foo+\" is odd\");\n" +
 		"  end\n" +
 		"  is == 2\n" +
 		"  is == 4\n" +
 		"  is == 6\n" +
 		"  is == 8 do\n" +
-		"    println(ident+\" is even\");\n" +
+		"    println(foo+\" is even\");\n" +
 		"  end\n" +
 		"  otherwise do \n" +
-		"    println(ident+\" is neither odd nor even\");\n" +
+		"    println(foo+\" is neither odd nor even\");\n" +
 		"  end\n" +
 		" end\n" +
 		"end\n";
