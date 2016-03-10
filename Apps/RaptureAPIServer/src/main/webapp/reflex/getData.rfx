@@ -1,7 +1,0 @@
-// Called by dynatree to get the nodes below this one for data. This one is "key"
-
-id = web['id'];
-response = {};
-contents <-- id;
-response['content'] = json(contents);
-println(json(response));

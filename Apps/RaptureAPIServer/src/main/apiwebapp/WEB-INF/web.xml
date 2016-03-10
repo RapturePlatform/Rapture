@@ -9,64 +9,11 @@
 	xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 	version="2.5">
-	<welcome-file-list>
-		<welcome-file>index.html</welcome-file>
-		<welcome-file>index.jsp</welcome-file>
-	</welcome-file-list>
 	<servlet>
 		<servlet-name>InitRapture</servlet-name>
 		<servlet-class>rapture.server.web.servlet.RaptureInitServlet</servlet-class>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
-	<servlet>
-		<servlet-name>jsp</servlet-name>
-		<servlet-class>org.apache.jasper.servlet.JspServlet</servlet-class>
-		<init-param>
-			<param-name>fork</param-name>
-			<param-value>false</param-value>
-		</init-param>
-		<init-param>
-			<param-name>xpoweredBy</param-name>
-			<param-value>false</param-value>
-		</init-param>
-		<load-on-startup>3</load-on-startup>
-	</servlet>
-	<servlet>
-		<servlet-name>REFLEX</servlet-name>
-		<servlet-class>rapture.server.web.servlet.ReflexScriptPageServlet</servlet-class>
-		<init-param>
-			<param-name>resourcePath</param-name>
-			<param-value>/</param-value>
-		</init-param>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>REFLEX</servlet-name>
-		<url-pattern>*.rfx</url-pattern>
-	</servlet-mapping>
-	<servlet>
-		<servlet-name>REFLEXREF</servlet-name>
-		<servlet-class>rapture.server.web.servlet.ReflexRefScriptPageServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>REFLEXREF</servlet-name>
-		<url-pattern>*.rrfx</url-pattern>
-	</servlet-mapping>
-	<servlet>
-		<servlet-name>JNLP</servlet-name>
-		<servlet-class>rapture.server.web.servlet.JNLPAppServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>JNLP</servlet-name>
-		<url-pattern>*.jnlp</url-pattern>
-	</servlet-mapping>
-	<servlet>
-		<servlet-name>REST</servlet-name>
-		<servlet-class>rapture.server.web.servlet.RestDocServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>REST</servlet-name>
-		<url-pattern>/r/*</url-pattern>
-	</servlet-mapping>
 	<servlet>
 		<servlet-name>LOGIN</servlet-name>
 		<servlet-class>rapture.server.web.servlet.LoginServlet</servlet-class>
@@ -75,6 +22,7 @@
 		<servlet-name>LOGIN</servlet-name>
 		<url-pattern>/login</url-pattern>
 	</servlet-mapping>
+
 	<servlet>
 		<servlet-name>ADMIN</servlet-name>
 		<servlet-class>rapture.server.web.servlet.AdminServlet</servlet-class>
@@ -82,6 +30,14 @@
 	<servlet-mapping>
 		<servlet-name>ADMIN</servlet-name>
 		<url-pattern>/admin</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>DOC</servlet-name>
+		<servlet-class>rapture.server.web.servlet.DocServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>DOC</servlet-name>
+		<url-pattern>/doc</url-pattern>
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>USER</servlet-name>
@@ -220,6 +176,13 @@
 		<url-pattern>/plugin</url-pattern>
 	</servlet-mapping>
 	<servlet>
+		<servlet-name>ACTIVITY</servlet-name>
+		<servlet-class>rapture.server.web.servlet.ActivityServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ACTIVITY</servlet-name>
+		<url-pattern>/activity</url-pattern>
+	</servlet-mapping>	<servlet>
 		<servlet-name>APP</servlet-name>
 		<servlet-class>rapture.server.web.servlet.AppServlet</servlet-class>
 	</servlet>
@@ -307,15 +270,79 @@
 		<servlet-name>ENVIRONMENT</servlet-name>
 		<url-pattern>/environment</url-pattern>
 	</servlet-mapping>
-	<!-- The mapping for the JSP servlet -->
+	<!-- explicitly list WebServlets previously using @WebServlet annotation in RaptureNew -->
+	<servlet>
+		<servlet-name>BLOB</servlet-name>
+		<servlet-class>rapture.server.web.servlet.BlobServlet</servlet-class>
+	</servlet>
 	<servlet-mapping>
-		<servlet-name>jsp</servlet-name>
-		<url-pattern>*.jsp</url-pattern>
+		<servlet-name>BLOB</servlet-name>
+		<url-pattern>/blob/*</url-pattern>
 	</servlet-mapping>
-
+	<servlet>
+		<servlet-name>BLOBUPLOAD</servlet-name>
+		<servlet-class>rapture.server.web.servlet.BlobUploadServlet</servlet-class>
+	</servlet>
 	<servlet-mapping>
-		<servlet-name>jsp</servlet-name>
-		<url-pattern>*.jspx</url-pattern>
+		<servlet-name>BLOBUPLOAD</servlet-name>
+		<url-pattern>/blobupload/*</url-pattern>
 	</servlet-mapping>
+	<servlet>
+		<servlet-name>DOC</servlet-name>
+		<servlet-class>rapture.server.web.servlet.DocServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>DOC</servlet-name>
+		<url-pattern>/doc/*</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>JAR</servlet-name>
+		<servlet-class>rapture.server.web.servlet.JarServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>JAR</servlet-name>
+		<url-pattern>/jar/*</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>QUESTION</servlet-name>
+		<servlet-class>rapture.server.web.servlet.QuestionServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>QUESTION</servlet-name>
+		<url-pattern>/question/*</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>RELATIONSHIP</servlet-name>
+		<servlet-class>rapture.server.web.servlet.RelationshipServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>RELATIONSHIP</servlet-name>
+		<url-pattern>/relationship/*</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>REPO</servlet-name>
+		<servlet-class>rapture.server.web.servlet.RepoServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>REPO</servlet-name>
+		<url-pattern>/repo/*</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>SHEET</servlet-name>
+		<servlet-class>rapture.server.web.servlet.SheetServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>SHEET</servlet-name>
+		<url-pattern>/sheet/*</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>STRUCTURED</servlet-name>
+		<servlet-class>rapture.server.web.servlet.StructuredServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>STRUCTURED</servlet-name>
+		<url-pattern>/structured/*</url-pattern>
+	</servlet-mapping>
+    <!-- end of WebServlet list -->
 </web-app>
 	
