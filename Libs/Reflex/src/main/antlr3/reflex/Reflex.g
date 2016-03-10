@@ -555,7 +555,7 @@ func2
 // MATCH allows expressions as case values
 
 matchStatement
-  :  Match expression Do actions* otherwise? End -> MATCH expression actions* otherwise?
+  :  Match expression (As Identifier)? Do actions* otherwise? End -> MATCH Identifier? expression actions* otherwise?
   ;
   
 actions
@@ -888,6 +888,7 @@ Split    : 'split';
 
 Def      : 'def';
 Match    : 'match';
+As       : 'as';
 Is       : 'is';
 Otherwise: 'otherwise';
 Switch   : 'switch';

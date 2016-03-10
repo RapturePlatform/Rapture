@@ -169,28 +169,35 @@ matchStatement returns [ReflexNode node]
   int line = ahead.getToken().getLine();
   MatchNode matchNode = new MatchNode(line, handler, currentScope);
   node = matchNode;
+  String matchName = "__mAtCh__";
 }
-  : MATCH matchValue=expression actions[$matchValue.node, matchNode]* otherwise[$matchValue.node, matchNode]?
+  : MATCH ident=Identifier? { if (ident != null) matchName=ident.getText(); } 
+  		expression { 
+  			matchNode.setMatchValue(new AssignmentNode(line, handler, currentScope, matchName, null, $expression.node));
+  			IdentifierNode idNode = new IdentifierNode(line, handler, currentScope, matchName, namespaceStack.asPrefix());
+  		}
+  		actions[idNode, matchNode]* 
+  		otherwise[idNode, matchNode]?
   ;
 
-actions[ReflexNode exp, MatchNode matchNode]
+actions[IdentifierNode idNode, MatchNode matchNode]
 @init  {
   List<ReflexNode> compNodes = new ArrayList<>();
 }
-  : (comp=comparator[exp] { compNodes.add(comp); })+ block { for (ReflexNode compNode : compNodes) matchNode.addCase(compNode, $block.node); }
+  : (comp=comparator[idNode] { compNodes.add(comp); })+ block { for (ReflexNode compNode : compNodes) matchNode.addCase(compNode, $block.node); }
   ;
   
-comparator [ReflexNode exp] returns [ReflexNode node]
+comparator [IdentifierNode idNode] returns [ReflexNode node]
 @init {
     CommonTree ahead = (CommonTree) input.LT(1);
     int line = ahead.getToken().getLine();
 }
-  :  Is Equals rhs=expression { node = new EqualsNode(line, handler, currentScope, $exp, $rhs.node); }
-  |  Is NEquals rhs=expression { node = new NotEqualsNode(line,handler, currentScope, $exp, $rhs.node); }
-  |  Is GTEquals rhs=expression { node = new GTEqualsNode(line, handler, currentScope, $exp, $rhs.node); }
-  |  Is LTEquals rhs=expression { node = new LTEqualsNode(line, handler, currentScope, $exp, $rhs.node); }
-  |  Is GT rhs=expression { node = new GTNode(line, handler, currentScope, $exp, $rhs.node); }
-  |  Is LT rhs=expression { node = new LTNode(line, handler, currentScope, $exp, $rhs.node); }
+  :  Is Equals rhs=expression { node = new EqualsNode(line, handler, currentScope, $idNode, $rhs.node); }
+  |  Is NEquals rhs=expression { node = new NotEqualsNode(line,handler, currentScope, $idNode, $rhs.node); }
+  |  Is GTEquals rhs=expression { node = new GTEqualsNode(line, handler, currentScope, $idNode, $rhs.node); }
+  |  Is LTEquals rhs=expression { node = new LTEqualsNode(line, handler, currentScope, $idNode, $rhs.node); }
+  |  Is GT rhs=expression { node = new GTNode(line, handler, currentScope, $idNode, $rhs.node); }
+  |  Is LT rhs=expression { node = new LTNode(line, handler, currentScope, $idNode, $rhs.node); }
   ;
 
 otherwise[ReflexNode exp, MatchNode matchNode]
