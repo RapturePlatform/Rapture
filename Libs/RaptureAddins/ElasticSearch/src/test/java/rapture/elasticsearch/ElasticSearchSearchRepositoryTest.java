@@ -54,8 +54,8 @@ public class ElasticSearchSearchRepositoryTest {
         e.setClient(es.getClient());
         try {
             Thread.sleep(1000);
-        } catch (InterruptedException e1) {
-            e1.printStackTrace();
+        } catch (InterruptedException e) {
+            fail(e.toString());
         }
     }
 
@@ -71,8 +71,8 @@ public class ElasticSearchSearchRepositoryTest {
         assertEquals(json, e.get(uri));
         try {
             Thread.sleep(1000);
-        } catch (InterruptedException e1) {
-            fail(e1.toString());
+        } catch (InterruptedException e) {
+            fail(e.toString());
         }
         rapture.common.SearchResponse response = e.search("kimchy");
         assertEquals(1, response.getTotal().longValue());
