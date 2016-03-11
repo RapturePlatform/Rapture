@@ -29,10 +29,13 @@ import static org.junit.Assert.assertNull;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.google.common.collect.ImmutableMap;
-
+import rapture.common.CallingContext;
+import rapture.common.ConnectionInfo;
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
+import rapture.common.connection.ConnectionType;
+import rapture.kernel.ContextFactory;
+import rapture.kernel.Kernel;
 
 public class ElasticSearchSearchRepositoryIntTest {
 
@@ -40,9 +43,10 @@ public class ElasticSearchSearchRepositoryIntTest {
 
     @Before
     public void setup() {
+        CallingContext context = ContextFactory.getKernelUser();
+        ConnectionInfo info = new ConnectionInfo("localhost", 9300, "rapture", "rapture", "default", "default");
+        Kernel.getSys().putConnectionInfo(context, ConnectionType.ES.toString(), info);
         e = new ElasticSearchSearchRepository();
-        e.setConfig(ImmutableMap.of("host", "localhost", "port", "9300"));
-        e.setInstanceName("default");
         e.start();
     }
 

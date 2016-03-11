@@ -32,8 +32,6 @@ public interface SearchRepository {
 
     void setInstanceName(String instanceName);
 
-    void setConfig(Map<String, String> config);
-
     void start();
 
     void put(RaptureURI uri, String content);

@@ -100,3 +100,6 @@ end
 #async.setupDefaultWorkflows(false);
 
 #event.addEventMessage("//event/alert", 'application/vnd.rapture.event.alert', 'alpha', {});
+
+// set up elastic search
+#sys.putConnectionInfo("ES", fromjson("{ \"host\" : \"elasticsearch\", \"port\" : 9300, \"username\" : \"rapture\", \"password\" : \"rapture\", \"dbName\" : \"default\", \"instanceName\" : \"default\", \"CLASS\" : \"rapture.common.ConnectionInfo\" }"))

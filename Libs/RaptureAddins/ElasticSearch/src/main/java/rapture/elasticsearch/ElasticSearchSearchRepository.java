@@ -39,8 +39,12 @@ import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 
+import rapture.common.ConnectionInfo;
 import rapture.common.RaptureURI;
+import rapture.common.connection.ConnectionType;
 import rapture.common.exception.RaptureExceptionFactory;
+import rapture.kernel.ContextFactory;
+import rapture.kernel.Kernel;
 import rapture.kernel.search.SearchRepository;
 
 /**
@@ -62,9 +66,8 @@ public class ElasticSearchSearchRepository implements SearchRepository {
      * An ElasticSearch 'index' is akin to a database in SQL or a database in mongo
      */
     private String index;
-
-    private String host;
-    private int port;
+    private String instanceName;
+    private ConnectionInfo connectionInfo;
     private Client client;
 
     @Override
@@ -100,29 +103,13 @@ public class ElasticSearchSearchRepository implements SearchRepository {
     }
 
     @Override
-    public void setConfig(Map<String, String> config) {
-        String hostStr = config.get("host");
-        if (!StringUtils.isBlank(hostStr)) {
-            host = hostStr;
-        } else {
-            log.info("Using default host [localhost]");
-            host = "localhost";
-        }
-        String portStr = config.get("port");
-        if (!StringUtils.isBlank(portStr)) {
-            port = Integer.parseInt(portStr);
-        } else {
-            log.info("Using default port [9300]");
-            port = 9300;
-        }
-    }
-
-    @Override
     public void start() {
+        getConnectionInfo();
         client = TransportClient.builder().build();
         try {
-            ((TransportClient) client).addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(host), port));
-            log.info(String.format("ElasticSearch connection configured to [%s:%d]", host, port));
+            ((TransportClient) client)
+                    .addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(connectionInfo.getHost()), connectionInfo.getPort()));
+            log.info(String.format("ElasticSearch connection configured to [%s:%d]", connectionInfo.getHost(), connectionInfo.getPort()));
         } catch (UnknownHostException e) {
             log.error(e);
         }
@@ -130,7 +117,7 @@ public class ElasticSearchSearchRepository implements SearchRepository {
 
     @Override
     public void setInstanceName(String instanceName) {
-        this.index = instanceName;
+        this.instanceName = instanceName;
     }
 
     /**
@@ -182,4 +169,17 @@ public class ElasticSearchSearchRepository implements SearchRepository {
         return ret;
     }
 
+    private void getConnectionInfo() {
+        if (StringUtils.isBlank(instanceName)) {
+            instanceName = "default";
+        }
+        Map<String, ConnectionInfo> map = Kernel.getSys().getConnectionInfo(
+                ContextFactory.getKernelUser(),
+                ConnectionType.ES.toString());
+        connectionInfo = map.get(instanceName);
+        if (connectionInfo == null) {
+            throw RaptureExceptionFactory.create("Elastic search for instance " + instanceName + " is not defined.");
+        }
+        index = connectionInfo.getDbName();
+    }
 }
