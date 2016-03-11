@@ -47,6 +47,7 @@ import rapture.common.RaptureURI;
 import rapture.common.Scheme;
 import rapture.common.api.SysApi;
 import rapture.common.connection.ConnectionInfoConfigurer;
+import rapture.common.connection.ESConnectionInfoConfigurer;
 import rapture.common.connection.MongoConnectionInfoConfigurer;
 import rapture.common.connection.PostgresConnectionInfoConfigurer;
 import rapture.common.connection.ConnectionType;
@@ -73,7 +74,8 @@ public class SysApiImpl extends KernelBase implements SysApi {
     private static Map<ConnectionType, ConnectionInfoConfigurer> configurers =
             ImmutableMap.of(
                     ConnectionType.MONGODB, new MongoConnectionInfoConfigurer(),
-                    ConnectionType.POSTGRES, new PostgresConnectionInfoConfigurer()
+                    ConnectionType.POSTGRES, new PostgresConnectionInfoConfigurer(),
+                    ConnectionType.ES, new ESConnectionInfoConfigurer()
             );
 
     Repository ephemeralRepo;

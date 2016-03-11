@@ -29,16 +29,23 @@ import org.junit.Test;
 
 import com.google.common.collect.ImmutableMap;
 
+import rapture.common.CallingContext;
+import rapture.common.ConnectionInfo;
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
+import rapture.common.connection.ConnectionType;
+import rapture.kernel.ContextFactory;
+import rapture.kernel.Kernel;
 
 public class ElasticSearchSearchRepositoryTest {
 
     @Test
     public void test() {
+        CallingContext context = ContextFactory.getKernelUser();
+        ConnectionInfo info = new ConnectionInfo("localhost", 9300, "rapture", "rapture", "default", "default");
+        Kernel.getSys().putConnectionInfo(context, ConnectionType.ES.toString(), info);
+
         ElasticSearchSearchRepository e = new ElasticSearchSearchRepository();
-        e.setConfig(ImmutableMap.of("host", "localhost", "port", "9300"));
-        e.setInstanceName("default");
         e.start();
         String json = "{" +
                 "\"user\":\"kimchy\"," +

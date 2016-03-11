@@ -23,8 +23,8 @@
  */
 package rapture.kernel.pipeline;
 
-import org.testng.log4testng.Logger;
 
+import org.apache.log4j.Logger;
 import rapture.common.RapturePipelineTask;
 import rapture.exchange.QueueHandler;
 

@@ -27,5 +27,5 @@ package rapture.common.connection;
  * Created by yanwang on 12/3/15.
  */
 public enum ConnectionType {
-    MONGODB, POSTGRES;
+    MONGODB, POSTGRES, ES;
 }
