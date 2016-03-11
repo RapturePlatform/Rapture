@@ -25,16 +25,19 @@ package rapture.elasticsearch;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.elasticsearch.action.get.GetResponse;
-import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
+import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.SearchHit;
 
 import rapture.common.ConnectionInfo;
 import rapture.common.RaptureURI;
@@ -52,22 +55,24 @@ import rapture.kernel.search.SearchRepository;
  */
 public class ElasticSearchSearchRepository implements SearchRepository {
 
-    private Logger log = Logger.getLogger(ElasticSearchSearchRepository.class);
+    private static final Logger log = Logger.getLogger(ElasticSearchSearchRepository.class);
+
+    /*
+     * how long to keep the cursor alive between paginated search queries, in milliseconds
+     */
+    private static final long CURSOR_KEEPALIVE = 600000;
 
     /*
      * An ElasticSearch 'index' is akin to a database in SQL or a database in mongo
      */
     private String index;
-
     private String instanceName;
     private ConnectionInfo connectionInfo;
-
-    private TransportClient client;
+    private Client client;
 
     @Override
     public void put(RaptureURI uri, String content) {
-        IndexResponse response = client.prepareIndex(index, getType(uri), uri.getDocPath()).setSource(content).get();
-        log.info("Version is: " + response.getVersion());
+        client.prepareIndex(index, getType(uri), uri.getDocPath()).setSource(content).get();
     }
 
     @Override
@@ -77,11 +82,24 @@ public class ElasticSearchSearchRepository implements SearchRepository {
     }
 
     @Override
-    public String search(String query) {
-        SearchResponse response = client.prepareSearch()
-                .setQuery(QueryBuilders.simpleQueryStringQuery(query))
-                .execute().actionGet();
-        return response.toString();
+    public rapture.common.SearchResponse search(String query) {
+        SearchResponse response = client.prepareSearch().setQuery(QueryBuilders.queryStringQuery(query)).get();
+        return convert(response);
+    }
+
+    @Override
+    public rapture.common.SearchResponse searchWithCursor(String cursorId, int size, String query) {
+        SearchResponse response;
+        if (StringUtils.isBlank(cursorId)) {
+            response = client.prepareSearch()
+                    .setQuery(QueryBuilders.queryStringQuery(query))
+                    .setScroll(new TimeValue(CURSOR_KEEPALIVE))
+                    .setSize(size)
+                    .get();
+        } else {
+            response = client.prepareSearchScroll(cursorId).setScroll(new TimeValue(CURSOR_KEEPALIVE)).get();
+        }
+        return convert(response);
     }
 
     @Override
@@ -89,11 +107,16 @@ public class ElasticSearchSearchRepository implements SearchRepository {
         getConnectionInfo();
         client = TransportClient.builder().build();
         try {
-            client.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(connectionInfo.getHost()), connectionInfo.getPort()));
+            ((TransportClient) client)
+                    .addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(connectionInfo.getHost()), connectionInfo.getPort()));
             log.info(String.format("ElasticSearch connection configured to [%s:%d]", connectionInfo.getHost(), connectionInfo.getPort()));
         } catch (UnknownHostException e) {
             log.error(e);
         }
+    }
+
+    void setIndex(String index) {
+        this.index = index;
     }
 
     @Override
@@ -107,25 +130,60 @@ public class ElasticSearchSearchRepository implements SearchRepository {
      * @param uri
      * @return
      */
-    private String getType(RaptureURI uri) {
+    String getType(RaptureURI uri) {
         if (uri.hasScheme()) {
             return String.format("%s.%s", uri.getScheme().toString(), uri.getAuthority());
         }
         throw RaptureExceptionFactory.create("No scheme in URI, cannot extract type for indexing.");
     }
 
+    /**
+     * Convert from scheme.authority and id back to scheme://authority/id
+     * 
+     * @param type
+     * @param id
+     * @return
+     */
+    String getUri(String type, String id) {
+        return type.replaceFirst("\\.", "://") + "/" + id;
+    }
+
+    /**
+     * For unit testing
+     * 
+     * @param client
+     */
+    void setClient(Client client) {
+        this.client = client;
+    }
+
+    rapture.common.SearchResponse convert(SearchResponse response) {
+        rapture.common.SearchResponse ret = new rapture.common.SearchResponse();
+        ret.setCursorId(response.getScrollId());
+        ret.setMaxScore(Double.parseDouble(Float.toString(response.getHits().getMaxScore())));
+        ret.setTotal(response.getHits().getTotalHits());
+        ret.setSearchHits(new ArrayList<>());
+        for (SearchHit hit : response.getHits().getHits()) {
+            rapture.common.SearchHit rHit = new rapture.common.SearchHit();
+            rHit.setScore(Double.parseDouble(Float.toString(hit.getScore())));
+            rHit.setSource(hit.getSourceAsString());
+            rHit.setUri(getUri(hit.getType(), hit.getId()));
+            ret.getSearchHits().add(rHit);
+        }
+        return ret;
+    }
+
     private void getConnectionInfo() {
-        if(StringUtils.isBlank(instanceName)) {
+        if (StringUtils.isBlank(instanceName)) {
             instanceName = "default";
         }
         Map<String, ConnectionInfo> map = Kernel.getSys().getConnectionInfo(
                 ContextFactory.getKernelUser(),
                 ConnectionType.ES.toString());
         connectionInfo = map.get(instanceName);
-        if(connectionInfo == null) {
+        if (connectionInfo == null) {
             throw RaptureExceptionFactory.create("Elastic search for instance " + instanceName + " is not defined.");
         }
         index = connectionInfo.getDbName();
     }
-
 }

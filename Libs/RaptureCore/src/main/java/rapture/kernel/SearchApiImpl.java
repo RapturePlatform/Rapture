@@ -21,34 +21,28 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package rapture.kernel.pipeline;
+package rapture.kernel;
 
-import org.apache.log4j.Logger;
+import rapture.common.CallingContext;
+import rapture.common.SearchResponse;
+import rapture.common.api.SearchApi;
 
-import rapture.common.RapturePipelineTask;
-import rapture.exchange.QueueHandler;
+public class SearchApiImpl extends KernelBase implements SearchApi {
 
-public class RaptureSearchHandler implements QueueHandler {
-
-    private static final Logger log = Logger.getLogger(RaptureSearchHandler.class);
-
-    private final PipelineTaskStatusManager statusManager;
-
-    public RaptureSearchHandler() {
-        statusManager = new PipelineTaskStatusManager();
+    public SearchApiImpl(Kernel raptureKernel) {
+        super(raptureKernel);
     }
 
     @Override
-    public boolean handleMessage(String tag, String routing, String contentType, RapturePipelineTask task) {
-        try {
-            statusManager.startRunning(task);
-            // SearchRepositoryFactory.get();
-            statusManager.finishRunningWithSuccess(task);
-        } catch (Exception e) {
-            log.error(e);
-            statusManager.finishRunningWithFailure(task);
-        }
-        return true;
+    public SearchResponse search(CallingContext context, String query) {
+        // return SearchRepositoryFactory.getDefault().search(query);
+        return null;
+    }
+
+    @Override
+    public SearchResponse searchWithCursor(CallingContext context, String cursorId, int size, String query) {
+        // return SearchRepositoryFactory.getDefault().searchWithCursor(cursorId, size, query);
+        return null;
     }
 
 }

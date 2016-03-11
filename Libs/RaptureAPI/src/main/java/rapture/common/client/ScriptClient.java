@@ -28,13 +28,10 @@ import rapture.common.api.ScriptActivityApi;
 import rapture.common.api.ScriptingApi;
 
 /**
- * This class is intended to mirror the action of RaptureKernelScript in
- * structure, so that we can potentially run scripts locally, knowing that
- * locally they will call this class, and when run on a RaptureServer they will
- * invoke the RaptureKernelScript.
+ * This class is intended to mirror the action of RaptureKernelScript in structure, so that we can potentially run scripts locally, knowing that locally they
+ * will call this class, and when run on a RaptureServer they will invoke the RaptureKernelScript.
  * 
- * As they both have the same fundamental structure the script should work just
- * fine either way.
+ * As they both have the same fundamental structure the script should work just fine either way.
  * 
  * @author amkimian
  * 
@@ -67,6 +64,7 @@ public class ScriptClient implements ScriptingApi {
     private final HttpEnvironmentApi environment;
     private final HttpLoginApi login;
     private final HttpStructuredApi structured;
+    private final HttpSearchApi search;
 
     public ScriptClient(HttpLoginApi loginApi) {
         login = loginApi;
@@ -96,6 +94,7 @@ public class ScriptClient implements ScriptingApi {
         decision = new HttpDecisionApi(loginApi);
         environment = new HttpEnvironmentApi(loginApi);
         structured = new HttpStructuredApi(loginApi);
+        search = new HttpSearchApi(loginApi);
     }
 
     public HttpLoginApi getLogin() {
@@ -139,7 +138,6 @@ public class ScriptClient implements ScriptingApi {
         return plugin;
     }
 
-
     public HttpIndexApi getIndex() {
         return index;
     }
@@ -147,7 +145,6 @@ public class ScriptClient implements ScriptingApi {
     public HttpLockApi getLock() {
         return lock;
     }
-
 
     public HttpScheduleApi getSchedule() {
         return schedule;
@@ -189,7 +186,6 @@ public class ScriptClient implements ScriptingApi {
         return jar;
     }
 
-
     public HttpSeriesApi getSeries() {
         return series;
     }
@@ -224,5 +220,10 @@ public class ScriptClient implements ScriptingApi {
     @Override
     public String getSerializedContext() {
         return login.getContext().getContext();
+    }
+
+    @Override
+    public HttpSearchApi getSearch() {
+        return search;
     }
 }

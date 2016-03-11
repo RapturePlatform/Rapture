@@ -24,10 +24,10 @@
 package rapture.elasticsearch;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
+import org.junit.Before;
 import org.junit.Test;
-
-import com.google.common.collect.ImmutableMap;
 
 import rapture.common.CallingContext;
 import rapture.common.ConnectionInfo;
@@ -37,16 +37,22 @@ import rapture.common.connection.ConnectionType;
 import rapture.kernel.ContextFactory;
 import rapture.kernel.Kernel;
 
-public class ElasticSearchSearchRepositoryTest {
+public class ElasticSearchSearchRepositoryIntTest {
 
-    @Test
-    public void test() {
+    private ElasticSearchSearchRepository e;
+
+    @Before
+    public void setup() {
+        Kernel.getKernel().restart();
         CallingContext context = ContextFactory.getKernelUser();
         ConnectionInfo info = new ConnectionInfo("localhost", 9300, "rapture", "rapture", "default", "default");
         Kernel.getSys().putConnectionInfo(context, ConnectionType.ES.toString(), info);
-
-        ElasticSearchSearchRepository e = new ElasticSearchSearchRepository();
+        e = new ElasticSearchSearchRepository();
         e.start();
+    }
+
+    @Test
+    public void test() {
         String json = "{" +
                 "\"user\":\"kimchy\"," +
                 "\"postDate\":\"2014-01-30\"," +
@@ -56,6 +62,12 @@ public class ElasticSearchSearchRepositoryTest {
         e.put(uri, json);
         assertEquals(json, e.get(uri));
         System.out.println(e.search("kim*"));
+    }
+
+    @Test
+    public void test2() {
+        RaptureURI uri = new RaptureURI("document://testme/missing", Scheme.DOCUMENT);
+        assertNull(e.get(uri));
     }
 
 }
