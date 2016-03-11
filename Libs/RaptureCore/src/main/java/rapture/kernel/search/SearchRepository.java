@@ -26,6 +26,7 @@ package rapture.kernel.search;
 import java.util.Map;
 
 import rapture.common.RaptureURI;
+import rapture.common.SearchResponse;
 
 public interface SearchRepository {
 
@@ -39,6 +40,8 @@ public interface SearchRepository {
 
     String get(RaptureURI uri);
 
-    String search(String query);
+    SearchResponse search(String query);
+
+    SearchResponse searchWithCursor(String cursorId, int size, String query);
 
 }

@@ -1,0 +1,12 @@
+[Search related functions for indexed data and fast retrieval]
+api(Search) {
+
+    [Search for data using a Lucene compliant query string query.  Default size of result set returned is 10]
+    @entitle=/search/read
+    @public SearchResponse search(String query);
+    
+    [Search for data using a Lucene compliant query string query.  This will return a cursor for scrolling thru the results.  The initial call should pass in the cursor argument as null or empty, but subsequent calls should use the previously returned cursorId.  The size parameter specifies how many results should be returned per call]
+    @entitle=/search/read
+    @public SearchResponse searchWithCursor(String cursorId, int size, String query);
+
+}

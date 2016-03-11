@@ -24,7 +24,9 @@
 package rapture.elasticsearch;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import com.google.common.collect.ImmutableMap;
@@ -32,14 +34,20 @@ import com.google.common.collect.ImmutableMap;
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
 
-public class ElasticSearchSearchRepositoryTest {
+public class ElasticSearchSearchRepositoryIntTest {
 
-    @Test
-    public void test() {
-        ElasticSearchSearchRepository e = new ElasticSearchSearchRepository();
+    private ElasticSearchSearchRepository e;
+
+    @Before
+    public void setup() {
+        e = new ElasticSearchSearchRepository();
         e.setConfig(ImmutableMap.of("host", "localhost", "port", "9300"));
         e.setInstanceName("default");
         e.start();
+    }
+
+    @Test
+    public void test() {
         String json = "{" +
                 "\"user\":\"kimchy\"," +
                 "\"postDate\":\"2014-01-30\"," +
@@ -49,6 +57,12 @@ public class ElasticSearchSearchRepositoryTest {
         e.put(uri, json);
         assertEquals(json, e.get(uri));
         System.out.println(e.search("kim*"));
+    }
+
+    @Test
+    public void test2() {
+        RaptureURI uri = new RaptureURI("document://testme/missing", Scheme.DOCUMENT);
+        assertNull(e.get(uri));
     }
 
 }

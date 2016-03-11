@@ -5,4 +5,5 @@ dependencies {
     compile project(':RaptureAPI')
     compile project(':RaptureAddinCore')
     compile 'org.elasticsearch:elasticsearch:2.2.0'
+    testCompile 'net.java.dev.jna:jna:4.2.1'
 }

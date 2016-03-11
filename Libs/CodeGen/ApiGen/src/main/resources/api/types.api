@@ -1446,3 +1446,20 @@ type ChildrenTransferObject(@package=rapture.common) {
 type StructuredRow(@package=rapture.common){
     Map<String,Object> columns;
 }
+
+[A SearchResponse object encapsulates the important information returned by using the search api in Rapture]
+@Bean
+type SearchResponse(@package=rapture.common) {
+	Long total;
+	Double maxScore;
+	String cursorId;
+	List<SearchHit> searchHits;
+}
+
+[A SearchHit object represents each individual data object that is returned as part of a SearchResponse]
+@Bean
+type SearchHit(@package=rapture.common) {
+	String uri;
+	Double score;
+	String source;
+}
