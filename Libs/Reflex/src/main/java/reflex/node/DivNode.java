@@ -23,6 +23,8 @@
  */
 package reflex.node;
 
+import java.math.BigDecimal;
+
 import reflex.IReflexHandler;
 import reflex.Scope;
 import reflex.debug.IReflexDebugger;
@@ -48,7 +50,10 @@ public class DivNode extends BaseNode {
 
         // number / number
         if (a.isNumber() && b.isNumber()) {
-            ReflexValue retVal = new ReflexValue(lineNumber, a.asDouble() / b.asDouble());
+        	BigDecimal bigA = a.asBigDecimal();
+        	BigDecimal bigB = b.asBigDecimal();
+        	BigDecimal product = bigA.multiply(bigB);
+        	ReflexValue retVal = new ReflexValue((product.abs().equals(product)) ? product.longValue() : product);
             debugger.stepEnd(this, retVal, null);
             return retVal;
         }

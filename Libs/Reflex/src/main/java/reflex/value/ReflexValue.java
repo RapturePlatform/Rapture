@@ -23,15 +23,18 @@
  */
 package reflex.value;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.math.MathContext;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import rapture.common.impl.jackson.JacksonUtil;
 import reflex.ReflexException;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class ReflexValue implements Comparable<ReflexValue> {
 
@@ -77,6 +80,8 @@ public class ReflexValue implements Comparable<ReflexValue> {
             valueType = ReflexValueType.INTERNAL;
         } else if (value instanceof String) {
             valueType = ReflexValueType.STRING;
+        } else if ((value instanceof Integer) || (value instanceof Long) || (value instanceof BigInteger)) {
+            valueType = ReflexValueType.INTEGER;
         } else if (value instanceof Number) {
             valueType = ReflexValueType.NUMBER;
         } else if (value instanceof Map<?, ?>) {
@@ -206,7 +211,8 @@ public class ReflexValue implements Comparable<ReflexValue> {
 
     public Double asDouble() {
         switch (valueType) {
-            case NUMBER:
+        case INTEGER:
+        case NUMBER:
                 return ((Number) value).doubleValue();
             case STRING:
                 return Double.valueOf(value.toString());
@@ -216,9 +222,25 @@ public class ReflexValue implements Comparable<ReflexValue> {
         return null;
     }
 
+    public BigDecimal asBigDecimal() {
+    	if (value instanceof BigDecimal) return (BigDecimal) value;
+        switch (valueType) {
+	        case INTEGER:
+	            return new BigDecimal(((Number) value).longValue());
+	        case NUMBER:
+	            return new BigDecimal(((Number) value).doubleValue(), MathContext.DECIMAL64);
+            case STRING:
+                return new BigDecimal(value.toString());
+            default:
+                standardThrow(ReflexValueType.NUMBER);
+        }
+        return null;
+    }
+
     public Float asFloat() {
         switch (valueType) {
             case NUMBER:
+            case INTEGER:
                 return ((Number) value).floatValue();
             default:
                 standardThrow(ReflexValueType.NUMBER);
@@ -269,6 +291,7 @@ public class ReflexValue implements Comparable<ReflexValue> {
 
     public Integer asInt() {
         switch (valueType) {
+        	case INTEGER:
             case NUMBER:
                 return ((Number) value).intValue();
             case STRING:
@@ -314,6 +337,7 @@ public class ReflexValue implements Comparable<ReflexValue> {
 
     public Long asLong() {
         switch (valueType) {
+        	case INTEGER:
             case NUMBER:
                 return ((Number) value).longValue();
             case STRING:
@@ -468,9 +492,10 @@ public class ReflexValue implements Comparable<ReflexValue> {
             return false;
         }
         ReflexValue that = (ReflexValue) o;
-        if (this.isNumber() && that.isNumber()) {
-            double diff = Math.abs(this.asDouble() - that.asDouble());
-            return diff < 0.00000000001;
+        if (this.isInteger() && that.isInteger()) {
+            return this.asLong().equals(that.asLong());
+        } else if (this.isNumber() && that.isNumber()) {
+            return this.asBigDecimal().equals(that.asBigDecimal());
         } else if (this.isDate() && that.isDate()) {
             return this.asDate().equals(that);
         } else if (this.isTime() && that.isTime()) {
@@ -478,7 +503,6 @@ public class ReflexValue implements Comparable<ReflexValue> {
         } else if (this.isList() && that.isList()) {
             return compareTwoLists(this.asList(), that.asList());
         } else {
-            
             return this.value.equals(that.value);
         }
     }
@@ -611,8 +635,17 @@ public class ReflexValue implements Comparable<ReflexValue> {
     }
 
     @JsonIgnore
+    /**
+     * Integers are Numbers
+     * @return
+     */
     public boolean isNumber() {
-        return valueType == ReflexValueType.NUMBER;
+        return (valueType == ReflexValueType.NUMBER) || (valueType == ReflexValueType.INTEGER);
+    }
+
+    @JsonIgnore
+    public boolean isInteger() {
+        return valueType == ReflexValueType.INTEGER;
     }
 
     @JsonIgnore
