@@ -43,6 +43,7 @@ public class ElasticSearchSearchRepositoryIntTest {
 
     @Before
     public void setup() {
+        Kernel.getKernel().restart();
         CallingContext context = ContextFactory.getKernelUser();
         ConnectionInfo info = new ConnectionInfo("localhost", 9300, "rapture", "rapture", "default", "default");
         Kernel.getSys().putConnectionInfo(context, ConnectionType.ES.toString(), info);

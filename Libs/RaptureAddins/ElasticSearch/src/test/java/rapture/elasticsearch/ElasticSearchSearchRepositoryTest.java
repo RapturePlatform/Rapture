@@ -49,7 +49,7 @@ public class ElasticSearchSearchRepositoryTest {
     @Before
     public void setup() {
         e = new ElasticSearchSearchRepository();
-        e.setInstanceName("unittest");
+        e.setIndex("unittest");
         es = new EmbeddedServer();
         e.setClient(es.getClient());
         try {

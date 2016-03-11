@@ -115,6 +115,10 @@ public class ElasticSearchSearchRepository implements SearchRepository {
         }
     }
 
+    void setIndex(String index) {
+        this.index = index;
+    }
+
     @Override
     public void setInstanceName(String instanceName) {
         this.instanceName = instanceName;
