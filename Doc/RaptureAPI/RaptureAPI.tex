@@ -12,8 +12,8 @@
 %\newcommand{\Rapture}{${\mathbf{Rapture}}$~}
 %\newcommand{\Reflex}{${\mathbf{Reflex}}$~}
 
-\newcommand{\Rapture}{Rapture~}
-\newcommand{\Reflex}{Reflex~}
+\newcommand{\Rapture}{\Verb+RAPTURE+~}
+\newcommand{\Reflex}{\Verb+REFLEX+~}
 
 \usepackage{listings}
 \usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
@@ -27,6 +27,10 @@
 \usepackage{paralist}
 \usepackage{arev}
 \usepackage{tikz}
+\usepackage{float}
+
+\fvset{fontsize=\footnotesize}
+
 \usetikzlibrary{positioning,shapes.symbols,shapes.multipart,shapes.misc,shadows,arrows,decorations.pathmorphing,decorations.pathreplacing,backgrounds,positioning,fit,petri,chains,mindmap}
 
 \tikzset{
@@ -54,10 +58,10 @@
 	fogclient/.style={cloud,draw=black,fill=blue!40,thick,drop shadow}
 }
 
-\newcommand{\myTitle}{ Rapture - API and Scripting\xspace}
+\newcommand{\myTitle}{ Rapture and Reflex\xspace}
 \newcommand{\myClient}{\xspace}
 \newcommand{\myName}{Alan Moore\xspace}
-\newcommand{\myTime}{February 12, 2016\xspace}
+\newcommand{\myTime}{March, 2016\xspace}
 \newcommand{\myCFootnote}{Documentation By\xspace}
 \newcommand{\myCompany}{Incapture\xspace}
 \newcommand{\myCompanyFull}{Incapture Technologies LLC\xspace}
@@ -107,9 +111,9 @@
 
 \begin{document}
 
-\title{The Rapture API}
+\title{Rapture and Reflex}
 \author{Alan Moore}
-\date{February 2016}
+\date{March 2016}
 
 \makeatletter
     \begin{titlepage}
@@ -146,7 +150,7 @@ The general architecture of a \Rapture system is reproduced in Figure~\vref{fig:
 
 \begin{figure}[htb]
 \centering
-\includegraphics[width=15cm]{Graphics/rapturecore}
+\includegraphics[scale=0.5]{Graphics/rapturecore}
 \caption{Rapture Component Parts}
 \label{fig:RaptureDiagram}
 \end{figure}
@@ -157,18 +161,227 @@ the \Rapture API is that the interaction with \Rapture is invariant to the locat
 of the application -- the API looks \emph{the same} no matter where the application
 resides.
 
+This document presents an overview of \Rapture and its scripting language \Reflex. The first
+part contains more general background to \Rapture and presents an overview of its parts. The second
+part is a detailed description of the API calls that can be made of a \Rapture system. Finally the third
+part presents the \Reflex scripting language.
+
+\chapter{Main Rapture concepts}
+
+The API section of this document gives a more thorough treatment to each of the major concepts in \Rapture. This section
+presents a general overview of the major themes. Nearly every concept in \Rapture and the entities that describe it are
+referenced using a uri naming scheme. The following sections describe these concepts.
+
+\section{Data}
+One of the prime uses of \Rapture is to manage access to data. \Rapture has the concept of a \emph{repository} which is a
+reference to either a data store managed by \Rapture (the data is only updated by \Rapture applications) or
+the data is externally managed and \Rapture is simply accessing it "remotely".
+
+Repositories in \Rapture are divided into types.
+
+\subsection{Document Data}
+Document data repositories manage data as key/value pairs. The key in \Rapture is a document uri and the value
+is typically (but not necessarily) a JSON formatted document. As an example, an abstract view of a document repository would map the following:
+
+\begin{Verbatim}
+	doc://test/one/two/three
+
+	{
+	  "field" : "value",
+		"one" : 1,
+		"array" : [ 1, 2, 3, 4]
+		"inner" : {
+			"a" : 0,
+			"b" : 1,
+			"c" : true
+		}
+	}
+\end{Verbatim}
+
+The first part of a document uri (\Verb+test+ in the above example) is a reference to a
+document repository which is defined by calling the \Rapture API call "createDocRepo". A
+document repository in \Rapture is hosted on an underlying database such as MongoDB or Cassandra
+and can be versioned. Each document can have metadata associated with it - some information maintained
+directly by \Rapture (such as write time, write user) and some information managed directly by
+an application.
+
+You can also append on a version qualifier to the end of a document uri. This gives an application
+developer the ability to reference absolutely a piece of content in \Rapture that is invariant.
+
+Documents in \Rapture that are formatted as JSON documents work well with the \Reflex scripting language. When
+you load a document from \Rapture into \Reflex it is automatically converted into a special "map of maps" structure
+which is easily accessible in the scripting language. As an example consider the code below:
+
+\begin{lstlisting}[caption={Reflex document example}, language=reflex]
+  doc <-- "//test/one/two/three";
+	assert(doc.one == 1);
+	doc.one = 2;
+	doc --> "//test/one/two/three";
+\end{lstlisting}
+
+This example takes the example document above, tests the value of the "one" field and then
+changes it to the value of 2. It then writes that document back to \Rapture, which will create a new
+version of that document.
+
+\subsection{Series data}
+
+Series data embraces the concept where instead of having a single document (or data value) at a given
+uri you would prefer to reference a whole set of documents each indexed with a unique "column" key. If those
+keys represent points in time (perhaps "20160101") then the series could represent time series data.
+
+Series repositories are used to manage this particular type of data. Such data could be represented in a document
+repository - the uri for the document could include the point in time or the column key. A series repository is simply
+much more efficient at storing and accessing this type of data and special API calls are available to return sub-parts of
+the series.
+
+The content stored in an individual point of a series can contain any arbitary value type. Typically the value will be
+numeric but strings or more complex structures (such as JSON formatted documents) are also supported.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[scale=0.7]{Graphics/SeriesExplain}
+\caption{Rapture Series Structure}
+\label{fig:RaptureSeriesStructure}
+\end{figure}
+
+Figure~\vref{fig:RaptureSeriesStructure} shows the association between a series uri in \Rapture and the data
+it "points" to.
+
+\subsection{Blob Data}
+
+Blob (Binary Large OBject) data is used in \Rapture to store data that has some structure or value to an
+external application but has no real "meaning" internally to \Rapture. The uri reference to a blob in \Rapture
+points to a sequence of bytes -- \Rapture understands (and maintains) the mime-type of the data and its length
+and other attributes such as the last writer and write time but it is really just an arbitary store of information.
+
+\Rapture applications tend to use Blob repositories to store spreadsheets, cvs files, images, application code and the like.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[scale=0.75]{Graphics/RaptureBlobExplain}
+\caption{Rapture Blob Structure}
+\label{fig:RaptureBlobStructure}
+\end{figure}
+
+Figure~\vref{fig:RaptureBlobStructure} shows an example blob uri pointing to a csv file
+used in an import/processing application.
+
+\subsection{Structured Data}
+
+Structured data is an alias for "relational data". Structured repositories (equivalent to databases and tables in
+a relational database) are used in two completely different ways.
+
+\subsubsection{Internal Structured Data}
+
+A structured data repository can be used internally within an application to store information that is relational in
+layout -- the internal reference implies that applications only modify and access this information through the \Rapture API. With
+this restriction \Rapture can manage server side caching of the information and propogate changes in a distributed manner to
+other servers in a \Rapture environment.
+
+\subsubsection{External Structured Data}
+
+An external structured data repository is simply a well described connection to an external database (and table set). The idea
+is that applications and process that are using other \Rapture facilities (the other data types described here, workflows etc.) can
+treat this type of external data in the same manner and have a single mechanism for accessing and joining these disparate data sets. In addition
+the entitlements system of \Rapture can be used to control access to such a resource.
+
+\section{Workflows}
+
+With data under control with a consistent access mechanism and naming conventions there is often a need in an enterprise application to
+manipulate and transform this data in consistent ways. Programs that manipulate data (or do other tasks) can often be broken down into a set of steps
+and a workflow in \Rapture is a vehicle for managing the execution of those steps in a controlled and distributed manner.
+
+A sample workflow in \Rapture is shown in Figure~\vref{fig:WorkflowExample}.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.75]{Graphics/RaptureWorkflowExplain}
+\caption{Rapture Workflow}
+\label{fig:WorkflowExample}
+\end{figure}
+
+This workflow, with the unique reference "workflow://processor/file/one" begins at the start step. The first
+task (or step) that is executed is "Check for Files". The implementation of a step in a \Rapture workflow can be either
+a piece of Java code that is embedded in the \Rapture server (as shown as a workflow extension in Figure~\vref{fig:RaptureExtensionPoints})
+or can be a \Reflex script hosted on \Rapture itself. After doing its work the step execution code returns a status code - a piece of text
+that is used to point to the next step that will be executed. In this case returning "ok" will move it to the "import file" step and returning
+"no files" can point it to the "wait for a while" step. These steps execute in a similar way and the workflow execution continues until we
+reach the "End" point.
+
+In a real workflow the "Wait for a while" step would ultimately error out after an extended time.
+
+Workflow steps are associated with server groups and any server in a group can be used to process that step. In this example the yellow first step
+needs to run on a special server that has access to a specific file location - once the file(s) are located they are imported into a \Rapture blob repository
+and the other steps can run on any server in the environment. This technique and approach allows \Rapture workflows to be distributed across a compute fabric while
+still maintaining some constraints on execution.
+
+Workflows can be started (run) using the \Rapture API (see the Decision API later on in this document) or attached to events or schedules.
+
+\section{Scripts}
+
+Scripts in \Rapture refer to programs written in the \Reflex scripting language. That language is described later on in this document.
+
+Scripts have unique references (uris) in \Rapture and can be used in many different ways. Some of the typical use cases are enumerated below:
+
+\begin{itemize}
+	\item{Workflow steps can use scripts as part of their execution.}
+	\item{Scripts can be run one-off as mini-programs through the \Rapture API.}
+	\item{Scripts can be run upon an event firing.}
+	\item{Scripts can be executed as part of an AJAX call to a service -- usually returning JSON data controlled by parameters passed in the service call.}
+\end{itemize}
+
+\section{Pipelines and Messages}
+\Rapture can be a multi-server environment. Coordination is needed between individual servers and this is accomplished through messaging. These messages are
+used to coordinate workflow activity or the initiation of any asynchronous style activity. \Rapture abstracts the concept of messaging and message queues from their
+implementation. The \Rapture kernel requires at least one of these "pipelines" to be setup for a system to run. In a single server environment
+this could be an in memory (in process) implementation - in a multi-server environment the open source RabbitMQ implementation is recommended.
+
+Figure~\vref{fig:PipelineExample} shows the different types of pipeline that could exist in a \Rapture environment.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.75]{Graphics/PipelineExplain}
+\caption{Rapture Pipeline}
+\label{fig:PipelineExample}
+\end{figure}
+
+The same pipeline system can be used by applications as well. Applications create queues on exchanges and can be both a publisher and a consumer of custom messages
+sent on those queues. Some queues could have no endpoint within \Rapture -- they could imply connectivity to external applications and systems. Conversely such queues could
+represent inbound queues from external systems. This abstraction separates the application code (the publisher and consumer) from the actual implementation of the transport.
+
+
+\section{Jobs and Schedules}
+
+In a \Rapture environment running a batch process in a production context it is often required to scheduled repeating tasks in a consistent manner.
+
+\Rapture has the concept of a schedule manager where you can define jobs that can execute according to the evaluation of a cron style specification. These jobs
+can be used to run scripts or workflows and there are many operational style API calls that can be used to monitor their progress.
+
+
 \chapter{Application Locations}
 Applications interacting with \Rapture will typicall fall within one of the
 following categories.
 
 \begin{itemize}
   \item{Client applications interacting with a remote \Rapture environment.}
-  \item{Client \Reflex scripts using the ReflexRunner application.}
+  \item{Client \Reflex scripts using the ReflexRunner application. These behave like client applications as far as \Rapture is concerned.}
   \item{Server applications embedding the \Rapture kernel.}
   \item{Scripts running on a server that is itself running the \Rapture kernel.}
   \item{Extensions to \Reflex or repository or message drivers.}
   \item{Scripts run in the context of an ajax call from a web browser.}
 \end{itemize}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.75]{Graphics/RaptureExtensionPoints}
+\caption{Rapture Extension Points}
+\label{fig:RaptureExtensionPoints}
+\end{figure}
+
+The diagram of Figure~\vref{fig:RaptureExtensionPoints} shows the places in which these extensions can take
+place. Typically a \Rapture environment or application suite is a combination of some of these -- and Incapture Technologies
+can provide some enterprise extensions (particularly in the low level extensions space) that can assist in rounding out an
+application.
 
 \section{Context and Entitlements}
 Every interaction with a \Rapture API call is made in the context of a logged in
@@ -252,7 +465,7 @@ Here we see a similar login approach and then the invocation of the same \Raptur
 API call. With the same target \Rapture environment these two code snippets will
 produce exactly the same output.
 
-\section{Client \Reflex scripts}
+\section{Client Reflex scripts}
 
 \Reflex scripts running on the client (or the server) are always running in a
 container that has already been connected to an environment -- the wrapper is
@@ -303,13 +516,6 @@ underlying data stores and then calling:
    Kernel.initBootstrap();
 \end{lstlisting}
 
-\chapter{Application Location Summary}
-Applications can sit in many places in the architecture of a solution that
-includes a \Rapture system. The goal of the \Rapture API is to make the access
-to \Rapture as simple and consistent as possible to all applications so it is
-easy for a developer to move their applications within the system architecture or
-to switch and change the programming languages used for an application.
-
 \part{API}
 \chapter{API Introduction}
 The \Rapture API is divided into a number of sections. We've seen in an earlier
@@ -338,11 +544,10 @@ will be described and then the detailed API calls will follow.
 \input{Sys}
 \input{Structured}
 \input{Schedule}
-\input{Jar}
 \input{Plugin}
 \input{Types}
 
-\input{reflexContent}
+%\input{reflexContent}
 
 %*******************************************************
 % Disclaimer

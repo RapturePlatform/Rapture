@@ -1,0 +1,34 @@
+The \verb+selectJoinedRows+ call is used to perform a select with join across a number of tables in a
+structured repository (database).
+
+The parameters require some explanation, the following table and the example code serve this purpose.
+
+\begin{table}[H]
+\begin{center}
+\begin{tabular}{r p{10cm}}
+  Field & Purpose \\
+  \hline
+  tableUris & This is simply a list of the full tableUris used in the join. \\
+  columnNames & This lists the column names that will be returned as part of this call. The column names should be prefixed with the table name. \\
+  from & The from clause, which will include the JOIN clause. (See the example). \\
+  where & A suitable WHERE clause if required. \\
+  order & Which columns should be used to order the results. \\
+  ascending & Whether the order should be ascending (true) or descending (false). \\
+  limit & The maximum number of rows that will be returned. \\
+\end{tabular}
+\end{center}
+\end{table}
+
+\begin{Verbatim}
+  tables = [ '//test/one', '//test/two'];
+  columns = [ 'one.firstname', 'two.city'];
+  from = 'test.one INNER JOIN test.two ON one.id=two.id';
+  where = '';
+  order = [ 'one.firstname' ];
+  ascending = true;
+  limit = 10;
+
+  results = #structured.selectJoinedRows(tables,
+    columns, from, where, order, ascending, limit);
+  println(json(results));
+\end{Verbatim}

@@ -4,12 +4,12 @@
 \subsection{ValidateDocRepo}
 \index{ValidateDocRepo}
 \label{Api:ValidateDocRepo}
-\begin{verbatim}
+\begin{Verbatim}
    boolean validateDocRepo (
            String    docRepoUri
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /repo/write
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -22,13 +22,13 @@
 \subsection{CreateDocRepo}
 \index{CreateDocRepo}
 \label{Api:CreateDocRepo}
-\begin{verbatim}
+\begin{Verbatim}
    void createDocRepo (
            String    docRepoUri
            String    config
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /repo/write
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -41,12 +41,12 @@
 \subsection{DocRepoExists}
 \index{DocRepoExists}
 \label{Api:DocRepoExists}
-\begin{verbatim}
+\begin{Verbatim}
    boolean docRepoExists (
            String    docRepoUri
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /repo/list
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -59,12 +59,12 @@
 \subsection{DocExists}
 \index{DocExists}
 \label{Api:DocExists}
-\begin{verbatim}
+\begin{Verbatim}
    boolean docExists (
            String    docUri
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /repo/list
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -77,12 +77,12 @@
 \subsection{GetDocRepoConfig}
 \index{GetDocRepoConfig}
 \label{Api:GetDocRepoConfig}
-\begin{verbatim}
+\begin{Verbatim}
    DocumentRepoConfig getDocRepoConfig (
            String    docRepoUri
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /repo/read
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -95,12 +95,12 @@
 \subsection{GetDocRepoStatus}
 \index{GetDocRepoStatus}
 \label{Api:GetDocRepoStatus}
-\begin{verbatim}
+\begin{Verbatim}
    Map<String,String> getDocRepoStatus (
            String    docRepoUri
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /repo/read
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -113,11 +113,11 @@
 \subsection{GetDocRepoConfigs}
 \index{GetDocRepoConfigs}
 \label{Api:GetDocRepoConfigs}
-\begin{verbatim}
+\begin{Verbatim}
    List<DocumentRepoConfig> getDocRepoConfigs (
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /repo/read
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -130,12 +130,12 @@
 \subsection{DeleteDocRepo}
 \index{DeleteDocRepo}
 \label{Api:DeleteDocRepo}
-\begin{verbatim}
+\begin{Verbatim}
    void deleteDocRepo (
            String    docRepoUri
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /repo/write
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -148,15 +148,15 @@
 \subsection{ArchiveRepoDocs}
 \index{ArchiveRepoDocs}
 \label{Api:ArchiveRepoDocs}
-\begin{verbatim}
+\begin{Verbatim}
    void archiveRepoDocs (
            String    docRepoUri
            int    versionLimit
            long    timeLimit
            boolean    ensureVersionLimit
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /repo/write
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -169,12 +169,12 @@
 \subsection{GetDocAndMeta}
 \index{GetDocAndMeta}
 \label{Api:GetDocAndMeta}
-\begin{verbatim}
+\begin{Verbatim}
    DocumentWithMeta getDocAndMeta (
            String    docUri
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/read/$f(docUri)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -187,12 +187,12 @@
 \subsection{GetDocMeta}
 \index{GetDocMeta}
 \label{Api:GetDocMeta}
-\begin{verbatim}
+\begin{Verbatim}
    DocumentMetadata getDocMeta (
            String    docUri
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/list/$f(docUri)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -205,12 +205,12 @@
 \subsection{RevertDoc}
 \index{RevertDoc}
 \label{Api:RevertDoc}
-\begin{verbatim}
+\begin{Verbatim}
    DocumentWithMeta revertDoc (
            String    docUri
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/write/$f(docUri)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -223,12 +223,12 @@
 \subsection{GetDoc}
 \index{GetDoc}
 \label{Api:GetDoc}
-\begin{verbatim}
+\begin{Verbatim}
    String getDoc (
            String    docUri
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/read/$f(docUri)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -241,13 +241,13 @@
 \subsection{PutDoc}
 \index{PutDoc}
 \label{Api:PutDoc}
-\begin{verbatim}
+\begin{Verbatim}
    String putDoc (
            String    docUri
            String    content
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/write/$f(docUri)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -260,14 +260,14 @@
 \subsection{PutDocWithVersion}
 \index{PutDocWithVersion}
 \label{Api:PutDocWithVersion}
-\begin{verbatim}
+\begin{Verbatim}
    boolean putDocWithVersion (
            String    docUri
            String    content
            int    currentVersion
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/write/$f(docUri)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -280,14 +280,14 @@
 \subsection{PutDocWithEventContext}
 \index{PutDocWithEventContext}
 \label{Api:PutDocWithEventContext}
-\begin{verbatim}
+\begin{Verbatim}
    DocWriteHandle putDocWithEventContext (
            String    docUri
            String    content
            Map<String,String>    eventContext
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/write/$f(docUri)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -300,12 +300,12 @@
 \subsection{DeleteDoc}
 \index{DeleteDoc}
 \label{Api:DeleteDoc}
-\begin{verbatim}
+\begin{Verbatim}
    boolean deleteDoc (
            String    docUri
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/write/$f(docUri)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -318,13 +318,13 @@
 \subsection{RenameDoc}
 \index{RenameDoc}
 \label{Api:RenameDoc}
-\begin{verbatim}
+\begin{Verbatim}
    String renameDoc (
            String    fromDocUri
            String    toDocUri
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/write/$f(fromDocUri)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -337,12 +337,12 @@
 \subsection{GetDocs}
 \index{GetDocs}
 \label{Api:GetDocs}
-\begin{verbatim}
+\begin{Verbatim}
    Map<String,String> getDocs (
            List<String>    docUris
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/batch
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -355,12 +355,12 @@
 \subsection{GetDocAndMetas}
 \index{GetDocAndMetas}
 \label{Api:GetDocAndMetas}
-\begin{verbatim}
+\begin{Verbatim}
    List<DocumentWithMeta> getDocAndMetas (
            List<String>    docUris
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/batch
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -373,12 +373,12 @@
 \subsection{DocsExist}
 \index{DocsExist}
 \label{Api:DocsExist}
-\begin{verbatim}
+\begin{Verbatim}
    List<boolean> docsExist (
            List<String>    docUris
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/batch
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -391,13 +391,13 @@
 \subsection{PutDocs}
 \index{PutDocs}
 \label{Api:PutDocs}
-\begin{verbatim}
+\begin{Verbatim}
    List<Object> putDocs (
            List<String>    docUris
            List<String>    contents
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/batch
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -410,15 +410,15 @@
 \subsection{RenameDocs}
 \index{RenameDocs}
 \label{Api:RenameDocs}
-\begin{verbatim}
+\begin{Verbatim}
    List<String> renameDocs (
            String    authority
            String    comment
            List<String>    fromDocUris
            List<String>    toDocUris
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/batch
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -431,12 +431,12 @@
 \subsection{DeleteDocsByUriPrefix}
 \index{DeleteDocsByUriPrefix}
 \label{Api:DeleteDocsByUriPrefix}
-\begin{verbatim}
+\begin{Verbatim}
    List<String> deleteDocsByUriPrefix (
            String    docUri
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/write/$f(docUri)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -449,13 +449,13 @@
 \subsection{ListDocsByUriPrefix}
 \index{ListDocsByUriPrefix}
 \label{Api:ListDocsByUriPrefix}
-\begin{verbatim}
+\begin{Verbatim}
    Map<String,RaptureFolderInfo> listDocsByUriPrefix (
            String    docUri
            int    depth
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/read/$f(docUri)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -468,13 +468,13 @@
 \subsection{SetDocAttribute}
 \index{SetDocAttribute}
 \label{Api:SetDocAttribute}
-\begin{verbatim}
+\begin{Verbatim}
    boolean setDocAttribute (
            String    attributeUri
            String    value
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/write/$f(attributeUri)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -487,14 +487,14 @@
 \subsection{SetDocAttributes}
 \index{SetDocAttributes}
 \label{Api:SetDocAttributes}
-\begin{verbatim}
+\begin{Verbatim}
    Map<String,boolean> setDocAttributes (
            String    attributeUri
            List<String>    keys
            List<String>    values
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/write/$f(attributeUri)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -507,12 +507,12 @@
 \subsection{GetDocAttribute}
 \index{GetDocAttribute}
 \label{Api:GetDocAttribute}
-\begin{verbatim}
+\begin{Verbatim}
    XferDocumentAttribute getDocAttribute (
            String    attributeUri
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/read/$f(attributeUri)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -525,12 +525,12 @@
 \subsection{GetDocAttributes}
 \index{GetDocAttributes}
 \label{Api:GetDocAttributes}
-\begin{verbatim}
+\begin{Verbatim}
    List<XferDocumentAttribute> getDocAttributes (
            String    attributeUri
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/read/$f(attributeUri)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -543,12 +543,12 @@
 \subsection{DeleteDocAttribute}
 \index{DeleteDocAttribute}
 \label{Api:DeleteDocAttribute}
-\begin{verbatim}
+\begin{Verbatim}
    boolean deleteDocAttribute (
            String    attributeUri
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/write/$f(attributeUri)
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -561,12 +561,12 @@
 \subsection{GetDocRepoIdGenUri}
 \index{GetDocRepoIdGenUri}
 \label{Api:GetDocRepoIdGenUri}
-\begin{verbatim}
+\begin{Verbatim}
    String getDocRepoIdGenUri (
            String    docRepoUri
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/idgen
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -579,13 +579,13 @@
 \subsection{SetDocRepoIdGenConfig}
 \index{SetDocRepoIdGenConfig}
 \label{Api:SetDocRepoIdGenConfig}
-\begin{verbatim}
+\begin{Verbatim}
    DocumentRepoConfig setDocRepoIdGenConfig (
            String    docRepoUri
            String    idGenConfig
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/idgen
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -598,12 +598,12 @@
 \subsection{GetDocRepoIdGenConfig}
 \index{GetDocRepoIdGenConfig}
 \label{Api:GetDocRepoIdGenConfig}
-\begin{verbatim}
+\begin{Verbatim}
    RaptureIdGenConfig getDocRepoIdGenConfig (
            String    docRepoUri
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/idgen
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]

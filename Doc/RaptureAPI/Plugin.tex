@@ -4,11 +4,11 @@
 \subsection{GetInstalledPlugins}
 \index{GetInstalledPlugins}
 \label{Api:GetInstalledPlugins}
-\begin{verbatim}
+\begin{Verbatim}
    List<PluginConfig> getInstalledPlugins (
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -21,12 +21,12 @@
 \subsection{GetPluginManifest}
 \index{GetPluginManifest}
 \label{Api:GetPluginManifest}
-\begin{verbatim}
+\begin{Verbatim}
    PluginManifest getPluginManifest (
            String    manifestUri
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -39,12 +39,12 @@
 \subsection{RecordPlugin}
 \index{RecordPlugin}
 \label{Api:RecordPlugin}
-\begin{verbatim}
+\begin{Verbatim}
    void recordPlugin (
            PluginConfig    plugin
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -57,13 +57,13 @@
 \subsection{InstallPlugin}
 \index{InstallPlugin}
 \label{Api:InstallPlugin}
-\begin{verbatim}
+\begin{Verbatim}
    void installPlugin (
            PluginManifest    manifest
            Map<String,PluginTransportItem>    payload
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -76,13 +76,13 @@
 \subsection{InstallPluginItem}
 \index{InstallPluginItem}
 \label{Api:InstallPluginItem}
-\begin{verbatim}
+\begin{Verbatim}
    void installPluginItem (
            String    pluginName
            PluginTransportItem    item
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -95,12 +95,12 @@
 \subsection{UninstallPlugin}
 \index{UninstallPlugin}
 \label{Api:UninstallPlugin}
-\begin{verbatim}
+\begin{Verbatim}
    void uninstallPlugin (
            String    name
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -113,12 +113,12 @@
 \subsection{UninstallPluginItem}
 \index{UninstallPluginItem}
 \label{Api:UninstallPluginItem}
-\begin{verbatim}
+\begin{Verbatim}
    void uninstallPluginItem (
            PluginTransportItem    item
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -131,12 +131,12 @@
 \subsection{DeletePluginManifest}
 \index{DeletePluginManifest}
 \label{Api:DeletePluginManifest}
-\begin{verbatim}
+\begin{Verbatim}
    void deletePluginManifest (
            String    manifestUri
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -149,12 +149,12 @@
 \subsection{GetPluginItem}
 \index{GetPluginItem}
 \label{Api:GetPluginItem}
-\begin{verbatim}
+\begin{Verbatim}
    PluginTransportItem getPluginItem (
            String    uri
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -167,12 +167,12 @@
 \subsection{VerifyPlugin}
 \index{VerifyPlugin}
 \label{Api:VerifyPlugin}
-\begin{verbatim}
+\begin{Verbatim}
    Map<String,String> verifyPlugin (
            String    plugin
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -185,12 +185,12 @@
 \subsection{CreateManifest}
 \index{CreateManifest}
 \label{Api:CreateManifest}
-\begin{verbatim}
+\begin{Verbatim}
    void createManifest (
            String    pluginName
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -203,13 +203,13 @@
 \subsection{AddManifestItem}
 \index{AddManifestItem}
 \label{Api:AddManifestItem}
-\begin{verbatim}
+\begin{Verbatim}
    void addManifestItem (
            String    pluginName
            String    uri
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -222,13 +222,13 @@
 \subsection{AddManifestDataFolder}
 \index{AddManifestDataFolder}
 \label{Api:AddManifestDataFolder}
-\begin{verbatim}
+\begin{Verbatim}
    void addManifestDataFolder (
            String    pluginName
            String    uri
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -241,13 +241,13 @@
 \subsection{RemoveManifestDataFolder}
 \index{RemoveManifestDataFolder}
 \label{Api:RemoveManifestDataFolder}
-\begin{verbatim}
+\begin{Verbatim}
    void removeManifestDataFolder (
            String    pluginName
            String    uri
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -260,13 +260,13 @@
 \subsection{SetManifestVersion}
 \index{SetManifestVersion}
 \label{Api:SetManifestVersion}
-\begin{verbatim}
+\begin{Verbatim}
    void setManifestVersion (
            String    pluginName
            String    version
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -279,13 +279,13 @@
 \subsection{RemoveItemFromManifest}
 \index{RemoveItemFromManifest}
 \label{Api:RemoveItemFromManifest}
-\begin{verbatim}
+\begin{Verbatim}
    void removeItemFromManifest (
            String    pluginName
            String    uri
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -298,13 +298,13 @@
 \subsection{ExportPlugin}
 \index{ExportPlugin}
 \label{Api:ExportPlugin}
-\begin{verbatim}
+\begin{Verbatim}
    String exportPlugin (
            String    pluginName
            String    path
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]

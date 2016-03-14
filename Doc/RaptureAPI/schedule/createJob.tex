@@ -1,0 +1,20 @@
+The \verb+createJob+ call can be used to define a script job in \Rapture. A script job will execute
+a \Reflex script according to the schedule provided in the cron expression and the time zone.
+
+The parameters to the call are described in the table below:
+
+\begin{table}[H]
+\begin{center}
+\begin{tabular}{r l l p{4cm}}
+  Parameter & Type & Example & Description \\
+  \hline
+  jobURI & String & \verb+//test/one+ & The unique name of this job \\
+  description & String & test job & A description of this job \\
+  scriptURI & String & \verb+//runme+ & The script to run \\
+  cronExpression & String & \verb+ * * 3 10 * *+ & The cron expression that defines when this script should run \\
+  timeZone & String & Americas/New York & The time zone of the job \\
+  jobParams & Map & \verb+param -> one+ & The parameters that should be passed to the script \\
+  autoActivate & bool & true & Whether the job will always run according to the schedule \\
+\end{tabular}
+\end{center}
+\end{table}

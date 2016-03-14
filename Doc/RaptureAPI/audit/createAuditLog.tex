@@ -1,0 +1,38 @@
+The \verb+createAuditLog+ call is used to define an audit log in \Rapture.
+
+The parameters to the call
+look straightforward -- simply the name of the new audit log and a configuration string. The configuration string is
+in fact a complex instruction written in a audit log domain specific language (DSL) that is used to define the
+capabilities and underlying implementation of the repository.
+
+The typical configuration string for a versioned repository backed by LOG4J is reproduced below:
+
+\begin{Verbatim}
+LOG {} USING LOG4J { }
+\end{Verbatim}
+
+The general form of the configuration is:
+
+\begin{Verbatim}
+LOG {  }
+     USING [underlying implementation] { [ config ]}
+     [ ON [ instance] ]
+\end{Verbatim}
+
+The second part of the configuration string defines the underlying implementation and its configuration. In
+most cases the configuration associated with the implementation has a \verb+prefix+ parameter that is used to
+define a table or a collection or a prefix for such entities in the underlying storage. The underlying implementation
+defines what lower level software is used to host the data managed by \Rapture. The following table shows the current
+implementations:
+
+\begin{table}[h]
+\begin{center}
+\begin{tabular}{r l p{8cm}}
+  Keyword & Underlying & Configuration \\
+  \hline
+  MONGODB & MongoDb & The prefix parameter defines the name of the collections used by this repository. To avoid
+  conflict this is usually a function of the name of the \Rapture repository. \\
+  LOG4J & LOG4J & The logs are written to a log4j appender. \\
+\end{tabular}
+\end{center}
+\end{table}

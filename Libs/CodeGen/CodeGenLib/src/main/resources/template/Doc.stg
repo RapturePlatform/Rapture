@@ -9,12 +9,12 @@ docApiEntry(apitype, ret, name, apiparams, paramNames, doc, ent) ::= <<
 \subsection{<name; format="upcase">}
 \index{<name; format="upcase">}
 \label{Api:<name; format="upcase">}
-\begin{verbatim}
+\begin{Verbatim}
    <ret> <name> (
       <apiparams; separator="\n">
    )
-\end{verbatim}
-\begin{Verbatim}[fontsize=\small, formatcom=\color{Maroon}]
+\end{Verbatim}
+\begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: <ent>
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
@@ -41,11 +41,11 @@ docTypeDef(name, fields, doc) ::= <<
 \label{type:<name; format="upcase">}
 \index{<name; format="upcase">}
 
-\begin{verbatim}
+\begin{Verbatim}
    type <name> {
       <fields; separator="\n">
    }
-\end{verbatim}
+\end{Verbatim}
 
 \rule{12cm}{2pt}
 >>

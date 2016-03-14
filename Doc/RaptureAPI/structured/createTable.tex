@@ -1,0 +1,16 @@
+The \verb+createTable+ call is used to create a table on a database. The table is defined
+by specifying a map of column names to types, and the table URI is hosted on the structured
+database defined by the first part of the uri.
+
+As an example, consider the following sample \Reflex code that creates a table on
+the structured store referenced by the uri \verb+//test+. (This structured store reference
+is created using createStructuredRepo)
+
+\begin{Verbatim}
+  columns = {};
+  columns.id = 'int';
+  columns.firstname = 'varchar(255)';
+  columns.lastname = 'varchar(255)';
+  columns.age = 'int';
+  #structured.createTable('//test/table', columns);
+\end{Verbatim}

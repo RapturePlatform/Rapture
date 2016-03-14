@@ -1,0 +1,7 @@
+The \verb+updateActivity+ call takes an existing \verb+activityId+ returned by
+the \verb+createActivity+ call and updates its status with respect to how complete it is.
+The message parameter can be used to pass status messages to viewing consoles.
+
+The return value indicates whether an external process has requested that this activity
+should be aborted (by using the \verb+requestAbortActivity+ call). It is entirely at the processes
+discretion to actually abort based on a request.
