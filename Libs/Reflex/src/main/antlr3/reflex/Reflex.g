@@ -469,7 +469,8 @@ functionCall
 
 func2
   :  TypeOf '(' expression ')'    -> ^(FUNC_CALL[$TypeOf] TypeOf expression)
-  |  Assert '(' expression ')'    -> ^(FUNC_CALL[$Assert] Assert expression)
+  |  Assert '(' exp=expression ')'    -> ^(FUNC_CALL[$Assert] Assert $exp $exp)
+  |  Assert '(' msg=expression ',' exp=expression ')'    -> ^(FUNC_CALL[$Assert] Assert $msg $exp)
   |  Replace '(' v=expression ',' s=expression ',' t=expression ')' -> ^(FUNC_CALL[$Replace] Replace $v $s $t)
   |  RPull '(' u=expression ')' -> ^(FUNC_CALL[$RPull] RPull $u)
   |  RPush '(' u=expression ',' v=expression (',' o=expression)?')' -> ^(FUNC_CALL[$RPush] RPush $u $v $o?)
