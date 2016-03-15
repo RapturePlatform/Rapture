@@ -49,6 +49,7 @@ import rapture.common.RaptureIdGenConfig;
 import rapture.common.RaptureScript;
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
+import rapture.common.SearchUpdateObject;
 import rapture.common.XferDocumentAttribute;
 import rapture.common.api.DocApi;
 import rapture.common.event.DocEventConstants;
@@ -214,6 +215,9 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
 
         DocumentRepoConfigStorage.deleteByAddress(internalUri, context.getUser(), "Drop document repo");
         removeRepoFromCache(internalUri.getAuthority());
+
+        SearchPublisher.publishMessage(context, SearchUpdateObject.ActionType.DELETE,
+                internalUri, null);
     }
 
     public void updateDocumentRepo(CallingContext context, DocumentRepoConfig data) {
@@ -395,7 +399,11 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
     public Boolean deleteDoc(CallingContext context, String docUri) {
         RaptureURI internalUri = new RaptureURI(docUri, Scheme.DOCUMENT);
         Repository repository = getRepoFromCache(internalUri.getAuthority());
-        return repository.removeDocument(internalUri.getDocPath(), context.getUser(), "");
+        boolean ret = repository.removeDocument(internalUri.getDocPath(), context.getUser(), "");
+        if (ret) {
+            SearchPublisher.publishMessage(context, SearchUpdateObject.ActionType.DELETE, internalUri, null);
+        }
+        return ret;
     }
 
     @Override
@@ -589,6 +597,9 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
             for (IndexScriptPair indexScriptPair : type.getIndexes()) {
                 runIndex(context, indexScriptPair, internalUri.getAuthority(), internalUri.getDocPath(), content);
             }
+
+            SearchPublisher.publishMessage(context, SearchUpdateObject.ActionType.CREATE,
+                    internalUri, content);
         }
         handle.setDocumentURI(internalUri.toString());
         handle.setIsSuccess(isSuccess);
