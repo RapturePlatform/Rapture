@@ -330,12 +330,11 @@ package reflex;
       super.reportError(e);
   }
   
-  public boolean wibble(String error, IntStream input, Token previous) throws ReflexRecognitionException {	
-	CommonToken t = (CommonToken) ((TokenStream) input).LT(-1);
-	int length = t.getStartIndex() - ((CommonToken)previous).getStopIndex();
-	int start = previous.getCharPositionInLine() + 2 + ((CommonToken)previous).getStopIndex() - ((CommonToken)previous).getStartIndex();
-	emitErrorMessage(error+" at token "+t.getText()+" "+ErrorHandler.displayError(t.getInputStream(), previous.getLine(), start, length));
-	return false;
+  public void wibble(String error, IntStream input, Token t) throws ReflexRecognitionException {	
+    CommonToken ct = (CommonToken) t;
+	int length = ct.getStopIndex() - ct.getStartIndex() +1;
+	int start = ct.getCharPositionInLine();
+	throw new ReflexRecognitionException(error+" at token "+t.getText()+" "+ErrorHandler.displayError(ct.getInputStream(), ct.getLine(), start, length), input, false);
   }
 }
 
@@ -363,8 +362,7 @@ block
   ;
 
 
-statement
-  :  assignment ';'   -> assignment
+statement  :  assignment ';'   -> assignment
   |  importStatement ';' -> importStatement
   |  port ';' -> port
   |  pull ';' -> pull
@@ -383,7 +381,18 @@ statement
   |  whileStatement
   |  guardedStatement
   |  exportStatement
+// Unexpected stuff that can throw off the parser.
+// Need to catch it and flag it at the source
+	|  Unsupported { wibble("Unsupported Operation", input, $Unsupported); }
+    |  SColon { wibble("Unexpected character", input, $SColon); } 
+  	|  Identifier { wibble("Unexpected identifier", input, $Identifier); } 
   ;
+	
+Unsupported 
+	: '++' 
+	| '--'
+	| '-='
+	;
 
 exportStatement
 @after {
@@ -569,8 +578,8 @@ otherwise
 
 comparator 
   : Is (Equals | NEquals | GTEquals | LTEquals | GT | LT) expression
-  | Is Assign { wibble("Assignment found where comparator expected", input, $Is) }? expression 
-  | Is (Or | And | Excl | Add | Subtract | Multiply | Divide | Modulus) { wibble("Comparator expected", input, $Is) }? expression 
+  | Is Assign { wibble("Assignment found where comparator expected", input, $Is); } expression 
+  | Is (Or | And | Excl | Add | Subtract | Multiply | Divide | Modulus) { wibble("Comparator expected", input, $Is); } expression 
   ;
 
 // SWITCH requires constants as case values
@@ -586,12 +595,12 @@ caseStatement
 variant
   :  Case Integer -> Integer
   |  Case Number -> Number
-  |  Case String -> String
   |  Case Long -> Long
-  |  Case Bool -> Bool
+  |  Case Bool -> Bool  
+  |  Case String -> String
   |  Default
-  |  Case QuotedString {wibble("Quoted String found where constant expected. Use single quotes.", input, $Case)}?
-  |  Case expression {wibble("Expression found where constant expected.", input, $Case)}?
+  |  Case QuotedString { wibble("Quoted String found where constant expected. Use single quotes.", input, $QuotedString);}
+  |  expression {wibble("Expression found where constant expected.", input, $expression.start);}
   ;
   
 ifStatement

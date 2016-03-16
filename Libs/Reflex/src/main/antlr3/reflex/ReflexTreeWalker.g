@@ -7,6 +7,7 @@ options {
 
 @header {
 package reflex;
+import java.math.*;
 import java.io.PrintStream;
 import reflex.function.*;
 import reflex.node.*;
@@ -138,7 +139,7 @@ variant returns [ReflexNode node]
     int line = ahead.getToken().getLine();
 }
   :  Integer { node = AtomNode.getIntegerAtom(line, handler, currentScope, $Integer.text); }
-  |  Number { node = new AtomNode(line, handler, currentScope, Double.parseDouble($Number.text)); }
+  |  Number { node = new AtomNode(line, handler, currentScope, new BigDecimal($Number.text, MathContext.DECIMAL128)); }
   |  String { node = AtomNode.getStringAtom(line, handler, currentScope, $String.text); }
   |  Long { node = new AtomNode(line, handler, currentScope, java.lang.Long.parseLong($Long.text)); }
   |  Bool { node = new AtomNode(line, handler, currentScope, Boolean.parseBoolean($Bool.text)); }
@@ -491,7 +492,7 @@ expression returns [ReflexNode node]
   |  ^('^' a=expression b=expression) { node = new PowNode(line, handler, currentScope, $a.node, $b.node); }
   |  ^(UNARY_MIN a=expression) { node = new UnaryMinusNode(line, handler, currentScope, $a.node); }
   |  ^(NEGATE a=expression) { node = new NegateNode(line, handler, currentScope, $a.node); }
-  |  Number { node = new AtomNode(line, handler, currentScope, Double.parseDouble($Number.text)); }
+  |  Number { node = new AtomNode(line, handler, currentScope, new BigDecimal($Number.text, MathContext.DECIMAL128)); }
   |  Integer { node = AtomNode.getIntegerAtom(line, handler, currentScope, $Integer.text); }
   |  Long { node = new AtomNode(line, handler, currentScope, java.lang.Long.parseLong($Long.text)); }
   |  Bool { node = new AtomNode(line, handler, currentScope, Boolean.parseBoolean($Bool.text)); }

@@ -57,7 +57,7 @@ public abstract class BaseAssignmentNode extends BaseNode {
         handler.getDebugHandler().statementReached(lineNumber, DebugLevel.SPAM, "Assignment, rhs = " + value.toString());
 
         if (value .getValue() == ReflexValue.Internal.VOID) {
-            throw new ReflexException(lineNumber, "can't assign VOID to " + identifier);
+            throw new ReflexException(lineNumber, "Illegal attempt to assign the result of a void function to the identifier " + identifier);
         }
 
         if (indexNodes.isEmpty()) { // a simple assignment
@@ -78,7 +78,7 @@ public abstract class BaseAssignmentNode extends BaseNode {
                 handler.getDebugHandler().statementReached(lineNumber, DebugLevel.SPAM, "Assign into sparse matrix");
                 setInMatrix(debugger, value, var, scopeToAssignIn);
             } else {
-                throw new ReflexException(lineNumber, "can't assign into a " + var.getTypeAsString() + " in that way");
+                throw new ReflexException(lineNumber, "Illegal attempt to assign "+value.getTypeAsString()+" to the identifier "+identifier+" which is of type " + var.getTypeAsString());
             }
             ret = var;
         }
