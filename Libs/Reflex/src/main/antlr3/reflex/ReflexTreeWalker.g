@@ -325,7 +325,7 @@ functionCall returns [ReflexNode node]
   |  ^(FUNC_CALL SplitWith Identifier expression) { node = new SplitWithNode(line, handler, currentScope, $Identifier.text, $expression.node, languageRegistry, importHandler); }
   |  ^(FUNC_CALL Split str=expression sep=expression quoter=expression) { node = new SplitNode(line, handler, currentScope, $str.node, $sep.node, $quoter.node, languageRegistry, importHandler); }
   |  ^(FUNC_CALL TypeOf expression) { node = new TypeOfNode(line, handler, currentScope, $expression.node); }
-  |  ^(FUNC_CALL Assert expression) { node = new AssertNode(line, handler, currentScope, $expression.node); }
+  |  ^(FUNC_CALL Assert msg=expression exp=expression) { node = new AssertNode(line, handler, currentScope, $msg.node, $exp.node); }
   |  ^(FUNC_CALL Size expression) { node = new SizeNode(line, handler,currentScope,  $expression.node); }
   |  ^(FUNC_CALL RPull u=expression) { node = new RapturePullNode(line, handler, currentScope, $u.node, null); }
   |  ^(FUNC_CALL RPush u=expression v=expression o=expression?) { node = new RapturePushNode(line, handler, currentScope, $u.node, $v.node, $o.node); }
