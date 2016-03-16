@@ -52,7 +52,7 @@ public class DivNode extends BaseNode {
         if (a.isNumber() && b.isNumber()) {
         	BigDecimal bigA = a.asBigDecimal();
         	BigDecimal bigB = b.asBigDecimal();
-        	BigDecimal product = bigA.multiply(bigB);
+        	BigDecimal product = bigA.divide(bigB);
         	ReflexValue retVal = new ReflexValue((product.abs().equals(product)) ? product.longValue() : product);
             debugger.stepEnd(this, retVal, null);
             return retVal;
