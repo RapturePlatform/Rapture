@@ -23,11 +23,10 @@
  */
 package reflex.node;
 
-import java.math.BigDecimal;
-
 import reflex.IReflexHandler;
 import reflex.Scope;
 import reflex.debug.IReflexDebugger;
+import reflex.value.ImmutableReflexValue;
 import reflex.value.ReflexValue;
 import reflex.value.internal.ReflexVoidValue;
 
@@ -48,21 +47,36 @@ public class PlusAssignmentNode extends BaseNode {
 
     @Override
     public ReflexValue evaluate(IReflexDebugger debugger, Scope scope) {
-        // This is plus assignment. We want to return the identifier as a value,
-        // but the purpose
-        // is to "add" the rhs to the identifier, depending on what type of
-        // value it is.
+        // This is plus assignment. 
+        // The purpose is to "add" the rhs to the identifier, 
+    	// depending on what type of value it is.
+
         debugger.stepStart(this, scope);
         ReflexValue value = rhs.evaluate(debugger, scope);
         ReflexValue var = scope.resolve(identifier);
         if (var.isList()) {
             var.asList().add(value);
         } else if (var.isInteger() && value.isInteger()) {
-            var.setValue(var.asLong() + value.asLong());
+        	if (var instanceof ImmutableReflexValue) {
+        		ReflexValue newValue = new ReflexValue(var.asLong() + value.asLong());
+	            scope.assign(identifier, newValue);
+        	} else {
+        		var.setValue(var.asLong() + value.asLong());
+        	}
         } else if (var.isNumber() && value.isNumber()) {
-        	var.setValue(var.asBigDecimal().add(value.asBigDecimal()));
+        	if (var instanceof ImmutableReflexValue) {
+        		ReflexValue newValue = new ReflexValue(var.asBigDecimal().add(value.asBigDecimal()));
+        		scope.assign(identifier, newValue);
+        	} else {
+        		var.setValue(var.asBigDecimal().add(value.asBigDecimal()));
+        	}
         } else if (var.isString()) {
-            var.setValue(var.asString() + value.toString());
+        	if (var instanceof ImmutableReflexValue) {
+        		ReflexValue newValue = new ReflexValue(var.asString() + value.toString());
+        		scope.assign(identifier, newValue);
+        	} else {
+        		var.setValue(var.asString() + value.toString());
+        	}
         }
         debugger.stepEnd(this, new ReflexVoidValue(lineNumber), scope);
         return new ReflexVoidValue();
