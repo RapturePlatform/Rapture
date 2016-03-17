@@ -672,7 +672,7 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
         Map<String, Object> extraVals = new HashMap<String, Object>();
         extraVals.put("document", JacksonUtil.getMapFromJson(content));
         extraVals.put("displayName", displayName);
-        ReflexValue value = rs.runProgram(context, walker, null, extraVals);
+        ReflexValue value = rs.runProgram(context, walker, null, extraVals, script);
         log.debug("Value is " + value.toString());
 
         IndexHandler indexHandler = Kernel.getIndex().getTrusted()
