@@ -99,19 +99,6 @@ public class ReflexRaptureScript implements IRaptureScript {
 		walker.currentScope.assign("_params", new ReflexValue(extra));
 	}
 
-	private RaptureException generateError(RecognitionException e) {
-		String message;
-		if (e.getMessage() != null) {
-			message = e.getMessage();
-		} else {
-			message = String.format("%s at line [%s], position [%s]", e.getClass().getName(), e.line,
-					e.charPositionInLine);
-		}
-		Kernel.writeAuditEntry(EXCEPTION, 2, message);
-		return RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, "Error running script: " + message,
-				e);
-	}
-
 	private ReflexTreeWalker getParserWithStandardContext(CallingContext context, String script, Map<String, ?> extra)
 			throws RecognitionException {
 		ReflexTreeWalker walker = getStandardWalker(context, script);
@@ -161,7 +148,9 @@ public class ReflexRaptureScript implements IRaptureScript {
 			ReflexNode res = walker.walk();
 			return res.evaluateWithoutScope(new NullDebugger()).asBoolean();
 		} catch (RecognitionException e) {
-			throw generateError(e);
+			String message = getErrorInfo(e.getMessage(), script, e.line, e.charPositionInLine);
+			Kernel.writeAuditEntry(EXCEPTION, 2, message);
+			throw new ReflexException(e.line, message, e);
 		}
 	}
 
@@ -175,7 +164,9 @@ public class ReflexRaptureScript implements IRaptureScript {
 			ReflexNode res = walker.walk();
 			res.evaluateWithoutScope(new NullDebugger());
 		} catch (RecognitionException e) {
-			throw generateError(e);
+			String message = getErrorInfo(e.getMessage(), script, e.line, e.charPositionInLine);
+			Kernel.writeAuditEntry(EXCEPTION, 2, message);
+			throw new ReflexException(e.line, message, e);
 		}
 	}
 
@@ -193,7 +184,9 @@ public class ReflexRaptureScript implements IRaptureScript {
 			}
 			return realRet;
 		} catch (RecognitionException e) {
-			throw generateError(e);
+			String message = getErrorInfo(e.getMessage(), script, e.line, e.charPositionInLine);
+			Kernel.writeAuditEntry(EXCEPTION, 2, message);
+			throw new ReflexException(e.line, message, e);
 		}
 	}
 
@@ -205,7 +198,9 @@ public class ReflexRaptureScript implements IRaptureScript {
 			ReflexNode res = walker.walk();
 			return res.evaluateWithoutScope(new NullDebugger()).toString();
 		} catch (RecognitionException e) {
-			throw generateError(e);
+			String message = getErrorInfo(e.getMessage(), script, e.line, e.charPositionInLine);
+			Kernel.writeAuditEntry(EXCEPTION, 2, message);
+			throw new ReflexException(e.line, message, e);
 		}
 	}
 
@@ -215,7 +210,7 @@ public class ReflexRaptureScript implements IRaptureScript {
 		return runProgram(context, activity, script, extraVals, -1);
 	}
 
-	private String getErrorInfo(String message, RaptureScript script, int lineNum) {
+	private String getErrorInfo(String message, RaptureScript script, int lineNum, int posInLine) {
 		StringBuilder msg = new StringBuilder();
 		msg.append(message).append(" in script ").append(script.getName()).append("\n");
 
@@ -229,8 +224,12 @@ public class ReflexRaptureScript implements IRaptureScript {
 			while (start < end) {
 				String l = lines[start++];
 				msg.append(start).append(": ").append(l).append("\n");
-				if (start == lineNum)
-					msg.append("----^^^^^^^^\n");
+				if (start == lineNum) {
+					for (int i = -4; i < posInLine; i++)
+						msg.append("-");
+					for (int i = posInLine; i < l.length(); i++)
+						msg.append("^");
+				}
 			}
 		}
 		return msg.toString();
@@ -297,10 +296,11 @@ public class ReflexRaptureScript implements IRaptureScript {
 					ScriptCollectorHelper.writeCollector(context, collector);
 				}
 			} catch (RecognitionException e) {
-				throw new ReflexException(e.line, getErrorInfo(e.getMessage(), script, e.line), e);
+				String message = getErrorInfo(e.getMessage(), script, e.line, e.charPositionInLine);
+				Kernel.writeAuditEntry(EXCEPTION, 2, message);
+				throw new ReflexException(e.line, message, e);
 			} catch (ReflexException e) {
-				throw new ReflexException(e.getLineNumber(), getErrorInfo(e.getMessage(), script, e.getLineNumber()),
-						e);
+				throw new ReflexException(e.getLineNumber(), getErrorInfo(e.getMessage(), script, e.getLineNumber(), 0), e);
 			} finally {
 				MDCService.INSTANCE.clearReflexMDC();
 			}
@@ -338,10 +338,12 @@ public class ReflexRaptureScript implements IRaptureScript {
 			ScriptCollectorHelper.writeCollector(context, collector);
 			res.setReturnValue(val.asString());
 		} catch (RecognitionException e) {
-			throw generateError(e);
+			String message = getErrorInfo(e.getMessage(), script, e.line, e.charPositionInLine);
+			Kernel.writeAuditEntry(EXCEPTION, 2, message);
+			throw new ReflexException(e.line, message, e);
 		} catch (ReflexException e) {
 			res.setInError(true);
-			res.setReturnValue(e.getMessage());
+			res.setReturnValue(getErrorInfo(e.getMessage(), script, e.getLineNumber(), 0));
 			res.getOutput().add("Error when running script");
 		}
 		return res;
@@ -383,7 +385,7 @@ public class ReflexRaptureScript implements IRaptureScript {
 	}
 
 	public ReflexValue runProgram(CallingContext context, ReflexTreeWalker walker, IActivityInfo activity,
-			Map<String, Object> extraVals) {
+			Map<String, Object> extraVals, RaptureScript script) {
 		walker.getReflexHandler().setDataHandler(new ReflexDataHelper(context));
 		walker.currentScope.assign("_params", new ReflexValue(extraVals));
 		ReflexNode res;
@@ -391,7 +393,9 @@ public class ReflexRaptureScript implements IRaptureScript {
 			res = walker.walk();
 			return res.evaluateWithoutScope(new ProgressDebugger(activity, ""));
 		} catch (RecognitionException e) {
-			throw generateError(e);
+			String message = getErrorInfo(e.getMessage(), script, e.line, e.charPositionInLine);
+			Kernel.writeAuditEntry(EXCEPTION, 2, message);
+			throw new ReflexException(e.line, message, e);
 		}
 	}
 
@@ -426,7 +430,9 @@ public class ReflexRaptureScript implements IRaptureScript {
 			progress.getInstrumenter().log();
 			return retVal.toString();
 		} catch (RecognitionException e) {
-			throw generateError(e);
+			String message = getErrorInfo(e.getMessage(), script, e.line, e.charPositionInLine);
+			Kernel.writeAuditEntry(EXCEPTION, 2, message);
+			throw new ReflexException(e.line, message, e);
 		}
 	}
 
@@ -452,7 +458,9 @@ public class ReflexRaptureScript implements IRaptureScript {
 			progress.getInstrumenter().log();
 			return JacksonUtil.jsonFromObject(res.getScope());
 		} catch (RecognitionException e) {
-			throw generateError(e);
+			String message = getErrorInfo(e.getMessage(), script, e.line, e.charPositionInLine);
+			Kernel.writeAuditEntry(EXCEPTION, 2, message);
+			throw new ReflexException(e.line, message, e);
 		}
 	}
 
