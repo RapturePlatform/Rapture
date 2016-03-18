@@ -1,14 +1,14 @@
 \chapter{Bootstrap API}
 \index{Bootstrap API}
 \input{bootstrap/info}
-\subsection{SetEmphemeralRepo}
+\section{SetEmphemeralRepo}
 \index{SetEmphemeralRepo}
 \label{Api:SetEmphemeralRepo}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void setEmphemeralRepo (
            String    config
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/bootstrap
 \end{Verbatim}
@@ -19,14 +19,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{SetConfigRepo}
+\section{SetConfigRepo}
 \index{SetConfigRepo}
 \label{Api:SetConfigRepo}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void setConfigRepo (
            String    config
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/bootstrap
 \end{Verbatim}
@@ -37,14 +37,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{SetSettingsRepo}
+\section{SetSettingsRepo}
 \index{SetSettingsRepo}
 \label{Api:SetSettingsRepo}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void setSettingsRepo (
            String    config
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /void/bootstrap
 \end{Verbatim}
@@ -55,14 +55,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{MigrateConfigRepo}
+\section{MigrateConfigRepo}
 \index{MigrateConfigRepo}
 \label{Api:MigrateConfigRepo}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void migrateConfigRepo (
            String    newConfig
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/bootstrap
 \end{Verbatim}
@@ -73,14 +73,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{MigrateEphemeralRepo}
+\section{MigrateEphemeralRepo}
 \index{MigrateEphemeralRepo}
 \label{Api:MigrateEphemeralRepo}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void migrateEphemeralRepo (
            String    newConfig
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/bootstrap
 \end{Verbatim}
@@ -91,14 +91,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{MigrateSettingsRepo}
+\section{MigrateSettingsRepo}
 \index{MigrateSettingsRepo}
 \label{Api:MigrateSettingsRepo}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void migrateSettingsRepo (
            String    newConfig
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/bootstrap
 \end{Verbatim}
@@ -109,13 +109,13 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetConfigRepo}
+\section{GetConfigRepo}
 \index{GetConfigRepo}
 \label{Api:GetConfigRepo}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    String getConfigRepo (
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -126,13 +126,13 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetSettingsRepo}
+\section{GetSettingsRepo}
 \index{GetSettingsRepo}
 \label{Api:GetSettingsRepo}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    String getSettingsRepo (
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -143,13 +143,13 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetEphemeralRepo}
+\section{GetEphemeralRepo}
 \index{GetEphemeralRepo}
 \label{Api:GetEphemeralRepo}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    String getEphemeralRepo (
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -160,13 +160,13 @@
 
 
 \rule{12cm}{2pt}
-\subsection{RestartBootstrap}
+\section{RestartBootstrap}
 \index{RestartBootstrap}
 \label{Api:RestartBootstrap}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void restartBootstrap (
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/bootstrap
 \end{Verbatim}
@@ -177,15 +177,15 @@
 
 
 \rule{12cm}{2pt}
-\subsection{AddScriptClass}
+\section{AddScriptClass}
 \index{AddScriptClass}
 \label{Api:AddScriptClass}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void addScriptClass (
            String    keyword
            String    className
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/bootstrap
 \end{Verbatim}
@@ -196,13 +196,13 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetScriptClasses}
+\section{GetScriptClasses}
 \index{GetScriptClasses}
 \label{Api:GetScriptClasses}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    Map<String,String> getScriptClasses (
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/bootstrap
 \end{Verbatim}
@@ -213,14 +213,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{DeleteScriptClass}
+\section{DeleteScriptClass}
 \index{DeleteScriptClass}
 \label{Api:DeleteScriptClass}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    boolean deleteScriptClass (
            String    keyword
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/bootstrap
 \end{Verbatim}

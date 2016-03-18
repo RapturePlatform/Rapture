@@ -1,15 +1,15 @@
 \chapter{Structured API}
 \index{Structured API}
 \input{structured/info}
-\subsection{CreateStructuredRepo}
+\section{CreateStructuredRepo}
 \index{CreateStructuredRepo}
 \label{Api:CreateStructuredRepo}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void createStructuredRepo (
            String    uri
            String    config
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /structured/write
 \end{Verbatim}
@@ -20,14 +20,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{DeleteStructuredRepo}
+\section{DeleteStructuredRepo}
 \index{DeleteStructuredRepo}
 \label{Api:DeleteStructuredRepo}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void deleteStructuredRepo (
            String    uri
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /structured/write
 \end{Verbatim}
@@ -38,14 +38,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{StructuredRepoExists}
+\section{StructuredRepoExists}
 \index{StructuredRepoExists}
 \label{Api:StructuredRepoExists}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    boolean structuredRepoExists (
            String    uri
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /structured/read
 \end{Verbatim}
@@ -56,14 +56,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetStructuredRepoConfig}
+\section{GetStructuredRepoConfig}
 \index{GetStructuredRepoConfig}
 \label{Api:GetStructuredRepoConfig}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    StructuredRepoConfig getStructuredRepoConfig (
            String    uri
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /structured/read
 \end{Verbatim}
@@ -74,13 +74,13 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetStructuredRepoConfigs}
+\section{GetStructuredRepoConfigs}
 \index{GetStructuredRepoConfigs}
 \label{Api:GetStructuredRepoConfigs}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    List<StructuredRepoConfig> getStructuredRepoConfigs (
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /structured/read
 \end{Verbatim}
@@ -91,15 +91,15 @@
 
 
 \rule{12cm}{2pt}
-\subsection{CreateTableUsingSql}
+\section{CreateTableUsingSql}
 \index{CreateTableUsingSql}
 \label{Api:CreateTableUsingSql}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void createTableUsingSql (
            String    schema
            String    rawSql
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /structured/admin/$f(schema)
 \end{Verbatim}
@@ -110,15 +110,15 @@
 
 
 \rule{12cm}{2pt}
-\subsection{CreateTable}
+\section{CreateTable}
 \index{CreateTable}
 \label{Api:CreateTable}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void createTable (
            String    tableUri
            Map<String,String>    columns
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /structured/admin/$f(tableUri)
 \end{Verbatim}
@@ -129,14 +129,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{DropTable}
+\section{DropTable}
 \index{DropTable}
 \label{Api:DropTable}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void dropTable (
            String    tableUri
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /structured/admin/$f(tableUri)
 \end{Verbatim}
@@ -147,14 +147,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{TableExists}
+\section{TableExists}
 \index{TableExists}
 \label{Api:TableExists}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    boolean tableExists (
            String    tableUri
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /structured/read/$f(tableUri)
 \end{Verbatim}
@@ -165,13 +165,13 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetSchemas}
+\section{GetSchemas}
 \index{GetSchemas}
 \label{Api:GetSchemas}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    List<String> getSchemas (
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /structured/read
 \end{Verbatim}
@@ -182,14 +182,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetTables}
+\section{GetTables}
 \index{GetTables}
 \label{Api:GetTables}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    List<String> getTables (
            String    repoUri
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /structured/read
 \end{Verbatim}
@@ -200,14 +200,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{DescribeTable}
+\section{DescribeTable}
 \index{DescribeTable}
 \label{Api:DescribeTable}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    Map<String,String> describeTable (
            String    tableUri
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /structured/read/$f(tableUri)
 \end{Verbatim}
@@ -218,15 +218,15 @@
 
 
 \rule{12cm}{2pt}
-\subsection{AddTableColumns}
+\section{AddTableColumns}
 \index{AddTableColumns}
 \label{Api:AddTableColumns}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void addTableColumns (
            String    tableUri
            Map<String,String>    columns
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /structured/admin/$f(tableUri)
 \end{Verbatim}
@@ -237,15 +237,15 @@
 
 
 \rule{12cm}{2pt}
-\subsection{DeleteTableColumns}
+\section{DeleteTableColumns}
 \index{DeleteTableColumns}
 \label{Api:DeleteTableColumns}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void deleteTableColumns (
            String    tableUri
            List<String>    columnNames
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /structured/admin/$f(tableUri)
 \end{Verbatim}
@@ -256,15 +256,15 @@
 
 
 \rule{12cm}{2pt}
-\subsection{UpdateTableColumns}
+\section{UpdateTableColumns}
 \index{UpdateTableColumns}
 \label{Api:UpdateTableColumns}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void updateTableColumns (
            String    tableUri
            Map<String,String>    columns
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /structured/admin/$f(tableUri)
 \end{Verbatim}
@@ -275,15 +275,15 @@
 
 
 \rule{12cm}{2pt}
-\subsection{RenameTableColumns}
+\section{RenameTableColumns}
 \index{RenameTableColumns}
 \label{Api:RenameTableColumns}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void renameTableColumns (
            String    tableUri
            Map<String,String>    columnNames
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /structured/admin/$f(tableUri)
 \end{Verbatim}
@@ -294,16 +294,16 @@
 
 
 \rule{12cm}{2pt}
-\subsection{CreateIndex}
+\section{CreateIndex}
 \index{CreateIndex}
 \label{Api:CreateIndex}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void createIndex (
            String    tableUri
            String    indexName
            List<String>    columnNames
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /structured/admin/$f(tableUri)
 \end{Verbatim}
@@ -314,15 +314,15 @@
 
 
 \rule{12cm}{2pt}
-\subsection{DropIndex}
+\section{DropIndex}
 \index{DropIndex}
 \label{Api:DropIndex}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void dropIndex (
            String    tableUri
            String    indexName
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /structured/admin/$f(tableUri)
 \end{Verbatim}
@@ -333,14 +333,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetIndexes}
+\section{GetIndexes}
 \index{GetIndexes}
 \label{Api:GetIndexes}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    List<TableIndex> getIndexes (
            String    tableUri
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /structured/read/$f(tableUri)
 \end{Verbatim}
@@ -351,10 +351,10 @@
 
 
 \rule{12cm}{2pt}
-\subsection{SelectJoinedRows}
+\section{SelectJoinedRows}
 \index{SelectJoinedRows}
 \label{Api:SelectJoinedRows}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    List<Map<String,Object>> selectJoinedRows (
            List<String>    tableUris
            List<String>    columnNames
@@ -364,7 +364,7 @@
            boolean    ascending
            int    limit
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /structured/read
 \end{Verbatim}
@@ -375,15 +375,15 @@
 
 
 \rule{12cm}{2pt}
-\subsection{SelectUsingSql}
+\section{SelectUsingSql}
 \index{SelectUsingSql}
 \label{Api:SelectUsingSql}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    List<Map<String,Object>> selectUsingSql (
            String    schema
            String    rawSql
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /structured/read/$f(schema)
 \end{Verbatim}
@@ -394,10 +394,10 @@
 
 
 \rule{12cm}{2pt}
-\subsection{SelectRows}
+\section{SelectRows}
 \index{SelectRows}
 \label{Api:SelectRows}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    List<Map<String,Object>> selectRows (
            String    tableUri
            List<String>    columnNames
@@ -406,7 +406,7 @@
            boolean    ascending
            int    limit
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /structured/read/$f(tableUri)
 \end{Verbatim}
@@ -417,15 +417,15 @@
 
 
 \rule{12cm}{2pt}
-\subsection{InsertUsingSql}
+\section{InsertUsingSql}
 \index{InsertUsingSql}
 \label{Api:InsertUsingSql}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void insertUsingSql (
            String    schema
            String    rawSql
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /structured/write/$f(schema)
 \end{Verbatim}
@@ -436,15 +436,15 @@
 
 
 \rule{12cm}{2pt}
-\subsection{InsertRow}
+\section{InsertRow}
 \index{InsertRow}
 \label{Api:InsertRow}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void insertRow (
            String    tableUri
            Map<String,Object>    values
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /structured/write/$f(tableUri)
 \end{Verbatim}
@@ -455,15 +455,15 @@
 
 
 \rule{12cm}{2pt}
-\subsection{InsertRows}
+\section{InsertRows}
 \index{InsertRows}
 \label{Api:InsertRows}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void insertRows (
            String    tableUri
            List<Map<String,Object>>    values
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /structured/write/$f(tableUri)
 \end{Verbatim}
@@ -474,15 +474,15 @@
 
 
 \rule{12cm}{2pt}
-\subsection{DeleteUsingSql}
+\section{DeleteUsingSql}
 \index{DeleteUsingSql}
 \label{Api:DeleteUsingSql}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void deleteUsingSql (
            String    schema
            String    rawSql
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /structured/write/$f(schema)
 \end{Verbatim}
@@ -493,15 +493,15 @@
 
 
 \rule{12cm}{2pt}
-\subsection{DeleteRows}
+\section{DeleteRows}
 \index{DeleteRows}
 \label{Api:DeleteRows}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void deleteRows (
            String    tableUri
            String    where
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /structured/write/$f(tableUri)
 \end{Verbatim}
@@ -512,15 +512,15 @@
 
 
 \rule{12cm}{2pt}
-\subsection{UpdateUsingSql}
+\section{UpdateUsingSql}
 \index{UpdateUsingSql}
 \label{Api:UpdateUsingSql}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void updateUsingSql (
            String    schema
            String    rawSql
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /structured/write/$f(schema)
 \end{Verbatim}
@@ -531,16 +531,16 @@
 
 
 \rule{12cm}{2pt}
-\subsection{UpdateRows}
+\section{UpdateRows}
 \index{UpdateRows}
 \label{Api:UpdateRows}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void updateRows (
            String    tableUri
            Map<String,Object>    values
            String    where
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /structured/write/$f(tableUri)
 \end{Verbatim}
@@ -551,13 +551,13 @@
 
 
 \rule{12cm}{2pt}
-\subsection{Begin}
+\section{Begin}
 \index{Begin}
 \label{Api:Begin}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    boolean begin (
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /structured/write
 \end{Verbatim}
@@ -568,13 +568,13 @@
 
 
 \rule{12cm}{2pt}
-\subsection{Commit}
+\section{Commit}
 \index{Commit}
 \label{Api:Commit}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    boolean commit (
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /structured/write
 \end{Verbatim}
@@ -585,13 +585,13 @@
 
 
 \rule{12cm}{2pt}
-\subsection{Rollback}
+\section{Rollback}
 \index{Rollback}
 \label{Api:Rollback}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    boolean rollback (
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /structured/write
 \end{Verbatim}
@@ -602,14 +602,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{Abort}
+\section{Abort}
 \index{Abort}
 \label{Api:Abort}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    boolean abort (
            String    transactionId
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /structured/admin
 \end{Verbatim}
@@ -620,13 +620,13 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetTransactions}
+\section{GetTransactions}
 \index{GetTransactions}
 \label{Api:GetTransactions}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    List<String> getTransactions (
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /structured/admin
 \end{Verbatim}
@@ -637,15 +637,15 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetDdl}
+\section{GetDdl}
 \index{GetDdl}
 \label{Api:GetDdl}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    String getDdl (
            String    uri
            boolean    includeTableData
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /structured/read/$f(uri)
 \end{Verbatim}
@@ -656,15 +656,15 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetCursorUsingSql}
+\section{GetCursorUsingSql}
 \index{GetCursorUsingSql}
 \label{Api:GetCursorUsingSql}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    String getCursorUsingSql (
            String    schema
            String    rawSql
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /structured/read/$f(schema)
 \end{Verbatim}
@@ -675,10 +675,10 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetCursor}
+\section{GetCursor}
 \index{GetCursor}
 \label{Api:GetCursor}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    String getCursor (
            String    tableUri
            List<String>    columnNames
@@ -687,7 +687,7 @@
            boolean    ascending
            int    limit
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /structured/read/$f(tableUri)
 \end{Verbatim}
@@ -698,10 +698,10 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetCursorForJoin}
+\section{GetCursorForJoin}
 \index{GetCursorForJoin}
 \label{Api:GetCursorForJoin}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    String getCursorForJoin (
            List<String>    tableUris
            List<String>    columnNames
@@ -711,7 +711,7 @@
            boolean    ascending
            int    limit
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /structured/read
 \end{Verbatim}
@@ -722,16 +722,16 @@
 
 
 \rule{12cm}{2pt}
-\subsection{Next}
+\section{Next}
 \index{Next}
 \label{Api:Next}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    List<Map<String,Object>> next (
            String    tableUri
            String    cursorId
            int    count
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /structured/read/$f(tableUri)
 \end{Verbatim}
@@ -742,16 +742,16 @@
 
 
 \rule{12cm}{2pt}
-\subsection{Previous}
+\section{Previous}
 \index{Previous}
 \label{Api:Previous}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    List<Map<String,Object>> previous (
            String    tableUri
            String    cursorId
            int    count
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /structured/read/$f(tableUri)
 \end{Verbatim}
@@ -762,15 +762,15 @@
 
 
 \rule{12cm}{2pt}
-\subsection{CloseCursor}
+\section{CloseCursor}
 \index{CloseCursor}
 \label{Api:CloseCursor}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void closeCursor (
            String    tableUri
            String    cursorId
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /structured/read/$f(tableUri)
 \end{Verbatim}
@@ -781,15 +781,15 @@
 
 
 \rule{12cm}{2pt}
-\subsection{CreateProcedureCallUsingSql}
+\section{CreateProcedureCallUsingSql}
 \index{CreateProcedureCallUsingSql}
 \label{Api:CreateProcedureCallUsingSql}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void createProcedureCallUsingSql (
            String    procUri
            String    rawSql
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /structured/admin/$f(procUri)
 \end{Verbatim}
@@ -800,15 +800,15 @@
 
 
 \rule{12cm}{2pt}
-\subsection{CallProcedure}
+\section{CallProcedure}
 \index{CallProcedure}
 \label{Api:CallProcedure}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    StoredProcedureResponse callProcedure (
            String    procUri
            StoredProcedureParams    params
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /structured/admin/$f(procUri)
 \end{Verbatim}
@@ -819,15 +819,15 @@
 
 
 \rule{12cm}{2pt}
-\subsection{DropProcedureUsingSql}
+\section{DropProcedureUsingSql}
 \index{DropProcedureUsingSql}
 \label{Api:DropProcedureUsingSql}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void dropProcedureUsingSql (
            String    procUri
            String    rawSql
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /structured/admin/$f(procUri)
 \end{Verbatim}
@@ -838,14 +838,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetPrimaryKey}
+\section{GetPrimaryKey}
 \index{GetPrimaryKey}
 \label{Api:GetPrimaryKey}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    String getPrimaryKey (
            String    tableUri
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /structured/read/$f(tableUri)
 \end{Verbatim}
@@ -856,14 +856,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetForeignKeys}
+\section{GetForeignKeys}
 \index{GetForeignKeys}
 \label{Api:GetForeignKeys}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    List<ForeignKey> getForeignKeys (
            String    tableUri
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /structured/read/$f(tableUri)
 \end{Verbatim}

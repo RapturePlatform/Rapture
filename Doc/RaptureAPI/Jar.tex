@@ -1,14 +1,14 @@
 \chapter{Jar API}
 \index{Jar API}
 \input{jar/info}
-\subsection{JarExists}
+\section{JarExists}
 \index{JarExists}
 \label{Api:JarExists}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    boolean jarExists (
            String    jarUri
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/list/$f(jarUri)
 \end{Verbatim}
@@ -19,15 +19,15 @@
 
 
 \rule{12cm}{2pt}
-\subsection{PutJar}
+\section{PutJar}
 \index{PutJar}
 \label{Api:PutJar}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void putJar (
            String    jarUri
            byte[]    jarContent
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/write/$f(jarUri)
 \end{Verbatim}
@@ -38,14 +38,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetJar}
+\section{GetJar}
 \index{GetJar}
 \label{Api:GetJar}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    BlobContainer getJar (
            String    jarUri
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/read/$f(jarUri)
 \end{Verbatim}
@@ -56,14 +56,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{DeleteJar}
+\section{DeleteJar}
 \index{DeleteJar}
 \label{Api:DeleteJar}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void deleteJar (
            String    jarUri
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/write/$f(jarUri)
 \end{Verbatim}
@@ -74,14 +74,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetJarSize}
+\section{GetJarSize}
 \index{GetJarSize}
 \label{Api:GetJarSize}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    Long getJarSize (
            String    jarUri
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/list/$f(jarUri)
 \end{Verbatim}
@@ -92,14 +92,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetJarMetaData}
+\section{GetJarMetaData}
 \index{GetJarMetaData}
 \label{Api:GetJarMetaData}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    Map<String,String> getJarMetaData (
            String    jarUri
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/list/$f(jarUri)
 \end{Verbatim}
@@ -110,15 +110,15 @@
 
 
 \rule{12cm}{2pt}
-\subsection{ListJarsByUriPrefix}
+\section{ListJarsByUriPrefix}
 \index{ListJarsByUriPrefix}
 \label{Api:ListJarsByUriPrefix}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    Map<String,RaptureFolderInfo> listJarsByUriPrefix (
            String    uriPrefix
            int    depth
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/list/$f(uriPrefix)
 \end{Verbatim}
@@ -129,14 +129,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{JarIsEnabled}
+\section{JarIsEnabled}
 \index{JarIsEnabled}
 \label{Api:JarIsEnabled}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    boolean jarIsEnabled (
            String    jarUri
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/list/$f(jarUri)
 \end{Verbatim}
@@ -147,14 +147,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{EnableJar}
+\section{EnableJar}
 \index{EnableJar}
 \label{Api:EnableJar}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void enableJar (
            String    jarUri
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/jar
 \end{Verbatim}
@@ -165,14 +165,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{DisableJar}
+\section{DisableJar}
 \index{DisableJar}
 \label{Api:DisableJar}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void disableJar (
            String    jarUri
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/jar
 \end{Verbatim}

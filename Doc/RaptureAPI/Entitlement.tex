@@ -1,13 +1,13 @@
 \chapter{Entitlement API}
 \index{Entitlement API}
 \input{entitlement/info}
-\subsection{GetEntitlements}
+\section{GetEntitlements}
 \index{GetEntitlements}
 \label{Api:GetEntitlements}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    List<RaptureEntitlement> getEntitlements (
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/ent
 \end{Verbatim}
@@ -18,14 +18,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetEntitlement}
+\section{GetEntitlement}
 \index{GetEntitlement}
 \label{Api:GetEntitlement}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    RaptureEntitlement getEntitlement (
            String    entitlementName
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/ent
 \end{Verbatim}
@@ -36,14 +36,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetEntitlementByAddress}
+\section{GetEntitlementByAddress}
 \index{GetEntitlementByAddress}
 \label{Api:GetEntitlementByAddress}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    RaptureEntitlement getEntitlementByAddress (
            String    entitlementURI
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/ent
 \end{Verbatim}
@@ -54,14 +54,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetEntitlementGroup}
+\section{GetEntitlementGroup}
 \index{GetEntitlementGroup}
 \label{Api:GetEntitlementGroup}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    RaptureEntitlementGroup getEntitlementGroup (
            String    groupName
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/ent
 \end{Verbatim}
@@ -72,14 +72,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetEntitlementGroupByAddress}
+\section{GetEntitlementGroupByAddress}
 \index{GetEntitlementGroupByAddress}
 \label{Api:GetEntitlementGroupByAddress}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    RaptureEntitlementGroup getEntitlementGroupByAddress (
            String    groupURI
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/ent
 \end{Verbatim}
@@ -90,13 +90,13 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetEntitlementGroups}
+\section{GetEntitlementGroups}
 \index{GetEntitlementGroups}
 \label{Api:GetEntitlementGroups}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    List<RaptureEntitlementGroup> getEntitlementGroups (
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/ent
 \end{Verbatim}
@@ -107,15 +107,15 @@
 
 
 \rule{12cm}{2pt}
-\subsection{AddEntitlement}
+\section{AddEntitlement}
 \index{AddEntitlement}
 \label{Api:AddEntitlement}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    RaptureEntitlement addEntitlement (
            String    entitlementName
            String    initialGroup
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/ent
 \end{Verbatim}
@@ -126,15 +126,15 @@
 
 
 \rule{12cm}{2pt}
-\subsection{AddGroupToEntitlement}
+\section{AddGroupToEntitlement}
 \index{AddGroupToEntitlement}
 \label{Api:AddGroupToEntitlement}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    RaptureEntitlement addGroupToEntitlement (
            String    entitlementName
            String    groupName
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/ent
 \end{Verbatim}
@@ -145,15 +145,15 @@
 
 
 \rule{12cm}{2pt}
-\subsection{RemoveGroupFromEntitlement}
+\section{RemoveGroupFromEntitlement}
 \index{RemoveGroupFromEntitlement}
 \label{Api:RemoveGroupFromEntitlement}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    RaptureEntitlement removeGroupFromEntitlement (
            String    entitlementName
            String    groupName
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/ent
 \end{Verbatim}
@@ -164,14 +164,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{DeleteEntitlement}
+\section{DeleteEntitlement}
 \index{DeleteEntitlement}
 \label{Api:DeleteEntitlement}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void deleteEntitlement (
            String    entitlementName
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/ent
 \end{Verbatim}
@@ -182,14 +182,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{DeleteEntitlementGroup}
+\section{DeleteEntitlementGroup}
 \index{DeleteEntitlementGroup}
 \label{Api:DeleteEntitlementGroup}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void deleteEntitlementGroup (
            String    groupName
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/ent
 \end{Verbatim}
@@ -200,14 +200,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{AddEntitlementGroup}
+\section{AddEntitlementGroup}
 \index{AddEntitlementGroup}
 \label{Api:AddEntitlementGroup}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    RaptureEntitlementGroup addEntitlementGroup (
            String    groupName
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/ent
 \end{Verbatim}
@@ -218,15 +218,15 @@
 
 
 \rule{12cm}{2pt}
-\subsection{AddUserToEntitlementGroup}
+\section{AddUserToEntitlementGroup}
 \index{AddUserToEntitlementGroup}
 \label{Api:AddUserToEntitlementGroup}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    RaptureEntitlementGroup addUserToEntitlementGroup (
            String    groupName
            String    userName
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/ent
 \end{Verbatim}
@@ -237,15 +237,15 @@
 
 
 \rule{12cm}{2pt}
-\subsection{RemoveUserFromEntitlementGroup}
+\section{RemoveUserFromEntitlementGroup}
 \index{RemoveUserFromEntitlementGroup}
 \label{Api:RemoveUserFromEntitlementGroup}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    RaptureEntitlementGroup removeUserFromEntitlementGroup (
            String    groupName
            String    userName
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/ent
 \end{Verbatim}
@@ -256,14 +256,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{FindEntitlementsByUser}
+\section{FindEntitlementsByUser}
 \index{FindEntitlementsByUser}
 \label{Api:FindEntitlementsByUser}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    List<RaptureEntitlement> findEntitlementsByUser (
            String    username
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/ent
 \end{Verbatim}
@@ -274,14 +274,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{FindEntitlementsByGroup}
+\section{FindEntitlementsByGroup}
 \index{FindEntitlementsByGroup}
 \label{Api:FindEntitlementsByGroup}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    List<RaptureEntitlement> findEntitlementsByGroup (
            String    groupname
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/ent
 \end{Verbatim}
@@ -292,13 +292,13 @@
 
 
 \rule{12cm}{2pt}
-\subsection{FindEntitlementsBySelf}
+\section{FindEntitlementsBySelf}
 \index{FindEntitlementsBySelf}
 \label{Api:FindEntitlementsBySelf}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    List<RaptureEntitlement> findEntitlementsBySelf (
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /everyone
 \end{Verbatim}

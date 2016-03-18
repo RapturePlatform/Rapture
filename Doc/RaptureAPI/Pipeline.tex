@@ -1,14 +1,14 @@
 \chapter{Pipeline API}
 \index{Pipeline API}
 \input{pipeline/info}
-\subsection{RemoveServerCategory}
+\section{RemoveServerCategory}
 \index{RemoveServerCategory}
 \label{Api:RemoveServerCategory}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void removeServerCategory (
            String    category
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -19,13 +19,13 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetServerCategories}
+\section{GetServerCategories}
 \index{GetServerCategories}
 \label{Api:GetServerCategories}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    List<String> getServerCategories (
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -36,14 +36,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetBoundExchanges}
+\section{GetBoundExchanges}
 \index{GetBoundExchanges}
 \label{Api:GetBoundExchanges}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    List<CategoryQueueBindings> getBoundExchanges (
            String    category
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -54,14 +54,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{DeregisterPipelineExchange}
+\section{DeregisterPipelineExchange}
 \index{DeregisterPipelineExchange}
 \label{Api:DeregisterPipelineExchange}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void deregisterPipelineExchange (
            String    name
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -72,13 +72,13 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetExchanges}
+\section{GetExchanges}
 \index{GetExchanges}
 \label{Api:GetExchanges}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    List<String> getExchanges (
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -89,14 +89,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetExchange}
+\section{GetExchange}
 \index{GetExchange}
 \label{Api:GetExchange}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    RaptureExchange getExchange (
            String    name
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -107,14 +107,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{PublishMessageToCategory}
+\section{PublishMessageToCategory}
 \index{PublishMessageToCategory}
 \label{Api:PublishMessageToCategory}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void publishMessageToCategory (
            RapturePipelineTask    task
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -125,14 +125,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{BroadcastMessageToCategory}
+\section{BroadcastMessageToCategory}
 \index{BroadcastMessageToCategory}
 \label{Api:BroadcastMessageToCategory}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void broadcastMessageToCategory (
            RapturePipelineTask    task
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -143,14 +143,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{BroadcastMessageToAll}
+\section{BroadcastMessageToAll}
 \index{BroadcastMessageToAll}
 \label{Api:BroadcastMessageToAll}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void broadcastMessageToAll (
            RapturePipelineTask    task
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -161,14 +161,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetStatus}
+\section{GetStatus}
 \index{GetStatus}
 \label{Api:GetStatus}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    PipelineTaskStatus getStatus (
            String    taskId
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -179,14 +179,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{QueryTasks}
+\section{QueryTasks}
 \index{QueryTasks}
 \label{Api:QueryTasks}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    List<RapturePipelineTask> queryTasks (
            String    query
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -197,14 +197,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{QueryTasksOld}
+\section{QueryTasksOld}
 \index{QueryTasksOld}
 \label{Api:QueryTasksOld}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    List<RapturePipelineTask> queryTasksOld (
            TableQuery    query
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -215,13 +215,13 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetLatestTaskEpoch}
+\section{GetLatestTaskEpoch}
 \index{GetLatestTaskEpoch}
 \label{Api:GetLatestTaskEpoch}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    Long getLatestTaskEpoch (
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -232,14 +232,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{DrainPipeline}
+\section{DrainPipeline}
 \index{DrainPipeline}
 \label{Api:DrainPipeline}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void drainPipeline (
            String    exchange
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -250,15 +250,15 @@
 
 
 \rule{12cm}{2pt}
-\subsection{RegisterExchangeDomain}
+\section{RegisterExchangeDomain}
 \index{RegisterExchangeDomain}
 \label{Api:RegisterExchangeDomain}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void registerExchangeDomain (
            String    domainURI
            String    config
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -269,14 +269,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{DeregisterExchangeDomain}
+\section{DeregisterExchangeDomain}
 \index{DeregisterExchangeDomain}
 \label{Api:DeregisterExchangeDomain}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void deregisterExchangeDomain (
            String    domainURI
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -287,13 +287,13 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetExchangeDomains}
+\section{GetExchangeDomains}
 \index{GetExchangeDomains}
 \label{Api:GetExchangeDomains}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    List<String> getExchangeDomains (
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -304,14 +304,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{SetupStandardCategory}
+\section{SetupStandardCategory}
 \index{SetupStandardCategory}
 \label{Api:SetupStandardCategory}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void setupStandardCategory (
            String    category
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -322,17 +322,17 @@
 
 
 \rule{12cm}{2pt}
-\subsection{MakeRPC}
+\section{MakeRPC}
 \index{MakeRPC}
 \label{Api:MakeRPC}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    Map<String,Object> makeRPC (
            String    queueName
            String    fnName
            Map<String,Object>    params
            Long    timeoutInSeconds
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /user/call
 \end{Verbatim}
@@ -343,15 +343,15 @@
 
 
 \rule{12cm}{2pt}
-\subsection{CreateTopicExchange}
+\section{CreateTopicExchange}
 \index{CreateTopicExchange}
 \label{Api:CreateTopicExchange}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void createTopicExchange (
            String    domain
            String    exchange
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -362,17 +362,17 @@
 
 
 \rule{12cm}{2pt}
-\subsection{PublishTopicMessage}
+\section{PublishTopicMessage}
 \index{PublishTopicMessage}
 \label{Api:PublishTopicMessage}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void publishTopicMessage (
            String    domain
            String    exchange
            String    topic
            String    message
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}

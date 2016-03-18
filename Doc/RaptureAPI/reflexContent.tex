@@ -1,19 +1,16 @@
 
-\part{Introducing Reflex}
+\part{Reflex}
 \chapter{Background}
-Recently there has been a significant move to create languages that run on top of the Java Virtual Machine. These languages are usually integrated as a fundamental "Java Scripting Language" - such as JRuby \index{JRuby} (an implementation of Ruby \index{Ruby}), Jython \index{Jython} (the equivalent of Python \index{Python}) and Rhino \index{Rhino} (a JavaScript \index{JavaScript} implementation) or as a fully defined language that hooks into the JVM at a lower level. Examples of these languages would include Clojure \index{Clojure} (a functional Lisp dialect), Groovy \index{Groovy} (a scripting language) and Scala \index{Scala} (an object-oriented and functional programming language). 
+Recently there has been a significant move to create languages that run on top of the Java Virtual Machine. These languages are usually integrated as a fundamental "Java Scripting Language" - such as JRuby \index{JRuby} (an implementation of Ruby \index{Ruby}), Jython \index{Jython} (the equivalent of Python \index{Python}) and Rhino \index{Rhino} (a JavaScript \index{JavaScript} implementation) or as a fully defined language that hooks into the JVM at a lower level. Examples of these languages would include Clojure \index{Clojure} (a functional Lisp dialect), Groovy \index{Groovy} (a scripting language) and Scala \index{Scala} (an object-oriented and functional programming language).
 
 \Reflex is a procedural language that hooks into the JVM at a lower level. Its syntax is similar to Python (without the indentation) and there are a number of built-in functions and special operators that are semantic short cuts when interacting with \Rapture.
 
-This book provides a detailed description of \Reflex.
+This part of the document provides a detailed description of \Reflex.
 
 \section{Why Reflex?}
 The designers of \Rapture felt that it was very important to provide a non-compiled way of running programs "in the cloud"\index{cloud}. The idea was that \Rapture application developers could define a lot of their data manipulations in a scripting language and then have \Rapture run these "programs" on the servers that make up an installed system. If such a program could be agnostic to the machine (actual server) it was running on such manipulations could be run in a scalable way across all of the servers that make up a \Rapture system.
 
 Initially the support for such a scripting language was built using JRuby and Jython - two well established languages that have a well educated developer base. Unfortunately this support ended up being impractical - both from a licensing perspective and from the fact that the scripting environment for these languages was very resource (time and memory) intensive. For these reasons it was decided to create a small language (now called \Reflex) to provide the "glue" for the data interactions in \Rapture.
-
-\section{A short summary of Rapture}
-\Rapture is a system for storing and manipulating data in a cloud (or distributed) server environment. Data is usually stored in "documents" \index{document} in a json \index{json} format and \Rapture isolates a developer from the underlying technology used to store that data. When data is changed in \Rapture scripts can be run to act upon that change. \Rapture also defines the concept of a workflow \index{workflow} - a set of tasks that are executed serially to perform a formal update to the data (such as an End Of Day process). Each step in a workflow is implemented by the execution of a script. \Rapture has a rich API that is exposed through a HTTP based protocol. Client side implementations of this API have been created for Python, Ruby, Java, .NET \index{.NET} (and VBA \index{VBA} for Excel \index{Excel} spreadsheets) and JavaScript\index{JavaScript}. There is also a REST \index{REST} based interface for even easier to access the documents that make up a \Rapture system in a RESTful way. \Rapture has a full entitlements \index{security} system to protect from unauthorized activity and a full audit trail to record authorized activity. \Rapture is also customized through many hook mechanisms - to provide analytics in a Risk Management System or to provide market data for pricing. The book "\Rapture in Action" describes this environment in full detail. The important thing to understand is that a scripting language "binds" the \Rapture system together - it is the glue that runs the workflow system, it is used to propagate events and it can be compared to the "stored procedure language" of a "database management system". 
 
 \chapter{Server hosted scripting}
 The initial use for \Reflex was to provide a scripting language that could be run on a server. However the same language could also be used to help setup a \Rapture system and hooks were also built in to handle file based io - something that normally would be restricted on a cloud/distributed server environment. In fact a \Reflex environment now has a number of "hooks" that can be implemented (or wired) differently depending on the context. In general the environment looks like the logical diagram below.
@@ -33,7 +30,7 @@ The initial use for \Reflex was to provide a scripting language that could be ru
 \node[api](Debugger) [above left=of Reflex] { Debugger }
    edge [post, bend left=45] (Reflex);
 \end{tikzpicture}
-\caption { Logical \Reflex environment }
+\caption { Logical Reflex environment }
 \end{figure}
 
 Here we see that \Reflex can reach out to a debugger, a \Rapture environment (for calling its API), a Scripting environment (for loading other scripts) and an IO sub-system for loading and saving data to a file system.
@@ -55,7 +52,7 @@ When running within a \Rapture server, the implementations are frozen to protect
 \node[internal](Debugger) [above left=of Reflex] { Disabled }
    edge [post, bend left=45] (Reflex);
 \end{tikzpicture}
-\caption { Server \Reflex environment }
+\caption { Server Reflex environment }
 \end{figure}
 
 Here the debugger and the file/IO subsystems are disabled.
@@ -81,85 +78,71 @@ Here the debugger and the file/IO subsystems are disabled.
 \node[ewd](Remote) [below=of HTTP] { Remote\nodepart{second}\Rapture }
    edge [post] (HTTP);
 \end{tikzpicture}
-\caption { External \Reflex environment }
+\caption { External Reflex environment }
 \end{figure}
 
 In this case the environment has a \Rapture system wired in via a standard HTTP based API - all \Rapture commands in \Reflex will still work through that API. In a server based environment the security context is set by \Rapture (and is based on the ultimate initiator of the \Reflex process). In the external approach the user security context is set either by using a \Rapture "API key" or by logging in manually through the Reflex runner application.
 
-\section{Installing Reflex}
-There are three options for using \Reflex. The most common use for \Reflex is to run scripts from within a \Rapture environment - you upload scripts to \Rapture and then call them through either \Rapture's API call \Verb+runProgram+ or through a \Rapture workflow, operation or event handling. For testing and debugging it is preferable to install a local environment to play with. This section describes how to do that.
+\chapter{Running Reflex}
+There are three options for using \Reflex. The most common use for \Reflex is to run scripts from within a \Rapture environment - you upload scripts to \Rapture and then call them through either \Rapture's API call \Verb+runScript+ or through a \Rapture workflow or event handling.
+
+For testing and debugging it is preferable to install a local environment to play with. This section describes how to do that.
 
 \Reflex is bundled into an application called \emph{ReflexRunner} that can be used to run \Reflex scripts. ReflexRunner is a command line java application that can be downloaded from the \href{http://incapture.github.com/RaptureRepo/release}{\Rapture Release Site}. Once downloaded it can be run using java as follows:
 
 \begin{Verbatim}[fontsize=\small]
-java -jar [ReflexRunner.jar] 
-          -r [RaptureAPIURL] -f [ReflextScript]
+  java -jar ReflexRunner [options]
+
+  ReflexRunner [-r Rapture API URL]
+               [-u Rapture username]
+               [-p Rapture password]
+               [-f Script file]
+               [-params Script parameters]
+               [-d Debug]
+               [-i Instrument]
 \end{Verbatim}
 
-Optional parameters are listed below:
+\subsection{Examples}
 
+Execute a script with a parameter:
 \begin{Verbatim}
--u 'user' - User name to login as
--p 'password' - Password to use
--d - Start debugger
+ReflexRunner -r http://localhost:8665/rapture
+             -f myScript.rfx -param x=1
+\end{Verbatim}
+Execute a script with 2 parameters:
+\begin{Verbatim}
+ReflexRunner -r http://localhost:8665/rapture
+             -f myScript.rfx -param x=1,y=abc
+\end{Verbatim}
+Execute a script with instrumentation:
+\begin{Verbatim}
+ReflexRunner -r http://localhost:8665/rapture
+             -f myScript.rfx -i
 \end{Verbatim}
 
-\section{Installing into Eclipse}
-\Reflex (and \Rapture) have an Eclipse plugin that can also be used to assist in the development of \Reflex scripts. This section describes how to install the plugin.
+\subsection{Usage notes}
+\begin{itemize}
+\item{-r and -f are mandatory parameters}
+\item{User name and password will be prompted for if not set using switches or environment variables.}
+\item{Cannot use -i and -d switches at the same time}
+\item{Parameter input format is a comma seperated list of: <variable name>=<variable value}
+\end{itemize}
 
-The first step is to install the latest version of Eclipse (recommended is at least the Java IDE for Eclipse) from \url{http://eclipse.org}.
+\subsection{Supported environment variables}
+\begin{itemize}
+\item{RAPTURE\_HOST sets -r}
+\item{RAPTURE\_USER sets -u}
+\item{RAPTURE\_PASSWORD sets -p}
+\end{itemize}
 
-From within Eclipse, navigate to the Help menu and click on \emph{Install New Software...}. You should see a dialog similar to that in Figure~\vref{fig:HelpInstall}.
+\subsection{Exit codes}
+\begin{itemize}
+\item{0: No parameters passed.}
+\item{1: Rapture URL (-r) parameter or environment variable is missing.}
+\item{2: Switches -d and -i cannot be used at same time.}
+\end{itemize}
 
-\begin{figure}[htb]
-\centering
-\includegraphics[scale=0.5]{../images/HelpInstall.png}
-\caption{Help/Install menu in Eclipse}
-\label{fig:HelpInstall}
-\end{figure}
-
-In the Install dialog, click on the Add button and then add the Incapture \Rapture Eclipse site to the Eclipse sites. If you have already done this simply pick that site from the drop-down instead. This is shown in Figure~\vref{fig:InstallDialog}.
-
-\begin{figure}[htb]
-\centering
-\includegraphics[scale=0.5]{../images/InstallDialog.png}
-\caption{Install Dialog in Eclipse}
-\label{fig:InstallDialog}
-\end{figure}
-
-Clicking on OK will add the site and determine what updates or options are available. In this case pick Rapture and if more than one item is shown pick the item with the greatest release version. The dialog will look similar to that in Figure~\vref{fig:AvailableSoftware}.
-
-\begin{figure}[htb]
-\centering
-\includegraphics[scale=0.5]{../images/AvailableSoftware.png}
-\caption{Available Software}
-\label{fig:AvailableSoftware}
-\end{figure}
-
-Clicking Next will then go through a validation process and eventually you will need to accept the license agreement and then restart Eclipse using a dialog similar to that in Figure~\vref{fig:License}.
-
-\begin{figure}[htb]
-\centering
-\includegraphics[scale=0.5]{../images/AcceptLicense.png}
-\caption{Accept License}
-\label{fig:License}
-\end{figure}
-
-\section{Configuration}
-
-The first thing to do post-install is to configure the \Rapture plugin for your local environment. The plugin will need to be told the location of the \Rapture environment you will be connecting to. You do this in the Preferences dialog of Eclipse, in the \Rapture section as shown in Figure~\vref{fig:Configuration}.
-
-\begin{figure}[htb]
-\centering
-\includegraphics[scale=0.5]{../images/Configuration.png}
-\caption{Configuration Dialog}
-\label{fig:Configuration}
-\end{figure}
-
-\section{Reflex scripts}
-(Script running, Console output, Debug output, Caveats)
-
-\section{Reflex fundamentals}
+\chapter{Reflex fundamentals}
 \Reflex is a basic procedural language with a few special operators \index{operator} and built-in functions \index{function} to make \Rapture interactions quicker to write. In this case the meaning of "procedural" is simply that in \Reflex you can define functions and invoke those functions. This section describes the fundamental characteristics of the language.
 \section{Hello, World}
 The simplest program in \Reflex uses the built-in function \Verb+println+ \index{println} to print out the contents to standard out:
@@ -176,6 +159,7 @@ Running the above program in Eclipse or through the ReflexRunner will print out 
 Variables \index{variable} in \Reflex are created upon first declaration and can be named using the letters of the alphabet and the digits 0 - 9. Some examples of variable names are shown in the table below:
 
 \begin{table}[h]
+\small
 \centering
 \begin{tabular} { | l | l | }
 Variable Name & Valid? \\
@@ -186,12 +170,13 @@ a*3 & No (contains a *) \\
 reflex & Yes \\
 \_var & No (contains a \_) \\
 \end{tabular}
-\caption{Variable names in \Reflex}
+\caption{Variable names in Reflex}
 \end{table}
 
 Types \index{type} in \Reflex are inferred from the context in which a value is assigned, and wherever possible a type will be coerced into another if the other type is needed for a context. The types are listed in table \vref{tab:Types}.
 
 \begin{table}[h!]
+\small
 \centering
 \begin{tabular} { | c | c | p{5cm} | }
 \hline
@@ -199,29 +184,32 @@ Type & Example & Description \\
 \hline
 string & 'Hello' & A string, an array of characters \\
 number & 4.0 & A number, either an integer or a float, depending on context \\
+integer & 4 & A specific integer (not the general number) \\
 boolean & true & A boolean value, either true or false \\
 list & \Verb+[ 1, 2, 3]+ & A list of values \\
 map & \Verb+{ 'key' : 'value' }+ & An associate map, mapping keys (strings) to values. \\
 date & \Verb+ date() + & A date. \\
 time & \Verb+ time() + & A time. \\
 file & \Verb+ file('test.txt') + & A file object, used to read or write data. \\
-queue & \Verb+ que('test','thequeue')+ & A queue object, used to receive and send messages in \Rapture.\\
 nul & \Verb+ null + & An object representing a nul value.\\
 void & \Verb+ void + & An object representing "no" object.\\
 lib & \Verb+ lib(className) + & An object representing a \Reflex library. \\
 stream & \Verb+ x = file('test.txt', 'CSV');+ & An object representing a stream of data from a file. \\
+process & \Verb+ p = spawn('ls');+ & An object representing an external process. \\
+timer & \Verb+ t = timer();+ & An object representing a timer that is started on creation. \\
 \hline
 \end{tabular}
 \label{tab:Types}
-\caption{Types in \Reflex}
+\caption{Types in Reflex}
 \end{table}
 
-The more complex types (queue, file) will be introduced in a later section on integration with \Rapture.
+The more complex types (stream, file) will be introduced in a later section on integration with \Rapture.
 
 \section{Type conversion}
 \Reflex will attempt to convert \index{conversion} from one type to another as needed. The table below shows what conversions are implicit and which ones need a little help from a built in function.
 
 \begin{table}[h!]
+  \small
 \centering
 \begin{tabular} { | c | c | c | c | c | c | c | c |}
 \hline
@@ -233,11 +221,11 @@ Number &  cast  &        &  n/a    &  n/a & n/a & Julian & Millis\\
 Boolean&  n/a   &  n/a   &         & n/a  & n/a & n/a & n/a \\
 List   &  n/a   &  n/a   &  n/a    &      & n/a & n/a & n/a \\
 Map    &  n/a   &  n/a   &  n/a    & n/a  & n/a & n/a & n/a  \\
-Date   &  YYYYMMDD & Julian  & n/a & n/a & n/a & & n/a \\
+Date   &  yyyyMMdd & Julian  & n/a & n/a & n/a & & n/a \\
 Time   &  HH:MM:SS & Millis & n/a & n/a & n/a & n/a & \\
 \hline
 \end{tabular}
-\caption{Conversions in \Reflex}
+\caption{Conversions in Reflex}
 \end{table}
 
 \section{Initialization}
@@ -255,6 +243,18 @@ c = "A string in quotes";
 const d = "There's a string in here somewhere";
 \end{lstlisting}
 
+When a string is wrapped in double quotes \Reflex will attempt to substitute variable names embedded in the string with their values. A variable
+name used in this way is prefixed with \Verb+\${+ and closed with \Verb+}+.
+
+\begin{lstlisting}[caption={String interpretation}]
+// String initialization
+value = 5;
+println("The value is ${value}");
+// Prints out 'The value is 5'
+\end{lstlisting}
+
+Strings in single quotes are not expanded.
+
 \subsection{Number}
 The number \index{number} type is initialized through a statement that represents a number - either an integer (a series of digits) or a floating point number through either a series of digits, a decimal point and a further series of digits, or through the definition of a number through scientific notation. If you suffix a number representation with a capital L the number will be locked to an internal integer \index{integer} type, which is useful when using these numbers in native Java calls.
 \begin{lstlisting}[caption={Number initialization}]
@@ -264,6 +264,9 @@ b = 100.4;
 const c = 5L;
 d = 4.5E04; // equivalent to 45000
 \end{lstlisting}
+
+If a number can be represented as an integer it will be stored as an integer initially.
+
 \subsection{Boolean}
 The boolean \index{boolean} type is defined using the keywords \Verb+true+ and \verb+false+, and of course can be initialized through the use of a boolean statement (see boolean operators in a later section).
 \begin{lstlisting}[caption={Boolean initialization}]
@@ -277,7 +280,7 @@ The list \index{list} type is defined using square brackets, with elements of th
 \begin{lstlisting}[caption={List initialization}]
 // List initialization
 a = []; // An empty list
-const b = [1, 2, 3, 4, 5]; 
+const b = [1, 2, 3, 4, 5];
 c = ['A string', 1, []]; // A list of a string, a number, and an empty list
 \end{lstlisting}
 \subsection{Map}
@@ -285,12 +288,41 @@ A map \index{map} is initialized using a JSON style format and is best demonstra
 \begin{lstlisting}[caption={Map initialization}]
 // Map initialization
 a = {}; // An empty map
-b = { 'a' : 4 }; // A map containing a 
-                 // single entry, with 
+b = { 'a' : 4 }; // A map containing a
+                 // single entry, with
                  // the key 'a' and the value 4
 c = { 'one' : 1, 'two' : 2, 'three' : 3 };
 const d = { 'outer' : { 'inner' : true }};
 \end{lstlisting}
+\subsection{Date}
+A date \index{date} is initialized using the built-in \Verb+date+ function. When no arguments are provided the date is
+initialized to the current date as understood by the server the script is running on.
+
+When more than one argument is specified the first argument specifies a date in \Verb+yyyyMMdd+ format, and if a second
+argument is provided it is used to determine how arithmetic can be performed on this date object. It can be one of those listed below:
+
+\begin{table}[h!]
+\small
+\centering
+\begin{tabular} { | c | p{7cm} | }
+\hline
+Calendar & Description \\
+\hline
+BDF & The date will always fall on the days Monday-Friday. \\
+BDFAct & When moving the date by an amount, weekends count as zero days. The date will always fall on a weekday. \\
+\hline
+\end{tabular}
+\label{tab:DateCalendarTypes}
+\caption{Calendar Types in Reflex}
+\end{table}
+
+\begin{lstlisting}[caption={Date examples}]
+d1 = date();
+d2 = date('20160101');
+d3 = date('20160101', 'BDFAct');
+\end{lstlisting}
+
+
 \section{Simple examples}
 Based on our understanding of types and variables, and our simple \Verb+println+ function, we can create some new \Reflex scripts. Here is a longer script that creates some variables and introduces some of the operators that will be expanded upon in the next section.
 
@@ -350,8 +382,18 @@ assert(a['one'] == 1);
 assert(a['two'] == 2);
 \end{lstlisting}
 
+The dot operator ($.$) can be used with maps to reference elements of that map:
+
+\begin{lstlisting}[caption={Dot operator on maps}]
+a = { 'one' : 1, 'two' : 2 };
+assert(a.one == 1);
+assert(a.two == 2);
+a.three = 3;
+assert(a.three == 3);
+\end{lstlisting}
+
 \chapter{Flow control}
-\Reflex has the standard flow control statements such as \Verb+ if ... else +, \verb+ while +, \verb+ for loops+. 
+\Reflex has the standard flow control statements such as \Verb+ if ... else +, \verb+ while +, \verb+ for loops+.
 \section{If}
 The \Reflex \Verb+if+ \index{if} statement has the following form:
 \begin{Verbatim}
@@ -369,7 +411,7 @@ a = 4;
 b = 2;
 if a > 3 do
    println("A is greater than 3");
-else do 
+else do
    println("A is less than or equal to 3");
 end
 
@@ -398,7 +440,7 @@ while a do
 end
 \end{lstlisting}
 \section{For}
-\Reflex has two different \Verb+for+\index{for} loop forms. The first, the counting form, assigns a numeric variable the values from a starting number to an ending number (inclusive) and calls the inner block for each iteration. 
+\Reflex has two different \Verb+for+\index{for} loop forms. The first, the counting form, assigns a numeric variable the values from a starting number to an ending number (inclusive) and calls the inner block for each iteration.
 \begin{lstlisting}[caption={For counting form}]
 // A for loop
 for a = 0 to 10 do
@@ -489,7 +531,7 @@ In this example we calla function that will increment our parameter, but the fun
 \Reflex can also catch general exceptions thrown by internal or addin functions.
 
 \chapter{Special operators}
-There are four special operators in \Reflex. They are \Verb+-->+ , \verb+<--+, \verb+-->>+ and \verb+<<--+. The operators are known as the push, pull, metapush and metapull operators. 
+There are four special operators in \Reflex. They are \Verb+-->+ , \verb+<--+, \verb+-->>+ and \verb+<<--+. The operators are known as the push, pull, metapush and metapull operators.
 
 \Reflex scripts are primarily about taking data from \Rapture, manipulating it, and then putting that data back. The push and pull operators can be used to get data from \Rapture and to save it back. The meta versions of the pull and push operators return (or deliver) the metadata about the content, such as who wrote the document, its version and when it was written. Only repositories that support metadata can benefit from these meta operators.
 
@@ -527,10 +569,10 @@ println("Meta is " + meta);
 \end{lstlisting}
 
 \begin{Verbatim}
-Meta is {version=1, 
-         writeTime=1351614168682, 
-         user=alan, 
-         comment=FeatureInstaller, 
+Meta is {version=1,
+         writeTime=1351614168682,
+         user=alan,
+         comment=FeatureInstaller,
          deleted=false}
 \end{Verbatim}
 
@@ -552,7 +594,7 @@ A simple example of a function being defined and used is in the following listin
 
 const prefix = "I'll say ";
 
-def sayWhat(name, what) 
+def sayWhat(name, what)
    println(prefix + what + " to " + name);
 end
 
@@ -593,7 +635,7 @@ public interface Module {
     ReflexValue keyholeCall(String name, List<ReflexValue> parameters);
     boolean handlesKeyhole();
     boolean canUseReflection();
-    void configure(List<ReflexValue> parameters);   
+    void configure(List<ReflexValue> parameters);
     void setReflexHandler(IReflexHandler handler);
 }
 \end{lstlisting}
@@ -712,6 +754,7 @@ The Erf module uses the Apache Commons Math library to compute Error Function va
 \section{Math module}
 The math module provides standard support through the Java Math package. The functions exposed are shown in the table below:
 \begin{table}[!h]
+  \small
 \centering
 \begin{tabular} { | l | l | p{9cm}  | }
 \hline
@@ -747,7 +790,7 @@ degrees & value & Converts radians to degrees \\
 radians & value & Converts radians to degrees \\
 \hline
 \end{tabular}
-\caption{Math module in \Reflex}
+\caption{Math module in Reflex}
 \end{table}
 
 \chapter{Functional Aspects of Reflex}
@@ -805,7 +848,7 @@ assert(res2 == false);
 In this example we define a simple function "lessThan5" that returns true if the passed parameter is less than 5. We then call the \emph{any} function with two different arrays -- one where there is a number less than 5 (l1) and one where none of the numbers are less than 5 (l2). The first call returns true (there is at least one element in l1 that is less than 5) and the second call returns false (there are no elements in l2 that are less than 5).
 
 \section{all}
-The \emph{all} built-in function works in a similar way to the \emph{any} function. It takes two parameters -- the first is a built-in function similar to that used by the filter function, one that returns true or false. The second parameter is an array. The \emph{all} function returns true if \emph{all} of the elements in the input array returns \emph{true} when passed through the built-in function. It will return false if \emph{any} of the elements in the input array returns \emph{false} when passed through the built-in function. The function will stop checking if it sees any check returning false. 
+The \emph{all} built-in function works in a similar way to the \emph{any} function. It takes two parameters -- the first is a built-in function similar to that used by the filter function, one that returns true or false. The second parameter is an array. The \emph{all} function returns true if \emph{all} of the elements in the input array returns \emph{true} when passed through the built-in function. It will return false if \emph{any} of the elements in the input array returns \emph{false} when passed through the built-in function. The function will stop checking if it sees any check returning false.
 
 \begin{lstlisting}[caption={Reflex all function}]
 def greaterThan(x)
@@ -999,7 +1042,7 @@ handle = @callScript("testPartition", "myScript", {});
 
 \subsection{@Status}
 
-The \verb+@status+ function returns a map containing details of the current execution of a script that was orignally scheduled through an \verb+@call+ or \verb+@callScript+ invocation. 
+The \verb+@status+ function returns a map containing details of the current execution of a script that was orignally scheduled through an \verb+@call+ or \verb+@callScript+ invocation.
 
 \begin{lstlisting}[caption={Example @Status}]
 
@@ -1014,13 +1057,13 @@ A typical output from the above program is reproduced below (assuming the script
 
 \begin{Verbatim}
 {
-   state=COMPLETED, 
-   taskId=2abd8d30-f7ea-4956-908c-e04737d64c0e, 
-   relatedTaskId=, 
-   creationTime=1354632237825, 
-   startExecutionTime=1354632237827, 
-   endExecutionTime=1354632237829, 
-   suspensionCount=0, 
+   state=COMPLETED,
+   taskId=2abd8d30-f7ea-4956-908c-e04737d64c0e,
+   relatedTaskId=,
+   creationTime=1354632237825,
+   startExecutionTime=1354632237827,
+   endExecutionTime=1354632237829,
+   suspensionCount=0,
    output=["Hello world"]
 }
 \end{Verbatim}
@@ -1445,7 +1488,7 @@ b = [3,4,5];
 un = unique(a,b);
 
 println("unique is " + un);
-// Returns 1,2,4,5 
+// Returns 1,2,4,5
 \end{lstlisting}
 The function works on lists of numbers or lists of strings.
 \section{Json}
@@ -1522,51 +1565,6 @@ println(a + " is not the same as " + b);
 
 \end{lstlisting}
 
-\section{Que}
-
-\begin{Verbatim}
-queue = que( partition, name )
-\end{Verbatim}
-
-The \Verb+que+ function defines a \emph{queue} object that is bound to the given partition (a string, known to \Rapture) and a name (the name of the queue in that partition). A queue can be used with the \verb+push+ and \verb+pull+ operators to send and receive messages to other queue participants. The implementation of a given queue is defined in the \Rapture system.
-
-It is normal to push a map object onto a queue and to receive a map object from a queue. When pulling from a queue the pull will eventually timeout and a \Verb+null+ value will be returned which will need to be tested for.
-
-Here is a set of scripts that show both sides of the same queue.
-
-\begin{lstlisting}[caption={Queue push example}]
-// Queue push example
-const partition = "test";
-const queueName = "thequeue";
-
-q = que(partition, queueName);
-
-message = {};
-message['value'] = 42;
-
-message --> q;
-
-\end{lstlisting}
-
-\begin{lstlisting}[caption={Queue pull example}]
-// Queue pull example, mirroring the queue push example
-const partition = "test";
-const queueName = "thequeue";
-
-q = que(partition, queueName);
-
-cont = true;
-
-while cont do
-   message <-- q;
-   if message != null do
-      println("Message was " + message['value']);
-      cont = false;
-   end
-end
-
-\end{lstlisting}
-
 \section{Wait}
 \index{wait}
 
@@ -1576,7 +1574,7 @@ wait( string, int, int )
 wait( process )
 \end{Verbatim}
 
-The \Verb+wait+ function is a convenience function that waits for a document to exist in \Rapture. The document name is provided in the first parameter and the optional second and third parameters control the retry interval (wait between checks) and retry count (how many times to check). The return value for the function is either the contents of the document (as a map) or null (if the document did not exist after the interval requested). 
+The \Verb+wait+ function is a convenience function that waits for a document to exist in \Rapture. The document name is provided in the first parameter and the optional second and third parameters control the retry interval (wait between checks) and retry count (how many times to check). The return value for the function is either the contents of the document (as a map) or null (if the document did not exist after the interval requested).
 
 Finally, \Verb+wait+ can also be used to wait on a process object returned by the \verb+spawn+ command.
 
@@ -1688,14 +1686,14 @@ println("Here is a list of random numbers - " + values);
 
 \begin{Verbatim}
 spawn( list-expression )
-spawn( list-expression, map-expression, file-expression) 
+spawn( list-expression, map-expression, file-expression)
 \end{Verbatim}
 
 The \Verb+spawn+ command, where supported, provides a mechansim for spawning a child process. The return value is a special \emph{process} object that can be used in a \emph{pull} context (to retrieve the standard output from the process) and by the \verb+wait+ function to wait for it to finish.
 
 The first parameter to the spawn command is a list of parameters to pass to the process. The first member of this list is the process to execute, the rest are parameters to pass to this process.
 
-The second parameter is a map expression that defines the \emph{environment} of the process. 
+The second parameter is a map expression that defines the \emph{environment} of the process.
 
 The third parameter is a file object that defines the folder the process should be run in.
 
@@ -1769,8 +1767,8 @@ mylib = lib('rapture.addins.BloombergData');
 \index{call}
 
 \begin{Verbatim}
-result = call( library-expression, 
-               string-expression, 
+result = call( library-expression,
+               string-expression,
                map-expression )
 \end{Verbatim}
 
@@ -1879,7 +1877,7 @@ assert(c == { 'one' : '1' });
 \begin{Verbatim}
 value = archive( string-expression )
 \end{Verbatim}
-The \Verb+archive+ command is used to create a special type of \verb+file+ object that tracks a ZIP archive. You can interact with the object in either read mode or write mode. 
+The \Verb+archive+ command is used to create a special type of \verb+file+ object that tracks a ZIP archive. You can interact with the object in either read mode or write mode.
 \subsection{Write Mode}
 In write mode you use the push operator (\Verb+-->+) to send either a simple map to an entry in the file or a two element list - the first element being the name of the entry and the second element being the map data.
 
@@ -1915,4 +1913,343 @@ println("First record data is " + dataRecord1['data']);
 println("Second record data is " + dataRecord2['data']);
 \end{lstlisting}
 
+\section{Sort}
+\index{sort}
+\begin{Verbatim}
+value = sort( map or list-expression, boolean-expression )
+\end{Verbatim}
+The sort function takes a map or a list and sorts it. The return value is the sorted array or map. The
+values of the list or the keys of the map must be strings and a simple lexical sort is performed. The second
+parameter is whether the return value should be sorted in ascending (true) or descending (false) order.
 
+\begin{lstlisting}[caption={Sort example}]
+x = ['a','c','d','b'];
+y = sort(x, true);
+assert(y == ['a','b','c','d']);
+\end{lstlisting}
+
+\section{Collate}
+\begin{Verbatim}
+value = collate( map or list-expression, string-expression )
+\end{Verbatim}
+
+The collate function works in a similar way to the sort function except that the second
+parameter specifies a \emph{locale} that should be used for the sorting collation function.
+The locale is specified using Java's Locale class, as an example the locale for the UK is
+\Verb+en_GB+.
+
+\begin{lstlisting}[caption={Collate example}]
+x = ['a','c','d','b'];
+y = collate(x, 'en_GB');
+assert(y == ['a','b','c','d']);
+\end{lstlisting}
+
+\section{GetLine}
+\begin{Verbatim}
+line = getline( )
+\end{Verbatim}
+
+The getline function reads the next line from the stdin io stream, assuming that the \Reflex container
+has an input handler. In most environments this is not the case, only the environment setup by \Verb+ReflexRunner+ has an
+input handler.
+
+\section{GetCh}
+\begin{Verbatim}
+ch = getch( )
+\end{Verbatim}
+
+The getch function reads the next character from the stdin io stream, assuming that the \Reflex container
+has an input handler. In most environments this is not the case, only the environment setup by \Verb+ReflexRunner+ has an
+input handler.
+
+\section{Capabilities}
+\begin{Verbatim}
+cap = capabilities( )
+\end{Verbatim}
+
+The capabilities function returns a map containing the status of each of the following capabilities present in the \Reflex container
+on which this script is running.
+
+\begin{table}[h!]
+\centering
+\small
+\begin{tabular} { | c | p{7cm} | }
+\hline
+Key     &  Meaning \\
+\hline
+DEBUG & Is there a debugger attached \\
+CACHE & Does the container have a cache \\
+DATA & Can the container retrieve data from \Rapture \\
+IO & Can the container perform file io? \\
+OUTPUT & Can the container write out information using print? \\
+SCRIPT & Can the container run other scripts? \\
+SUSPEND & Can the container suspend scripts for later resumption? \\
+\hline
+\end{tabular}
+\label{tab:Capabilities}
+\caption{Capabilities of a Reflex Container}
+\end{table}
+
+The return value is a map that contains two keys - "ON" and "OFF" with the values associated
+with that key being a list of the capabilties defined above. E.g.
+
+\begin{lstlisting}[caption={Capabilities example}, language=reflex]
+x = capabilities();
+println(x);
+// prints out {ON=[SCRIPT, PORT, IO, CACHE, OUTPUT, DATA, OFF=[DEBUG, SUSPEND]}
+\end{lstlisting}
+
+\section{HasCapability}
+\begin{Verbatim}
+hascapability(string-expression)
+\end{Verbatim}
+
+The hascapability function returns true or false depending on whether the \Reflex container
+has the given capability. The list of Table~\vref{tab:Capabilities} shows the possible choices for
+capabilities to be tested.
+
+\begin{lstlisting}[caption={HasCapability example}, language=reflex]
+x = hascapability('DEBUG');
+println("Debug is ${x}");
+\end{lstlisting}
+
+\section{Replace}
+\begin{Verbatim}
+string-or-list = replace( string-or-list-expression,
+      expression, expression )
+\end{Verbatim}
+
+The replace function is used to replace elements of a list or characters in a string. The
+first parameter is the value to be worked on. It can be a list or a string. The second parameter is
+an expression that is used to match either parts of the value string or elements in the value list. The third
+parameter is what those elements should be replaced with. The return value has the same type
+as the first parameter.
+
+\begin{lstlisting}[caption={replace example}]
+hello = 'Goodbye, world!';
+goodbye = replace(hello, 'Goodbye', 'Hello');
+// goodbye is now 'Hello, world!'
+
+lval = [1, 2, 3, 4];
+nval = replace(lval, 1, 5);
+// nval is now [5,2,3,4]
+\end{lstlisting}
+
+\section{Transpose}
+\begin{Verbatim}
+res = transpose( matrix )
+\end{Verbatim}
+
+Transpose takes a matrix value in \Reflex (a sparse array of values) and tranposes it
+into a new matrix.
+
+\begin{lstlisting}[caption={tranpose example}]
+x = [ - ];
+x[0,'A'] = 1;
+x[0,'B'] = 2;
+x[1,'A'] = 3;
+x[1,'B'] = 4;
+xt = transpose(x);
+println(xt);
+
+\end{lstlisting}
+
+\section{B64Compress}
+\begin{Verbatim}
+string-val = bcompress(string-val)
+\end{Verbatim}
+
+The B64Compress function compresses a string using a GZIP algorithm and then encodes the result as a Base64 string.
+\begin{lstlisting}[caption={bcompress example}]
+x = "Hello, world!"
+y = bcompress(x);
+// y is now H4sIAAAAAAAAAPNIzcnJVyjPL8pJUQQAlRmFGwwAAAA=
+
+\end{lstlisting}
+
+\section{B64Decompress}
+\begin{Verbatim}
+string-value = bdecompress(string-value)
+\end{Verbatim}
+
+The bdecompress function reverses the call to bcompress.
+
+\begin{lstlisting}[caption={bdecompress example}]
+x = "H4sIAAAAAAAAAPNIzcnJVyjPL8pJUQQAlRmFGwwAAAA="
+y = bdecompress(x);
+// y is now Hello world!
+
+\end{lstlisting}
+
+\section{Evals}
+\begin{Verbatim}
+string-vals = evals(string-value)
+\end{Verbatim}
+
+The evals function performs the same evaluation as for a quoted string but gives you
+the ability to store the variable. It's equivalent to simply assigning from a quoted string.
+
+\begin{lstlisting}[caption={evals example}]
+val = "world";
+msg1 = "Hello, ${val}";
+msg2 = evals('Hello, ${val}');
+// msg1 and msg2 are both "Hello, world"
+\end{lstlisting}
+
+\section{Remove}
+\begin{Verbatim}
+remove( map-identifier, key )
+\end{Verbatim}
+
+The remove function removes (deletes) the key from the given map value (in place).
+
+\begin{lstlisting}[caption={remove example}]
+val = {};
+val.x = 'Value of x';
+val.y = 'Value of y';
+
+println(val);
+
+remove(val, 'x');
+
+println(val);
+// Prints out
+// {x=Value of x, y=Value of y}
+// {y=Value of y}
+\end{lstlisting}
+
+\section{Join}
+\begin{Verbatim}
+string or list = join( items to join )
+\end{Verbatim}
+
+The join function takes a list of items and joins them together. If the
+list (which is simply the parameters to the function) is purely string based the return
+value is a string. Otherwise the function returns a list.
+
+\begin{lstlisting}[caption={join example}]
+val = join('a','b','c'); // val is 'abc'
+a = join(5, 2, 3); // val is [ 5, 2, 3]
+\end{lstlisting}
+
+
+\section{Copy}
+\begin{Verbatim}
+  copy(source-string, target-string)
+\end{Verbatim}
+
+The copy function copies a blob from \Rapture into a file. The source parameter is
+a reference to a blob in \Rapture and the target is a file name. Only scripts running
+with a container that allows file access will be able to use this function.
+
+\begin{lstlisting}[caption={copy example}]
+copy('blob://mytest/test.csv', 'output/file1.csv');
+\end{lstlisting}
+
+\section{Timer}
+\begin{Verbatim}
+  timer-handle = timer()
+  timer( timer-handle)
+\end{Verbatim}
+
+The timer call is used to record how much time has elapsed between two
+\Reflex statements. The first call to timer returns a timer handle and starts
+the timer. The second call (with the timer handle) returns the elapsed time since
+that first statement in milliseconds.
+
+\begin{lstlisting}[caption={timer example}]
+  t = timer();
+  for i = 0 to 100 do
+     print('.');
+  end
+  println();
+  elapsed = timer(t);
+  println("${elapsed} milliseconds have passed");
+\end{lstlisting}
+
+\section{Vars}
+\begin{Verbatim}
+map-value = vars()
+\end{Verbatim}
+
+The vars function returns a map with three keys reflecting the variables in scope at this point.
+
+The local key returns the variables in the innermost scope stack, the global key returns the variables
+that are globally available and the constant key returns the variables that are invariant.
+
+\begin{lstlisting}[caption={vars example}]
+  const a = 5;
+  b = 10;
+  println(json(vars));
+\end{lstlisting}
+
+Note that in the global scope the ENV and PROPS variables are usually present and reflect the system environment
+variables and the java properties of the environment.
+
+\section{Format}
+\begin{Verbatim}
+string-value = format( format-string, params, ... )
+\end{Verbatim}
+
+The format function simply calls the Java String.format method with the parameters
+as passed.
+
+\section{PutCache}
+\begin{Verbatim}
+putcache( key-string-value, cache-value )
+\end{Verbatim}
+
+A \Reflex container can maintain a short term in memory cache that can be used
+to improve the performance of repeating calls of a script. Often the script will call
+getcache to attempt to retrieve a value. If this returns null it will perform some fault loading
+routing and then call putcache on that value. In subsequent calls the "getcache" call \emph{may}
+return the value.
+
+\begin{lstlisting}[caption={cache example}]
+  c = getcache('test');
+  if c == null do
+     c = "a value that took a long time to compute";
+     putcache('test', c);
+  end
+  // c is now always "a value that took a long time to compute"
+\end{lstlisting}
+
+\section{GetCache}
+See putcache above.
+
+\begin{Verbatim}
+value = getcache( key-string-value )
+\end{Verbatim}
+
+\section{Matches}
+\begin{Verbatim}
+group = matches( str-exp, regex-expr )
+\end{Verbatim}
+
+The matches function performs a Regex match on the string passed given
+a regular expression. The return value is the group (or not) that matches the expression.
+
+\begin{lstlisting}[caption={matches example}]
+  res1 = matches('A test','t?s');
+  res2 = matches('A test','t?e');
+  // res1 size is 1
+  // res2 size is 0
+\end{lstlisting}
+
+\section{Rand}
+\begin{Verbatim}
+long-value = rand( long-value )
+\end{Verbatim}
+
+The rand function returns a random number between zero and the number passed as the
+first parameter.
+
+\begin{lstlisting}[caption={rand example}]
+  x= [];
+  for a = 0 to 10 do
+      x = x+ rand(10);
+  end
+
+  println(x);
+ // [1, 4, 1, 5, 2, 6, 7, 3, 2, 5, 7]
+\end{lstlisting}

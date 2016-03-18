@@ -6,14 +6,14 @@ param(name, type) ::= <<
 
 // The entry for a single function
 docApiEntry(apitype, ret, name, apiparams, paramNames, doc, ent) ::= <<
-\subsection{<name; format="upcase">}
+\section{<name; format="upcase">}
 \index{<name; format="upcase">}
 \label{Api:<name; format="upcase">}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    <ret> <name> (
       <apiparams; separator="\n">
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: <ent>
 \end{Verbatim}
@@ -41,11 +41,11 @@ docTypeDef(name, fields, doc) ::= <<
 \label{type:<name; format="upcase">}
 \index{<name; format="upcase">}
 
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    type <name> {
       <fields; separator="\n">
    }
-\end{Verbatim}
+\end{lstlisting}
 
 \rule{12cm}{2pt}
 >>

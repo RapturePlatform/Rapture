@@ -73,21 +73,22 @@
 
 \lstdefinelanguage{reflex}
 {
-  morekeywords={def,end,for,while,if,else,do,const,println,fromjson,json},
+  morekeywords={def,end,for,while,if,else,do,const,println,fromjson,json,collate,getch},
+	morekeywords={sort,capabilities,hascapability,assert,close,open,archive},
   morecomment=[l]{//},
-  morestring=[b]"
+  morestring=[b]",
+	morestring=[b]'
 }
 
-\definecolor{mygray}{rgb}{0.95,0.95,0.95}
-\lstset{basicstyle=\footnotesize\ttfamily,breaklines=true}
+\definecolor{mygray}{rgb}{0.97,0.97,0.75}
 
 \lstset{ %
   aboveskip=7pt,
   belowskip=7pt,
   numberbychapter=false,
-  %language=reflex,                % the language of the code
-  %basicstyle=\small,           % the size of the fonts that are used for the code
-  %numbers=left,                   % where to put the line-numbers
+  language=reflex,                % the language of the code
+  basicstyle=\footnotesize,           % the size of the fonts that are used for the code
+  numbers=left,                   % where to put the line-numbers
   backgroundcolor=\color{mygray},
   numberstyle=\tiny\color{gray},  % the style that is used for the line-numbers
   keywordstyle=\color{blue},
@@ -108,6 +109,8 @@
   morekeywords={*,...}               % if you want to add more keywords to the set
 }
 
+\lstdefinestyle{nonumbers}
+  {numbers=none}
 
 \begin{document}
 
@@ -133,6 +136,7 @@
 %\newpage
 
 %\maketitle
+\setcounter{tocdepth}{1}
 \tableofcontents
 \setcounter{page}{1} %Start the actually document on page 1
 
@@ -516,6 +520,8 @@ underlying data stores and then calling:
    Kernel.initBootstrap();
 \end{lstlisting}
 
+\input{reflexContent}
+
 \part{API}
 \chapter{API Introduction}
 The \Rapture API is divided into a number of sections. We've seen in an earlier
@@ -547,7 +553,7 @@ will be described and then the detailed API calls will follow.
 \input{Plugin}
 \input{Types}
 
-%\input{reflexContent}
+
 
 %*******************************************************
 % Disclaimer

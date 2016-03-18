@@ -1,16 +1,16 @@
 \chapter{Blob API}
 \index{Blob API}
 \input{blob/info}
-\subsection{CreateBlobRepo}
+\section{CreateBlobRepo}
 \index{CreateBlobRepo}
 \label{Api:CreateBlobRepo}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void createBlobRepo (
            String    blobRepoUri
            String    config
            String    metaConfig
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /repo/write
 \end{Verbatim}
@@ -21,14 +21,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetBlobRepoConfig}
+\section{GetBlobRepoConfig}
 \index{GetBlobRepoConfig}
 \label{Api:GetBlobRepoConfig}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    BlobRepoConfig getBlobRepoConfig (
            String    blobRepoUri
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /repo/read
 \end{Verbatim}
@@ -39,13 +39,13 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetBlobRepoConfigs}
+\section{GetBlobRepoConfigs}
 \index{GetBlobRepoConfigs}
 \label{Api:GetBlobRepoConfigs}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    List<BlobRepoConfig> getBlobRepoConfigs (
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /repo/read
 \end{Verbatim}
@@ -56,14 +56,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{DeleteBlobRepo}
+\section{DeleteBlobRepo}
 \index{DeleteBlobRepo}
 \label{Api:DeleteBlobRepo}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void deleteBlobRepo (
            String    repoUri
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /repo/write
 \end{Verbatim}
@@ -74,14 +74,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{BlobRepoExists}
+\section{BlobRepoExists}
 \index{BlobRepoExists}
 \label{Api:BlobRepoExists}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    boolean blobRepoExists (
            String    repoUri
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /repo/list
 \end{Verbatim}
@@ -92,14 +92,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{BlobExists}
+\section{BlobExists}
 \index{BlobExists}
 \label{Api:BlobExists}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    boolean blobExists (
            String    blobUri
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/list/$f(blobUri)
 \end{Verbatim}
@@ -110,15 +110,15 @@
 
 
 \rule{12cm}{2pt}
-\subsection{AddBlobContent}
+\section{AddBlobContent}
 \index{AddBlobContent}
 \label{Api:AddBlobContent}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void addBlobContent (
            String    blobUri
            byte[]    content
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/write/$f(blobUri)
 \end{Verbatim}
@@ -129,16 +129,16 @@
 
 
 \rule{12cm}{2pt}
-\subsection{PutBlob}
+\section{PutBlob}
 \index{PutBlob}
 \label{Api:PutBlob}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void putBlob (
            String    blobUri
            byte[]    content
            String    contentType
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/write/$f(blobUri)
 \end{Verbatim}
@@ -149,14 +149,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetBlob}
+\section{GetBlob}
 \index{GetBlob}
 \label{Api:GetBlob}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    BlobContainer getBlob (
            String    blobUri
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/read/$f(blobUri)
 \end{Verbatim}
@@ -167,14 +167,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{DeleteBlob}
+\section{DeleteBlob}
 \index{DeleteBlob}
 \label{Api:DeleteBlob}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void deleteBlob (
            String    blobUri
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/write/$f(blobUri)
 \end{Verbatim}
@@ -185,14 +185,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetBlobSize}
+\section{GetBlobSize}
 \index{GetBlobSize}
 \label{Api:GetBlobSize}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    Long getBlobSize (
            String    blobUri
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/list/$f(blobUri)
 \end{Verbatim}
@@ -203,14 +203,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetBlobMetaData}
+\section{GetBlobMetaData}
 \index{GetBlobMetaData}
 \label{Api:GetBlobMetaData}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    Map<String,String> getBlobMetaData (
            String    blobUri
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/list/$f(blobUri)
 \end{Verbatim}
@@ -221,15 +221,15 @@
 
 
 \rule{12cm}{2pt}
-\subsection{ListBlobsByUriPrefix}
+\section{ListBlobsByUriPrefix}
 \index{ListBlobsByUriPrefix}
 \label{Api:ListBlobsByUriPrefix}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    Map<String,RaptureFolderInfo> listBlobsByUriPrefix (
            String    blobUri
            int    depth
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/list/$f(blobUri)
 \end{Verbatim}
@@ -240,14 +240,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{DeleteBlobsByUriPrefix}
+\section{DeleteBlobsByUriPrefix}
 \index{DeleteBlobsByUriPrefix}
 \label{Api:DeleteBlobsByUriPrefix}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    List<String> deleteBlobsByUriPrefix (
            String    blobUri
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/write/$f(blobUri)
 \end{Verbatim}

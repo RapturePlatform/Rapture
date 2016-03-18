@@ -1,15 +1,15 @@
 \chapter{Fields API}
 \index{Fields API}
 \input{fields/info}
-\subsection{ListFieldsByUriPrefix}
+\section{ListFieldsByUriPrefix}
 \index{ListFieldsByUriPrefix}
 \label{Api:ListFieldsByUriPrefix}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    Map<String,RaptureFolderInfo> listFieldsByUriPrefix (
            String    authority
            int    depth
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/field
 \end{Verbatim}
@@ -20,14 +20,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetField}
+\section{GetField}
 \index{GetField}
 \label{Api:GetField}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    RaptureField getField (
            String    fieldUri
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/field
 \end{Verbatim}
@@ -38,14 +38,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{PutField}
+\section{PutField}
 \index{PutField}
 \label{Api:PutField}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void putField (
            RaptureField    field
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/field
 \end{Verbatim}
@@ -56,14 +56,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{FieldExists}
+\section{FieldExists}
 \index{FieldExists}
 \label{Api:FieldExists}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    boolean fieldExists (
            String    fieldUri
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/field
 \end{Verbatim}
@@ -74,14 +74,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{DeleteField}
+\section{DeleteField}
 \index{DeleteField}
 \label{Api:DeleteField}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void deleteField (
            String    fieldUri
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/field
 \end{Verbatim}
@@ -92,15 +92,15 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetDocumentFields}
+\section{GetDocumentFields}
 \index{GetDocumentFields}
 \label{Api:GetDocumentFields}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    List<String> getDocumentFields (
            String    docURI
            List<String>    fields
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /user/field/$f(docURI)
 \end{Verbatim}
@@ -111,16 +111,16 @@
 
 
 \rule{12cm}{2pt}
-\subsection{PutDocumentAndGetDocumentFields}
+\section{PutDocumentAndGetDocumentFields}
 \index{PutDocumentAndGetDocumentFields}
 \label{Api:PutDocumentAndGetDocumentFields}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    List<String> putDocumentAndGetDocumentFields (
            String    docURI
            String    content
            List<String>    fields
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /user/field/$f(docURI)
 \end{Verbatim}
