@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+<suite name="HttpSuite">
+	<parameter name="RaptureURL" value="http://192.168.99.100:8665/rapture" />
+	<parameter name="RaptureUser" value="rapture" />
+	<parameter name="RapturePassword" value="rapture" />
+	<test name="HttpSuite">
+		<packages>
+			<package name="rapture.api.checkout" />
+			<package name="rapture.api.document" />
+		</packages>
+	</test>
+</suite> <!-- Suite -->

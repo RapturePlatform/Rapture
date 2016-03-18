@@ -1,10 +1,10 @@
 \chapter{Schedule API}
 \index{Schedule API}
 \input{schedule/info}
-\subsection{CreateJob}
+\section{CreateJob}
 \index{CreateJob}
 \label{Api:CreateJob}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    RaptureJob createJob (
            String    jobURI
            String    description
@@ -14,7 +14,7 @@
            Map<String,String>    jobParams
            boolean    autoActivate
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/schedule
 \end{Verbatim}
@@ -25,10 +25,10 @@
 
 
 \rule{12cm}{2pt}
-\subsection{CreateWorkflowJob}
+\section{CreateWorkflowJob}
 \index{CreateWorkflowJob}
 \label{Api:CreateWorkflowJob}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    RaptureJob createWorkflowJob (
            String    jobURI
            String    description
@@ -40,7 +40,7 @@
            int    maxRuntimeMinutes
            String    appStatusNamePattern
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/schedule
 \end{Verbatim}
@@ -51,15 +51,15 @@
 
 
 \rule{12cm}{2pt}
-\subsection{ActivateJob}
+\section{ActivateJob}
 \index{ActivateJob}
 \label{Api:ActivateJob}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void activateJob (
            String    jobURI
            Map<String,String>    extraParams
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/schedule
 \end{Verbatim}
@@ -70,14 +70,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{DeactivateJob}
+\section{DeactivateJob}
 \index{DeactivateJob}
 \label{Api:DeactivateJob}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void deactivateJob (
            String    jobURI
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/schedule
 \end{Verbatim}
@@ -88,14 +88,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{RetrieveJob}
+\section{RetrieveJob}
 \index{RetrieveJob}
 \label{Api:RetrieveJob}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    RaptureJob retrieveJob (
            String    jobURI
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/schedule
 \end{Verbatim}
@@ -106,14 +106,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{RetrieveJobs}
+\section{RetrieveJobs}
 \index{RetrieveJobs}
 \label{Api:RetrieveJobs}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    List<RaptureJob> retrieveJobs (
            String    uriPrefix
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/schedule
 \end{Verbatim}
@@ -124,15 +124,15 @@
 
 
 \rule{12cm}{2pt}
-\subsection{RunJobNow}
+\section{RunJobNow}
 \index{RunJobNow}
 \label{Api:RunJobNow}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void runJobNow (
            String    jobURI
            Map<String,String>    extraParams
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/schedule
 \end{Verbatim}
@@ -143,14 +143,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{ResetJob}
+\section{ResetJob}
 \index{ResetJob}
 \label{Api:ResetJob}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void resetJob (
            String    jobURI
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/schedule
 \end{Verbatim}
@@ -161,15 +161,15 @@
 
 
 \rule{12cm}{2pt}
-\subsection{RetrieveJobExec}
+\section{RetrieveJobExec}
 \index{RetrieveJobExec}
 \label{Api:RetrieveJobExec}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    RaptureJobExec retrieveJobExec (
            String    jobURI
            Long    execTime
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/schedule
 \end{Verbatim}
@@ -180,14 +180,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{DeleteJob}
+\section{DeleteJob}
 \index{DeleteJob}
 \label{Api:DeleteJob}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void deleteJob (
            String    jobURI
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/schedule
 \end{Verbatim}
@@ -198,13 +198,13 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetJobs}
+\section{GetJobs}
 \index{GetJobs}
 \label{Api:GetJobs}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    List<String> getJobs (
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/schedule
 \end{Verbatim}
@@ -215,13 +215,13 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetUpcomingJobs}
+\section{GetUpcomingJobs}
 \index{GetUpcomingJobs}
 \label{Api:GetUpcomingJobs}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    List<RaptureJobExec> getUpcomingJobs (
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/schedule
 \end{Verbatim}
@@ -232,13 +232,13 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetWorkflowExecsStatus}
+\section{GetWorkflowExecsStatus}
 \index{GetWorkflowExecsStatus}
 \label{Api:GetWorkflowExecsStatus}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    WorkflowExecsStatus getWorkflowExecsStatus (
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/schedule
 \end{Verbatim}
@@ -249,16 +249,16 @@
 
 
 \rule{12cm}{2pt}
-\subsection{AckJobError}
+\section{AckJobError}
 \index{AckJobError}
 \label{Api:AckJobError}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    JobErrorAck ackJobError (
            String    jobURI
            Long    execTime
            String    jobErrorType
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/schedule
 \end{Verbatim}
@@ -269,14 +269,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetNextExec}
+\section{GetNextExec}
 \index{GetNextExec}
 \label{Api:GetNextExec}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    RaptureJobExec getNextExec (
            String    jobURI
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/schedule
 \end{Verbatim}
@@ -287,17 +287,17 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetJobExecs}
+\section{GetJobExecs}
 \index{GetJobExecs}
 \label{Api:GetJobExecs}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    List<RaptureJobExec> getJobExecs (
            String    jobURI
            int    start
            int    count
            boolean    reversed
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/schedule
 \end{Verbatim}
@@ -308,17 +308,17 @@
 
 
 \rule{12cm}{2pt}
-\subsection{BatchGetJobExecs}
+\section{BatchGetJobExecs}
 \index{BatchGetJobExecs}
 \label{Api:BatchGetJobExecs}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    List<RaptureJobExec> batchGetJobExecs (
            List<String>    jobURI
            int    start
            int    count
            boolean    reversed
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/schedule
 \end{Verbatim}
@@ -329,14 +329,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{IsJobReadyToRun}
+\section{IsJobReadyToRun}
 \index{IsJobReadyToRun}
 \label{Api:IsJobReadyToRun}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    boolean isJobReadyToRun (
            String    toJobURI
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/schedule
 \end{Verbatim}
@@ -347,14 +347,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetCurrentWeekTimeRecords}
+\section{GetCurrentWeekTimeRecords}
 \index{GetCurrentWeekTimeRecords}
 \label{Api:GetCurrentWeekTimeRecords}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    List<TimedEventRecord> getCurrentWeekTimeRecords (
            int    weekOffsetfromNow
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/schedule
 \end{Verbatim}
@@ -365,13 +365,13 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetCurrentDayJobs}
+\section{GetCurrentDayJobs}
 \index{GetCurrentDayJobs}
 \label{Api:GetCurrentDayJobs}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    List<TimedEventRecord> getCurrentDayJobs (
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/schedule
 \end{Verbatim}

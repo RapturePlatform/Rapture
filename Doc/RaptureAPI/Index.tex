@@ -1,15 +1,15 @@
 \chapter{Index API}
 \index{Index API}
 \input{index/info}
-\subsection{CreateIndex}
+\section{CreateIndex}
 \index{CreateIndex}
 \label{Api:CreateIndex}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    IndexConfig createIndex (
            String    indexUri
            String    config
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/index/write
 \end{Verbatim}
@@ -20,14 +20,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetIndex}
+\section{GetIndex}
 \index{GetIndex}
 \label{Api:GetIndex}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    IndexConfig getIndex (
            String    indexUri
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/index/read
 \end{Verbatim}
@@ -38,14 +38,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{DeleteIndex}
+\section{DeleteIndex}
 \index{DeleteIndex}
 \label{Api:DeleteIndex}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void deleteIndex (
            String    indexUri
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/index/write
 \end{Verbatim}
@@ -56,15 +56,15 @@
 
 
 \rule{12cm}{2pt}
-\subsection{CreateTable}
+\section{CreateTable}
 \index{CreateTable}
 \label{Api:CreateTable}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    TableConfig createTable (
            String    tableUri
            String    config
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/index/write
 \end{Verbatim}
@@ -75,14 +75,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{DeleteTable}
+\section{DeleteTable}
 \index{DeleteTable}
 \label{Api:DeleteTable}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void deleteTable (
            String    tableUri
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/index/write
 \end{Verbatim}
@@ -93,14 +93,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetTable}
+\section{GetTable}
 \index{GetTable}
 \label{Api:GetTable}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    TableConfig getTable (
            String    indexURI
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/index/read
 \end{Verbatim}
@@ -111,15 +111,15 @@
 
 
 \rule{12cm}{2pt}
-\subsection{QueryTable}
+\section{QueryTable}
 \index{QueryTable}
 \label{Api:QueryTable}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    List<TableRecord> queryTable (
            String    indexURI
            TableQuery    query
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/index/read
 \end{Verbatim}
@@ -130,15 +130,15 @@
 
 
 \rule{12cm}{2pt}
-\subsection{FindIndex}
+\section{FindIndex}
 \index{FindIndex}
 \label{Api:FindIndex}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    TableQueryResult findIndex (
            String    indexUri
            String    query
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/index/read
 \end{Verbatim}

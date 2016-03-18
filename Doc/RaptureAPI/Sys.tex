@@ -1,15 +1,15 @@
 \chapter{Sys API}
 \index{Sys API}
 \input{sys/info}
-\subsection{RetrieveSystemConfig}
+\section{RetrieveSystemConfig}
 \index{RetrieveSystemConfig}
 \label{Api:RetrieveSystemConfig}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    String retrieveSystemConfig (
            String    area
            String    path
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/root
 \end{Verbatim}
@@ -20,16 +20,16 @@
 
 
 \rule{12cm}{2pt}
-\subsection{WriteSystemConfig}
+\section{WriteSystemConfig}
 \index{WriteSystemConfig}
 \label{Api:WriteSystemConfig}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    String writeSystemConfig (
            String    area
            String    path
            String    content
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/root
 \end{Verbatim}
@@ -40,15 +40,15 @@
 
 
 \rule{12cm}{2pt}
-\subsection{RemoveSystemConfig}
+\section{RemoveSystemConfig}
 \index{RemoveSystemConfig}
 \label{Api:RemoveSystemConfig}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void removeSystemConfig (
            String    area
            String    path
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/root
 \end{Verbatim}
@@ -59,15 +59,15 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetSystemFolders}
+\section{GetSystemFolders}
 \index{GetSystemFolders}
 \label{Api:GetSystemFolders}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    List<RaptureFolderInfo> getSystemFolders (
            String    area
            String    path
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/root
 \end{Verbatim}
@@ -78,13 +78,13 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetAllTopLevelRepos}
+\section{GetAllTopLevelRepos}
 \index{GetAllTopLevelRepos}
 \label{Api:GetAllTopLevelRepos}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    List<String> getAllTopLevelRepos (
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /repo/read
 \end{Verbatim}
@@ -95,10 +95,10 @@
 
 
 \rule{12cm}{2pt}
-\subsection{ListByUriPrefix}
+\section{ListByUriPrefix}
 \index{ListByUriPrefix}
 \label{Api:ListByUriPrefix}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    ChildrenTransferObject listByUriPrefix (
            String    raptureURI
            String    marker
@@ -106,7 +106,7 @@
            Long    maximum
            Long    millisUntilCacheExpiry
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /repo/read
 \end{Verbatim}
@@ -117,14 +117,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetChildren}
+\section{GetChildren}
 \index{GetChildren}
 \label{Api:GetChildren}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    ChildrenTransferObject getChildren (
            String    raptureURI
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /repo/read
 \end{Verbatim}
@@ -135,16 +135,16 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetAllChildren}
+\section{GetAllChildren}
 \index{GetAllChildren}
 \label{Api:GetAllChildren}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    ChildrenTransferObject getAllChildren (
            String    raptureURI
            String    marker
            Long    maximum
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /repo/read
 \end{Verbatim}
@@ -155,14 +155,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetFolderInfo}
+\section{GetFolderInfo}
 \index{GetFolderInfo}
 \label{Api:GetFolderInfo}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    NodeEnum getFolderInfo (
            String    raptureURI
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /repo/read
 \end{Verbatim}
@@ -173,14 +173,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetConnectionInfo}
+\section{GetConnectionInfo}
 \index{GetConnectionInfo}
 \label{Api:GetConnectionInfo}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    Map<String,ConnectionInfo> getConnectionInfo (
            String    connectionType
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /repo/read
 \end{Verbatim}
@@ -191,15 +191,15 @@
 
 
 \rule{12cm}{2pt}
-\subsection{PutConnectionInfo}
+\section{PutConnectionInfo}
 \index{PutConnectionInfo}
 \label{Api:PutConnectionInfo}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void putConnectionInfo (
            String    connectionType
            ConnectionInfo    connectionInfo
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /repo/write
 \end{Verbatim}
@@ -210,15 +210,15 @@
 
 
 \rule{12cm}{2pt}
-\subsection{SetConnectionInfo}
+\section{SetConnectionInfo}
 \index{SetConnectionInfo}
 \label{Api:SetConnectionInfo}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void setConnectionInfo (
            String    connectionType
            ConnectionInfo    connectionInfo
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /repo/write
 \end{Verbatim}

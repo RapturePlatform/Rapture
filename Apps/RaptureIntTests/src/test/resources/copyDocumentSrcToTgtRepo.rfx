@@ -1,0 +1,11 @@
+
+println ("Event fires and runs this reflex script to copy from src to target repository!");
+
+docName = _params['associatedURI'];
+println("param doc name: " + docName);
+//get the contents of source document
+s = #doc.getDoc("//test.doceventsrc/" + docName);
+//create a new document in target repository
+res = #doc.putDoc("//test.doceventtgt/" + docName, s);
+println ("Result is : " + res);
+return res;
