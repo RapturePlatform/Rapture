@@ -23,9 +23,9 @@
  */
 package reflex.value.internal;
 
-import reflex.value.ReflexValue;
+import reflex.value.ImmutableReflexValue;
 
-public class ReflexInternalValue extends ReflexValue {
+public class ReflexInternalValue extends ImmutableReflexValue {
 
     public ReflexInternalValue(int lineNumber, Object v) {
         super(lineNumber, v);
