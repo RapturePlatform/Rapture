@@ -7,6 +7,7 @@ options {
 
 @header {
 package reflex;
+import java.math.*;
 import java.io.PrintStream;
 import reflex.function.*;
 import reflex.node.*;
@@ -138,7 +139,7 @@ variant returns [ReflexNode node]
     int line = ahead.getToken().getLine();
 }
   :  Integer { node = AtomNode.getIntegerAtom(line, handler, currentScope, $Integer.text); }
-  |  Number { node = new AtomNode(line, handler, currentScope, Double.parseDouble($Number.text)); }
+  |  Number { node = new AtomNode(line, handler, currentScope, new BigDecimal($Number.text, MathContext.DECIMAL128)); }
   |  String { node = AtomNode.getStringAtom(line, handler, currentScope, $String.text); }
   |  Long { node = new AtomNode(line, handler, currentScope, java.lang.Long.parseLong($Long.text)); }
   |  Bool { node = new AtomNode(line, handler, currentScope, Boolean.parseBoolean($Bool.text)); }
@@ -325,7 +326,7 @@ functionCall returns [ReflexNode node]
   |  ^(FUNC_CALL SplitWith Identifier expression) { node = new SplitWithNode(line, handler, currentScope, $Identifier.text, $expression.node, languageRegistry, importHandler); }
   |  ^(FUNC_CALL Split str=expression sep=expression quoter=expression) { node = new SplitNode(line, handler, currentScope, $str.node, $sep.node, $quoter.node, languageRegistry, importHandler); }
   |  ^(FUNC_CALL TypeOf expression) { node = new TypeOfNode(line, handler, currentScope, $expression.node); }
-  |  ^(FUNC_CALL Assert expression) { node = new AssertNode(line, handler, currentScope, $expression.node); }
+  |  ^(FUNC_CALL Assert msg=expression exp=expression) { node = new AssertNode(line, handler, currentScope, $msg.node, $exp.node); }
   |  ^(FUNC_CALL Size expression) { node = new SizeNode(line, handler,currentScope,  $expression.node); }
   |  ^(FUNC_CALL RPull u=expression) { node = new RapturePullNode(line, handler, currentScope, $u.node, null); }
   |  ^(FUNC_CALL RPush u=expression v=expression o=expression?) { node = new RapturePushNode(line, handler, currentScope, $u.node, $v.node, $o.node); }
@@ -491,7 +492,7 @@ expression returns [ReflexNode node]
   |  ^('^' a=expression b=expression) { node = new PowNode(line, handler, currentScope, $a.node, $b.node); }
   |  ^(UNARY_MIN a=expression) { node = new UnaryMinusNode(line, handler, currentScope, $a.node); }
   |  ^(NEGATE a=expression) { node = new NegateNode(line, handler, currentScope, $a.node); }
-  |  Number { node = new AtomNode(line, handler, currentScope, Double.parseDouble($Number.text)); }
+  |  Number { node = new AtomNode(line, handler, currentScope, new BigDecimal($Number.text, MathContext.DECIMAL128)); }
   |  Integer { node = AtomNode.getIntegerAtom(line, handler, currentScope, $Integer.text); }
   |  Long { node = new AtomNode(line, handler, currentScope, java.lang.Long.parseLong($Long.text)); }
   |  Bool { node = new AtomNode(line, handler, currentScope, Boolean.parseBoolean($Bool.text)); }

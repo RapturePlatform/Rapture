@@ -50,8 +50,10 @@ public class SubNode extends BaseNode {
         ReflexValue ret = new ReflexNullValue(lineNumber);;
 
         // number - number
-        if (a.isNumber() && b.isNumber()) {
-            ret = new ReflexValue(lineNumber, a.asDouble() - b.asDouble());
+        if (a.isInteger() && b.isInteger()) {
+        	ret = new ReflexValue(a.asLong() - b.asLong());
+        } else if (a.isNumber() && b.isNumber()) {
+        	ret = new ReflexValue(a.asBigDecimal().subtract(b.asBigDecimal()));
         } else if (a.isDate() && b.isNumber()) {
             ret = new ReflexValue(a.asDate().sub(b.asInt()));
         } else if (a.isList()) {

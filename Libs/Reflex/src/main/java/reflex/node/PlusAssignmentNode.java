@@ -23,6 +23,8 @@
  */
 package reflex.node;
 
+import java.math.BigDecimal;
+
 import reflex.IReflexHandler;
 import reflex.Scope;
 import reflex.debug.IReflexDebugger;
@@ -55,10 +57,10 @@ public class PlusAssignmentNode extends BaseNode {
         ReflexValue var = scope.resolve(identifier);
         if (var.isList()) {
             var.asList().add(value);
-        } else if (var.isNumber()) {
-            if (value.isNumber()) {
-                var.setValue(var.asDouble().doubleValue() + value.asDouble().doubleValue());
-            }
+        } else if (var.isInteger() && value.isInteger()) {
+            var.setValue(var.asLong() + value.asLong());
+        } else if (var.isNumber() && value.isNumber()) {
+        	var.setValue(var.asBigDecimal().add(value.asBigDecimal()));
         } else if (var.isString()) {
             var.setValue(var.asString() + value.toString());
         }

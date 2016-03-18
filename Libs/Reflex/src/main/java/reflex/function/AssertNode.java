@@ -34,10 +34,12 @@ import reflex.value.internal.ReflexVoidValue;
 
 public class AssertNode extends BaseNode {
 
+    private ReflexNode message;
     private ReflexNode expression;
 
-    public AssertNode(int lineNumber, IReflexHandler handler, Scope s, ReflexNode e) {
+    public AssertNode(int lineNumber, IReflexHandler handler, Scope s, ReflexNode m, ReflexNode e) {
         super(lineNumber, handler, s);
+        message = m;
         expression = e;
     }
 
@@ -52,7 +54,8 @@ public class AssertNode extends BaseNode {
         }
 
         if (!value.asBoolean()) {
-            throw new AssertionError(expression.toString());
+        	String str = (message != null) ? message.evaluate(debugger, scope).asString() : expression.toString();
+            throw new AssertionError(str);
         }
 
         debugger.stepEnd(this, new ReflexVoidValue(lineNumber), scope);

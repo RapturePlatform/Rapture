@@ -23,6 +23,7 @@
  */
 package reflex.node;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,11 +49,15 @@ public class MulNode extends BaseNode {
         debugger.stepStart(this, scope);
         ReflexValue a = lhs.evaluate(debugger, scope);
         ReflexValue b = rhs.evaluate(debugger, scope);
-        ReflexValue retVal = new ReflexNullValue(lineNumber);;
+        ReflexValue retVal = new ReflexNullValue(lineNumber);
 
         // number * number
-        if (a.isNumber() && b.isNumber()) {
-            retVal = new ReflexValue(lineNumber, a.asDouble() * b.asDouble());
+        if (a.isInteger() && b.isInteger()) {
+            retVal = new ReflexValue(a.asLong() * b.asLong());
+        } else if (a.isNumber() && b.isNumber()) {
+        	BigDecimal bigA = a.asBigDecimal();
+        	BigDecimal bigB = b.asBigDecimal();
+            retVal = new ReflexValue(bigA.multiply(bigB));
         } else if (a.isString() && b.isNumber()) {
             StringBuilder str = new StringBuilder();
             int stop = b.asDouble().intValue();

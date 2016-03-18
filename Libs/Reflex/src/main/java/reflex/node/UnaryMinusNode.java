@@ -23,6 +23,8 @@
  */
 package reflex.node;
 
+import java.math.BigDecimal;
+
 import reflex.IReflexHandler;
 import reflex.ReflexException;
 import reflex.Scope;
@@ -46,7 +48,7 @@ public class UnaryMinusNode extends BaseNode {
         if (!v.isNumber()) {
             throw new ReflexException(lineNumber, "illegal expression: " + this);
         }
-        ReflexValue retVal = new ReflexValue(-v.asDouble());
+        ReflexValue retVal = new ReflexValue(v.isInteger() ? -v.asInt() : BigDecimal.ZERO.subtract(v.asBigDecimal()));
         debugger.stepEnd(this, retVal, scope);
         return retVal;
     }
