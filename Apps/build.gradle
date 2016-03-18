@@ -133,7 +133,6 @@ subprojects {
         compile "org.slf4j:slf4j-api:$loggingVersion"
         compile "org.slf4j:slf4j-log4j12:$loggingVersion"
         testCompile 'junit:junit:4.10'
-        testCompile 'org.testng:testng:6.8.7'
         testCompile 'com.googlecode.catch-exception:catch-exception:1.0.4'
         testCompile 'org.objenesis:objenesis:2.0'
         testCompile 'org.powermock:powermock-module-junit4:1.5.1'

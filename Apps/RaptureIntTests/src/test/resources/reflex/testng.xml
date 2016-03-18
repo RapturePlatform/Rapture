@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suite name="ReflexSuite">
+	<parameter name="RaptureURL"  value="http://localhost:8665/rapture"/>
+	<test name="ReflexSuite">
+		<packages>
+			<package name="rapture.test.reflex"/>
+		</packages>
+	</test>
+</suite> <!-- Suite -->

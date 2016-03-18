@@ -1,0 +1,55 @@
+version = '3.0.0'
+
+jar.manifest.attributes "Implementation-Title" : "Rapture Integration tests."
+jar.manifest.attributes "Implementation-Version" : version
+
+mainClassName = "rapture.test.java"
+
+dependencies {
+    compile "net.rapture:WorkflowsCore:$project.platformVersion"
+    compile "net.rapture:RaptureCore:$project.platformVersion"
+    compile "net.rapture:RaptureAddinCore:$project.platformVersion"
+    compile "net.rapture:MongoDb:$project.platformVersion"
+    compile "net.rapture:RabbitMQ:$project.platformVersion"
+    compile("net.rapture:Cassandra:$project.platformVersion") {
+       exclude module: 'servlet-api'
+    }
+    compile 'org.testng:testng:6.9.10'
+    compile 'com.github.fge:json-patch:1.9'
+}
+
+
+
+task smokeTests (type: Test) {
+    description 'Runs TestNG tests in the Java smoke test group.'
+    useTestNG(){
+      ignoreFailures = true
+      useDefaultListeners = true
+      jvmArgs '-Xmx2048m', '-XX:MaxPermSize=256m'
+      includeGroups 'smoke'
+
+      if(project.hasProperty('env')){
+          ext.testngfile = "/src/test/resources/${env}_testng.xml"
+       } else {
+          ext.testngfile = "/src/test/resources/local_testng.xml"
+       }
+      suites ext.testngfile
+    }
+}
+
+task docTests (type: Test) {
+    description 'Runs TestNG tests in the Java document test group.'
+    useTestNG(){
+        useDefaultListeners = true
+        ignoreFailures = true
+        jvmArgs '-Xmx2048m', '-XX:MaxPermSize=256m'
+        includeGroups 'document'
+
+        if(project.hasProperty('env')){
+            ext.testngfile = "/src/test/resources/${env}_testng.xml"
+        } else {
+            ext.testngfile = "/src/test/resources/local_testng.xml"
+        }
+        suites ext.testngfile
+    }
+}
