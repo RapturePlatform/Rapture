@@ -209,7 +209,10 @@ public class ReflexRaptureScript implements IRaptureScript {
 			Map<String, Object> extraVals) {
 		return runProgram(context, activity, script, extraVals, -1);
 	}
-
+	
+	// how many lines to show (if possible) each side of the error
+	private static final int DEBUG_CONTEXT = 5;
+	
 	private String getErrorInfo(String message, RaptureScript script, int lineNum, int posInLine) {
 		StringBuilder msg = new StringBuilder();
 		msg.append(message).append(" in script ").append(script.getName()).append("\n");
@@ -217,8 +220,8 @@ public class ReflexRaptureScript implements IRaptureScript {
 		if (lineNum > 0) {
 			String[] lines = script.getScript().split("\n");
 
-			int start = (lineNum > 5) ? lineNum - 5 : 0;
-			int end = lineNum + 5;
+			int start = (lineNum > DEBUG_CONTEXT) ? lineNum - DEBUG_CONTEXT : 0;
+			int end = lineNum + DEBUG_CONTEXT;
 			if (end > lines.length)
 				end = lines.length;
 			while (start < end) {
