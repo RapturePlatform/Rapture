@@ -28,4 +28,19 @@ public class MathsTest extends AbstractReflexScriptTest {
 		assertEquals("10.5", output.trim());
 	}
 	
+	@Test
+	public void testEqual() throws RecognitionException {
+		String program = "i = [];\n" +
+			"j = size(i); \n" +
+			"println(j);  \n" +
+			"if (j == 0) do \n" +
+			"println(true); \n" +
+			"else do \n" +
+			"println(false); \n" +
+			"end\n";
+
+		String output = runScript(program, null);
+		assertEquals("0\ntrue", output.trim());
+	}
+	
 }

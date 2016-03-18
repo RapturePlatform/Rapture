@@ -488,7 +488,7 @@ public class ReflexValue implements Comparable<ReflexValue> {
         if (this == o) {
             return true;
         }
-        if (o == null || this.getClass() != o.getClass()) {
+        if (o == null || !(o instanceof ReflexValue)) {
             return false;
         }
         ReflexValue that = (ReflexValue) o;
