@@ -170,7 +170,7 @@ a*3 & No (contains a *) \\
 reflex & Yes \\
 \_var & No (contains a \_) \\
 \end{tabular}
-\caption{Variable names in \Reflex}
+\caption{Variable names in Reflex}
 \end{table}
 
 Types \index{type} in \Reflex are inferred from the context in which a value is assigned, and wherever possible a type will be coerced into another if the other type is needed for a context. The types are listed in table \vref{tab:Types}.
@@ -200,7 +200,7 @@ timer & \Verb+ t = timer();+ & An object representing a timer that is started on
 \hline
 \end{tabular}
 \label{tab:Types}
-\caption{Types in \Reflex}
+\caption{Types in Reflex}
 \end{table}
 
 The more complex types (stream, file) will be introduced in a later section on integration with \Rapture.
@@ -225,7 +225,7 @@ Date   &  yyyyMMdd & Julian  & n/a & n/a & n/a & & n/a \\
 Time   &  HH:MM:SS & Millis & n/a & n/a & n/a & n/a & \\
 \hline
 \end{tabular}
-\caption{Conversions in \Reflex}
+\caption{Conversions in Reflex}
 \end{table}
 
 \section{Initialization}
@@ -313,7 +313,7 @@ BDFAct & When moving the date by an amount, weekends count as zero days. The dat
 \hline
 \end{tabular}
 \label{tab:DateCalendarTypes}
-\caption{Calendar Types in \Reflex}
+\caption{Calendar Types in Reflex}
 \end{table}
 
 \begin{lstlisting}[caption={Date examples}]
@@ -790,7 +790,7 @@ degrees & value & Converts radians to degrees \\
 radians & value & Converts radians to degrees \\
 \hline
 \end{tabular}
-\caption{Math module in \Reflex}
+\caption{Math module in Reflex}
 \end{table}
 
 \chapter{Functional Aspects of Reflex}
@@ -2025,7 +2025,7 @@ an expression that is used to match either parts of the value string or elements
 parameter is what those elements should be replaced with. The return value has the same type
 as the first parameter.
 
-\begin{lstlisting}[capture={replace example}]
+\begin{lstlisting}[caption={replace example}]
 hello = 'Goodbye, world!';
 goodbye = replace(hello, 'Goodbye', 'Hello');
 // goodbye is now 'Hello, world!'
@@ -2037,90 +2037,219 @@ nval = replace(lval, 1, 5);
 
 \section{Transpose}
 \begin{Verbatim}
-cap = capabilities( )
+res = transpose( matrix )
 \end{Verbatim}
+
+Transpose takes a matrix value in \Reflex (a sparse array of values) and tranposes it
+into a new matrix.
+
+\begin{lstlisting}[caption={tranpose example}]
+x = [ - ];
+x[0,'A'] = 1;
+x[0,'B'] = 2;
+x[1,'A'] = 3;
+x[1,'B'] = 4;
+xt = transpose(x);
+println(xt);
+
+\end{lstlisting}
 
 \section{B64Compress}
 \begin{Verbatim}
-cap = capabilities( )
+string-val = bcompress(string-val)
 \end{Verbatim}
+
+The B64Compress function compresses a string using a GZIP algorithm and then encodes the result as a Base64 string.
+\begin{lstlisting}[caption={bcompress example}]
+x = "Hello, world!"
+y = bcompress(x);
+// y is now H4sIAAAAAAAAAPNIzcnJVyjPL8pJUQQAlRmFGwwAAAA=
+
+\end{lstlisting}
 
 \section{B64Decompress}
 \begin{Verbatim}
-cap = capabilities( )
+string-value = bdecompress(string-value)
 \end{Verbatim}
+
+The bdecompress function reverses the call to bcompress.
+
+\begin{lstlisting}[caption={bdecompress example}]
+x = "H4sIAAAAAAAAAPNIzcnJVyjPL8pJUQQAlRmFGwwAAAA="
+y = bdecompress(x);
+// y is now Hello world!
+
+\end{lstlisting}
 
 \section{Evals}
 \begin{Verbatim}
-cap = capabilities( )
+string-vals = evals(string-value)
 \end{Verbatim}
 
-\section{MkDir}
-\begin{Verbatim}
-cap = capabilities( )
-\end{Verbatim}
+The evals function performs the same evaluation as for a quoted string but gives you
+the ability to store the variable. It's equivalent to simply assigning from a quoted string.
+
+\begin{lstlisting}[caption={evals example}]
+val = "world";
+msg1 = "Hello, ${val}";
+msg2 = evals('Hello, ${val}');
+// msg1 and msg2 are both "Hello, world"
+\end{lstlisting}
 
 \section{Remove}
 \begin{Verbatim}
-cap = capabilities( )
+remove( map-identifier, key )
 \end{Verbatim}
+
+The remove function removes (deletes) the key from the given map value (in place).
+
+\begin{lstlisting}[caption={remove example}]
+val = {};
+val.x = 'Value of x';
+val.y = 'Value of y';
+
+println(val);
+
+remove(val, 'x');
+
+println(val);
+// Prints out
+// {x=Value of x, y=Value of y}
+// {y=Value of y}
+\end{lstlisting}
 
 \section{Join}
 \begin{Verbatim}
-cap = capabilities( )
+string or list = join( items to join )
 \end{Verbatim}
+
+The join function takes a list of items and joins them together. If the
+list (which is simply the parameters to the function) is purely string based the return
+value is a string. Otherwise the function returns a list.
+
+\begin{lstlisting}[caption={join example}]
+val = join('a','b','c'); // val is 'abc'
+a = join(5, 2, 3); // val is [ 5, 2, 3]
+\end{lstlisting}
+
 
 \section{Copy}
 \begin{Verbatim}
-cap = capabilities( )
+  copy(source-string, target-string)
 \end{Verbatim}
 
-\section{Close}
-\begin{Verbatim}
-cap = capabilities( )
-\end{Verbatim}
+The copy function copies a blob from \Rapture into a file. The source parameter is
+a reference to a blob in \Rapture and the target is a file name. Only scripts running
+with a container that allows file access will be able to use this function.
+
+\begin{lstlisting}[caption={copy example}]
+copy('blob://mytest/test.csv', 'output/file1.csv');
+\end{lstlisting}
 
 \section{Timer}
 \begin{Verbatim}
-cap = capabilities( )
+  timer-handle = timer()
+  timer( timer-handle)
 \end{Verbatim}
+
+The timer call is used to record how much time has elapsed between two
+\Reflex statements. The first call to timer returns a timer handle and starts
+the timer. The second call (with the timer handle) returns the elapsed time since
+that first statement in milliseconds.
+
+\begin{lstlisting}[caption={timer example}]
+  t = timer();
+  for i = 0 to 100 do
+     print('.');
+  end
+  println();
+  elapsed = timer(t);
+  println("${elapsed} milliseconds have passed");
+\end{lstlisting}
 
 \section{Vars}
 \begin{Verbatim}
-cap = capabilities( )
+map-value = vars()
 \end{Verbatim}
+
+The vars function returns a map with three keys reflecting the variables in scope at this point.
+
+The local key returns the variables in the innermost scope stack, the global key returns the variables
+that are globally available and the constant key returns the variables that are invariant.
+
+\begin{lstlisting}[caption={vars example}]
+  const a = 5;
+  b = 10;
+  println(json(vars));
+\end{lstlisting}
+
+Note that in the global scope the ENV and PROPS variables are usually present and reflect the system environment
+variables and the java properties of the environment.
 
 \section{Format}
 \begin{Verbatim}
-cap = capabilities( )
+string-value = format( format-string, params, ... )
 \end{Verbatim}
+
+The format function simply calls the Java String.format method with the parameters
+as passed.
 
 \section{PutCache}
 \begin{Verbatim}
-cap = capabilities( )
+putcache( key-string-value, cache-value )
 \end{Verbatim}
+
+A \Reflex container can maintain a short term in memory cache that can be used
+to improve the performance of repeating calls of a script. Often the script will call
+getcache to attempt to retrieve a value. If this returns null it will perform some fault loading
+routing and then call putcache on that value. In subsequent calls the "getcache" call \emph{may}
+return the value.
+
+\begin{lstlisting}[caption={cache example}]
+  c = getcache('test');
+  if c == null do
+     c = "a value that took a long time to compute";
+     putcache('test', c);
+  end
+  // c is now always "a value that took a long time to compute"
+\end{lstlisting}
 
 \section{GetCache}
-\begin{Verbatim}
-cap = capabilities( )
-\end{Verbatim}
+See putcache above.
 
-\section{UrlEncode}
 \begin{Verbatim}
-cap = capabilities( )
-\end{Verbatim}
-
-\section{UrlDecode}
-\begin{Verbatim}
-cap = capabilities( )
+value = getcache( key-string-value )
 \end{Verbatim}
 
 \section{Matches}
 \begin{Verbatim}
-cap = capabilities( )
+group = matches( str-exp, regex-expr )
 \end{Verbatim}
+
+The matches function performs a Regex match on the string passed given
+a regular expression. The return value is the group (or not) that matches the expression.
+
+\begin{lstlisting}[caption={matches example}]
+  res1 = matches('A test','t?s');
+  res2 = matches('A test','t?e');
+  // res1 size is 1
+  // res2 size is 0
+\end{lstlisting}
 
 \section{Rand}
 \begin{Verbatim}
-cap = capabilities( )
+long-value = rand( long-value )
 \end{Verbatim}
+
+The rand function returns a random number between zero and the number passed as the
+first parameter.
+
+\begin{lstlisting}[caption={rand example}]
+  x= [];
+  for a = 0 to 10 do
+      x = x+ rand(10);
+  end
+
+  println(x);
+ // [1, 4, 1, 5, 2, 6, 7, 3, 2, 5, 7]
+\end{lstlisting}
