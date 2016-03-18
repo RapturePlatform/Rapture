@@ -1,0 +1,26 @@
+{ 
+ "transactions": { 
+ "accountId": "83405188", 
+ "count": "2", 
+ "transaction": [ 
+ { 
+ "transactionId": "345678", 
+ "transactionDate": "1266519026", 
+ "transactionShortDesc": "Bought", 
+ "description": "10 of AAPL @ $3.00 (Order #141)", 
+ "amount": "-39.99", 
+ "details": 
+"https://etws.etrade.com/accounts/sandbox/rest/83405188/transactions/345678" 
+ }, 
+ { 
+ "transactionId": "345678", 
+ "transactionDate": "1266519024", 
+ "transactionShortDesc": "Sold", 
+ "description": "1 of KO @ $100.00 (Order #142)", 
+ "amount": "90.00", 
+ "details": 
+"https://etws.etrade.com/accounts/sandbox/rest/83405188/transactions/345678" 
+ } 
+ ] 
+ } 
+}
