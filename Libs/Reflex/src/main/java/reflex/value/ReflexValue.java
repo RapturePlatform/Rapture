@@ -472,7 +472,7 @@ public class ReflexValue implements Comparable<ReflexValue> {
         }
     }
 
-    private int compareList(List<?> asList, List<?> asList2) {
+    private int compareList(List<? extends ReflexValue> asList, List<? extends ReflexValue> asList2) {
         if (asList.size() != asList2.size()) {
             return asList.size() > asList2.size() ? -1 : 1;
         } else {
@@ -495,7 +495,7 @@ public class ReflexValue implements Comparable<ReflexValue> {
         if (this.isInteger() && that.isInteger()) {
             return this.asLong().equals(that.asLong());
         } else if (this.isNumber() && that.isNumber()) {
-            return this.asBigDecimal().equals(that.asBigDecimal());
+            return this.asBigDecimal().compareTo(that.asBigDecimal()) == 0;
         } else if (this.isDate() && that.isDate()) {
             return this.asDate().equals(that);
         } else if (this.isTime() && that.isTime()) {
@@ -507,29 +507,16 @@ public class ReflexValue implements Comparable<ReflexValue> {
         }
     }
 
-    private boolean compareTwoLists(List<?> a, List<?> b) {
+    private boolean compareTwoLists(List<? extends ReflexValue> a, List<? extends ReflexValue> b) {
         if (a.size() != b.size()) {
             return false;
         }
         for (int i = 0; i < a.size(); i++) {
-            Object one = a.get(i);
-            Object two = b.get(i);
-            if (one instanceof ReflexValue) {
-                one = ((ReflexValue) one).value;
-            }
-
-            if (two instanceof ReflexValue) {
-                two = ((ReflexValue) two).value;
-            }
-            if (one instanceof Integer && two instanceof Double) {
-                one = Double.valueOf((Integer) one);
-            }
-            if (two instanceof Integer && one instanceof Double) {
-                two = Double.valueOf((Integer) two);
-            }
-            if (!one.equals(two)) {
-                return false;
-            }
+        	ReflexValue one = a.get(i);
+        	ReflexValue two = b.get(i);
+        	// Must be of like types otherwise 2 == '2'
+            if (one.isNumber() != two.isNumber()) return false;
+            if (one.compareTo(two) != 0) return false;
         }
         return true;
     }
