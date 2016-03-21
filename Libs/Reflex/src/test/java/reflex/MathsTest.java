@@ -71,4 +71,19 @@ public class MathsTest extends AbstractReflexScriptTest {
 		assertEquals("type of c is  :number", output[3]);
 	}
 	
+	@Test
+	public void testListCompare() throws RecognitionException {
+		String program = 
+		"       a = [1 ,2 ,3 ,4 ]; \n" +
+		"       b = []; \n" +
+		"       for c in a do \n" +
+		"           b = b + (c * 2); \n" +
+		"       end \n" +
+		"       assert ('Compare list of Number to list of Integers', b == [2,4,6,8]); \n" +
+		"       assert ('Compare list of Number to list of BigDecimals', b == [2.0,4.00,6.000,8.0000000]); \n" +
+		"       assert ('Cannot compare list of Number to list of String', b != ['2','4','6','8']); \n" +
+		"       assert ('Compare list of Number to list of mixed Numbers', b == [2,4.0,6,8]); \n";
+		
+		String output = runScript(program, null);
+	}		
 }
