@@ -152,7 +152,7 @@ public abstract class AbstractReflexScriptTest {
 			instrument.setProgram(program);
 			ReflexValue retVal = (returned == null) ? null : returned.evaluateWithoutScope(instrument);
 			instrument.getInstrumenter().log();
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			sb.append(e.getMessage()).append("\n");
 		}
 		sb.append("-----\n");

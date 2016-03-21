@@ -23,12 +23,16 @@
  */
 package reflex.function;
 
+import java.util.List;
+
 import reflex.IReflexHandler;
 import reflex.ReflexException;
 import reflex.Scope;
 import reflex.debug.IReflexDebugger;
 import reflex.node.BaseNode;
 import reflex.node.ReflexNode;
+import reflex.util.InstrumentDebugger;
+import reflex.util.InstrumentationLine;
 import reflex.value.ReflexValue;
 import reflex.value.internal.ReflexVoidValue;
 
@@ -54,8 +58,14 @@ public class AssertNode extends BaseNode {
         }
 
         if (!value.asBoolean()) {
-        	String str = (message != null) ? message.evaluate(debugger, scope).asString() : expression.toString();
-            throw new AssertionError(str);
+        	StringBuilder sb = new StringBuilder();
+        	sb.append((message != null) ? message.evaluate(debugger, scope).asString() : expression.toString());
+        	sb.append("\nLine "+lineNumber+" : \n");
+        	if (debugger instanceof InstrumentDebugger) {
+        		List<InstrumentationLine> lines = ((InstrumentDebugger) debugger).getInstrumenter().getLines();
+        		sb.append(lines.get(lineNumber-1).getCode());
+        	}
+            throw new AssertionError(sb.toString());
         }
 
         debugger.stepEnd(this, new ReflexVoidValue(lineNumber), scope);
