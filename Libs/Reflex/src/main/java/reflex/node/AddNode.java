@@ -23,6 +23,7 @@
  */
 package reflex.node;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import reflex.IReflexHandler;
@@ -52,8 +53,12 @@ public class AddNode extends BaseNode {
         ReflexValue retVal = new ReflexNullValue(lineNumber);;
 
         // number + number
-        if (a.isNumber() && b.isNumber()) {
-            retVal = new ReflexValue(a.asDouble() + b.asDouble());
+        if (a.isInteger() && b.isInteger()) {
+            retVal = new ReflexValue(a.asLong() + b.asLong());
+        } else if (a.isNumber() && b.isNumber()) {
+        	BigDecimal bigA = a.asBigDecimal();
+        	BigDecimal bigB = b.asBigDecimal();
+            retVal = new ReflexValue(bigA.add(bigB));
         } else if (a.isDate() && b.isNumber()) {
             retVal = new ReflexValue(a.asDate().add(b.asInt()));
         } else if (a.isList()) {

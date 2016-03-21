@@ -1,14 +1,14 @@
 \chapter{Admin API}
 \index{Admin API}
 \input{admin/info}
-\subsection{GetSystemProperties}
+\section{GetSystemProperties}
 \index{GetSystemProperties}
 \label{Api:GetSystemProperties}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    Map<String,String> getSystemProperties (
            List<String>    keys
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -19,13 +19,13 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetRepoConfig}
+\section{GetRepoConfig}
 \index{GetRepoConfig}
 \label{Api:GetRepoConfig}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    List<RepoConfig> getRepoConfig (
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -36,14 +36,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetSessionsForUser}
+\section{GetSessionsForUser}
 \index{GetSessionsForUser}
 \label{Api:GetSessionsForUser}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    List<CallingContext> getSessionsForUser (
            String    user
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -54,14 +54,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{DeleteUser}
+\section{DeleteUser}
 \index{DeleteUser}
 \label{Api:DeleteUser}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void deleteUser (
            String    userName
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -72,14 +72,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{DestroyUser}
+\section{DestroyUser}
 \index{DestroyUser}
 \label{Api:DestroyUser}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void destroyUser (
            String    userName
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -90,14 +90,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{RestoreUser}
+\section{RestoreUser}
 \index{RestoreUser}
 \label{Api:RestoreUser}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void restoreUser (
            String    userName
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -108,17 +108,17 @@
 
 
 \rule{12cm}{2pt}
-\subsection{AddUser}
+\section{AddUser}
 \index{AddUser}
 \label{Api:AddUser}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void addUser (
            String    userName
            String    description
            String    hashPassword
            String    email
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -129,15 +129,15 @@
 
 
 \rule{12cm}{2pt}
-\subsection{VerifyUser}
+\section{VerifyUser}
 \index{VerifyUser}
 \label{Api:VerifyUser}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    boolean verifyUser (
            String    userName
            String    token
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -148,14 +148,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{DoesUserExist}
+\section{DoesUserExist}
 \index{DoesUserExist}
 \label{Api:DoesUserExist}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    boolean doesUserExist (
            String    userName
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -166,14 +166,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetUser}
+\section{GetUser}
 \index{GetUser}
 \label{Api:GetUser}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    RaptureUser getUser (
            String    userName
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -184,15 +184,15 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GenerateApiUser}
+\section{GenerateApiUser}
 \index{GenerateApiUser}
 \label{Api:GenerateApiUser}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    RaptureUser generateApiUser (
            String    prefix
            String    description
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -203,15 +203,15 @@
 
 
 \rule{12cm}{2pt}
-\subsection{ResetUserPassword}
+\section{ResetUserPassword}
 \index{ResetUserPassword}
 \label{Api:ResetUserPassword}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void resetUserPassword (
            String    userName
            String    newHashPassword
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -222,14 +222,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{CreatePasswordResetToken}
+\section{CreatePasswordResetToken}
 \index{CreatePasswordResetToken}
 \label{Api:CreatePasswordResetToken}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    String createPasswordResetToken (
            String    username
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -240,14 +240,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{CreateRegistrationToken}
+\section{CreateRegistrationToken}
 \index{CreateRegistrationToken}
 \label{Api:CreateRegistrationToken}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    String createRegistrationToken (
            String    username
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -258,14 +258,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{CancelPasswordResetToken}
+\section{CancelPasswordResetToken}
 \index{CancelPasswordResetToken}
 \label{Api:CancelPasswordResetToken}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void cancelPasswordResetToken (
            String    username
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -276,16 +276,16 @@
 
 
 \rule{12cm}{2pt}
-\subsection{EmailUser}
+\section{EmailUser}
 \index{EmailUser}
 \label{Api:EmailUser}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void emailUser (
            String    userName
            String    emailTemplate
            Map<String,Object>    templateValues
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -296,15 +296,15 @@
 
 
 \rule{12cm}{2pt}
-\subsection{UpdateUserEmail}
+\section{UpdateUserEmail}
 \index{UpdateUserEmail}
 \label{Api:UpdateUserEmail}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void updateUserEmail (
            String    userName
            String    newEmail
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -315,16 +315,16 @@
 
 
 \rule{12cm}{2pt}
-\subsection{AddTemplate}
+\section{AddTemplate}
 \index{AddTemplate}
 \label{Api:AddTemplate}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void addTemplate (
            String    name
            String    template
            boolean    overwrite
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -335,15 +335,15 @@
 
 
 \rule{12cm}{2pt}
-\subsection{RunTemplate}
+\section{RunTemplate}
 \index{RunTemplate}
 \label{Api:RunTemplate}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    String runTemplate (
            String    name
            String    parameters
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -354,14 +354,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetTemplate}
+\section{GetTemplate}
 \index{GetTemplate}
 \label{Api:GetTemplate}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    String getTemplate (
            String    name
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -372,16 +372,16 @@
 
 
 \rule{12cm}{2pt}
-\subsection{CopyDocumentRepo}
+\section{CopyDocumentRepo}
 \index{CopyDocumentRepo}
 \label{Api:CopyDocumentRepo}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void copyDocumentRepo (
            String    srcAuthority
            String    targAuthority
            boolean    wipe
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -392,14 +392,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{AddIPToWhiteList}
+\section{AddIPToWhiteList}
 \index{AddIPToWhiteList}
 \label{Api:AddIPToWhiteList}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void addIPToWhiteList (
            String    ipAddress
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -410,14 +410,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{RemoveIPFromWhiteList}
+\section{RemoveIPFromWhiteList}
 \index{RemoveIPFromWhiteList}
 \label{Api:RemoveIPFromWhiteList}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void removeIPFromWhiteList (
            String    ipAddress
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -428,13 +428,13 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetIPWhiteList}
+\section{GetIPWhiteList}
 \index{GetIPWhiteList}
 \label{Api:GetIPWhiteList}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    List<String> getIPWhiteList (
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -445,13 +445,13 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetAllUsers}
+\section{GetAllUsers}
 \index{GetAllUsers}
 \label{Api:GetAllUsers}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    List<RaptureUser> getAllUsers (
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -462,16 +462,16 @@
 
 
 \rule{12cm}{2pt}
-\subsection{InitiateTypeConversion}
+\section{InitiateTypeConversion}
 \index{InitiateTypeConversion}
 \label{Api:InitiateTypeConversion}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void initiateTypeConversion (
            String    raptureURI
            String    newConfig
            int    versionsToKeep
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -482,15 +482,15 @@
 
 
 \rule{12cm}{2pt}
-\subsection{PutArchiveConfig}
+\section{PutArchiveConfig}
 \index{PutArchiveConfig}
 \label{Api:PutArchiveConfig}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void putArchiveConfig (
            String    raptureURI
            TypeArchiveConfig    config
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -501,14 +501,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetArchiveConfig}
+\section{GetArchiveConfig}
 \index{GetArchiveConfig}
 \label{Api:GetArchiveConfig}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    TypeArchiveConfig getArchiveConfig (
            String    raptureURI
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -519,14 +519,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{DeleteArchiveConfig}
+\section{DeleteArchiveConfig}
 \index{DeleteArchiveConfig}
 \label{Api:DeleteArchiveConfig}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void deleteArchiveConfig (
            String    raptureURI
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -537,13 +537,13 @@
 
 
 \rule{12cm}{2pt}
-\subsection{Ping}
+\section{Ping}
 \index{Ping}
 \label{Api:Ping}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    boolean ping (
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -554,15 +554,15 @@
 
 
 \rule{12cm}{2pt}
-\subsection{AddMetadata}
+\section{AddMetadata}
 \index{AddMetadata}
 \label{Api:AddMetadata}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void addMetadata (
            Map<String,String>    values
            boolean    overwrite
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -573,14 +573,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{SetMOTD}
+\section{SetMOTD}
 \index{SetMOTD}
 \label{Api:SetMOTD}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void setMOTD (
            String    message
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -591,13 +591,13 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetMOTD}
+\section{GetMOTD}
 \index{GetMOTD}
 \label{Api:GetMOTD}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    String getMOTD (
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /everyone
 \end{Verbatim}
@@ -608,14 +608,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{SetEnvironmentName}
+\section{SetEnvironmentName}
 \index{SetEnvironmentName}
 \label{Api:SetEnvironmentName}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void setEnvironmentName (
            String    name
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -626,14 +626,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{SetEnvironmentProperties}
+\section{SetEnvironmentProperties}
 \index{SetEnvironmentProperties}
 \label{Api:SetEnvironmentProperties}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void setEnvironmentProperties (
            Map<String,String>    properties
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -644,13 +644,13 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetEnvironmentName}
+\section{GetEnvironmentName}
 \index{GetEnvironmentName}
 \label{Api:GetEnvironmentName}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    String getEnvironmentName (
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -661,13 +661,13 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetEnvironmentProperties}
+\section{GetEnvironmentProperties}
 \index{GetEnvironmentProperties}
 \label{Api:GetEnvironmentProperties}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    Map<String,String> getEnvironmentProperties (
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -678,14 +678,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{Encode}
+\section{Encode}
 \index{Encode}
 \label{Api:Encode}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    String encode (
            String    toEncode
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -696,15 +696,15 @@
 
 
 \rule{12cm}{2pt}
-\subsection{CreateURI}
+\section{CreateURI}
 \index{CreateURI}
 \label{Api:CreateURI}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    String createURI (
            String    path
            String    leaf
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -715,14 +715,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{CreateMultipartURI}
+\section{CreateMultipartURI}
 \index{CreateMultipartURI}
 \label{Api:CreateMultipartURI}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    String createMultipartURI (
            List<String>    elements
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -733,14 +733,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{Decode}
+\section{Decode}
 \index{Decode}
 \label{Api:Decode}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    String decode (
            String    encoded
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -751,14 +751,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{FindGroupNamesByUser}
+\section{FindGroupNamesByUser}
 \index{FindGroupNamesByUser}
 \label{Api:FindGroupNamesByUser}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    List<String> findGroupNamesByUser (
            String    username
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}

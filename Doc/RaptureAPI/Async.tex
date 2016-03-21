@@ -1,15 +1,15 @@
 \chapter{Async API}
 \index{Async API}
 \input{async/info}
-\subsection{AsyncReflexScript}
+\section{AsyncReflexScript}
 \index{AsyncReflexScript}
 \label{Api:AsyncReflexScript}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    String asyncReflexScript (
            String    reflexScript
            Map<String,String>    parameters
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /async/reflex
 \end{Verbatim}
@@ -20,15 +20,15 @@
 
 
 \rule{12cm}{2pt}
-\subsection{AsyncReflexReference}
+\section{AsyncReflexReference}
 \index{AsyncReflexReference}
 \label{Api:AsyncReflexReference}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    String asyncReflexReference (
            String    scriptURI
            Map<String,String>    parameters
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /async/reflex
 \end{Verbatim}
@@ -39,14 +39,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{AsyncStatus}
+\section{AsyncStatus}
 \index{AsyncStatus}
 \label{Api:AsyncStatus}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    WorkOrderStatus asyncStatus (
            String    taskId
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/main
 \end{Verbatim}
@@ -57,14 +57,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{SetupDefaultWorkflows}
+\section{SetupDefaultWorkflows}
 \index{SetupDefaultWorkflows}
 \label{Api:SetupDefaultWorkflows}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void setupDefaultWorkflows (
            boolean    force
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /admin/async
 \end{Verbatim}

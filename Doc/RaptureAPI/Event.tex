@@ -1,14 +1,14 @@
 \chapter{Event API}
 \index{Event API}
 \input{event/info}
-\subsection{GetEvent}
+\section{GetEvent}
 \index{GetEvent}
 \label{Api:GetEvent}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    RaptureEvent getEvent (
            String    eventUri
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /event/admin
 \end{Verbatim}
@@ -19,14 +19,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{PutEvent}
+\section{PutEvent}
 \index{PutEvent}
 \label{Api:PutEvent}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void putEvent (
            RaptureEvent    event
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /event/admin
 \end{Verbatim}
@@ -37,14 +37,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{DeleteEvent}
+\section{DeleteEvent}
 \index{DeleteEvent}
 \label{Api:DeleteEvent}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void deleteEvent (
            String    eventUri
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /event/admin
 \end{Verbatim}
@@ -55,14 +55,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{ListEventsByUriPrefix}
+\section{ListEventsByUriPrefix}
 \index{ListEventsByUriPrefix}
 \label{Api:ListEventsByUriPrefix}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    List<RaptureFolderInfo> listEventsByUriPrefix (
            String    eventUriPrefix
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /user/get
 \end{Verbatim}
@@ -73,16 +73,16 @@
 
 
 \rule{12cm}{2pt}
-\subsection{AddEventScript}
+\section{AddEventScript}
 \index{AddEventScript}
 \label{Api:AddEventScript}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void addEventScript (
            String    eventUri
            String    scriptUri
            boolean    performOnce
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /event/admin
 \end{Verbatim}
@@ -93,15 +93,15 @@
 
 
 \rule{12cm}{2pt}
-\subsection{DeleteEventScript}
+\section{DeleteEventScript}
 \index{DeleteEventScript}
 \label{Api:DeleteEventScript}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void deleteEventScript (
            String    eventUri
            String    scriptUri
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /event/admin
 \end{Verbatim}
@@ -112,17 +112,17 @@
 
 
 \rule{12cm}{2pt}
-\subsection{AddEventMessage}
+\section{AddEventMessage}
 \index{AddEventMessage}
 \label{Api:AddEventMessage}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void addEventMessage (
            String    eventUri
            String    name
            String    pipeline
            Map<String,String>    params
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /event/admin
 \end{Verbatim}
@@ -133,15 +133,15 @@
 
 
 \rule{12cm}{2pt}
-\subsection{DeleteEventMessage}
+\section{DeleteEventMessage}
 \index{DeleteEventMessage}
 \label{Api:DeleteEventMessage}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void deleteEventMessage (
            String    eventUri
            String    name
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /event/admin
 \end{Verbatim}
@@ -152,17 +152,17 @@
 
 
 \rule{12cm}{2pt}
-\subsection{AddEventNotification}
+\section{AddEventNotification}
 \index{AddEventNotification}
 \label{Api:AddEventNotification}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void addEventNotification (
            String    eventUri
            String    name
            String    notification
            Map<String,String>    params
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /event/admin
 \end{Verbatim}
@@ -173,15 +173,15 @@
 
 
 \rule{12cm}{2pt}
-\subsection{DeleteEventNotification}
+\section{DeleteEventNotification}
 \index{DeleteEventNotification}
 \label{Api:DeleteEventNotification}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void deleteEventNotification (
            String    eventUri
            String    name
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /event/admin
 \end{Verbatim}
@@ -192,17 +192,17 @@
 
 
 \rule{12cm}{2pt}
-\subsection{AddEventWorkflow}
+\section{AddEventWorkflow}
 \index{AddEventWorkflow}
 \label{Api:AddEventWorkflow}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void addEventWorkflow (
            String    eventUri
            String    name
            String    workflowUri
            Map<String,String>    params
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /event/admin
 \end{Verbatim}
@@ -213,15 +213,15 @@
 
 
 \rule{12cm}{2pt}
-\subsection{DeleteEventWorkflow}
+\section{DeleteEventWorkflow}
 \index{DeleteEventWorkflow}
 \label{Api:DeleteEventWorkflow}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    void deleteEventWorkflow (
            String    eventUri
            String    name
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /event/admin
 \end{Verbatim}
@@ -232,16 +232,16 @@
 
 
 \rule{12cm}{2pt}
-\subsection{RunEvent}
+\section{RunEvent}
 \index{RunEvent}
 \label{Api:RunEvent}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    boolean runEvent (
            String    eventUri
            String    associatedUri
            String    eventContext
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /event/admin
 \end{Verbatim}
@@ -252,16 +252,16 @@
 
 
 \rule{12cm}{2pt}
-\subsection{RunEventWithContext}
+\section{RunEventWithContext}
 \index{RunEventWithContext}
 \label{Api:RunEventWithContext}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    RunEventHandle runEventWithContext (
            String    eventUri
            String    associatedUri
            Map<String,String>    eventContextMap
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /event/admin
 \end{Verbatim}
@@ -272,14 +272,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{EventExists}
+\section{EventExists}
 \index{EventExists}
 \label{Api:EventExists}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    boolean eventExists (
            String    eventUri
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /event/admin
 \end{Verbatim}
@@ -290,14 +290,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{DeleteEventsByUriPrefix}
+\section{DeleteEventsByUriPrefix}
 \index{DeleteEventsByUriPrefix}
 \label{Api:DeleteEventsByUriPrefix}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    List<String> deleteEventsByUriPrefix (
            String    uriPrefix
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /data/write/$f(uriPrefix)
 \end{Verbatim}

@@ -1,17 +1,17 @@
 \chapter{Activity API}
 \index{Activity API}
 \input{activity/info}
-\subsection{CreateActivity}
+\section{CreateActivity}
 \index{CreateActivity}
 \label{Api:CreateActivity}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    String createActivity (
            String    description
            String    message
            Long    progress
            Long    max
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /activity/write
 \end{Verbatim}
@@ -22,17 +22,17 @@
 
 
 \rule{12cm}{2pt}
-\subsection{UpdateActivity}
+\section{UpdateActivity}
 \index{UpdateActivity}
 \label{Api:UpdateActivity}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    boolean updateActivity (
            String    activityId
            String    message
            Long    progress
            Long    max
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /activity/write
 \end{Verbatim}
@@ -43,15 +43,15 @@
 
 
 \rule{12cm}{2pt}
-\subsection{FinishActivity}
+\section{FinishActivity}
 \index{FinishActivity}
 \label{Api:FinishActivity}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    boolean finishActivity (
            String    activityId
            String    message
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /activity/write
 \end{Verbatim}
@@ -62,15 +62,15 @@
 
 
 \rule{12cm}{2pt}
-\subsection{RequestAbortActivity}
+\section{RequestAbortActivity}
 \index{RequestAbortActivity}
 \label{Api:RequestAbortActivity}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    boolean requestAbortActivity (
            String    activityId
            String    message
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /activity/write
 \end{Verbatim}
@@ -81,16 +81,16 @@
 
 
 \rule{12cm}{2pt}
-\subsection{QueryByExpiryTime}
+\section{QueryByExpiryTime}
 \index{QueryByExpiryTime}
 \label{Api:QueryByExpiryTime}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    ActivityQueryResponse queryByExpiryTime (
            String    nextBatchId
            Long    batchSize
            Long    lastSeen
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /activity/read
 \end{Verbatim}
@@ -101,14 +101,14 @@
 
 
 \rule{12cm}{2pt}
-\subsection{GetById}
+\section{GetById}
 \index{GetById}
 \label{Api:GetById}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    Activity getById (
            String    activityId
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: /activity/read
 \end{Verbatim}

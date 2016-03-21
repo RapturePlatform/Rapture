@@ -29,6 +29,7 @@ import java.util.Map;
 import reflex.IReflexHandler;
 import reflex.Scope;
 import reflex.debug.IReflexDebugger;
+import reflex.value.ImmutableReflexValue;
 import reflex.value.ReflexSparseMatrixValue;
 import reflex.value.ReflexValue;
 import reflex.value.internal.ReflexNullValue;
@@ -64,7 +65,7 @@ public class AtomNode extends BaseNode {
         }
     }
 
-    private ReflexValue value;
+    private final ReflexValue value;
 
     public AtomNode(int lineNumber, IReflexHandler handler, Scope s) {
         super(lineNumber, handler, s);
@@ -73,12 +74,12 @@ public class AtomNode extends BaseNode {
     
     public AtomNode(int lineNumber, IReflexHandler handler, Scope s, MatrixDim dim) {
     	super(lineNumber, handler, s);
-    	value = new ReflexValue(new ReflexSparseMatrixValue(dim.getDimension()));
+    	value = new ImmutableReflexValue(new ReflexSparseMatrixValue(dim.getDimension()));
     }
     
     public AtomNode(int lineNumber, IReflexHandler handler, Scope s, Object v) {
         super(lineNumber, handler, s);
-        value = (v == null) ? new ReflexNullValue(lineNumber) : new ReflexValue(lineNumber, v);
+        value = (v == null) ? new ReflexNullValue(lineNumber) : new ImmutableReflexValue(lineNumber, v);
     }
 
     @Override
