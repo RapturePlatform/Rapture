@@ -495,7 +495,7 @@ public class ReflexValue implements Comparable<ReflexValue> {
         if (this.isInteger() && that.isInteger()) {
             return this.asLong().equals(that.asLong());
         } else if (this.isNumber() && that.isNumber()) {
-            return this.asBigDecimal().equals(that.asBigDecimal());
+            return this.asBigDecimal().compareTo(that.asBigDecimal()) == 0;
         } else if (this.isDate() && that.isDate()) {
             return this.asDate().equals(that);
         } else if (this.isTime() && that.isTime()) {
