@@ -35,11 +35,11 @@ import reflex.value.internal.ReflexNullValue;
 public class ImportTest extends ResourceBasedTest {
     @Test
     public void testStandalone() throws RecognitionException {
-        ReflexValue retVal = runTestForWithScriptHandler("/imports/import.rfx", new TestScriptHandler(this, "imports"));
-        assertEquals(33.0, retVal.getValue());
+        String retVal = runTestForWithScriptHandler("/imports/import.rfx", new TestScriptHandler(this, "imports"));
+        assertEquals("33", retVal.split("--RETURNS--")[1]);
         retVal = runTestForWithScriptHandler("/imports/returnNull.rfx", new TestScriptHandler(this, "imports"));
-        assertEquals(new ReflexNullValue(), retVal);
+        assertEquals("NULL", retVal.split("--RETURNS--")[1]);
         retVal = runTestForWithScriptHandler("/imports/import.rfx", new TestScriptHandler(this, "imports"));
-        assertEquals(33.0, retVal.getValue());
+        assertEquals("33", retVal.split("--RETURNS--")[1]);
     }
 }

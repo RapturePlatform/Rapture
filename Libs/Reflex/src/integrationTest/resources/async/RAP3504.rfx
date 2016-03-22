@@ -1,0 +1,22 @@
+runResult={};
+returnVal = false;
+
+try do
+	println('Test call of simple valid script, assert pass');
+	program = "println('I am the target script');";
+	handle = @call(program, {});
+	sleep (5000);
+	println (@status(handle));
+	runResult=@status(handle);
+	if (runResult['status'] == 'FINISHED') do
+		returnVal = true;
+	else do
+		returnVal = false;
+	end
+end
+catch e do
+    returnVal = false;
+end
+
+return returnVal;
+
