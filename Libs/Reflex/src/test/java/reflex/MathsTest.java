@@ -85,5 +85,25 @@ public class MathsTest extends AbstractReflexScriptTest {
 		"       assert ('Compare list of Number to list of mixed Numbers', b == [2,4.0,6,8]); \n";
 		
 		String output = runScript(program, null);
+	}	
+	
+	@Test
+	public void testThePower() throws RecognitionException {
+		String program = 
+		"       a = 3.0 ^ 4; \n" +
+		"       b = 3 ^ 4.00000; \n" +
+		"       c = 256 ^ 0.25; \n" +
+		"       d = 2 ^ -1; \n" +
+		"       println(a); \n" +
+		"       println(b); \n" +
+		"       println(c); \n" +
+		"       println(d); \n" +
+		"       assert (a == 81); \n" +
+		"       assert (b == 81); \n" +
+		"       assert (c == 4); \n" +
+		"       assert (d == 0.5); \n";
+		
+		String output = runScript(program, null);
+		System.out.println(output);
 	}		
 }
