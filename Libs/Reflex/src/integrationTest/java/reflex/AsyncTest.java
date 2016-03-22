@@ -24,6 +24,10 @@ import rapture.common.client.HttpLoginApi;
 import rapture.common.client.ScriptClient;
 import rapture.common.client.SimpleCredentialsProvider;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 public class AsyncTest extends ResourceBasedTest {
 
     @BeforeClass
@@ -65,5 +69,15 @@ public class AsyncTest extends ResourceBasedTest {
     @Test
     public void runCallOnServerAndWaitTest() throws RecognitionException {
         runTestFor("/async/callOnServerAndWait.rfx");
+    }
+    
+    @Test
+    public void RAP3504() throws RecognitionException {
+        String output = runTestFor("/async/RAP3504.rfx");
+        assertNotNull(output);
+        System.out.println(output);
+        String workOrderStatus = output.split("[{}]")[1];
+        assertEquals("workerIds=[0], status=FINISHED, CLASS=rapture.common.dp.WorkOrderStatus", workOrderStatus);
+        assertTrue(output.contains("I am the target script"));
     }
 }
