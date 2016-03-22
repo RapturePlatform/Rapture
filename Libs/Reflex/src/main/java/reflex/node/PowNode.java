@@ -57,9 +57,9 @@ public class PowNode extends BaseNode {
         	if ((b.isInteger() || (b.asBigDecimal().equals(bInt))) && (bInt >= 0)) {
             	BigDecimal aBig = a.asBigDecimal();
         		retVal = new ReflexValue(aBig.pow(bInt));
+        	} else {
+	            retVal = new ReflexValue(new BigDecimal(Math.pow(a.asDouble(), b.asDouble()), MathContext.DECIMAL64));
         	}
-            System.err.println("Expressions with exponents other than positive integers may not be accurate");
-            retVal = new ReflexValue(new BigDecimal(Math.pow(a.asDouble(), b.asDouble()), MathContext.DECIMAL64));
             debugger.stepEnd(this, retVal, scope);
             return retVal;
         }
