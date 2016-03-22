@@ -97,6 +97,7 @@ import rapture.common.exception.ExceptionToString;
 import rapture.common.exception.RaptureException;
 import rapture.common.exception.RaptureExceptionFactory;
 import rapture.common.impl.jackson.JacksonUtil;
+import rapture.common.model.BlobRepoConfig;
 import rapture.dp.ArgsHashFactory;
 import rapture.dp.DecisionProcessExecutorFactory;
 import rapture.dp.InvocableUtils;
@@ -112,6 +113,11 @@ import rapture.kernel.dp.WorkflowValidator;
 import rapture.log.management.LogManagerConnection;
 import rapture.log.management.LogReadException;
 import rapture.log.management.SessionExpiredException;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.google.common.base.Optional;
+import com.google.common.collect.Maps;
+import com.google.common.net.MediaType;
 
 public class DecisionApiImpl extends KernelBase implements DecisionApi {
     private static final String ERROR_LIST_CONSTANT = "errorList";
