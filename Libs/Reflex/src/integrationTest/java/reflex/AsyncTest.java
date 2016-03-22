@@ -77,7 +77,7 @@ public class AsyncTest extends ResourceBasedTest {
         assertNotNull(output);
         System.out.println(output);
         String workOrderStatus = output.split("[{}]")[1];
-        assertEquals("workerIds=[0], status=FINISHED, CLASS=rapture.common.dp.WorkOrderStatus", workOrderStatus);
+        assertEquals("workerIds=[0], output=I am the target script\n, status=FINISHED, CLASS=rapture.common.dp.WorkOrderStatus", workOrderStatus);
         assertTrue(output.contains("I am the target script"));
     }
 }
