@@ -29,9 +29,9 @@ import java.net.URLClassLoader;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -42,9 +42,16 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Logger;
 
+import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
+
 import rapture.common.AppStatus;
 import rapture.common.AppStatusGroup;
 import rapture.common.AppStatusGroupStorage;
+import rapture.common.BlobContainer;
 import rapture.common.CallingContext;
 import rapture.common.ErrorWrapper;
 import rapture.common.ErrorWrapperFactory;
@@ -54,6 +61,7 @@ import rapture.common.RaptureScript;
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
 import rapture.common.WorkOrderExecutionState;
+import rapture.common.api.BlobApi;
 import rapture.common.dp.AbstractInvocable;
 import rapture.common.dp.ContextVariables;
 import rapture.common.dp.Step;
@@ -75,6 +83,7 @@ import rapture.common.exception.RaptureException;
 import rapture.common.exception.RaptureExceptionFactory;
 import rapture.common.impl.jackson.JacksonUtil;
 import rapture.common.mime.MimeDecisionProcessAdvance;
+import rapture.common.model.BlobRepoConfig;
 import rapture.config.LocalConfigService;
 import rapture.dp.event.WorkOrderStatusUpdateEvent;
 import rapture.dp.metrics.WorkflowMetricsService;
@@ -89,12 +98,6 @@ import rapture.log.MDCService;
 import rapture.script.reflex.ReflexRaptureScript;
 import rapture.server.dp.JoinCountdown;
 import rapture.server.dp.JoinCountdownStorage;
-
-import com.google.common.base.Optional;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 /**
  * Default implementation that submits steps sequentially to the pipeline. Steps are picked up and acted upon and this is repeated until the process has
@@ -490,6 +493,7 @@ public class DefaultDecisionProcessExecutor implements DecisionProcessExecutor {
                 ErrorWrapper exceptionInfo = ErrorWrapperFactory.create(re.get());
                 worker.setExceptionInfo(exceptionInfo);
             }
+            CallingContext kernelUser = ContextFactory.getKernelUser();
             saveWorker(worker);
             String id = worker.getId();
             List<String> ids = workOrder.getPendingIds();
@@ -506,7 +510,6 @@ public class DefaultDecisionProcessExecutor implements DecisionProcessExecutor {
                 }
             } else if (ids.size() == 1 && ids.get(0).equals(id)) {
                 workOrder.setEndTime(System.currentTimeMillis());
-                CallingContext kernelUser = ContextFactory.getKernelUser();
                 try {
                     WorkOrderStorage.add(workOrder, kernelUser.getUser(), "Finished execution");
                 } finally {
@@ -522,6 +525,39 @@ public class DefaultDecisionProcessExecutor implements DecisionProcessExecutor {
             // remove the completed id from the master list
             ids.remove(id);
             workOrder.setPendingIds(ids);
+            
+            // Clear up temporary output storage
+            BlobApi blobApi = Kernel.getBlob();
+            String workOrderURI = worker.getWorkOrderURI();
+            String outputUri = (workOrderURI.startsWith("//")) 
+            		? Scheme.BLOB+":"+workOrderURI
+                	: Scheme.BLOB + (workOrderURI.substring(workOrderURI.indexOf(':')));
+            String auth = new RaptureURI(workOrderURI).toAuthString();
+            
+            if (blobApi.blobRepoExists(kernelUser, auth)) {
+    	        for (String workerId : workOrder.getWorkerIds()) {
+    	            String uri =outputUri+"#"+workerId;
+    	            BlobContainer blob = blobApi.getBlob(kernelUser, uri);
+    	            if (blob != null) {
+    	            	Map<String, String> outputs = workOrder.getOutputs();
+    	            	if (outputs == null) {
+    	            		outputs = new LinkedHashMap<>();
+    	            		workOrder.setOutputs(outputs);
+    	            	}
+    	            	outputs.put(workerId, new String(blob.getContent()));
+    	            	blobApi.deleteBlob(kernelUser, uri);
+    	            }
+    	        }  
+            }
+
+	        BlobRepoConfig config = blobApi.getBlobRepoConfig(kernelUser, auth);
+	        // If it's empty and we created it then delete it
+	        if (config.getConfig().contains("USING MEMORY")) {
+	        	if (blobApi.listBlobsByUriPrefix(kernelUser, auth, -1).isEmpty()) {
+	        		blobApi.deleteBlobRepo(kernelUser, auth);
+	        	}
+	        }
+
             WorkOrderStorage.add(workOrder, ContextFactory.getKernelUser().getUser(), "Updating status");
         } finally {
             releaseMultiWorkerLock(workOrder, worker, NO_FORCE);

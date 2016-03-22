@@ -28,6 +28,7 @@ import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -43,6 +44,10 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 import org.joda.time.Period;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.google.common.base.Optional;
+import com.google.common.collect.Maps;
 
 import rapture.common.AppStatus;
 import rapture.common.AppStatusGroup;
@@ -92,7 +97,6 @@ import rapture.common.exception.ExceptionToString;
 import rapture.common.exception.RaptureException;
 import rapture.common.exception.RaptureExceptionFactory;
 import rapture.common.impl.jackson.JacksonUtil;
-import rapture.common.model.BlobRepoConfig;
 import rapture.dp.ArgsHashFactory;
 import rapture.dp.DecisionProcessExecutorFactory;
 import rapture.dp.InvocableUtils;
@@ -108,11 +112,6 @@ import rapture.kernel.dp.WorkflowValidator;
 import rapture.log.management.LogManagerConnection;
 import rapture.log.management.LogReadException;
 import rapture.log.management.SessionExpiredException;
-
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.google.common.base.Optional;
-import com.google.common.collect.Maps;
-import com.google.common.net.MediaType;
 
 public class DecisionApiImpl extends KernelBase implements DecisionApi {
     private static final String ERROR_LIST_CONSTANT = "errorList";
@@ -474,7 +473,9 @@ public class DecisionApiImpl extends KernelBase implements DecisionApi {
         WorkOrder workOrder = WorkOrderFactory.getWorkOrderNotNull(context, workOrderURI);
         WorkOrderStatus retVal = new WorkOrderStatus();
         retVal.setStatus(workOrder.getStatus());
-        retVal.setWorkerIds(workOrder.getWorkerIds());
+        List<String> workerIds = workOrder.getWorkerIds();
+        Map<String, String> workOrderOutput = workOrder.getOutputs();
+        Map<String, String> workerOutput = new LinkedHashMap<>();
         
         String outputUri = (workOrderURI.startsWith("//")) 
     		? Scheme.BLOB+":"+workOrderURI
@@ -483,23 +484,20 @@ public class DecisionApiImpl extends KernelBase implements DecisionApi {
         BlobApi blobApi = Kernel.getBlob();
         String auth = new RaptureURI(outputUri).toAuthString();
         
-        if (blobApi.blobRepoExists(context, auth)) {
-	        for (String workerId : workOrder.getWorkerIds()) {
-	            String uri =outputUri+"#"+workerId;
-	            BlobContainer blob = blobApi.getBlob(context, uri);
-	            if (blob != null) {
-	            	retVal.setOutput(new String(blob.getContent()));
-	            	blobApi.deleteBlob(context, uri);
-	            }
-	        }
-	        BlobRepoConfig config = blobApi.getBlobRepoConfig(context, auth);
-	        // If it's empty and we created it then delete it
-	        if (config.getConfig().contains("USING MEMORY")) {
-	        	if (blobApi.listBlobsByUriPrefix(context, auth, -1).isEmpty()) {
-	        		blobApi.deleteBlobRepo(context, auth);
+        for (String workerId : workerIds) {
+        	String out = null;
+        	if (workOrderOutput != null) out = workOrderOutput.get(workerId);
+        	if (out == null) {
+                if (blobApi.blobRepoExists(context, auth)) {
+		            BlobContainer blob = blobApi.getBlob(context, outputUri+"#"+workerId);
+		            if (blob != null) {
+		            	out = new String(blob.getContent());
+		            }
 	        	}
-	        }
-        }
+        	}
+        	workerOutput.put(workerId, out);
+	    }
+        retVal.setWorkerOutput(workerOutput);
         return retVal;
     }
 
