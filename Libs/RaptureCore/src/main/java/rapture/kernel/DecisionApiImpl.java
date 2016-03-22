@@ -48,6 +48,7 @@ import rapture.common.AppStatus;
 import rapture.common.AppStatusGroup;
 import rapture.common.AppStatusGroupStorage;
 import rapture.common.AppStatusStorage;
+import rapture.common.BlobContainer;
 import rapture.common.CallingContext;
 import rapture.common.CreateResponse;
 import rapture.common.ErrorWrapper;
@@ -57,6 +58,7 @@ import rapture.common.RaptureURI;
 import rapture.common.Scheme;
 import rapture.common.SemaphoreAcquireResponse;
 import rapture.common.WorkOrderExecutionState;
+import rapture.common.api.BlobApi;
 import rapture.common.api.DecisionApi;
 import rapture.common.dp.AppStatusDetails;
 import rapture.common.dp.ContextValueType;
@@ -90,6 +92,7 @@ import rapture.common.exception.ExceptionToString;
 import rapture.common.exception.RaptureException;
 import rapture.common.exception.RaptureExceptionFactory;
 import rapture.common.impl.jackson.JacksonUtil;
+import rapture.common.model.BlobRepoConfig;
 import rapture.dp.ArgsHashFactory;
 import rapture.dp.DecisionProcessExecutorFactory;
 import rapture.dp.InvocableUtils;
@@ -109,6 +112,7 @@ import rapture.log.management.SessionExpiredException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
+import com.google.common.net.MediaType;
 
 public class DecisionApiImpl extends KernelBase implements DecisionApi {
     private static final String ERROR_LIST_CONSTANT = "errorList";
@@ -471,6 +475,31 @@ public class DecisionApiImpl extends KernelBase implements DecisionApi {
         WorkOrderStatus retVal = new WorkOrderStatus();
         retVal.setStatus(workOrder.getStatus());
         retVal.setWorkerIds(workOrder.getWorkerIds());
+        
+        String outputUri = (workOrderURI.startsWith("//")) 
+    		? Scheme.BLOB+":"+workOrderURI
+        	: Scheme.BLOB + (workOrderURI.substring(workOrderURI.indexOf(':')));
+
+        BlobApi blobApi = Kernel.getBlob();
+        String auth = new RaptureURI(outputUri).toAuthString();
+        
+        if (blobApi.blobRepoExists(context, auth)) {
+	        for (String workerId : workOrder.getWorkerIds()) {
+	            String uri =outputUri+"#"+workerId;
+	            BlobContainer blob = blobApi.getBlob(context, uri);
+	            if (blob != null) {
+	            	retVal.setOutput(new String(blob.getContent()));
+	            	blobApi.deleteBlob(context, uri);
+	            }
+	        }
+	        BlobRepoConfig config = blobApi.getBlobRepoConfig(context, auth);
+	        // If it's empty and we created it then delete it
+	        if (config.getConfig().contains("USING MEMORY")) {
+	        	if (blobApi.listBlobsByUriPrefix(context, auth, -1).isEmpty()) {
+	        		blobApi.deleteBlobRepo(context, auth);
+	        	}
+	        }
+        }
         return retVal;
     }
 

@@ -1088,6 +1088,7 @@ type ExecutionContextField(@package=rapture.common.dp) {
 @Bean
 type WorkOrderStatus(@package=rapture.common.dp) {
     List<String> workerIds;
+    String output;
     WorkOrderExecutionState status;  // ACTIVE, CANCELLING, CANCELLED, FINISHED, ERROR
 }
 

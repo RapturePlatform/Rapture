@@ -23,9 +23,18 @@
  */
 package rapture.dp.invocable.core.script;
 
+import java.util.Map;
+
 import org.apache.log4j.Logger;
+
+import com.google.common.net.MediaType;
+
 import rapture.common.CallingContext;
 import rapture.common.RaptureScript;
+import rapture.common.RaptureURI;
+import rapture.common.Scheme;
+import rapture.common.ScriptResult;
+import rapture.common.api.BlobApi;
 import rapture.common.dp.AbstractInvocable;
 import rapture.common.impl.jackson.JacksonUtil;
 import rapture.dp.InvocableUtils;
@@ -33,13 +42,11 @@ import rapture.kernel.Kernel;
 import rapture.script.reflex.ReflexRaptureScript;
 import rapture.workflow.script.WorkflowScriptConstants;
 
-import java.util.Map;
-
 /**
  * @author bardhi
  * @since 8/19/14.
  */
-public class ScriptBodyStep extends AbstractInvocable {
+public class ScriptBodyStep<T> extends AbstractInvocable<T> {
     private static final Logger log = Logger.getLogger(ScriptBodyStep.class);
 
     public ScriptBodyStep(String workerURI) {
@@ -63,10 +70,22 @@ public class ScriptBodyStep extends AbstractInvocable {
             rScript.setAuditLogUri(workerAuditUri);
         }
 
-        String resp = rScript.runProgram(context, null, script, params);
+        ScriptResult resp = rScript.runProgramExtended(context, null, script, params);
         if (resp != null) {
             log.info("Reflex script returned " + resp);
         }
+        
+        String outputUri = getWorkerURI();
+        if (outputUri.startsWith("//")) outputUri = Scheme.BLOB+":"+outputUri;
+        else outputUri = Scheme.BLOB + (outputUri.substring(outputUri.indexOf(':')));
+        String blobAuth = new RaptureURI(outputUri).toAuthString();
+
+        BlobApi blob = Kernel.getBlob();
+        if (!blob.blobRepoExists(context, blobAuth)) blob.createBlobRepo(context, blobAuth, "BLOB {} USING MEMORY {}",  "REP {} USING MEMORY {}");
+        StringBuilder sb = new StringBuilder();
+        for (String s : resp.getOutput()) sb.append(s);
+        Kernel.getBlob().putBlob(context, outputUri, sb.toString().getBytes(), MediaType.PLAIN_TEXT_UTF_8.toString());
+        
         return "next";
     }
 }
