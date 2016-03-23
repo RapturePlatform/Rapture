@@ -72,6 +72,16 @@ public class AsyncTest extends ResourceBasedTest {
     }
     
     @Test
+    public void RAP3500() throws RecognitionException {
+        String output = runTestFor("/async/RAP3500.rfx");
+        assertNotNull(output);
+        System.out.println(output);
+        String workOrderStatus = output.split("[{}]")[1];
+        assertEquals("workerIds=[0], status=FINISHED, CLASS=rapture.common.dp.WorkOrderStatus", workOrderStatus);
+        assertTrue(output.contains("I am the target script"));
+    }
+    
+    @Test
     public void RAP3504() throws RecognitionException {
         String output = runTestFor("/async/RAP3504.rfx");
         assertNotNull(output);
