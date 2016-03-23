@@ -24,6 +24,9 @@
 package reflex;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -55,6 +58,19 @@ public class ResourceBasedTest {
 
 	public static String getResourceAsString(Object context, String path) {
 		InputStream is = (context == null ? IOTest.class : context.getClass()).getResourceAsStream(path);
+
+		// Can't open as a resource - try as a file
+		if (is == null) {
+			File f = new File("src/integrationTest/resources" + path);
+			String s = f.getAbsolutePath();
+			System.out.println(s);
+			try {
+				is = new FileInputStream(f);
+			} catch (FileNotFoundException e) {
+				// oops
+			}
+		}
+
 		if (is != null) {
 			Writer writer = new StringWriter();
 			char[] buffer = new char[1024];
@@ -74,10 +90,10 @@ public class ResourceBasedTest {
 				}
 			}
 			return writer.toString();
-		} else {
-			return "";
 		}
-
+		// Can't open. Return null so that the caller doesn't assume we
+		// succeeded.
+		return null;
 	}
 
 	protected void runSuspendTestFor(String fileName) throws RecognitionException {
@@ -104,7 +120,8 @@ public class ResourceBasedTest {
 		System.out.println(value);
 	}
 
-	protected ReflexValue runTestForWithScriptHandler(String fileName, IReflexScriptHandler scriptHandler) throws RecognitionException {
+	protected String runTestForWithScriptHandler(String fileName, IReflexScriptHandler scriptHandler)
+			throws RecognitionException {
 		ReflexLexer lexer = new ReflexLexer();
 		String program = getResourceAsString(this, fileName);
 		lexer.setCharStream(new ANTLRStringStream(program));
@@ -112,89 +129,120 @@ public class ResourceBasedTest {
 		return runTestForWithLexer(fileName, lexer, program, null);
 	}
 
-	protected void runTestWithString(String program) throws RecognitionException {
+	protected String runTestWithString(String program) throws RecognitionException {
 		ReflexLexer lexer = new ReflexLexer();
 		lexer.setCharStream(new ANTLRStringStream(program));
-		runTestForWithLexer("", lexer, program, null);
+		return runTestForWithLexer("", lexer, program, null);
 
 	}
 
-	protected void runTestFor(String fileName) throws RecognitionException {
-		ReflexLexer lexer = new ReflexLexer();
-		String program = getResourceAsString(this, fileName);
-		lexer.setCharStream(new ANTLRStringStream(program));
-		runTestForWithLexer(fileName, lexer, program, null);
-	}
-
-	protected void runTestFor(String fileName, Map<String, Object> params) throws RecognitionException {
+	protected String runTestFor(String fileName) throws RecognitionException {
 		ReflexLexer lexer = new ReflexLexer();
 		String program = getResourceAsString(this, fileName);
 		lexer.setCharStream(new ANTLRStringStream(program));
-		runTestForWithLexer(fileName, lexer, program, params);
+		return runTestForWithLexer(fileName, lexer, program, null);
 	}
 
-	private ReflexValue runTestForWithLexer(String fileName, ReflexLexer lexer, String program, Map<String, Object> injectedVars) throws RecognitionException  {
-        CommonTokenStream tokens = new CommonTokenStream(lexer);
-        ReflexParser parser = new ReflexParser(tokens);
-        
-        try {
-        CommonTree tree = (CommonTree) parser.parse().getTree();
+	protected String runTestFor(String fileName, Map<String, Object> params) throws RecognitionException {
+		ReflexLexer lexer = new ReflexLexer();
+		String program = getResourceAsString(this, fileName);
+		lexer.setCharStream(new ANTLRStringStream(program));
+		return runTestForWithLexer(fileName, lexer, program, params);
+	}
 
-        /*
-         * DOTTreeGenerator gen = new DOTTreeGenerator(); StringTemplate st =
-         * gen.toDOT(tree); System.out.println(st);
-         */
+	private String runTestForWithLexer(String fileName, ReflexLexer lexer, String program,
+			Map<String, Object> injectedVars) throws RecognitionException {
+		if ((program == null) || program.isEmpty())
+			throw new RuntimeException("No programme to run");
+		CommonTokenStream tokens = new CommonTokenStream(lexer);
+		ReflexParser parser = new ReflexParser(tokens);
 
-        CommonTreeNodeStream nodes = new CommonTreeNodeStream(tree);
-        ReflexTreeWalker walker = createReflexTreeWalker(nodes, parser);
-        if (injectedVars != null && !injectedVars.isEmpty()) {
-            for (Map.Entry<String, Object> kv : injectedVars.entrySet()) {
-                walker.currentScope.assign(kv.getKey(), kv.getValue() == null ? new ReflexNullValue() : new ReflexValue(kv.getValue()));
-            }
-        }
+		try {
+			CommonTree tree = (CommonTree) parser.parse().getTree();
 
-        ReflexNode returned = walker.walk();
-        InstrumentDebugger instrument = new InstrumentDebugger();
-        instrument.setProgram(program);
-        ReflexValue retVal;
-        if (returned == null) {
-            retVal = null;
-            System.out.println("null");
-        } else {
-            retVal = returned.evaluateWithoutScope(instrument);
-            System.out.println(retVal);
-        }
-        instrument.getInstrumenter().log();
-        return retVal;
-        } catch(RecognitionException e) {
-            String hdr = parser.getErrorHeader(e);
-            String msg = parser.getErrorMessage(e, ReflexParser.tokenNames);
-            
-            StringBuilder sb = new StringBuilder();
-            CommonToken token = (CommonToken) e.token;
-            
-            String[] lines = token.getInputStream().substring(0, token.getInputStream().size() - 1).split("\n");
-            
-            sb.append("Error at token ").append(token.getText()).append(" on line ").append(e.line).append(" while parsing: \n");
-            
-            int start = Math.max(0, token.getLine() -5);
-            int end = Math.min(lines.length, token.getLine() +5);
-            int badline = token.getLine() -1;
-            
-            for (int i = start; i < end; i++) {
-                sb.append(String.format("%5d: %s\n", i+1, lines[i]));
-                if (i == badline) {
-                    for (int j = 0; j < e.charPositionInLine+7; j++) sb.append(" ");
-                    for (int j = 0; j < token.getText().length(); j++) sb.append("^");
-                    sb.append("\n");
-                }
-            }
-            
-            System.out.println("Captured an error - " + hdr + " - " + msg);
-            System.out.println(sb.toString());
-            throw e;
-        }
-    }
+			/*
+			 * DOTTreeGenerator gen = new DOTTreeGenerator(); StringTemplate st
+			 * = gen.toDOT(tree); System.out.println(st);
+			 */
+
+			CommonTreeNodeStream nodes = new CommonTreeNodeStream(tree);
+			ReflexTreeWalker walker = createReflexTreeWalker(nodes, parser);
+			if (injectedVars != null && !injectedVars.isEmpty()) {
+				for (Map.Entry<String, Object> kv : injectedVars.entrySet()) {
+					walker.currentScope.assign(kv.getKey(),
+							kv.getValue() == null ? new ReflexNullValue() : new ReflexValue(kv.getValue()));
+				}
+			}
+
+			final StringBuilder sb = new StringBuilder();
+			IReflexHandler handler = walker.getReflexHandler();
+			handler.setOutputHandler(new IReflexOutputHandler() {
+
+				@Override
+				public boolean hasCapability() {
+					return false;
+				}
+
+				@Override
+				public void printLog(String text) {
+					sb.append(text);
+				}
+
+				@Override
+				public void printOutput(String text) {
+					sb.append(text);
+				}
+
+				@Override
+				public void setApi(ScriptingApi api) {
+				}
+			});
+
+			ReflexNode returned = walker.walk();
+			InstrumentDebugger instrument = new InstrumentDebugger();
+			instrument.setProgram(program);
+			ReflexValue retVal;
+			if (returned == null) {
+				retVal = null;
+				System.out.println("null");
+			} else {
+				retVal = returned.evaluateWithoutScope(instrument);
+				sb.append("--RETURNS--").append(retVal.asString());
+			}
+			instrument.getInstrumenter().log();
+			return sb.toString();
+		} catch (RecognitionException e) {
+			String hdr = parser.getErrorHeader(e);
+			String msg = parser.getErrorMessage(e, ReflexParser.tokenNames);
+
+			StringBuilder sb = new StringBuilder();
+			CommonToken token = (CommonToken) e.token;
+
+			String[] lines = token.getInputStream().substring(0, token.getInputStream().size() - 1).split("\n");
+
+			sb.append("Error at token ").append(token.getText()).append(" on line ").append(e.line)
+					.append(" while parsing: \n");
+
+			int start = Math.max(0, token.getLine() - 5);
+			int end = Math.min(lines.length, token.getLine() + 5);
+			int badline = token.getLine() - 1;
+
+			for (int i = start; i < end; i++) {
+				sb.append(String.format("%5d: %s\n", i + 1, lines[i]));
+				if (i == badline) {
+					for (int j = 0; j < e.charPositionInLine + 7; j++)
+						sb.append(" ");
+					for (int j = 0; j < token.getText().length(); j++)
+						sb.append("^");
+					sb.append("\n");
+				}
+			}
+
+			System.out.println("Captured an error - " + hdr + " - " + msg);
+			System.out.println(sb.toString());
+			throw e;
+		}
+	}
 
 	protected ReflexTreeWalker createReflexTreeWalker(CommonTreeNodeStream nodes, ReflexParser parser) {
 		return new ReflexTreeWalker(nodes, parser.languageRegistry);
@@ -202,14 +250,16 @@ public class ResourceBasedTest {
 
 	protected void runTestForWithApi(String fileName) throws RecognitionException {
 
-		HttpLoginApi loginApi = new HttpLoginApi("http://localhost:8665/rapture", new SimpleCredentialsProvider("rapture", "rapture"));
+		HttpLoginApi loginApi = new HttpLoginApi("http://localhost:8665/rapture",
+				new SimpleCredentialsProvider("rapture", "rapture"));
 		loginApi.login();
 
 		ScriptingApi api = new ScriptClient(loginApi);
 		runTestForWithApi(fileName, api, new ReflexScriptDataHandler(api));
 	}
 
-	protected void runTestForWithApi(String fileName, ScriptingApi api, IReflexDataHandler dataHandler) throws RecognitionException {
+	protected void runTestForWithApi(String fileName, ScriptingApi api, IReflexDataHandler dataHandler)
+			throws RecognitionException {
 		ReflexLexer lexer = new ReflexLexer();
 		lexer.setCharStream(new ANTLRStringStream(getResourceAsString(this, fileName)));
 		CommonTokenStream tokens = new CommonTokenStream(lexer);

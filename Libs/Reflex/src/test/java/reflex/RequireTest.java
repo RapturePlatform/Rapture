@@ -42,14 +42,14 @@ public class RequireTest extends ResourceBasedTest {
     
     @Test
     public void testStandalone() throws RecognitionException {
-        ReflexValue ret = runTestForWithScriptHandler("/require/module.rfx", new TestScriptHandler(this, "require"));
-        assertTrue(ret.isVoid());
+        String ret = runTestForWithScriptHandler("/require/module.rfx", new TestScriptHandler(this, "require"));
+        assertEquals("VOID", ret.split("--RETURNS--")[1]);
     }
 
     @Test
     public void testRequire() throws RecognitionException {
-        ReflexValue ret = runTestForWithScriptHandler("/require/main.rfx", new TestScriptHandler(this, "require"));
-        assertEquals(4, ret.asInt().intValue());
+        String ret = runTestForWithScriptHandler("/require/main.rfx", new TestScriptHandler(this, "require"));
+        assertEquals("4", ret.split("--RETURNS--")[1]);
     }
     
 }
