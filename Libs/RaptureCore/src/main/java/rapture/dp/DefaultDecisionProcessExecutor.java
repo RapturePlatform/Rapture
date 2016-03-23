@@ -89,6 +89,7 @@ import rapture.dp.event.WorkOrderStatusUpdateEvent;
 import rapture.dp.metrics.WorkflowMetricsService;
 import rapture.event.EventLevel;
 import rapture.kernel.ContextFactory;
+import rapture.kernel.DocApiImpl;
 import rapture.kernel.Kernel;
 import rapture.kernel.LockApiImpl;
 import rapture.kernel.dp.ExecutionContextUtil;
@@ -526,38 +527,23 @@ public class DefaultDecisionProcessExecutor implements DecisionProcessExecutor {
             ids.remove(id);
             workOrder.setPendingIds(ids);
             
-            // Clear up temporary output storage
-            BlobApi blobApi = Kernel.getBlob();
-            String workOrderURI = worker.getWorkOrderURI();
-            String outputUri = (workOrderURI.startsWith("//")) 
-            		? Scheme.BLOB+":"+workOrderURI
-                	: Scheme.BLOB + (workOrderURI.substring(workOrderURI.indexOf(':')));
-            String auth = new RaptureURI(workOrderURI).toAuthString();
-            
-            if (blobApi.blobRepoExists(kernelUser, auth)) {
-    	        for (String workerId : workOrder.getWorkerIds()) {
-    	            String uri =outputUri+"#"+workerId;
-    	            BlobContainer blob = blobApi.getBlob(kernelUser, uri);
-    	            if (blob != null) {
-    	            	Map<String, String> outputs = workOrder.getOutputs();
-    	            	if (outputs == null) {
-    	            		outputs = new LinkedHashMap<>();
-    	            		workOrder.setOutputs(outputs);
-    	            	}
-    	            	outputs.put(workerId, new String(blob.getContent()));
-    	            	blobApi.deleteBlob(kernelUser, uri);
-    	            }
-    	        }  
-            }
+			// Get workflow output from ephemeral storage
+	        DocApiImpl docApi = Kernel.getDoc().getTrusted();
+			String outputUri = RaptureURI.newScheme(worker.getWorkOrderURI(), Scheme.DOCUMENT).toShortString();
 
-	        BlobRepoConfig config = blobApi.getBlobRepoConfig(kernelUser, auth);
-	        // If it's empty and we created it then delete it
-	        if (config.getConfig().contains("USING MEMORY")) {
-	        	if (blobApi.listBlobsByUriPrefix(kernelUser, auth, -1).isEmpty()) {
-	        		blobApi.deleteBlobRepo(kernelUser, auth);
-	        	}
-	        }
-
+			for (String workerId : workOrder.getWorkerIds()) {
+				String doc = docApi.getDocEphemeral(kernelUser, outputUri);
+				if (doc != null) {
+					Map<String, Object> map = JacksonUtil.getMapFromJson(doc);
+					Map<String, String> outputs = workOrder.getOutputs();
+					if (outputs == null) {
+						outputs = new LinkedHashMap<>();
+						workOrder.setOutputs(outputs);
+					}
+					outputs.put(workerId, map.get(outputUri + "#" + workerId).toString());
+					// delete it here
+				}
+			}
             WorkOrderStorage.add(workOrder, ContextFactory.getKernelUser().getUser(), "Updating status");
         } finally {
             releaseMultiWorkerLock(workOrder, worker, NO_FORCE);

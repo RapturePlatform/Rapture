@@ -656,6 +656,20 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
     public String putDoc(CallingContext context, String docUri, String content) {
         return putDocWithEventContext(context, docUri, content, null).getDocumentURI();
     }
+    
+    public void putDocEphemeral(CallingContext context, String docUri, String content) {
+    	RaptureURI uri = new RaptureURI(docUri);
+        Repository ephemeral = getEphemeralRepo();
+        ephemeral.createStage(uri.getAuthority());
+        ephemeral.addToStage(uri.getAuthority(), docUri, content, false);
+        ephemeral.commitStage(uri.getAuthority(), "admin", "Temporary storage");
+    }
+
+    public String getDocEphemeral(CallingContext context, String docUri) {
+    	// RaptureURI uri = new RaptureURI(docUri);
+        Repository ephemeral = getEphemeralRepo();
+        return ephemeral.getDocument(docUri);
+    }
 
     @SuppressWarnings("unchecked")
     public void runIndex(CallingContext context, IndexScriptPair indexScriptPair, String authority, String displayName, String content) {

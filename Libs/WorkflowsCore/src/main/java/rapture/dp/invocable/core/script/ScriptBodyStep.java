@@ -23,6 +23,7 @@
  */
 package rapture.dp.invocable.core.script;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -34,10 +35,10 @@ import rapture.common.RaptureScript;
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
 import rapture.common.ScriptResult;
-import rapture.common.api.BlobApi;
 import rapture.common.dp.AbstractInvocable;
 import rapture.common.impl.jackson.JacksonUtil;
 import rapture.dp.InvocableUtils;
+import rapture.kernel.DocApiImpl;
 import rapture.kernel.Kernel;
 import rapture.script.reflex.ReflexRaptureScript;
 import rapture.workflow.script.WorkflowScriptConstants;
@@ -75,17 +76,16 @@ public class ScriptBodyStep<T> extends AbstractInvocable<T> {
             log.info("Reflex script returned " + resp);
         }
         
-        String outputUri = getWorkerURI();
-        if (outputUri.startsWith("//")) outputUri = Scheme.BLOB+":"+outputUri;
-        else outputUri = Scheme.BLOB + (outputUri.substring(outputUri.indexOf(':')));
-        String blobAuth = new RaptureURI(outputUri).toAuthString();
-
-        BlobApi blob = Kernel.getBlob();
-        if (!blob.blobRepoExists(context, blobAuth)) blob.createBlobRepo(context, blobAuth, "BLOB {} USING MEMORY {}",  "REP {} USING MEMORY {}");
+        RaptureURI outputUri = RaptureURI.newScheme(getWorkerURI(), Scheme.DOCUMENT);
+        
+        DocApiImpl docApi = Kernel.getDoc().getTrusted();
         StringBuilder sb = new StringBuilder();
         for (String s : resp.getOutput()) sb.append(s);
-        Kernel.getBlob().putBlob(context, outputUri, sb.toString().getBytes(), MediaType.PLAIN_TEXT_UTF_8.toString());
-        
+        String str = docApi.getDocEphemeral(context, outputUri.toShortString());
+        Map<String, Object> m = (str == null) ? new HashMap<>() : JacksonUtil.getMapFromJson(str);
+        m.put(outputUri.toString(),  sb.toString());
+        String json = JacksonUtil.jsonFromObject(m);
+        docApi.putDocEphemeral(context, outputUri.toShortString(), json);
         return "next";
     }
 }

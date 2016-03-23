@@ -679,4 +679,21 @@ public class RaptureURI implements Cloneable {
     public RaptureURI withoutElement() {
         return builder(this).element(null).build();
     }
+    
+    public static RaptureURI newScheme(String uri, Scheme newScheme) {
+        RaptureURI retVal = new RaptureURI(uri);
+        retVal.scheme = newScheme;
+        return retVal;
+    }
+    
+    public static RaptureURI newScheme(RaptureURI uri, Scheme newScheme) {
+        RaptureURI retVal = null;
+		try {
+			retVal = (RaptureURI) uri.clone();
+	        retVal.scheme = newScheme;
+		} catch (CloneNotSupportedException e) {
+			log.info("This can't happen", e);
+		}
+        return retVal;
+    }
 }
