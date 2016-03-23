@@ -28,6 +28,7 @@ import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -44,10 +45,15 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 import org.joda.time.Period;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.google.common.base.Optional;
+import com.google.common.collect.Maps;
+
 import rapture.common.AppStatus;
 import rapture.common.AppStatusGroup;
 import rapture.common.AppStatusGroupStorage;
 import rapture.common.AppStatusStorage;
+import rapture.common.BlobContainer;
 import rapture.common.CallingContext;
 import rapture.common.CreateResponse;
 import rapture.common.ErrorWrapper;
@@ -57,6 +63,7 @@ import rapture.common.RaptureURI;
 import rapture.common.Scheme;
 import rapture.common.SemaphoreAcquireResponse;
 import rapture.common.WorkOrderExecutionState;
+import rapture.common.api.BlobApi;
 import rapture.common.api.DecisionApi;
 import rapture.common.dp.AppStatusDetails;
 import rapture.common.dp.ContextValueType;
@@ -90,6 +97,7 @@ import rapture.common.exception.ExceptionToString;
 import rapture.common.exception.RaptureException;
 import rapture.common.exception.RaptureExceptionFactory;
 import rapture.common.impl.jackson.JacksonUtil;
+import rapture.common.model.BlobRepoConfig;
 import rapture.dp.ArgsHashFactory;
 import rapture.dp.DecisionProcessExecutorFactory;
 import rapture.dp.InvocableUtils;
@@ -109,6 +117,7 @@ import rapture.log.management.SessionExpiredException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
+import com.google.common.net.MediaType;
 
 public class DecisionApiImpl extends KernelBase implements DecisionApi {
     private static final String ERROR_LIST_CONSTANT = "errorList";
@@ -470,7 +479,25 @@ public class DecisionApiImpl extends KernelBase implements DecisionApi {
         WorkOrder workOrder = WorkOrderFactory.getWorkOrderNotNull(context, workOrderURI);
         WorkOrderStatus retVal = new WorkOrderStatus();
         retVal.setStatus(workOrder.getStatus());
-        retVal.setWorkerIds(workOrder.getWorkerIds());
+        List<String> workerIds = workOrder.getWorkerIds();
+        Map<String, String> workOrderOutput = workOrder.getOutputs();
+        Map<String, String> workerOutput = new LinkedHashMap<>();
+        
+        DocApiImpl docApi = Kernel.getDoc().getTrusted();
+        String outputUri = RaptureURI.newScheme(workOrderURI, Scheme.DOCUMENT).toShortString();
+        
+		for (String workerId : workerIds) {
+        	String out = null;
+        	if (workOrderOutput != null) out = workOrderOutput.get(workerId);
+        	if (out == null) {
+        		String str = docApi.getDocEphemeral(context, outputUri);
+				Map<String, Object> map = JacksonUtil.getMapFromJson(str);
+				out = map.get(outputUri + "#" + workerId).toString();
+        	}
+        	workerOutput.put(workerId, out);
+		}
+
+        retVal.setWorkerOutput(workerOutput);
         return retVal;
     }
 

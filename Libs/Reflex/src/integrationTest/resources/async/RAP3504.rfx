@@ -8,6 +8,7 @@ try do
 	sleep (5000);
 	println (@status(handle));
 	runResult=@status(handle);
+	println (runResult);
 	if (runResult['status'] == 'FINISHED') do
 		returnVal = true;
 	else do
