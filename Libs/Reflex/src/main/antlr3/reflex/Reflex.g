@@ -17,6 +17,7 @@ tokens {
   ASSIGNMENT;
   CONSTASSIGNMENT;
   PLUSASSIGNMENT;
+  MINUSASSIGNMENT;
   DOTTEDASSIGNMENT;
   FUNC_CALL;
   EXP;
@@ -391,7 +392,6 @@ statement  :  assignment ';'   -> assignment
 Unsupported 
 	: '++' 
 	| '--'
-	| '-='
 	;
 
 exportStatement
@@ -412,6 +412,8 @@ assignment
 //     -> ^(DOTTEDASSIGNMENT[$DottedIdentifier] DottedIdentifier expression)
   |   Identifier '+=' expression
      -> ^(PLUSASSIGNMENT[$Identifier] Identifier expression)
+  |   Identifier '-=' expression
+     -> ^(MINUSASSIGNMENT[$Identifier] Identifier expression)
   ;
 
 breakStatement

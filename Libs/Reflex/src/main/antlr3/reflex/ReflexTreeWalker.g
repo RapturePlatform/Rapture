@@ -220,6 +220,8 @@ assignment returns [ReflexNode node]
      { node = new AssignmentNode(line, handler, currentScope, $i.text, $x.e, $e.node); }
   | ^(PLUSASSIGNMENT i=Identifier e=expression)
      { node = new PlusAssignmentNode(line, handler, currentScope, $i.text, $e.node); }
+  | ^(MINUSASSIGNMENT i=Identifier e=expression)
+     { node = new PlusAssignmentNode(line, handler, currentScope, $i.text, new UnaryMinusNode(line, handler, currentScope, $e.node)); }
   ;
 
 breakStatement returns [ReflexNode node]

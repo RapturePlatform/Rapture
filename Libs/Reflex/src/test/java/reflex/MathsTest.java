@@ -29,6 +29,34 @@ public class MathsTest extends AbstractReflexScriptTest {
 	}
 	
 	@Test
+	public void testplusEquals() throws RecognitionException {
+		String program = "i = 10;\n" +
+				"i += 2; \n" +
+				"j = 10.0;\n" +
+				"j += 2; \n" +
+				"k = 10;\n" +
+				"k += 2.00; \n" +
+				"println(i+','+j+','+k); \n";
+
+		String output = runScript(program, null);
+		assertEquals("12,12.0,12.00", output.trim());
+	}
+		
+	@Test
+	public void testminusEquals() throws RecognitionException {
+		String program = "i = 10;\n" +
+				"i -= 2; \n" +
+				"j = 10.0;\n" +
+				"j -= 2; \n" +
+				"k = 10;\n" +
+				"k -= 2.00; \n" +
+				"println(i+','+j+','+k); \n";
+
+		String output = runScript(program, null);
+		assertEquals("8,8.0,8.00", output.trim());
+	}
+		
+	@Test
 	public void testEqual() throws RecognitionException {
 		String program = "i = [];\n" +
 			"j = size(i); \n" +
