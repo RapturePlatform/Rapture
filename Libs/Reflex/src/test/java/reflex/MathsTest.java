@@ -29,6 +29,34 @@ public class MathsTest extends AbstractReflexScriptTest {
 	}
 	
 	@Test
+	public void testplusEquals() throws RecognitionException {
+		String program = "i = 10;\n" +
+				"i += 2; \n" +
+				"j = 10.0;\n" +
+				"j += 2; \n" +
+				"k = 10;\n" +
+				"k += 2.00; \n" +
+				"println(i+','+j+','+k); \n";
+
+		String output = runScript(program, null);
+		assertEquals("12,12.0,12.00", output.trim());
+	}
+		
+	@Test
+	public void testminusEquals() throws RecognitionException {
+		String program = "i = 10;\n" +
+				"i -= 2; \n" +
+				"j = 10.0;\n" +
+				"j -= 2; \n" +
+				"k = 10;\n" +
+				"k -= 2.00; \n" +
+				"println(i+','+j+','+k); \n";
+
+		String output = runScript(program, null);
+		assertEquals("8,8.0,8.00", output.trim());
+	}
+		
+	@Test
 	public void testEqual() throws RecognitionException {
 		String program = "i = [];\n" +
 			"j = size(i); \n" +
@@ -85,5 +113,25 @@ public class MathsTest extends AbstractReflexScriptTest {
 		"       assert ('Compare list of Number to list of mixed Numbers', b == [2,4.0,6,8]); \n";
 		
 		String output = runScript(program, null);
+	}	
+	
+	@Test
+	public void testThePower() throws RecognitionException {
+		String program = 
+		"       a = 3.0 ^ 4; \n" +
+		"       b = 3 ^ 4.00000; \n" +
+		"       c = 256 ^ 0.25; \n" +
+		"       d = 2 ^ -1; \n" +
+		"       println(a); \n" +
+		"       println(b); \n" +
+		"       println(c); \n" +
+		"       println(d); \n" +
+		"       assert (a == 81); \n" +
+		"       assert (b == 81); \n" +
+		"       assert (c == 4); \n" +
+		"       assert (d == 0.5); \n";
+		
+		String output = runScript(program, null);
+		System.out.println(output);
 	}		
 }
