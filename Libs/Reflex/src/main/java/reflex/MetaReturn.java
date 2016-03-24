@@ -25,19 +25,19 @@ package reflex;
 
 public class MetaReturn {
     private String type;
-    private String meta;
+    private String description;
     
-    public MetaReturn(String type, String meta) {
+    public MetaReturn(String type, String description) {
         this.type = type;
-        this.meta = meta;
+        this.description = description;
     }
     
     public String getType() {
         return type;
     }
     
-    public String getMeta() {
-        return meta;
+    public String getDescription() {
+        return description;
     }
 
 }

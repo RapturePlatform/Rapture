@@ -24,26 +24,15 @@
 package reflex;
 
 public class MetaParam {
-    public MetaParamRequest getParamRequest() {
-        return paramRequest;
-    }
-
-    public String getParamRequestData() {
-        return paramRequestData;
-    }
-
+   
     private String parameterName;
     private String parameterType;
     private String description;
-    private MetaParamRequest paramRequest;
-    private String paramRequestData;
     
-    public MetaParam(String parameterName, String parameterType, String description, MetaParamRequest paramRequest, String paramRequestData) {
+    public MetaParam(String parameterName, String parameterType, String description) {
         this.parameterName = parameterName;
         this.parameterType = parameterType;
         this.description = description;
-        this.paramRequest = paramRequest;
-        this.paramRequestData = paramRequestData;
     }
     
     public String getParameterName() {

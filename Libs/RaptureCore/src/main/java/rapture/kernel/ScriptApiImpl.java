@@ -154,15 +154,6 @@ public class ScriptApiImpl extends KernelBase implements ScriptApi {
         }
     }
 
-    @Override
-    public RaptureScript setScriptParameters(CallingContext context, String scriptURI, List<RaptureParameter> parameters) {
-        RaptureScript script = getScript(context, scriptURI);
-        if (script != null) {
-            script.setParameters(parameters);
-            RaptureScriptStorage.add(script, context.getUser(), Messages.getString("Script.parameterAdd")); //$NON-NLS-1$
-        }
-        return script;
-    }
 
     @Override
     public Boolean doesScriptExist(CallingContext context, String scriptURI) {
@@ -653,7 +644,7 @@ public class ScriptApiImpl extends KernelBase implements ScriptApi {
     public ScriptInterface getInterface(CallingContext context, String scriptURI) {
         ScriptInterface result = new ScriptInterface();
         HashMap<String, ScriptParameter> inputs = new HashMap<>();
-        HashMap<String, ScriptParameter> outputs = new HashMap<>();
+        ScriptParameter output = new ScriptParameter();
         RaptureScript script = getScriptNoFollowLink(scriptURI);
         if (script == null) {
             log.error("ScriptApiImpl.getInterface, script not found returning NULL, scriptURI: " + scriptURI);
@@ -680,21 +671,19 @@ public class ScriptApiImpl extends KernelBase implements ScriptApi {
                 inputs.put(param.getParameterName(), scriptParam);
             }
             MetaReturn returnInfo = parser.scriptInfo.getReturnInfo();
-            // For void return, leave the outputs empty.
-            if (!returnInfo.getType().equals("void")) {
-                ScriptParameter output = new ScriptParameter();
+            
                 String type = returnInfo.getType().toUpperCase();
                 output.setParameterType(RaptureParameterType.valueOf(type));
-                output.setDescription(returnInfo.getMeta());
-                outputs.put("__OUTPUT__", output);
-            }
+                output.setDescription(returnInfo.getDescription());
+               
+            result.setProperties(parser.scriptInfo.getProperties());
         } catch (Exception e) {
             log.error("ScriptApiImpl.getInterface, scriptURI: " + scriptURI);
             log.log(Level.ERROR, "ScriptApiImpl.getInterface, exception" + e.getMessage(), e);
             throw RaptureExceptionFactory.create("Exception while parsing script parameters: " + e);
         }
         result.setInputs(inputs);
-        result.setOutputs(outputs);
+        result.setRet(output);
         return result;
      }
 }
