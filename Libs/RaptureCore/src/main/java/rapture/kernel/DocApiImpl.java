@@ -777,13 +777,11 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
             return ret;
         }
         
-        if (!docRepoExists(context, authority)) {
-            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST,  apiMessageCatalog.getMessage("NoSuchRepo", internalUri.toAuthString())); //$NON-NLS-1$
-        }
-        
-                
-         
         Repository repository = getRepoFromCache(authority);
+        if (repository == null) {
+        	throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST,  apiMessageCatalog.getMessage("NoSuchRepo", internalUri.toAuthString())); //$NON-NLS-1$
+        }
+
         String parentDocPath = internalUri.getDocPath() == null ? "" : internalUri.getDocPath();
         int startDepth = StringUtils.countMatches(parentDocPath, "/");
 

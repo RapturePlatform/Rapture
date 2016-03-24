@@ -1036,11 +1036,18 @@ QuotedString
   alias.pop();
 }
     :
-           '"'
+           DoubleQuote
            ( escaped=ESC {lBuf.append(getText());} |
-             normal=~('"'|'\\'|'\n'|'\r')     {lBuf.appendCodePoint(normal);} )*
-           '"'
-           {setText(lBuf.toString());}
+             normal=~('"'|'“'|'”'|'\\'|'\n'|'\r')     {lBuf.appendCodePoint(normal);} )*
+           ( DoubleQuote {setText(lBuf.toString());} 
+           | ( '\n' | '\r')  {wibble("Found newline in string "+lBuf.toString(), input, false);})
+           
+    ;
+    
+DoubleQuote 
+    : '"'
+    | '“'
+    | '”'
     ;
 
 fragment
@@ -1065,8 +1072,9 @@ String
            '\''
            ( escaped=ESC {lBuf.append(getText());} |
              normal=~('\''|'\\'|'\n'|'\r')     {lBuf.appendCodePoint(normal);} )*
-           '\''
-           {setText(lBuf.toString());}
+           ( '\'' {setText(lBuf.toString());} 
+           | ( '\n' | '\r')  {wibble("Found newline in string "+lBuf.toString(), input, false);})
+           
     ;
 
 Comment

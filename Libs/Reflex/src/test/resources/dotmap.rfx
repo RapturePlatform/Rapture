@@ -25,11 +25,14 @@
 
 x = {};
 x['alan'] = 5;
-println(x.alan);
+println("x.alan="+x.alan);
 
 y = {};
 y.a = 'alan';
 y.b = 5;
 //y.alan.fred.billy.joe = 'Hello';
 
-println(y);
+println("y="+y);
+
+z.a = 'b';
+println("z="+z);

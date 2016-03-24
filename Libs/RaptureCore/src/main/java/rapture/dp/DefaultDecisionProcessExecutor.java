@@ -531,17 +531,16 @@ public class DefaultDecisionProcessExecutor implements DecisionProcessExecutor {
 	        DocApiImpl docApi = Kernel.getDoc().getTrusted();
 			String outputUri = RaptureURI.newScheme(worker.getWorkOrderURI(), Scheme.DOCUMENT).toShortString();
 
-			for (String workerId : workOrder.getWorkerIds()) {
-				String doc = docApi.getDocEphemeral(kernelUser, outputUri);
-				if (doc != null) {
-					Map<String, Object> map = JacksonUtil.getMapFromJson(doc);
-					Map<String, String> outputs = workOrder.getOutputs();
-					if (outputs == null) {
-						outputs = new LinkedHashMap<>();
-						workOrder.setOutputs(outputs);
-					}
-					outputs.put(workerId, map.get(outputUri + "#" + workerId).toString());
-					// delete it here
+			String doc = docApi.getDocEphemeral(kernelUser, outputUri);
+			if (doc != null) {
+				Map<String, Object> map = JacksonUtil.getMapFromJson(doc);
+				Map<String, String> outputs = workOrder.getOutputs();
+				if (outputs == null) {
+					outputs = new LinkedHashMap<>();
+					workOrder.setOutputs(outputs);
+				}
+				for (String key : map.keySet()) {
+					outputs.put(key, map.get(key).toString());
 				}
 			}
             WorkOrderStorage.add(workOrder, ContextFactory.getKernelUser().getUser(), "Updating status");

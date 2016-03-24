@@ -32,7 +32,7 @@ public class MatchTest extends AbstractReflexScriptTest {
 				+ "end\n" + "end";
 
 		String output = runScript(program, null);
-		assertEquals("Success", output);
+		assertEquals("Success", output.trim());
 	}
 	
 	@Test
@@ -42,7 +42,7 @@ public class MatchTest extends AbstractReflexScriptTest {
 				+ "end\n" + "end";
 
 		String output = runScript(program, null);
-		assertEquals("10", output);
+		assertEquals("10", output.trim());
 	}
 	
 	@Test
