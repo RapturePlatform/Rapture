@@ -493,11 +493,12 @@ public class DecisionApiImpl extends KernelBase implements DecisionApi {
         	String id = outputUri + "#" + workerId;
         	if (!workerOutput.containsKey(id)) {
         		String str = docApi.getDocEphemeral(context, outputUri);
-				Map<String, Object> map = JacksonUtil.getMapFromJson(str);
-				Object out = map.get(id);
-				if (out != null)
-		        	workerOutput.put(id, out.toString());
-        	}
+        		if (str != null) {
+					Map<String, Object> map = JacksonUtil.getMapFromJson(str);
+					Object out = map.get(id);
+					if (out != null) workerOutput.put(id, out.toString());
+        		}
+    		}
 		}
         return retVal;
     }
