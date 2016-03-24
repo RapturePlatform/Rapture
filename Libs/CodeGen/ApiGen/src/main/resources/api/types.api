@@ -1034,6 +1034,7 @@ type WorkOrder(@package=rapture.common.dp) {
     WorkOrderURI workOrderURI;
     WorkflowURI workflowURI; //uri of Workflow used when creating this WorkOrder
     List<String> workerIds; // all ids since the start of time
+    Map<String, String> outputs; // output for each Worker ID
     List<String> pendingIds; // top-level ids that have not terminated
     Integer priority; 
     Long startTime; //epoch in milliseconds
@@ -1082,7 +1083,7 @@ type ExecutionContextField(@package=rapture.common.dp) {
 [The status of a work order.]
 @Bean
 type WorkOrderStatus(@package=rapture.common.dp) {
-    List<String> workerIds;
+    Map<String, String> workerOutput;
     WorkOrderExecutionState status;  // ACTIVE, CANCELLING, CANCELLED, FINISHED, ERROR
 }
 

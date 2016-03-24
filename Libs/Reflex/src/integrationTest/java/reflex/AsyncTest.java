@@ -76,8 +76,7 @@ public class AsyncTest extends ResourceBasedTest {
         String output = runTestFor("/async/RAP3504.rfx");
         assertNotNull(output);
         System.out.println(output);
-        String workOrderStatus = output.split("[{}]")[1];
-        assertEquals("workerIds=[0], status=FINISHED, CLASS=rapture.common.dp.WorkOrderStatus", workOrderStatus);
-        assertTrue(output.contains("I am the target script"));
+        String lines[] = output.split("\n");
+        assertEquals("{workerOutput={0=I am the target script}, status=FINISHED, CLASS=rapture.common.dp.WorkOrderStatus}", lines[1]+lines[2]);
     }
 }
