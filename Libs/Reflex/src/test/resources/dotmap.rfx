@@ -30,7 +30,7 @@ println("x.alan="+x.alan);
 y = {};
 y.a = 'alan';
 y.b = 5;
-//y.alan.fred.billy.joe = 'Hello';
+y.alan.fred.billy.joe = 'Hello';
 
 println("y="+y);
 
