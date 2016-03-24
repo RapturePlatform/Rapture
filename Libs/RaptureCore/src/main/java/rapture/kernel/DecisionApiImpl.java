@@ -28,7 +28,6 @@ import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -53,7 +52,6 @@ import rapture.common.AppStatus;
 import rapture.common.AppStatusGroup;
 import rapture.common.AppStatusGroupStorage;
 import rapture.common.AppStatusStorage;
-import rapture.common.BlobContainer;
 import rapture.common.CallingContext;
 import rapture.common.CreateResponse;
 import rapture.common.ErrorWrapper;
@@ -63,7 +61,6 @@ import rapture.common.RaptureURI;
 import rapture.common.Scheme;
 import rapture.common.SemaphoreAcquireResponse;
 import rapture.common.WorkOrderExecutionState;
-import rapture.common.api.BlobApi;
 import rapture.common.api.DecisionApi;
 import rapture.common.dp.AppStatusDetails;
 import rapture.common.dp.ContextValueType;
@@ -97,7 +94,6 @@ import rapture.common.exception.ExceptionToString;
 import rapture.common.exception.RaptureException;
 import rapture.common.exception.RaptureExceptionFactory;
 import rapture.common.impl.jackson.JacksonUtil;
-import rapture.common.model.BlobRepoConfig;
 import rapture.dp.ArgsHashFactory;
 import rapture.dp.DecisionProcessExecutorFactory;
 import rapture.dp.InvocableUtils;
@@ -113,11 +109,6 @@ import rapture.kernel.dp.WorkflowValidator;
 import rapture.log.management.LogManagerConnection;
 import rapture.log.management.LogReadException;
 import rapture.log.management.SessionExpiredException;
-
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.google.common.base.Optional;
-import com.google.common.collect.Maps;
-import com.google.common.net.MediaType;
 
 public class DecisionApiImpl extends KernelBase implements DecisionApi {
     private static final String ERROR_LIST_CONSTANT = "errorList";
@@ -321,7 +312,7 @@ public class DecisionApiImpl extends KernelBase implements DecisionApi {
             }
             String error = String
                     .format("Unable to acquire a permit for a new WorkOrder for Workflow %s, with lockKey %s. The lock is already being held by the following" +
-                                    " WorkOrder(s): %s",
+                            " WorkOrder(s): %s",
                             workflowURI, lockKey, StringUtils.join(existingWoDesc, ", "));
             logger.warn(error);
             CreateResponse ret = new CreateResponse();
@@ -482,24 +473,24 @@ public class DecisionApiImpl extends KernelBase implements DecisionApi {
         List<String> workerIds = workOrder.getWorkerIds();
         Map<String, String> workerOutput = workOrder.getOutputs();
         if (workerOutput == null) {
-        	workerOutput = new HashMap<>();
+            workerOutput = new HashMap<>();
         }
         retVal.setWorkerOutput(workerOutput);
-        
+
         DocApiImpl docApi = Kernel.getDoc().getTrusted();
         String outputUri = RaptureURI.newScheme(workOrderURI, Scheme.DOCUMENT).toShortString();
-        
-		for (String workerId : workerIds) {
-        	String id = outputUri + "#" + workerId;
-        	if (!workerOutput.containsKey(id)) {
-        		String str = docApi.getDocEphemeral(context, outputUri);
-        		if (str != null) {
-					Map<String, Object> map = JacksonUtil.getMapFromJson(str);
-					Object out = map.get(id);
-					if (out != null) workerOutput.put(id, out.toString());
-        		}
-    		}
-		}
+
+        for (String workerId : workerIds) {
+            String id = outputUri + "#" + workerId;
+            if (!workerOutput.containsKey(id)) {
+                String str = docApi.getDocEphemeral(context, outputUri);
+                if (str != null) {
+                    Map<String, Object> map = JacksonUtil.getMapFromJson(str);
+                    Object out = map.get(id);
+                    if (out != null) workerOutput.put(id, out.toString());
+                }
+            }
+        }
         return retVal;
     }
 
@@ -797,6 +788,31 @@ public class DecisionApiImpl extends KernelBase implements DecisionApi {
     public List<WorkOrder> getWorkOrdersByDay(CallingContext context, Long startTimeInstant) {
         String startDate = getStartOfDayEpoch(startTimeInstant);
         return WorkOrderStorage.readAll(startDate);
+    }
+
+    @Override
+    public List<String> getWorkOrdersByWorkflow(CallingContext context, Long startTimeInstant, String workflowUri) {
+        if (startTimeInstant == null) {
+            startTimeInstant = 0L;
+        }
+        DateTime startDate = new DateTime(startTimeInstant, DateTimeZone.UTC).withTimeAtStartOfDay();
+        DateTime nowDate = new DateTime(System.currentTimeMillis(), DateTimeZone.UTC).withTimeAtStartOfDay();
+        List<String> ret = new ArrayList<>();
+        RaptureURI uri = new RaptureURI(workflowUri, Scheme.WORKFLOW);
+        log.info(String.format("Requested startDate is [%s] and current date is [%s]", startDate.toString(), nowDate.toString()));
+        while (true) {
+            if (startDate.isAfter(nowDate)) {
+                break;
+            } else {
+                String prefix = String.format("%d/%s/%s", startDate.getMillis() / 1000, uri.getAuthority(), uri.getDocPath());
+                List<WorkOrder> workOrders = WorkOrderStorage.readAll(prefix);
+                for (WorkOrder workOrder : workOrders) {
+                    ret.add(workOrder.getWorkOrderURI());
+                }
+                startDate = startDate.plusDays(1);
+            }
+        }
+        return ret;
     }
 
     @Override
