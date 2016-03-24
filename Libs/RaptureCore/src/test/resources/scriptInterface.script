@@ -1,0 +1,10 @@
+_params = {};
+param1 = _params['a'];
+param2 = _params['b'];
+param3 = _params['c'];
+param4 = _params['d'];
+
+println("a is ${a}");
+println("b is ${b}");
+println("c is ${c}");
+println("d is ${d}");
