@@ -44,7 +44,7 @@ assert(res == 15);
 assert(res2 == 120);
 
 def matrixPlayFn(total, row, column, value)
-	if (typeof(value) == 'number') do
+	if (typeof(value) == 'number' || typeof(value) == 'integer') do
 	   if (row % 2 == 0) do
 	       total = total + value;
 	   end

@@ -770,16 +770,11 @@ type RaptureFolderInfo(@package=rapture.common) {
 	boolean folder;
 }
 
-[Parameters that should be passed to a script. Deprecated]
-type RaptureParameter(@package=rapture.common) {
-	String name;
-	RaptureParameterType parameterType;
-}
-
 [Script input and output metadata.]
 type ScriptInterface(@package=rapture.common) {
+    Map<String, String> properties;
 	Map<String, ScriptParameter> inputs;
-	Map<String, ScriptParameter> outputs;
+	ScriptParameter ret;
 }
 
 [Metadata for an script parameter.]
