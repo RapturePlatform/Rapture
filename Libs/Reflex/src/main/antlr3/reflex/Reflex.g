@@ -180,7 +180,7 @@ package reflex;
         super.recover(e);
     }
     
-  public boolean wibble(String error, IntStream input, Token token, boolean ignorable) throws ReflexRecognitionException {
+  public boolean error(String error, IntStream input, Token token, boolean ignorable) throws ReflexRecognitionException {
 	ReflexRecognitionException rre = new ReflexRecognitionException(error, input, token);
 	if (ignorable) emitErrorMessage(ErrorHandler.getParserExceptionDetails(rre));
 	else throw rre;
@@ -331,7 +331,7 @@ package reflex;
       super.reportError(e);
   }
   
-  public void wibble(String error, IntStream input, Token t) throws ReflexRecognitionException {	
+  public void error(String error, IntStream input, Token t) throws ReflexRecognitionException {	
     CommonToken ct = (CommonToken) t;
 	int length = ct.getStopIndex() - ct.getStartIndex() +1;
 	int start = ct.getCharPositionInLine();
@@ -384,9 +384,9 @@ statement  :  assignment ';'   -> assignment
   |  exportStatement
 // Unexpected stuff that can throw off the parser.
 // Need to catch it and flag it at the source
-	|  Unsupported { wibble("Unsupported Operation", input, $Unsupported); }
-    |  SColon { wibble("Unexpected character", input, $SColon); } 
-  	|  Identifier { wibble("Unexpected identifier", input, $Identifier); } 
+	|  Unsupported { error("Unsupported Operation", input, $Unsupported); }
+    |  SColon { error("Unexpected character", input, $SColon); } 
+  	|  Identifier { error("Unexpected identifier", input, $Identifier); } 
   ;
 	
 Unsupported 
@@ -580,8 +580,8 @@ otherwise
 
 comparator 
   : Is (Equals | NEquals | GTEquals | LTEquals | GT | LT) expression
-  | Is Assign { wibble("Assignment found where comparator expected", input, $Is); } expression 
-  | Is (Or | And | Excl | Add | Subtract | Multiply | Divide | Modulus) { wibble("Comparator expected", input, $Is); } expression 
+  | Is Assign { error("Assignment found where comparator expected", input, $Is); } expression 
+  | Is (Or | And | Excl | Add | Subtract | Multiply | Divide | Modulus) { error("Comparator expected", input, $Is); } expression 
   ;
 
 // SWITCH requires constants as case values
@@ -601,8 +601,8 @@ variant
   |  Case Bool -> Bool  
   |  Case String -> String
   |  Default
-  |  Case QuotedString { wibble("Quoted String found where constant expected. Use single quotes.", input, $QuotedString);}
-  |  expression {wibble("Expression found where constant expected.", input, $expression.start);}
+  |  Case QuotedString { error("Quoted String found where constant expected. Use single quotes.", input, $QuotedString);}
+  |  expression {error("Expression found where constant expected.", input, $expression.start);}
   ;
   
 ifStatement
@@ -919,7 +919,7 @@ Do       : 'do';
 
 // Without this a semicolon after end causes really unhelpful error messages
 End      : 'end'
-         | 'end' {wibble("Unexpected semicolon", input, null, true)}? SColon
+         | 'end' {error("Unexpected semicolon", input, null, true)}? SColon
          ;
 
 In       : 'in';
@@ -1040,7 +1040,7 @@ QuotedString
            ( escaped=ESC {lBuf.append(getText());} |
              normal=~('"'|'“'|'”'|'\\'|'\n'|'\r')     {lBuf.appendCodePoint(normal);} )*
            ( DoubleQuote {setText(lBuf.toString());} 
-           | ( '\n' | '\r')  {wibble("Found newline in string "+lBuf.toString(), input, tok, false);})
+           | ( '\n' | '\r')  {error("Found newline in string "+lBuf.toString(), input, tok, false);})
            
     ;
     
@@ -1077,7 +1077,7 @@ String
            ( escaped=ESC {lBuf.append(getText());} |
              normal=~('\''|'\\'|'\n'|'\r')     {lBuf.appendCodePoint(normal);} )*
            ( SingleQuote {setText(lBuf.toString());} 
-           | ( '\n' | '\r')  {wibble("Found newline in string "+lBuf.toString(), input, tok, false);})
+           | ( '\n' | '\r')  {error("Found newline in string "+lBuf.toString(), input, tok, false);})
            
     ;
 
