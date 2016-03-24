@@ -15,6 +15,7 @@ import org.antlr.runtime.RecognitionException;
 import org.junit.Before;
 import org.junit.Test;
 
+import rapture.common.impl.jackson.JacksonUtil;
 import rapture.kernel.ContextFactory;
 import rapture.script.ScriptFactory;
 import rapture.script.reflex.ReflexRaptureScript;
@@ -81,6 +82,8 @@ public class ScriptInterfaceTest {
         MetaScriptInfo info = parser.scriptInfo;
         if (info == null) {
         	System.out.println("No meta info");
+        } else {
+        	System.out.println(JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(info)));
         }
     }
 }
