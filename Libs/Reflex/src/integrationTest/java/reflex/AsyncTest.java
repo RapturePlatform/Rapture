@@ -80,6 +80,14 @@ public class AsyncTest extends ResourceBasedTest {
 	}
 
 	@Test
+	public void RAP3502() throws RecognitionException {
+		String output = runTestFor("/async/RAP3502.rfx");
+		assertNotNull(output);
+		System.out.println(output);
+//		assertTrue(output.contains("Unexpected identifier at token Wibble  at line 1"));
+	}
+
+	@Test
 	public void RAP3504() throws RecognitionException {
 		String output = runTestFor("/async/RAP3504.rfx");
 		assertNotNull(output);
