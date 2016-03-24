@@ -139,6 +139,8 @@ public class ResourceBasedTest {
 	protected String runTestFor(String fileName) throws RecognitionException {
 		ReflexLexer lexer = new ReflexLexer();
 		String program = getResourceAsString(this, fileName);
+		if ((program == null) || program.isEmpty())
+			throw new RuntimeException("No programme to run");
 		lexer.setCharStream(new ANTLRStringStream(program));
 		return runTestForWithLexer(fileName, lexer, program, null);
 	}
@@ -210,6 +212,7 @@ public class ResourceBasedTest {
 				sb.append("--RETURNS--").append(retVal.asString());
 			}
 			instrument.getInstrumenter().log();
+			System.out.println(sb.toString());
 			return sb.toString();
 		} catch (RecognitionException e) {
 			String hdr = parser.getErrorHeader(e);

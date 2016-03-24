@@ -19,7 +19,7 @@ public class SwitchTest extends AbstractReflexScriptTest {
 				+ "end\n" + "end";
 
 		String output = runScript(program, null);
-		assertEquals("Success", output);
+		assertEquals("Success", output.trim());
 	}
 
 	@Test
@@ -28,7 +28,7 @@ public class SwitchTest extends AbstractReflexScriptTest {
 				+ "default do\n" + "println('Success');\n" + "end\n" + "end";
 
 		String output = runScript(program, null);
-		assertEquals("Success", output);
+		assertEquals("Success", output.trim());
 	}
 
 	@Test
@@ -114,7 +114,7 @@ public class SwitchTest extends AbstractReflexScriptTest {
 			"  end\n"+
 			"end\n";
 		String output = runScript(program, null);
-		assertEquals("Integer", output);
+		assertEquals("Integer", output.trim());
 
 	}
 	

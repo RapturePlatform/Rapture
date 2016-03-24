@@ -30,6 +30,6 @@ public class CastTest extends ResourceBasedTest {
 
     @Test
     public void testCast() throws RecognitionException {
-        runTestFor("./cast.rfx");
+        runTestFor("/cast.rfx");
     }
 }

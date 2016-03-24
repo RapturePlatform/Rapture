@@ -12,6 +12,10 @@
  */
 package reflex;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.tree.CommonTreeNodeStream;
 import org.junit.Before;
@@ -24,60 +28,72 @@ import rapture.common.client.HttpLoginApi;
 import rapture.common.client.ScriptClient;
 import rapture.common.client.SimpleCredentialsProvider;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 public class AsyncTest extends ResourceBasedTest {
 
-    @BeforeClass
-    public static void setUpBeforeClass() throws Exception {
-    }
+	@BeforeClass
+	public static void setUpBeforeClass() throws Exception {
+	}
 
-    @Before
-    public void setUp() throws Exception {
+	@Before
+	public void setUp() throws Exception {
 
-    }
+	}
 
-    protected ReflexTreeWalker createReflexTreeWalker(CommonTreeNodeStream nodes, ReflexParser parser) {
-        ReflexTreeWalker treeWalker = new ReflexTreeWalker(nodes, parser.languageRegistry);
-        String hostUrl = "http://localhost:8665/rapture";
-        CredentialsProvider provider = new SimpleCredentialsProvider("rapture", "rapture");
-        HttpLoginApi loginApi = new HttpLoginApi(hostUrl, provider);
-        loginApi.login();
-        ScriptingApi api = new ScriptClient(loginApi);
-        IReflexHandler handler = new StandardReflexHandler(api);
-        treeWalker.setReflexHandler(handler);
-        return treeWalker;
-    }
+	protected ReflexTreeWalker createReflexTreeWalker(CommonTreeNodeStream nodes, ReflexParser parser) {
+		ReflexTreeWalker treeWalker = new ReflexTreeWalker(nodes, parser.languageRegistry);
+		String hostUrl = "http://localhost:8665/rapture";
+		CredentialsProvider provider = new SimpleCredentialsProvider("rapture", "rapture");
+		HttpLoginApi loginApi = new HttpLoginApi(hostUrl, provider);
+		loginApi.login();
+		ScriptingApi api = new ScriptClient(loginApi);
+		IReflexHandler handler = new StandardReflexHandler(api);
+		treeWalker.setReflexHandler(handler);
+		return treeWalker;
+	}
 
-    @Test
-    public void runCallAndSuspendTest() throws RecognitionException {
-        runTestFor("/async/callAndSuspend.rfx");
-    }
+	@Test
+	public void runCallAndSuspendTest() throws RecognitionException {
+		runTestFor("/async/callAndSuspend.rfx");
+	}
 
-    @Test
-    public void runCallAndSuspendSingleTest() throws RecognitionException {
-        runTestFor("/async/callAndSuspendSingle.rfx");
-    }
+	@Test
+	public void runCallAndSuspendSingleTest() throws RecognitionException {
+		runTestFor("/async/callAndSuspendSingle.rfx");
+	}
 
-    @Test
-    public void runCallAndWaitTest() throws RecognitionException {
-        runTestFor("/async/callAndWait.rfx");
-    }
+	@Test
+	public void runCallAndWaitTest() throws RecognitionException {
+		runTestFor("/async/callAndWait.rfx");
+	}
 
-    @Test
-    public void runCallOnServerAndWaitTest() throws RecognitionException {
-        runTestFor("/async/callOnServerAndWait.rfx");
-    }
-    
-    @Test
-    public void RAP3504() throws RecognitionException {
-        String output = runTestFor("/async/RAP3504.rfx");
-        assertNotNull(output);
-        System.out.println(output);
-        String workOrderStatus = output.split("[{}]")[1];
-        assertEquals("workerIds=[0], status=FINISHED, CLASS=rapture.common.dp.WorkOrderStatus", workOrderStatus);
-        assertTrue(output.contains("I am the target script"));
-    }
+	@Test
+	public void runCallOnServerAndWaitTest() throws RecognitionException {
+		runTestFor("/async/callOnServerAndWait.rfx");
+	}
+
+	@Test
+	public void RAP3500() throws RecognitionException {
+		String output = runTestFor("/async/RAP3500.rfx");
+		assertNotNull(output);
+		System.out.println(output);
+		assertTrue(output.contains("Unexpected identifier at token Wibble  at line 1"));
+	}
+
+	@Test
+	public void RAP3502() throws RecognitionException {
+		String output = runTestFor("/async/RAP3502.rfx");
+		assertNotNull(output);
+		System.out.println(output);
+//		assertTrue(output.contains("Unexpected identifier at token Wibble  at line 1"));
+	}
+
+	@Test
+	public void RAP3504() throws RecognitionException {
+		String output = runTestFor("/async/RAP3504.rfx");
+		assertNotNull(output);
+		System.out.println(output);
+		String lines[] = output.split("\n");
+		assertTrue(lines[1].endsWith("I am the target script"));
+		assertEquals("}, status=FINISHED, CLASS=rapture.common.dp.WorkOrderStatus}", lines[2]);
+	}
 }

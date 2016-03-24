@@ -3,12 +3,11 @@ returnVal = false;
 
 try do
 	println('Test call of simple valid script, assert pass');
-	program = "println('I am the target script');";
+	program = "Wibble";
 	handle = @call(program, {});
 	sleep (5000);
 	println (@status(handle));
 	runResult=@status(handle);
-	println (runResult);
 	if (runResult['status'] == 'FINISHED') do
 		returnVal = true;
 	else do

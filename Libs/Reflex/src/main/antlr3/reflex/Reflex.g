@@ -321,8 +321,8 @@ package reflex;
         scriptInfo.setReturn(retType, meta);
   }
 
-  private void addMetaParameter(String parameterName, String parameterType, String description, String requestType, String requestData) {
-        scriptInfo.addParameter(parameterName, parameterType, description, MetaParamRequest.valueOf(requestType), requestData);
+  private void addMetaParameter(String parameterName, String parameterType, String description) {
+        scriptInfo.addParameter(parameterName, parameterType, description);
   }
 
   @Override
@@ -348,7 +348,7 @@ metaBlock
   ;
 
 metaStatement
-  : 'param'  name=String ',' metaType=('list' | 'map' | 'number' | 'string') ',' desc=String ',' reqType = (  'FIXEDLIST' | 'FREESTRING' | 'SCRIPTLIST') ',' requestData=String ';' { addMetaParameter($name.text, $metaType.text, $desc.text, $reqType.text, $requestData.text); }
+  : 'param'  name=String ',' metaType=('list' | 'map' | 'number' | 'string') ',' desc=String  ';' { addMetaParameter($name.text, $metaType.text, $desc.text); }
   | Return ret=('list' | 'map' | 'number' | 'string') ',' meta=String ';' { defineMetaReturn($ret.text, $meta.text); }
   | 'property' name=String ',' value=String ';' { addMetaProperty($name.text, $value.text); }
   ;
@@ -1036,11 +1036,18 @@ QuotedString
   alias.pop();
 }
     :
-           '"'
+           DoubleQuote
            ( escaped=ESC {lBuf.append(getText());} |
-             normal=~('"'|'\\'|'\n'|'\r')     {lBuf.appendCodePoint(normal);} )*
-           '"'
-           {setText(lBuf.toString());}
+             normal=~('"'|'“'|'”'|'\\'|'\n'|'\r')     {lBuf.appendCodePoint(normal);} )*
+           ( DoubleQuote {setText(lBuf.toString());} 
+           | ( '\n' | '\r')  {wibble("Found newline in string "+lBuf.toString(), input, false);})
+           
+    ;
+    
+DoubleQuote 
+    : '"'
+    | '“'
+    | '”'
     ;
 
 fragment
@@ -1065,8 +1072,9 @@ String
            '\''
            ( escaped=ESC {lBuf.append(getText());} |
              normal=~('\''|'\\'|'\n'|'\r')     {lBuf.appendCodePoint(normal);} )*
-           '\''
-           {setText(lBuf.toString());}
+           ( '\'' {setText(lBuf.toString());} 
+           | ( '\n' | '\r')  {wibble("Found newline in string "+lBuf.toString(), input, false);})
+           
     ;
 
 Comment
