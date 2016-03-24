@@ -117,8 +117,8 @@ public class DocGeneratorTest {
                 assertTrue(file.getAbsolutePath().endsWith("includes/" + name));
                 String content = readResource("/output/expected/includes/" + name);
                 
-                String expects[] = content.split("\n");
-                String tmp[] = FileUtils.readFileToString(file).split("\n====\n");
+                String expects[] = content.split("[\n]+");
+                String tmp[] = FileUtils.readFileToString(file).replaceAll("[\n]+", "\n").split("====\n");
                 StringBuilder sb = new StringBuilder();
                 // Strip out the MIT licence
                 for (String s : tmp) {
