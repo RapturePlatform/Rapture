@@ -480,24 +480,25 @@ public class DecisionApiImpl extends KernelBase implements DecisionApi {
         WorkOrderStatus retVal = new WorkOrderStatus();
         retVal.setStatus(workOrder.getStatus());
         List<String> workerIds = workOrder.getWorkerIds();
-        Map<String, String> workOrderOutput = workOrder.getOutputs();
-        Map<String, String> workerOutput = new LinkedHashMap<>();
+        Map<String, String> workerOutput = workOrder.getOutputs();
+        if (workerOutput == null) {
+        	workerOutput = new HashMap<>();
+        }
+        retVal.setWorkerOutput(workerOutput);
         
         DocApiImpl docApi = Kernel.getDoc().getTrusted();
         String outputUri = RaptureURI.newScheme(workOrderURI, Scheme.DOCUMENT).toShortString();
         
 		for (String workerId : workerIds) {
-        	String out = null;
-        	if (workOrderOutput != null) out = workOrderOutput.get(workerId);
-        	if (out == null) {
+        	String id = outputUri + "#" + workerId;
+        	if (!workerOutput.containsKey(id)) {
         		String str = docApi.getDocEphemeral(context, outputUri);
 				Map<String, Object> map = JacksonUtil.getMapFromJson(str);
-				out = map.get(outputUri + "#" + workerId).toString();
+				Object out = map.get(id);
+				if (out != null)
+		        	workerOutput.put(id, out.toString());
         	}
-        	workerOutput.put(workerId, out);
 		}
-
-        retVal.setWorkerOutput(workerOutput);
         return retVal;
     }
 

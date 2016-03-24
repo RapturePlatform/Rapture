@@ -70,22 +70,29 @@ public class ScriptBodyStep<T> extends AbstractInvocable<T> {
         if (workerAuditUri != null) {
             rScript.setAuditLogUri(workerAuditUri);
         }
-
-        ScriptResult resp = rScript.runProgramExtended(context, null, script, params);
-        if (resp != null) {
-            log.info("Reflex script returned " + resp);
-        }
         
         RaptureURI outputUri = RaptureURI.newScheme(getWorkerURI(), Scheme.DOCUMENT);
-        
         DocApiImpl docApi = Kernel.getDoc().getTrusted();
         StringBuilder sb = new StringBuilder();
-        for (String s : resp.getOutput()) sb.append(s);
-        String str = docApi.getDocEphemeral(context, outputUri.toShortString());
-        Map<String, Object> m = (str == null) ? new HashMap<>() : JacksonUtil.getMapFromJson(str);
-        m.put(outputUri.toString(),  sb.toString());
-        String json = JacksonUtil.jsonFromObject(m);
-        docApi.putDocEphemeral(context, outputUri.toShortString(), json);
-        return "next";
+
+		try {
+			ScriptResult resp = rScript.runProgramExtended(context, null, script, params);
+			if (resp != null) {
+			    log.info("Reflex script returned " + resp);
+			}
+	        for (String s : resp.getOutput()) sb.append(s);
+	        String str = docApi.getDocEphemeral(context, outputUri.toShortString());
+	        Map<String, Object> m = (str == null) ? new HashMap<>() : JacksonUtil.getMapFromJson(str);
+	        m.put(outputUri.toString(),  sb.toString());
+	        String json = JacksonUtil.jsonFromObject(m);
+	        docApi.putDocEphemeral(context, outputUri.toShortString(), JacksonUtil.jsonFromObject(m));
+	        return "next";
+		} catch (Exception e) {
+			sb.append(e.getMessage());
+	        Map<String, Object> m = new HashMap<>();
+	        m.put(outputUri.toString(),  sb.toString());
+	        docApi.putDocEphemeral(context, outputUri.toShortString(), JacksonUtil.jsonFromObject(m));
+	        throw e;
+		}
     }
 }
