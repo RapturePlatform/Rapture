@@ -38,7 +38,7 @@
 
 // Test and exercise typeof
 
-assert(typeof(3)=='number');
+assert(typeof(3)=='integer');
 assert(typeof(true)=='boolean');
 assert(typeof('hello')=='string');
 assert(typeof([1,2.0,3])=='list');
@@ -53,5 +53,5 @@ x = 4.9;
 assert(typeof(x) == 'number');
 assert(typeof(println('hello')) == 'complex');
 
-assert(typeof(size([1,2,3])) == 'number');
+assert(typeof(size([1,2,3])) == 'integer');
 
