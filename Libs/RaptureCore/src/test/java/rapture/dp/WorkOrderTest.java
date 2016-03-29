@@ -59,6 +59,7 @@ public class WorkOrderTest {
         Kernel.getScript().createScript(ctx, REPO_URI + "/" + scr1, RaptureScriptLanguage.REFLEX, RaptureScriptPurpose.PROGRAM,
                 "println(\"Hello there\"); return \"ok\";");
         String workflowUri = "workflow://testthisworkflow/wf";
+        String workflowUri2 = "workflow://anotherworkflow/xx";
         List<Step> steps = new ArrayList<Step>();
         Step s1 = new Step();
         s1.setName("start");
@@ -72,7 +73,16 @@ public class WorkOrderTest {
         workflow.setStartStep("start");
 
         Kernel.getDecision().putWorkflow(ctx, workflow);
+
+        Workflow workflow2 = new Workflow();
+        workflow2.setSteps(steps);
+        workflow2.setWorkflowURI(workflowUri2);
+        workflow2.setStartStep("start");
+
+        Kernel.getDecision().putWorkflow(ctx, workflow2);
+
         final String workOrderUri = Kernel.getDecision().createWorkOrder(ctx, workflowUri, null);
+        Kernel.getDecision().createWorkOrder(ctx, workflowUri2, null);
 
         List<String> ret = Kernel.getDecision().getWorkOrdersByWorkflow(ctx, System.currentTimeMillis(), workflowUri);
         assertEquals(1, ret.size());

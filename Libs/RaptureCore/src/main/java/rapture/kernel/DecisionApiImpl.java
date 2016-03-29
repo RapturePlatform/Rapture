@@ -82,6 +82,7 @@ import rapture.common.dp.WorkOrderCancellationStorage;
 import rapture.common.dp.WorkOrderDebug;
 import rapture.common.dp.WorkOrderInitialArgsHash;
 import rapture.common.dp.WorkOrderInitialArgsHashStorage;
+import rapture.common.dp.WorkOrderPathBuilder;
 import rapture.common.dp.WorkOrderStatus;
 import rapture.common.dp.WorkOrderStorage;
 import rapture.common.dp.Worker;
@@ -800,16 +801,20 @@ public class DecisionApiImpl extends KernelBase implements DecisionApi {
         List<String> ret = new ArrayList<>();
         RaptureURI uri = new RaptureURI(workflowUri, Scheme.WORKFLOW);
         log.info(String.format("Requested startDate is [%s] and current date is [%s]", startDate.toString(), nowDate.toString()));
-        while (true) {
-            if (startDate.isAfter(nowDate)) {
-                break;
-            } else {
-                String prefix = String.format("%d/%s/%s", startDate.getMillis() / 1000, uri.getAuthority(), uri.getDocPath());
+
+        final String workOrderPrefix = new WorkOrderPathBuilder().buildStorageLocation().toString();
+        Map<String, RaptureFolderInfo> existingTimes = Kernel.getDoc().listDocsByUriPrefix(context, workOrderPrefix, 1);
+        Map<String, RaptureFolderInfo> existingTimesWithAuthority = Kernel.getDoc().listDocsByUriPrefix(context, workOrderPrefix, 2);
+
+        for (Map.Entry<String, RaptureFolderInfo> entry : existingTimes.entrySet()) {
+            DateTime potentialTimestamp = new DateTime(Long.parseLong(entry.getValue().getName()) * 1000, DateTimeZone.UTC);
+            // check if the timestamp is within range and also if there is an matching workflow authority
+            if (!startDate.isAfter(potentialTimestamp) && existingTimesWithAuthority.containsKey(String.format("%s%s/", entry.getKey(), uri.getAuthority()))) {
+                String prefix = String.format("%s/%s/%s", entry.getValue().getName(), uri.getAuthority(), uri.getDocPath());
                 List<WorkOrder> workOrders = WorkOrderStorage.readAll(prefix);
                 for (WorkOrder workOrder : workOrders) {
                     ret.add(workOrder.getWorkOrderURI());
                 }
-                startDate = startDate.plusDays(1);
             }
         }
         return ret;
