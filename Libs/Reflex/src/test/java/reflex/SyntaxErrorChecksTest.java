@@ -97,25 +97,25 @@ public class SyntaxErrorChecksTest extends AbstractReflexScriptTest {
     @Test
     public void testNonTerminatedString1() throws RecognitionException {
     	String program = "x = 'abc';\n"+
-    			"y1 = \"abc;\n"+
+    			"y1 = \"xyz\"+\"abc;\n"+
     			"println(x == y1);\n"+
     			"";
 		String output = this.runScriptCatchingExceptions(program, null);
 		System.out.println(output);
 		String split[] = output.split("\n");
-		assertEquals("Found newline in string abc; at line 3 while parsing: ", split[2]);
+		assertEquals("Found newline in string abc; at token \" at line 2 while parsing: ", split[2]);
 	}
 
     @Test
     public void testNonTerminatedString2() throws RecognitionException {
     	String program = "x = 'abc';\n"+
-    			"y1 = 'abc;\n"+
+    			"y1 = 'xyz'+'abc;\n"+
     			"println(x == y1);\n"+
     			"";
 		String output = this.runScriptCatchingExceptions(program, null);
 		System.out.println(output);
 		String split[] = output.split("\n");
-		assertEquals("Found newline in string abc; at line 3 while parsing: ", split[2]);
+		assertEquals("Found newline in string abc; at token ' at line 2 while parsing: ", split[2]);
 	}
 
     @Test
@@ -127,7 +127,7 @@ public class SyntaxErrorChecksTest extends AbstractReflexScriptTest {
 		String output = this.runScriptCatchingExceptions(program, null);
 		System.out.println(output);
 		String split[] = output.split("\n");
-		assertEquals("Found newline in string abc; at line 3 while parsing: ", split[2]);
+		assertEquals("Found newline in string abc; at token ” at line 2 while parsing: ", split[2]);
 	}
 
     @Test
@@ -139,6 +139,6 @@ public class SyntaxErrorChecksTest extends AbstractReflexScriptTest {
 		String output = this.runScriptCatchingExceptions(program, null);
 		System.out.println(output);
 		String split[] = output.split("\n");
-		assertEquals("Found newline in string abc; at line 3 while parsing: ", split[2]);
+		assertEquals("Found newline in string abc; at token “ at line 2 while parsing: ", split[2]);
 	}
 }

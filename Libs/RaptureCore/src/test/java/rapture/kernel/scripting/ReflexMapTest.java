@@ -29,6 +29,7 @@ import java.util.HashMap;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import rapture.common.CallingContext;
@@ -108,6 +109,7 @@ public class ReflexMapTest {
         Kernel.getScript().runScript(ctx, uri + "/" + scr, new HashMap<String, String>());
     }
     
+    @Ignore // this is legal behaviour now
     @Test 
     public void testInvalidAssign() {
         try {

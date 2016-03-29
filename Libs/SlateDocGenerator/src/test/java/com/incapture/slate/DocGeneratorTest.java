@@ -29,8 +29,10 @@ import static junit.framework.TestCase.assertTrue;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
@@ -114,7 +116,24 @@ public class DocGeneratorTest {
                 assertTrue("filename is " + name, FILE_NAMES.contains(name));
                 assertTrue(file.getAbsolutePath().endsWith("includes/" + name));
                 String content = readResource("/output/expected/includes/" + name);
-                assertEquals(String.format("content for file %s does not match", file.getAbsolutePath()), content, FileUtils.readFileToString(file));
+                
+                String expects[] = content.split("[\n]+");
+                String tmp[] = FileUtils.readFileToString(file).replaceAll("[\n]+", "\n").split("====\n");
+                StringBuilder sb = new StringBuilder();
+                // Strip out the MIT licence
+                for (String s : tmp) {
+                	if (!s.startsWith("    The MIT License (MIT)"))
+                		sb.append(s);
+                }
+                String actuals[] = sb.toString().split("\n");
+                assertEquals(String.format("Expected number of lines for file %s does not match", file.getAbsolutePath()),  expects.length, actuals.length);
+                int i = 0;
+                while (i < expects.length) {
+                	String expect = expects[i];
+                	String actual = actuals[i];
+                	i++;
+                	assertEquals(String.format("Line %d in file %s does not match", i, file.getAbsolutePath()), expect, actual);
+                }
             }
         }
     }
