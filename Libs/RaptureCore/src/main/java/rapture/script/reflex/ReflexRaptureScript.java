@@ -292,8 +292,6 @@ public class ReflexRaptureScript implements IRaptureScript {
 				// Audit Log is NothingLog so this doesn't help
 
 				if (auditLogUri != null) {
-					AuditLog alog = Kernel.getKernel().getLog(context, new RaptureURI(auditLogUri));
-
 					Kernel.getAudit().writeAuditEntry(context, auditLogUri, "debug", 1, collector.getBlobContent());
 				} else {
 					ScriptCollectorHelper.writeCollector(context, collector);
