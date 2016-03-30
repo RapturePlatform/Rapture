@@ -46,7 +46,7 @@ import com.google.common.collect.ImmutableMap;
 /**
  * Instances of this class are used to invoke an appropriate response to manage
  * a message on a pipeline task queue.
- * <p/>
+ * <p>
  * The appropriate content handler is determined by the contentType field, this
  * class simply routes to the appropriate one.
  *

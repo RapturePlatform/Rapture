@@ -67,7 +67,7 @@ public class StepRecordUtil {
     /**
      * Store a step record for a worker. If this step record already exists for the worker, then it will get updated/overwritten. If it does not exist, a new
      * one is created. StepRecord equality is computed by checking if the stepURI and startTime fields in the StepRecord are the same
-     * <p/>
+     * <p>
      * This is NOT thread safe. However it should not matter, as a worker is by definition sequential, so this should never get called in parallel
      *
      * @param context

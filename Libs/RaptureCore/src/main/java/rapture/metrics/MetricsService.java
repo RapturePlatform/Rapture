@@ -37,7 +37,7 @@ public interface MetricsService {
      * Use this to measure how long certain events take. Call this function to indicate that it should start monitoring a unique metric class + id
      * combination. This tells the system to start monitoring this combination. To record a time between the call to this function and after something is
      * complete, call {@link #recordTimeDifference(String, String, String)}. The event must be relatively short, ranging from milliseconds to a few hours
-     * <p/>
+     * <p>
      *
      * @param metricClass The metric class is a string that together with the unique id, can be used to record metrics for a particular area we are measuring.
      * @param id          A unique id for this occurrence of the event that we're measuring, e.g. the work order id (WO00001)
@@ -48,12 +48,12 @@ public interface MetricsService {
      * Call this to record the time difference between now and the time we started monitoring a metric class + id combination. The metric class and id must
      * match the metric class and id already being monitored, which means that {@link #startMonitoring(String, String)} must have already been called.
      * This method can be called multiple times for the same start event-unique id combination.
-     * <p/>
+     * <p>
      *
      * @param metricClass   The metric class we are monitoring
      * @param id            The unique id for this metric class
      * @param parameterName The name of the parameter to record.
-     *                      <p/>
+     *                      <p>
      *                      Use this convention for parameterName: <namespace>.<instrumented section>.<target (noun)>.<action
      *                      (past tense verb)>
      *                      E.g. poms.bag.order.written

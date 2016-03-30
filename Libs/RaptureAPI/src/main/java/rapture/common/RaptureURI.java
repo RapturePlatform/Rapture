@@ -482,7 +482,7 @@ public class RaptureURI implements Cloneable {
         /**
          * Attempt to parse an input {@link String}. This method should be used to parse the input and then retrieve the resulting parts using methods like
          * {@link #getAuthority()}, {@link #getScheme()}, etc. {@link Parser} is a stateful object. For example:
-         * <p/>
+         * <p>
          * 
          * <pre>
          * URIParser parser = new URIParser(input, defaultScheme);
