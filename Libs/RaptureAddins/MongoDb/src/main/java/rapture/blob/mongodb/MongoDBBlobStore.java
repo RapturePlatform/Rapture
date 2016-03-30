@@ -24,22 +24,25 @@
 package rapture.blob.mongodb;
 
 import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.mongodb.MongoException;
+
 import rapture.blob.BaseBlobStore;
 import rapture.common.CallingContext;
+import rapture.common.Messages;
 import rapture.common.RaptureURI;
 import rapture.common.exception.RaptureExceptionFactory;
-
-import com.mongodb.MongoException;
 
 public class MongoDBBlobStore extends BaseBlobStore {
     private final static String INSTANCE_NAME = "default";
     public static final String PRIMARY_CONFIG = "prefix";
     public static final String SECONDARY_CONFIG = "grid";
     public static final String MULTIPART = "multipart";
+	private Messages mongoMsgCatalog = new Messages("Mongo");
 
     private BlobHandler blobHandler;
     private Map<String, String> config;
@@ -49,7 +52,7 @@ public class MongoDBBlobStore extends BaseBlobStore {
         try {
             return blobHandler.storeBlob(context, blobUri.getDocPath(), content, append);
         } catch (MongoException e) {
-            throw RaptureExceptionFactory.create(String.format("Mongo error when writing blob for path '%s': %s", blobUri.getDocPath(), e.getMessage()), e);
+			throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, mongoMsgCatalog.getMessage("WriteError", new String[] { blobUri.getDocPath(), e.getMessage()}));
         }
     }
 
@@ -58,7 +61,7 @@ public class MongoDBBlobStore extends BaseBlobStore {
         try {
             return blobHandler.deleteBlob(context, blobUri.getDocPath());
         } catch (MongoException e) {
-            throw RaptureExceptionFactory.create(String.format("Mongo error when deleting blob for path '%s': %s", blobUri.getDocPath(), e.getMessage()), e);
+			throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, mongoMsgCatalog.getMessage("DeleteError", new String[] { blobUri.getDocPath(), e.getMessage()}));
         }
     }
 
@@ -67,7 +70,7 @@ public class MongoDBBlobStore extends BaseBlobStore {
         try {
             return blobHandler.getBlob(context, blobUri.getDocPath());
         } catch (MongoException e) {
-            throw RaptureExceptionFactory.create(String.format("Mongo error when reading blob for path '%s': %s", blobUri.getDocPath(), e.getMessage()), e);
+			throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, mongoMsgCatalog.getMessage("ReadError", new String[] { blobUri.getDocPath(), e.getMessage()}));
         }
 
     }

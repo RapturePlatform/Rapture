@@ -23,20 +23,6 @@
  */
 package rapture.series.mongo;
 
-import rapture.common.RaptureFolderInfo;
-import rapture.common.SeriesValue;
-import rapture.common.exception.RaptureExceptionFactory;
-import rapture.dsl.serfun.DecimalSeriesValue;
-import rapture.dsl.serfun.LongSeriesValue;
-import rapture.dsl.serfun.StringSeriesValue;
-import rapture.dsl.serfun.StructureSeriesValueImpl;
-import rapture.mongodb.MongoDBFactory;
-import rapture.mongodb.MongoRetryWrapper;
-import rapture.series.SeriesPaginator;
-import rapture.series.SeriesStore;
-import rapture.series.children.ChildKeyUtil;
-import rapture.series.children.ChildrenRepo;
-
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.util.Iterator;
@@ -48,7 +34,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import com.google.common.base.Preconditions;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -58,7 +43,25 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
+import com.mongodb.MongoException;
+import com.mongodb.WriteConcernException;
 import com.mongodb.WriteResult;
+
+import rapture.common.Messages;
+import rapture.common.RaptureFolderInfo;
+import rapture.common.SeriesValue;
+import rapture.common.exception.ExceptionToString;
+import rapture.common.exception.RaptureExceptionFactory;
+import rapture.dsl.serfun.DecimalSeriesValue;
+import rapture.dsl.serfun.LongSeriesValue;
+import rapture.dsl.serfun.StringSeriesValue;
+import rapture.dsl.serfun.StructureSeriesValueImpl;
+import rapture.mongodb.MongoDBFactory;
+import rapture.mongodb.MongoRetryWrapper;
+import rapture.series.SeriesPaginator;
+import rapture.series.SeriesStore;
+import rapture.series.children.ChildKeyUtil;
+import rapture.series.children.ChildrenRepo;
 
 /**
  * Mongo implementation of the storage for series api.
@@ -75,7 +78,10 @@ public class MongoSeriesStore implements SeriesStore {
     private final ChildrenRepo childrenRepo;
     private static Logger log = Logger.getLogger(MongoSeriesStore.class);
 
+    private Messages mongoMsgCatalog;
+        
     public MongoSeriesStore() {
+        mongoMsgCatalog = new Messages("Mongo");
         this.childrenRepo = new ChildrenRepo() {
             @Override
             public List<SeriesValue> getPoints(String key) {
@@ -134,7 +140,7 @@ public class MongoSeriesStore implements SeriesStore {
         else if (value.isLong()) addLongToSeries(key, value.getColumn(), value.asLong());
         else if (value.isString()) addStringToSeries(key, value.getColumn(), value.asString());
         else if (value.isStructure()) addStructureToSeries(key, value.getColumn(), value.asString());
-        else throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, "Value has no encoder in MongoSeriesStore: " + value.asString());
+        else throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, mongoMsgCatalog.getMessage("NoEncoder", value.asString()));
     }
 
     private void saveDBObject(String key, String column, Object val) {
@@ -142,9 +148,11 @@ public class MongoSeriesStore implements SeriesStore {
         DBCollection collection = getCollection(key);
         DBObject dbkey = new BasicDBObject(ROWKEY, key).append(COLKEY, column);
         DBObject dbval = new BasicDBObject(ROWKEY, key).append(COLKEY, column).append(VALKEY, val);
-        WriteResult result = collection.update(dbkey, dbval, true, false);
-        if (!result.getCachedLastError().ok()) {
-            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, result.getCachedLastError().getErrorMessage());
+		try {
+			WriteResult result = collection.update(dbkey, dbval, true, false);
+			log.info("Update "+(result.wasAcknowledged() ? "was" : "was not")+" acknowledged");
+		} catch (MongoException me) {
+            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, new ExceptionToString(me));
         }
     }
 
@@ -166,7 +174,7 @@ public class MongoSeriesStore implements SeriesStore {
             }
         } catch (ExecutionException e) {
             // this should be impossible
-            throw RaptureExceptionFactory.create("Severe: 'return false' failed in key cache");
+            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, new ExceptionToString(e));
         }
     }
 
@@ -189,14 +197,13 @@ public class MongoSeriesStore implements SeriesStore {
         Preconditions.checkArgument(columns.size() == values.size());
         Iterator<String> col = columns.iterator();
         Iterator<T> val = values.iterator();
-        boolean result = true;
         while (col.hasNext()) {
             String column = col.next();
             T value = val.next();
             if (column == null) nullKey = true;
             else c.go(key, column, value);
         }
-        if (nullKey) throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, "Column Key may not be null, other values added");
+        if (nullKey) throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, mongoMsgCatalog.getMessage("NullKey"));
     }
 
     @Override
@@ -269,9 +276,11 @@ public class MongoSeriesStore implements SeriesStore {
         DBCollection collection = getCollection(key);
         for (String pointKey : pointKeys) {
             DBObject victim = new BasicDBObject(ROWKEY, key).append(COLKEY, pointKey);
-            WriteResult result = collection.remove(victim);
-            if (!result.getCachedLastError().ok()) {
-                throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, result.getCachedLastError().getErrorMessage());
+    		try {
+    			WriteResult result = collection.remove(victim);
+    			log.info("Remove "+(result.wasAcknowledged() ? "was" : "was not")+" acknowledged");
+    		} catch (MongoException me) {
+                throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, new ExceptionToString(me));
             }
         }
         return true;
@@ -282,9 +291,11 @@ public class MongoSeriesStore implements SeriesStore {
         unregisterKey(key);
         DBCollection collection = getCollection(key);
         DBObject victim = new BasicDBObject(ROWKEY, key);
-        WriteResult result = collection.remove(victim);
-        if (!result.getCachedLastError().ok()) {
-            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, result.getCachedLastError().getErrorMessage());
+		try {
+			WriteResult result = collection.remove(victim);
+			log.info("Remove "+(result.wasAcknowledged() ? "was" : "was not")+" acknowledged");
+		} catch (MongoException me) {
+            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, new ExceptionToString(me));
         }
     }
 
@@ -317,18 +328,15 @@ public class MongoSeriesStore implements SeriesStore {
         if (val instanceof Double) return new DecimalSeriesValue(((Double) val).doubleValue(), col);
         if (val instanceof String) return decodeString((String) val, col);
         if (val instanceof Long) return new LongSeriesValue(((Long) val).longValue(), col);
-        throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, "Unkown type in MongoSeriesStore");
+        throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, mongoMsgCatalog.getMessage("UnknownType"));
     }
 
     private SeriesValue decodeString(String val, String col) {
         if (val.startsWith("'")) return new StringSeriesValue(val.substring(1), col);
         try {
             return StructureSeriesValueImpl.unmarshal(val, col);
-        } catch (JsonParseException e) {
-            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, "Error parsing json value " + val, e);
-
         } catch (IOException e) {
-            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, "Error parsing json value " + val, e);
+        	throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, mongoMsgCatalog.getMessage("JsonError", val));
         }
     }
 
@@ -419,11 +427,11 @@ public class MongoSeriesStore implements SeriesStore {
         tableName = config.get("prefix");
         log.debug("Table name is " + tableName + ", instance name is " + instanceName);
         if (tableName == null) {
-            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, "Madatory config 'prefix' missing for MongoSeriesStore");
+        	throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, mongoMsgCatalog.getMessage("NoPrefix"));
         }
         // WARNING: Fragile code assumes setInstanceName is called BEFORE
         // setConfig
-        MongoDBFactory.getCollection(instanceName, tableName).ensureIndex(INDEX_KEYS, INDEX_OPTS);
+        MongoDBFactory.getCollection(instanceName, tableName).createIndex(INDEX_KEYS, INDEX_OPTS);
     }
 
     @Override

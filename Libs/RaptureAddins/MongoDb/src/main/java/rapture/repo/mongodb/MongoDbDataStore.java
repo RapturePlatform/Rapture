@@ -32,6 +32,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.bson.Document;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
@@ -39,13 +40,18 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
+import com.mongodb.MongoException;
 import com.mongodb.WriteResult;
+import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoCollection;
 import com.mongodb.util.JSON;
 
+import rapture.common.Messages;
 import rapture.common.RaptureFolderInfo;
 import rapture.common.RaptureNativeQueryResult;
 import rapture.common.RaptureNativeRow;
 import rapture.common.RaptureQueryResult;
+import rapture.common.exception.ExceptionToString;
 import rapture.common.exception.RaptNotSupportedException;
 import rapture.common.exception.RaptureExceptionFactory;
 import rapture.common.impl.jackson.JacksonUtil;
@@ -91,11 +97,12 @@ public class MongoDbDataStore extends AbstractKeyStore implements KeyStore, Rapt
     private String instanceName = "default";
     private boolean separateVersion = false;
     private boolean needsFolderHandling = true;
-
+    private Messages mongoMsgCatalog;
     private final MongoChildrenRepo dirRepo = new MongoChildrenRepo(new MongoSeriesStore());
 
     public MongoDbDataStore() {
         super();
+        mongoMsgCatalog = new Messages("Mongo");
         Kernel.getKernel().registerTypeListener(this.getClass().getName(), this);
         log.trace("Registered as a listener with TypeChangeManager ");
     }
@@ -159,15 +166,21 @@ public class MongoDbDataStore extends AbstractKeyStore implements KeyStore, Rapt
         BasicDBObject inClause = new BasicDBObject();
         inClause.append($IN, keys);
         query.append(KEY, inClause);
-        WriteResult result = getCollection().remove(query);
-        boolean deleted = StringUtils.isEmpty(result.getError());
+		try {
+			WriteResult result = getCollection().remove(query);
+			log.info("Remove "+(result.wasAcknowledged() ? "was" : "was not")+" acknowledged");
 
-        if (deleted && needsFolderHandling) {
-            for (String key : keys) {
-                dirRepo.dropFileEntry(key);
-            }
+	        int deleted = result.getN();
+	        if ((deleted != 0) && needsFolderHandling) {
+	            for (String key : keys) {
+	                dirRepo.dropFileEntry(key);
+	            }
+	        }
+	        return deleted > 0;
+		} catch (MongoException me) {
+            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, new ExceptionToString(me));
         }
-        return deleted;
+
     }
 
     @Override
@@ -328,7 +341,7 @@ public class MongoDbDataStore extends AbstractKeyStore implements KeyStore, Rapt
             };
             return wrapper.doAction();
         } else {
-            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, "RepoType mismatch. Repo is of type MONGODB, asked for " + repoType);
+			throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, mongoMsgCatalog.getMessage("Mismatch", repoType));
         }
     }
 
@@ -389,7 +402,7 @@ public class MongoDbDataStore extends AbstractKeyStore implements KeyStore, Rapt
         }
 
         DBCollection collection = getCollection();
-        collection.ensureIndex(KEY);
+        collection.createIndex(KEY);
         dirRepo.setInstanceName(instanceName);
         Map<String, String> dirConfig = ImmutableMap.of(PREFIX, dirName);
         dirRepo.setConfig(dirConfig);

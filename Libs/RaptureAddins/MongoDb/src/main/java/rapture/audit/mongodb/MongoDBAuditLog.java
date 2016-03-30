@@ -29,12 +29,15 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.bson.Document;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.MongoException;
+import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoCollection;
 
 import rapture.audit.AuditLog;
 import rapture.audit.AuditUtil;
@@ -136,7 +139,7 @@ public class MongoDBAuditLog implements AuditLog {
         tableName = config.get(TABLE_NAME);
         this.logId = logId;
         try {
-            getAuditCollection().ensureIndex(WHEN);
+            getAuditCollection().createIndex(WHEN);
         } catch (MongoException e) {
             log.info("setConfig failed on " + tableName + ": " + e.getMessage());
             log.debug(ExceptionToString.format(e));

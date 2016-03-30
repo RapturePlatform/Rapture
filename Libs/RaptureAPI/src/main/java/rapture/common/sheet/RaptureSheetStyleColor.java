@@ -23,6 +23,7 @@
  */
 package rapture.common.sheet;
 
+@Deprecated
 public enum RaptureSheetStyleColor {
     BLACK, BLUE, RED, GREEN;
 
