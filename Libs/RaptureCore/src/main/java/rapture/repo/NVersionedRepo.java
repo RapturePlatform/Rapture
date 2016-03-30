@@ -44,7 +44,7 @@ import org.apache.log4j.Logger;
 
 /**
  * A repo that manages a "latest" version and a history of versions
- * <p/>
+ * <p>
  * Also stores meta data about the current and historical versions
  *
  * @author amkimian

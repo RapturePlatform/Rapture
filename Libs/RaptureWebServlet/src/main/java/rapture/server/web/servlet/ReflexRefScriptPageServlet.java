@@ -40,7 +40,7 @@ import rapture.kernel.Kernel;
  * The Reflex script page servlet is kind of like jsps but for Reflex scripts
  * Here the sources of the scripts come from Rapture - with the path after the
  * servlet information simply being
- * <p/>
+ * <p>
  * authority/scriptName
  *
  * @author alan
