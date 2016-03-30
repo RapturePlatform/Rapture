@@ -34,11 +34,11 @@ import org.apache.log4j.Logger;
 
 /**
  * A folder handler stores rows by prefix
- * <p/>
+ * <p>
  * When we add a prefix we store entries for each entry in that hierarchy - storing the next level down value at each point as a column name. The value of each
  * column is a count of the number of children - so often we may have to attempt to retrieve the value to update it by one - and if the value is decremented to
  * zero we should remove that cell intersection. Documents have a value of -1
- *
+ * <p>
  * @author amkimian
  */
 public class CassFolderHandler {
