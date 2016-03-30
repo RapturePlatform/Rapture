@@ -244,7 +244,7 @@ public enum Kernel {
     /**
      * The bootstrap uses an environment variable to boot up the initial repo that is used to define the configs - particularly RaptureConfig (used for
      * users/authorities etc.) and RaptureEphemeral (used for sessions/contexts etc.)
-     * <p/>
+     * <p>
      * These repositories are installed into the kernel and it is these repositories that are referred to or passed down to the RaptureKernel instances
      *
      * @

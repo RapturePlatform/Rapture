@@ -74,9 +74,9 @@ import rapture.table.mongodb.MongoIndexHandler;
 /**
  * The MongoDBDataStore is configured with a table name and then the content
  * follows a normal K=V type approach to store the data.
- * <p/>
+ * <p>
  * The MongoDB connection URL is normally a setting in the environment
- * <p/>
+ * <p>
  * tableName = 'table'
  *
  * @author alan
