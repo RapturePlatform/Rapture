@@ -504,7 +504,6 @@ public class ScriptApiImpl extends KernelBase implements ScriptApi {
                 @Override
                 public void printOutput(String text) {
                     sb.append(text);
-                    sb.append("\n");
                 }
 
                 @Override
