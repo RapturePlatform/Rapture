@@ -26,6 +26,8 @@ package reflex;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
+import java.io.UnsupportedEncodingException;
+
 import org.antlr.runtime.RecognitionException;
 import org.junit.Test;
 
@@ -79,17 +81,16 @@ public class SyntaxErrorChecksTest extends AbstractReflexScriptTest {
     }
 
     @Test
-    public void testRAP3895() throws RecognitionException {
+    public void testRAP3895() throws RecognitionException, UnsupportedEncodingException {
     	String program = "x = 'abc';\n"+
     			"y1 = \"abc\";\n"+
     			"println(x == y1);\n"+
-    			"y2 = “abc”;\n"+
+    			"y2 = \u201Cabc\u201D;\n"+
     			"println(x == y2);\n"+
-    			"y3 = ”abc“;\n"+
+    			"y3 = \u201Dabc\u201C;\n"+
     			"println(x == y3);\n"+
-    			"y4 = ”abc\";\n"+
-    			"println(x == y4);\n"+
-    			"";
+    			"y4 = \u201Dabc\";\n"+
+    			"println(x == y4);\n";
 		String output = runScript(program, null);
 		assertEquals("true\ntrue\ntrue\ntrue", output.trim());
 	}
@@ -121,24 +122,24 @@ public class SyntaxErrorChecksTest extends AbstractReflexScriptTest {
     @Test
     public void testNonTerminatedString3() throws RecognitionException {
     	String program = "x = 'abc';\n"+
-    			"y1 = ”abc;\n"+
+    			"y1 = \u201Dabc;\n"+
     			"println(x == y1);\n"+
     			"";
 		String output = this.runScriptCatchingExceptions(program, null);
 		System.out.println(output);
 		String split[] = output.split("\n");
-		assertEquals("Found newline in string abc; at token ” at line 2 while parsing: ", split[2]);
+		assertEquals("Found newline in string abc; at token \u201D at line 2 while parsing: ", split[2]);
 	}
 
     @Test
     public void testNonTerminatedString4() throws RecognitionException {
     	String program = "x = 'abc';\n"+
-    			"y1 = “abc;\n"+
+    			"y1 = \u201Cabc;\n"+
     			"println(x == y1);\n"+
     			"";
 		String output = this.runScriptCatchingExceptions(program, null);
 		System.out.println(output);
 		String split[] = output.split("\n");
-		assertEquals("Found newline in string abc; at token “ at line 2 while parsing: ", split[2]);
+		assertEquals("Found newline in string abc; at token \u201C at line 2 while parsing: ", split[2]);
 	}
 }

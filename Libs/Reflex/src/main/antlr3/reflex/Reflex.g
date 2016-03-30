@@ -1038,20 +1038,34 @@ QuotedString
     :
            tok=DoubleQuote
            ( escaped=ESC {lBuf.append(getText());} |
-             normal=~('"'|'“'|'”'|'\\'|'\n'|'\r')     {lBuf.appendCodePoint(normal);} )*
+             normal=~(DoubleQuote | EndLine | '\\')     {lBuf.appendCodePoint(normal);} )*
            ( DoubleQuote {setText(lBuf.toString());} 
            | ( '\n' | '\r')  {error("Found newline in string "+lBuf.toString(), input, tok, false);})
            
     ;
-    
+
+fragment
 DoubleQuote 
     : '"'
-    | '“'
-    | '”'
+    | '\u201C'
+    | '\u201D'
+    | '\u201E'
+    | '\u201F'
     ;
 
+fragment
+EndLine
+	: '\n'
+	| '\r'
+	;
+	
+fragment
 SingleQuote 
     : '\''
+    | '\u2018'
+    | '\u2019'
+    | '\u201A'
+    | '\u201B'
     ;
 
 fragment
@@ -1063,6 +1077,14 @@ ESC
         |   'b'    {setText("\b");}
         |   'f'    {setText("\f");}
         |   '"'    {setText("\"");}
+        | '\u2018' {setText("\u2018");}
+    	| '\u2019' {setText("\u2019");}
+    	| '\u201A' {setText("\u201A");}
+    	| '\u201B' {setText("\u201B");}
+        | '\u201C' {setText("\u201C");}
+    	| '\u201D' {setText("\u201D");}
+    	| '\u201E' {setText("\u201E");}
+    	| '\u201F' {setText("\u201F");}
         |   '\''   {setText("\'");}
         |   '/'    {setText("/");}
         |   '\\'   {setText("\\");}
