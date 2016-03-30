@@ -240,7 +240,7 @@ public class BaseServlet extends HttpServlet {
      * 
      * @param context 
      * @param entPath
-     * @param RaptureEntitlementsContext
+     * @param entCtx
      * 
      */
     protected void validateContext(CallingContext context, String entPath, RaptureEntitlementsContext entCtx) {
