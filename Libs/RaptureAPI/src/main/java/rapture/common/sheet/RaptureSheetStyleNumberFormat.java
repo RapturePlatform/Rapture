@@ -23,6 +23,7 @@
  */
 package rapture.common.sheet;
 
+@Deprecated
 public enum RaptureSheetStyleNumberFormat {
     MONEY, NORMAL, DECIMAL2, DECIMAL4;
 

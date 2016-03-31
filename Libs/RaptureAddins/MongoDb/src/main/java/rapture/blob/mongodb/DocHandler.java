@@ -97,7 +97,7 @@ public class DocHandler implements BlobHandler {
         DB db = MongoDBFactory.getDB(instanceName);
         DBCollection tempCollection = db.getCollection(bucket);
         DBObject blobNameIndex = new BasicDBObject(BLOB_NAME, 1).append("unique", false).append("sparse", true);
-        tempCollection.ensureIndex(blobNameIndex);
+        tempCollection.createIndex(blobNameIndex);
         return tempCollection;
     }
 

@@ -29,6 +29,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * Note that this class is referenced in types.api - any changes to this file should be reflected there.
  **/
 
+@Deprecated
 public class RaptureSheetRange {
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
@@ -39,42 +40,52 @@ public class RaptureSheetRange {
                 + endColumn + "]";
     }
 
+    @Deprecated
     public String getName() {
         return name;
     }
 
+    @Deprecated
     public void setName(String name) {
         this.name = name;
     }
 
+    @Deprecated
     public int getStartRow() {
         return startRow;
     }
 
+    @Deprecated
     public void setStartRow(int startRow) {
         this.startRow = startRow;
     }
 
+    @Deprecated
     public int getEndRow() {
         return endRow;
     }
 
+    @Deprecated
     public void setEndRow(int endRow) {
         this.endRow = endRow;
     }
 
+    @Deprecated
     public int getStartColumn() {
         return startColumn;
     }
 
+    @Deprecated
     public void setStartColumn(int startColumn) {
         this.startColumn = startColumn;
     }
 
+    @Deprecated
     public int getEndColumn() {
         return endColumn;
     }
 
+    @Deprecated
     public void setEndColumn(int endColumn) {
         this.endColumn = endColumn;
     }
@@ -91,6 +102,7 @@ public class RaptureSheetRange {
      * @return
      */
     @JsonIgnore
+    @Deprecated
     public String getDescriptiveColumn() {
         if ((endColumn == startColumn) && (endRow == startRow)) {
             return String.format("(%d,%d)", startRow, startColumn);

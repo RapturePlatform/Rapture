@@ -230,8 +230,10 @@ public class ScriptApiImpl extends KernelBase implements ScriptApi {
 
         IRaptureScript scriptContext = ScriptFactory.getScript(script);
         Map<String, Object> extraVals = new HashMap<String, Object>();
-        for (Map.Entry<String, String> entry : params.entrySet()) {
-            extraVals.put(entry.getKey(), entry.getValue());
+        if (params != null) {
+	        for (Map.Entry<String, String> entry : params.entrySet()) {
+	            extraVals.put(entry.getKey(), entry.getValue());
+	        }
         }
         Kernel.writeComment(String.format(Messages.getString("Script.running"), scriptURI)); //$NON-NLS-1$
         final String activityId = Kernel.getActivity()
