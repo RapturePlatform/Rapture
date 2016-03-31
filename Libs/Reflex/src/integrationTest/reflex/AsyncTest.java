@@ -27,6 +27,11 @@ import rapture.common.client.CredentialsProvider;
 import rapture.common.client.HttpLoginApi;
 import rapture.common.client.ScriptClient;
 import rapture.common.client.SimpleCredentialsProvider;
+import reflex.IReflexHandler;
+import reflex.ReflexParser;
+import reflex.ReflexTreeWalker;
+import reflex.ResourceBasedTest;
+import reflex.StandardReflexHandler;
 
 public class AsyncTest extends ResourceBasedTest {
 
