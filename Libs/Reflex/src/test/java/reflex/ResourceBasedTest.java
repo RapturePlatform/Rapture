@@ -57,17 +57,17 @@ import reflex.value.internal.ReflexNullValue;
 public class ResourceBasedTest {
 
 	public static String getResourceAsString(Object context, String path) {
-		InputStream is = (context == null ? IOTest.class : context.getClass()).getResourceAsStream(path);
+		InputStream is = (context == null ? ResourceBasedTest.class : context.getClass()).getResourceAsStream(path);
 
 		// Can't open as a resource - try as a file
 		if (is == null) {
-			File f = new File("src/integrationTest/resources" + path);
+			File f = new File("src/test/resources" + path);
 			String s = f.getAbsolutePath();
 			System.out.println(s);
 			try {
 				is = new FileInputStream(f);
 			} catch (FileNotFoundException e) {
-				// oops
+				System.out.println("Problem loading file " + e.getMessage());
 			}
 		}
 
