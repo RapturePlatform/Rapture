@@ -28,6 +28,8 @@ import reflex.MetaScriptInfo;
 import reflex.ReflexParser;
 
 public class ScriptInterfaceTest {
+    String scriptName = "scriptInterface.script";
+    
     @Before
     public void setup() {
         ScriptFactory.init();
@@ -76,18 +78,18 @@ public class ScriptInterfaceTest {
     public void testInputProgram() throws RecognitionException {
     	// We want to load Jonathan's script and put it through the same tests that the 
     	// ScriptApiImpl does.
-    	
-        //assertTrue(testScript("println('hello');println(_params['hello']);return 5;\n").isEmpty());
-    	
+        
         ReflexRaptureScript rrs = new ReflexRaptureScript();
         String test = "";
         try{
-            test = getResourceAsString(this, "/scriptinterface.script");
+            test = getResourceAsString(this, "/" + scriptName);
         } catch (FileNotFoundException fnf){
             System.out.println("file not found. exception is " + fnf.getMessage());
         } catch (RuntimeException rte){
             System.out.println("Runtime exception " + rte.getMessage());
         }
+        
+        Assert.assertFalse(test == null); //fail test if script is not loaded.
         
         System.out.println("test script file: " + test);
         
