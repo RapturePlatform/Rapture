@@ -30,6 +30,7 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.bson.Document;
 
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
@@ -38,6 +39,7 @@ import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
 import com.mongodb.MongoCredential;
 import com.mongodb.MongoException;
+import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
 import rapture.common.ConnectionInfo;
@@ -134,6 +136,7 @@ public enum MongoDBFactory {
 		return !mongoInstances.isEmpty();
 	}
 
+	@Deprecated
 	public static DBCollection getCollection(String instanceName, String name) {
 		return INSTANCE._getDB(instanceName).getCollection(name);
 	}
@@ -141,10 +144,12 @@ public enum MongoDBFactory {
 	/**
 	 * get the database or throw a RaptureException -- never returns null
 	 */
+	@Deprecated
 	public static DB getDB(String instanceName) {
 		return INSTANCE._getDB(instanceName);
 	}
-
+	
+	@Deprecated
 	private DB _getDB(String instanceName) {
 		if (mongoDBs.containsKey(instanceName)) {
 			return mongoDBs.get(instanceName);
@@ -152,6 +157,31 @@ public enum MongoDBFactory {
 			getMongoForInstance(instanceName);
 			if (mongoDBs.containsKey(instanceName)) {
 				return mongoDBs.get(instanceName);
+			} else {
+				throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST,
+						mongoMsgCatalog.getMessage("NotInitialized"));
+			}
+		}
+	}
+	
+	public static MongoCollection<Document> getMongoCollection(String instanceName, String name) {
+		return INSTANCE._getMongoDatabase(instanceName).getCollection(name);
+	}
+
+	/**
+	 * get the database or throw a RaptureException -- never returns null
+	 */
+	public static MongoDatabase getMongoDatabase(String instanceName) {
+		return INSTANCE._getMongoDatabase(instanceName);
+	}
+	
+	private MongoDatabase _getMongoDatabase(String instanceName) {
+		if (mongoDatabases.containsKey(instanceName)) {
+			return mongoDatabases.get(instanceName);
+		} else {
+			getMongoForInstance(instanceName);
+			if (mongoDatabases.containsKey(instanceName)) {
+				return mongoDatabases.get(instanceName);
 			} else {
 				throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST,
 						mongoMsgCatalog.getMessage("NotInitialized"));
