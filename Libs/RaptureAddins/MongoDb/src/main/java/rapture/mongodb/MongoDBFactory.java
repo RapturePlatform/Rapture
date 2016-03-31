@@ -57,6 +57,7 @@ public enum MongoDBFactory {
 
     private static Logger log = Logger.getLogger(MongoDBFactory.class);
     private Map<String, Mongo> mongoInstances = new HashMap<>();
+
     @Deprecated
     private Map<String, DB> mongoDBs = new HashMap<>();
     private Map<String, MongoDatabase> mongoDatabases = new HashMap<>();

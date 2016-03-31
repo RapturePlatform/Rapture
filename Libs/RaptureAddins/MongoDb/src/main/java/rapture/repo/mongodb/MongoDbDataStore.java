@@ -166,18 +166,18 @@ public class MongoDbDataStore extends AbstractKeyStore implements KeyStore, Rapt
         BasicDBObject inClause = new BasicDBObject();
         inClause.append($IN, keys);
         query.append(KEY, inClause);
-		try {
-			WriteResult result = getCollection().remove(query);
-			log.info("Remove "+(result.wasAcknowledged() ? "was" : "was not")+" acknowledged");
+        try {
+            WriteResult result = getCollection().remove(query);
+            log.info("Remove " + (result.wasAcknowledged() ? "was" : "was not") + " acknowledged");
 
-	        int deleted = result.getN();
-	        if ((deleted != 0) && needsFolderHandling) {
-	            for (String key : keys) {
-	                dirRepo.dropFileEntry(key);
-	            }
-	        }
-	        return deleted > 0;
-		} catch (MongoException me) {
+            int deleted = result.getN();
+            if ((deleted != 0) && needsFolderHandling) {
+                for (String key : keys) {
+                    dirRepo.dropFileEntry(key);
+                }
+            }
+            return deleted > 0;
+        } catch (MongoException me) {
             throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, new ExceptionToString(me));
         }
 
@@ -341,7 +341,7 @@ public class MongoDbDataStore extends AbstractKeyStore implements KeyStore, Rapt
             };
             return wrapper.doAction();
         } else {
-			throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, mongoMsgCatalog.getMessage("Mismatch", repoType));
+            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, mongoMsgCatalog.getMessage("Mismatch", repoType));
         }
     }
 
