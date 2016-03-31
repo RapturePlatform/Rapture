@@ -24,7 +24,6 @@
 package rapture.mongodb;
 
 import java.net.HttpURLConnection;
-import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -52,140 +51,135 @@ import rapture.kernel.ContextFactory;
 import rapture.kernel.Kernel;
 
 public enum MongoDBFactory {
-	INSTANCE;
+    INSTANCE;
 
-	private Messages mongoMsgCatalog = new Messages("Mongo");
+    private Messages mongoMsgCatalog = new Messages("Mongo");
 
-	private static Logger log = Logger.getLogger(MongoDBFactory.class);
-	private Map<String, Mongo> mongoInstances = new HashMap<>();
-	@Deprecated
-	private Map<String, DB> mongoDBs = new HashMap<>();
-	private Map<String, MongoDatabase> mongoDatabases = new HashMap<>();
-	private static int retryCount = 3;
+    private static Logger log = Logger.getLogger(MongoDBFactory.class);
+    private Map<String, Mongo> mongoInstances = new HashMap<>();
+    @Deprecated
+    private Map<String, DB> mongoDBs = new HashMap<>();
+    private Map<String, MongoDatabase> mongoDatabases = new HashMap<>();
+    private static int retryCount = 3;
 
-	public static int getRetryCount() {
-		return retryCount;
-	}
+    public static int getRetryCount() {
+        return retryCount;
+    }
 
-	public static void setRetryCount(int retryCount) {
-		MongoDBFactory.retryCount = retryCount;
-	}
+    public static void setRetryCount(int retryCount) {
+        MongoDBFactory.retryCount = retryCount;
+    }
 
-	private Mongo getMongoForInstance(String instanceName) {
-		if (instanceName == null) {
-			instanceName = "default";
-		}
-		if (mongoInstances.containsKey(instanceName)) {
-			return mongoInstances.get(instanceName);
-		}
-		// if bootstrap, get from local config file
-		if (Kernel.getSys() == null) {
-			return getMongoFromLocalConfig(instanceName);
-			// otherwise, get from sys.config
-		} else {
-			return getMongoFromSysConfig(instanceName);
-		}
-	}
+    private Mongo getMongoForInstance(String instanceName) {
+        if (instanceName == null) {
+            instanceName = "default";
+        }
+        if (mongoInstances.containsKey(instanceName)) {
+            return mongoInstances.get(instanceName);
+        }
+        // if bootstrap, get from local config file
+        if (Kernel.getSys() == null) {
+            return getMongoFromLocalConfig(instanceName);
+            // otherwise, get from sys.config
+        } else {
+            return getMongoFromSysConfig(instanceName);
+        }
+    }
 
-	private Mongo getMongoFromLocalConfig(String instanceName) {
-		String mongoHost = MultiValueConfigLoader.getConfig("MONGODB-" + instanceName);
-		log.info("Host is " + mongoHost);
-		if (StringUtils.isBlank(mongoHost)) {
-			throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST,
-					mongoMsgCatalog.getMessage("NoHost"));
-		}
-		MongoClientURI uri = new MongoClientURI(mongoHost);
-		log.info("Username is " + uri.getUsername());
-		log.info("Host is " + uri.getHosts().toString());
-		log.info("DBName is " + uri.getDatabase());
-		log.info("Collection is " + uri.getCollection());
+    private Mongo getMongoFromLocalConfig(String instanceName) {
+        String mongoHost = MultiValueConfigLoader.getConfig("MONGODB-" + instanceName);
+        log.info("Host is " + mongoHost);
+        if (StringUtils.isBlank(mongoHost)) {
+            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, mongoMsgCatalog.getMessage("NoHost"));
+        }
+        MongoClientURI uri = new MongoClientURI(mongoHost);
+        log.info("Username is " + uri.getUsername());
+        log.info("Host is " + uri.getHosts().toString());
+        log.info("DBName is " + uri.getDatabase());
+        log.info("Collection is " + uri.getCollection());
 
-		try {
-			MongoCredential credential = MongoCredential.createCredential(uri.getUsername(), uri.getDatabase(), uri.getPassword());
-			MongoClient mongo = new MongoClient(uri);
-			mongoDBs.put(instanceName, mongo.getDB(uri.getDatabase()));
-			mongoDatabases.put(instanceName, mongo.getDatabase(uri.getDatabase()));
-			mongoInstances.put(instanceName, mongo);
-			return mongo;
-		} catch (MongoException e) {
-			throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, new ExceptionToString(e));
-		}
-	}
+        try {
+            MongoCredential credential = MongoCredential.createCredential(uri.getUsername(), uri.getDatabase(), uri.getPassword());
+            MongoClient mongo = new MongoClient(uri);
+            mongoDBs.put(instanceName, mongo.getDB(uri.getDatabase()));
+            mongoDatabases.put(instanceName, mongo.getDatabase(uri.getDatabase()));
+            mongoInstances.put(instanceName, mongo);
+            return mongo;
+        } catch (MongoException e) {
+            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, new ExceptionToString(e));
+        }
+    }
 
-	private Mongo getMongoFromSysConfig(String instanceName) {
-		Map<String, ConnectionInfo> map = Kernel.getSys().getConnectionInfo(ContextFactory.getKernelUser(),
-				ConnectionType.MONGODB.toString());
-		if (!map.containsKey(instanceName)) {
-			throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR,
-					mongoMsgCatalog.getMessage("NoInstance", instanceName));
-		}
-		ConnectionInfo info = map.get(instanceName);
-		log.info("Connection info = " + info);
-		try {
-			MongoClient mongo = new MongoClient(info.getHost(), info.getPort());
-			mongoDBs.put(instanceName, mongo.getDB(info.getDbName()));
-			mongoDatabases.put(instanceName, mongo.getDatabase(info.getDbName()));
-			mongoInstances.put(instanceName, mongo);
-			return mongo;
-		} catch (MongoException e) {
-			throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, new ExceptionToString(e));
-		}
-	}
+    private Mongo getMongoFromSysConfig(String instanceName) {
+        Map<String, ConnectionInfo> map = Kernel.getSys().getConnectionInfo(ContextFactory.getKernelUser(), ConnectionType.MONGODB.toString());
+        if (!map.containsKey(instanceName)) {
+            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, mongoMsgCatalog.getMessage("NoInstance", instanceName));
+        }
+        ConnectionInfo info = map.get(instanceName);
+        log.info("Connection info = " + info);
+        try {
+            MongoClient mongo = new MongoClient(info.getHost(), info.getPort());
+            mongoDBs.put(instanceName, mongo.getDB(info.getDbName()));
+            mongoDatabases.put(instanceName, mongo.getDatabase(info.getDbName()));
+            mongoInstances.put(instanceName, mongo);
+            return mongo;
+        } catch (MongoException e) {
+            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, new ExceptionToString(e));
+        }
+    }
 
-	public boolean canConnect() {
-		return !mongoInstances.isEmpty();
-	}
+    public boolean canConnect() {
+        return !mongoInstances.isEmpty();
+    }
 
-	@Deprecated
-	public static DBCollection getCollection(String instanceName, String name) {
-		return INSTANCE._getDB(instanceName).getCollection(name);
-	}
+    @Deprecated
+    public static DBCollection getCollection(String instanceName, String name) {
+        return INSTANCE._getDB(instanceName).getCollection(name);
+    }
 
-	/**
-	 * get the database or throw a RaptureException -- never returns null
-	 */
-	@Deprecated
-	public static DB getDB(String instanceName) {
-		return INSTANCE._getDB(instanceName);
-	}
-	
-	@Deprecated
-	private DB _getDB(String instanceName) {
-		if (mongoDBs.containsKey(instanceName)) {
-			return mongoDBs.get(instanceName);
-		} else {
-			getMongoForInstance(instanceName);
-			if (mongoDBs.containsKey(instanceName)) {
-				return mongoDBs.get(instanceName);
-			} else {
-				throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST,
-						mongoMsgCatalog.getMessage("NotInitialized"));
-			}
-		}
-	}
-	
-	public static MongoCollection<Document> getMongoCollection(String instanceName, String name) {
-		return INSTANCE._getMongoDatabase(instanceName).getCollection(name);
-	}
+    /**
+     * get the database or throw a RaptureException -- never returns null
+     */
+    @Deprecated
+    public static DB getDB(String instanceName) {
+        return INSTANCE._getDB(instanceName);
+    }
 
-	/**
-	 * get the database or throw a RaptureException -- never returns null
-	 */
-	public static MongoDatabase getMongoDatabase(String instanceName) {
-		return INSTANCE._getMongoDatabase(instanceName);
-	}
-	
-	private MongoDatabase _getMongoDatabase(String instanceName) {
-		if (mongoDatabases.containsKey(instanceName)) {
-			return mongoDatabases.get(instanceName);
-		} else {
-			getMongoForInstance(instanceName);
-			if (mongoDatabases.containsKey(instanceName)) {
-				return mongoDatabases.get(instanceName);
-			} else {
-				throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST,
-						mongoMsgCatalog.getMessage("NotInitialized"));
-			}
-		}
-	}
+    @Deprecated
+    private DB _getDB(String instanceName) {
+        if (mongoDBs.containsKey(instanceName)) {
+            return mongoDBs.get(instanceName);
+        } else {
+            getMongoForInstance(instanceName);
+            if (mongoDBs.containsKey(instanceName)) {
+                return mongoDBs.get(instanceName);
+            } else {
+                throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, mongoMsgCatalog.getMessage("NotInitialized"));
+            }
+        }
+    }
+
+    public static MongoCollection<Document> getMongoCollection(String instanceName, String name) {
+        return INSTANCE._getMongoDatabase(instanceName).getCollection(name);
+    }
+
+    /**
+     * get the database or throw a RaptureException -- never returns null
+     */
+    public static MongoDatabase getMongoDatabase(String instanceName) {
+        return INSTANCE._getMongoDatabase(instanceName);
+    }
+
+    private MongoDatabase _getMongoDatabase(String instanceName) {
+        if (mongoDatabases.containsKey(instanceName)) {
+            return mongoDatabases.get(instanceName);
+        } else {
+            getMongoForInstance(instanceName);
+            if (mongoDatabases.containsKey(instanceName)) {
+                return mongoDatabases.get(instanceName);
+            } else {
+                throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, mongoMsgCatalog.getMessage("NotInitialized"));
+            }
+        }
+    }
 }

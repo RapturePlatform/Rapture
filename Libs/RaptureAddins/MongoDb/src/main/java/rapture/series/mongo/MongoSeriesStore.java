@@ -44,7 +44,6 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.MongoException;
-import com.mongodb.WriteConcernException;
 import com.mongodb.WriteResult;
 
 import rapture.common.Messages;
@@ -79,7 +78,7 @@ public class MongoSeriesStore implements SeriesStore {
     private static Logger log = Logger.getLogger(MongoSeriesStore.class);
 
     private Messages mongoMsgCatalog;
-        
+
     public MongoSeriesStore() {
         mongoMsgCatalog = new Messages("Mongo");
         this.childrenRepo = new ChildrenRepo() {
@@ -148,10 +147,10 @@ public class MongoSeriesStore implements SeriesStore {
         DBCollection collection = getCollection(key);
         DBObject dbkey = new BasicDBObject(ROWKEY, key).append(COLKEY, column);
         DBObject dbval = new BasicDBObject(ROWKEY, key).append(COLKEY, column).append(VALKEY, val);
-		try {
-			WriteResult result = collection.update(dbkey, dbval, true, false);
-			log.info("Update "+(result.wasAcknowledged() ? "was" : "was not")+" acknowledged");
-		} catch (MongoException me) {
+        try {
+            WriteResult result = collection.update(dbkey, dbval, true, false);
+            log.info("Update " + (result.wasAcknowledged() ? "was" : "was not") + " acknowledged");
+        } catch (MongoException me) {
             throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, new ExceptionToString(me));
         }
     }
@@ -276,10 +275,10 @@ public class MongoSeriesStore implements SeriesStore {
         DBCollection collection = getCollection(key);
         for (String pointKey : pointKeys) {
             DBObject victim = new BasicDBObject(ROWKEY, key).append(COLKEY, pointKey);
-    		try {
-    			WriteResult result = collection.remove(victim);
-    			log.info("Remove "+(result.wasAcknowledged() ? "was" : "was not")+" acknowledged");
-    		} catch (MongoException me) {
+            try {
+                WriteResult result = collection.remove(victim);
+                log.info("Remove " + (result.wasAcknowledged() ? "was" : "was not") + " acknowledged");
+            } catch (MongoException me) {
                 throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, new ExceptionToString(me));
             }
         }
@@ -291,10 +290,10 @@ public class MongoSeriesStore implements SeriesStore {
         unregisterKey(key);
         DBCollection collection = getCollection(key);
         DBObject victim = new BasicDBObject(ROWKEY, key);
-		try {
-			WriteResult result = collection.remove(victim);
-			log.info("Remove "+(result.wasAcknowledged() ? "was" : "was not")+" acknowledged");
-		} catch (MongoException me) {
+        try {
+            WriteResult result = collection.remove(victim);
+            log.info("Remove " + (result.wasAcknowledged() ? "was" : "was not") + " acknowledged");
+        } catch (MongoException me) {
             throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, new ExceptionToString(me));
         }
     }
@@ -336,7 +335,7 @@ public class MongoSeriesStore implements SeriesStore {
         try {
             return StructureSeriesValueImpl.unmarshal(val, col);
         } catch (IOException e) {
-        	throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, mongoMsgCatalog.getMessage("JsonError", val));
+            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, mongoMsgCatalog.getMessage("JsonError", val));
         }
     }
 
@@ -427,7 +426,7 @@ public class MongoSeriesStore implements SeriesStore {
         tableName = config.get("prefix");
         log.debug("Table name is " + tableName + ", instance name is " + instanceName);
         if (tableName == null) {
-        	throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, mongoMsgCatalog.getMessage("NoPrefix"));
+            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, mongoMsgCatalog.getMessage("NoPrefix"));
         }
         // WARNING: Fragile code assumes setInstanceName is called BEFORE
         // setConfig
@@ -480,15 +479,15 @@ public class MongoSeriesStore implements SeriesStore {
         };
         return wrapper.doAction();
     }
-    
-	@Override
-	public void createSeries(String key) {
-		registerKey(key);
-	}
 
-	@Override
-	public void deleteSeries(String key) {
-		unregisterKey(key);
-		deletePointsFromSeries(key);
-	}
+    @Override
+    public void createSeries(String key) {
+        registerKey(key);
+    }
+
+    @Override
+    public void deleteSeries(String key) {
+        unregisterKey(key);
+        deletePointsFromSeries(key);
+    }
 }
