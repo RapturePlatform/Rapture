@@ -35,6 +35,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * Note that this class is referenced in types.api - any changes to this file should be reflected there.
 **/
 
+@Deprecated
 public class RaptureSheetStyle {
     @JsonIgnore
     public String getDisplayDescription() {
@@ -51,46 +52,60 @@ public class RaptureSheetStyle {
         sb.append(numberFormatString);
         return sb.toString();
     }
+    @Deprecated
     public RaptureSheetStyleWeight getWeight() {
         return weight;
     }
+    @Deprecated
     public void setWeight(RaptureSheetStyleWeight weight) {
         this.weight = weight;
     }
+    @Deprecated
     public RaptureSheetStyleAlignment getAlignment() {
         return alignment;
     }
+    @Deprecated
     public void setAlignment(RaptureSheetStyleAlignment alignment) {
         this.alignment = alignment;
     }
+    @Deprecated
     public RaptureSheetStyleColor getColor() {
         return color;
     }
+    @Deprecated
     public void setColor(RaptureSheetStyleColor color) {
         this.color = color;
     }
+    @Deprecated
     public RaptureSheetStyleSize getSize() {
         return size;
     }
+    @Deprecated
     public void setSize(RaptureSheetStyleSize size) {
         this.size = size;
     }
+    @Deprecated
     public RaptureSheetStyleNumberFormat getNumberFormat() {
         return numberFormat;
     }
+    @Deprecated
     public void setNumberFormat(RaptureSheetStyleNumberFormat numberFormat) {
         this.numberFormat = numberFormat;
     }   
+    @Deprecated
     public String getName() {
         return name;
     }
+    @Deprecated
     public void setName(String name) {
         this.name = name;
     }
     
+    @Deprecated
     public String getNumberFormatString() {
         return numberFormatString;
     }
+    @Deprecated
     public void setNumberFormatString(String numberFormatString) {
         this.numberFormatString = numberFormatString;
     }

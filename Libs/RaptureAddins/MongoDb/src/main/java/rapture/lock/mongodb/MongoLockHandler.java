@@ -28,14 +28,14 @@ import java.util.UUID;
 
 import org.apache.log4j.Logger;
 
-import rapture.common.LockHandle;
-import rapture.lock.ILockingHandler;
-import rapture.mongodb.MongoDBFactory;
-
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
+
+import rapture.common.LockHandle;
+import rapture.lock.ILockingHandler;
+import rapture.mongodb.MongoDBFactory;
 
 /**
  * An implementation of a lock strategy on Mongo. The idea is that we need to
@@ -174,7 +174,6 @@ public class MongoLockHandler implements ILockingHandler {
         if (val != null) {
             if (val instanceof Long) {
                 if ((Long) val < System.currentTimeMillis()) {
-                    log.trace("Existing lock expired");
                     return true;
                 }
             }
@@ -241,7 +240,7 @@ public class MongoLockHandler implements ILockingHandler {
 
     @Override
     public void setConfig(Map<String, String> config) {
-        getLockCollection().ensureIndex(NAME);
+        getLockCollection().createIndex(NAME);
     }
 
     @Override

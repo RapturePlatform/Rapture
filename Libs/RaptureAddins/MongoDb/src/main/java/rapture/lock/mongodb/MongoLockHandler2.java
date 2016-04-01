@@ -79,7 +79,8 @@ public class MongoLockHandler2 implements ILockingHandler {
                 lockFile.put("_id", "" + myLockID);
                 lockFile.put("lease", myLockID + secondsToHold * 1000);
 
-                WriteResult result = coll.insert(WriteConcern.ACKNOWLEDGED, lockFile);
+                @SuppressWarnings("unused")
+				WriteResult result = coll.insert(WriteConcern.ACKNOWLEDGED, lockFile);
                 log.debug("inserted file" + lockFile);
 
                 break;

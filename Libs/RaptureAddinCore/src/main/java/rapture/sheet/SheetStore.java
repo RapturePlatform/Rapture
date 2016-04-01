@@ -34,64 +34,92 @@ import rapture.common.RaptureSheetRange;
 import rapture.common.RaptureSheetScript;
 import rapture.common.RaptureSheetStyle;
 
+@Deprecated
 public interface SheetStore {
 
+    @Deprecated
     void setConfig(String authority, Map<String, String> config);
 
+    @Deprecated
     void setCell(String sheetName, int row, int column, String string, int dimension);
 
+    @Deprecated
     String getCell(String sheetName, int row, int column, int dimension);
 
+    @Deprecated
     RaptureSheet createSheet(String name);
 
+    @Deprecated
     RaptureSheet deleteSheet(String name);
 
+    @Deprecated
     List<RaptureFolderInfo> listSheetsByUriPrefix(String displayNamePart);
 
+    @Deprecated
     List<RaptureSheetCell> findCellsByEpoch(String name, int dimension, long epoch);
 
+    @Deprecated
     List<RaptureSheetStyle> getSheetStyles(String name);
 
+    @Deprecated
     Boolean deleteSheetStyle(String name, String styleName);
 
+    @Deprecated
     RaptureSheetStyle putSheetStyle(String name, RaptureSheetStyle style);
 
+    @Deprecated
     List<RaptureSheetScript> getSheetScripts(String name);
 
+    @Deprecated
     Boolean deleteSheetScript(String name, String scriptName);
 
+    @Deprecated
     RaptureSheetScript putSheetScript(String name, String scriptName, RaptureSheetScript script);
 
+    @Deprecated
     List<RaptureSheetRange> getSheetNamedSelections(String name);
 
+    @Deprecated
     Boolean deleteSheetNamedSelection(String name, String rangeName);
 
+    @Deprecated
     RaptureSheetRange putSheetNamedSelection(String name, String rangeName, RaptureSheetRange range);
 
+    @Deprecated
     RaptureSheetScript getSheetScript(String name, String scriptName);
 
+    @Deprecated
     void cloneSheet(String srcName, String targetName);
 
+    @Deprecated
     RaptureSheetRange getSheetNamedSelection(String name, String rangeName);
 
+    @Deprecated
     List<RaptureSheetNote> getSheetNotes(String name);
 
+    @Deprecated
     Boolean deleteSheetNote(String name, String noteId);
 
+    @Deprecated
     RaptureSheetNote putSheetNote(String name, RaptureSheetNote note);
 
+    @Deprecated
     Boolean deleteSheetColumn(String docPath, int column);
 
+    @Deprecated
     Boolean deleteSheetRow(String docPath, int row);
 
+    @Deprecated
     Boolean deleteSheetCell(String docPath, int row, int column, int dimension);
 
+    @Deprecated
     Boolean sheetExists(String docPath);
 
-    Boolean setBlock(String docPath, int startRow, int startColumn, List<String> values, int height, int width,
-            int dimension);
+    @Deprecated
+    Boolean setBlock(String docPath, int startRow, int startColumn, List<String> values, int height, int width, int dimension);
 
     // Drop the sheet store
+    @Deprecated
     void drop();
 
 }
