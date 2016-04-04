@@ -24,17 +24,22 @@
 package rapture.kernel;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import org.antlr.runtime.ANTLRStringStream;
+import org.antlr.runtime.CommonTokenStream;
+import org.antlr.runtime.RecognitionException;
+import org.antlr.runtime.tree.CommonTree;
+import org.antlr.runtime.tree.CommonTreeNodeStream;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import rapture.common.CallingContext;
@@ -47,6 +52,17 @@ import rapture.common.RaptureScriptPurpose;
 import rapture.common.RaptureSnippet;
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
+import rapture.common.api.ScriptingApi;
+import reflex.IReflexHandler;
+import reflex.IReflexOutputHandler;
+import reflex.ReflexLexer;
+import reflex.ReflexParseException;
+import reflex.ReflexParser;
+import reflex.ReflexTreeWalker;
+import reflex.node.ReflexNode;
+import reflex.util.InstrumentDebugger;
+import reflex.value.ReflexValue;
+import reflex.value.internal.ReflexNullValue;
 
 public class ScriptApiFileTest extends AbstractFileTest {
 
@@ -251,4 +267,105 @@ public class ScriptApiFileTest extends AbstractFileTest {
         removed = scriptImpl.deleteScriptsByUriPrefix(callingContext, uriPrefix);
         assertEquals(4, removed.size());
     }
+    
+    public String runScript(String program, Map<String, Object> injectedVars)
+            throws RecognitionException, ReflexParseException {
+        final StringBuilder sb = new StringBuilder();
+
+        ReflexLexer lexer = new ReflexLexer();
+        lexer.setCharStream(new ANTLRStringStream(program));
+        CommonTokenStream tokens = new CommonTokenStream(lexer);
+        ReflexParser parser = new ReflexParser(tokens);
+
+        CommonTree tree = (CommonTree) parser.parse().getTree();
+
+        CommonTreeNodeStream nodes = new CommonTreeNodeStream(tree);
+        ReflexTreeWalker walker = new ReflexTreeWalker(nodes, parser.languageRegistry);
+
+        IReflexHandler handler = walker.getReflexHandler();
+        handler.setOutputHandler(new IReflexOutputHandler() {
+
+            @Override
+            public boolean hasCapability() {
+                return false;
+            }
+
+            @Override
+            public void printLog(String text) {
+                sb.append(text);
+            }
+
+            @Override
+            public void printOutput(String text) {
+                sb.append(text);
+            }
+
+            @Override
+            public void setApi(ScriptingApi api) {
+            }
+        });
+
+        if (injectedVars != null && !injectedVars.isEmpty()) {
+            for (Map.Entry<String, Object> kv : injectedVars.entrySet()) {
+                walker.currentScope.assign(kv.getKey(),
+                        kv.getValue() == null ? new ReflexNullValue() : new ReflexValue(kv.getValue()));
+            }
+        }
+
+        @SuppressWarnings("unused")
+        ReflexNode returned = walker.walk();
+        InstrumentDebugger instrument = new InstrumentDebugger();
+        instrument.setProgram(program);
+        ReflexValue retVal = (returned == null) ? null : returned.evaluateWithoutScope(instrument);
+        instrument.getInstrumenter().log();
+        return sb.toString();
+    }
+
+    @Test
+    public void params() throws RecognitionException {
+        Map<String, Object> map = new HashMap<>();
+        map.put("a", "one");
+        String program = "b='two';\n println(\"${a}${b}\"); \n";
+
+        String output = runScript(program, map);
+        assertEquals("onetwo", output.trim());
+    }
+        
+    @Ignore // Fails with RaptureException: No such IdGen idgen://sys/activity/id
+    @Test
+    public void testScriptWithParams() {
+        RaptureScript script = new RaptureScript();
+        CallingContext ctx = ContextFactory.getKernelUser();
+        script.setAuthority(auth);
+        script.setLanguage(RaptureScriptLanguage.REFLEX);
+        script.setName("Candy");
+        script.setPurpose(RaptureScriptPurpose.PROGRAM);
+        script.setParameters(new ArrayList<RaptureParameter>());
+        String scriptWrite = "meta do \n"+
+                                "return string,'Just the parameters put together'; \n"+
+                                "param 'a',string,'The a parameter'; \n"+
+                                "param 'b',string,'The b parameter'; \n"+
+                                "param 'c',string,'The c parameter'; \n"+
+                                "param 'd',string,'The d parameter'; \n"+
+                                "property 'color','blue'; \n"+
+                                "end \n"+
+                                "println(\"a is ${a}\"); \n"+
+                                "println(\"b is ${b}\"); \n"+
+                                "println(\"c is ${c}\"); \n"+
+                                "println(\"d is ${d}\"); \n"+
+                                "return \"${a}${b}${c}${d}\"; \n";
+        script.setScript(scriptWrite);
+        scriptImpl.putScript(ctx, script.getAddressURI().toString(), script);
+        RaptureScript scriptRead = scriptImpl.getScript(ctx, script.getAddressURI().toString());
+        assertEquals(scriptWrite, scriptRead.getScript());
+
+        Map<String, String> parameters = new HashMap<>();
+        parameters.put("a", "A");
+        parameters.put("b", "B");
+        parameters.put("c", "C");
+        parameters.put("d", "D");
+
+        String ret = Kernel.getScript().runScript(ctx, script.getAddressURI().toString(), parameters);
+        assertEquals("ABCD", ret);
+    }       
 }
