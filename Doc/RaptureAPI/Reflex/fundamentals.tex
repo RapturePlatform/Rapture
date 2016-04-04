@@ -1,0 +1,194 @@
+\chapter{Reflex fundamentals}
+\Reflex is a basic procedural language with a few special operators \index{operator} and built-in functions \index{function} to make \Rapture interactions quicker to write. In this case the meaning of "procedural" is simply that in \Reflex you can define functions and invoke those functions. This section describes the fundamental characteristics of the language.
+\section{Hello, World}
+The simplest program in \Reflex uses the built-in function \Verb+println+ \index{println} to print out the contents to standard out:
+\begin{lstlisting}[caption={Hello world}]
+// This is Hello World in Reflex
+println('Hello, world');
+
+\end{lstlisting}
+
+Running the above program in Eclipse or through the ReflexRunner will print out the string 'Hello, world' on the console. It introduces two concepts. Line 1 shows how comments are defined in \Reflex. Comments are prefixed with a double slash and continue to the end of the line. This is the only comment style in \Reflex. Line 2 shows the built-in function \Verb+println+ and the fact that strings can be enclosed either in single quotes or double quotes. Finally statements in \Reflex are terminated by semi-colons.
+
+\section{Variables and Types}
+
+Variables \index{variable} in \Reflex are created upon first declaration and can be named using the letters of the alphabet and the digits 0 - 9. Some examples of variable names are shown in the table below:
+
+\begin{table}[h]
+\small
+\centering
+\begin{tabular} { | l | l | }
+Variable Name & Valid? \\
+\hline
+abc & Yes \\
+aB0 & Yes \\
+a*3 & No (contains a *) \\
+reflex & Yes \\
+\_var & No (contains a \_) \\
+\end{tabular}
+\caption{Variable names in Reflex}
+\end{table}
+
+Types \index{type} in \Reflex are inferred from the context in which a value is assigned, and wherever possible a type will be coerced into another if the other type is needed for a context. The types are listed in table \vref{tab:Types}.
+
+\begin{table}[h!]
+\small
+\centering
+\begin{tabular} { | c | c | p{5cm} | }
+\hline
+Type & Example & Description \\
+\hline
+string & 'Hello' & A string, an array of characters \\
+number & 4.0 & A number, either an integer or a float, depending on context \\
+integer & 4 & A specific integer (not the general number) \\
+boolean & true & A boolean value, either true or false \\
+list & \Verb+[ 1, 2, 3]+ & A list of values \\
+map & \Verb+{ 'key' : 'value' }+ & An associate map, mapping keys (strings) to values. \\
+date & \Verb+ date() + & A date. \\
+time & \Verb+ time() + & A time. \\
+file & \Verb+ file('test.txt') + & A file object, used to read or write data. \\
+nul & \Verb+ null + & An object representing a nul value.\\
+void & \Verb+ void + & An object representing "no" object.\\
+lib & \Verb+ lib(className) + & An object representing a \Reflex library. \\
+stream & \Verb+ x = file('test.txt', 'CSV');+ & An object representing a stream of data from a file. \\
+process & \Verb+ p = spawn('ls');+ & An object representing an external process. \\
+timer & \Verb+ t = timer();+ & An object representing a timer that is started on creation. \\
+\hline
+\end{tabular}
+\label{tab:Types}
+\caption{Types in Reflex}
+\end{table}
+
+The more complex types (stream, file) will be introduced in a later section on integration with \Rapture.
+
+\section{Type conversion}
+\Reflex will attempt to convert \index{conversion} from one type to another as needed. The table below shows what conversions are implicit and which ones need a little help from a built in function.
+
+\begin{table}[h!]
+  \small
+\centering
+\begin{tabular} { | c | c | c | c | c | c | c | c |}
+\hline
+       & \multicolumn{7}{c|} {From} \\ \hline
+To     & String & Number & Boolean & List & Map & Date & Time\\
+\hline
+String &        &  auto  &  auto   & auto & auto & auto & auto\\
+Number &  cast  &        &  n/a    &  n/a & n/a & Julian & Millis\\
+Boolean&  n/a   &  n/a   &         & n/a  & n/a & n/a & n/a \\
+List   &  n/a   &  n/a   &  n/a    &      & n/a & n/a & n/a \\
+Map    &  n/a   &  n/a   &  n/a    & n/a  & n/a & n/a & n/a  \\
+Date   &  yyyyMMdd & Julian  & n/a & n/a & n/a & & n/a \\
+Time   &  HH:MM:SS & Millis & n/a & n/a & n/a & n/a & \\
+\hline
+\end{tabular}
+\caption{Conversions in Reflex}
+\end{table}
+
+\section{Initialization}
+\index{initialize}\Reflex types are determined by context - for example the result of calling the built-in \Verb+size+ function is a number, so assigning a variable to the result of calling that function will result in a numeric variable being created. Another way of defining the type of a variable is to initialize it. Reflex uses the format of the initialization to determine the type.
+
+A variable initialization can also be prefixed with the keyword \Verb+const+\index{const}. This keyword ensures that the value of this variable will be unchanged after first assignment, and that the variable will be accessible globally, including within functions.
+
+\subsection{String}
+The string type is initialized through a statement enclosed in either single quotes or double quotes. The different quoting options are equivalent in \Reflex - the choice is a matter of convenience. If your string needs to contain double quotes you can enclose it in single quotes and vice versa.\index{quote}
+\begin{lstlisting}[caption={String initialization}]
+// String initialization
+a = 'a string';
+b = 'another string';
+c = "A string in quotes";
+const d = "There's a string in here somewhere";
+\end{lstlisting}
+
+When a string is wrapped in double quotes \Reflex will attempt to substitute variable names embedded in the string with their values. A variable
+name used in this way is prefixed with \Verb+\${+ and closed with \Verb+}+.
+
+\begin{lstlisting}[caption={String interpretation}]
+// String initialization
+value = 5;
+println("The value is ${value}");
+// Prints out 'The value is 5'
+\end{lstlisting}
+
+Strings in single quotes are not expanded.
+
+\subsection{Number}
+The number \index{number} type is initialized through a statement that represents a number - either an integer (a series of digits) or a floating point number through either a series of digits, a decimal point and a further series of digits, or through the definition of a number through scientific notation. If you suffix a number representation with a capital L the number will be locked to an internal integer \index{integer} type, which is useful when using these numbers in native Java calls.
+\begin{lstlisting}[caption={Number initialization}]
+// Number initializaion
+a = 10;
+b = 100.4;
+const c = 5L;
+d = 4.5E04; // equivalent to 45000
+\end{lstlisting}
+
+If a number can be represented as an integer it will be stored as an integer initially.
+
+\subsection{Boolean}
+The boolean \index{boolean} type is defined using the keywords \Verb+true+ and \verb+false+, and of course can be initialized through the use of a boolean statement (see boolean operators in a later section).
+\begin{lstlisting}[caption={Boolean initialization}]
+// Boolean initialization
+a = true;
+const b = false;
+c = (1 == 1); // c == true
+\end{lstlisting}
+\subsection{List}
+The list \index{list} type is defined using square brackets, with elements of the list being separated by commas. The elements can be any expression which includes the name of an existing (pre-defined) variable.
+\begin{lstlisting}[caption={List initialization}]
+// List initialization
+a = []; // An empty list
+const b = [1, 2, 3, 4, 5];
+c = ['A string', 1, []]; // A list of a string, a number, and an empty list
+\end{lstlisting}
+\subsection{Map}
+A map \index{map} is initialized using a JSON style format and is best demonstrated through example.
+\begin{lstlisting}[caption={Map initialization}]
+// Map initialization
+a = {}; // An empty map
+b = { 'a' : 4 }; // A map containing a
+                 // single entry, with
+                 // the key 'a' and the value 4
+c = { 'one' : 1, 'two' : 2, 'three' : 3 };
+const d = { 'outer' : { 'inner' : true }};
+\end{lstlisting}
+\subsection{Date}
+A date \index{date} is initialized using the built-in \Verb+date+ function. When no arguments are provided the date is
+initialized to the current date as understood by the server the script is running on.
+
+When more than one argument is specified the first argument specifies a date in \Verb+yyyyMMdd+ format, and if a second
+argument is provided it is used to determine how arithmetic can be performed on this date object. It can be one of those listed below:
+
+\begin{table}[h!]
+\small
+\centering
+\begin{tabular} { | c | p{7cm} | }
+\hline
+Calendar & Description \\
+\hline
+BDF & The date will always fall on the days Monday-Friday. \\
+BDFAct & When moving the date by an amount, weekends count as zero days. The date will always fall on a weekday. \\
+\hline
+\end{tabular}
+\label{tab:DateCalendarTypes}
+\caption{Calendar Types in Reflex}
+\end{table}
+
+\begin{lstlisting}[caption={Date examples}]
+d1 = date();
+d2 = date('20160101');
+d3 = date('20160101', 'BDFAct');
+\end{lstlisting}
+
+
+\section{Simple examples}
+Based on our understanding of types and variables, and our simple \Verb+println+ function, we can create some new \Reflex scripts. Here is a longer script that creates some variables and introduces some of the operators that will be expanded upon in the next section.
+
+\begin{lstlisting}[caption={Variables and Types}]
+
+// An example Reflex script showing variables and types
+x = 10;
+y = "Hello";
+z = x + 1;
+println("Z is " + z);
+\end{lstlisting}
+
+In this example we have defined three variables, $x$, $y$ and $z$. $x$ and $z$ are ultimately numbers and $y$ is a string. We create the variable $x$ on line 3, and $y$ on line 4. $z$ is implicitly created as the value of $x+1$ (i.e. 11). Finally we print out the value of $z$ on line 6, but note that we have used the $+$ operator on a string (\Verb+Z is+) and a number (the variable $z$). In this case \Reflex will convert $z$ from a number to a string and then append the strings together.

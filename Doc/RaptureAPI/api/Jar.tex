@@ -1,0 +1,185 @@
+\chapter{Jar API}
+\index{Jar API}
+\input{api/jar/info}
+\section{JarExists}
+\index{JarExists}
+\label{Api:JarExists}
+\begin{lstlisting}[style=nonumbers]
+   boolean jarExists (
+           String    jarUri
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /data/list/$f(jarUri)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #jar.jarExists(jarUri);
+%\end{lstlisting}
+\input{api/jar/jarExists}
+
+
+\rule{12cm}{2pt}
+\section{PutJar}
+\index{PutJar}
+\label{Api:PutJar}
+\begin{lstlisting}[style=nonumbers]
+   void putJar (
+           String    jarUri
+           byte[]    jarContent
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /data/write/$f(jarUri)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #jar.putJar(jarUri,jarContent);
+%\end{lstlisting}
+\input{api/jar/putJar}
+
+
+\rule{12cm}{2pt}
+\section{GetJar}
+\index{GetJar}
+\label{Api:GetJar}
+\begin{lstlisting}[style=nonumbers]
+   BlobContainer getJar (
+           String    jarUri
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /data/read/$f(jarUri)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #jar.getJar(jarUri);
+%\end{lstlisting}
+\input{api/jar/getJar}
+
+
+\rule{12cm}{2pt}
+\section{DeleteJar}
+\index{DeleteJar}
+\label{Api:DeleteJar}
+\begin{lstlisting}[style=nonumbers]
+   void deleteJar (
+           String    jarUri
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /data/write/$f(jarUri)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #jar.deleteJar(jarUri);
+%\end{lstlisting}
+\input{api/jar/deleteJar}
+
+
+\rule{12cm}{2pt}
+\section{GetJarSize}
+\index{GetJarSize}
+\label{Api:GetJarSize}
+\begin{lstlisting}[style=nonumbers]
+   Long getJarSize (
+           String    jarUri
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /data/list/$f(jarUri)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #jar.getJarSize(jarUri);
+%\end{lstlisting}
+\input{api/jar/getJarSize}
+
+
+\rule{12cm}{2pt}
+\section{GetJarMetaData}
+\index{GetJarMetaData}
+\label{Api:GetJarMetaData}
+\begin{lstlisting}[style=nonumbers]
+   Map<String,String> getJarMetaData (
+           String    jarUri
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /data/list/$f(jarUri)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #jar.getJarMetaData(jarUri);
+%\end{lstlisting}
+\input{api/jar/getJarMetaData}
+
+
+\rule{12cm}{2pt}
+\section{ListJarsByUriPrefix}
+\index{ListJarsByUriPrefix}
+\label{Api:ListJarsByUriPrefix}
+\begin{lstlisting}[style=nonumbers]
+   Map<String,RaptureFolderInfo> listJarsByUriPrefix (
+           String    uriPrefix
+           int    depth
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /data/list/$f(uriPrefix)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #jar.listJarsByUriPrefix(uriPrefix,depth);
+%\end{lstlisting}
+\input{api/jar/listJarsByUriPrefix}
+
+
+\rule{12cm}{2pt}
+\section{JarIsEnabled}
+\index{JarIsEnabled}
+\label{Api:JarIsEnabled}
+\begin{lstlisting}[style=nonumbers]
+   boolean jarIsEnabled (
+           String    jarUri
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /data/list/$f(jarUri)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #jar.jarIsEnabled(jarUri);
+%\end{lstlisting}
+\input{api/jar/jarIsEnabled}
+
+
+\rule{12cm}{2pt}
+\section{EnableJar}
+\index{EnableJar}
+\label{Api:EnableJar}
+\begin{lstlisting}[style=nonumbers]
+   void enableJar (
+           String    jarUri
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/jar
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #jar.enableJar(jarUri);
+%\end{lstlisting}
+\input{api/jar/enableJar}
+
+
+\rule{12cm}{2pt}
+\section{DisableJar}
+\index{DisableJar}
+\label{Api:DisableJar}
+\begin{lstlisting}[style=nonumbers]
+   void disableJar (
+           String    jarUri
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/jar
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #jar.disableJar(jarUri);
+%\end{lstlisting}
+\input{api/jar/disableJar}
+
+
+\rule{12cm}{2pt}

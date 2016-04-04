@@ -1,0 +1,221 @@
+\chapter{User API}
+\index{User API}
+\input{api/user/info}
+\section{GetWhoAmI}
+\index{GetWhoAmI}
+\label{Api:GetWhoAmI}
+\begin{lstlisting}[style=nonumbers]
+   RaptureUser getWhoAmI (
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /everyone
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #user.getWhoAmI();
+%\end{lstlisting}
+\input{api/user/getWhoAmI}
+
+
+\rule{12cm}{2pt}
+\section{LogoutUser}
+\index{LogoutUser}
+\label{Api:LogoutUser}
+\begin{lstlisting}[style=nonumbers]
+   void logoutUser (
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /everyone
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #user.logoutUser();
+%\end{lstlisting}
+\input{api/user/logoutUser}
+
+
+\rule{12cm}{2pt}
+\section{StorePreference}
+\index{StorePreference}
+\label{Api:StorePreference}
+\begin{lstlisting}[style=nonumbers]
+   void storePreference (
+           String    category
+           String    name
+           String    content
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /user/preferences
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #user.storePreference(category,name,content);
+%\end{lstlisting}
+\input{api/user/storePreference}
+
+
+\rule{12cm}{2pt}
+\section{GetPreference}
+\index{GetPreference}
+\label{Api:GetPreference}
+\begin{lstlisting}[style=nonumbers]
+   String getPreference (
+           String    category
+           String    name
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /user/preferences
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #user.getPreference(category,name);
+%\end{lstlisting}
+\input{api/user/getPreference}
+
+
+\rule{12cm}{2pt}
+\section{RemovePreference}
+\index{RemovePreference}
+\label{Api:RemovePreference}
+\begin{lstlisting}[style=nonumbers]
+   void removePreference (
+           String    category
+           String    name
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /user/preferences
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #user.removePreference(category,name);
+%\end{lstlisting}
+\input{api/user/removePreference}
+
+
+\rule{12cm}{2pt}
+\section{GetPreferenceCategories}
+\index{GetPreferenceCategories}
+\label{Api:GetPreferenceCategories}
+\begin{lstlisting}[style=nonumbers]
+   List<String> getPreferenceCategories (
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /user/preferences
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #user.getPreferenceCategories();
+%\end{lstlisting}
+\input{api/user/getPreferenceCategories}
+
+
+\rule{12cm}{2pt}
+\section{GetPreferencesInCategory}
+\index{GetPreferencesInCategory}
+\label{Api:GetPreferencesInCategory}
+\begin{lstlisting}[style=nonumbers]
+   List<String> getPreferencesInCategory (
+           String    category
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /user/preferences
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #user.getPreferencesInCategory(category);
+%\end{lstlisting}
+\input{api/user/getPreferencesInCategory}
+
+
+\rule{12cm}{2pt}
+\section{UpdateMyDescription}
+\index{UpdateMyDescription}
+\label{Api:UpdateMyDescription}
+\begin{lstlisting}[style=nonumbers]
+   RaptureUser updateMyDescription (
+           String    description
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /everyone
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #user.updateMyDescription(description);
+%\end{lstlisting}
+\input{api/user/updateMyDescription}
+
+
+\rule{12cm}{2pt}
+\section{ChangeMyPassword}
+\index{ChangeMyPassword}
+\label{Api:ChangeMyPassword}
+\begin{lstlisting}[style=nonumbers]
+   RaptureUser changeMyPassword (
+           String    oldHashPassword
+           String    newHashPassword
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /everyone
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #user.changeMyPassword(oldHashPassword,newHashPassword);
+%\end{lstlisting}
+\input{api/user/changeMyPassword}
+
+
+\rule{12cm}{2pt}
+\section{ChangeMyEmail}
+\index{ChangeMyEmail}
+\label{Api:ChangeMyEmail}
+\begin{lstlisting}[style=nonumbers]
+   RaptureUser changeMyEmail (
+           String    newAddress
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /everyone
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #user.changeMyEmail(newAddress);
+%\end{lstlisting}
+\input{api/user/changeMyEmail}
+
+
+\rule{12cm}{2pt}
+\section{GetServerApiVersion}
+\index{GetServerApiVersion}
+\label{Api:GetServerApiVersion}
+\begin{lstlisting}[style=nonumbers]
+   ApiVersion getServerApiVersion (
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /everyone
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #user.getServerApiVersion();
+%\end{lstlisting}
+\input{api/user/getServerApiVersion}
+
+
+\rule{12cm}{2pt}
+\section{IsPermitted}
+\index{IsPermitted}
+\label{Api:IsPermitted}
+\begin{lstlisting}[style=nonumbers]
+   boolean isPermitted (
+           String    apiCall
+           String    callParam
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /everyone
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #user.isPermitted(apiCall,callParam);
+%\end{lstlisting}
+\input{api/user/isPermitted}
+
+
+\rule{12cm}{2pt}

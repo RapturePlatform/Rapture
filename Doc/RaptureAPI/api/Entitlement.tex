@@ -1,0 +1,311 @@
+\chapter{Entitlement API}
+\index{Entitlement API}
+\input{api/entitlement/info}
+\section{GetEntitlements}
+\index{GetEntitlements}
+\label{Api:GetEntitlements}
+\begin{lstlisting}[style=nonumbers]
+   List<RaptureEntitlement> getEntitlements (
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/ent
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #entitlement.getEntitlements();
+%\end{lstlisting}
+\input{api/entitlement/getEntitlements}
+
+
+\rule{12cm}{2pt}
+\section{GetEntitlement}
+\index{GetEntitlement}
+\label{Api:GetEntitlement}
+\begin{lstlisting}[style=nonumbers]
+   RaptureEntitlement getEntitlement (
+           String    entitlementName
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/ent
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #entitlement.getEntitlement(entitlementName);
+%\end{lstlisting}
+\input{api/entitlement/getEntitlement}
+
+
+\rule{12cm}{2pt}
+\section{GetEntitlementByAddress}
+\index{GetEntitlementByAddress}
+\label{Api:GetEntitlementByAddress}
+\begin{lstlisting}[style=nonumbers]
+   RaptureEntitlement getEntitlementByAddress (
+           String    entitlementURI
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/ent
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #entitlement.getEntitlementByAddress(entitlementURI);
+%\end{lstlisting}
+\input{api/entitlement/getEntitlementByAddress}
+
+
+\rule{12cm}{2pt}
+\section{GetEntitlementGroup}
+\index{GetEntitlementGroup}
+\label{Api:GetEntitlementGroup}
+\begin{lstlisting}[style=nonumbers]
+   RaptureEntitlementGroup getEntitlementGroup (
+           String    groupName
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/ent
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #entitlement.getEntitlementGroup(groupName);
+%\end{lstlisting}
+\input{api/entitlement/getEntitlementGroup}
+
+
+\rule{12cm}{2pt}
+\section{GetEntitlementGroupByAddress}
+\index{GetEntitlementGroupByAddress}
+\label{Api:GetEntitlementGroupByAddress}
+\begin{lstlisting}[style=nonumbers]
+   RaptureEntitlementGroup getEntitlementGroupByAddress (
+           String    groupURI
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/ent
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #entitlement.getEntitlementGroupByAddress(groupURI);
+%\end{lstlisting}
+\input{api/entitlement/getEntitlementGroupByAddress}
+
+
+\rule{12cm}{2pt}
+\section{GetEntitlementGroups}
+\index{GetEntitlementGroups}
+\label{Api:GetEntitlementGroups}
+\begin{lstlisting}[style=nonumbers]
+   List<RaptureEntitlementGroup> getEntitlementGroups (
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/ent
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #entitlement.getEntitlementGroups();
+%\end{lstlisting}
+\input{api/entitlement/getEntitlementGroups}
+
+
+\rule{12cm}{2pt}
+\section{AddEntitlement}
+\index{AddEntitlement}
+\label{Api:AddEntitlement}
+\begin{lstlisting}[style=nonumbers]
+   RaptureEntitlement addEntitlement (
+           String    entitlementName
+           String    initialGroup
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/ent
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #entitlement.addEntitlement(entitlementName,initialGroup);
+%\end{lstlisting}
+\input{api/entitlement/addEntitlement}
+
+
+\rule{12cm}{2pt}
+\section{AddGroupToEntitlement}
+\index{AddGroupToEntitlement}
+\label{Api:AddGroupToEntitlement}
+\begin{lstlisting}[style=nonumbers]
+   RaptureEntitlement addGroupToEntitlement (
+           String    entitlementName
+           String    groupName
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/ent
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #entitlement.addGroupToEntitlement(entitlementName,groupName);
+%\end{lstlisting}
+\input{api/entitlement/addGroupToEntitlement}
+
+
+\rule{12cm}{2pt}
+\section{RemoveGroupFromEntitlement}
+\index{RemoveGroupFromEntitlement}
+\label{Api:RemoveGroupFromEntitlement}
+\begin{lstlisting}[style=nonumbers]
+   RaptureEntitlement removeGroupFromEntitlement (
+           String    entitlementName
+           String    groupName
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/ent
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #entitlement.removeGroupFromEntitlement(entitlementName,groupName);
+%\end{lstlisting}
+\input{api/entitlement/removeGroupFromEntitlement}
+
+
+\rule{12cm}{2pt}
+\section{DeleteEntitlement}
+\index{DeleteEntitlement}
+\label{Api:DeleteEntitlement}
+\begin{lstlisting}[style=nonumbers]
+   void deleteEntitlement (
+           String    entitlementName
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/ent
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #entitlement.deleteEntitlement(entitlementName);
+%\end{lstlisting}
+\input{api/entitlement/deleteEntitlement}
+
+
+\rule{12cm}{2pt}
+\section{DeleteEntitlementGroup}
+\index{DeleteEntitlementGroup}
+\label{Api:DeleteEntitlementGroup}
+\begin{lstlisting}[style=nonumbers]
+   void deleteEntitlementGroup (
+           String    groupName
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/ent
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #entitlement.deleteEntitlementGroup(groupName);
+%\end{lstlisting}
+\input{api/entitlement/deleteEntitlementGroup}
+
+
+\rule{12cm}{2pt}
+\section{AddEntitlementGroup}
+\index{AddEntitlementGroup}
+\label{Api:AddEntitlementGroup}
+\begin{lstlisting}[style=nonumbers]
+   RaptureEntitlementGroup addEntitlementGroup (
+           String    groupName
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/ent
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #entitlement.addEntitlementGroup(groupName);
+%\end{lstlisting}
+\input{api/entitlement/addEntitlementGroup}
+
+
+\rule{12cm}{2pt}
+\section{AddUserToEntitlementGroup}
+\index{AddUserToEntitlementGroup}
+\label{Api:AddUserToEntitlementGroup}
+\begin{lstlisting}[style=nonumbers]
+   RaptureEntitlementGroup addUserToEntitlementGroup (
+           String    groupName
+           String    userName
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/ent
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #entitlement.addUserToEntitlementGroup(groupName,userName);
+%\end{lstlisting}
+\input{api/entitlement/addUserToEntitlementGroup}
+
+
+\rule{12cm}{2pt}
+\section{RemoveUserFromEntitlementGroup}
+\index{RemoveUserFromEntitlementGroup}
+\label{Api:RemoveUserFromEntitlementGroup}
+\begin{lstlisting}[style=nonumbers]
+   RaptureEntitlementGroup removeUserFromEntitlementGroup (
+           String    groupName
+           String    userName
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/ent
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #entitlement.removeUserFromEntitlementGroup(groupName,userName);
+%\end{lstlisting}
+\input{api/entitlement/removeUserFromEntitlementGroup}
+
+
+\rule{12cm}{2pt}
+\section{FindEntitlementsByUser}
+\index{FindEntitlementsByUser}
+\label{Api:FindEntitlementsByUser}
+\begin{lstlisting}[style=nonumbers]
+   List<RaptureEntitlement> findEntitlementsByUser (
+           String    username
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/ent
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #entitlement.findEntitlementsByUser(username);
+%\end{lstlisting}
+\input{api/entitlement/findEntitlementsByUser}
+
+
+\rule{12cm}{2pt}
+\section{FindEntitlementsByGroup}
+\index{FindEntitlementsByGroup}
+\label{Api:FindEntitlementsByGroup}
+\begin{lstlisting}[style=nonumbers]
+   List<RaptureEntitlement> findEntitlementsByGroup (
+           String    groupname
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/ent
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #entitlement.findEntitlementsByGroup(groupname);
+%\end{lstlisting}
+\input{api/entitlement/findEntitlementsByGroup}
+
+
+\rule{12cm}{2pt}
+\section{FindEntitlementsBySelf}
+\index{FindEntitlementsBySelf}
+\label{Api:FindEntitlementsBySelf}
+\begin{lstlisting}[style=nonumbers]
+   List<RaptureEntitlement> findEntitlementsBySelf (
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /everyone
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #entitlement.findEntitlementsBySelf();
+%\end{lstlisting}
+\input{api/entitlement/findEntitlementsBySelf}
+
+
+\rule{12cm}{2pt}

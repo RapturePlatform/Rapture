@@ -1,0 +1,58 @@
+\chapter{Running Reflex}
+There are three options for using \Reflex. The most common use for \Reflex is to run scripts from within a \Rapture environment - you upload scripts to \Rapture and then call them through either \Rapture's API call \Verb+runScript+ or through a \Rapture workflow or event handling.
+
+For testing and debugging it is preferable to install a local environment to play with. This section describes how to do that.
+
+\Reflex is bundled into an application called \emph{ReflexRunner} that can be used to run \Reflex scripts. ReflexRunner is a command line java application that can be downloaded from the \href{http://incapture.github.com/RaptureRepo/release}{\Rapture Release Site}. Once downloaded it can be run using java as follows:
+
+\begin{Verbatim}[fontsize=\small]
+  java -jar ReflexRunner [options]
+
+  ReflexRunner [-r Rapture API URL]
+               [-u Rapture username]
+               [-p Rapture password]
+               [-f Script file]
+               [-params Script parameters]
+               [-d Debug]
+               [-i Instrument]
+\end{Verbatim}
+
+\subsection{Examples}
+
+Execute a script with a parameter:
+\begin{Verbatim}
+ReflexRunner -r http://localhost:8665/rapture
+             -f myScript.rfx -param x=1
+\end{Verbatim}
+Execute a script with 2 parameters:
+\begin{Verbatim}
+ReflexRunner -r http://localhost:8665/rapture
+             -f myScript.rfx -param x=1,y=abc
+\end{Verbatim}
+Execute a script with instrumentation:
+\begin{Verbatim}
+ReflexRunner -r http://localhost:8665/rapture
+             -f myScript.rfx -i
+\end{Verbatim}
+
+\subsection{Usage notes}
+\begin{itemize}
+\item{-r and -f are mandatory parameters}
+\item{User name and password will be prompted for if not set using switches or environment variables.}
+\item{Cannot use -i and -d switches at the same time}
+\item{Parameter input format is a comma seperated list of: <variable name>=<variable value}
+\end{itemize}
+
+\subsection{Supported environment variables}
+\begin{itemize}
+\item{RAPTURE\_HOST sets -r}
+\item{RAPTURE\_USER sets -u}
+\item{RAPTURE\_PASSWORD sets -p}
+\end{itemize}
+
+\subsection{Exit codes}
+\begin{itemize}
+\item{0: No parameters passed.}
+\item{1: Rapture URL (-r) parameter or environment variable is missing.}
+\item{2: Switches -d and -i cannot be used at same time.}
+\end{itemize}
