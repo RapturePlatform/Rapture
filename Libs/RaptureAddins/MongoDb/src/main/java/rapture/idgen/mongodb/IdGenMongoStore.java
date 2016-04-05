@@ -137,12 +137,12 @@ public class IdGenMongoStore implements IdGenStore {
     @Override
     public void invalidate() {
         Document invalidator = getInvalidator();
-        getIdGenCollection().findOneAndUpdate(getQueryObject(), invalidator);
+        getIdGenCollection().findOneAndUpdate(getQueryObject(), invalidator, new FindOneAndUpdateOptions().upsert(true));
     }
 
     public void makeValid() {
         Document invalidator = getRevalidator();
-        getIdGenCollection().findOneAndUpdate(getQueryObject(), invalidator);
+        getIdGenCollection().findOneAndUpdate(getQueryObject(), invalidator, new FindOneAndUpdateOptions().upsert(true));
     }
 
     @Override

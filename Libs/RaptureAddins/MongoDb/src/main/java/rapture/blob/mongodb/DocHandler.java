@@ -119,11 +119,8 @@ public class DocHandler implements BlobHandler {
     @Override
     public InputStream getBlob(CallingContext context, String docPath) {
         // For now get all of the binary contents and append them together
-        final Document query = new Document();
-        query.append(BLOB_NAME, docPath);
-
-        final Document fields = new Document();
-        fields.put(CONTENT, "1");
+        final Document query = new Document(BLOB_NAME, docPath);
+        final Document fields = new Document(CONTENT, "1");
 
         MongoRetryWrapper<ByteArrayInputStream> wrapper = new MongoRetryWrapper<ByteArrayInputStream>() {
 

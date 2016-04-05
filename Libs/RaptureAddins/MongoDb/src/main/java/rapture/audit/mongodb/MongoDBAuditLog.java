@@ -76,9 +76,9 @@ public class MongoDBAuditLog implements AuditLog {
                 return getAuditCollection().find().sort(sort).limit(count);
             }
 
-            public List<AuditLogEntry> action(FindIterable<Document> iterable) {
+            public List<AuditLogEntry> action(FindIterable<Document> cursor) {
                 List<AuditLogEntry> ret = new ArrayList<AuditLogEntry>();
-                fillFromIterable(ret, iterable);
+                fillFromCursor(ret, cursor);
                 return ret;
             }
         };
@@ -86,19 +86,29 @@ public class MongoDBAuditLog implements AuditLog {
         return wrapper.doAction();
     }
 
-    private void fillFromIterable(List<AuditLogEntry> ret, FindIterable<Document> iterable) throws MongoException {
-        Iterator<Document> iterator = iterable.iterator();
+    private static String safeString(Document obj, String fieldName) {
+        if (obj != null) {
+            Object val = obj.get(fieldName);
+            if (val != null) {
+                return val.toString();
+            }
+        }
+        return "";
+    }
+
+    private void fillFromCursor(List<AuditLogEntry> ret, FindIterable<Document> cursor) throws MongoException {
+        Iterator<Document> iterator = cursor.iterator();
         while (iterator.hasNext()) {
             Document obj = iterator.next();
             AuditLogEntry entry = new AuditLogEntry();
             entry.setLevel((Integer) obj.get(LEVEL));
-            entry.setMessage(obj.get(MESSAGE).toString());
-            entry.setUser(obj.get(USER).toString());
-            entry.setLogId(obj.get(LOG_ID).toString());
+            entry.setMessage(safeString(obj, MESSAGE));
+            entry.setUser(safeString(obj, USER));
+            entry.setLogId(safeString(obj, LOG_ID));
             entry.setWhen((Date) obj.get(WHEN));
-            entry.setSource(obj.get(SOURCE).toString());
-            entry.setEntryId(obj.get(ENTRY_ID).toString());
-            entry.setCategory(obj.get(CATEGORY).toString());
+            entry.setSource(safeString(obj, SOURCE));
+            entry.setEntryId(safeString(obj, ENTRY_ID));
+            entry.setCategory(safeString(obj, CATEGORY));
             ret.add(entry);
         }
     }
@@ -115,9 +125,9 @@ public class MongoDBAuditLog implements AuditLog {
                 return getAuditCollection().find(query).sort(sort);
             }
 
-            public List<AuditLogEntry> action(FindIterable<Document> iterable) {
+            public List<AuditLogEntry> action(FindIterable<Document> cursor) {
                 List<AuditLogEntry> ret = new ArrayList<AuditLogEntry>();
-                fillFromIterable(ret, iterable);
+                fillFromCursor(ret, cursor);
                 return ret;
             }
         };
@@ -197,9 +207,9 @@ public class MongoDBAuditLog implements AuditLog {
                 return ret;
             }
 
-            public List<AuditLogEntry> action(FindIterable<Document> iterable) {
+            public List<AuditLogEntry> action(FindIterable<Document> cursor) {
                 List<AuditLogEntry> ret = new ArrayList<AuditLogEntry>();
-                fillFromIterable(ret, iterable);
+                fillFromCursor(ret, cursor);
                 return ret;
             }
         };

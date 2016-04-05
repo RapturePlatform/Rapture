@@ -23,6 +23,7 @@
  */
 package rapture.lock.mongodb;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -104,7 +105,7 @@ public class MongoLockHandler implements ILockingHandler {
             // Look for the locks field, and see if we are top
             if (obj != null) {
                 log.trace("Locks are present");
-                BasicDBList locks = (BasicDBList) obj.get(LOCKS);
+                List<Object> locks = (List<Object>) obj.get(LOCKS);
                 if (locks.size() > 0) {
                     Document first = (Document) locks.get(0);
                     log.trace("First lock is " + first.get(CTX));

@@ -119,10 +119,7 @@ public class MongoDbDataStore extends AbstractKeyStore implements KeyStore, Rapt
     @Override
     public boolean containsKey(String ref) {
         MongoCollection<Document> collection = MongoDBFactory.getCollection(instanceName, tableName);
-        Document query = new Document();
-        query.put(KEY, ref);
-        FindIterable<Document> obj = collection.find(query);
-        return obj.iterator().hasNext();
+        return collection.count(new Document(KEY, ref)) > 0;
     }
 
     @Override
@@ -162,10 +159,8 @@ public class MongoDbDataStore extends AbstractKeyStore implements KeyStore, Rapt
 
     @Override
     public boolean delete(List<String> keys) {
-        Document query = new Document();
-        Document inClause = new Document();
-        inClause.append($IN, keys);
-        query.append(KEY, inClause);
+        Document inClause = new Document($IN, keys);
+        Document query = new Document(KEY, inClause);
         try {
             Document result = getCollection().findOneAndDelete(query);
             if ((result != null) && needsFolderHandling) {
@@ -223,10 +218,8 @@ public class MongoDbDataStore extends AbstractKeyStore implements KeyStore, Rapt
 
             public FindIterable<Document> makeCursor() {
                 MongoCollection<Document> collection = MongoDBFactory.getCollection(instanceName, tableName);
-                Document query = new Document();
-                Document inClause = new Document();
-                inClause.append($IN, keys);
-                query.append(KEY, inClause);
+                Document inClause = new Document($IN, keys);
+                Document query = new Document(KEY, inClause);
                 return collection.find(query);
             }
 
@@ -402,8 +395,7 @@ public class MongoDbDataStore extends AbstractKeyStore implements KeyStore, Rapt
 
             public FindIterable<Document> makeCursor() {
                 MongoCollection<Document> collection = getCollection();
-                Document query = new Document();
-                query.put(KEY, Pattern.compile(folderPrefix));
+                Document query = new Document(KEY, Pattern.compile(folderPrefix));
 
                 return collection.find(query);
             }
@@ -431,11 +423,10 @@ public class MongoDbDataStore extends AbstractKeyStore implements KeyStore, Rapt
 
             public FindIterable<Document> makeCursor() {
                 MongoCollection<Document> collection = getCollection();
-                Document query = new Document();
                 // REGEX on key name, surrounding prefix with \Q and \E means
                 // dont interpret any regex chars
                 String regex = "^\\Q" + prefix + "\\E";
-                query.put(KEY, Pattern.compile(regex));
+                Document query = new Document(KEY, Pattern.compile(regex));
                 return collection.find(query);
             }
 
@@ -460,11 +451,9 @@ public class MongoDbDataStore extends AbstractKeyStore implements KeyStore, Rapt
 
             public FindIterable<Document> makeCursor() {
                 MongoCollection<Document> collection = getCollection();
-                Document query = new Document();
                 // REGEX on key name?
                 String regex = ".*";
-                query.put(KEY, Pattern.compile(regex));
-
+                Document query = new Document(KEY, Pattern.compile(regex));
                 return collection.find(query);
             }
 

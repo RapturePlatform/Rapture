@@ -28,12 +28,14 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.bson.Document;
 
+import com.mongodb.MongoServerException;
 import com.mongodb.WriteConcern;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.result.DeleteResult;
 
 import rapture.common.LockHandle;
+import rapture.common.exception.ExceptionToString;
 import rapture.lock.ILockingHandler;
 import rapture.mongodb.MongoDBFactory;
 
@@ -82,8 +84,8 @@ public class MongoLockHandler2 implements ILockingHandler {
                 log.debug("inserted file" + lockFile);
 
                 break;
-            } catch (Exception e) {
-                // log.error(e.getCode());
+            } catch (MongoServerException e) {
+                log.error(ExceptionToString.format(e));
                 try {
                     Thread.sleep(50);
                 } catch (InterruptedException e1) {

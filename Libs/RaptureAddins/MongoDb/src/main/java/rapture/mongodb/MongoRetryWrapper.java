@@ -10,22 +10,22 @@ import rapture.common.exception.ExceptionToString;
 public abstract class MongoRetryWrapper<T> {
     private static Logger log = Logger.getLogger(MongoRetryWrapper.class);
     private int retryCount = MongoDBFactory.getRetryCount();
-        
+
     public MongoRetryWrapper() {
     }
-    
+
     public abstract T action(FindIterable<Document> cursor);
-    
+
     public FindIterable<Document> makeCursor() {
         return null;
     }
-    
+
     public T doAction() {
         T object = null;
         FindIterable<Document> cursor = null;
         while (retryCount-- > 0) {
             try {
-            	cursor = makeCursor();
+                cursor = makeCursor();
                 object = action(cursor);
                 retryCount = 0;
             } catch (com.mongodb.MongoException e) {
