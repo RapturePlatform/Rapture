@@ -27,11 +27,12 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.apache.log4j.Logger;
+import org.bson.BsonInt32;
+import org.bson.Document;
 
 import com.mongodb.BasicDBList;
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBCollection;
-import com.mongodb.DBObject;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.UpdateOptions;
 
 import rapture.common.LockHandle;
 import rapture.lock.ILockingHandler;
@@ -85,27 +86,27 @@ public class MongoLockHandler implements ILockingHandler {
         // create a random marker for each acquisition -- that way double-grabs
         // from the same session are rejected
         String random = makeRandom();
-        BasicDBObject query = getLockQuery(lockName);
-        BasicDBObject val = createLockVal(lockHolder, secondsToHold, random);
-        BasicDBObject update = createAddValObject(val);
+        Document query = getLockQuery(lockName);
+        Document val = createLockVal(lockHolder, secondsToHold, random);
+        Document update = createAddValObject(val);
 
         // First see if this exists
 
-        DBCollection coll = getLockCollection();
+        MongoCollection<Document> coll = getLockCollection();
 
         long bailTime = System.currentTimeMillis() + secondsToWait * 1000;
 
         boolean gotLock = false;
-        coll.update(query, update, true, false);
+        coll.updateOne(query, update, new UpdateOptions().upsert(true));
 
         while (!gotLock) {
-            DBObject obj = coll.findOne(query);
+            Document obj = coll.find(query).first();
             // Look for the locks field, and see if we are top
             if (obj != null) {
                 log.trace("Locks are present");
                 BasicDBList locks = (BasicDBList) obj.get(LOCKS);
                 if (locks.size() > 0) {
-                    DBObject first = (DBObject) locks.get(0);
+                    Document first = (Document) locks.get(0);
                     log.trace("First lock is " + first.get(CTX));
                     if (first.get(CTX).toString().equals(lockHolder) && first.get(RANDOM).toString().equals(random)) {
                         log.trace(String.format("We have the lock  with name '%s'", lockName));
@@ -153,23 +154,23 @@ public class MongoLockHandler implements ILockingHandler {
         return UUID.randomUUID().toString(); // this is overkill, but will do
     }
 
-    private BasicDBObject createAddValObject(BasicDBObject val) {
-        BasicDBObject update = new BasicDBObject();
-        BasicDBObject upVal = new BasicDBObject();
+    private Document createAddValObject(Document val) {
+        Document update = new Document();
+        Document upVal = new Document();
         upVal.put(LOCKS, val);
         update.put(DOLLARPUSH, upVal);
         return update;
     }
 
-    private BasicDBObject createLockVal(String lockHolder, long secondsToHold, String random) {
-        BasicDBObject val = new BasicDBObject();
+    private Document createLockVal(String lockHolder, long secondsToHold, String random) {
+        Document val = new Document();
         val.put(CTX, lockHolder);
         val.put(RANDOM, random);
         val.put(RELEASETIME, System.currentTimeMillis() + secondsToHold * 1000);
         return val;
     }
 
-    private boolean expired(DBObject obj) {
+    private boolean expired(Document obj) {
         Object val = obj.get(RELEASETIME);
         if (val != null) {
             if (val instanceof Long) {
@@ -181,12 +182,12 @@ public class MongoLockHandler implements ILockingHandler {
         return false;
     }
 
-    protected DBCollection getLockCollection() {
-        return MongoDBFactory.getDB(instanceName).getCollection(tableName);
+    protected MongoCollection<Document> getLockCollection() {
+        return MongoDBFactory.getCollection(instanceName, tableName);
     }
 
-    BasicDBObject getLockQuery(String lockName) {
-        BasicDBObject query = new BasicDBObject();
+    Document getLockQuery(String lockName) {
+        Document query = new Document();
         query.put(NAME, lockName);
         return query;
     }
@@ -213,44 +214,43 @@ public class MongoLockHandler implements ILockingHandler {
     }
 
     private Boolean releaseLockWithRandom(String lockHolder, String lockName, String random) {
-
-        BasicDBObject query = getLockQuery(lockName);
-        BasicDBObject toRemove = new BasicDBObject();
+        Document query = getLockQuery(lockName);
+        Document toRemove = new Document();
         toRemove.put(CTX, lockHolder);
         toRemove.put(RANDOM, random);
-        BasicDBObject field = new BasicDBObject();
+        Document field = new Document();
         field.put(LOCKS, toRemove);
-        BasicDBObject oper = new BasicDBObject();
+        Document oper = new Document();
         oper.put(DOLLARPULL, field);
-        getLockCollection().update(query, oper, false, false);
+        getLockCollection().updateOne(query, oper, new UpdateOptions().upsert(false));
         return true;
     }
 
     private Boolean breakLock(String lockHolder, String lockName) {
-        BasicDBObject query = getLockQuery(lockName);
-        BasicDBObject test = new BasicDBObject();
+        Document query = getLockQuery(lockName);
+        Document test = new Document();
         test.put(CTX, lockHolder);
-        BasicDBObject field = new BasicDBObject();
+        Document field = new Document();
         field.put(LOCKS, test);
-        BasicDBObject oper = new BasicDBObject();
+        Document oper = new Document();
         oper.put(DOLLARPULL, field);
-        getLockCollection().update(query, oper, false, false);
+        getLockCollection().updateOne(query, oper, new UpdateOptions().upsert(false));
         return true;
     }
 
     @Override
     public void setConfig(Map<String, String> config) {
-        getLockCollection().createIndex(NAME);
+        getLockCollection().createIndex(new Document(NAME, new BsonInt32(1)));
     }
 
     @Override
     public Boolean forceReleaseLock(String lockName) {
         log.debug("Mongo break lock");
-        BasicDBObject query = getLockQuery(lockName);
-        DBObject current = getLockCollection().findOne(query);
+        Document query = getLockQuery(lockName);
+        Document current = getLockCollection().find(query).first();
         if (current != null) {
             BasicDBList locks = (BasicDBList) current.get(LOCKS);
-            DBObject first = (DBObject) locks.get(0);
+            Document first = (Document) locks.get(0);
             String holder = first.get(CTX).toString();
             breakLock(holder, lockName);
             return true;

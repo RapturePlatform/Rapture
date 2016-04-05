@@ -21,10 +21,10 @@ import rapture.common.CallingContext;
 import rapture.common.MongoDbTests;
 import rapture.common.TableQueryResult;
 import rapture.common.exception.RaptureException;
-import rapture.kernel.ContextFactory;
-import rapture.kernel.Kernel;
 import rapture.config.MultiValueConfigLoader;
 import rapture.config.ValueReader;
+import rapture.kernel.ContextFactory;
+import rapture.kernel.Kernel;
 
 /**
  * This integration test requires an attached MongoDB instance, and it uses this

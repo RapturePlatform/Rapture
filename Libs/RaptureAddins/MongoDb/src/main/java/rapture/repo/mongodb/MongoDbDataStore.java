@@ -26,24 +26,23 @@ package rapture.repo.mongodb;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.bson.BsonInt32;
 import org.bson.Document;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
 import com.mongodb.MongoException;
-import com.mongodb.WriteResult;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.FindOneAndUpdateOptions;
+import com.mongodb.client.model.ReturnDocument;
 import com.mongodb.util.JSON;
 
 import rapture.common.Messages;
@@ -59,8 +58,8 @@ import rapture.common.impl.jackson.JsonContent;
 import rapture.index.IndexHandler;
 import rapture.index.IndexProducer;
 import rapture.kernel.Kernel;
-import rapture.mongodb.MongoDBFactory;
 import rapture.mongodb.MongoRetryWrapper;
+import rapture.mongodb.MongoDBFactory;
 import rapture.notification.NotificationMessage;
 import rapture.notification.RaptureMessageListener;
 import rapture.repo.AbstractKeyStore;
@@ -85,6 +84,7 @@ public class MongoDbDataStore extends AbstractKeyStore implements KeyStore, Rapt
     private static final Logger log = Logger.getLogger(MongoDbDataStore.class);
     private static final String MONGODB = "MONGODB";
     private static final String $IN = "$in";
+    private static final String $SET = "$set";
     private static final String SORT = "sort";
     private static final String LIMIT = "limit";
     private static final String SKIP = "skip";
@@ -118,16 +118,16 @@ public class MongoDbDataStore extends AbstractKeyStore implements KeyStore, Rapt
 
     @Override
     public boolean containsKey(String ref) {
-        DBCollection collection = MongoDBFactory.getDB(instanceName).getCollection(tableName);
-        BasicDBObject query = new BasicDBObject();
+        MongoCollection<Document> collection = MongoDBFactory.getCollection(instanceName, tableName);
+        Document query = new Document();
         query.put(KEY, ref);
-        BasicDBObject obj = (BasicDBObject) collection.findOne(query);
-        return obj != null;
+        FindIterable<Document> obj = collection.find(query);
+        return obj.iterator().hasNext();
     }
 
     @Override
     public long countKeys() throws RaptNotSupportedException {
-        return MongoDBFactory.getDB(instanceName).getCollection(tableName).count();
+        return MongoDBFactory.getCollection(instanceName, tableName).count();
     }
 
     /**
@@ -146,9 +146,9 @@ public class MongoDbDataStore extends AbstractKeyStore implements KeyStore, Rapt
 
     @Override
     public boolean delete(String key) {
-        DBCollection collection = getCollection();
-        BasicDBObject query = new BasicDBObject(KEY, key);
-        boolean deleted = null != collection.findAndRemove(query);
+        MongoCollection<Document> collection = getCollection();
+        Document query = new Document(KEY, key);
+        boolean deleted = null != collection.findOneAndDelete(query);
         if (deleted && needsFolderHandling) {
             dirRepo.dropFileEntry(key);
         }
@@ -162,21 +162,18 @@ public class MongoDbDataStore extends AbstractKeyStore implements KeyStore, Rapt
 
     @Override
     public boolean delete(List<String> keys) {
-        BasicDBObject query = new BasicDBObject();
-        BasicDBObject inClause = new BasicDBObject();
+        Document query = new Document();
+        Document inClause = new Document();
         inClause.append($IN, keys);
         query.append(KEY, inClause);
         try {
-            WriteResult result = getCollection().remove(query);
-            log.info("Remove " + (result.wasAcknowledged() ? "was" : "was not") + " acknowledged");
-
-            int deleted = result.getN();
-            if ((deleted != 0) && needsFolderHandling) {
+            Document result = getCollection().findOneAndDelete(query);
+            if ((result != null) && needsFolderHandling) {
                 for (String key : keys) {
                     dirRepo.dropFileEntry(key);
                 }
             }
-            return deleted > 0;
+            return result != null;
         } catch (MongoException me) {
             throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, new ExceptionToString(me));
         }
@@ -185,7 +182,7 @@ public class MongoDbDataStore extends AbstractKeyStore implements KeyStore, Rapt
 
     @Override
     public boolean dropKeyStore() {
-        MongoDBFactory.getDB(instanceName).getCollection(tableName).drop();
+        MongoDBFactory.getCollection(instanceName, tableName).drop();
         dirRepo.drop();
         return true;
     }
@@ -195,13 +192,15 @@ public class MongoDbDataStore extends AbstractKeyStore implements KeyStore, Rapt
         if (log.isDebugEnabled()) {
             log.debug("Get " + k); // Temporary to see what's up
         }
-        DBCollection collection = MongoDBFactory.getDB(instanceName).getCollection(tableName);
-        BasicDBObject query = new BasicDBObject();
+        MongoCollection<Document> collection = MongoDBFactory.getCollection(instanceName, tableName);
+        Document query = new Document();
         query.put(KEY, k);
-        BasicDBObject obj = (BasicDBObject) collection.findOne(query);
+        FindIterable<Document> obj = collection.find(query).limit(1);
         if (obj != null) {
-            Object v = obj.get(VALUE);
-            return v.toString();
+            for (Document doc : obj) {
+                Object v = doc.get(VALUE);
+                if (v != null) return v.toString();
+            }
         }
         return null;
     }
@@ -222,22 +221,21 @@ public class MongoDbDataStore extends AbstractKeyStore implements KeyStore, Rapt
 
         MongoRetryWrapper<List<String>> wrapper = new MongoRetryWrapper<List<String>>() {
 
-            public DBCursor makeCursor() {
-                DBCollection collection = MongoDBFactory.getDB(instanceName).getCollection(tableName);
-                BasicDBObject query = new BasicDBObject();
-                BasicDBObject inClause = new BasicDBObject();
+            public FindIterable<Document> makeCursor() {
+                MongoCollection<Document> collection = MongoDBFactory.getCollection(instanceName, tableName);
+                Document query = new Document();
+                Document inClause = new Document();
                 inClause.append($IN, keys);
                 query.append(KEY, inClause);
                 return collection.find(query);
             }
 
-            public List<String> action(DBCursor cursor) {
+            public List<String> action(FindIterable<Document> cursor) {
                 List<String> ret = new ArrayList<String>();
                 // We may not get them all, we need to match those that work
                 Map<String, String> retMap = new HashMap<String, String>();
 
-                while (cursor.hasNext()) {
-                    BasicDBObject obj = (BasicDBObject) cursor.next();
+                for (Document obj : cursor) {
                     if (obj != null) {
                         String v = obj.get(VALUE).toString();
                         String k = obj.get(KEY).toString();
@@ -258,18 +256,8 @@ public class MongoDbDataStore extends AbstractKeyStore implements KeyStore, Rapt
         return wrapper.doAction();
     }
 
-    private DBObject getFieldObjFromQueryParams(List<String> queryParams) {
-        DBObject fieldObj = null;
-        // (2) the return fields
-        String field = queryParams.get(1);
-        if (field != null && !field.isEmpty()) {
-            fieldObj = (DBObject) JSON.parse(field);
-        }
-        return fieldObj;
-    }
-
-    private DBObject getQueryObjFromQueryParams(List<String> queryParams) {
-        return (DBObject) JSON.parse(queryParams.get(0));
+    private Document getQueryObjFromQueryParams(List<String> queryParams) {
+        return (Document) JSON.parse(queryParams.get(0));
     }
 
     @Override
@@ -279,13 +267,13 @@ public class MongoDbDataStore extends AbstractKeyStore implements KeyStore, Rapt
 
     @Override
     public void put(String key, String value) {
-        DBCollection collection = getCollection();
-        BasicDBObject query = new BasicDBObject(KEY, key);
-        BasicDBObject toPut = new BasicDBObject(KEY, key);
+        MongoCollection<Document> collection = getCollection();
+        Document query = new Document(KEY, key);
+        Document toPut = new Document($SET, new Document(KEY, key).append(VALUE, value));
 
-        toPut.put(VALUE, value);
-
-        DBObject result = collection.findAndModify(query, null, null, false, toPut, false, true);
+        FindOneAndUpdateOptions options = new FindOneAndUpdateOptions().upsert(true).returnDocument(ReturnDocument.AFTER);
+        Document result = collection.findOneAndUpdate(query, toPut, options);
+                
         if (needsFolderHandling && result == null) {
             dirRepo.registerParentage(key);
         }
@@ -297,47 +285,40 @@ public class MongoDbDataStore extends AbstractKeyStore implements KeyStore, Rapt
 
             MongoRetryWrapper<RaptureQueryResult> wrapper = new MongoRetryWrapper<RaptureQueryResult>() {
 
-                public DBCursor makeCursor() {
+                public FindIterable<Document> makeCursor() {
                     // Here we go, the queryParams are basically
                     // (1) the searchCriteria
-                    DBObject queryObj = getQueryObjFromQueryParams(queryParams);
-                    DBObject fieldObj = getFieldObjFromQueryParams(queryParams);
-                    DBCollection collection = MongoDBFactory.getDB(instanceName).getCollection(tableName);
-                    return collection.find(queryObj, fieldObj);
-                }
-
-                public RaptureQueryResult action(DBCursor cursor) {
-                    int skip = 0;
-                    int batch = 100;
-                    Map<String, Object> options = null;
+                    Document queryObj = getQueryObjFromQueryParams(queryParams);
+                    // Document fieldObj =
+                    // getFieldObjFromQueryParams(queryParams);
+                    MongoCollection<Document> collection = MongoDBFactory.getCollection(instanceName, tableName);
+                    FindIterable<Document> find = collection.find(queryObj).batchSize(100);
                     if (queryParams.size() > 2) {
-                        options = JacksonUtil.getMapFromJson(queryParams.get(2));
+                        Map<String, Object> options = JacksonUtil.getMapFromJson(queryParams.get(2));
                         if (options.containsKey(SKIP)) {
-                            skip = (Integer) options.get(SKIP);
+                            find.skip((Integer) options.get(SKIP));
                         }
                         if (options.containsKey(LIMIT)) {
-                            batch = (Integer) options.get(LIMIT);
+                            find.limit((Integer) options.get(LIMIT));
+                        }
+                        if (options.containsKey(SORT)) {
+                            Map<String, Object> sortInfo = JacksonUtil.getMapFromJson(options.get(SORT).toString());
+                            Document sortInfoObject = new Document();
+                            sortInfoObject.putAll(sortInfo);
+                            find.sort(sortInfoObject);
                         }
                     }
+                    return find;
+                }
 
+                public RaptureQueryResult action(FindIterable<Document> iterable) {
                     RaptureQueryResult res = new RaptureQueryResult();
-                    // (3) optional extended stuff (such as sort, etc.)
-                    if (options != null && options.containsKey(SORT)) {
-                        @SuppressWarnings("unchecked")
-                        Map<String, Object> sortInfo = (Map<String, Object>) options.get(SORT);
-                        DBObject sortInfoObject = new BasicDBObject();
-                        sortInfoObject.putAll(sortInfo);
-                        cursor = cursor.sort(sortInfoObject);
-                    }
-                    cursor = cursor.skip(skip).limit(batch);
-                    // And now setup the values
-
-                    for (DBObject d : cursor.toArray()) {
+                    for (Document d : iterable) {
                         res.addRowContent(new JsonContent(d.toString()));
                     }
-
                     return res;
                 }
+
             };
             return wrapper.doAction();
         } else {
@@ -351,28 +332,29 @@ public class MongoDbDataStore extends AbstractKeyStore implements KeyStore, Rapt
 
             MongoRetryWrapper<RaptureNativeQueryResult> wrapper = new MongoRetryWrapper<RaptureNativeQueryResult>() {
 
-                public DBCursor makeCursor() {
+                public FindIterable<Document> makeCursor() {
                     // This is like a native query, except that we need to (a)
                     // add in
                     // the displayname (the key) into the
                     // results, and force a limit and offset (so the queryParams
                     // will
                     // only be of size 2).
-                    DBObject queryObj = getQueryObjFromQueryParams(queryParams);
-                    DBObject fieldObj = getFieldObjFromQueryParams(queryParams);
-                    if (!fieldObj.keySet().isEmpty()) {
-                        fieldObj.put(KEY, "1");
-                    }
+                    Document queryObj = getQueryObjFromQueryParams(queryParams);
+                    // Document fieldObj =
+                    // getFieldObjFromQueryParams(queryParams);
+                    // if (!fieldObj.keySet().isEmpty()) {
+                    // fieldObj.put(KEY, "1");
+                    // }
 
-                    DBCollection collection = MongoDBFactory.getDB(instanceName).getCollection(tableName);
-                    DBCursor cursor = collection.find(queryObj, fieldObj);
+                    MongoCollection<Document> collection = MongoDBFactory.getCollection(instanceName, tableName);
+                    FindIterable<Document> cursor = collection.find(queryObj);
                     cursor = cursor.skip(offset).limit(limit);
                     return cursor;
                 }
 
-                public RaptureNativeQueryResult action(DBCursor cursor) {
+                public RaptureNativeQueryResult action(FindIterable<Document> iterable) {
                     RaptureNativeQueryResult res = new RaptureNativeQueryResult();
-                    for (DBObject d : cursor.toArray()) {
+                    for (Document d : iterable) {
                         RaptureNativeRow row = new RaptureNativeRow();
                         row.setName(d.get(KEY).toString());
                         row.setContent(new JsonContent(d.get(VALUE).toString()));
@@ -383,7 +365,7 @@ public class MongoDbDataStore extends AbstractKeyStore implements KeyStore, Rapt
             };
             return wrapper.doAction();
         } else {
-            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, "RepoType mismatch. Repo is of type MONGODB, asked for " + repoType);
+            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, mongoMsgCatalog.getMessage("Mismatch", repoType));
         }
     }
 
@@ -401,16 +383,16 @@ public class MongoDbDataStore extends AbstractKeyStore implements KeyStore, Rapt
             dirName = "__dir__" + tableName;
         }
 
-        DBCollection collection = getCollection();
-        collection.createIndex(KEY);
+        MongoCollection<Document> collection = getCollection();
+        collection.createIndex(new Document(KEY, new BsonInt32(1)));
         dirRepo.setInstanceName(instanceName);
         Map<String, String> dirConfig = ImmutableMap.of(PREFIX, dirName);
         dirRepo.setConfig(dirConfig);
         dirRepo.setRepoDescription(String.format("Mongo - %s", tableName));
     }
 
-    private DBCollection getCollection() {
-        return MongoDBFactory.getDB(instanceName).getCollection(tableName);
+    private MongoCollection<Document> getCollection() {
+        return MongoDBFactory.getCollection(instanceName, tableName);
     }
 
     @Override
@@ -418,17 +400,18 @@ public class MongoDbDataStore extends AbstractKeyStore implements KeyStore, Rapt
 
         MongoRetryWrapper<Object> wrapper = new MongoRetryWrapper<Object>() {
 
-            public DBCursor makeCursor() {
-                DBCollection collection = getCollection();
-                BasicDBObject query = new BasicDBObject();
+            public FindIterable<Document> makeCursor() {
+                MongoCollection<Document> collection = getCollection();
+                Document query = new Document();
                 query.put(KEY, Pattern.compile(folderPrefix));
 
                 return collection.find(query);
             }
 
-            public Object action(DBCursor cursor) {
+            public Object action(FindIterable<Document> iterable) {
+                Iterator<Document> cursor = iterable.iterator();
                 while (cursor.hasNext()) {
-                    BasicDBObject d = (BasicDBObject) cursor.next();
+                    Document d = (Document) cursor.next();
                     if (!d.getString(KEY).startsWith("$")) {
                         if (!iRepoVisitor.visit(d.getString(KEY), new JsonContent(d.getString(VALUE)), false)) {
                             break;
@@ -446,9 +429,9 @@ public class MongoDbDataStore extends AbstractKeyStore implements KeyStore, Rapt
     public void visitKeys(final String prefix, final StoreKeyVisitor iStoreKeyVisitor) {
         MongoRetryWrapper<Object> wrapper = new MongoRetryWrapper<Object>() {
 
-            public DBCursor makeCursor() {
-                DBCollection collection = getCollection();
-                BasicDBObject query = new BasicDBObject();
+            public FindIterable<Document> makeCursor() {
+                MongoCollection<Document> collection = getCollection();
+                Document query = new Document();
                 // REGEX on key name, surrounding prefix with \Q and \E means
                 // dont interpret any regex chars
                 String regex = "^\\Q" + prefix + "\\E";
@@ -456,9 +439,10 @@ public class MongoDbDataStore extends AbstractKeyStore implements KeyStore, Rapt
                 return collection.find(query);
             }
 
-            public Object action(DBCursor cursor) {
+            public Object action(FindIterable<Document> iterable) {
+                Iterator<Document> cursor = iterable.iterator();
                 while (cursor.hasNext()) {
-                    BasicDBObject d = (BasicDBObject) cursor.next();
+                    Document d = (Document) cursor.next();
                     if (!iStoreKeyVisitor.visit(d.getString(KEY), d.getString(VALUE))) {
                         break;
                     }
@@ -474,9 +458,9 @@ public class MongoDbDataStore extends AbstractKeyStore implements KeyStore, Rapt
     public void visitKeysFromStart(final String startPoint, final StoreKeyVisitor iStoreKeyVisitor) {
         MongoRetryWrapper<Object> wrapper = new MongoRetryWrapper<Object>() {
 
-            public DBCursor makeCursor() {
-                DBCollection collection = getCollection();
-                BasicDBObject query = new BasicDBObject();
+            public FindIterable<Document> makeCursor() {
+                MongoCollection<Document> collection = getCollection();
+                Document query = new Document();
                 // REGEX on key name?
                 String regex = ".*";
                 query.put(KEY, Pattern.compile(regex));
@@ -484,10 +468,11 @@ public class MongoDbDataStore extends AbstractKeyStore implements KeyStore, Rapt
                 return collection.find(query);
             }
 
-            public Object action(DBCursor cursor) {
+            public Object action(FindIterable<Document> iterable) {
+                Iterator<Document> cursor = iterable.iterator();
                 boolean canStart = startPoint == null;
                 while (cursor.hasNext()) {
-                    BasicDBObject d = (BasicDBObject) cursor.next();
+                    Document d = (Document) cursor.next();
                     if (canStart) {
                         if (!iStoreKeyVisitor.visit(d.getString(KEY), d.getString(VALUE))) {
                             break;
@@ -589,7 +574,7 @@ public class MongoDbDataStore extends AbstractKeyStore implements KeyStore, Rapt
 
     @Override
     public long getSize() {
-        return getCollection().getStats().getLong("size");
+        return getCollection().count();
     }
 
     /**
@@ -601,5 +586,9 @@ public class MongoDbDataStore extends AbstractKeyStore implements KeyStore, Rapt
     public void signalMessage(NotificationMessage message) {
         // this implementation no longer has state, so we can completely ignore
         // peer notifications on the subject
+    }
+
+    public static void bbb() {
+        System.out.println("Do Not Check In");
     }
 }

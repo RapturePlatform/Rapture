@@ -33,18 +33,20 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
+import org.bson.Document;
 
 import com.google.common.base.Preconditions;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
 import com.mongodb.MongoException;
-import com.mongodb.WriteResult;
+import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.FindOneAndUpdateOptions;
+import com.mongodb.client.model.IndexOptions;
+import com.mongodb.client.model.ReturnDocument;
+import com.mongodb.client.result.DeleteResult;
 
 import rapture.common.Messages;
 import rapture.common.RaptureFolderInfo;
@@ -55,8 +57,8 @@ import rapture.dsl.serfun.DecimalSeriesValue;
 import rapture.dsl.serfun.LongSeriesValue;
 import rapture.dsl.serfun.StringSeriesValue;
 import rapture.dsl.serfun.StructureSeriesValueImpl;
-import rapture.mongodb.MongoDBFactory;
 import rapture.mongodb.MongoRetryWrapper;
+import rapture.mongodb.MongoDBFactory;
 import rapture.series.SeriesPaginator;
 import rapture.series.SeriesStore;
 import rapture.series.children.ChildKeyUtil;
@@ -70,6 +72,7 @@ import rapture.series.children.ChildrenRepo;
 public class MongoSeriesStore implements SeriesStore {
     private String instanceName = "default";
     private String tableName;
+    private static final String $SET = "$set";
     public static final String ROWKEY = "row";
     public static final String COLKEY = "col";
     public static final String VALKEY = "val";
@@ -108,29 +111,29 @@ public class MongoSeriesStore implements SeriesStore {
 
     @Override
     public void drop() {
-        DBCollection collection = getCollection(null);
+        MongoCollection<Document> collection = getCollection(null);
         collection.drop();
         keyCache.invalidateAll();
     }
 
     @Override
     public void addDoubleToSeries(String key, String column, double value) {
-        saveDBObject(key, column, value);
+        saveDocument(key, column, value);
     }
 
     @Override
     public void addLongToSeries(String key, String column, long value) {
-        saveDBObject(key, column, value);
+        saveDocument(key, column, value);
     }
 
     @Override
     public void addStringToSeries(String key, String column, String value) {
-        saveDBObject(key, column, "'" + value);
+        saveDocument(key, column, "'" + value);
     }
 
     @Override
     public void addStructureToSeries(String key, String column, String json) {
-        saveDBObject(key, column, json);
+        saveDocument(key, column, json);
     }
 
     @Override
@@ -142,14 +145,15 @@ public class MongoSeriesStore implements SeriesStore {
         else throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, mongoMsgCatalog.getMessage("NoEncoder", value.asString()));
     }
 
-    private void saveDBObject(String key, String column, Object val) {
+    private void saveDocument(String key, String column, Object val) {
         registerKey(key);
-        DBCollection collection = getCollection(key);
-        DBObject dbkey = new BasicDBObject(ROWKEY, key).append(COLKEY, column);
-        DBObject dbval = new BasicDBObject(ROWKEY, key).append(COLKEY, column).append(VALKEY, val);
+        MongoCollection<Document> collection = getCollection(key);
+        Document dbkey = new Document(ROWKEY, key).append(COLKEY, column);
+        Document dbval = new Document($SET, new Document(ROWKEY, key).append(COLKEY, column).append(VALKEY, val));
+        FindOneAndUpdateOptions options = new FindOneAndUpdateOptions().upsert(true).returnDocument(ReturnDocument.AFTER);
         try {
-            WriteResult result = collection.update(dbkey, dbval, true, false);
-            log.info("Update " + (result.wasAcknowledged() ? "was" : "was not") + " acknowledged");
+            @SuppressWarnings("unused")
+            Document ret = collection.findOneAndUpdate(dbkey, dbval, options);
         } catch (MongoException me) {
             throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, new ExceptionToString(me));
         }
@@ -272,11 +276,11 @@ public class MongoSeriesStore implements SeriesStore {
 
     @Override
     public Boolean deletePointsFromSeriesByPointKey(String key, List<String> pointKeys) {
-        DBCollection collection = getCollection(key);
+        MongoCollection<Document> collection = getCollection(key);
         for (String pointKey : pointKeys) {
-            DBObject victim = new BasicDBObject(ROWKEY, key).append(COLKEY, pointKey);
+            Document victim = new Document(ROWKEY, key).append(COLKEY, pointKey);
             try {
-                WriteResult result = collection.remove(victim);
+                DeleteResult result = collection.deleteMany(victim);
                 log.info("Remove " + (result.wasAcknowledged() ? "was" : "was not") + " acknowledged");
             } catch (MongoException me) {
                 throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, new ExceptionToString(me));
@@ -288,10 +292,10 @@ public class MongoSeriesStore implements SeriesStore {
     @Override
     public void deletePointsFromSeries(String key) {
         unregisterKey(key);
-        DBCollection collection = getCollection(key);
-        DBObject victim = new BasicDBObject(ROWKEY, key);
+        MongoCollection<Document> collection = getCollection(key);
+        Document victim = new Document(ROWKEY, key);
         try {
-            WriteResult result = collection.remove(victim);
+            DeleteResult result = collection.deleteMany(victim);
             log.info("Remove " + (result.wasAcknowledged() ? "was" : "was not") + " acknowledged");
         } catch (MongoException me) {
             throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, new ExceptionToString(me));
@@ -303,15 +307,19 @@ public class MongoSeriesStore implements SeriesStore {
 
         MongoRetryWrapper<List<SeriesValue>> wrapper = new MongoRetryWrapper<List<SeriesValue>>() {
 
-            public DBCursor makeCursor() {
-                DBObject query = new BasicDBObject(ROWKEY, key);
-                DBCollection collection = getCollection(key);
-                return collection.find(query);
+            public FindIterable<Document> makeCursor() {
+                Document query = new Document(ROWKEY, key);
+                MongoCollection<Document> collection = getCollection(key);
+                FindIterable<Document> cursor = collection.find(query);
+                if (cursor == null)
+                    log.info("No points found for "+key);
+                return cursor;
             }
 
-            public List<SeriesValue> action(DBCursor cursor) {
+            public List<SeriesValue> action(FindIterable<Document> cursor) {
+                if (cursor == null) return null;
                 List<SeriesValue> result = Lists.newArrayList();
-                for (DBObject entry : cursor) {
+                for (Document entry : cursor) {
                     SeriesValue bolt = makeSeriesValue(entry);
                     result.add(bolt);
                 }
@@ -321,7 +329,7 @@ public class MongoSeriesStore implements SeriesStore {
         return wrapper.doAction();
     }
 
-    private SeriesValue makeSeriesValue(DBObject entry) {
+    private SeriesValue makeSeriesValue(Document entry) {
         Object val = entry.get(VALKEY);
         String col = (String) entry.get(COLKEY);
         if (val instanceof Double) return new DecimalSeriesValue(((Double) val).doubleValue(), col);
@@ -343,16 +351,20 @@ public class MongoSeriesStore implements SeriesStore {
     public List<SeriesValue> getPointsAfter(final String key, final String startColumn, final int maxNumber) {
         MongoRetryWrapper<List<SeriesValue>> wrapper = new MongoRetryWrapper<List<SeriesValue>>() {
 
-            public DBCursor makeCursor() {
-                DBCollection collection = getCollection(key);
-                DBObject query = new BasicDBObject(ROWKEY, key).append(COLKEY, new BasicDBObject("$gte", startColumn));
-                return collection.find(query);
+            public FindIterable<Document> makeCursor() {
+                MongoCollection<Document> collection = getCollection(key);
+                Document query = new Document(ROWKEY, key).append(COLKEY, new Document("$gte", startColumn));
+                FindIterable<Document> cursor = collection.find(query);
+                if (cursor == null)
+                    log.info("No points found for "+key);
+                return cursor;
             }
 
-            public List<SeriesValue> action(DBCursor cursor) {
+            public List<SeriesValue> action(FindIterable<Document> cursor) {
+                if (cursor == null) return null;
                 List<SeriesValue> result = Lists.newArrayList();
                 int count = 0;
-                for (DBObject entry : cursor) {
+                for (Document entry : cursor) {
                     if (count >= maxNumber) break;
                     SeriesValue bolt = makeSeriesValue(entry);
                     result.add(bolt);
@@ -368,17 +380,21 @@ public class MongoSeriesStore implements SeriesStore {
     public List<SeriesValue> getPointsAfterReverse(final String key, final String startColumn, final int maxNumber) {
         MongoRetryWrapper<List<SeriesValue>> wrapper = new MongoRetryWrapper<List<SeriesValue>>() {
 
-            public DBCursor makeCursor() {
-                DBCollection collection = getCollection(key);
-                DBObject query = new BasicDBObject(ROWKEY, key).append(COLKEY, new BasicDBObject("$lte", startColumn));
-                BasicDBObject sort = new BasicDBObject(COLKEY, -1);
-                return collection.find(query).sort(sort);
+            public FindIterable<Document> makeCursor() {
+                MongoCollection<Document> collection = getCollection(key);
+                Document query = new Document(ROWKEY, key).append(COLKEY, new Document("$lte", startColumn));
+                Document sort = new Document(COLKEY, -1);
+                FindIterable<Document> cursor = collection.find(query).sort(sort);
+                if (cursor == null)
+                    log.info("No points found for "+key);
+                return cursor;
             }
 
-            public List<SeriesValue> action(DBCursor cursor) {
+            public List<SeriesValue> action(FindIterable<Document> cursor) {
+                if (cursor == null) return null;
                 int count = 0;
                 List<SeriesValue> result = Lists.newArrayList();
-                for (DBObject entry : cursor) {
+                for (Document entry : cursor) {
                     if (count >= maxNumber) break;
                     SeriesValue bolt = makeSeriesValue(entry);
                     result.add(bolt);
@@ -394,16 +410,20 @@ public class MongoSeriesStore implements SeriesStore {
     public List<SeriesValue> getPointsAfter(final String key, final String startColumn, final String endColumn, final int maxNumber) {
         MongoRetryWrapper<List<SeriesValue>> wrapper = new MongoRetryWrapper<List<SeriesValue>>() {
 
-            public DBCursor makeCursor() {
-                DBCollection collection = getCollection(key);
-                DBObject query = new BasicDBObject(ROWKEY, key).append(COLKEY, new BasicDBObject("$gte", startColumn).append("$lte", endColumn));
-                return collection.find(query);
+            public FindIterable<Document> makeCursor() {
+                MongoCollection<Document> collection = getCollection(key);
+                Document query = new Document(ROWKEY, key).append(COLKEY, new Document("$gte", startColumn).append("$lte", endColumn));
+                FindIterable<Document> cursor = collection.find(query);
+                if (cursor == null)
+                    log.info("No points found for "+key);
+                return cursor;
             }
 
-            public List<SeriesValue> action(DBCursor cursor) {
+            public List<SeriesValue> action(FindIterable<Document> cursor) {
+                if (cursor == null) return null;
                 int count = 0;
                 List<SeriesValue> result = Lists.newArrayList();
-                for (DBObject entry : cursor) {
+                for (Document entry : cursor) {
                     if (count >= maxNumber) break;
                     SeriesValue bolt = makeSeriesValue(entry);
                     result.add(bolt);
@@ -419,6 +439,9 @@ public class MongoSeriesStore implements SeriesStore {
     public void setInstanceName(String instanceName) {
         this.instanceName = instanceName;
     }
+
+    private static final Document INDEX_KEYS = new Document(ROWKEY, 1).append(COLKEY, 1);
+    private static final IndexOptions INDEX_OPTS = new IndexOptions().unique(true);
 
     @Override
     public void setConfig(Map<String, String> config) {
@@ -453,11 +476,8 @@ public class MongoSeriesStore implements SeriesStore {
         return childrenRepo.getChildren(folderName);
     }
 
-    private static final DBObject INDEX_KEYS = new BasicDBObject(ROWKEY, 1).append(COLKEY, 1);
-    private static final DBObject INDEX_OPTS = new BasicDBObject("unique", true);
-
-    private DBCollection getCollection(String checkAllTheCallersIfYouStopIgnoringThisParameter) {
-        DBCollection result = MongoDBFactory.getCollection(instanceName, tableName);
+    private MongoCollection<Document> getCollection(String checkAllTheCallersIfYouStopIgnoringThisParameter) {
+        MongoCollection<Document> result = MongoDBFactory.getCollection(instanceName, tableName);
         return result;
     }
 
@@ -466,15 +486,20 @@ public class MongoSeriesStore implements SeriesStore {
 
         MongoRetryWrapper<SeriesValue> wrapper = new MongoRetryWrapper<SeriesValue>() {
 
-            public DBCursor makeCursor() {
-                DBCollection collection = getCollection(key);
-                DBObject query = new BasicDBObject(ROWKEY, key);
-                BasicDBObject sort = new BasicDBObject(COLKEY, -1);
-                return collection.find(query).sort(sort).limit(1);
+            public FindIterable<Document> makeCursor() {
+                MongoCollection<Document> collection = getCollection(key);
+                Document query = new Document(ROWKEY, key);
+                Document sort = new Document(COLKEY, -1);
+                FindIterable<Document> cursor = collection.find(query).sort(sort).limit(1);
+                if (cursor == null)
+                    log.info("No points found for "+key);
+                return cursor;
             }
 
-            public SeriesValue action(DBCursor cursor) {
-                return cursor.hasNext() ? makeSeriesValue(cursor.next()) : null;
+            public SeriesValue action(FindIterable<Document> cursor) {
+                if (cursor == null) return null;
+                Iterator<Document> iterator = cursor.iterator();
+                return iterator.hasNext() ? makeSeriesValue(iterator.next()) : null;
             }
         };
         return wrapper.doAction();
@@ -489,5 +514,9 @@ public class MongoSeriesStore implements SeriesStore {
     public void deleteSeries(String key) {
         unregisterKey(key);
         deletePointsFromSeries(key);
+    }
+    
+    public static void yyz() {
+        System.out.println("DO NOT CHECK THIS IN");
     }
 }
