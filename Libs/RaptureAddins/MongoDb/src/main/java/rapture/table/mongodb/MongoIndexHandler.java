@@ -381,9 +381,9 @@ public class MongoIndexHandler implements IndexHandler {
 
         } else {
             String key = indexQuery.getSelect().getFieldList().get(0);
-            DistinctIterable<BsonDocument> values = collection.distinct(key, mongoQuery, BsonDocument.class);
             List<List<Object>> rows = new ArrayList<List<Object>>();
-            for (BsonDocument v : values) {
+            DistinctIterable<String> values = collection.distinct(key, mongoQuery, String.class);
+            for (String v : values) {
                 List<Object> row = new ArrayList<Object>();
                 row.add(v);
                 rows.add(row);
