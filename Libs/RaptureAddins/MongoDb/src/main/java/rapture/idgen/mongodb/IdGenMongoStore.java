@@ -149,8 +149,4 @@ public class IdGenMongoStore implements IdGenStore {
     public void init() {
 
     }
-    
-    static public void Bar() {
-        System.out.println("Do not check in");
-    }
 }

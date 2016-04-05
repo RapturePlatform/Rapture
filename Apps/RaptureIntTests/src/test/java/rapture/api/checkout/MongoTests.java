@@ -44,7 +44,6 @@ import com.mongodb.client.MongoCollection;
 
 import rapture.audit.AuditLog;
 import rapture.audit.AuditLogFactory;
-import rapture.audit.mongodb.MongoDBAuditLog;
 import rapture.common.CallingContext;
 import rapture.common.RaptureScript;
 import rapture.common.RaptureScriptLanguage;
@@ -65,16 +64,13 @@ import rapture.common.exception.RaptureException;
 import rapture.common.model.AuditLogEntry;
 import rapture.dsl.idgen.IdGenFactory;
 import rapture.dsl.idgen.RaptureIdGen;
-import rapture.idgen.mongodb.IdGenMongoStore;
 import rapture.kernel.ContextFactory;
 import rapture.kernel.Kernel;
 import rapture.mongodb.MongoDBFactory;
-import rapture.repo.mongodb.MongoDbDataStore;
-import rapture.series.mongo.MongoSeriesStore;
-
 
 /**
- * Tests to exercise the Mongo repo to check for breakages in migrating to Mongo 3.0
+ * Tests to exercise the Mongo repo to check for breakages in migrating to Mongo
+ * 3.0
  */
 
 public class MongoTests {
@@ -89,28 +85,32 @@ public class MongoTests {
     /**
      * Setup TestNG method to create Rapture login object and objects.
      *
-     * @param RaptureURL Passed in from <env>_testng.xml suite file
-     * @param RaptureUser Passed in from <env>_testng.xml suite file
-     * @param RapturePassword Passed in from <env>_testng.xml suite file
+     * @param RaptureURL
+     *            Passed in from <env>_testng.xml suite file
+     * @param RaptureUser
+     *            Passed in from <env>_testng.xml suite file
+     * @param RapturePassword
+     *            Passed in from <env>_testng.xml suite file
      * @return none
      */
     @BeforeMethod
-    @BeforeClass(groups={"mongo"})
-    @Parameters({"RaptureURL","RaptureUser","RapturePassword"})
-    public void setUp(@Optional("http://localhost:8665/rapture")String url,
-                      @Optional("rapture")String username, @Optional("rapture")String password ) {
+    @BeforeClass(groups = { "mongo" })
+    @Parameters({ "RaptureURL", "RaptureUser", "RapturePassword" })
+    public void setUp(@Optional("http://localhost:8665/rapture") String url, @Optional("rapture") String username, @Optional("rapture") String password) {
 
-//        //If running from eclipse set env var -Penv=docker or use the following url variable settings:
-//        //url="http://192.168.99.101:8665/rapture"; //docker
-//        //url="http://localhost:8665/rapture";
-//        System.out.println("Using url " + url);
-//        raptureLogin = new HttpLoginApi(url, new SimpleCredentialsProvider(username, password));
-//        raptureLogin.login();
-//        series = new HttpSeriesApi(raptureLogin);
-//        document = new HttpDocApi(raptureLogin);
-//        script = new HttpScriptApi(raptureLogin);
-//        event = new HttpEventApi(raptureLogin);
-//        fountain = new HttpIdGenApi(raptureLogin);
+        // //If running from eclipse set env var -Penv=docker or use the
+        // following url variable settings:
+        // //url="http://192.168.99.101:8665/rapture"; //docker
+        // //url="http://localhost:8665/rapture";
+        // System.out.println("Using url " + url);
+        // raptureLogin = new HttpLoginApi(url, new
+        // SimpleCredentialsProvider(username, password));
+        // raptureLogin.login();
+        // series = new HttpSeriesApi(raptureLogin);
+        // document = new HttpDocApi(raptureLogin);
+        // script = new HttpScriptApi(raptureLogin);
+        // event = new HttpEventApi(raptureLogin);
+        // fountain = new HttpIdGenApi(raptureLogin);
     }
 
     /**
@@ -119,38 +119,32 @@ public class MongoTests {
      * @param none
      * @return none
      */
-    @AfterClass(groups={"mongo"})
+    @AfterClass(groups = { "mongo" })
     public void afterTest() {
         raptureLogin = null;
     }
 
-
-    @Test(groups ={"mongo"}, enabled=true, description="Simple Mongo Audit log test")
+    @Test(groups = { "mongo" }, enabled = true, description = "Simple Mongo Audit log test")
     public void testSimpleAuditGen() {
-        UUID message = UUID.randomUUID(); 
-        // Ensure latest version is loaded. Delete before check in
-        MongoDBAuditLog.foo();
+        UUID message = UUID.randomUUID();
         AuditLog log = AuditLogFactory.getLog("test", "LOG {} using MONGODB {prefix=\"mongotest\"}");
         List<AuditLogEntry> entries = log.getRecentEntries(Integer.MAX_VALUE);
-        System.out.println("Found "+entries.size()+" log entries");
+        System.out.println("Found " + entries.size() + " log entries");
         log.writeLog("category", 0, message.toString(), "user");
         List<AuditLogEntry> newEntries = log.getRecentEntries(Integer.MAX_VALUE);
-        assertEquals(1+entries.size(), newEntries.size());
+        assertEquals(1 + entries.size(), newEntries.size());
         assertEquals(message.toString(), newEntries.get(entries.size()).getMessage());
     }
 
-    @Test(groups ={"mongo"}, enabled=true, description="Simple Mongo document read/write test")
+    @Test(groups = { "mongo" }, enabled = true, description = "Simple Mongo document read/write test")
     public void testSimpleDocument() {
-        UUID uuid = UUID.randomUUID(); 
-        // Ensure latest version is loaded. Delete before check in
-        MongoDbDataStore.bbb();
-        
+        UUID uuid = UUID.randomUUID();
         CallingContext context = ContextFactory.getKernelUser();
         DocApi docApi = Kernel.getDoc();
-        RaptureURI docUri = new RaptureURI("//"+uuid, Scheme.DOCUMENT); 
+        RaptureURI docUri = new RaptureURI("//" + uuid, Scheme.DOCUMENT);
 
         docApi.createDocRepo(context, docUri.toString(), "NREP {} using MONGODB {prefix=\"mongotest\"}");
-        String uri = docUri.toString()+"/test";
+        String uri = docUri.toString() + "/test";
         String content = "{\"foo\" : \"bar\", \"baz\" : 1}";
         String content2 = "{\"foo\" : \"FOO\", \"bar\" : 2}";
         docApi.putDoc(context, uri, content);
@@ -165,16 +159,13 @@ public class MongoTests {
         docApi.deleteDocRepo(context, docUri.toString());
     }
 
-    @Test(groups ={"mongo"}, enabled=true, description="Simple Mongo script read/write test")
+    @Test(groups = { "mongo" }, enabled = true, description = "Simple Mongo script read/write test")
     public void testSimpleScript() {
-        UUID uuid = UUID.randomUUID(); 
-        // Ensure latest version is loaded. Delete before check in
-        MongoDbDataStore.bbb();
-        
+        UUID uuid = UUID.randomUUID();
         CallingContext context = ContextFactory.getKernelUser();
         ScriptApi scriptApi = Kernel.getScript();
-        RaptureURI scriptUri = new RaptureURI("//"+uuid, Scheme.SCRIPT); 
-        String uri = scriptUri.toString()+"/test";
+        RaptureURI scriptUri = new RaptureURI("//" + uuid, Scheme.SCRIPT);
+        String uri = scriptUri.toString() + "/test";
 
         RaptureScript script = new RaptureScript();
         script.setLanguage(RaptureScriptLanguage.REFLEX);
@@ -191,15 +182,14 @@ public class MongoTests {
         Assert.assertNull(get, "Script has been deleted");
     }
 
-    @Test(groups ={"mongo"}, enabled=true, description="IDGEN test")
+    @Test(groups = { "mongo" }, enabled = true, description = "IDGEN test")
     public void testIdGen() {
-        IdGenMongoStore.Bar();
-        UUID uuid = UUID.randomUUID(); 
-        RaptureIdGen f = IdGenFactory.getIdGen("IDGEN { initial=\"143\", base=\"36\", length=\"8\", prefix=\"FOO\" } USING MONGO { prefix=\""+uuid+"\"}");
+        UUID uuid = UUID.randomUUID();
+        RaptureIdGen f = IdGenFactory.getIdGen("IDGEN { initial=\"143\", base=\"36\", length=\"8\", prefix=\"FOO\" } USING MONGO { prefix=\"" + uuid + "\"}");
         String result = f.incrementIdGen(14500L);
-        Assert.assertEquals("FOO00000BAR",result);
+        Assert.assertEquals("FOO00000BAR", result);
         result = f.incrementIdGen(2L);
-        Assert.assertEquals("FOO00000BAT",result);
+        Assert.assertEquals("FOO00000BAT", result);
         f.invalidate();
         try {
             result = f.incrementIdGen(2L);
@@ -209,19 +199,16 @@ public class MongoTests {
         }
     }
 
-    @Test(groups ={"mongo"}, enabled=true, description="Index Handler test")
+    @Test(groups = { "mongo" }, enabled = true, description = "Index Handler test")
     public void testIndexHandler() {
-        
-        UUID uuid = UUID.randomUUID(); 
-        // Ensure latest version is loaded. Delete before check in
-        MongoDbDataStore.bbb();
-        
+
+        UUID uuid = UUID.randomUUID();
         CallingContext context = ContextFactory.getKernelUser();
         DocApi docApi = Kernel.getDoc();
-        RaptureURI docUri = new RaptureURI("//"+uuid, Scheme.DOCUMENT); 
+        RaptureURI docUri = new RaptureURI("//" + uuid, Scheme.DOCUMENT);
 
         docApi.createDocRepo(context, docUri.toString(), "VREP {} using MONGODB {prefix=\"mongotest\"}");
-        String uri = docUri.toString()+"/test";
+        String uri = docUri.toString() + "/test";
         String content = "{\"foo\" : \"bar\", \"baz\" : 1}";
         String content2 = "{\"foo\" : \"FOO\", \"bar\" : 2}";
         docApi.putDoc(context, uri, content);
@@ -235,20 +222,18 @@ public class MongoTests {
         Assert.assertNull(get, "Document was deleted");
         docApi.deleteDocRepo(context, docUri.toString());
     }
-    
-    @Test(groups ={"mongo"}, enabled=true, description="Simple Mongo series test")
+
+    @Test(groups = { "mongo" }, enabled = true, description = "Simple Mongo series test")
     public void testSimpleSeries() {
-        UUID uuid = UUID.randomUUID(); 
-        
-        MongoSeriesStore.yyz();
-        RaptureURI seriesUri = new RaptureURI("//"+uuid, Scheme.SERIES); 
-        
+        UUID uuid = UUID.randomUUID();
+        RaptureURI seriesUri = new RaptureURI("//" + uuid, Scheme.SERIES);
+
         SeriesApi serApi = Kernel.getSeries();
         CallingContext context = ContextFactory.getKernelUser();
-        
-        serApi.createSeriesRepo(context, seriesUri.toString(), "SREP {} using MONGODB {prefix=\""+uuid+"\"}");
-        
-        String uri = seriesUri.toString()+"/test";
+
+        serApi.createSeriesRepo(context, seriesUri.toString(), "SREP {} using MONGODB {prefix=\"" + uuid + "\"}");
+
+        String uri = seriesUri.toString() + "/test";
         serApi.createSeries(context, uri);
         List<String> points = new ArrayList<>();
         List<String> pointVals = new ArrayList<>();
@@ -256,34 +241,34 @@ public class MongoTests {
         points.add("bar");
         pointVals.add("Foo");
         pointVals.add("Bar");
-        
+
         serApi.addStringsToSeries(context, uri, points, pointVals);
         List<SeriesPoint> check = serApi.getPoints(context, uri);
         assertEquals(2, check.size());
-        
+
         for (SeriesPoint p : check) {
             Assert.assertTrue(points.contains(p.getColumn()));
             Assert.assertTrue(pointVals.contains(p.getValue().substring(1)));
         }
-        
+
         List<String> points2 = new ArrayList<>();
         List<String> pointVals2 = new ArrayList<>();
         points2.add("Doctor");
         pointVals2.add("Foo");
         points2.add("River");
-        pointVals2.add("Song");        
+        pointVals2.add("Song");
         points.addAll(points2);
         pointVals.addAll(pointVals2);
-        
+
         serApi.addStringsToSeries(context, uri, points2, pointVals2);
         check = serApi.getPoints(context, uri);
         assertEquals(4, check.size());
-        
+
         for (SeriesPoint p : check) {
             Assert.assertTrue(points.contains(p.getColumn()));
             Assert.assertTrue(pointVals.contains(p.getValue().substring(1)));
         }
-        
+
         serApi.deletePointsFromSeries(context, uri);
         check = serApi.getPoints(context, uri);
         Assert.assertTrue(check.isEmpty());
@@ -298,9 +283,9 @@ public class MongoTests {
         DB db = MongoDBFactory.getDB("default");
         DBCollection dc = db.getCollection(uuid.toString());
         MongoCollection<Document> mc = MongoDBFactory.getCollection("default", uuid.toString());
-        
-        Assert.assertEquals(dc.getFullName(), "RaptureMongoDB."+uuid.toString());
-        Assert.assertEquals(mc.getNamespace().getFullName(), "RaptureMongoDB."+uuid.toString());
+
+        Assert.assertEquals(dc.getFullName(), "RaptureMongoDB." + uuid.toString());
+        Assert.assertEquals(mc.getNamespace().getFullName(), "RaptureMongoDB." + uuid.toString());
 
     }
 }

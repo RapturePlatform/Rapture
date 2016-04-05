@@ -205,8 +205,4 @@ public class MongoDBAuditLog implements AuditLog {
         };
         return wrapper.doAction();
     }
-
-    public static void foo() {
-        System.out.println("DO NOT CHECK THSI IN");
-    }
 }

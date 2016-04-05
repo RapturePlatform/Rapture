@@ -447,8 +447,4 @@ public class MongoIndexHandler implements IndexHandler {
             }
         }
     }
-
-    public static void bar() {
-        System.out.println("Do Not Check In");
-    }
 }

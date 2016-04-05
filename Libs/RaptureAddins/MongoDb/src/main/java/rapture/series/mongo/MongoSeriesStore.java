@@ -515,8 +515,4 @@ public class MongoSeriesStore implements SeriesStore {
         unregisterKey(key);
         deletePointsFromSeries(key);
     }
-    
-    public static void yyz() {
-        System.out.println("DO NOT CHECK THIS IN");
-    }
 }

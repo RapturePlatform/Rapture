@@ -587,8 +587,4 @@ public class MongoDbDataStore extends AbstractKeyStore implements KeyStore, Rapt
         // this implementation no longer has state, so we can completely ignore
         // peer notifications on the subject
     }
-
-    public static void bbb() {
-        System.out.println("Do Not Check In");
-    }
 }
