@@ -1,0 +1,70 @@
+\chapter{Server hosted scripting}
+The initial use for \Reflex was to provide a scripting language that could be run on a server. However the same language could also be used to help setup a \Rapture system and hooks were also built in to handle file based io - something that normally would be restricted on a cloud/distributed server environment. In fact a \Reflex environment now has a number of "hooks" that can be implemented (or wired) differently depending on the context. In general the environment looks like the logical diagram below.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\node[external](Reflex) { \Reflex     };
+\node[api] (File) [below right=of Reflex] { File IO }
+   edge [post, bend right=45] (Reflex);
+\node[client] (Plugin) [right=of Reflex] { Plugins}
+   edge [post] (Reflex);
+\node[api] (API) [below left=of Reflex] { \Rapture }
+   edge [post,bend left=45]  (Reflex);
+\node[api] (Scripting) [below=of Reflex] { Scripting }
+   edge [post] (Reflex);
+\node[api](Debugger) [above left=of Reflex] { Debugger }
+   edge [post, bend left=45] (Reflex);
+\end{tikzpicture}
+\caption { Logical Reflex environment }
+\end{figure}
+
+Here we see that \Reflex can reach out to a debugger, a \Rapture environment (for calling its API), a Scripting environment (for loading other scripts) and an IO sub-system for loading and saving data to a file system.
+
+When running within a \Rapture server, the implementations are frozen to protect the environment:
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\node[external](Reflex) { \Reflex     };
+\node[internal] (File) [below right=of Reflex] { Disabled }
+   edge [post, bend right=45] (Reflex);
+\node[client] (Plugin) [right=of Reflex] { Plugins}
+   edge [post] (Reflex);
+\node[api] (API) [below left=of Reflex] { \Rapture }
+   edge [post,bend left=45]  (Reflex);
+\node[api] (Scripting) [below=of Reflex] { Scripting }
+   edge [post] (Reflex);
+\node[internal](Debugger) [above left=of Reflex] { Disabled }
+   edge [post, bend left=45] (Reflex);
+\end{tikzpicture}
+\caption { Server Reflex environment }
+\end{figure}
+
+Here the debugger and the file/IO subsystems are disabled.
+
+\Reflex can also be run on a local desktop, or on a server outside of a \Rapture environment. In this case the bindings of the environment are as below:
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\node[external](Reflex) { \Reflex     };
+\node[api] (File) [below right=of Reflex] { File }
+   edge [post, bend right=45] (Reflex);
+\node[client] (Plugin) [right=of Reflex] { Plugins}
+   edge [post] (Reflex);
+\node[api] (API) [below left=of Reflex] { \Rapture }
+   edge [post,bend left=45]  (Reflex);
+\node[api] (Scripting) [below=of Reflex] { Scripting }
+   edge [post] (Reflex);
+\node[api](Debugger) [above left=of Reflex] { Debugger }
+   edge [post, bend left=45] (Reflex);
+\node[external](HTTP) [below left=of API] { HTTP }
+   edge [post] (API)
+   edge [post] (Scripting);
+\node[ewd](Remote) [below=of HTTP] { Remote\nodepart{second}\Rapture }
+   edge [post] (HTTP);
+\end{tikzpicture}
+\caption { External Reflex environment }
+\end{figure}
+
+In this case the environment has a \Rapture system wired in via a standard HTTP based API - all \Rapture commands in \Reflex will still work through that API. In a server based environment the security context is set by \Rapture (and is based on the ultimate initiator of the \Reflex process). In the external approach the user security context is set either by using a \Rapture "API key" or by logging in manually through the Reflex runner application.

@@ -1,0 +1,316 @@
+\chapter{Plugin API}
+\index{Plugin API}
+\input{api/plugin/info}
+\section{GetInstalledPlugins}
+\index{GetInstalledPlugins}
+\label{Api:GetInstalledPlugins}
+\begin{lstlisting}[style=nonumbers]
+   List<PluginConfig> getInstalledPlugins (
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #plugin.getInstalledPlugins();
+%\end{lstlisting}
+\input{api/plugin/getInstalledPlugins}
+
+
+\rule{12cm}{2pt}
+\section{GetPluginManifest}
+\index{GetPluginManifest}
+\label{Api:GetPluginManifest}
+\begin{lstlisting}[style=nonumbers]
+   PluginManifest getPluginManifest (
+           String    manifestUri
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #plugin.getPluginManifest(manifestUri);
+%\end{lstlisting}
+\input{api/plugin/getPluginManifest}
+
+
+\rule{12cm}{2pt}
+\section{RecordPlugin}
+\index{RecordPlugin}
+\label{Api:RecordPlugin}
+\begin{lstlisting}[style=nonumbers]
+   void recordPlugin (
+           PluginConfig    plugin
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #plugin.recordPlugin(plugin);
+%\end{lstlisting}
+\input{api/plugin/recordPlugin}
+
+
+\rule{12cm}{2pt}
+\section{InstallPlugin}
+\index{InstallPlugin}
+\label{Api:InstallPlugin}
+\begin{lstlisting}[style=nonumbers]
+   void installPlugin (
+           PluginManifest    manifest
+           Map<String,PluginTransportItem>    payload
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #plugin.installPlugin(manifest,payload);
+%\end{lstlisting}
+\input{api/plugin/installPlugin}
+
+
+\rule{12cm}{2pt}
+\section{InstallPluginItem}
+\index{InstallPluginItem}
+\label{Api:InstallPluginItem}
+\begin{lstlisting}[style=nonumbers]
+   void installPluginItem (
+           String    pluginName
+           PluginTransportItem    item
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #plugin.installPluginItem(pluginName,item);
+%\end{lstlisting}
+\input{api/plugin/installPluginItem}
+
+
+\rule{12cm}{2pt}
+\section{UninstallPlugin}
+\index{UninstallPlugin}
+\label{Api:UninstallPlugin}
+\begin{lstlisting}[style=nonumbers]
+   void uninstallPlugin (
+           String    name
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #plugin.uninstallPlugin(name);
+%\end{lstlisting}
+\input{api/plugin/uninstallPlugin}
+
+
+\rule{12cm}{2pt}
+\section{UninstallPluginItem}
+\index{UninstallPluginItem}
+\label{Api:UninstallPluginItem}
+\begin{lstlisting}[style=nonumbers]
+   void uninstallPluginItem (
+           PluginTransportItem    item
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #plugin.uninstallPluginItem(item);
+%\end{lstlisting}
+\input{api/plugin/uninstallPluginItem}
+
+
+\rule{12cm}{2pt}
+\section{DeletePluginManifest}
+\index{DeletePluginManifest}
+\label{Api:DeletePluginManifest}
+\begin{lstlisting}[style=nonumbers]
+   void deletePluginManifest (
+           String    manifestUri
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #plugin.deletePluginManifest(manifestUri);
+%\end{lstlisting}
+\input{api/plugin/deletePluginManifest}
+
+
+\rule{12cm}{2pt}
+\section{GetPluginItem}
+\index{GetPluginItem}
+\label{Api:GetPluginItem}
+\begin{lstlisting}[style=nonumbers]
+   PluginTransportItem getPluginItem (
+           String    uri
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #plugin.getPluginItem(uri);
+%\end{lstlisting}
+\input{api/plugin/getPluginItem}
+
+
+\rule{12cm}{2pt}
+\section{VerifyPlugin}
+\index{VerifyPlugin}
+\label{Api:VerifyPlugin}
+\begin{lstlisting}[style=nonumbers]
+   Map<String,String> verifyPlugin (
+           String    plugin
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #plugin.verifyPlugin(plugin);
+%\end{lstlisting}
+\input{api/plugin/verifyPlugin}
+
+
+\rule{12cm}{2pt}
+\section{CreateManifest}
+\index{CreateManifest}
+\label{Api:CreateManifest}
+\begin{lstlisting}[style=nonumbers]
+   void createManifest (
+           String    pluginName
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #plugin.createManifest(pluginName);
+%\end{lstlisting}
+\input{api/plugin/createManifest}
+
+
+\rule{12cm}{2pt}
+\section{AddManifestItem}
+\index{AddManifestItem}
+\label{Api:AddManifestItem}
+\begin{lstlisting}[style=nonumbers]
+   void addManifestItem (
+           String    pluginName
+           String    uri
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #plugin.addManifestItem(pluginName,uri);
+%\end{lstlisting}
+\input{api/plugin/addManifestItem}
+
+
+\rule{12cm}{2pt}
+\section{AddManifestDataFolder}
+\index{AddManifestDataFolder}
+\label{Api:AddManifestDataFolder}
+\begin{lstlisting}[style=nonumbers]
+   void addManifestDataFolder (
+           String    pluginName
+           String    uri
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #plugin.addManifestDataFolder(pluginName,uri);
+%\end{lstlisting}
+\input{api/plugin/addManifestDataFolder}
+
+
+\rule{12cm}{2pt}
+\section{RemoveManifestDataFolder}
+\index{RemoveManifestDataFolder}
+\label{Api:RemoveManifestDataFolder}
+\begin{lstlisting}[style=nonumbers]
+   void removeManifestDataFolder (
+           String    pluginName
+           String    uri
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #plugin.removeManifestDataFolder(pluginName,uri);
+%\end{lstlisting}
+\input{api/plugin/removeManifestDataFolder}
+
+
+\rule{12cm}{2pt}
+\section{SetManifestVersion}
+\index{SetManifestVersion}
+\label{Api:SetManifestVersion}
+\begin{lstlisting}[style=nonumbers]
+   void setManifestVersion (
+           String    pluginName
+           String    version
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #plugin.setManifestVersion(pluginName,version);
+%\end{lstlisting}
+\input{api/plugin/setManifestVersion}
+
+
+\rule{12cm}{2pt}
+\section{RemoveItemFromManifest}
+\index{RemoveItemFromManifest}
+\label{Api:RemoveItemFromManifest}
+\begin{lstlisting}[style=nonumbers]
+   void removeItemFromManifest (
+           String    pluginName
+           String    uri
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #plugin.removeItemFromManifest(pluginName,uri);
+%\end{lstlisting}
+\input{api/plugin/removeItemFromManifest}
+
+
+\rule{12cm}{2pt}
+\section{ExportPlugin}
+\index{ExportPlugin}
+\label{Api:ExportPlugin}
+\begin{lstlisting}[style=nonumbers]
+   String exportPlugin (
+           String    pluginName
+           String    path
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #plugin.exportPlugin(pluginName,path);
+%\end{lstlisting}
+\input{api/plugin/exportPlugin}
+
+
+\rule{12cm}{2pt}

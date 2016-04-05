@@ -1,0 +1,88 @@
+\chapter{Built-in modules}
+\Reflex has a number of built-in modules that have been created to extend \Reflex using commonly used third party (and open source) libraries. All are implemented as \emph{reflection} based modules.
+\section{Statistics module}
+The statistics module draws on the Apache Commons Math library. The main function computes the statistics associated with a list of values and is called "statistics". It returns a map with three values, the "mean", the "std" (standard deviation) and "median" (the value of the 50th percentile).
+
+The other three functions in the module work with "Frequency" objects. A frequency object is created using the frequency function - it returns a special Reflex Value that can be passed into the other two methods as the first value. The other two methods calculate the number of values that match the value passed (\Verb+frequency_count+) and the cumulative percentage of values up to a value (\verb+frequency_cum_pct+). This is best illustrated by example:
+
+\begin{lstlisting}[caption={Statistics}]
+import reflexStatistics as stat;
+
+points = [ 1,2,3,4,5,6,7,8,9,10,100];
+
+res = $stat.statistics(points);
+
+println("Result is " + res);
+
+multiplePoints = [ 1,2,1,1,1,1,2,1,2,4,5,1,2,3,5];
+
+freq = $stat.frequency(multiplePoints);
+
+println("Count of 1 in frequency is " + $stat.frequency_count(freq, 1));
+
+for i = 1 to 5 do
+   println("CumPct at " + i + " is " + $stat.frequency_cum_pct(freq, i));
+end
+
+\end{lstlisting}
+ The result of running this script would yield the following output:
+\begin{Verbatim}
+Result is {median=6.0, std=28.637229424141385, mean=14.09090909090909}
+Count of 1 in frequency is 7
+CumPct at 1 is 0.4666666666666667
+CumPct at 2 is 0.7333333333333333
+CumPct at 3 is 0.8
+CumPct at 4 is 0.8666666666666667
+CumPct at 5 is 1.0
+\end{Verbatim}
+\section{Gamma module}
+The Gamma module uses the Apache Commons Math library to compute values relating to the $\Gamma$ function and its derivatives.
+\subsection{Gamma function}
+The gamma function (\Verb+gamma+) takes zero or one parameter. In its no parameter form, it returns the value of the Euler-Mascheroni constant (also known as Euler's constant), and referred to as $\gamma$. With one parameter it reurns the gamma function on the parameter.
+\subsection{DiGamma function}
+The digamma function (\Verb+digamma+) takes one parameter and returns the digamma function on the parameter.
+\subsection{TriGamma function}
+The trigamma function (\Verb+trigamma+) takes one parameter and returns the trigamma function on the parameter.
+\section{Erf module}
+The Erf module uses the Apache Commons Math library to compute Error Function values. It has two functins - \Verb+erf+ reyurns the error function of its parameter, and \verb+erfc+ returns the error function coefficient of its parameter.
+\section{Math module}
+The math module provides standard support through the Java Math package. The functions exposed are shown in the table below:
+\begin{table}[!h]
+  \small
+\centering
+\begin{tabular} { | l | l | p{9cm}  | }
+\hline
+Function  & Parameters & Description   \\
+\hline
+pi & none & Returns the constant $\pi$   \\
+e & none & Returns the constant $\epsilon$   \\
+abs & value & Returns the absolute value of a number  \\
+acos & value & Returns the arc-cosine of the number \\
+asin & value & Returns the arc-sine of the number \\
+atan & value & Returns the arc-tangent of the number \\
+atan2 & x,y & Returns the arc-tangent "2 parameter" result of the (x,y) values passed \\
+cbrt & value & Returns the cube root of the number \\
+ceil & value & Returns the value rounded up to the nearest integer \\
+cos & value & Returns the cosine of the value in radians \\
+cosh & value & Returns the hyperbolic cosine of the value \\
+exp & value & Returns $\epsilon$ raised to the power of the value \\
+expm1 & value & Returns $\epsilon^x - 1 $ \\
+floor & value & Returns the value rounded down to the nearest integer \\
+hypot & x,y & Computes $ \sqrt { x^2 + y^2 } $ \\
+log & value & Computes the natural logarithm of the value \\
+log10 & value & Computes the base-10 logarithm of the value \\
+log1p & x & Computes \Verb^log(1+x)^ \\
+max & x,y & Returns the maximum of x or y \\
+min & x,y & Returns the minimum of x or y \\
+pow & x,y & Returns $x^y$ \\
+sin & value & Returns the sine of the angle in radians \\
+sinh & value & Returns the hyperbolic sine \\
+sqrt & value & Computes $\sqrt x $ \\
+tan & value & Computes the tangent of the angle in radians \\
+tanh & value & Computes the hyperbolic tangent \\
+degrees & value & Converts radians to degrees \\
+radians & value & Converts radians to degrees \\
+\hline
+\end{tabular}
+\caption{Math module in Reflex}
+\end{table}

@@ -1,0 +1,385 @@
+\chapter{Pipeline API}
+\index{Pipeline API}
+\input{api/pipeline/info}
+\section{RemoveServerCategory}
+\index{RemoveServerCategory}
+\label{Api:RemoveServerCategory}
+\begin{lstlisting}[style=nonumbers]
+   void removeServerCategory (
+           String    category
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #pipeline.removeServerCategory(category);
+%\end{lstlisting}
+\input{api/pipeline/removeServerCategory}
+
+
+\rule{12cm}{2pt}
+\section{GetServerCategories}
+\index{GetServerCategories}
+\label{Api:GetServerCategories}
+\begin{lstlisting}[style=nonumbers]
+   List<String> getServerCategories (
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #pipeline.getServerCategories();
+%\end{lstlisting}
+\input{api/pipeline/getServerCategories}
+
+
+\rule{12cm}{2pt}
+\section{GetBoundExchanges}
+\index{GetBoundExchanges}
+\label{Api:GetBoundExchanges}
+\begin{lstlisting}[style=nonumbers]
+   List<CategoryQueueBindings> getBoundExchanges (
+           String    category
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #pipeline.getBoundExchanges(category);
+%\end{lstlisting}
+\input{api/pipeline/getBoundExchanges}
+
+
+\rule{12cm}{2pt}
+\section{DeregisterPipelineExchange}
+\index{DeregisterPipelineExchange}
+\label{Api:DeregisterPipelineExchange}
+\begin{lstlisting}[style=nonumbers]
+   void deregisterPipelineExchange (
+           String    name
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #pipeline.deregisterPipelineExchange(name);
+%\end{lstlisting}
+\input{api/pipeline/deregisterPipelineExchange}
+
+
+\rule{12cm}{2pt}
+\section{GetExchanges}
+\index{GetExchanges}
+\label{Api:GetExchanges}
+\begin{lstlisting}[style=nonumbers]
+   List<String> getExchanges (
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #pipeline.getExchanges();
+%\end{lstlisting}
+\input{api/pipeline/getExchanges}
+
+
+\rule{12cm}{2pt}
+\section{GetExchange}
+\index{GetExchange}
+\label{Api:GetExchange}
+\begin{lstlisting}[style=nonumbers]
+   RaptureExchange getExchange (
+           String    name
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #pipeline.getExchange(name);
+%\end{lstlisting}
+\input{api/pipeline/getExchange}
+
+
+\rule{12cm}{2pt}
+\section{PublishMessageToCategory}
+\index{PublishMessageToCategory}
+\label{Api:PublishMessageToCategory}
+\begin{lstlisting}[style=nonumbers]
+   void publishMessageToCategory (
+           RapturePipelineTask    task
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #pipeline.publishMessageToCategory(task);
+%\end{lstlisting}
+\input{api/pipeline/publishMessageToCategory}
+
+
+\rule{12cm}{2pt}
+\section{BroadcastMessageToCategory}
+\index{BroadcastMessageToCategory}
+\label{Api:BroadcastMessageToCategory}
+\begin{lstlisting}[style=nonumbers]
+   void broadcastMessageToCategory (
+           RapturePipelineTask    task
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #pipeline.broadcastMessageToCategory(task);
+%\end{lstlisting}
+\input{api/pipeline/broadcastMessageToCategory}
+
+
+\rule{12cm}{2pt}
+\section{BroadcastMessageToAll}
+\index{BroadcastMessageToAll}
+\label{Api:BroadcastMessageToAll}
+\begin{lstlisting}[style=nonumbers]
+   void broadcastMessageToAll (
+           RapturePipelineTask    task
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #pipeline.broadcastMessageToAll(task);
+%\end{lstlisting}
+\input{api/pipeline/broadcastMessageToAll}
+
+
+\rule{12cm}{2pt}
+\section{GetStatus}
+\index{GetStatus}
+\label{Api:GetStatus}
+\begin{lstlisting}[style=nonumbers]
+   PipelineTaskStatus getStatus (
+           String    taskId
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #pipeline.getStatus(taskId);
+%\end{lstlisting}
+\input{api/pipeline/getStatus}
+
+
+\rule{12cm}{2pt}
+\section{QueryTasks}
+\index{QueryTasks}
+\label{Api:QueryTasks}
+\begin{lstlisting}[style=nonumbers]
+   List<RapturePipelineTask> queryTasks (
+           String    query
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #pipeline.queryTasks(query);
+%\end{lstlisting}
+\input{api/pipeline/queryTasks}
+
+
+\rule{12cm}{2pt}
+\section{QueryTasksOld}
+\index{QueryTasksOld}
+\label{Api:QueryTasksOld}
+\begin{lstlisting}[style=nonumbers]
+   List<RapturePipelineTask> queryTasksOld (
+           TableQuery    query
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #pipeline.queryTasksOld(query);
+%\end{lstlisting}
+\input{api/pipeline/queryTasksOld}
+
+
+\rule{12cm}{2pt}
+\section{GetLatestTaskEpoch}
+\index{GetLatestTaskEpoch}
+\label{Api:GetLatestTaskEpoch}
+\begin{lstlisting}[style=nonumbers]
+   Long getLatestTaskEpoch (
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #pipeline.getLatestTaskEpoch();
+%\end{lstlisting}
+\input{api/pipeline/getLatestTaskEpoch}
+
+
+\rule{12cm}{2pt}
+\section{DrainPipeline}
+\index{DrainPipeline}
+\label{Api:DrainPipeline}
+\begin{lstlisting}[style=nonumbers]
+   void drainPipeline (
+           String    exchange
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #pipeline.drainPipeline(exchange);
+%\end{lstlisting}
+\input{api/pipeline/drainPipeline}
+
+
+\rule{12cm}{2pt}
+\section{RegisterExchangeDomain}
+\index{RegisterExchangeDomain}
+\label{Api:RegisterExchangeDomain}
+\begin{lstlisting}[style=nonumbers]
+   void registerExchangeDomain (
+           String    domainURI
+           String    config
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #pipeline.registerExchangeDomain(domainURI,config);
+%\end{lstlisting}
+\input{api/pipeline/registerExchangeDomain}
+
+
+\rule{12cm}{2pt}
+\section{DeregisterExchangeDomain}
+\index{DeregisterExchangeDomain}
+\label{Api:DeregisterExchangeDomain}
+\begin{lstlisting}[style=nonumbers]
+   void deregisterExchangeDomain (
+           String    domainURI
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #pipeline.deregisterExchangeDomain(domainURI);
+%\end{lstlisting}
+\input{api/pipeline/deregisterExchangeDomain}
+
+
+\rule{12cm}{2pt}
+\section{GetExchangeDomains}
+\index{GetExchangeDomains}
+\label{Api:GetExchangeDomains}
+\begin{lstlisting}[style=nonumbers]
+   List<String> getExchangeDomains (
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #pipeline.getExchangeDomains();
+%\end{lstlisting}
+\input{api/pipeline/getExchangeDomains}
+
+
+\rule{12cm}{2pt}
+\section{SetupStandardCategory}
+\index{SetupStandardCategory}
+\label{Api:SetupStandardCategory}
+\begin{lstlisting}[style=nonumbers]
+   void setupStandardCategory (
+           String    category
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #pipeline.setupStandardCategory(category);
+%\end{lstlisting}
+\input{api/pipeline/setupStandardCategory}
+
+
+\rule{12cm}{2pt}
+\section{MakeRPC}
+\index{MakeRPC}
+\label{Api:MakeRPC}
+\begin{lstlisting}[style=nonumbers]
+   Map<String,Object> makeRPC (
+           String    queueName
+           String    fnName
+           Map<String,Object>    params
+           Long    timeoutInSeconds
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /user/call
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #pipeline.makeRPC(queueName,fnName,params,timeoutInSeconds);
+%\end{lstlisting}
+\input{api/pipeline/makeRPC}
+
+
+\rule{12cm}{2pt}
+\section{CreateTopicExchange}
+\index{CreateTopicExchange}
+\label{Api:CreateTopicExchange}
+\begin{lstlisting}[style=nonumbers]
+   void createTopicExchange (
+           String    domain
+           String    exchange
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #pipeline.createTopicExchange(domain,exchange);
+%\end{lstlisting}
+\input{api/pipeline/createTopicExchange}
+
+
+\rule{12cm}{2pt}
+\section{PublishTopicMessage}
+\index{PublishTopicMessage}
+\label{Api:PublishTopicMessage}
+\begin{lstlisting}[style=nonumbers]
+   void publishTopicMessage (
+           String    domain
+           String    exchange
+           String    topic
+           String    message
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #pipeline.publishTopicMessage(domain,exchange,topic,message);
+%\end{lstlisting}
+\input{api/pipeline/publishTopicMessage}
+
+
+\rule{12cm}{2pt}

@@ -265,20 +265,25 @@ public class ReflexRaptureScript implements IRaptureScript {
 						: new ProgressDebugger(activity, script.getScript());
 				log.info("Running script " + getScriptName(script));
 				ReflexExecutor.injectSystemIntoScope(walker.currentScope);
-				if (timeout <= 0) {
+				
+                for (Map.Entry<String, Object> val : extraVals.entrySet()) {
+                    log.debug("Looking to inject " + val.getKey());
+                    ReflexValue v = walker.currentScope.resolve(val.getKey());
+                    if (v != null && v.getValue() != ReflexValue.Internal.VOID
+                            && v.getValue() != ReflexValue.Internal.NULL) {
+                        log.debug("Injecting " + v.asObject() + " as " + val.getKey());
+                        val.setValue(v.asObject());
+                    } else
+                        walker.currentScope.assign(val.getKey(),
+                                val.getValue() == null ? new ReflexNullValue() : new ReflexValue(val.getValue()));
+
+                }
+                
+                if (timeout <= 0) {
 					ret = res.evaluateWithoutScope(progress).toString();
 				} else {
 					// TODO replace this with abortable invocation
 					ret = res.evaluateWithoutScope(progress).toString();
-				}
-				for (Map.Entry<String, Object> val : extraVals.entrySet()) {
-					log.debug("Looking to inject " + val.getKey());
-					ReflexValue v = walker.currentScope.resolve(val.getKey());
-					if (v != null && v.getValue() != ReflexValue.Internal.VOID
-							&& v.getValue() != ReflexValue.Internal.NULL) {
-						log.debug("Injecting " + v.asObject() + " as " + val.getKey());
-						val.setValue(v.asObject());
-					}
 				}
 				progress.getInstrumenter().log();
 				if (walker.getReflexHandler() instanceof AddingOutputReflexHandler) {

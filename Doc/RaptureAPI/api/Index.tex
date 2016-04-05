@@ -1,0 +1,151 @@
+\chapter{Index API}
+\index{Index API}
+\input{api/index/info}
+\section{CreateIndex}
+\index{CreateIndex}
+\label{Api:CreateIndex}
+\begin{lstlisting}[style=nonumbers]
+   IndexConfig createIndex (
+           String    indexUri
+           String    config
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/index/write
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #index.createIndex(indexUri,config);
+%\end{lstlisting}
+\input{api/index/createIndex}
+
+
+\rule{12cm}{2pt}
+\section{GetIndex}
+\index{GetIndex}
+\label{Api:GetIndex}
+\begin{lstlisting}[style=nonumbers]
+   IndexConfig getIndex (
+           String    indexUri
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/index/read
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #index.getIndex(indexUri);
+%\end{lstlisting}
+\input{api/index/getIndex}
+
+
+\rule{12cm}{2pt}
+\section{DeleteIndex}
+\index{DeleteIndex}
+\label{Api:DeleteIndex}
+\begin{lstlisting}[style=nonumbers]
+   void deleteIndex (
+           String    indexUri
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/index/write
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #index.deleteIndex(indexUri);
+%\end{lstlisting}
+\input{api/index/deleteIndex}
+
+
+\rule{12cm}{2pt}
+\section{CreateTable}
+\index{CreateTable}
+\label{Api:CreateTable}
+\begin{lstlisting}[style=nonumbers]
+   TableConfig createTable (
+           String    tableUri
+           String    config
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/index/write
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #index.createTable(tableUri,config);
+%\end{lstlisting}
+\input{api/index/createTable}
+
+
+\rule{12cm}{2pt}
+\section{DeleteTable}
+\index{DeleteTable}
+\label{Api:DeleteTable}
+\begin{lstlisting}[style=nonumbers]
+   void deleteTable (
+           String    tableUri
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/index/write
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #index.deleteTable(tableUri);
+%\end{lstlisting}
+\input{api/index/deleteTable}
+
+
+\rule{12cm}{2pt}
+\section{GetTable}
+\index{GetTable}
+\label{Api:GetTable}
+\begin{lstlisting}[style=nonumbers]
+   TableConfig getTable (
+           String    indexURI
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/index/read
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #index.getTable(indexURI);
+%\end{lstlisting}
+\input{api/index/getTable}
+
+
+\rule{12cm}{2pt}
+\section{QueryTable}
+\index{QueryTable}
+\label{Api:QueryTable}
+\begin{lstlisting}[style=nonumbers]
+   List<TableRecord> queryTable (
+           String    indexURI
+           TableQuery    query
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/index/read
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #index.queryTable(indexURI,query);
+%\end{lstlisting}
+\input{api/index/queryTable}
+
+
+\rule{12cm}{2pt}
+\section{FindIndex}
+\index{FindIndex}
+\label{Api:FindIndex}
+\begin{lstlisting}[style=nonumbers]
+   TableQueryResult findIndex (
+           String    indexUri
+           String    query
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/index/read
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #index.findIndex(indexUri,query);
+%\end{lstlisting}
+\input{api/index/findIndex}
+
+
+\rule{12cm}{2pt}

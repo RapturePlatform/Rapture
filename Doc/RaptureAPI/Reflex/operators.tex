@@ -1,0 +1,54 @@
+\chapter{Operators}
+Operators \index{operator} in \Reflex will, in the most part, be very familiar to developers of other languages. There are boolean \index{boolean} operators ($==$, $>=$, $<=$, $<$, $>$, $!=$, $||$, $\&\&$), arithmetic \index{arithmetic} operators ($+$,$-$,$/$,$*$,$\%$) and index \index{index} operators (\Verb+[ ]+). The ternary \index{ternary} operator $?$ is also supported. The use of these \emph{simple} operators is best illustrated by example. The examples below also introduce the \verb+assert+ built-in function - it aborts the \Reflex script with an error if the result of the boolean expression is \verb+false+.
+\begin{lstlisting}[caption={Simple operators}]
+// Examples of use of simple operators
+// Boolean operators
+assert(true);
+assert(true || false);
+assert(!false);
+assert(true && true);
+// Relational
+assert(1 < 2);
+assert(55 >= 55);
+assert('a' < 'b'); // Note that strings can be compared
+// Addition
+assert(1 + 999 == 1000);
+assert([1] + 1 == [1,1]); // Note addition on lists
+assert([1,2,3] - 3 == [1,2]); // Note subtraction on lists
+// Multiply
+assert(3 * 50 == 150);
+assert(4 / 2 == 2);
+assert(999 % 3 == 0); // % = mod operator
+// Power
+assert(2 ^ 3 == 8);
+\end{lstlisting}
+It is worth calling out explicitly how $+$ and $-$ work with lists. If the left hand side of an expression is a list, then adding an element to it results in a new list with that element added to the end. Subtracting from a list removes that element from the list if it is within the list. This also works with strings.
+
+The index \Verb+[ ]+ operator is worth its own set of examples.
+\begin{lstlisting}[caption={Index operator}]
+// Examples of the index operator
+a = [1, 2, 3, 4, 5];
+b = 'abcdefg';
+assert(a[0] == 1);
+assert(a[1 .. 2] == [2,3]);
+assert(b[0] == 'a');
+assert(b[1 .. 2] == 'bc');
+\end{lstlisting}
+There are two forms of the index operator. The first, with one integer parameter, simply returns the element at that position. The second, with the \Verb+..+ directive is a range operator - it returns the elements between these index points, inclusive of the first parameter and exclusive of the second.
+
+The index operator also applies to map types as well. In this case the parameter is a string and refers to the key to lookup in the associative map.
+\begin{lstlisting}[caption={Index operator on maps}]
+a = { 'one' : 1, 'two' : 2 };
+assert(a['one'] == 1);
+assert(a['two'] == 2);
+\end{lstlisting}
+
+The dot operator ($.$) can be used with maps to reference elements of that map:
+
+\begin{lstlisting}[caption={Dot operator on maps}]
+a = { 'one' : 1, 'two' : 2 };
+assert(a.one == 1);
+assert(a.two == 2);
+a.three = 3;
+assert(a.three == 3);
+\end{lstlisting}

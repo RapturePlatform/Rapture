@@ -20,7 +20,7 @@ docApiEntry(apitype, ret, name, apiparams, paramNames, doc, ent) ::= <<
 %\begin{lstlisting}[language=reflex]
 %ret = #<apitype; format="lower">.<name>(<paramNames; separator=",">);
 %\end{lstlisting}
-\input{<apitype; format="lower">/<name>}
+\input{api/<apitype; format="lower">/<name>}
 
 
 \rule{12cm}{2pt}
@@ -28,7 +28,7 @@ docApiEntry(apitype, ret, name, apiparams, paramNames, doc, ent) ::= <<
 docApiList(apitype, apis, doc) ::= <<
 \chapter{<apitype> API}
 \index{<apitype> API}
-\input{<apitype; format="lower">/info}
+\input{api/<apitype; format="lower">/info}
 <apis; separator="\n">
 >>
 
