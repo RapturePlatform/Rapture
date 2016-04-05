@@ -1,0 +1,107 @@
+\chapter{Environment API}
+\index{Environment API}
+\input{api/environment/info}
+\section{GetThisServer}
+\index{GetThisServer}
+\label{Api:GetThisServer}
+\begin{lstlisting}[style=nonumbers]
+   RaptureServerInfo getThisServer (
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /env/common
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #environment.getThisServer();
+%\end{lstlisting}
+\input{api/environment/getThisServer}
+
+
+\rule{12cm}{2pt}
+\section{GetServers}
+\index{GetServers}
+\label{Api:GetServers}
+\begin{lstlisting}[style=nonumbers]
+   List<RaptureServerInfo> getServers (
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /env/common
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #environment.getServers();
+%\end{lstlisting}
+\input{api/environment/getServers}
+
+
+\rule{12cm}{2pt}
+\section{SetThisServer}
+\index{SetThisServer}
+\label{Api:SetThisServer}
+\begin{lstlisting}[style=nonumbers]
+   RaptureServerInfo setThisServer (
+           RaptureServerInfo    info
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /env/admin
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #environment.setThisServer(info);
+%\end{lstlisting}
+\input{api/environment/setThisServer}
+
+
+\rule{12cm}{2pt}
+\section{SetApplianceMode}
+\index{SetApplianceMode}
+\label{Api:SetApplianceMode}
+\begin{lstlisting}[style=nonumbers]
+   void setApplianceMode (
+           boolean    mode
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /env/admin
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #environment.setApplianceMode(mode);
+%\end{lstlisting}
+\input{api/environment/setApplianceMode}
+
+
+\rule{12cm}{2pt}
+\section{GetApplianceMode}
+\index{GetApplianceMode}
+\label{Api:GetApplianceMode}
+\begin{lstlisting}[style=nonumbers]
+   boolean getApplianceMode (
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /env/common
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #environment.getApplianceMode();
+%\end{lstlisting}
+\input{api/environment/getApplianceMode}
+
+
+\rule{12cm}{2pt}
+\section{GetServerStatus}
+\index{GetServerStatus}
+\label{Api:GetServerStatus}
+\begin{lstlisting}[style=nonumbers]
+   List<RaptureServerStatus> getServerStatus (
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /env/common
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #environment.getServerStatus();
+%\end{lstlisting}
+\input{api/environment/getServerStatus}
+
+
+\rule{12cm}{2pt}

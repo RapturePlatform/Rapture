@@ -1,0 +1,2111 @@
+\chapter{Types}
+\section{ErrorWrapper}
+\label{type:ErrorWrapper}
+\index{ErrorWrapper}
+
+\begin{lstlisting}[style=nonumbers]
+   type ErrorWrapper {
+          String   id
+          Integer   status
+          String   message
+          String   stackTrace
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{RaptureQueryResult}
+\label{type:RaptureQueryResult}
+\index{RaptureQueryResult}
+
+\begin{lstlisting}[style=nonumbers]
+   type RaptureQueryResult {
+          List<JsonContent>   rows
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{ConnectionInfo}
+\label{type:ConnectionInfo}
+\index{ConnectionInfo}
+
+\begin{lstlisting}[style=nonumbers]
+   type ConnectionInfo {
+          String   host
+          int   port
+          String   username
+          String   password
+          String   dbName
+          String   instanceName
+          Map(String, Object)   options
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{BlobRepoConfig}
+\label{type:BlobRepoConfig}
+\index{BlobRepoConfig}
+
+\begin{lstlisting}[style=nonumbers]
+   type BlobRepoConfig {
+          String   description
+          String   config
+          String   authority
+          String   metaConfig
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{RaptureField}
+\label{type:RaptureField}
+\index{RaptureField}
+
+\begin{lstlisting}[style=nonumbers]
+   type RaptureField {
+          String   authority
+          String   category
+          String   name
+          String   longName
+          String   description
+          String   units
+          RaptureGroupingFn   groupingFn
+          List<RaptureFieldBand>   bands
+          Set<RaptureFieldPath>   fieldPaths
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{AuditLogEntry}
+\label{type:AuditLogEntry}
+\index{AuditLogEntry}
+
+\begin{lstlisting}[style=nonumbers]
+   type AuditLogEntry {
+          String   category
+          String   entryId
+          int   level
+          String   logId
+          String   message
+          String   source
+          String   user
+          Date   when
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{Log4jAuditConfig}
+\label{type:Log4jAuditConfig}
+\index{Log4jAuditConfig}
+
+\begin{lstlisting}[style=nonumbers]
+   type Log4jAuditConfig {
+          String   serverName
+          String   logDirPath
+          String   xml
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{AuditLogConfig}
+\label{type:AuditLogConfig}
+\index{AuditLogConfig}
+
+\begin{lstlisting}[style=nonumbers]
+   type AuditLogConfig {
+          String   name
+          String   config
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{DocWriteHandle}
+\label{type:DocWriteHandle}
+\index{DocWriteHandle}
+
+\begin{lstlisting}[style=nonumbers]
+   type DocWriteHandle {
+          Boolean   isSuccess
+          RaptureURI   documentURI
+          RunEventHandle   eventHandle
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{RaptureScript}
+\label{type:RaptureScript}
+\index{RaptureScript}
+
+\begin{lstlisting}[style=nonumbers]
+   type RaptureScript {
+          String   name
+          String   script
+          RaptureScriptLanguage   language
+          RaptureScriptPurpose   purpose
+          String   authority
+          List(RaptureParameter)   parameters
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{RaptureSnippet}
+\label{type:RaptureSnippet}
+\index{RaptureSnippet}
+
+\begin{lstlisting}[style=nonumbers]
+   type RaptureSnippet {
+          String   name
+          String   authority
+          String   snippet
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{REPLVariable}
+\label{type:REPLVariable}
+\index{REPLVariable}
+
+\begin{lstlisting}[style=nonumbers]
+   type REPLVariable {
+          String   name
+          String   serializedVar
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{ReflexREPLSession}
+\label{type:ReflexREPLSession}
+\index{ReflexREPLSession}
+
+\begin{lstlisting}[style=nonumbers]
+   type ReflexREPLSession {
+          String   id
+          List(REPLVariable)   vars
+          String   partialLine
+          List(String)   functionDecls
+          Date   lastSeen
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{RaptureScriptLanguage}
+\label{type:RaptureScriptLanguage}
+\index{RaptureScriptLanguage}
+
+\begin{lstlisting}[style=nonumbers]
+   type RaptureScriptLanguage {
+          String   REFLEX
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{RaptureScriptPurpose}
+\label{type:RaptureScriptPurpose}
+\index{RaptureScriptPurpose}
+
+\begin{lstlisting}[style=nonumbers]
+   type RaptureScriptPurpose {
+          String   INDEXGENERATOR
+          String   MAP
+          String   FILTER
+          String   OPERATION
+          String   PROGRAM
+          String   LINK
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{RaptureLockConfig}
+\label{type:RaptureLockConfig}
+\index{RaptureLockConfig}
+
+\begin{lstlisting}[style=nonumbers]
+   type RaptureLockConfig {
+          String   name
+          String   config
+          String   authority
+          String   pathPosition
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{LockHandle}
+\label{type:LockHandle}
+\index{LockHandle}
+
+\begin{lstlisting}[style=nonumbers]
+   type LockHandle {
+          String   lockName
+          String   handle
+          String   lockHolder
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{SemaphoreLock}
+\label{type:SemaphoreLock}
+\index{SemaphoreLock}
+
+\begin{lstlisting}[style=nonumbers]
+   type SemaphoreLock {
+          String   lockKey
+          Set<RaptureURI>   stakeholderURIs
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{CreateResponse}
+\label{type:CreateResponse}
+\index{CreateResponse}
+
+\begin{lstlisting}[style=nonumbers]
+   type CreateResponse {
+          Boolean   isCreated
+          RaptureURI   uri
+          String   message
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{SemaphoreAcquireResponse}
+\label{type:SemaphoreAcquireResponse}
+\index{SemaphoreAcquireResponse}
+
+\begin{lstlisting}[style=nonumbers]
+   type SemaphoreAcquireResponse {
+          Boolean   isAcquired
+          RaptureURI   acquiredURI
+          Set<RaptureURI>   existingStakeholderURIs
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{RaptureIdGenConfig}
+\label{type:RaptureIdGenConfig}
+\index{RaptureIdGenConfig}
+
+\begin{lstlisting}[style=nonumbers]
+   type RaptureIdGenConfig {
+          String   name
+          String   config
+          String   authority
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{RaptureTableConfig}
+\label{type:RaptureTableConfig}
+\index{RaptureTableConfig}
+
+\begin{lstlisting}[style=nonumbers]
+   type RaptureTableConfig {
+          String   name
+          String   config
+          String   authority
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{RaptureSearchResult}
+\label{type:RaptureSearchResult}
+\index{RaptureSearchResult}
+
+\begin{lstlisting}[style=nonumbers]
+   type RaptureSearchResult {
+          String   displayName
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{RepoConfig}
+\label{type:RepoConfig}
+\index{RepoConfig}
+
+\begin{lstlisting}[style=nonumbers]
+   type RepoConfig {
+          String   name
+          String   config
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{CallingContext}
+\label{type:CallingContext}
+\index{CallingContext}
+
+\begin{lstlisting}[style=nonumbers]
+   type CallingContext {
+          String   user
+          String   context
+          String   salt
+          Map<String, String>   metadata
+          Boolean   valid
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{RaptureContextInfo}
+\label{type:RaptureContextInfo}
+\index{RaptureContextInfo}
+
+\begin{lstlisting}[style=nonumbers]
+   type RaptureContextInfo {
+          String   sessionId
+          String   authority
+          String   perspective
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{RaptureAuthority}
+\label{type:RaptureAuthority}
+\index{RaptureAuthority}
+
+\begin{lstlisting}[style=nonumbers]
+   type RaptureAuthority {
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{DocumentRepoConfig}
+\label{type:DocumentRepoConfig}
+\index{DocumentRepoConfig}
+
+\begin{lstlisting}[style=nonumbers]
+   type DocumentRepoConfig {
+          String   description
+          String   config
+          String   authority
+          IdGenURI   idGenUri
+          Boolean   strictCheck
+          Set<IndexScriptPair>   indexes
+          Set<FullTextIndexScriptPair>   fullTextIndexes
+          String   updateQueue
+          RaptureDocConfig   documentRepo
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{RaptureDocConfig}
+\label{type:RaptureDocConfig}
+\index{RaptureDocConfig}
+
+\begin{lstlisting}[style=nonumbers]
+   type RaptureDocConfig {
+          String   authority
+          String   config
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{RaptureUser}
+\label{type:RaptureUser}
+\index{RaptureUser}
+
+\begin{lstlisting}[style=nonumbers]
+   type RaptureUser {
+          String   username
+          String   userId
+          String   emailAddress
+          String   salt
+          String   hashPassword
+          String   description
+          Boolean   inactive
+          Boolean   apiKey
+          Boolean   hasRoot
+          String   passwordResetToken
+          Long   tokenExpirationTime
+          String   registrationToken
+          Boolean   verified
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{RaptureEntitlement}
+\label{type:RaptureEntitlement}
+\index{RaptureEntitlement}
+
+\begin{lstlisting}[style=nonumbers]
+   type RaptureEntitlement {
+          String   name
+          EntitlementType   entType
+          Set<String>   groups
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{RaptureEntitlementGroup}
+\label{type:RaptureEntitlementGroup}
+\index{RaptureEntitlementGroup}
+
+\begin{lstlisting}[style=nonumbers]
+   type RaptureEntitlementGroup {
+          String   name
+          Set<String>   users
+          String   dynamicEntitlementClassName
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{RaptureEvent}
+\label{type:RaptureEvent}
+\index{RaptureEvent}
+
+\begin{lstlisting}[style=nonumbers]
+   type RaptureEvent {
+          String   uriFullPath
+          Set(RaptureEventScript)   scripts
+          Set(RaptureEventMessage)   messages
+          Set(RaptureEventNotification)   notifications
+          Set(RaptureEventWorkflow)   workflows
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{RunEventHandle}
+\label{type:RunEventHandle}
+\index{RunEventHandle}
+
+\begin{lstlisting}[style=nonumbers]
+   type RunEventHandle {
+          RaptureURI   eventUri
+          String   eventId
+          Boolean   didRun
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{RaptureServerInfo}
+\label{type:RaptureServerInfo}
+\index{RaptureServerInfo}
+
+\begin{lstlisting}[style=nonumbers]
+   type RaptureServerInfo {
+          String   serverId
+          String   name
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{RaptureServerStatus}
+\label{type:RaptureServerStatus}
+\index{RaptureServerStatus}
+
+\begin{lstlisting}[style=nonumbers]
+   type RaptureServerStatus {
+          String   serverId
+          Long   status
+          String   statusMessage
+          Date   lastSeen
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{PluginConfig}
+\label{type:PluginConfig}
+\index{PluginConfig}
+
+\begin{lstlisting}[style=nonumbers]
+   type PluginConfig {
+          Map(String, PluginVersion)   depends
+          String   description
+          String   plugin
+          PluginVersion   version
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{PluginManifest}
+\label{type:PluginManifest}
+\index{PluginManifest}
+
+\begin{lstlisting}[style=nonumbers]
+   type PluginManifest {
+          List(PluginManifestItem)   contents
+          Map(String, PluginVersion)   depends
+          String   description
+          String   plugin
+          PluginVersion   version
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{PluginManifestItem}
+\label{type:PluginManifestItem}
+\index{PluginManifestItem}
+
+\begin{lstlisting}[style=nonumbers]
+   type PluginManifestItem {
+          String   uri
+          String   hash
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{PluginTransportItem}
+\label{type:PluginTransportItem}
+\index{PluginTransportItem}
+
+\begin{lstlisting}[style=nonumbers]
+   type PluginTransportItem {
+          String   uri
+          ByteArray   content
+          String   hash
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{PluginVersion}
+\label{type:PluginVersion}
+\index{PluginVersion}
+
+\begin{lstlisting}[style=nonumbers]
+   type PluginVersion {
+          int   major
+          int   minor
+          int   release
+          long   timestamp
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{Jar}
+\label{type:Jar}
+\index{Jar}
+
+\begin{lstlisting}[style=nonumbers]
+   type Jar {
+          String   description
+          String   authority
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{AppRepoSettings}
+\label{type:AppRepoSettings}
+\index{AppRepoSettings}
+
+\begin{lstlisting}[style=nonumbers]
+   type AppRepoSettings {
+          String   codeBase
+          String   raptureBase
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{AppConfig}
+\label{type:AppConfig}
+\index{AppConfig}
+
+\begin{lstlisting}[style=nonumbers]
+   type AppConfig {
+          String   name
+          String   title
+          String   vendor
+          String   homePage
+          String   longDescription
+          String   shortDescription
+          String   iconLocation
+          String   splashLocation
+          String   jarFile
+          String   mainClass
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{AppInstanceConfig}
+\label{type:AppInstanceConfig}
+\index{AppInstanceConfig}
+
+\begin{lstlisting}[style=nonumbers]
+   type AppInstanceConfig {
+          String   name
+          String   appConfig
+          List(String)   arguments
+          Map(String, String)   properties
+          String   apiKey
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{RaptureExchange}
+\label{type:RaptureExchange}
+\index{RaptureExchange}
+
+\begin{lstlisting}[style=nonumbers]
+   type RaptureExchange {
+          String   domain
+          String   name
+          RaptureExchangeType   exchangeType
+          List(RaptureExchangeQueue)   queueBindings
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{RapturePipelineTask}
+\label{type:RapturePipelineTask}
+\index{RapturePipelineTask}
+
+\begin{lstlisting}[style=nonumbers]
+   type RapturePipelineTask {
+          PipelineTaskStatus   status
+          PipelineTaskType   taskType
+          int   priority
+          List<String>   categoryList
+          String   taskId
+          String   content
+          String   contentType
+          Long   epoch
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{ServerCategory}
+\label{type:ServerCategory}
+\index{ServerCategory}
+
+\begin{lstlisting}[style=nonumbers]
+   type ServerCategory {
+          String   name
+          String   description
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{CategoryQueueBindings}
+\label{type:CategoryQueueBindings}
+\index{CategoryQueueBindings}
+
+\begin{lstlisting}[style=nonumbers]
+   type CategoryQueueBindings {
+          String   name
+          Map(String, Set(String))   bindings
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{ExchangeDomain}
+\label{type:ExchangeDomain}
+\index{ExchangeDomain}
+
+\begin{lstlisting}[style=nonumbers]
+   type ExchangeDomain {
+          String   name
+          String   config
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{TableRecord}
+\label{type:TableRecord}
+\index{TableRecord}
+
+\begin{lstlisting}[style=nonumbers]
+   type TableRecord {
+          String   keyName
+          Map(String, Object)   fields
+          String   content
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{TableQuery}
+\label{type:TableQuery}
+\index{TableQuery}
+
+\begin{lstlisting}[style=nonumbers]
+   type TableQuery {
+          List(TableSelect)   fieldTests
+          List(String)   fieldReturns
+          List(TableColumnSort)   sortFields
+          int   skip
+          int   limit
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{DocumentMetadata}
+\label{type:DocumentMetadata}
+\index{DocumentMetadata}
+
+\begin{lstlisting}[style=nonumbers]
+   type DocumentMetadata {
+          Integer   version
+          Date   writeTime
+          Long   createdTimestamp
+          Long   modifiedTimestamp
+          String   user
+          String   comment
+          Boolean   deleted
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{DocumentWithMeta}
+\label{type:DocumentWithMeta}
+\index{DocumentWithMeta}
+
+\begin{lstlisting}[style=nonumbers]
+   type DocumentWithMeta {
+          String   displayName
+          DocumentMetadata   metaData
+          String   content
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{XferDocumentAttribute}
+\label{type:XferDocumentAttribute}
+\index{XferDocumentAttribute}
+
+\begin{lstlisting}[style=nonumbers]
+   type XferDocumentAttribute {
+          String   attributeType
+          String   key
+          String   value
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{PipelineTaskStatus}
+\label{type:PipelineTaskStatus}
+\index{PipelineTaskStatus}
+
+\begin{lstlisting}[style=nonumbers]
+   type PipelineTaskStatus {
+          PipelineTaskState   currentState
+          String   taskId
+          String   relatedTaskId
+          Date   creationTime
+          Date   startExecutionTime
+          Date   endExecutionTime
+          int   suspensionCount
+          List(String)   output
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{RaptureJob}
+\label{type:RaptureJob}
+\index{RaptureJob}
+
+\begin{lstlisting}[style=nonumbers]
+   type RaptureJob {
+          JobURI   jobURI
+          String   description
+          ScriptURI   scriptURI
+          String   cronSpec
+          String   timeZone
+          Map<String, String>   params
+          Boolean   autoActivate
+          Boolean   activated
+          JobType   jobType
+          Integer   maxRuntimeMinutes
+          String   appStatusNamePattern
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{RaptureJobExec}
+\label{type:RaptureJobExec}
+\index{RaptureJobExec}
+
+\begin{lstlisting}[style=nonumbers]
+   type RaptureJobExec {
+          JobURI   jobURI
+          JobType   jobType
+          JobExecStatus   status
+          Long   execTime
+          Map<String, String>   passedParams
+          String   execDetails
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{WorkflowJobDetails}
+\label{type:WorkflowJobDetails}
+\index{WorkflowJobDetails}
+
+\begin{lstlisting}[style=nonumbers]
+   type WorkflowJobDetails {
+          String   workOrderURI
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{UpcomingJobExec}
+\label{type:UpcomingJobExec}
+\index{UpcomingJobExec}
+
+\begin{lstlisting}[style=nonumbers]
+   type UpcomingJobExec {
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{LastJobExec}
+\label{type:LastJobExec}
+\index{LastJobExec}
+
+\begin{lstlisting}[style=nonumbers]
+   type LastJobExec {
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{WorkflowJobExecDetails}
+\label{type:WorkflowJobExecDetails}
+\index{WorkflowJobExecDetails}
+
+\begin{lstlisting}[style=nonumbers]
+   type WorkflowJobExecDetails {
+          JobURI   jobURI
+          Map<String, String>   parameters
+          Map<String, String>   passedParams
+          WorkflowURI   workflowURI
+          WorkOrderURI   workOrderURI
+          String   workOrderID
+          Long   startDate
+          Long   lastUpdated
+          WorkOrderExecutionState   workOrderStatus
+          JobExecStatus   jobStatus
+          String   prettyStatus
+          Long   overrunMillis
+          Integer   maxRuntimeMinutes
+          String   notes
+          JobErrorAck   errorAck
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{JobErrorAck}
+\label{type:JobErrorAck}
+\index{JobErrorAck}
+
+\begin{lstlisting}[style=nonumbers]
+   type JobErrorAck {
+          JobURI   jobURI
+          Long   execTime
+          JobErrorType   errorType
+          Long   timestamp
+          String   user
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{WorkflowExecsStatus}
+\label{type:WorkflowExecsStatus}
+\index{WorkflowExecsStatus}
+
+\begin{lstlisting}[style=nonumbers]
+   type WorkflowExecsStatus {
+          List<WorkflowJobExecDetails>   failed
+          List<WorkflowJobExecDetails>   ok
+          List<WorkflowJobExecDetails>   overrun
+          List<WorkflowJobExecDetails>   success
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{WorkflowGridLayout}
+\label{type:WorkflowGridLayout}
+\index{WorkflowGridLayout}
+
+\begin{lstlisting}[style=nonumbers]
+   type WorkflowGridLayout {
+          String   workflowURI
+          List(WorkflowColumnLayout)   columns
+          List(WorkflowArrowLayout)   arrows
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{WorkflowColumnLayout}
+\label{type:WorkflowColumnLayout}
+\index{WorkflowColumnLayout}
+
+\begin{lstlisting}[style=nonumbers]
+   type WorkflowColumnLayout {
+          Integer   columnNumber
+          List(WorkflowBoxLayout)   boxes
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{WorkflowBoxLayout}
+\label{type:WorkflowBoxLayout}
+\index{WorkflowBoxLayout}
+
+\begin{lstlisting}[style=nonumbers]
+   type WorkflowBoxLayout {
+          Integer   gx
+          Integer   gy
+          String   kind
+          String   name
+          String   id
+          Integer   offsetX
+          Integer   offsetY
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{WorkflowArrowLayout}
+\label{type:WorkflowArrowLayout}
+\index{WorkflowArrowLayout}
+
+\begin{lstlisting}[style=nonumbers]
+   type WorkflowArrowLayout {
+          String   name
+          String   fromBoxName
+          String   toBoxName
+          Integer   offsetX
+          Integer   offsetY
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{RaptureServerGroup}
+\label{type:RaptureServerGroup}
+\index{RaptureServerGroup}
+
+\begin{lstlisting}[style=nonumbers]
+   type RaptureServerGroup {
+          String   name
+          String   description
+          Integer   jmxPort
+          Set(String)   inclusions
+          Set(String)   exclusions
+          Set(String)   libraries
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{RaptureApplicationDefinition}
+\label{type:RaptureApplicationDefinition}
+\index{RaptureApplicationDefinition}
+
+\begin{lstlisting}[style=nonumbers]
+   type RaptureApplicationDefinition {
+          String   name
+          String   description
+          String   version
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{RaptureLibraryDefinition}
+\label{type:RaptureLibraryDefinition}
+\index{RaptureLibraryDefinition}
+
+\begin{lstlisting}[style=nonumbers]
+   type RaptureLibraryDefinition {
+          String   name
+          String   description
+          String   version
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{RaptureApplicationInstance}
+\label{type:RaptureApplicationInstance}
+\index{RaptureApplicationInstance}
+
+\begin{lstlisting}[style=nonumbers]
+   type RaptureApplicationInstance {
+          String   name
+          String   appName
+          String   description
+          String   serverGroup
+          String   timeRangeSpecification
+          Integer   retryCount
+          String   parameters
+          String   apiUser
+          String   lockedBy
+          Boolean   oneShot
+          Boolean   finished
+          String   status
+          Date   lastStateChange
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{RaptureRunnerInstanceStatus}
+\label{type:RaptureRunnerInstanceStatus}
+\index{RaptureRunnerInstanceStatus}
+
+\begin{lstlisting}[style=nonumbers]
+   type RaptureRunnerInstanceStatus {
+          String   serverGroup
+          String   appInstance
+          String   appName
+          String   status
+          Date   lastSeen
+          Boolean   needsRestart
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{RaptureInstanceCapabilities}
+\label{type:RaptureInstanceCapabilities}
+\index{RaptureInstanceCapabilities}
+
+\begin{lstlisting}[style=nonumbers]
+   type RaptureInstanceCapabilities {
+          String   server
+          String   instanceName
+          Map<String, Object>   capabilities
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{RaptureRunnerStatus}
+\label{type:RaptureRunnerStatus}
+\index{RaptureRunnerStatus}
+
+\begin{lstlisting}[style=nonumbers]
+   type RaptureRunnerStatus {
+          String   serverName
+          Map<String, RaptureRunnerInstanceStatus>   statusByInstanceName
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{RaptureRunnerConfig}
+\label{type:RaptureRunnerConfig}
+\index{RaptureRunnerConfig}
+
+\begin{lstlisting}[style=nonumbers]
+   type RaptureRunnerConfig {
+          Map(String, String)   config
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{RaptureNotificationConfig}
+\label{type:RaptureNotificationConfig}
+\index{RaptureNotificationConfig}
+
+\begin{lstlisting}[style=nonumbers]
+   type RaptureNotificationConfig {
+          String   name
+          String   config
+          String   purpose
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{NotificationResult}
+\label{type:NotificationResult}
+\index{NotificationResult}
+
+\begin{lstlisting}[style=nonumbers]
+   type NotificationResult {
+          Long   currentEpoch
+          List(String)   references
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{NotificationInfo}
+\label{type:NotificationInfo}
+\index{NotificationInfo}
+
+\begin{lstlisting}[style=nonumbers]
+   type NotificationInfo {
+          String   id
+          String   content
+          String   reference
+          Long   epoch
+          Date   when
+          String   contentType
+          String   who
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{RaptureFolderInfo}
+\label{type:RaptureFolderInfo}
+\index{RaptureFolderInfo}
+
+\begin{lstlisting}[style=nonumbers]
+   type RaptureFolderInfo {
+          String   name
+          boolean   folder
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{ScriptInterface}
+\label{type:ScriptInterface}
+\index{ScriptInterface}
+
+\begin{lstlisting}[style=nonumbers]
+   type ScriptInterface {
+          Map<String, String>   properties
+          Map<String, ScriptParameter>   inputs
+          ScriptParameter   ret
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{ScriptParameter}
+\label{type:ScriptParameter}
+\index{ScriptParameter}
+
+\begin{lstlisting}[style=nonumbers]
+   type ScriptParameter {
+          RaptureParameterType   parameterType
+          String   description
+          Object   defaultValue
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{JobLinkStatus}
+\label{type:JobLinkStatus}
+\index{JobLinkStatus}
+
+\begin{lstlisting}[style=nonumbers]
+   type JobLinkStatus {
+          String   from
+          String   to
+          Integer   level
+          Date   lastChange
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{JobLink}
+\label{type:JobLink}
+\index{JobLink}
+
+\begin{lstlisting}[style=nonumbers]
+   type JobLink {
+          String   from
+          String   to
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{ActivityQueryResponse}
+\label{type:ActivityQueryResponse}
+\index{ActivityQueryResponse}
+
+\begin{lstlisting}[style=nonumbers]
+   type ActivityQueryResponse {
+          Boolean   isLast
+          String   nextBatchId
+          List<Activity>   activities
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{Activity}
+\label{type:Activity}
+\index{Activity}
+
+\begin{lstlisting}[style=nonumbers]
+   type Activity {
+          String   id
+          String   description
+          String   message
+          Long   progress
+          Long   max
+          Long   lastSeen
+          ActivityStatus   status
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{TableConfig}
+\label{type:TableConfig}
+\index{TableConfig}
+
+\begin{lstlisting}[style=nonumbers]
+   type TableConfig {
+          String   name
+          String   config
+          String   authority
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{TableRecord}
+\label{type:TableRecord}
+\index{TableRecord}
+
+\begin{lstlisting}[style=nonumbers]
+   type TableRecord {
+          String   keyName
+          Map(String, Object)   fields
+          String   content
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{TableQuery}
+\label{type:TableQuery}
+\index{TableQuery}
+
+\begin{lstlisting}[style=nonumbers]
+   type TableQuery {
+          List(TableSelect)   fieldTests
+          List(String)   fieldReturns
+          List(TableColumnSort)   sortFields
+          int   skip
+          int   limit
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{RaptureActivity}
+\label{type:RaptureActivity}
+\index{RaptureActivity}
+
+\begin{lstlisting}[style=nonumbers]
+   type RaptureActivity {
+          String   id
+          String   otherId
+          String   message
+          Long   progress
+          Long   maxProgress
+          Boolean   requestFinish
+          Date   lastSeen
+          Long   expiresAt
+          Boolean   finished
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{StructuredRepoConfig}
+\label{type:StructuredRepoConfig}
+\index{StructuredRepoConfig}
+
+\begin{lstlisting}[style=nonumbers]
+   type StructuredRepoConfig {
+          String   description
+          String   config
+          String   authority
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{StructuredColumn}
+\label{type:StructuredColumn}
+\index{StructuredColumn}
+
+\begin{lstlisting}[style=nonumbers]
+   type StructuredColumn {
+          String   name
+          String   nativeName
+          String   raptureType
+          String   nativeType
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{StructuredTable}
+\label{type:StructuredTable}
+\index{StructuredTable}
+
+\begin{lstlisting}[style=nonumbers]
+   type StructuredTable {
+          String   authority
+          String   name
+          String   nativeName
+          List(StructuredColumn)   columns
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{TableMeta}
+\label{type:TableMeta}
+\index{TableMeta}
+
+\begin{lstlisting}[style=nonumbers]
+   type TableMeta {
+          Map<String, String>   rows
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{TableIndex}
+\label{type:TableIndex}
+\index{TableIndex}
+
+\begin{lstlisting}[style=nonumbers]
+   type TableIndex {
+          String   name
+          List<String>   columns
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{ForeignKey}
+\label{type:ForeignKey}
+\index{ForeignKey}
+
+\begin{lstlisting}[style=nonumbers]
+   type ForeignKey {
+          String   column
+          String   foreignTable
+          String   foreignColumn
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{SeriesRepoConfig}
+\label{type:SeriesRepoConfig}
+\index{SeriesRepoConfig}
+
+\begin{lstlisting}[style=nonumbers]
+   type SeriesRepoConfig {
+          String   description
+          String   config
+          String   authority
+          String   seriesName
+          String   sampleColumn
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{SeriesPoint}
+\label{type:SeriesPoint}
+\index{SeriesPoint}
+
+\begin{lstlisting}[style=nonumbers]
+   type SeriesPoint {
+          String   column
+          String   value
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{SeriesDouble}
+\label{type:SeriesDouble}
+\index{SeriesDouble}
+
+\begin{lstlisting}[style=nonumbers]
+   type SeriesDouble {
+          String   columns
+          Double   values
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{SeriesString}
+\label{type:SeriesString}
+\index{SeriesString}
+
+\begin{lstlisting}[style=nonumbers]
+   type SeriesString {
+          String   columns
+          String   values
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{TypeArchiveConfig}
+\label{type:TypeArchiveConfig}
+\index{TypeArchiveConfig}
+
+\begin{lstlisting}[style=nonumbers]
+   type TypeArchiveConfig {
+          String   authority
+          String   typeName
+          Boolean   useScript
+          String   scriptName
+          Long   versionsToKeep
+          Long   timeRangeToKeepInDays
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{Workflow}
+\label{type:Workflow}
+\index{Workflow}
+
+\begin{lstlisting}[style=nonumbers]
+   type Workflow {
+          WorkflowURI   workflowURI
+          SemaphoreType   semaphoreType
+          String   semaphoreConfig
+          List<Step>   steps
+          String   startStep
+          String   category
+          Map<String, String>   view
+          List<ExpectedArgument>   expectedArguments
+          String   defaultAppStatusNamePattern
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{ExpectedArgument}
+\label{type:ExpectedArgument}
+\index{ExpectedArgument}
+
+\begin{lstlisting}[style=nonumbers]
+   type ExpectedArgument {
+          String   name
+          Boolean   isRequired
+          String   defaultValue
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{PassedArgument}
+\label{type:PassedArgument}
+\index{PassedArgument}
+
+\begin{lstlisting}[style=nonumbers]
+   type PassedArgument {
+          String   name
+          String   value
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{WorkOrderArguments}
+\label{type:WorkOrderArguments}
+\index{WorkOrderArguments}
+
+\begin{lstlisting}[style=nonumbers]
+   type WorkOrderArguments {
+          WorkOrderURI   workOrderURI
+          List<PassedArgument>   arguments
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{Transition}
+\label{type:Transition}
+\index{Transition}
+
+\begin{lstlisting}[style=nonumbers]
+   type Transition {
+          String   name
+          String   targetStep
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{Step}
+\label{type:Step}
+\index{Step}
+
+\begin{lstlisting}[style=nonumbers]
+   type Step {
+          String   name
+          String   description
+          String   executable
+          Map<String,String>   view
+          List<Transition>   transitions
+          String   categoryOverride
+          Integer   softTimeout
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{WorkOrder}
+\label{type:WorkOrder}
+\index{WorkOrder}
+
+\begin{lstlisting}[style=nonumbers]
+   type WorkOrder {
+          WorkOrderURI   workOrderURI
+          WorkflowURI   workflowURI
+          List<String>   workerIds
+          Map<String, String>   outputs
+          List<String>   pendingIds
+          Integer   priority
+          Long   startTime
+          Long   endTime
+          SemaphoreType   semaphoreType
+          String   semaphoreConfig
+          WorkOrderExecutionState   status
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{WorkOrderInitialArgsHash}
+\label{type:WorkOrderInitialArgsHash}
+\index{WorkOrderInitialArgsHash}
+
+\begin{lstlisting}[style=nonumbers]
+   type WorkOrderInitialArgsHash {
+          WorkOrderURI   workOrderURI
+          String   hashValue
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{WorkflowHistoricalMetrics}
+\label{type:WorkflowHistoricalMetrics}
+\index{WorkflowHistoricalMetrics}
+
+\begin{lstlisting}[style=nonumbers]
+   type WorkflowHistoricalMetrics {
+          Double   workflowAverage
+          Double   jobAverage
+          Double   workflowWithArgsAverage
+          String   workflowMetricName
+          String   jobMetricName
+          String   argsHashMetricName
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{ExecutionContext}
+\label{type:ExecutionContext}
+\index{ExecutionContext}
+
+\begin{lstlisting}[style=nonumbers]
+   type ExecutionContext {
+          WorkOrderURI   workOrderURI
+          Map<String, String>   data
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{ExecutionContextField}
+\label{type:ExecutionContextField}
+\index{ExecutionContextField}
+
+\begin{lstlisting}[style=nonumbers]
+   type ExecutionContextField {
+          WorkOrderURI   workOrderURI
+          String   varName
+          String   value
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{WorkOrderStatus}
+\label{type:WorkOrderStatus}
+\index{WorkOrderStatus}
+
+\begin{lstlisting}[style=nonumbers]
+   type WorkOrderStatus {
+          Map<String, String>   workerOutput
+          WorkOrderExecutionState   status
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{AppStatusGroup}
+\label{type:AppStatusGroup}
+\index{AppStatusGroup}
+
+\begin{lstlisting}[style=nonumbers]
+   type AppStatusGroup {
+          String   name
+          Map<WorkOrderURI, AppStatus>   idToStatus
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{AppStatus}
+\label{type:AppStatus}
+\index{AppStatus}
+
+\begin{lstlisting}[style=nonumbers]
+   type AppStatus {
+          String   name
+          WorkOrderURI   workOrderURI
+          WorkOrderExecutionState   overallStatus
+          Long   lastUpdated
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{StepExecutionRecord}
+\label{type:StepExecutionRecord}
+\index{StepExecutionRecord}
+
+\begin{lstlisting}[style=nonumbers]
+   type StepExecutionRecord {
+          WorkflowURI   stepURI
+          Long   time
+          String   hostname
+          StepExecutionRecordType   recordType
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{StepRecord}
+\label{type:StepRecord}
+\index{StepRecord}
+
+\begin{lstlisting}[style=nonumbers]
+   type StepRecord {
+          WorkflowURI   stepURI
+          String   name
+          Long   startTime
+          Long   endTime
+          String   retVal
+          String   hostname
+          WorkOrderExecutionState   status
+          ErrorWrapper   exceptionInfo
+          String   activityId
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{StepRecordsWrapper}
+\label{type:StepRecordsWrapper}
+\index{StepRecordsWrapper}
+
+\begin{lstlisting}[style=nonumbers]
+   type StepRecordsWrapper {
+          WorkOrderURI   workOrderURI
+          String   workerId
+          List<StepRecord>   stepRecords
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{AppStatusDetails}
+\label{type:AppStatusDetails}
+\index{AppStatusDetails}
+
+\begin{lstlisting}[style=nonumbers]
+   type AppStatusDetails {
+          AppStatus   appStatus
+          Map<String, List<StepRecord>>   workerIdToSteps
+          String   logURI
+          Map<String, String>   extraContextValues
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{WorkOrderCancellation}
+\label{type:WorkOrderCancellation}
+\index{WorkOrderCancellation}
+
+\begin{lstlisting}[style=nonumbers]
+   type WorkOrderCancellation {
+          WorkOrderURI   workOrderURI
+          Long   time
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{Worker}
+\label{type:Worker}
+\index{Worker}
+
+\begin{lstlisting}[style=nonumbers]
+   type Worker {
+          WorkOrderURI   workOrderURI
+          String   id
+          Map<String,String>   viewOverlay
+          List<WorkflowURI>   stack
+          List<Map<String,String>>   localView
+          List<StepExecutionRecord>   stepExecutionRecords
+          List<StepRecord>   stepRecords
+          WorkerExecutionState   status
+          String   detail
+          String   effectiveUser
+          Integer   priority
+          CallingContext   callingContext
+          String   activityId
+          List<String>   appStatusNameStack
+          String   parent
+          Integer   siblingCount
+          Integer   siblingPosition
+          Integer   waitCount
+          ErrorWrapper   exceptionInfo
+          String   myActivityId
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{JoinCountdown}
+\label{type:JoinCountdown}
+\index{JoinCountdown}
+
+\begin{lstlisting}[style=nonumbers]
+   type JoinCountdown {
+          Integer   waitCount
+          String   parentId
+          String   workOrderURI
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{WorkOrderSearch}
+\label{type:WorkOrderSearch}
+\index{WorkOrderSearch}
+
+\begin{lstlisting}[style=nonumbers]
+   type WorkOrderSearch {
+          WorkerExecutionState   status
+          List<WorkOrderURI>   workOrderURIs
+          Long   startTimeBegin
+          Long   startTimeEnd
+          Long   endTimeBegin
+          Long   endTimeEnd
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{WorkOrderDebug}
+\label{type:WorkOrderDebug}
+\index{WorkOrderDebug}
+
+\begin{lstlisting}[style=nonumbers]
+   type WorkOrderDebug {
+          WorkOrder   order
+          List<WorkerDebug>   workerDebugs
+          List<PassedArgument>   passedArguments
+          ExecutionContext   context
+          String   logURI
+          String   argsHashValue
+          String   parentJobURI
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{WorkerDebug}
+\label{type:WorkerDebug}
+\index{WorkerDebug}
+
+\begin{lstlisting}[style=nonumbers]
+   type WorkerDebug {
+          Worker   worker
+          List<StepRecordDebug>   stepRecordDebugs
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{StepRecordDebug}
+\label{type:StepRecordDebug}
+\index{StepRecordDebug}
+
+\begin{lstlisting}[style=nonumbers]
+   type StepRecordDebug {
+          StepRecord   stepRecord
+          Activity   activity
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{JavaInvocable}
+\label{type:JavaInvocable}
+\index{JavaInvocable}
+
+\begin{lstlisting}[style=nonumbers]
+   type JavaInvocable {
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{PropertyBasedSemaphoreConfig}
+\label{type:PropertyBasedSemaphoreConfig}
+\index{PropertyBasedSemaphoreConfig}
+
+\begin{lstlisting}[style=nonumbers]
+   type PropertyBasedSemaphoreConfig {
+          Integer   maxAllowed
+          Integer   timeout
+          String   propertyName
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{WorkflowBasedSemaphoreConfig}
+\label{type:WorkflowBasedSemaphoreConfig}
+\index{WorkflowBasedSemaphoreConfig}
+
+\begin{lstlisting}[style=nonumbers]
+   type WorkflowBasedSemaphoreConfig {
+          Integer   maxAllowed
+          Integer   timeout
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{ApiVersion}
+\label{type:ApiVersion}
+\index{ApiVersion}
+
+\begin{lstlisting}[style=nonumbers]
+   type ApiVersion {
+          String   major
+          String   minor
+          String   micro
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{TimedEventRecord}
+\label{type:TimedEventRecord}
+\index{TimedEventRecord}
+
+\begin{lstlisting}[style=nonumbers]
+   type TimedEventRecord {
+          String   eventName
+          String   eventContext
+          Date   when
+          Date   end
+          String   infoContext
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{ContentEnvelope}
+\label{type:ContentEnvelope}
+\index{ContentEnvelope}
+
+\begin{lstlisting}[style=nonumbers]
+   type ContentEnvelope {
+          Map(String, String)   headers
+          Object   content
+          String   contentType
+          String   raptureURI
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{BlobContainer}
+\label{type:BlobContainer}
+\index{BlobContainer}
+
+\begin{lstlisting}[style=nonumbers]
+   type BlobContainer {
+          Map(String, String)   headers
+          ByteArray   content
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{LicenseInfo}
+\label{type:LicenseInfo}
+\index{LicenseInfo}
+
+\begin{lstlisting}[style=nonumbers]
+   type LicenseInfo {
+          String   companyName
+          String   salt
+          Boolean   developer
+          Long   expirationTimestamp
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{RaptureSheetRow}
+\label{type:RaptureSheetRow}
+\index{RaptureSheetRow}
+
+\begin{lstlisting}[style=nonumbers]
+   type RaptureSheetRow {
+          List(RaptureSheetCell)   cells
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{ScriptResult}
+\label{type:ScriptResult}
+\index{ScriptResult}
+
+\begin{lstlisting}[style=nonumbers]
+   type ScriptResult {
+          String   returnValue
+          List(String)   output
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{TableQueryResult}
+\label{type:TableQueryResult}
+\index{TableQueryResult}
+
+\begin{lstlisting}[style=nonumbers]
+   type TableQueryResult {
+          List(String)   columnNames
+          List(String)   columnTypes
+          List(List(Object))   rows
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{IndexConfig}
+\label{type:IndexConfig}
+\index{IndexConfig}
+
+\begin{lstlisting}[style=nonumbers]
+   type IndexConfig {
+          String   name
+          String   config
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{RaptureApplicationStatusStep}
+\label{type:RaptureApplicationStatusStep}
+\index{RaptureApplicationStatusStep}
+
+\begin{lstlisting}[style=nonumbers]
+   type RaptureApplicationStatusStep {
+          String   INITIATED
+          String   PICKEDUP
+          String   PREPROCESSING
+          String   RUNNING
+          String   POSTPROCESSING
+          String   COMPLETED
+          String   FAILED
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{RaptureApplicationStatus}
+\label{type:RaptureApplicationStatus}
+\index{RaptureApplicationStatus}
+
+\begin{lstlisting}[style=nonumbers]
+   type RaptureApplicationStatus {
+          String   appName
+          String   theDate
+          String   instanceId
+          String   overrideApplicationPath
+          RaptureApplicationStatusStep   status
+          String   lastMessage
+          List(String)   messages
+          Map(String, String)   inputConfig
+          Map(String, String)   outputConfig
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{HooksConfig}
+\label{type:HooksConfig}
+\index{HooksConfig}
+
+\begin{lstlisting}[style=nonumbers]
+   type HooksConfig {
+          Map(String, SingleHookConfig)   idToHook
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{RaptureIPWhiteList}
+\label{type:RaptureIPWhiteList}
+\index{RaptureIPWhiteList}
+
+\begin{lstlisting}[style=nonumbers]
+   type RaptureIPWhiteList {
+          List<String>   ipWhiteList
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{EnvironmentInfo}
+\label{type:EnvironmentInfo}
+\index{EnvironmentInfo}
+
+\begin{lstlisting}[style=nonumbers]
+   type EnvironmentInfo {
+          String   name
+          String   motd
+          Map(String, String)   properties
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{TimerStartRecord}
+\label{type:TimerStartRecord}
+\index{TimerStartRecord}
+
+\begin{lstlisting}[style=nonumbers]
+   type TimerStartRecord {
+          String   id
+          String   metricName
+          Long   timestamp
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{LogMessage}
+\label{type:LogMessage}
+\index{LogMessage}
+
+\begin{lstlisting}[style=nonumbers]
+   type LogMessage {
+          Long   timestamp
+          String   host
+          String   level
+          String   appName
+          String   threadName
+          String   className
+          Integer   lineNumber
+          String   message
+          String   workOrderURI
+          String   workerId
+          String   rfxScript
+          String   stepName
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{LogQueryResponse}
+\label{type:LogQueryResponse}
+\index{LogQueryResponse}
+
+\begin{lstlisting}[style=nonumbers]
+   type LogQueryResponse {
+          Boolean   isLast
+          String   nextBatchId
+          List<LogMessage>   messages
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{StoredProcedureResponse}
+\label{type:StoredProcedureResponse}
+\index{StoredProcedureResponse}
+
+\begin{lstlisting}[style=nonumbers]
+   type StoredProcedureResponse {
+          Boolean   callSuccessful
+          Map<String, Object>   singleValueReturn
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{StoredProcedureParams}
+\label{type:StoredProcedureParams}
+\index{StoredProcedureParams}
+
+\begin{lstlisting}[style=nonumbers]
+   type StoredProcedureParams {
+          Map<String, Object>   inParams
+          Map<String, Integer>   outParams
+          Map<String, Object>   inOutParams
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{ChildrenTransferObject}
+\label{type:ChildrenTransferObject}
+\index{ChildrenTransferObject}
+
+\begin{lstlisting}[style=nonumbers]
+   type ChildrenTransferObject {
+          String   parentURI
+          Map<String,RaptureFolderInfo>   children
+          Map<String,RaptureFolderInfo>   deleted
+          String   indexMark
+          Long   remainder
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{StructuredRow}
+\label{type:StructuredRow}
+\index{StructuredRow}
+
+\begin{lstlisting}[style=nonumbers]
+   type StructuredRow {
+          Map<String,Object>   columns
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}

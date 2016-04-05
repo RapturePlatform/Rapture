@@ -1,0 +1,384 @@
+\chapter{Schedule API}
+\index{Schedule API}
+\input{api/schedule/info}
+\section{CreateJob}
+\index{CreateJob}
+\label{Api:CreateJob}
+\begin{lstlisting}[style=nonumbers]
+   RaptureJob createJob (
+           String    jobURI
+           String    description
+           String    scriptURI
+           String    cronExpression
+           String    timeZone
+           Map<String,String>    jobParams
+           boolean    autoActivate
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/schedule
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #schedule.createJob(jobURI,description,scriptURI,cronExpression,timeZone,jobParams,autoActivate);
+%\end{lstlisting}
+\input{api/schedule/createJob}
+
+
+\rule{12cm}{2pt}
+\section{CreateWorkflowJob}
+\index{CreateWorkflowJob}
+\label{Api:CreateWorkflowJob}
+\begin{lstlisting}[style=nonumbers]
+   RaptureJob createWorkflowJob (
+           String    jobURI
+           String    description
+           String    workflowURI
+           String    cronExpression
+           String    timeZone
+           Map<String,String>    jobParams
+           boolean    autoActivate
+           int    maxRuntimeMinutes
+           String    appStatusNamePattern
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/schedule
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #schedule.createWorkflowJob(jobURI,description,workflowURI,cronExpression,timeZone,jobParams,autoActivate,maxRuntimeMinutes,appStatusNamePattern);
+%\end{lstlisting}
+\input{api/schedule/createWorkflowJob}
+
+
+\rule{12cm}{2pt}
+\section{ActivateJob}
+\index{ActivateJob}
+\label{Api:ActivateJob}
+\begin{lstlisting}[style=nonumbers]
+   void activateJob (
+           String    jobURI
+           Map<String,String>    extraParams
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/schedule
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #schedule.activateJob(jobURI,extraParams);
+%\end{lstlisting}
+\input{api/schedule/activateJob}
+
+
+\rule{12cm}{2pt}
+\section{DeactivateJob}
+\index{DeactivateJob}
+\label{Api:DeactivateJob}
+\begin{lstlisting}[style=nonumbers]
+   void deactivateJob (
+           String    jobURI
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/schedule
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #schedule.deactivateJob(jobURI);
+%\end{lstlisting}
+\input{api/schedule/deactivateJob}
+
+
+\rule{12cm}{2pt}
+\section{RetrieveJob}
+\index{RetrieveJob}
+\label{Api:RetrieveJob}
+\begin{lstlisting}[style=nonumbers]
+   RaptureJob retrieveJob (
+           String    jobURI
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/schedule
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #schedule.retrieveJob(jobURI);
+%\end{lstlisting}
+\input{api/schedule/retrieveJob}
+
+
+\rule{12cm}{2pt}
+\section{RetrieveJobs}
+\index{RetrieveJobs}
+\label{Api:RetrieveJobs}
+\begin{lstlisting}[style=nonumbers]
+   List<RaptureJob> retrieveJobs (
+           String    uriPrefix
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/schedule
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #schedule.retrieveJobs(uriPrefix);
+%\end{lstlisting}
+\input{api/schedule/retrieveJobs}
+
+
+\rule{12cm}{2pt}
+\section{RunJobNow}
+\index{RunJobNow}
+\label{Api:RunJobNow}
+\begin{lstlisting}[style=nonumbers]
+   void runJobNow (
+           String    jobURI
+           Map<String,String>    extraParams
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/schedule
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #schedule.runJobNow(jobURI,extraParams);
+%\end{lstlisting}
+\input{api/schedule/runJobNow}
+
+
+\rule{12cm}{2pt}
+\section{ResetJob}
+\index{ResetJob}
+\label{Api:ResetJob}
+\begin{lstlisting}[style=nonumbers]
+   void resetJob (
+           String    jobURI
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/schedule
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #schedule.resetJob(jobURI);
+%\end{lstlisting}
+\input{api/schedule/resetJob}
+
+
+\rule{12cm}{2pt}
+\section{RetrieveJobExec}
+\index{RetrieveJobExec}
+\label{Api:RetrieveJobExec}
+\begin{lstlisting}[style=nonumbers]
+   RaptureJobExec retrieveJobExec (
+           String    jobURI
+           Long    execTime
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/schedule
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #schedule.retrieveJobExec(jobURI,execTime);
+%\end{lstlisting}
+\input{api/schedule/retrieveJobExec}
+
+
+\rule{12cm}{2pt}
+\section{DeleteJob}
+\index{DeleteJob}
+\label{Api:DeleteJob}
+\begin{lstlisting}[style=nonumbers]
+   void deleteJob (
+           String    jobURI
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/schedule
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #schedule.deleteJob(jobURI);
+%\end{lstlisting}
+\input{api/schedule/deleteJob}
+
+
+\rule{12cm}{2pt}
+\section{GetJobs}
+\index{GetJobs}
+\label{Api:GetJobs}
+\begin{lstlisting}[style=nonumbers]
+   List<String> getJobs (
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/schedule
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #schedule.getJobs();
+%\end{lstlisting}
+\input{api/schedule/getJobs}
+
+
+\rule{12cm}{2pt}
+\section{GetUpcomingJobs}
+\index{GetUpcomingJobs}
+\label{Api:GetUpcomingJobs}
+\begin{lstlisting}[style=nonumbers]
+   List<RaptureJobExec> getUpcomingJobs (
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/schedule
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #schedule.getUpcomingJobs();
+%\end{lstlisting}
+\input{api/schedule/getUpcomingJobs}
+
+
+\rule{12cm}{2pt}
+\section{GetWorkflowExecsStatus}
+\index{GetWorkflowExecsStatus}
+\label{Api:GetWorkflowExecsStatus}
+\begin{lstlisting}[style=nonumbers]
+   WorkflowExecsStatus getWorkflowExecsStatus (
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/schedule
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #schedule.getWorkflowExecsStatus();
+%\end{lstlisting}
+\input{api/schedule/getWorkflowExecsStatus}
+
+
+\rule{12cm}{2pt}
+\section{AckJobError}
+\index{AckJobError}
+\label{Api:AckJobError}
+\begin{lstlisting}[style=nonumbers]
+   JobErrorAck ackJobError (
+           String    jobURI
+           Long    execTime
+           String    jobErrorType
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/schedule
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #schedule.ackJobError(jobURI,execTime,jobErrorType);
+%\end{lstlisting}
+\input{api/schedule/ackJobError}
+
+
+\rule{12cm}{2pt}
+\section{GetNextExec}
+\index{GetNextExec}
+\label{Api:GetNextExec}
+\begin{lstlisting}[style=nonumbers]
+   RaptureJobExec getNextExec (
+           String    jobURI
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/schedule
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #schedule.getNextExec(jobURI);
+%\end{lstlisting}
+\input{api/schedule/getNextExec}
+
+
+\rule{12cm}{2pt}
+\section{GetJobExecs}
+\index{GetJobExecs}
+\label{Api:GetJobExecs}
+\begin{lstlisting}[style=nonumbers]
+   List<RaptureJobExec> getJobExecs (
+           String    jobURI
+           int    start
+           int    count
+           boolean    reversed
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/schedule
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #schedule.getJobExecs(jobURI,start,count,reversed);
+%\end{lstlisting}
+\input{api/schedule/getJobExecs}
+
+
+\rule{12cm}{2pt}
+\section{BatchGetJobExecs}
+\index{BatchGetJobExecs}
+\label{Api:BatchGetJobExecs}
+\begin{lstlisting}[style=nonumbers]
+   List<RaptureJobExec> batchGetJobExecs (
+           List<String>    jobURI
+           int    start
+           int    count
+           boolean    reversed
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/schedule
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #schedule.batchGetJobExecs(jobURI,start,count,reversed);
+%\end{lstlisting}
+\input{api/schedule/batchGetJobExecs}
+
+
+\rule{12cm}{2pt}
+\section{IsJobReadyToRun}
+\index{IsJobReadyToRun}
+\label{Api:IsJobReadyToRun}
+\begin{lstlisting}[style=nonumbers]
+   boolean isJobReadyToRun (
+           String    toJobURI
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/schedule
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #schedule.isJobReadyToRun(toJobURI);
+%\end{lstlisting}
+\input{api/schedule/isJobReadyToRun}
+
+
+\rule{12cm}{2pt}
+\section{GetCurrentWeekTimeRecords}
+\index{GetCurrentWeekTimeRecords}
+\label{Api:GetCurrentWeekTimeRecords}
+\begin{lstlisting}[style=nonumbers]
+   List<TimedEventRecord> getCurrentWeekTimeRecords (
+           int    weekOffsetfromNow
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/schedule
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #schedule.getCurrentWeekTimeRecords(weekOffsetfromNow);
+%\end{lstlisting}
+\input{api/schedule/getCurrentWeekTimeRecords}
+
+
+\rule{12cm}{2pt}
+\section{GetCurrentDayJobs}
+\index{GetCurrentDayJobs}
+\label{Api:GetCurrentDayJobs}
+\begin{lstlisting}[style=nonumbers]
+   List<TimedEventRecord> getCurrentDayJobs (
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/schedule
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #schedule.getCurrentDayJobs();
+%\end{lstlisting}
+\input{api/schedule/getCurrentDayJobs}
+
+
+\rule{12cm}{2pt}

@@ -4,6 +4,7 @@ dependencies {
     compile project(':RaptureAPI')
     compile project(':RaptureCommon')
     compile 'org.yaml:snakeyaml:1.10'
+    compile 'commons-dbcp:commons-dbcp:1.2.2'
     compile 'org.apache.ddlutils:ddlutils:1.0'
 }
 

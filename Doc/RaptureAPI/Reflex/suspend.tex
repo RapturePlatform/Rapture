@@ -1,0 +1,100 @@
+\chapter{Suspension and Coordination}
+\Reflex can be hosted in an environment that can support suspension and eventual resumption. On the one hand, suspension is useful to simply \emph{pause} the running script for a set amount of time in order to wait for some external activity to take place. Upon resumption from suspension the script continues from where it was suspended. Another use case involves a script actively waiting (\emph{coordinating}) with the activity of another script -- when the target script is completed the suspending (waiting) script automatically resumes.
+
+
+In the \Rapture context the suspension involves freezing the context of the script -- its variables, the calling parameters, the modules loaded and the exact point of suspension -- and then either placing the suspended script onto the \Rapture pipeline for resumption as soon as possible \emph{or} making a scheduled task entry for resumption at a future point in time. The important aspect of this suspension is that the resumption can take place on a different \Rapture server to that which originally ran the script, and in fact due to the virtual nature of \Rapture servers the original server may no longer exist.
+
+\section{Suspension functions}
+\subsection{Suspend}
+The \verb+suspend+ function takes one parameter - a number that represents a desired amount of time to suspend. The actual amount of time suspended will vary depending on the container that the script is running on. To a script writer it should be considered as a \emph{pause} in the execution of a script. A script can be suspended any number of times.
+
+\begin{lstlisting}[caption={Reflex Page Script Example}]
+// Suspend example
+
+i = 5;
+suspend(10); // Suspend for approximately 10 seconds
+println("I is " + i);
+
+\end{lstlisting}
+
+The above listing would ultimately result in the text:
+
+\begin{Verbatim}
+I is 5
+\end{Verbatim}
+
+to be placed onto the output context of the script.
+
+\subsection{@Call}
+
+The \verb+@call+ function makes an asynchronous request to execute a script that is passed as the first parameter to the function. The second parameter to this function forms the parameters to the invoked script. The request is placed onto the \Rapture pipeline for execution, and a handle to that request is returned from this function. This handle (which is in fact a string) can be used in the \verb+@wait+ and \verb+@status+ functions described below.
+
+\begin{lstlisting}[caption={Example @Call}]
+
+program = "println('Hello world')";
+handle = @call(program, {});
+
+\end{lstlisting}
+
+In the above example we pass in an empty parameter set \verb+{}+ to the script being invoked.
+
+The \verb+@call+ function internally uses the connect to the \Rapture API environment for execution -- the script will be executed on that environment which is not necessarily the same environment that is running the script making the \verb+@call+ invocation.
+
+\subsection{@CallScript}
+The \verb+@callScript+ function is very similar to the \verb+@call+ function above, except that it refers to a script that is already hosted on a \Rapture server. The single script parameter of the \verb+@call+ function is replaced by two parameters to reference this script -- the partition and the name of the script. As with \verb+@call+, this function returns a handle that can be used in \verb+@wait+ and \verb+@status+.
+
+\begin{lstlisting}[caption={Example @CallScript}]
+
+handle = @callScript("testPartition", "myScript", {});
+
+\end{lstlisting}
+
+\subsection{@Status}
+
+The \verb+@status+ function returns a map containing details of the current execution of a script that was orignally scheduled through an \verb+@call+ or \verb+@callScript+ invocation.
+
+\begin{lstlisting}[caption={Example @Status}]
+
+program = "println('Hello world');";
+handle = @call(program, {});
+
+println(@status(handle));
+
+\end{lstlisting}
+
+A typical output from the above program is reproduced below (assuming the script was actually executed in the time between the invocation and the status call).
+
+\begin{Verbatim}
+{
+   state=COMPLETED,
+   taskId=2abd8d30-f7ea-4956-908c-e04737d64c0e,
+   relatedTaskId=,
+   creationTime=1354632237825,
+   startExecutionTime=1354632237827,
+   endExecutionTime=1354632237829,
+   suspensionCount=0,
+   output=["Hello world"]
+}
+\end{Verbatim}
+
+The resultant status document has an important \verb+state+ field that can have the values of SUBMITTED, RUNNING, COMPLETED, FAILED or SUSPENDED. The taskId corresponds to the handle of the call, the time fields are set dependant on the execution of the task and the suspensionCount field indicates the number of times this task has been suspended. Finally the output field is a list of strings that contain any output from any print or println statements in the executed script.
+
+\subsection{@Wait}
+The \verb+@wait+ function waits for an array of handles to be either COMPLETED or FAILED. It can be used to suspend the current script until any invoked \verb+@call+ or \verb+@callScript+ scripts have completely finished executing. Like \verb+suspend+ it takes a parameter that indicates the amount of time it should expect to wait between suspensions before waking up to check the status of the called scripts. An example is reproduced below:
+
+\begin{lstlisting}[caption={Call and Wait example}]
+handles = [];
+
+for i = 1 to 50 do
+    program = "println('hello from " + i + " ');";
+    handle = @call(program, {});
+    handles = handles + handle;
+end
+
+@wait(10, handles);
+
+for h in handles do
+    println(@status(h));
+end
+\end{lstlisting}
+In this example the master script invokes 50 asynchronous scripts, each with a different output. Once they are all completed it enumerates through the executed scripts printing their eventual status.

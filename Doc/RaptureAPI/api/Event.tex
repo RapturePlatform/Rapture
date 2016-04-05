@@ -1,0 +1,310 @@
+\chapter{Event API}
+\index{Event API}
+\input{api/event/info}
+\section{GetEvent}
+\index{GetEvent}
+\label{Api:GetEvent}
+\begin{lstlisting}[style=nonumbers]
+   RaptureEvent getEvent (
+           String    eventUri
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /event/admin
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #event.getEvent(eventUri);
+%\end{lstlisting}
+\input{api/event/getEvent}
+
+
+\rule{12cm}{2pt}
+\section{PutEvent}
+\index{PutEvent}
+\label{Api:PutEvent}
+\begin{lstlisting}[style=nonumbers]
+   void putEvent (
+           RaptureEvent    event
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /event/admin
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #event.putEvent(event);
+%\end{lstlisting}
+\input{api/event/putEvent}
+
+
+\rule{12cm}{2pt}
+\section{DeleteEvent}
+\index{DeleteEvent}
+\label{Api:DeleteEvent}
+\begin{lstlisting}[style=nonumbers]
+   void deleteEvent (
+           String    eventUri
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /event/admin
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #event.deleteEvent(eventUri);
+%\end{lstlisting}
+\input{api/event/deleteEvent}
+
+
+\rule{12cm}{2pt}
+\section{ListEventsByUriPrefix}
+\index{ListEventsByUriPrefix}
+\label{Api:ListEventsByUriPrefix}
+\begin{lstlisting}[style=nonumbers]
+   List<RaptureFolderInfo> listEventsByUriPrefix (
+           String    eventUriPrefix
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /user/get
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #event.listEventsByUriPrefix(eventUriPrefix);
+%\end{lstlisting}
+\input{api/event/listEventsByUriPrefix}
+
+
+\rule{12cm}{2pt}
+\section{AddEventScript}
+\index{AddEventScript}
+\label{Api:AddEventScript}
+\begin{lstlisting}[style=nonumbers]
+   void addEventScript (
+           String    eventUri
+           String    scriptUri
+           boolean    performOnce
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /event/admin
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #event.addEventScript(eventUri,scriptUri,performOnce);
+%\end{lstlisting}
+\input{api/event/addEventScript}
+
+
+\rule{12cm}{2pt}
+\section{DeleteEventScript}
+\index{DeleteEventScript}
+\label{Api:DeleteEventScript}
+\begin{lstlisting}[style=nonumbers]
+   void deleteEventScript (
+           String    eventUri
+           String    scriptUri
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /event/admin
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #event.deleteEventScript(eventUri,scriptUri);
+%\end{lstlisting}
+\input{api/event/deleteEventScript}
+
+
+\rule{12cm}{2pt}
+\section{AddEventMessage}
+\index{AddEventMessage}
+\label{Api:AddEventMessage}
+\begin{lstlisting}[style=nonumbers]
+   void addEventMessage (
+           String    eventUri
+           String    name
+           String    pipeline
+           Map<String,String>    params
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /event/admin
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #event.addEventMessage(eventUri,name,pipeline,params);
+%\end{lstlisting}
+\input{api/event/addEventMessage}
+
+
+\rule{12cm}{2pt}
+\section{DeleteEventMessage}
+\index{DeleteEventMessage}
+\label{Api:DeleteEventMessage}
+\begin{lstlisting}[style=nonumbers]
+   void deleteEventMessage (
+           String    eventUri
+           String    name
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /event/admin
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #event.deleteEventMessage(eventUri,name);
+%\end{lstlisting}
+\input{api/event/deleteEventMessage}
+
+
+\rule{12cm}{2pt}
+\section{AddEventNotification}
+\index{AddEventNotification}
+\label{Api:AddEventNotification}
+\begin{lstlisting}[style=nonumbers]
+   void addEventNotification (
+           String    eventUri
+           String    name
+           String    notification
+           Map<String,String>    params
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /event/admin
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #event.addEventNotification(eventUri,name,notification,params);
+%\end{lstlisting}
+\input{api/event/addEventNotification}
+
+
+\rule{12cm}{2pt}
+\section{DeleteEventNotification}
+\index{DeleteEventNotification}
+\label{Api:DeleteEventNotification}
+\begin{lstlisting}[style=nonumbers]
+   void deleteEventNotification (
+           String    eventUri
+           String    name
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /event/admin
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #event.deleteEventNotification(eventUri,name);
+%\end{lstlisting}
+\input{api/event/deleteEventNotification}
+
+
+\rule{12cm}{2pt}
+\section{AddEventWorkflow}
+\index{AddEventWorkflow}
+\label{Api:AddEventWorkflow}
+\begin{lstlisting}[style=nonumbers]
+   void addEventWorkflow (
+           String    eventUri
+           String    name
+           String    workflowUri
+           Map<String,String>    params
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /event/admin
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #event.addEventWorkflow(eventUri,name,workflowUri,params);
+%\end{lstlisting}
+\input{api/event/addEventWorkflow}
+
+
+\rule{12cm}{2pt}
+\section{DeleteEventWorkflow}
+\index{DeleteEventWorkflow}
+\label{Api:DeleteEventWorkflow}
+\begin{lstlisting}[style=nonumbers]
+   void deleteEventWorkflow (
+           String    eventUri
+           String    name
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /event/admin
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #event.deleteEventWorkflow(eventUri,name);
+%\end{lstlisting}
+\input{api/event/deleteEventWorkflow}
+
+
+\rule{12cm}{2pt}
+\section{RunEvent}
+\index{RunEvent}
+\label{Api:RunEvent}
+\begin{lstlisting}[style=nonumbers]
+   boolean runEvent (
+           String    eventUri
+           String    associatedUri
+           String    eventContext
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /event/admin
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #event.runEvent(eventUri,associatedUri,eventContext);
+%\end{lstlisting}
+\input{api/event/runEvent}
+
+
+\rule{12cm}{2pt}
+\section{RunEventWithContext}
+\index{RunEventWithContext}
+\label{Api:RunEventWithContext}
+\begin{lstlisting}[style=nonumbers]
+   RunEventHandle runEventWithContext (
+           String    eventUri
+           String    associatedUri
+           Map<String,String>    eventContextMap
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /event/admin
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #event.runEventWithContext(eventUri,associatedUri,eventContextMap);
+%\end{lstlisting}
+\input{api/event/runEventWithContext}
+
+
+\rule{12cm}{2pt}
+\section{EventExists}
+\index{EventExists}
+\label{Api:EventExists}
+\begin{lstlisting}[style=nonumbers]
+   boolean eventExists (
+           String    eventUri
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /event/admin
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #event.eventExists(eventUri);
+%\end{lstlisting}
+\input{api/event/eventExists}
+
+
+\rule{12cm}{2pt}
+\section{DeleteEventsByUriPrefix}
+\index{DeleteEventsByUriPrefix}
+\label{Api:DeleteEventsByUriPrefix}
+\begin{lstlisting}[style=nonumbers]
+   List<String> deleteEventsByUriPrefix (
+           String    uriPrefix
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /data/write/$f(uriPrefix)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #event.deleteEventsByUriPrefix(uriPrefix);
+%\end{lstlisting}
+\input{api/event/deleteEventsByUriPrefix}
+
+
+\rule{12cm}{2pt}

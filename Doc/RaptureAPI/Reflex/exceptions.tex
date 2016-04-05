@@ -1,0 +1,31 @@
+\chapter{Exceptions}
+\Reflex supports exceptions in the form of a \Verb+try/catch+ construct. An example will best illustrate the approach.
+\begin{lstlisting}[caption={Exception handling}]
+// A simple test of exception structure
+
+x = 0;
+y = false;
+
+def addIt(var)
+   var = var + 1;
+   throw "From the function " + var;
+   return var;
+end
+
+try do
+    x = addIt(x);
+    println("After function, but not caught");
+end
+catch e do
+    println("Caught exception " + e);
+    y = true;
+end
+
+assert(x == 0);
+assert(y);
+
+\end{lstlisting}
+
+In this example we calla function that will increment our parameter, but the function throws an exception before the parameter is returned. In the exception handler we set the \Verb+y+ variable to true. Both assertions at the end of the script are valid -- $x$ is still zero because the function threw an exception before it could be updated. And $y$ is \verb+true+ because we entered the exception handler.
+
+\Reflex can also catch general exceptions thrown by internal or addin functions.

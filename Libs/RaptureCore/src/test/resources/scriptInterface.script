@@ -4,6 +4,7 @@ meta do
   param 'b',string,'The b parameter';
   param 'c',string,'The c parameter';
   param 'd',string,'The d parameter';
+  param 'e',number,'The e parameter';
   property 'color','blue';
 end
 

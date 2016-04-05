@@ -1,0 +1,615 @@
+\chapter{Doc API}
+\index{Doc API}
+\input{api/doc/info}
+\section{ValidateDocRepo}
+\index{ValidateDocRepo}
+\label{Api:ValidateDocRepo}
+\begin{lstlisting}[style=nonumbers]
+   boolean validateDocRepo (
+           String    docRepoUri
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /repo/write
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #doc.validateDocRepo(docRepoUri);
+%\end{lstlisting}
+\input{api/doc/validateDocRepo}
+
+
+\rule{12cm}{2pt}
+\section{CreateDocRepo}
+\index{CreateDocRepo}
+\label{Api:CreateDocRepo}
+\begin{lstlisting}[style=nonumbers]
+   void createDocRepo (
+           String    docRepoUri
+           String    config
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /repo/write
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #doc.createDocRepo(docRepoUri,config);
+%\end{lstlisting}
+\input{api/doc/createDocRepo}
+
+
+\rule{12cm}{2pt}
+\section{DocRepoExists}
+\index{DocRepoExists}
+\label{Api:DocRepoExists}
+\begin{lstlisting}[style=nonumbers]
+   boolean docRepoExists (
+           String    docRepoUri
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /repo/list
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #doc.docRepoExists(docRepoUri);
+%\end{lstlisting}
+\input{api/doc/docRepoExists}
+
+
+\rule{12cm}{2pt}
+\section{DocExists}
+\index{DocExists}
+\label{Api:DocExists}
+\begin{lstlisting}[style=nonumbers]
+   boolean docExists (
+           String    docUri
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /repo/list
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #doc.docExists(docUri);
+%\end{lstlisting}
+\input{api/doc/docExists}
+
+
+\rule{12cm}{2pt}
+\section{GetDocRepoConfig}
+\index{GetDocRepoConfig}
+\label{Api:GetDocRepoConfig}
+\begin{lstlisting}[style=nonumbers]
+   DocumentRepoConfig getDocRepoConfig (
+           String    docRepoUri
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /repo/read
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #doc.getDocRepoConfig(docRepoUri);
+%\end{lstlisting}
+\input{api/doc/getDocRepoConfig}
+
+
+\rule{12cm}{2pt}
+\section{GetDocRepoStatus}
+\index{GetDocRepoStatus}
+\label{Api:GetDocRepoStatus}
+\begin{lstlisting}[style=nonumbers]
+   Map<String,String> getDocRepoStatus (
+           String    docRepoUri
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /repo/read
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #doc.getDocRepoStatus(docRepoUri);
+%\end{lstlisting}
+\input{api/doc/getDocRepoStatus}
+
+
+\rule{12cm}{2pt}
+\section{GetDocRepoConfigs}
+\index{GetDocRepoConfigs}
+\label{Api:GetDocRepoConfigs}
+\begin{lstlisting}[style=nonumbers]
+   List<DocumentRepoConfig> getDocRepoConfigs (
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /repo/read
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #doc.getDocRepoConfigs();
+%\end{lstlisting}
+\input{api/doc/getDocRepoConfigs}
+
+
+\rule{12cm}{2pt}
+\section{DeleteDocRepo}
+\index{DeleteDocRepo}
+\label{Api:DeleteDocRepo}
+\begin{lstlisting}[style=nonumbers]
+   void deleteDocRepo (
+           String    docRepoUri
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /repo/write
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #doc.deleteDocRepo(docRepoUri);
+%\end{lstlisting}
+\input{api/doc/deleteDocRepo}
+
+
+\rule{12cm}{2pt}
+\section{ArchiveRepoDocs}
+\index{ArchiveRepoDocs}
+\label{Api:ArchiveRepoDocs}
+\begin{lstlisting}[style=nonumbers]
+   void archiveRepoDocs (
+           String    docRepoUri
+           int    versionLimit
+           long    timeLimit
+           boolean    ensureVersionLimit
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /repo/write
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #doc.archiveRepoDocs(docRepoUri,versionLimit,timeLimit,ensureVersionLimit);
+%\end{lstlisting}
+\input{api/doc/archiveRepoDocs}
+
+
+\rule{12cm}{2pt}
+\section{GetDocAndMeta}
+\index{GetDocAndMeta}
+\label{Api:GetDocAndMeta}
+\begin{lstlisting}[style=nonumbers]
+   DocumentWithMeta getDocAndMeta (
+           String    docUri
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /data/read/$f(docUri)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #doc.getDocAndMeta(docUri);
+%\end{lstlisting}
+\input{api/doc/getDocAndMeta}
+
+
+\rule{12cm}{2pt}
+\section{GetDocMeta}
+\index{GetDocMeta}
+\label{Api:GetDocMeta}
+\begin{lstlisting}[style=nonumbers]
+   DocumentMetadata getDocMeta (
+           String    docUri
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /data/list/$f(docUri)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #doc.getDocMeta(docUri);
+%\end{lstlisting}
+\input{api/doc/getDocMeta}
+
+
+\rule{12cm}{2pt}
+\section{RevertDoc}
+\index{RevertDoc}
+\label{Api:RevertDoc}
+\begin{lstlisting}[style=nonumbers]
+   DocumentWithMeta revertDoc (
+           String    docUri
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /data/write/$f(docUri)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #doc.revertDoc(docUri);
+%\end{lstlisting}
+\input{api/doc/revertDoc}
+
+
+\rule{12cm}{2pt}
+\section{GetDoc}
+\index{GetDoc}
+\label{Api:GetDoc}
+\begin{lstlisting}[style=nonumbers]
+   String getDoc (
+           String    docUri
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /data/read/$f(docUri)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #doc.getDoc(docUri);
+%\end{lstlisting}
+\input{api/doc/getDoc}
+
+
+\rule{12cm}{2pt}
+\section{PutDoc}
+\index{PutDoc}
+\label{Api:PutDoc}
+\begin{lstlisting}[style=nonumbers]
+   String putDoc (
+           String    docUri
+           String    content
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /data/write/$f(docUri)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #doc.putDoc(docUri,content);
+%\end{lstlisting}
+\input{api/doc/putDoc}
+
+
+\rule{12cm}{2pt}
+\section{PutDocWithVersion}
+\index{PutDocWithVersion}
+\label{Api:PutDocWithVersion}
+\begin{lstlisting}[style=nonumbers]
+   boolean putDocWithVersion (
+           String    docUri
+           String    content
+           int    currentVersion
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /data/write/$f(docUri)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #doc.putDocWithVersion(docUri,content,currentVersion);
+%\end{lstlisting}
+\input{api/doc/putDocWithVersion}
+
+
+\rule{12cm}{2pt}
+\section{PutDocWithEventContext}
+\index{PutDocWithEventContext}
+\label{Api:PutDocWithEventContext}
+\begin{lstlisting}[style=nonumbers]
+   DocWriteHandle putDocWithEventContext (
+           String    docUri
+           String    content
+           Map<String,String>    eventContext
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /data/write/$f(docUri)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #doc.putDocWithEventContext(docUri,content,eventContext);
+%\end{lstlisting}
+\input{api/doc/putDocWithEventContext}
+
+
+\rule{12cm}{2pt}
+\section{DeleteDoc}
+\index{DeleteDoc}
+\label{Api:DeleteDoc}
+\begin{lstlisting}[style=nonumbers]
+   boolean deleteDoc (
+           String    docUri
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /data/write/$f(docUri)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #doc.deleteDoc(docUri);
+%\end{lstlisting}
+\input{api/doc/deleteDoc}
+
+
+\rule{12cm}{2pt}
+\section{RenameDoc}
+\index{RenameDoc}
+\label{Api:RenameDoc}
+\begin{lstlisting}[style=nonumbers]
+   String renameDoc (
+           String    fromDocUri
+           String    toDocUri
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /data/write/$f(fromDocUri)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #doc.renameDoc(fromDocUri,toDocUri);
+%\end{lstlisting}
+\input{api/doc/renameDoc}
+
+
+\rule{12cm}{2pt}
+\section{GetDocs}
+\index{GetDocs}
+\label{Api:GetDocs}
+\begin{lstlisting}[style=nonumbers]
+   Map<String,String> getDocs (
+           List<String>    docUris
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /data/batch
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #doc.getDocs(docUris);
+%\end{lstlisting}
+\input{api/doc/getDocs}
+
+
+\rule{12cm}{2pt}
+\section{GetDocAndMetas}
+\index{GetDocAndMetas}
+\label{Api:GetDocAndMetas}
+\begin{lstlisting}[style=nonumbers]
+   List<DocumentWithMeta> getDocAndMetas (
+           List<String>    docUris
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /data/batch
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #doc.getDocAndMetas(docUris);
+%\end{lstlisting}
+\input{api/doc/getDocAndMetas}
+
+
+\rule{12cm}{2pt}
+\section{DocsExist}
+\index{DocsExist}
+\label{Api:DocsExist}
+\begin{lstlisting}[style=nonumbers]
+   List<boolean> docsExist (
+           List<String>    docUris
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /data/batch
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #doc.docsExist(docUris);
+%\end{lstlisting}
+\input{api/doc/docsExist}
+
+
+\rule{12cm}{2pt}
+\section{PutDocs}
+\index{PutDocs}
+\label{Api:PutDocs}
+\begin{lstlisting}[style=nonumbers]
+   List<Object> putDocs (
+           List<String>    docUris
+           List<String>    contents
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /data/batch
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #doc.putDocs(docUris,contents);
+%\end{lstlisting}
+\input{api/doc/putDocs}
+
+
+\rule{12cm}{2pt}
+\section{RenameDocs}
+\index{RenameDocs}
+\label{Api:RenameDocs}
+\begin{lstlisting}[style=nonumbers]
+   List<String> renameDocs (
+           String    authority
+           String    comment
+           List<String>    fromDocUris
+           List<String>    toDocUris
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /data/batch
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #doc.renameDocs(authority,comment,fromDocUris,toDocUris);
+%\end{lstlisting}
+\input{api/doc/renameDocs}
+
+
+\rule{12cm}{2pt}
+\section{DeleteDocsByUriPrefix}
+\index{DeleteDocsByUriPrefix}
+\label{Api:DeleteDocsByUriPrefix}
+\begin{lstlisting}[style=nonumbers]
+   List<String> deleteDocsByUriPrefix (
+           String    docUri
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /data/write/$f(docUri)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #doc.deleteDocsByUriPrefix(docUri);
+%\end{lstlisting}
+\input{api/doc/deleteDocsByUriPrefix}
+
+
+\rule{12cm}{2pt}
+\section{ListDocsByUriPrefix}
+\index{ListDocsByUriPrefix}
+\label{Api:ListDocsByUriPrefix}
+\begin{lstlisting}[style=nonumbers]
+   Map<String,RaptureFolderInfo> listDocsByUriPrefix (
+           String    docUri
+           int    depth
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /data/read/$f(docUri)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #doc.listDocsByUriPrefix(docUri,depth);
+%\end{lstlisting}
+\input{api/doc/listDocsByUriPrefix}
+
+
+\rule{12cm}{2pt}
+\section{SetDocAttribute}
+\index{SetDocAttribute}
+\label{Api:SetDocAttribute}
+\begin{lstlisting}[style=nonumbers]
+   boolean setDocAttribute (
+           String    attributeUri
+           String    value
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /data/write/$f(attributeUri)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #doc.setDocAttribute(attributeUri,value);
+%\end{lstlisting}
+\input{api/doc/setDocAttribute}
+
+
+\rule{12cm}{2pt}
+\section{SetDocAttributes}
+\index{SetDocAttributes}
+\label{Api:SetDocAttributes}
+\begin{lstlisting}[style=nonumbers]
+   Map<String,boolean> setDocAttributes (
+           String    attributeUri
+           List<String>    keys
+           List<String>    values
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /data/write/$f(attributeUri)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #doc.setDocAttributes(attributeUri,keys,values);
+%\end{lstlisting}
+\input{api/doc/setDocAttributes}
+
+
+\rule{12cm}{2pt}
+\section{GetDocAttribute}
+\index{GetDocAttribute}
+\label{Api:GetDocAttribute}
+\begin{lstlisting}[style=nonumbers]
+   XferDocumentAttribute getDocAttribute (
+           String    attributeUri
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /data/read/$f(attributeUri)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #doc.getDocAttribute(attributeUri);
+%\end{lstlisting}
+\input{api/doc/getDocAttribute}
+
+
+\rule{12cm}{2pt}
+\section{GetDocAttributes}
+\index{GetDocAttributes}
+\label{Api:GetDocAttributes}
+\begin{lstlisting}[style=nonumbers]
+   List<XferDocumentAttribute> getDocAttributes (
+           String    attributeUri
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /data/read/$f(attributeUri)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #doc.getDocAttributes(attributeUri);
+%\end{lstlisting}
+\input{api/doc/getDocAttributes}
+
+
+\rule{12cm}{2pt}
+\section{DeleteDocAttribute}
+\index{DeleteDocAttribute}
+\label{Api:DeleteDocAttribute}
+\begin{lstlisting}[style=nonumbers]
+   boolean deleteDocAttribute (
+           String    attributeUri
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /data/write/$f(attributeUri)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #doc.deleteDocAttribute(attributeUri);
+%\end{lstlisting}
+\input{api/doc/deleteDocAttribute}
+
+
+\rule{12cm}{2pt}
+\section{GetDocRepoIdGenUri}
+\index{GetDocRepoIdGenUri}
+\label{Api:GetDocRepoIdGenUri}
+\begin{lstlisting}[style=nonumbers]
+   String getDocRepoIdGenUri (
+           String    docRepoUri
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/idgen
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #doc.getDocRepoIdGenUri(docRepoUri);
+%\end{lstlisting}
+\input{api/doc/getDocRepoIdGenUri}
+
+
+\rule{12cm}{2pt}
+\section{SetDocRepoIdGenConfig}
+\index{SetDocRepoIdGenConfig}
+\label{Api:SetDocRepoIdGenConfig}
+\begin{lstlisting}[style=nonumbers]
+   DocumentRepoConfig setDocRepoIdGenConfig (
+           String    docRepoUri
+           String    idGenConfig
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/idgen
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #doc.setDocRepoIdGenConfig(docRepoUri,idGenConfig);
+%\end{lstlisting}
+\input{api/doc/setDocRepoIdGenConfig}
+
+
+\rule{12cm}{2pt}
+\section{GetDocRepoIdGenConfig}
+\index{GetDocRepoIdGenConfig}
+\label{Api:GetDocRepoIdGenConfig}
+\begin{lstlisting}[style=nonumbers]
+   RaptureIdGenConfig getDocRepoIdGenConfig (
+           String    docRepoUri
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/idgen
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #doc.getDocRepoIdGenConfig(docRepoUri);
+%\end{lstlisting}
+\input{api/doc/getDocRepoIdGenConfig}
+
+
+\rule{12cm}{2pt}
