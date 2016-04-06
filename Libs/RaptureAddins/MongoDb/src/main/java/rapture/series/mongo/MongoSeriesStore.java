@@ -149,7 +149,7 @@ public class MongoSeriesStore implements SeriesStore {
         DBObject dbval = new BasicDBObject(ROWKEY, key).append(COLKEY, column).append(VALKEY, val);
         try {
             WriteResult result = collection.update(dbkey, dbval, true, false);
-            log.info("Update " + (result.wasAcknowledged() ? "was" : "was not") + " acknowledged");
+            log.trace("Update " + (result.wasAcknowledged() ? "was" : "was not") + " acknowledged");
         } catch (MongoException me) {
             throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, new ExceptionToString(me));
         }
