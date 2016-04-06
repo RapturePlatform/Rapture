@@ -48,8 +48,10 @@ public class ModNode extends BaseNode {
         ReflexValue retVal = new ReflexNullValue(lineNumber);;
 
         // number % number
-        if (a.isNumber() && b.isNumber()) {
-            retVal = new ReflexValue(lineNumber, a.asDouble() % b.asDouble());
+        if (a.isInteger() && b.isInteger()) {
+            retVal = new ReflexValue(lineNumber, a.asLong() % b.asLong());
+        } else if (a.isNumber() && b.isNumber()) {
+            retVal = new ReflexValue(lineNumber, a.asBigDecimal().remainder(b.asBigDecimal()));
         } else {
             throwError("both must be numeric", lhs, rhs, a, b);
         }

@@ -1,0 +1,61 @@
+\chapter{Reflex Page Scripting}
+\Reflex can also be hosted within a web server to serve content through the execution of \Reflex scripts. The function can be enabled in a web server that supports servlets by routing file requests through one of two servlet classes provided as part of the \Rapture Core library.
+
+\section{Reflex File Serving}
+\Reflex scripts that are accessible through the resources of the web server can be served through the \emph{ReflexScriptPageServlet}. Often this servlet will be bound to a file name extension "rfx" and can have a resource path configured to prepend to all resource requests. A typical configuration (part of \Verb+web.xml+) is reproduced below:
+
+\begin{Verbatim}
+<servlet>
+   <servlet-name>REFLEX</servlet-name>
+   <servlet-class>rapture.server.web.servlet.ReflexScriptPageServlet
+   </servlet-class>
+   <init-param>
+     <param-name>resourcePath</param-name>
+     <param-value>/</param-value>
+   </init-param>
+</servlet>
+<servlet-mapping>
+   <servlet-name>REFLEX</servlet-name>
+   <url-pattern>*.rfx</url-pattern>
+</servlet-mapping>
+\end{Verbatim}
+
+The servlet works by attempting to load the resource specified in the url of the request (that ends in rfx), prepending the resourcePath parameter to that resource name. It loads this file as a \Reflex script and executes it with a "web" parameter injected into the context containing any parameters passed to the script.
+
+Any "println" output from the script is sent to the http client making the request. A typical use in a \Rapture environment is to convert a result into a \emph{json} string and return that for parsing by (for example) an Ajax call.
+
+An example script that produces a json result containing the features installed in a \Rapture environment is reproduced below:
+
+\begin{lstlisting}[caption={Reflex Page Script Example}]
+// Returns the list of features
+features = #feature.getInstalledFeatures();
+ret = [];
+for feature in features do
+    inner = {};
+    inner['feature'] = feature['feature'];
+    inner['description'] = feature['description'];
+    ver = feature['version'];
+    inner['version'] = ver['major'] + '.' + ver['minor'] + '.' + ver['release'];
+    ret = ret + inner;
+end
+println(json(ret));
+\end{lstlisting}
+
+\section{Reflex Script Serving}
+\Reflex scripts that are stored in \Rapture can also be executed in this manner, using the \emph{ReflexRefScriptPageServlet}. This will also typically be bound to a file extension, but instead of the path of the resource reflecting a real resource in the web server it is referencing a means to load the script from \Rapture -- in this way it will typically be of the form -- \Verb+partition/scriptPath+. Any extension on the resource is automatically removed from the resource.
+
+A typical configuration for this servlet is reproduced below:
+
+\begin{Verbatim}
+<servlet>
+    <servlet-name>REFLEXREF</servlet-name>
+    <servlet-class>rapture.server.web.servlet.ReflexRefScriptPageServlet
+    </servlet-class>
+</servlet>
+<servlet-mapping>
+    <servlet-name>REFLEXREF</servlet-name>
+    <url-pattern>*.rrfx</url-pattern>
+</servlet-mapping>
+\end{Verbatim}
+
+The execution of the script follows an identical pattern (once loaded) to that of the script file approach shown in the previous section.

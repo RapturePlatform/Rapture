@@ -23,12 +23,17 @@
  */
 package reflex;
 
+import static org.junit.Assert.assertEquals;
+
 import org.antlr.runtime.RecognitionException;
 import org.junit.Test;
 
 public class DotMapTest extends ResourceBasedTest {
     @Test
     public void runDotMapTest() throws RecognitionException {
-        runTestFor("/dotmap.rfx");
+        String output[] = runTestFor("/dotmap.rfx").split("\n");
+        assertEquals("x.alan=5", output[0]);
+        assertEquals("y={a=alan, b=5, alan={fred={billy={joe=Hello}}}}", output[1]);
+        assertEquals("z={a=b}", output[2]);
     }
 }

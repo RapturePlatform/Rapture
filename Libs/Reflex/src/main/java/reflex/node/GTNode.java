@@ -23,6 +23,8 @@
  */
 package reflex.node;
 
+import java.math.BigDecimal;
+
 import reflex.IReflexHandler;
 import reflex.Scope;
 import reflex.debug.IReflexDebugger;
@@ -47,7 +49,7 @@ public class GTNode extends BaseNode {
         ReflexValue b = rhs.evaluate(debugger, scope);
         ReflexValue retVal = new ReflexNullValue(lineNumber);;
         if (a.isNumber() && b.isNumber()) {
-            retVal = new ReflexValue(a.asDouble() > b.asDouble());
+            retVal = new ReflexValue(a.compareTo(b) > 0);	// returns > 0 if A>B
         } else if (a.isString() && b.isString()) {
             retVal = new ReflexValue(a.asString().compareTo(b.asString()) > 0);
         } else if (a.isTime() && b.isTime()) {

@@ -1,0 +1,174 @@
+\chapter{Flow control}
+\Reflex has the standard flow control statements such as \Verb+ if ... else +, \verb+ while +, \verb+ for loops+.
+\section{If}
+The \Reflex \Verb+if+ \index{if} statement has the following form:
+\begin{Verbatim}
+if booleanExpression do
+   block
+else do
+   block
+end
+\end{Verbatim}
+For statements without an else \index{else} block the complete \Verb+ else do block+ can be omitted.
+
+\begin{lstlisting}[caption={If statement}]
+// An If statement
+a = 4;
+b = 2;
+if a > 3 do
+   println("A is greater than 3");
+else do
+   println("A is less than or equal to 3");
+end
+
+if b == 2 do
+   println("Yes, b is 2");
+end
+\end{lstlisting}
+Note that there does not need to be a semi-colon after the \Verb+end+ keyword here.
+\section{While}
+The \Reflex \Verb+while+\index{while} statement has the following form:
+\begin{Verbatim}
+while booleanExpression do
+    block
+end
+\end{Verbatim}
+
+\begin{lstlisting}[caption={While statement}]
+// A while loop
+a = true;
+b = 0;
+while a do
+   b = b + 1;
+   if b > 5 do
+      a = false;
+   end
+end
+\end{lstlisting}
+\section{For}
+\Reflex has two different \Verb+for+\index{for} loop forms. The first, the counting form, assigns a numeric variable the values from a starting number to an ending number (inclusive) and calls the inner block for each iteration.
+\begin{lstlisting}[caption={For counting form}]
+// A for loop
+for a = 0 to 10 do
+   println("The value of a is " + a);
+end
+\end{lstlisting}
+The second is known as the iterator \index{iterator} form, and it takes as a secondary argument a list expression (which can be a variable or an expression that yields a list). The value of the variable is set to each element in the list and the inner block is called with that element set.
+\begin{lstlisting}[caption={For iterator form}]
+// A for loop
+a = [1, 2, 3, 4 ];
+b = [];
+for c in a do
+   b = b + ( c * 2 );
+end
+assert(c == [2, 4, 6, 8 ];
+\end{lstlisting}
+\section{PFor}
+\Reflex also has a novel way of running \Verb+for+ blocks in parallel, through the \verb+pfor+ keyword. \verb+Pfor+ can replace \verb+for+ in most cases and \Reflex will attempt to run the loop in parallel, with each statement being executed on a pool of threads. Care must be taken with this approach as sequencing of changes can occur out of a natural order. Both the counting and iterator form are supported.
+\begin{lstlisting}[caption={PFor counting form}]
+// A pfor loop
+
+res = {};
+pfor a = 0 to 10 do
+   res['' + a] = a;
+end
+
+println("The resultant map is " + res);
+\end{lstlisting}
+
+\section{Break and Continue}
+\Reflex also supports \Verb+break+ and \verb+continue+ semantics, which work as expected. The following code snippets (which assert correctly) show this behavior.
+\begin{lstlisting}[caption={Break in for loop}]
+res = [];
+
+for i = 0 to 10 do
+   res = res + i;
+   if i == 5 do
+      break;
+   end
+end
+
+assert(res == [0,1,2,3,4,5]);
+\end{lstlisting}
+
+\begin{lstlisting}[caption={Continue in for loop}]
+res = [];
+
+for i = 0 to 10 do
+    if i < 5 do
+       continue;
+    end
+    res = res + i;
+end
+
+assert(res == [5,6,7,8,9,10]);
+\end{lstlisting}
+
+\section{Switch and Match}
+\Reflex has two similar \emph{case} like statements used to control flow based on the values of things.
+\subsection{switch}
+The switch construct is best described with an example:
+
+\begin{lstlisting}[caption={switch construct}]
+  for ident in [0,1,2,3,4,5,6,7,8,9,'fish','banana'] do
+     switch ident do
+         default do
+            println("${ident} is neither odd nor even");
+         end
+         case 1
+         case 3
+         case 5
+         case 7
+         case 9 do
+            println("${ident} is odd");
+         end
+         case 2
+         case 4
+         case 6
+         case 8 do
+            println("${ident} is even");
+         end
+      end
+  end
+\end{lstlisting}
+
+The switch part of the statement selects a variable or constant that is to be tested. Then the
+case statements (which can be chained) do a simple comparison check between the variable and the
+value, if true the case matches and the expression is evaluated. Finally if no case statement matches
+the default statement is executed.
+
+\subsection{match}
+The match construct is much more powerful than the switch construct, and again is best described with
+an example:
+
+\begin{lstlisting}[caption={match construct}]
+   for ident in [1,2,3,4,5,6,7,8,9] do
+      match ident do
+         is < 6 do
+            println(" is less than 6");
+         end
+         is == 2*3 do
+            println(" is equal to 6");
+         end
+         otherwise do
+            println(" probably greater than 6!");
+         end
+     end
+   end
+\end{lstlisting}
+
+The match construct uses a similar technique to identify a variable or value to be tested. However the
+checks for each match line (the is clause) is now an expression that is evaluated.
+
+If the thing to be matched is evaluated it can be assigned to a variable during the match section:
+
+\begin{lstlisting}[caption={match construct assign}]
+  match 5*100 as bar do
+    is <= 500 do
+       println("Yes, ${bar} is <= 500");
+    end
+    otherwise do
+       println("Well that was unexpected");
+    end
+  end
+\end{lstlisting}

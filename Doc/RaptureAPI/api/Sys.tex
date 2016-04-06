@@ -1,0 +1,231 @@
+\chapter{Sys API}
+\index{Sys API}
+\input{api/sys/info}
+\section{RetrieveSystemConfig}
+\index{RetrieveSystemConfig}
+\label{Api:RetrieveSystemConfig}
+\begin{lstlisting}[style=nonumbers]
+   String retrieveSystemConfig (
+           String    area
+           String    path
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/root
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #sys.retrieveSystemConfig(area,path);
+%\end{lstlisting}
+\input{api/sys/retrieveSystemConfig}
+
+
+\rule{12cm}{2pt}
+\section{WriteSystemConfig}
+\index{WriteSystemConfig}
+\label{Api:WriteSystemConfig}
+\begin{lstlisting}[style=nonumbers]
+   String writeSystemConfig (
+           String    area
+           String    path
+           String    content
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/root
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #sys.writeSystemConfig(area,path,content);
+%\end{lstlisting}
+\input{api/sys/writeSystemConfig}
+
+
+\rule{12cm}{2pt}
+\section{RemoveSystemConfig}
+\index{RemoveSystemConfig}
+\label{Api:RemoveSystemConfig}
+\begin{lstlisting}[style=nonumbers]
+   void removeSystemConfig (
+           String    area
+           String    path
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/root
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #sys.removeSystemConfig(area,path);
+%\end{lstlisting}
+\input{api/sys/removeSystemConfig}
+
+
+\rule{12cm}{2pt}
+\section{GetSystemFolders}
+\index{GetSystemFolders}
+\label{Api:GetSystemFolders}
+\begin{lstlisting}[style=nonumbers]
+   List<RaptureFolderInfo> getSystemFolders (
+           String    area
+           String    path
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/root
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #sys.getSystemFolders(area,path);
+%\end{lstlisting}
+\input{api/sys/getSystemFolders}
+
+
+\rule{12cm}{2pt}
+\section{GetAllTopLevelRepos}
+\index{GetAllTopLevelRepos}
+\label{Api:GetAllTopLevelRepos}
+\begin{lstlisting}[style=nonumbers]
+   List<String> getAllTopLevelRepos (
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /repo/read
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #sys.getAllTopLevelRepos();
+%\end{lstlisting}
+\input{api/sys/getAllTopLevelRepos}
+
+
+\rule{12cm}{2pt}
+\section{ListByUriPrefix}
+\index{ListByUriPrefix}
+\label{Api:ListByUriPrefix}
+\begin{lstlisting}[style=nonumbers]
+   ChildrenTransferObject listByUriPrefix (
+           String    raptureURI
+           String    marker
+           int    depth
+           Long    maximum
+           Long    millisUntilCacheExpiry
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /repo/read
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #sys.listByUriPrefix(raptureURI,marker,depth,maximum,millisUntilCacheExpiry);
+%\end{lstlisting}
+\input{api/sys/listByUriPrefix}
+
+
+\rule{12cm}{2pt}
+\section{GetChildren}
+\index{GetChildren}
+\label{Api:GetChildren}
+\begin{lstlisting}[style=nonumbers]
+   ChildrenTransferObject getChildren (
+           String    raptureURI
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /repo/read
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #sys.getChildren(raptureURI);
+%\end{lstlisting}
+\input{api/sys/getChildren}
+
+
+\rule{12cm}{2pt}
+\section{GetAllChildren}
+\index{GetAllChildren}
+\label{Api:GetAllChildren}
+\begin{lstlisting}[style=nonumbers]
+   ChildrenTransferObject getAllChildren (
+           String    raptureURI
+           String    marker
+           Long    maximum
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /repo/read
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #sys.getAllChildren(raptureURI,marker,maximum);
+%\end{lstlisting}
+\input{api/sys/getAllChildren}
+
+
+\rule{12cm}{2pt}
+\section{GetFolderInfo}
+\index{GetFolderInfo}
+\label{Api:GetFolderInfo}
+\begin{lstlisting}[style=nonumbers]
+   NodeEnum getFolderInfo (
+           String    raptureURI
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /repo/read
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #sys.getFolderInfo(raptureURI);
+%\end{lstlisting}
+\input{api/sys/getFolderInfo}
+
+
+\rule{12cm}{2pt}
+\section{GetConnectionInfo}
+\index{GetConnectionInfo}
+\label{Api:GetConnectionInfo}
+\begin{lstlisting}[style=nonumbers]
+   Map<String,ConnectionInfo> getConnectionInfo (
+           String    connectionType
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /repo/read
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #sys.getConnectionInfo(connectionType);
+%\end{lstlisting}
+\input{api/sys/getConnectionInfo}
+
+
+\rule{12cm}{2pt}
+\section{PutConnectionInfo}
+\index{PutConnectionInfo}
+\label{Api:PutConnectionInfo}
+\begin{lstlisting}[style=nonumbers]
+   void putConnectionInfo (
+           String    connectionType
+           ConnectionInfo    connectionInfo
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /repo/write
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #sys.putConnectionInfo(connectionType,connectionInfo);
+%\end{lstlisting}
+\input{api/sys/putConnectionInfo}
+
+
+\rule{12cm}{2pt}
+\section{SetConnectionInfo}
+\index{SetConnectionInfo}
+\label{Api:SetConnectionInfo}
+\begin{lstlisting}[style=nonumbers]
+   void setConnectionInfo (
+           String    connectionType
+           ConnectionInfo    connectionInfo
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /repo/write
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #sys.setConnectionInfo(connectionType,connectionInfo);
+%\end{lstlisting}
+\input{api/sys/setConnectionInfo}
+
+
+\rule{12cm}{2pt}

@@ -39,7 +39,7 @@ public interface LogManagerConnection extends AutoCloseable {
 
     /**
      * Get log messages filtered by a workOrderURI.
-     * <p/>
+     * <p>
      * This method just initiates the search and returns a scrollId, which is a handle that is then passed to
      * {@link #getScrollingResults(String, int)}
      *
@@ -59,7 +59,7 @@ public interface LogManagerConnection extends AutoCloseable {
 
     /**
      * Get log messages filtered by a specified field in the log
-     * <p/>
+     * <p>
      * This method just initiates the search and returns a scrollId, which is a handle that is then passed to
      * {@link #getScrollingResults(String, int)}
      *

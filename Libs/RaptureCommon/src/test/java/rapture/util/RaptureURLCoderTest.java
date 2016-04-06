@@ -96,12 +96,14 @@ public class RaptureURLCoderTest {
     
     @Test
     public void testInternationalCharacters() {
+    	// If you don't see Cyrillic and Chinese characters your default character encoding is not UTF-8
         testNotEncoded("ДэвидТонг");
         testNotEncoded("大衛通");
     }
     
     @Test
     public void testEightBitSymbols() {
+    	// These are all single UTF-8 characters: Paragraph, GBP Currency, Section, +/-, JPY currency
         testReversible("¶");
         testReversible("£");
         testReversible("§");
@@ -111,6 +113,7 @@ public class RaptureURLCoderTest {
 
     @Test
     public void testEmoji() throws UnsupportedEncodingException {
+    	// This is a 'smiley face' emoji
         testReversible("😊");
     }
     
@@ -119,6 +122,7 @@ public class RaptureURLCoderTest {
      */
     @Test
     public void testSixteenBitSymbols() {
+    	// This is the Euro symbol
         testReversible("€");
     }
 

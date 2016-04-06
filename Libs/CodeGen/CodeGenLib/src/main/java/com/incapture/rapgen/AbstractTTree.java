@@ -70,7 +70,7 @@ public abstract class AbstractTTree extends TreeParser {
     private static final String DEFAULT_PACKAGE = "rapture.common";
     /**
      * So this abstract tree will be used to host a number of generated files with a generated file simply being a list of templates ordered by some means
-     * <p/>
+     * <p>
      * We can add a template to a file + section
      */
 

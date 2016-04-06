@@ -23,6 +23,7 @@
  */
 package rapture.common.sheet;
 
+@Deprecated
 public enum RaptureSheetStyleWeight {
     NORMAL, BOLD, ITALIC, BOLDITALIC;
 

@@ -29,6 +29,6 @@ import org.junit.Test;
 public class CapTest extends ResourceBasedTest {
     @Test
     public void runCap() throws RecognitionException {
-        runTestFor("/capTest.rfx");
+        runTestFor("/captest.rfx");
     }
 }

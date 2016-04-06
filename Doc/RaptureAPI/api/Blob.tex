@@ -1,0 +1,260 @@
+\chapter{Blob API}
+\index{Blob API}
+\input{api/blob/info}
+\section{CreateBlobRepo}
+\index{CreateBlobRepo}
+\label{Api:CreateBlobRepo}
+\begin{lstlisting}[style=nonumbers]
+   void createBlobRepo (
+           String    blobRepoUri
+           String    config
+           String    metaConfig
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /repo/write
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #blob.createBlobRepo(blobRepoUri,config,metaConfig);
+%\end{lstlisting}
+\input{api/blob/createBlobRepo}
+
+
+\rule{12cm}{2pt}
+\section{GetBlobRepoConfig}
+\index{GetBlobRepoConfig}
+\label{Api:GetBlobRepoConfig}
+\begin{lstlisting}[style=nonumbers]
+   BlobRepoConfig getBlobRepoConfig (
+           String    blobRepoUri
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /repo/read
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #blob.getBlobRepoConfig(blobRepoUri);
+%\end{lstlisting}
+\input{api/blob/getBlobRepoConfig}
+
+
+\rule{12cm}{2pt}
+\section{GetBlobRepoConfigs}
+\index{GetBlobRepoConfigs}
+\label{Api:GetBlobRepoConfigs}
+\begin{lstlisting}[style=nonumbers]
+   List<BlobRepoConfig> getBlobRepoConfigs (
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /repo/read
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #blob.getBlobRepoConfigs();
+%\end{lstlisting}
+\input{api/blob/getBlobRepoConfigs}
+
+
+\rule{12cm}{2pt}
+\section{DeleteBlobRepo}
+\index{DeleteBlobRepo}
+\label{Api:DeleteBlobRepo}
+\begin{lstlisting}[style=nonumbers]
+   void deleteBlobRepo (
+           String    repoUri
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /repo/write
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #blob.deleteBlobRepo(repoUri);
+%\end{lstlisting}
+\input{api/blob/deleteBlobRepo}
+
+
+\rule{12cm}{2pt}
+\section{BlobRepoExists}
+\index{BlobRepoExists}
+\label{Api:BlobRepoExists}
+\begin{lstlisting}[style=nonumbers]
+   boolean blobRepoExists (
+           String    repoUri
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /repo/list
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #blob.blobRepoExists(repoUri);
+%\end{lstlisting}
+\input{api/blob/blobRepoExists}
+
+
+\rule{12cm}{2pt}
+\section{BlobExists}
+\index{BlobExists}
+\label{Api:BlobExists}
+\begin{lstlisting}[style=nonumbers]
+   boolean blobExists (
+           String    blobUri
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /data/list/$f(blobUri)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #blob.blobExists(blobUri);
+%\end{lstlisting}
+\input{api/blob/blobExists}
+
+
+\rule{12cm}{2pt}
+\section{AddBlobContent}
+\index{AddBlobContent}
+\label{Api:AddBlobContent}
+\begin{lstlisting}[style=nonumbers]
+   void addBlobContent (
+           String    blobUri
+           byte[]    content
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /data/write/$f(blobUri)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #blob.addBlobContent(blobUri,content);
+%\end{lstlisting}
+\input{api/blob/addBlobContent}
+
+
+\rule{12cm}{2pt}
+\section{PutBlob}
+\index{PutBlob}
+\label{Api:PutBlob}
+\begin{lstlisting}[style=nonumbers]
+   void putBlob (
+           String    blobUri
+           byte[]    content
+           String    contentType
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /data/write/$f(blobUri)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #blob.putBlob(blobUri,content,contentType);
+%\end{lstlisting}
+\input{api/blob/putBlob}
+
+
+\rule{12cm}{2pt}
+\section{GetBlob}
+\index{GetBlob}
+\label{Api:GetBlob}
+\begin{lstlisting}[style=nonumbers]
+   BlobContainer getBlob (
+           String    blobUri
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /data/read/$f(blobUri)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #blob.getBlob(blobUri);
+%\end{lstlisting}
+\input{api/blob/getBlob}
+
+
+\rule{12cm}{2pt}
+\section{DeleteBlob}
+\index{DeleteBlob}
+\label{Api:DeleteBlob}
+\begin{lstlisting}[style=nonumbers]
+   void deleteBlob (
+           String    blobUri
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /data/write/$f(blobUri)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #blob.deleteBlob(blobUri);
+%\end{lstlisting}
+\input{api/blob/deleteBlob}
+
+
+\rule{12cm}{2pt}
+\section{GetBlobSize}
+\index{GetBlobSize}
+\label{Api:GetBlobSize}
+\begin{lstlisting}[style=nonumbers]
+   Long getBlobSize (
+           String    blobUri
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /data/list/$f(blobUri)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #blob.getBlobSize(blobUri);
+%\end{lstlisting}
+\input{api/blob/getBlobSize}
+
+
+\rule{12cm}{2pt}
+\section{GetBlobMetaData}
+\index{GetBlobMetaData}
+\label{Api:GetBlobMetaData}
+\begin{lstlisting}[style=nonumbers]
+   Map<String,String> getBlobMetaData (
+           String    blobUri
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /data/list/$f(blobUri)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #blob.getBlobMetaData(blobUri);
+%\end{lstlisting}
+\input{api/blob/getBlobMetaData}
+
+
+\rule{12cm}{2pt}
+\section{ListBlobsByUriPrefix}
+\index{ListBlobsByUriPrefix}
+\label{Api:ListBlobsByUriPrefix}
+\begin{lstlisting}[style=nonumbers]
+   Map<String,RaptureFolderInfo> listBlobsByUriPrefix (
+           String    blobUri
+           int    depth
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /data/list/$f(blobUri)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #blob.listBlobsByUriPrefix(blobUri,depth);
+%\end{lstlisting}
+\input{api/blob/listBlobsByUriPrefix}
+
+
+\rule{12cm}{2pt}
+\section{DeleteBlobsByUriPrefix}
+\index{DeleteBlobsByUriPrefix}
+\label{Api:DeleteBlobsByUriPrefix}
+\begin{lstlisting}[style=nonumbers]
+   List<String> deleteBlobsByUriPrefix (
+           String    blobUri
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /data/write/$f(blobUri)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #blob.deleteBlobsByUriPrefix(blobUri);
+%\end{lstlisting}
+\input{api/blob/deleteBlobsByUriPrefix}
+
+
+\rule{12cm}{2pt}

@@ -7,6 +7,7 @@ options {
 
 @header {
 package reflex;
+import java.math.*;
 import java.io.PrintStream;
 import reflex.function.*;
 import reflex.node.*;
@@ -16,6 +17,7 @@ import reflex.importer.*;
 import reflex.debug.*;
 import reflex.util.function.LanguageRegistry;
 import reflex.util.*;
+import reflex.value.ReflexValue;
 }
 
 @members {
@@ -122,11 +124,89 @@ statement returns [ReflexNode node]
   |  continueStatement { node = $continueStatement.node; }
   |  functionCall { node = $functionCall.node; }
   |  throwStatement { node = $throwStatement.node; }
+  |  matchStatement { node = $matchStatement.node; }
+  |  switchStatement { node = $switchStatement.node; }
   |  ifStatement { node = $ifStatement.node; }
   |  forStatement { node = $forStatement.node;}
   |  pforStatement { node = $pforStatement.node; }
   |  whileStatement { node = $whileStatement.node; }
   |  guardedStatement { node = $guardedStatement.node; }
+  ;
+  
+variant returns [ReflexNode node]
+@init {
+    CommonTree ahead = (CommonTree) input.LT(1);
+    int line = ahead.getToken().getLine();
+}
+  :  Integer { node = AtomNode.getIntegerAtom(line, handler, currentScope, $Integer.text); }
+  |  Number { node = new AtomNode(line, handler, currentScope, new BigDecimal($Number.text, MathContext.DECIMAL128)); }
+  |  String { node = AtomNode.getStringAtom(line, handler, currentScope, $String.text); }
+  |  Long { node = new AtomNode(line, handler, currentScope, java.lang.Long.parseLong($Long.text)); }
+  |  Bool { node = new AtomNode(line, handler, currentScope, Boolean.parseBoolean($Bool.text)); }
+  |  Default { node = null; }
+  ;
+
+switchStatement returns [ReflexNode node]
+@init  {
+  CommonTree ahead = (CommonTree) input.LT(1);
+  int line = ahead.getToken().getLine();
+  SwitchNode switchNode = new SwitchNode(line, handler, currentScope);
+  node = switchNode;
+}
+  :  SWITCH expression { switchNode.setSwitchValue($expression.node); } caseStatement[switchNode]+
+  ;
+  
+caseStatement [SwitchNode switchNode]
+@init  {
+  List<ReflexNode> caseNodes = new ArrayList<>();
+}
+  : (v=variant { caseNodes.add(v); })+ block { for (ReflexNode caseNode : caseNodes) switchNode.addCase(caseNode, $block.node); }
+  ;
+  
+  
+matchStatement returns [ReflexNode node]
+@init  {
+  CommonTree ahead = (CommonTree) input.LT(1);
+  int line = ahead.getToken().getLine();
+  MatchNode matchNode = new MatchNode(line, handler, currentScope);
+  node = matchNode;
+  String matchName = "__mAtCh__";
+}
+  : MATCH ident=Identifier? { if (ident != null) matchName=ident.getText(); } 
+  		expression { 
+  			matchNode.setMatchValue(new AssignmentNode(line, handler, currentScope, matchName, null, $expression.node));
+  			IdentifierNode idNode = new IdentifierNode(line, handler, currentScope, matchName, namespaceStack.asPrefix());
+  		}
+  		actions[idNode, matchNode]* 
+  		otherwise[idNode, matchNode]?
+  ;
+
+actions[IdentifierNode idNode, MatchNode matchNode]
+@init  {
+  List<ReflexNode> compNodes = new ArrayList<>();
+}
+  : (comp=comparator[idNode] { compNodes.add(comp); })+ block { for (ReflexNode compNode : compNodes) matchNode.addCase(compNode, $block.node); }
+  ;
+  
+comparator [IdentifierNode idNode] returns [ReflexNode node]
+@init {
+    CommonTree ahead = (CommonTree) input.LT(1);
+    int line = ahead.getToken().getLine();
+}
+  :  Is Equals rhs=expression { node = new EqualsNode(line, handler, currentScope, $idNode, $rhs.node); }
+  |  Is NEquals rhs=expression { node = new NotEqualsNode(line,handler, currentScope, $idNode, $rhs.node); }
+  |  Is GTEquals rhs=expression { node = new GTEqualsNode(line, handler, currentScope, $idNode, $rhs.node); }
+  |  Is LTEquals rhs=expression { node = new LTEqualsNode(line, handler, currentScope, $idNode, $rhs.node); }
+  |  Is GT rhs=expression { node = new GTNode(line, handler, currentScope, $idNode, $rhs.node); }
+  |  Is LT rhs=expression { node = new LTNode(line, handler, currentScope, $idNode, $rhs.node); }
+  ;
+
+otherwise[ReflexNode exp, MatchNode matchNode]
+@init {
+    CommonTree ahead = (CommonTree) input.LT(1);
+    int line = ahead.getToken().getLine();
+}
+  : OTHERWISE block { matchNode.addCase(new AtomNode(line, handler, currentScope, new ReflexValue(line, Boolean.TRUE)), $block.node); }
   ;
 
 assignment returns [ReflexNode node]
@@ -140,6 +220,8 @@ assignment returns [ReflexNode node]
      { node = new AssignmentNode(line, handler, currentScope, $i.text, $x.e, $e.node); }
   | ^(PLUSASSIGNMENT i=Identifier e=expression)
      { node = new PlusAssignmentNode(line, handler, currentScope, $i.text, $e.node); }
+  | ^(MINUSASSIGNMENT i=Identifier e=expression)
+     { node = new PlusAssignmentNode(line, handler, currentScope, $i.text, new UnaryMinusNode(line, handler, currentScope, $e.node)); }
   ;
 
 breakStatement returns [ReflexNode node]
@@ -246,7 +328,7 @@ functionCall returns [ReflexNode node]
   |  ^(FUNC_CALL SplitWith Identifier expression) { node = new SplitWithNode(line, handler, currentScope, $Identifier.text, $expression.node, languageRegistry, importHandler); }
   |  ^(FUNC_CALL Split str=expression sep=expression quoter=expression) { node = new SplitNode(line, handler, currentScope, $str.node, $sep.node, $quoter.node, languageRegistry, importHandler); }
   |  ^(FUNC_CALL TypeOf expression) { node = new TypeOfNode(line, handler, currentScope, $expression.node); }
-  |  ^(FUNC_CALL Assert expression) { node = new AssertNode(line, handler, currentScope, $expression.node); }
+  |  ^(FUNC_CALL Assert msg=expression exp=expression) { node = new AssertNode(line, handler, currentScope, $msg.node, $exp.node); }
   |  ^(FUNC_CALL Size expression) { node = new SizeNode(line, handler,currentScope,  $expression.node); }
   |  ^(FUNC_CALL RPull u=expression) { node = new RapturePullNode(line, handler, currentScope, $u.node, null); }
   |  ^(FUNC_CALL RPush u=expression v=expression o=expression?) { node = new RapturePushNode(line, handler, currentScope, $u.node, $v.node, $o.node); }
@@ -328,7 +410,6 @@ ifStatement returns [ReflexNode node]
        (^(EXP b2=block)           {ifNode.addChoice(new AtomNode(line, handler, currentScope, true),$b2.node);})?
      )
   ;
-
 
 forStatement returns [ReflexNode node]
 @init {
@@ -413,7 +494,7 @@ expression returns [ReflexNode node]
   |  ^('^' a=expression b=expression) { node = new PowNode(line, handler, currentScope, $a.node, $b.node); }
   |  ^(UNARY_MIN a=expression) { node = new UnaryMinusNode(line, handler, currentScope, $a.node); }
   |  ^(NEGATE a=expression) { node = new NegateNode(line, handler, currentScope, $a.node); }
-  |  Number { node = new AtomNode(line, handler, currentScope, Double.parseDouble($Number.text)); }
+  |  Number { node = new AtomNode(line, handler, currentScope, new BigDecimal($Number.text, MathContext.DECIMAL128)); }
   |  Integer { node = AtomNode.getIntegerAtom(line, handler, currentScope, $Integer.text); }
   |  Long { node = new AtomNode(line, handler, currentScope, java.lang.Long.parseLong($Long.text)); }
   |  Bool { node = new AtomNode(line, handler, currentScope, Boolean.parseBoolean($Bool.text)); }

@@ -29,6 +29,7 @@ import java.util.Date;
  * Note that this class is referenced in types.api - any changes to this file should be reflected there.
 **/
 
+@Deprecated
 public class RaptureSheetNote {
  
     /* (non-Javadoc)
@@ -39,27 +40,35 @@ public class RaptureSheetNote {
         return "RaptureSheetNote [id=" + id + ", who=" + who + ", note=" + note + ", when=" + when + "]";
     }
     
+    @Deprecated
     public String getId() {
         return id;
     }
+    @Deprecated
     public void setId(String id) {
         this.id = id;
     }
+    @Deprecated
     public String getWho() {
         return who;
     }
+    @Deprecated
     public void setWho(String who) {
         this.who = who;
     }
+    @Deprecated
     public String getNote() {
         return note;
     }
+    @Deprecated
     public void setNote(String note) {
         this.note = note;
     }
+    @Deprecated
     public Date getWhen() {
         return when;
     }
+    @Deprecated
     public void setWhen(Date when) {
         this.when = when;
     }

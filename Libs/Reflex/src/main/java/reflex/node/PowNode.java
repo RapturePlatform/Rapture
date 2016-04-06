@@ -23,6 +23,10 @@
  */
 package reflex.node;
 
+import java.math.BigDecimal;
+import java.math.MathContext;
+
+import rapture.common.RaptureConstants;
 import reflex.IReflexHandler;
 import reflex.Scope;
 import reflex.debug.IReflexDebugger;
@@ -48,12 +52,18 @@ public class PowNode extends BaseNode {
 
         // number ^ number
         if (a.isNumber() && b.isNumber()) {
-            double val = Math.pow(a.asDouble(), b.asDouble());
-            ReflexValue retVal = new ReflexValue(val);
+        	Integer bInt = b.asInt();
+        	ReflexValue retVal;
+        	if ((b.isInteger() || (b.asBigDecimal().equals(bInt))) && (bInt >= 0)) {
+            	BigDecimal aBig = a.asBigDecimal();
+        		retVal = new ReflexValue(aBig.pow(bInt));
+        	} else {
+	            retVal = new ReflexValue(new BigDecimal(Math.pow(a.asDouble(), b.asDouble()), MathContext.DECIMAL64));
+        	}
             debugger.stepEnd(this, retVal, scope);
             return retVal;
         }
-        throwError("both must be numeric", lhs, rhs, a, b);
+        throwError("Both arguments to an exponent must be numeric", lhs, rhs, a, b);
         return new ReflexNullValue();
     }
 

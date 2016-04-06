@@ -1,0 +1,212 @@
+\chapter{Audit API}
+\index{Audit API}
+\input{api/audit/info}
+\section{Setup}
+\index{Setup}
+\label{Api:Setup}
+\begin{lstlisting}[style=nonumbers]
+   void setup (
+           boolean    force
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /audit/admin
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #audit.setup(force);
+%\end{lstlisting}
+\input{api/audit/setup}
+
+
+\rule{12cm}{2pt}
+\section{CreateAuditLog}
+\index{CreateAuditLog}
+\label{Api:CreateAuditLog}
+\begin{lstlisting}[style=nonumbers]
+   void createAuditLog (
+           String    name
+           String    config
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /audit/admin
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #audit.createAuditLog(name,config);
+%\end{lstlisting}
+\input{api/audit/createAuditLog}
+
+
+\rule{12cm}{2pt}
+\section{DoesAuditLogExist}
+\index{DoesAuditLogExist}
+\label{Api:DoesAuditLogExist}
+\begin{lstlisting}[style=nonumbers]
+   boolean doesAuditLogExist (
+           String    logURI
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /audit/main
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #audit.doesAuditLogExist(logURI);
+%\end{lstlisting}
+\input{api/audit/doesAuditLogExist}
+
+
+\rule{12cm}{2pt}
+\section{GetChildren}
+\index{GetChildren}
+\label{Api:GetChildren}
+\begin{lstlisting}[style=nonumbers]
+   List<RaptureFolderInfo> getChildren (
+           String    prefix
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /audit/main
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #audit.getChildren(prefix);
+%\end{lstlisting}
+\input{api/audit/getChildren}
+
+
+\rule{12cm}{2pt}
+\section{DeleteAuditLog}
+\index{DeleteAuditLog}
+\label{Api:DeleteAuditLog}
+\begin{lstlisting}[style=nonumbers]
+   void deleteAuditLog (
+           String    logURI
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /audit/admin
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #audit.deleteAuditLog(logURI);
+%\end{lstlisting}
+\input{api/audit/deleteAuditLog}
+
+
+\rule{12cm}{2pt}
+\section{GetAuditLog}
+\index{GetAuditLog}
+\label{Api:GetAuditLog}
+\begin{lstlisting}[style=nonumbers]
+   AuditLogConfig getAuditLog (
+           String    logURI
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /audit/admin
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #audit.getAuditLog(logURI);
+%\end{lstlisting}
+\input{api/audit/getAuditLog}
+
+
+\rule{12cm}{2pt}
+\section{WriteAuditEntry}
+\index{WriteAuditEntry}
+\label{Api:WriteAuditEntry}
+\begin{lstlisting}[style=nonumbers]
+   void writeAuditEntry (
+           String    logURI
+           String    category
+           int    level
+           String    message
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /audit/admin
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #audit.writeAuditEntry(logURI,category,level,message);
+%\end{lstlisting}
+\input{api/audit/writeAuditEntry}
+
+
+\rule{12cm}{2pt}
+\section{WriteAuditEntryData}
+\index{WriteAuditEntryData}
+\label{Api:WriteAuditEntryData}
+\begin{lstlisting}[style=nonumbers]
+   void writeAuditEntryData (
+           String    logURI
+           String    category
+           int    level
+           String    message
+           Map<String,Object>    data
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /audit/admin
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #audit.writeAuditEntryData(logURI,category,level,message,data);
+%\end{lstlisting}
+\input{api/audit/writeAuditEntryData}
+
+
+\rule{12cm}{2pt}
+\section{GetRecentLogEntries}
+\index{GetRecentLogEntries}
+\label{Api:GetRecentLogEntries}
+\begin{lstlisting}[style=nonumbers]
+   List<AuditLogEntry> getRecentLogEntries (
+           String    logURI
+           int    count
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /audit/admin
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #audit.getRecentLogEntries(logURI,count);
+%\end{lstlisting}
+\input{api/audit/getRecentLogEntries}
+
+
+\rule{12cm}{2pt}
+\section{GetEntriesSince}
+\index{GetEntriesSince}
+\label{Api:GetEntriesSince}
+\begin{lstlisting}[style=nonumbers]
+   List<AuditLogEntry> getEntriesSince (
+           String    logURI
+           AuditLogEntry    when
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /audit/main
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #audit.getEntriesSince(logURI,when);
+%\end{lstlisting}
+\input{api/audit/getEntriesSince}
+
+
+\rule{12cm}{2pt}
+\section{GetRecentUserActivity}
+\index{GetRecentUserActivity}
+\label{Api:GetRecentUserActivity}
+\begin{lstlisting}[style=nonumbers]
+   List<AuditLogEntry> getRecentUserActivity (
+           String    user
+           int    count
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /audit/admin
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #audit.getRecentUserActivity(user,count);
+%\end{lstlisting}
+\input{api/audit/getRecentUserActivity}
+
+
+\rule{12cm}{2pt}

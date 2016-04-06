@@ -1,0 +1,431 @@
+\chapter{Script API}
+\index{Script API}
+\input{api/script/info}
+\section{CreateScript}
+\index{CreateScript}
+\label{Api:CreateScript}
+\begin{lstlisting}[style=nonumbers]
+   RaptureScript createScript (
+           String    scriptURI
+           RaptureScriptLanguage    language
+           RaptureScriptPurpose    purpose
+           String    script
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /script/write/$f(scriptURI)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #script.createScript(scriptURI,language,purpose,script);
+%\end{lstlisting}
+\input{api/script/createScript}
+
+
+\rule{12cm}{2pt}
+\section{CreateScriptLink}
+\index{CreateScriptLink}
+\label{Api:CreateScriptLink}
+\begin{lstlisting}[style=nonumbers]
+   void createScriptLink (
+           String    fromScriptURI
+           String    toScriptURI
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /script/write/$f(fromScriptURI)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #script.createScriptLink(fromScriptURI,toScriptURI);
+%\end{lstlisting}
+\input{api/script/createScriptLink}
+
+
+\rule{12cm}{2pt}
+\section{RemoveScriptLink}
+\index{RemoveScriptLink}
+\label{Api:RemoveScriptLink}
+\begin{lstlisting}[style=nonumbers]
+   void removeScriptLink (
+           String    fromScriptURI
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /script/write/$f(fromScriptURI)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #script.removeScriptLink(fromScriptURI);
+%\end{lstlisting}
+\input{api/script/removeScriptLink}
+
+
+\rule{12cm}{2pt}
+\section{DoesScriptExist}
+\index{DoesScriptExist}
+\label{Api:DoesScriptExist}
+\begin{lstlisting}[style=nonumbers]
+   boolean doesScriptExist (
+           String    scriptURI
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /script/read/$f(scriptURI)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #script.doesScriptExist(scriptURI);
+%\end{lstlisting}
+\input{api/script/doesScriptExist}
+
+
+\rule{12cm}{2pt}
+\section{DeleteScript}
+\index{DeleteScript}
+\label{Api:DeleteScript}
+\begin{lstlisting}[style=nonumbers]
+   void deleteScript (
+           String    scriptUri
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /script/write/$f(scriptUri)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #script.deleteScript(scriptUri);
+%\end{lstlisting}
+\input{api/script/deleteScript}
+
+
+\rule{12cm}{2pt}
+\section{GetScriptNames}
+\index{GetScriptNames}
+\label{Api:GetScriptNames}
+\begin{lstlisting}[style=nonumbers]
+   List<String> getScriptNames (
+           String    scriptURI
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /script/read/$f(scriptURI)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #script.getScriptNames(scriptURI);
+%\end{lstlisting}
+\input{api/script/getScriptNames}
+
+
+\rule{12cm}{2pt}
+\section{GetScript}
+\index{GetScript}
+\label{Api:GetScript}
+\begin{lstlisting}[style=nonumbers]
+   RaptureScript getScript (
+           String    scriptURI
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /script/read/$f(scriptURI)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #script.getScript(scriptURI);
+%\end{lstlisting}
+\input{api/script/getScript}
+
+
+\rule{12cm}{2pt}
+\section{GetInterface}
+\index{GetInterface}
+\label{Api:GetInterface}
+\begin{lstlisting}[style=nonumbers]
+   ScriptInterface getInterface (
+           String    scriptURI
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /script/read/$f(scriptURI)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #script.getInterface(scriptURI);
+%\end{lstlisting}
+\input{api/script/getInterface}
+
+
+\rule{12cm}{2pt}
+\section{PutScript}
+\index{PutScript}
+\label{Api:PutScript}
+\begin{lstlisting}[style=nonumbers]
+   RaptureScript putScript (
+           String    scriptURI
+           RaptureScript    script
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /script/write/$f(scriptURI)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #script.putScript(scriptURI,script);
+%\end{lstlisting}
+\input{api/script/putScript}
+
+
+\rule{12cm}{2pt}
+\section{PutRawScript}
+\index{PutRawScript}
+\label{Api:PutRawScript}
+\begin{lstlisting}[style=nonumbers]
+   RaptureScript putRawScript (
+           String    scriptURI
+           String    content
+           String    language
+           String    purpose
+           List<String>    param_types
+           List<String>    param_names
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /script/write/$f(scriptURI)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #script.putRawScript(scriptURI,content,language,purpose,param_types,param_names);
+%\end{lstlisting}
+\input{api/script/putRawScript}
+
+
+\rule{12cm}{2pt}
+\section{RunScript}
+\index{RunScript}
+\label{Api:RunScript}
+\begin{lstlisting}[style=nonumbers]
+   String runScript (
+           String    scriptURI
+           Map<String,String>    parameters
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /script/exec/$f(scriptURI)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #script.runScript(scriptURI,parameters);
+%\end{lstlisting}
+\input{api/script/runScript}
+
+
+\rule{12cm}{2pt}
+\section{RunScriptExtended}
+\index{RunScriptExtended}
+\label{Api:RunScriptExtended}
+\begin{lstlisting}[style=nonumbers]
+   ScriptResult runScriptExtended (
+           String    scriptURI
+           Map<String,String>    parameters
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /script/exec/$f(scriptURI)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #script.runScriptExtended(scriptURI,parameters);
+%\end{lstlisting}
+\input{api/script/runScriptExtended}
+
+
+\rule{12cm}{2pt}
+\section{CheckScript}
+\index{CheckScript}
+\label{Api:CheckScript}
+\begin{lstlisting}[style=nonumbers]
+   String checkScript (
+           String    scriptURI
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /script/read/$f(scriptURI)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #script.checkScript(scriptURI);
+%\end{lstlisting}
+\input{api/script/checkScript}
+
+
+\rule{12cm}{2pt}
+\section{CreateREPLSession}
+\index{CreateREPLSession}
+\label{Api:CreateREPLSession}
+\begin{lstlisting}[style=nonumbers]
+   String createREPLSession (
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /script/exec
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #script.createREPLSession();
+%\end{lstlisting}
+\input{api/script/createREPLSession}
+
+
+\rule{12cm}{2pt}
+\section{DestroyREPLSession}
+\index{DestroyREPLSession}
+\label{Api:DestroyREPLSession}
+\begin{lstlisting}[style=nonumbers]
+   void destroyREPLSession (
+           String    sessionId
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /script/exec
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #script.destroyREPLSession(sessionId);
+%\end{lstlisting}
+\input{api/script/destroyREPLSession}
+
+
+\rule{12cm}{2pt}
+\section{EvaluateREPL}
+\index{EvaluateREPL}
+\label{Api:EvaluateREPL}
+\begin{lstlisting}[style=nonumbers]
+   String evaluateREPL (
+           String    sessionId
+           String    line
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /script/exec
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #script.evaluateREPL(sessionId,line);
+%\end{lstlisting}
+\input{api/script/evaluateREPL}
+
+
+\rule{12cm}{2pt}
+\section{ArchiveOldREPLSessions}
+\index{ArchiveOldREPLSessions}
+\label{Api:ArchiveOldREPLSessions}
+\begin{lstlisting}[style=nonumbers]
+   void archiveOldREPLSessions (
+           Long    ageInMinutes
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/script
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #script.archiveOldREPLSessions(ageInMinutes);
+%\end{lstlisting}
+\input{api/script/archiveOldREPLSessions}
+
+
+\rule{12cm}{2pt}
+\section{CreateSnippet}
+\index{CreateSnippet}
+\label{Api:CreateSnippet}
+\begin{lstlisting}[style=nonumbers]
+   RaptureSnippet createSnippet (
+           String    snippetURI
+           String    snippet
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/snippet
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #script.createSnippet(snippetURI,snippet);
+%\end{lstlisting}
+\input{api/script/createSnippet}
+
+
+\rule{12cm}{2pt}
+\section{GetSnippetChildren}
+\index{GetSnippetChildren}
+\label{Api:GetSnippetChildren}
+\begin{lstlisting}[style=nonumbers]
+   List<RaptureFolderInfo> getSnippetChildren (
+           String    prefix
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/snippet
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #script.getSnippetChildren(prefix);
+%\end{lstlisting}
+\input{api/script/getSnippetChildren}
+
+
+\rule{12cm}{2pt}
+\section{DeleteSnippet}
+\index{DeleteSnippet}
+\label{Api:DeleteSnippet}
+\begin{lstlisting}[style=nonumbers]
+   void deleteSnippet (
+           String    snippetURI
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/snippet
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #script.deleteSnippet(snippetURI);
+%\end{lstlisting}
+\input{api/script/deleteSnippet}
+
+
+\rule{12cm}{2pt}
+\section{GetSnippet}
+\index{GetSnippet}
+\label{Api:GetSnippet}
+\begin{lstlisting}[style=nonumbers]
+   RaptureSnippet getSnippet (
+           String    snippetURI
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/snippet
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #script.getSnippet(snippetURI);
+%\end{lstlisting}
+\input{api/script/getSnippet}
+
+
+\rule{12cm}{2pt}
+\section{ListScriptsByUriPrefix}
+\index{ListScriptsByUriPrefix}
+\label{Api:ListScriptsByUriPrefix}
+\begin{lstlisting}[style=nonumbers]
+   Map<String,RaptureFolderInfo> listScriptsByUriPrefix (
+           String    scriptUri
+           int    depth
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /script/read/$f(scriptUri)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #script.listScriptsByUriPrefix(scriptUri,depth);
+%\end{lstlisting}
+\input{api/script/listScriptsByUriPrefix}
+
+
+\rule{12cm}{2pt}
+\section{DeleteScriptsByUriPrefix}
+\index{DeleteScriptsByUriPrefix}
+\label{Api:DeleteScriptsByUriPrefix}
+\begin{lstlisting}[style=nonumbers]
+   List<String> deleteScriptsByUriPrefix (
+           String    scriptUri
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /script/write/$f(scriptUri)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #script.deleteScriptsByUriPrefix(scriptUri);
+%\end{lstlisting}
+\input{api/script/deleteScriptsByUriPrefix}
+
+
+\rule{12cm}{2pt}

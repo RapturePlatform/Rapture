@@ -29,7 +29,23 @@ import java.util.Map;
  * Note that this class is referenced in types.api - any changes to this file should be reflected there.
 **/
 public class ScriptInterface {
-    public Map<String, ScriptParameter> getInputs() {
+    public ScriptParameter getRet() {
+		return ret;
+	}
+
+	public void setRet(ScriptParameter ret) {
+		this.ret = ret;
+	}
+
+	public Map<String, String> getProperties() {
+		return properties;
+	}
+
+	public void setProperties(Map<String, String> properties) {
+		this.properties = properties;
+	}
+
+	public Map<String, ScriptParameter> getInputs() {
         return inputs;
     }
 
@@ -37,14 +53,7 @@ public class ScriptInterface {
         this.inputs = inputs;
     }
 
-    public Map<String, ScriptParameter> getOutputs() {
-        return outputs;
-    }
-
-    public void setOutputs(Map<String, ScriptParameter> outputs) {
-        this.outputs = outputs;
-    }
-
     Map<String, ScriptParameter> inputs;
-    Map<String, ScriptParameter> outputs;
+    ScriptParameter ret;
+    Map<String, String> properties;
 }

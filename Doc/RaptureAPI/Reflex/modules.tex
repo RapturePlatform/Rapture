@@ -1,0 +1,96 @@
+\chapter{Modules}
+\Reflex has the concept of \Verb+modules+ that can be used to extend the functionality of \Reflex through custom Java code that can be deployed alongside the environment. In this way application developers can create (or link to) more complex concepts and can interact with those libraries through normal \Reflex scripts. As an example, in a Financial services application using \Reflex the complete analytics library was exposed to \Reflex users using this technique.
+
+\section{Use in Reflex}
+In \Reflex a module is referenced using an \Verb+import+ statement. This statement takes the following form:
+\begin{Verbatim}
+import "classname" as "modulename" [with ( parameters ) ];
+\end{Verbatim}
+
+The classname refers to a Java class that is on the classpath loaded by \Reflex, and the module name is an alias for this module that is used later on in scripts. The classname can omit 'reflex.module' if the class is in that package already. The module name will be converted to a normal Java convention of having first letter capitalization. The module can be initialized with parameters if necessary. To call a function in a module a script writer uses the \emph{\$} prefix on the module name, like in the example below:
+
+\begin{lstlisting}[caption={Module example}]
+
+import testModule as test;
+
+answer = $test.addOne(5);
+assert(answer == 6);
+\end{lstlisting}
+
+This example refers to a testModule that will be explored in later sections.
+
+\section{Creating a module}
+Classes that are referred to in import statements must implement the \Verb+reflex.importer.Module+ interface. This is reproduced below:
+\begin{lstlisting}[caption={Module interface}]
+public interface Module {
+    ReflexValue keyholeCall(String name, List<ReflexValue> parameters);
+    boolean handlesKeyhole();
+    boolean canUseReflection();
+    void configure(List<ReflexValue> parameters);
+    void setReflexHandler(IReflexHandler handler);
+}
+\end{lstlisting}
+There are two ways a developer can create a module -- using a keyhole interface and using reflection. A module could support both but would normally support just one. Reflection is preferred for ease of development and rapid extension at a small cost of Java reflection.
+\subsection{Keyhole module}
+A keyhole module would return \Verb+true+ for the method \verb+handlesKeyhole+. If a module returns true to this method \Reflex will invoke the keyholeCall method for each module method invocation in a \Reflex script. In the example above, a call to \verb+$test.addOne(5)+ would be translated into the following call:
+
+\begin{Verbatim}
+List<ReflexValue> params = new ArrayList<ReflexValue>();
+params.add(new ReflexValue(5));
+ReflexValue result = module.keyholeCall("addOne", params);
+\end{Verbatim}
+
+In this way the implementation of the \Verb+keyholeCall+ method must test the value of the \verb+name+ parameter to switch to the appropriate implementation.
+
+\subsection{Reflection module}
+A reflection module would return \Verb+true+ for the method \verb+canUseReflection+. If a module returns true to this method \Reflex will look for a method with a very specific signature in the class implementation of the module. If that method exists it will be invoked. The signature is for a method that returns a \verb+ReflexValue+ and takes a single \verb+List<ReflexValue>+ parameter. As an example, the implementation of the \verb+testModule+ demonstrated above could be completely implemented by the following Java class:
+
+\begin{lstlisting}[caption={Test Module}]
+
+package reflex.module;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import reflex.IReflexHandler;
+import reflex.ReflexException;
+import reflex.importer.Module;
+import reflex.value.ReflexValue;
+
+public class TestModule implements Module {
+
+    @Override
+    public ReflexValue keyholeCall(String name, List<ReflexValue> parameters) {
+             return ReflexValue.VOID;
+    }
+
+    @Override
+    public boolean handlesKeyhole() {
+            return false;
+    }
+
+    @Override
+    public boolean canUseReflection() {
+           return true;
+    }
+
+    @Override
+    public void configure(List<ReflexValue> parameters) {
+    }
+
+    @Override
+    public void setReflexHandler(IReflexHandler handler) {
+    }
+
+    public ReflexValue addOne(List<ReflexValue> parameters) {
+          if (parameters.size() != -1) {
+              throw new ReflexException(-1, "addOne needs one parameter!");
+          }
+          Integer v = parameters.get(0).asInt();
+          return new ReflexValue(v.intValue() + 1);
+    }
+}
+
+\end{lstlisting}
+
+In the listing above we check the size of the parameters and throw a \Verb+ReflexException+ if incorrect, and then use simple mathematics to return the result. Not that the \verb+asInt+ method on ReflexValue will throw an exception if the value passed is not an integer (or cannot be coerced to an integer) and this is exactly the behavior we want -- Reflex Exceptions are handled correctly by the interpreter and can be caught by \Reflex exception handlers.

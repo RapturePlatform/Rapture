@@ -1,0 +1,771 @@
+\chapter{Admin API}
+\index{Admin API}
+\input{api/admin/info}
+\section{GetSystemProperties}
+\index{GetSystemProperties}
+\label{Api:GetSystemProperties}
+\begin{lstlisting}[style=nonumbers]
+   Map<String,String> getSystemProperties (
+           List<String>    keys
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #admin.getSystemProperties(keys);
+%\end{lstlisting}
+\input{api/admin/getSystemProperties}
+
+
+\rule{12cm}{2pt}
+\section{GetRepoConfig}
+\index{GetRepoConfig}
+\label{Api:GetRepoConfig}
+\begin{lstlisting}[style=nonumbers]
+   List<RepoConfig> getRepoConfig (
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #admin.getRepoConfig();
+%\end{lstlisting}
+\input{api/admin/getRepoConfig}
+
+
+\rule{12cm}{2pt}
+\section{GetSessionsForUser}
+\index{GetSessionsForUser}
+\label{Api:GetSessionsForUser}
+\begin{lstlisting}[style=nonumbers]
+   List<CallingContext> getSessionsForUser (
+           String    user
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #admin.getSessionsForUser(user);
+%\end{lstlisting}
+\input{api/admin/getSessionsForUser}
+
+
+\rule{12cm}{2pt}
+\section{DeleteUser}
+\index{DeleteUser}
+\label{Api:DeleteUser}
+\begin{lstlisting}[style=nonumbers]
+   void deleteUser (
+           String    userName
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #admin.deleteUser(userName);
+%\end{lstlisting}
+\input{api/admin/deleteUser}
+
+
+\rule{12cm}{2pt}
+\section{DestroyUser}
+\index{DestroyUser}
+\label{Api:DestroyUser}
+\begin{lstlisting}[style=nonumbers]
+   void destroyUser (
+           String    userName
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #admin.destroyUser(userName);
+%\end{lstlisting}
+\input{api/admin/destroyUser}
+
+
+\rule{12cm}{2pt}
+\section{RestoreUser}
+\index{RestoreUser}
+\label{Api:RestoreUser}
+\begin{lstlisting}[style=nonumbers]
+   void restoreUser (
+           String    userName
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #admin.restoreUser(userName);
+%\end{lstlisting}
+\input{api/admin/restoreUser}
+
+
+\rule{12cm}{2pt}
+\section{AddUser}
+\index{AddUser}
+\label{Api:AddUser}
+\begin{lstlisting}[style=nonumbers]
+   void addUser (
+           String    userName
+           String    description
+           String    hashPassword
+           String    email
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #admin.addUser(userName,description,hashPassword,email);
+%\end{lstlisting}
+\input{api/admin/addUser}
+
+
+\rule{12cm}{2pt}
+\section{VerifyUser}
+\index{VerifyUser}
+\label{Api:VerifyUser}
+\begin{lstlisting}[style=nonumbers]
+   boolean verifyUser (
+           String    userName
+           String    token
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #admin.verifyUser(userName,token);
+%\end{lstlisting}
+\input{api/admin/verifyUser}
+
+
+\rule{12cm}{2pt}
+\section{DoesUserExist}
+\index{DoesUserExist}
+\label{Api:DoesUserExist}
+\begin{lstlisting}[style=nonumbers]
+   boolean doesUserExist (
+           String    userName
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #admin.doesUserExist(userName);
+%\end{lstlisting}
+\input{api/admin/doesUserExist}
+
+
+\rule{12cm}{2pt}
+\section{GetUser}
+\index{GetUser}
+\label{Api:GetUser}
+\begin{lstlisting}[style=nonumbers]
+   RaptureUser getUser (
+           String    userName
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #admin.getUser(userName);
+%\end{lstlisting}
+\input{api/admin/getUser}
+
+
+\rule{12cm}{2pt}
+\section{GenerateApiUser}
+\index{GenerateApiUser}
+\label{Api:GenerateApiUser}
+\begin{lstlisting}[style=nonumbers]
+   RaptureUser generateApiUser (
+           String    prefix
+           String    description
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #admin.generateApiUser(prefix,description);
+%\end{lstlisting}
+\input{api/admin/generateApiUser}
+
+
+\rule{12cm}{2pt}
+\section{ResetUserPassword}
+\index{ResetUserPassword}
+\label{Api:ResetUserPassword}
+\begin{lstlisting}[style=nonumbers]
+   void resetUserPassword (
+           String    userName
+           String    newHashPassword
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #admin.resetUserPassword(userName,newHashPassword);
+%\end{lstlisting}
+\input{api/admin/resetUserPassword}
+
+
+\rule{12cm}{2pt}
+\section{CreatePasswordResetToken}
+\index{CreatePasswordResetToken}
+\label{Api:CreatePasswordResetToken}
+\begin{lstlisting}[style=nonumbers]
+   String createPasswordResetToken (
+           String    username
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #admin.createPasswordResetToken(username);
+%\end{lstlisting}
+\input{api/admin/createPasswordResetToken}
+
+
+\rule{12cm}{2pt}
+\section{CreateRegistrationToken}
+\index{CreateRegistrationToken}
+\label{Api:CreateRegistrationToken}
+\begin{lstlisting}[style=nonumbers]
+   String createRegistrationToken (
+           String    username
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #admin.createRegistrationToken(username);
+%\end{lstlisting}
+\input{api/admin/createRegistrationToken}
+
+
+\rule{12cm}{2pt}
+\section{CancelPasswordResetToken}
+\index{CancelPasswordResetToken}
+\label{Api:CancelPasswordResetToken}
+\begin{lstlisting}[style=nonumbers]
+   void cancelPasswordResetToken (
+           String    username
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #admin.cancelPasswordResetToken(username);
+%\end{lstlisting}
+\input{api/admin/cancelPasswordResetToken}
+
+
+\rule{12cm}{2pt}
+\section{EmailUser}
+\index{EmailUser}
+\label{Api:EmailUser}
+\begin{lstlisting}[style=nonumbers]
+   void emailUser (
+           String    userName
+           String    emailTemplate
+           Map<String,Object>    templateValues
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #admin.emailUser(userName,emailTemplate,templateValues);
+%\end{lstlisting}
+\input{api/admin/emailUser}
+
+
+\rule{12cm}{2pt}
+\section{UpdateUserEmail}
+\index{UpdateUserEmail}
+\label{Api:UpdateUserEmail}
+\begin{lstlisting}[style=nonumbers]
+   void updateUserEmail (
+           String    userName
+           String    newEmail
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #admin.updateUserEmail(userName,newEmail);
+%\end{lstlisting}
+\input{api/admin/updateUserEmail}
+
+
+\rule{12cm}{2pt}
+\section{AddTemplate}
+\index{AddTemplate}
+\label{Api:AddTemplate}
+\begin{lstlisting}[style=nonumbers]
+   void addTemplate (
+           String    name
+           String    template
+           boolean    overwrite
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #admin.addTemplate(name,template,overwrite);
+%\end{lstlisting}
+\input{api/admin/addTemplate}
+
+
+\rule{12cm}{2pt}
+\section{RunTemplate}
+\index{RunTemplate}
+\label{Api:RunTemplate}
+\begin{lstlisting}[style=nonumbers]
+   String runTemplate (
+           String    name
+           String    parameters
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #admin.runTemplate(name,parameters);
+%\end{lstlisting}
+\input{api/admin/runTemplate}
+
+
+\rule{12cm}{2pt}
+\section{GetTemplate}
+\index{GetTemplate}
+\label{Api:GetTemplate}
+\begin{lstlisting}[style=nonumbers]
+   String getTemplate (
+           String    name
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #admin.getTemplate(name);
+%\end{lstlisting}
+\input{api/admin/getTemplate}
+
+
+\rule{12cm}{2pt}
+\section{CopyDocumentRepo}
+\index{CopyDocumentRepo}
+\label{Api:CopyDocumentRepo}
+\begin{lstlisting}[style=nonumbers]
+   void copyDocumentRepo (
+           String    srcAuthority
+           String    targAuthority
+           boolean    wipe
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #admin.copyDocumentRepo(srcAuthority,targAuthority,wipe);
+%\end{lstlisting}
+\input{api/admin/copyDocumentRepo}
+
+
+\rule{12cm}{2pt}
+\section{AddIPToWhiteList}
+\index{AddIPToWhiteList}
+\label{Api:AddIPToWhiteList}
+\begin{lstlisting}[style=nonumbers]
+   void addIPToWhiteList (
+           String    ipAddress
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #admin.addIPToWhiteList(ipAddress);
+%\end{lstlisting}
+\input{api/admin/addIPToWhiteList}
+
+
+\rule{12cm}{2pt}
+\section{RemoveIPFromWhiteList}
+\index{RemoveIPFromWhiteList}
+\label{Api:RemoveIPFromWhiteList}
+\begin{lstlisting}[style=nonumbers]
+   void removeIPFromWhiteList (
+           String    ipAddress
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #admin.removeIPFromWhiteList(ipAddress);
+%\end{lstlisting}
+\input{api/admin/removeIPFromWhiteList}
+
+
+\rule{12cm}{2pt}
+\section{GetIPWhiteList}
+\index{GetIPWhiteList}
+\label{Api:GetIPWhiteList}
+\begin{lstlisting}[style=nonumbers]
+   List<String> getIPWhiteList (
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #admin.getIPWhiteList();
+%\end{lstlisting}
+\input{api/admin/getIPWhiteList}
+
+
+\rule{12cm}{2pt}
+\section{GetAllUsers}
+\index{GetAllUsers}
+\label{Api:GetAllUsers}
+\begin{lstlisting}[style=nonumbers]
+   List<RaptureUser> getAllUsers (
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #admin.getAllUsers();
+%\end{lstlisting}
+\input{api/admin/getAllUsers}
+
+
+\rule{12cm}{2pt}
+\section{InitiateTypeConversion}
+\index{InitiateTypeConversion}
+\label{Api:InitiateTypeConversion}
+\begin{lstlisting}[style=nonumbers]
+   void initiateTypeConversion (
+           String    raptureURI
+           String    newConfig
+           int    versionsToKeep
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #admin.initiateTypeConversion(raptureURI,newConfig,versionsToKeep);
+%\end{lstlisting}
+\input{api/admin/initiateTypeConversion}
+
+
+\rule{12cm}{2pt}
+\section{PutArchiveConfig}
+\index{PutArchiveConfig}
+\label{Api:PutArchiveConfig}
+\begin{lstlisting}[style=nonumbers]
+   void putArchiveConfig (
+           String    raptureURI
+           TypeArchiveConfig    config
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #admin.putArchiveConfig(raptureURI,config);
+%\end{lstlisting}
+\input{api/admin/putArchiveConfig}
+
+
+\rule{12cm}{2pt}
+\section{GetArchiveConfig}
+\index{GetArchiveConfig}
+\label{Api:GetArchiveConfig}
+\begin{lstlisting}[style=nonumbers]
+   TypeArchiveConfig getArchiveConfig (
+           String    raptureURI
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #admin.getArchiveConfig(raptureURI);
+%\end{lstlisting}
+\input{api/admin/getArchiveConfig}
+
+
+\rule{12cm}{2pt}
+\section{DeleteArchiveConfig}
+\index{DeleteArchiveConfig}
+\label{Api:DeleteArchiveConfig}
+\begin{lstlisting}[style=nonumbers]
+   void deleteArchiveConfig (
+           String    raptureURI
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #admin.deleteArchiveConfig(raptureURI);
+%\end{lstlisting}
+\input{api/admin/deleteArchiveConfig}
+
+
+\rule{12cm}{2pt}
+\section{Ping}
+\index{Ping}
+\label{Api:Ping}
+\begin{lstlisting}[style=nonumbers]
+   boolean ping (
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #admin.ping();
+%\end{lstlisting}
+\input{api/admin/ping}
+
+
+\rule{12cm}{2pt}
+\section{AddMetadata}
+\index{AddMetadata}
+\label{Api:AddMetadata}
+\begin{lstlisting}[style=nonumbers]
+   void addMetadata (
+           Map<String,String>    values
+           boolean    overwrite
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #admin.addMetadata(values,overwrite);
+%\end{lstlisting}
+\input{api/admin/addMetadata}
+
+
+\rule{12cm}{2pt}
+\section{SetMOTD}
+\index{SetMOTD}
+\label{Api:SetMOTD}
+\begin{lstlisting}[style=nonumbers]
+   void setMOTD (
+           String    message
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #admin.setMOTD(message);
+%\end{lstlisting}
+\input{api/admin/setMOTD}
+
+
+\rule{12cm}{2pt}
+\section{GetMOTD}
+\index{GetMOTD}
+\label{Api:GetMOTD}
+\begin{lstlisting}[style=nonumbers]
+   String getMOTD (
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /everyone
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #admin.getMOTD();
+%\end{lstlisting}
+\input{api/admin/getMOTD}
+
+
+\rule{12cm}{2pt}
+\section{SetEnvironmentName}
+\index{SetEnvironmentName}
+\label{Api:SetEnvironmentName}
+\begin{lstlisting}[style=nonumbers]
+   void setEnvironmentName (
+           String    name
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #admin.setEnvironmentName(name);
+%\end{lstlisting}
+\input{api/admin/setEnvironmentName}
+
+
+\rule{12cm}{2pt}
+\section{SetEnvironmentProperties}
+\index{SetEnvironmentProperties}
+\label{Api:SetEnvironmentProperties}
+\begin{lstlisting}[style=nonumbers]
+   void setEnvironmentProperties (
+           Map<String,String>    properties
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #admin.setEnvironmentProperties(properties);
+%\end{lstlisting}
+\input{api/admin/setEnvironmentProperties}
+
+
+\rule{12cm}{2pt}
+\section{GetEnvironmentName}
+\index{GetEnvironmentName}
+\label{Api:GetEnvironmentName}
+\begin{lstlisting}[style=nonumbers]
+   String getEnvironmentName (
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #admin.getEnvironmentName();
+%\end{lstlisting}
+\input{api/admin/getEnvironmentName}
+
+
+\rule{12cm}{2pt}
+\section{GetEnvironmentProperties}
+\index{GetEnvironmentProperties}
+\label{Api:GetEnvironmentProperties}
+\begin{lstlisting}[style=nonumbers]
+   Map<String,String> getEnvironmentProperties (
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #admin.getEnvironmentProperties();
+%\end{lstlisting}
+\input{api/admin/getEnvironmentProperties}
+
+
+\rule{12cm}{2pt}
+\section{Encode}
+\index{Encode}
+\label{Api:Encode}
+\begin{lstlisting}[style=nonumbers]
+   String encode (
+           String    toEncode
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #admin.encode(toEncode);
+%\end{lstlisting}
+\input{api/admin/encode}
+
+
+\rule{12cm}{2pt}
+\section{CreateURI}
+\index{CreateURI}
+\label{Api:CreateURI}
+\begin{lstlisting}[style=nonumbers]
+   String createURI (
+           String    path
+           String    leaf
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #admin.createURI(path,leaf);
+%\end{lstlisting}
+\input{api/admin/createURI}
+
+
+\rule{12cm}{2pt}
+\section{CreateMultipartURI}
+\index{CreateMultipartURI}
+\label{Api:CreateMultipartURI}
+\begin{lstlisting}[style=nonumbers]
+   String createMultipartURI (
+           List<String>    elements
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #admin.createMultipartURI(elements);
+%\end{lstlisting}
+\input{api/admin/createMultipartURI}
+
+
+\rule{12cm}{2pt}
+\section{Decode}
+\index{Decode}
+\label{Api:Decode}
+\begin{lstlisting}[style=nonumbers]
+   String decode (
+           String    encoded
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #admin.decode(encoded);
+%\end{lstlisting}
+\input{api/admin/decode}
+
+
+\rule{12cm}{2pt}
+\section{FindGroupNamesByUser}
+\index{FindGroupNamesByUser}
+\label{Api:FindGroupNamesByUser}
+\begin{lstlisting}[style=nonumbers]
+   List<String> findGroupNamesByUser (
+           String    username
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /admin/main
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #admin.findGroupNamesByUser(username);
+%\end{lstlisting}
+\input{api/admin/findGroupNamesByUser}
+
+
+\rule{12cm}{2pt}

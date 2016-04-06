@@ -1,0 +1,221 @@
+\documentclass[12pt,twoside,a4paper]{book}
+
+\renewcommand*\sfdefault{phv}
+\renewcommand{\familydefault}{\sfdefault}
+
+%\usepackage{arev}
+\usepackage[scaled]{helvet}
+\usepackage[T1]{fontenc}
+
+\setcounter{secnumdepth}{0}
+
+%\newcommand{\Rapture}{${\mathbf{Rapture}}$~}
+%\newcommand{\Reflex}{${\mathbf{Reflex}}$~}
+
+\newcommand{\Rapture}{\Verb+RAPTURE+~}
+\newcommand{\Reflex}{\Verb+REFLEX+~}
+
+\usepackage{listings}
+\usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
+\usepackage{graphicx}
+\usepackage{makeidx}
+\usepackage{hyperref}
+\usepackage{varioref}
+\usepackage{fancyvrb}
+\usepackage[T1]{fontenc}
+\usepackage{moreverb}
+\usepackage{paralist}
+\usepackage{arev}
+\usepackage{tikz}
+\usepackage{float}
+
+\fvset{fontsize=\footnotesize}
+
+\usetikzlibrary{positioning,shapes.symbols,shapes.multipart,shapes.misc,shadows,arrows,decorations.pathmorphing,decorations.pathreplacing,backgrounds,positioning,fit,petri,chains,mindmap}
+
+\tikzset{
+	inner sep=2mm,bend angle=45,
+	ewd/.style={rectangle split, rectangle split parts=2,draw=black,fill=green!20,thick,drop shadow},
+	external/.style={circle,draw=black,fill=blue!20,thick,circular drop shadow},
+	internal/.style={circle,draw=black,fill=green!20,thick,circular drop shadow},
+	client/.style={rounded rectangle,draw=black,fill=red!20,thick,drop shadow},
+	server/.style={rounded rectangle,draw=black,fill=green!20,thick,drop shadow},
+	appserver/.style={rounded rectangle,draw=black,fill=yellow!20,thick,drop shadow},
+	yround/.style={rounded rectangle,draw=black,fill=yellow!20,thick,drop shadow},
+	api/.style={circle,draw=black,fill=yellow!20,thick,circular drop shadow},
+	lab/.style={circle,draw=black,thin,inner sep=2pt,outer sep=3pt,fill=orange!10},
+	main/.style={rounded rectangle,draw=black,fill=blue!20,thick,drop shadow},
+	highlight/.style={rounded rectangle,draw=black,fill=yellow!20,thick,drop shadow},
+	ctx/.style={rounded rectangle,draw=black,fill=green!20,thick,drop shadow},
+	qtop/.style={rectangle,draw=black,fill=green!20,thick},
+	qbot/.style={rectangle,draw=black,fill=blue!20,thick},
+	desc/.style={rectangle,draw=white},
+	pre/.style={->,shorten <=1pt,>=triangle 60,thin},
+	post/.style={<-,shorten >=1pt,>=triangle 60,thin},
+	line/.style={thin},
+	both/.style={<->,shorten >=1pt,>=triangle 60,thin},
+	fog/.style={cloud,draw=black,fill=orange!40,thick,drop shadow},
+	fogclient/.style={cloud,draw=black,fill=blue!40,thick,drop shadow}
+}
+
+\newcommand{\myTitle}{ Rapture and Reflex\xspace}
+\newcommand{\myClient}{\xspace}
+\newcommand{\myName}{Alan Moore\xspace}
+\newcommand{\myTime}{March, 2016\xspace}
+\newcommand{\myCFootnote}{Documentation By\xspace}
+\newcommand{\myCompany}{Incapture\xspace}
+\newcommand{\myCompanyFull}{Incapture Technologies LLC\xspace}
+\newcommand{\myCompanyAddress}{600 Montgomery Street\\San Francisco \\ CA 94111\xspace}
+
+\parskip 5pt
+
+\makeindex
+
+\lstdefinelanguage{reflex}
+{
+  morekeywords={def,end,for,while,if,else,do,const,println,fromjson,json,collate,getch},
+	morekeywords={sort,capabilities,hascapability,assert,close,open,archive},
+  morecomment=[l]{//},
+  morestring=[b]",
+	morestring=[b]'
+}
+
+\definecolor{mygray}{rgb}{0.97,0.97,0.75}
+
+\lstset{ %
+  aboveskip=7pt,
+  belowskip=7pt,
+  numberbychapter=false,
+  language=reflex,                % the language of the code
+  basicstyle=\footnotesize,           % the size of the fonts that are used for the code
+  numbers=left,                   % where to put the line-numbers
+  backgroundcolor=\color{mygray},
+  numberstyle=\tiny\color{gray},  % the style that is used for the line-numbers
+  keywordstyle=\color{blue},
+  stringstyle=\color{red},
+  stepnumber=1,                   % the step between two line-numbers. If it's 1, each line
+  numbersep=7pt,                  % how far the line-numbers are from the code
+  columns=fixed,
+  showspaces=false,               % show spaces adding particular underscores
+  showstringspaces=false,         % underline spaces within strings
+  showtabs=false,                 % show tabs within strings adding particular underscores
+  %frame=TB,                   % adds a frame around the code
+  rulecolor=\color{black},        % if not set, the frame-color may be changed on line-breaks within not-black text (e.g. commens (green here))
+  tabsize=2,                      % sets default tabsize to 2 spaces
+  captionpos=b,                   % sets the caption-position to bottom
+  breaklines=true,                % sets automatic line breaking
+  breakatwhitespace=false,        % sets if automatic breaks should only happen at whitespace
+  escapeinside={\%*}{*)},            % if you want to add LaTeX within your code
+  morekeywords={*,...}               % if you want to add more keywords to the set
+}
+
+\lstdefinestyle{nonumbers}
+  {numbers=none}
+
+\begin{document}
+
+\title{Rapture and Reflex}
+\author{Alan Moore}
+\date{April 2016}
+
+\makeatletter
+    \begin{titlepage}
+      \includegraphics[width=0.7\linewidth]{Graphics/RaptureLogo.png}\\[4ex]
+        \begin{center}
+            {\huge \bfseries  \@title }\\[2ex]
+            {\LARGE  \@author}\\[50ex]
+            {\large \@date}
+        \end{center}
+    \end{titlepage}
+\makeatother
+\thispagestyle{empty}
+\newpage
+
+%Add content for page two here (useful for two-sided printing)
+%\thispagestyle{empty}
+%\newpage
+
+%\maketitle
+\setcounter{tocdepth}{1}
+\tableofcontents
+\setcounter{page}{1} %Start the actually document on page 1
+
+
+\part{Rapture}
+\input{Rapture/background}
+\input{Rapture/mainconcepts}
+\input{Rapture/applocations}
+\input{Rapture/usagepatterns}
+\part{Reflex}
+\input{Reflex/background}
+\input{Reflex/serverscripting}
+\input{Reflex/running}
+\input{Reflex/fundamentals}
+\input{Reflex/operators}
+\input{Reflex/flowcontrol}
+\input{Reflex/exceptions}
+\input{Reflex/specialops}
+\input{Reflex/userdef}
+\input{Reflex/modules}
+\input{Reflex/builtinmod}
+\input{Reflex/functional}
+\input{Reflex/suspend}
+\input{Reflex/pagescript}
+\input{Reflex/builtin}
+
+\part{API}
+\chapter{API Introduction}
+The \Rapture API is divided into a number of sections. We've seen in an earlier
+section how you may need to use the \emph{login} api to establish a connection
+to \Rapture. The other sections of the API will form the rest of this document.
+For each section the general positioning of the section with respect to \Rapture
+will be described and then the detailed API calls will follow.
+
+\input{api/Doc}
+\input{api/Blob}
+\input{api/Series}
+\input{api/Script}
+\input{api/Decision}
+\input{api/Admin}
+\input{api/User}
+\input{api/Index}
+\input{api/Event}
+\input{api/Entitlement}
+\input{api/Environment}
+\input{api/Lock}
+\input{api/IdGen}
+\input{api/Activity}
+\input{api/Async}
+\input{api/Audit}
+\input{api/Bootstrap}
+\input{api/Sys}
+\input{api/Structured}
+\input{api/Schedule}
+\input{api/Plugin}
+\input{api/Types}
+
+
+
+%*******************************************************
+% Disclaimer
+%*******************************************************
+\clearpage
+\printindex
+\vspace*{10pt}
+
+\begin{center} \textbf{DISCLAIMER} \end{center}
+
+\textbf{Copyright}: Unless otherwise noted, text, images and layout of this publication are the exclusive property of Incapture Technologies LLC and/or its related, affiliated and subsidiary companies and may not be copied or distributed, in whole or in part, without the express written consent of Incapture Technologies LLC or its related and affiliated companies.
+
+\begin{center} \copyright 2012-2016 Incapture Technologies LLC \end{center}
+
+\begin{center}
+\large
+\hfill
+\vfill
+\color{Maroon}\small\spacedallcaps{\myCompanyFull} \\
+\color{Black}\small{\myCompanyAddress} \\
+
+\end{center}
+
+\end{document}

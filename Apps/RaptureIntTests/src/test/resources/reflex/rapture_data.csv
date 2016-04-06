@@ -1,0 +1,2 @@
+identifier,prefix,source,frequency,reference_fields,series_fields,description,country
+AEX Index,equity/index,BBG,D,"['NAME', 'CRNCY', 'BASE_CRNCY', 'SECURITY_TYP', 'PRICING_SOURCE', 'HISTORY_START_DT', 'TIME_ZONE_NUM']","['PX_LAST', 'PX_OPEN', 'PX_HIGH', 'PX_LOW']",,

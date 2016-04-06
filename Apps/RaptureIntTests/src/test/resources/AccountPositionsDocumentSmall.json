@@ -1,0 +1,25 @@
+{ 
+ "AccountPositionsResponse": { 
+ "accountId": "83405188", 
+ "count": "1", 
+ "AccountPositions": { 
+ "AccountPosition": { 
+ "costBasis": "31.40", 
+ "description": "GOOG Feb 20 '10 $500 Call", 
+ "longOrShort": "SHORT", 
+ "productId": { 
+ "symbol": "GOP", 
+ "typeCode": "OPTN", 
+ "callPut": "CALL", 
+ "strikePrice": "500", 
+ "expYear": "2010", 
+ "expMonth": "2", 
+ "expDay": "20" 
+ }, 
+ "qty": "-1", 
+ "currentPrice": "-3.32", 
+ "marketValue": "-3320.00" 
+ } 
+ } 
+ } 
+} 

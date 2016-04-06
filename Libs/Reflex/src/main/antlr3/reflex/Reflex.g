@@ -17,6 +17,7 @@ tokens {
   ASSIGNMENT;
   CONSTASSIGNMENT;
   PLUSASSIGNMENT;
+  MINUSASSIGNMENT;
   DOTTEDASSIGNMENT;
   FUNC_CALL;
   EXP;
@@ -55,6 +56,12 @@ tokens {
   IMPORTPARAMS;
   EXPORT;
   PATCH;
+  MATCH;
+  IS;
+  OTHERWISE;
+  SWITCH;
+  CASE;
+  DEFAULT;
 }
 
 @parser::header{
@@ -72,6 +79,7 @@ package reflex;
 }
 
 @lexer::members {
+	public static Stack<String> alias = new Stack<String>();
     public IReflexScriptHandler dataHandler = new DummyReflexScriptHandler();
 
     private boolean syntaxOnly = false;
@@ -161,49 +169,24 @@ package reflex;
        return token;
      }
 
-    public static String getBetterParseError(RecognitionException e) {
-        StringBuilder sb = new StringBuilder();
-        CommonToken token = (CommonToken) e.token;
-	if (token == null) {
-	    sb.append("Exception ");
-	    String message = e.getMessage();
-	    if (message != null) {
-		sb.append(message);
-	    } else {
-		sb.append("of type ").append(e.getClass().getCanonicalName());
-	    }
-	    sb.append(" on line ").append(e.line).append("\n");
-	    String[] lines = e.input.toString().split("\n");
-	    int lineNum = e.line - 1;
-	    sb.append(lines[lineNum++]).append("\n");
-            for (int i = 0; i < e.charPositionInLine; i++) sb.append("-");
-	    sb.append("^\n");
-	    if (lineNum < lines.length) sb.append(lines[lineNum++]).append("\n");
-	    if (lineNum < lines.length) sb.append(lines[lineNum++]).append("\n");
-	} else {
-	    String[] badLine = token.getInputStream().substring(token.getStartIndex() - e.charPositionInLine, token.getStopIndex() + 256).split("\n");
-
-	    sb.append("Error while parsing: \n").append(badLine[0]).append("\n");
-	    for (int i = 0; i < e.charPositionInLine; i++) sb.append("-");
-	    for (int i = 0; i < token.getText().length(); i++) sb.append("^");
-	    sb.append("\n");
-	    if (badLine.length > 1) sb.append(badLine[1]).append("\n");
-	    if (badLine.length > 2) sb.append(badLine[2]).append("\n");
-	    sb.append("Error at token ").append(token.getText());
-	    sb.append(" on line ").append(e.line).append("\n");
-	}
-	Throwable cause = e.getCause();
-	if (cause != null) {
-	    sb.append("Caused by ").append(cause.getMessage()).append("\n");
-	}
-	return sb.toString();
-    }
-
     @Override
     public void reportError(RecognitionException e) {
-        emitErrorMessage(getBetterParseError(e));
+        emitErrorMessage(ErrorHandler.getParserExceptionDetails(e));
         super.reportError(e);
     }
+    
+    @Override
+    public void recover(RecognitionException e) {
+        super.recover(e);
+    }
+    
+  public boolean error(String error, IntStream input, Token token, boolean ignorable) throws ReflexRecognitionException {
+	ReflexRecognitionException rre = new ReflexRecognitionException(error, input, token);
+	if (ignorable) emitErrorMessage(ErrorHandler.getParserExceptionDetails(rre));
+	else throw rre;
+	return ignorable;
+  }
+    
 }
 
 @lexer::rulecatch {
@@ -338,13 +321,21 @@ package reflex;
         scriptInfo.setReturn(retType, meta);
   }
 
-  private void addMetaParameter(String parameterName, String parameterType, String description, String requestType, String requestData) {
-        scriptInfo.addParameter(parameterName, parameterType, description, MetaParamRequest.valueOf(requestType), requestData);
+  private void addMetaParameter(String parameterName, String parameterType, String description) {
+        scriptInfo.addParameter(parameterName, parameterType, description);
   }
 
   @Override
   public void reportError(RecognitionException e) {
+      emitErrorMessage(ErrorHandler.getParserExceptionDetails(e));
       super.reportError(e);
+  }
+  
+  public void error(String error, IntStream input, Token t) throws ReflexRecognitionException {	
+    CommonToken ct = (CommonToken) t;
+	int length = ct.getStopIndex() - ct.getStartIndex() +1;
+	int start = ct.getCharPositionInLine();
+	throw new ReflexRecognitionException(error+" at token "+t.getText()+" "+ErrorHandler.displayError(ct.getInputStream(), ct.getLine(), start, length), input, t);
   }
 }
 
@@ -357,7 +348,7 @@ metaBlock
   ;
 
 metaStatement
-  : 'param'  name=String ',' metaType=('list' | 'map' | 'number' | 'string') ',' desc=String ',' reqType = (  'FIXEDLIST' | 'FREESTRING' | 'SCRIPTLIST') ',' requestData=String ';' { addMetaParameter($name.text, $metaType.text, $desc.text, $reqType.text, $requestData.text); }
+  : 'param'  name=String ',' metaType=('list' | 'map' | 'number' | 'string') ',' desc=String  ';' { addMetaParameter($name.text, $metaType.text, $desc.text); }
   | Return ret=('list' | 'map' | 'number' | 'string') ',' meta=String ';' { defineMetaReturn($ret.text, $meta.text); }
   | 'property' name=String ',' value=String ';' { addMetaProperty($name.text, $value.text); }
   ;
@@ -372,8 +363,7 @@ block
   ;
 
 
-statement
-  :  assignment ';'   -> assignment
+statement  :  assignment ';'   -> assignment
   |  importStatement ';' -> importStatement
   |  port ';' -> port
   |  pull ';' -> pull
@@ -384,16 +374,25 @@ statement
   |  throwStatement ';' -> throwStatement
   |  breakStatement ';' -> breakStatement
   |  continueStatement ';' -> continueStatement
+  |  matchStatement
+  |  switchStatement
   |  ifStatement
   |  forStatement
   |  pforStatement
   |  whileStatement
   |  guardedStatement
   |  exportStatement
+// Unexpected stuff that can throw off the parser.
+// Need to catch it and flag it at the source
+	|  Unsupported { error("Unsupported Operation", input, $Unsupported); }
+    |  SColon { error("Unexpected character", input, $SColon); } 
+  	|  Identifier { error("Unexpected identifier", input, $Identifier); } 
   ;
-  catch [RecognitionException e] {
-      throw new ReflexParseException(e, getErrorMessage(e, this.getTokenNames()));
-  }
+	
+Unsupported 
+	: '++' 
+	| '--'
+	;
 
 exportStatement
 @after {
@@ -413,6 +412,8 @@ assignment
 //     -> ^(DOTTEDASSIGNMENT[$DottedIdentifier] DottedIdentifier expression)
   |   Identifier '+=' expression
      -> ^(PLUSASSIGNMENT[$Identifier] Identifier expression)
+  |   Identifier '-=' expression
+     -> ^(MINUSASSIGNMENT[$Identifier] Identifier expression)
   ;
 
 breakStatement
@@ -479,7 +480,8 @@ functionCall
 
 func2
   :  TypeOf '(' expression ')'    -> ^(FUNC_CALL[$TypeOf] TypeOf expression)
-  |  Assert '(' expression ')'    -> ^(FUNC_CALL[$Assert] Assert expression)
+  |  Assert '(' exp=expression ')'    -> ^(FUNC_CALL[$Assert] Assert $exp $exp)
+  |  Assert '(' msg=expression ',' exp=expression ')'    -> ^(FUNC_CALL[$Assert] Assert $msg $exp)
   |  Replace '(' v=expression ',' s=expression ',' t=expression ')' -> ^(FUNC_CALL[$Replace] Replace $v $s $t)
   |  RPull '(' u=expression ')' -> ^(FUNC_CALL[$RPull] RPull $u)
   |  RPush '(' u=expression ',' v=expression (',' o=expression)?')' -> ^(FUNC_CALL[$RPush] RPush $u $v $o?)
@@ -562,14 +564,47 @@ func2
                                   -> ^({token("KERNEL_CALL", KERNEL_CALL, $KernelIdentifier.getLine())} KernelIdentifier exprList?)
   ;
 
+// MATCH allows expressions as case values
 
-// So really we should have
-// if x do
-//    something
-// end else do
-//    something else
-// end
+matchStatement
+  :  Match expression (As Identifier)? Do actions* otherwise? End -> MATCH Identifier? expression actions* otherwise?
+  ;
+  
+actions
+  : comparator+ Do block End	-> comparator+ block
+  ;
 
+otherwise
+  : Otherwise Do block End	-> OTHERWISE block
+  ;
+
+comparator 
+  : Is (Equals | NEquals | GTEquals | LTEquals | GT | LT) expression
+  | Is Assign { error("Assignment found where comparator expected", input, $Is); } expression 
+  | Is (Or | And | Excl | Add | Subtract | Multiply | Divide | Modulus) { error("Comparator expected", input, $Is); } expression 
+  ;
+
+// SWITCH requires constants as case values
+
+switchStatement
+  :  Switch expression Do caseStatement+ End -> SWITCH expression caseStatement+
+  ;
+  
+caseStatement 
+  : variant+ Do block End -> variant+ block
+  ;
+  
+variant
+  :  Case Integer -> Integer
+  |  Case Number -> Number
+  |  Case Long -> Long
+  |  Case Bool -> Bool  
+  |  Case String -> String
+  |  Default
+  |  Case QuotedString { error("Quoted String found where constant expected. Use single quotes.", input, $QuotedString);}
+  |  expression {error("Expression found where constant expected.", input, $expression.start);}
+  ;
+  
 ifStatement
   :  ifStat elseIfStat* elseStat? End? -> ^(IF[$ifStat.start] ifStat elseIfStat* elseStat?)
   ;
@@ -666,6 +701,12 @@ exprList
   ;
 
 expression
+@init{
+  ReflexLexer.alias.push("Expression");
+}
+@after {
+  ReflexLexer.alias.pop();
+}
   :  condExpr
   ;
 
@@ -719,16 +760,14 @@ sparsematrix
   ;
 
 atom
-  :  Number
-  |  Integer
+  :  Integer
   |  Long
+  |  Number
   |  Bool
   |  Null
   |  sparsematrix
   |  lookup
   ;
-
-
 
 list
   :  '[' exprList? ']' -> ^(LIST exprList?)
@@ -860,6 +899,13 @@ Matches  : 'matches';
 Split    : 'split';
 
 Def      : 'def';
+Match    : 'match';
+As       : 'as';
+Is       : 'is';
+Otherwise: 'otherwise';
+Switch   : 'switch';
+Case     : 'case';
+Default  : 'default';
 If       : 'if';
 Else     : 'else';
 Return   : 'return';
@@ -870,7 +916,12 @@ To       : 'to';
 OBrace   : '{';
 CBrace   : '}';
 Do       : 'do';
-End      : 'end';
+
+// Without this a semicolon after end causes really unhelpful error messages
+End      : 'end'
+         | 'end' {error("Unexpected semicolon", input, null, true)}? SColon
+         ;
+
 In       : 'in';
 Null     : 'null';
 New      : 'new';
@@ -923,17 +974,18 @@ Patch    : '<-->';
 PullVal  : '<--';
 PushVal  : '-->';
 
-
 Bool
   :  'true'
   |  'false'
   ;
 
-Integer
+Integer 
 @after {
-  setText(getText().substring(0,getText().length()-1));
-}
-  :  Int 'I'
+  String tx = getText();
+  if (tx.endsWith("I")) setText(tx.substring(0, tx.length()-1));
+}  
+  : Int
+  | Int 'I' 
   ;
 
 Long
@@ -944,8 +996,7 @@ Long
   ;
 
 Number
-  :  Int
-  |  Int '.' Digit (Digit)*
+  :  Int '.' Digit (Digit)*
   ;
 
 PackageIdentifier
@@ -977,13 +1028,44 @@ DottedIdentifier
 
 
 QuotedString
-@init{StringBuilder lBuf = new StringBuilder();}
+@init{
+  StringBuilder lBuf = new StringBuilder();
+  alias.push("Quoted String");
+}
+@after {
+  alias.pop();
+}
     :
-           '"'
+           tok=DoubleQuote
            ( escaped=ESC {lBuf.append(getText());} |
-             normal=~('"'|'\\'|'\n'|'\r')     {lBuf.appendCodePoint(normal);} )*
-           '"'
-           {setText(lBuf.toString());}
+             normal=~(DoubleQuote | EndLine | '\\')     {lBuf.appendCodePoint(normal);} )*
+           ( DoubleQuote {setText(lBuf.toString());} 
+           | ( '\n' | '\r')  {error("Found newline in string "+lBuf.toString(), input, tok, false);})
+           
+    ;
+
+fragment
+DoubleQuote 
+    : '"'
+    | '\u201C'
+    | '\u201D'
+    | '\u201E'
+    | '\u201F'
+    ;
+
+fragment
+EndLine
+	: '\n'
+	| '\r'
+	;
+	
+fragment
+SingleQuote 
+    : '\''
+    | '\u2018'
+    | '\u2019'
+    | '\u201A'
+    | '\u201B'
     ;
 
 fragment
@@ -995,6 +1077,14 @@ ESC
         |   'b'    {setText("\b");}
         |   'f'    {setText("\f");}
         |   '"'    {setText("\"");}
+        | '\u2018' {setText("\u2018");}
+    	| '\u2019' {setText("\u2019");}
+    	| '\u201A' {setText("\u201A");}
+    	| '\u201B' {setText("\u201B");}
+        | '\u201C' {setText("\u201C");}
+    	| '\u201D' {setText("\u201D");}
+    	| '\u201E' {setText("\u201E");}
+    	| '\u201F' {setText("\u201F");}
         |   '\''   {setText("\'");}
         |   '/'    {setText("/");}
         |   '\\'   {setText("\\");}
@@ -1005,11 +1095,12 @@ ESC
 String
 @init{StringBuilder lBuf = new StringBuilder();}
     :
-           '\''
+           tok=SingleQuote
            ( escaped=ESC {lBuf.append(getText());} |
              normal=~('\''|'\\'|'\n'|'\r')     {lBuf.appendCodePoint(normal);} )*
-           '\''
-           {setText(lBuf.toString());}
+           ( SingleQuote {setText(lBuf.toString());} 
+           | ( '\n' | '\r')  {error("Found newline in string "+lBuf.toString(), input, tok, false);})
+           
     ;
 
 Comment

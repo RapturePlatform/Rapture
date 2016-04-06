@@ -482,7 +482,7 @@ public class RaptureURI implements Cloneable {
         /**
          * Attempt to parse an input {@link String}. This method should be used to parse the input and then retrieve the resulting parts using methods like
          * {@link #getAuthority()}, {@link #getScheme()}, etc. {@link Parser} is a stateful object. For example:
-         * <p/>
+         * <p>
          * 
          * <pre>
          * URIParser parser = new URIParser(input, defaultScheme);
@@ -678,5 +678,22 @@ public class RaptureURI implements Cloneable {
 
     public RaptureURI withoutElement() {
         return builder(this).element(null).build();
+    }
+    
+    public static RaptureURI newScheme(String uri, Scheme newScheme) {
+        RaptureURI retVal = new RaptureURI(uri);
+        retVal.scheme = newScheme;
+        return retVal;
+    }
+    
+    public static RaptureURI newScheme(RaptureURI uri, Scheme newScheme) {
+        RaptureURI retVal = null;
+		try {
+			retVal = (RaptureURI) uri.clone();
+	        retVal.scheme = newScheme;
+		} catch (CloneNotSupportedException e) {
+			log.info("This can't happen", e);
+		}
+        return retVal;
     }
 }

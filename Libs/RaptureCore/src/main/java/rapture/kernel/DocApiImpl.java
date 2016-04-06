@@ -667,6 +667,20 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
     public String putDoc(CallingContext context, String docUri, String content) {
         return putDocWithEventContext(context, docUri, content, null).getDocumentURI();
     }
+    
+    public void putDocEphemeral(CallingContext context, String docUri, String content) {
+    	RaptureURI uri = new RaptureURI(docUri);
+        Repository ephemeral = getEphemeralRepo();
+        ephemeral.createStage(uri.getAuthority());
+        ephemeral.addToStage(uri.getAuthority(), docUri, content, false);
+        ephemeral.commitStage(uri.getAuthority(), "admin", "Temporary storage");
+    }
+
+    public String getDocEphemeral(CallingContext context, String docUri) {
+    	// RaptureURI uri = new RaptureURI(docUri);
+        Repository ephemeral = getEphemeralRepo();
+        return ephemeral.getDocument(docUri);
+    }
 
     @SuppressWarnings("unchecked")
     public void runIndex(CallingContext context, IndexScriptPair indexScriptPair, String authority, String displayName, String content) {
@@ -683,7 +697,7 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
         Map<String, Object> extraVals = new HashMap<String, Object>();
         extraVals.put("document", JacksonUtil.getMapFromJson(content));
         extraVals.put("displayName", displayName);
-        ReflexValue value = rs.runProgram(context, walker, null, extraVals);
+        ReflexValue value = rs.runProgram(context, walker, null, extraVals, script);
         log.debug("Value is " + value.toString());
 
         IndexHandler indexHandler = Kernel.getIndex().getTrusted()
@@ -774,13 +788,11 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
             return ret;
         }
         
-        if (!docRepoExists(context, authority)) {
-            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST,  apiMessageCatalog.getMessage("NoSuchRepo", internalUri.toAuthString())); //$NON-NLS-1$
-        }
-        
-                
-         
         Repository repository = getRepoFromCache(authority);
+        if (repository == null) {
+        	throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST,  apiMessageCatalog.getMessage("NoSuchRepo", internalUri.toAuthString())); //$NON-NLS-1$
+        }
+
         String parentDocPath = internalUri.getDocPath() == null ? "" : internalUri.getDocPath();
         int startDepth = StringUtils.countMatches(parentDocPath, "/");
 

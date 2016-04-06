@@ -236,10 +236,12 @@ public class BaseServlet extends HttpServlet {
     }
 
     /**
-     * Is this session valid?
+     * Check this session is valid
      * 
-     * @param context
-     *            @
+     * @param context 
+     * @param entPath
+     * @param entCtx
+     * 
      */
     protected void validateContext(CallingContext context, String entPath, RaptureEntitlementsContext entCtx) {
         // Does the context match what we know?

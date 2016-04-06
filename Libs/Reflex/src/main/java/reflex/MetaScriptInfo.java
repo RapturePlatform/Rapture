@@ -38,8 +38,8 @@ public class MetaScriptInfo {
         returnInfo = new MetaReturn(retType, meta);
     }
     
-    public void addParameter(String parameterName, String parameterType, String description, MetaParamRequest paramRequest, String paramData) {
-        params.add(new MetaParam(parameterName, parameterType, description, paramRequest, paramData));
+    public void addParameter(String parameterName, String parameterType, String description) {
+        params.add(new MetaParam(parameterName, parameterType, description));
     }
     
     public MetaReturn getReturnInfo() {
@@ -57,4 +57,8 @@ public class MetaScriptInfo {
     public String getProperty(String name) {
         return properties.get(name);
     }
+
+	public Map<String, String> getProperties() {
+		return properties;
+	}
 }
