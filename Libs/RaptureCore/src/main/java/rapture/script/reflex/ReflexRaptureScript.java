@@ -75,416 +75,380 @@ import reflex.value.internal.ReflexNullValue;
  * @author amkimian
  */
 public class ReflexRaptureScript implements IRaptureScript {
-	private static Logger log = Logger.getLogger(ReflexRaptureScript.class);
+    private static Logger log = Logger.getLogger(ReflexRaptureScript.class);
 
-	private static final String EXCEPTION = "exception";
-	private String auditLogUri = null;
+    private static final String EXCEPTION = "exception";
+    private String auditLogUri = null;
 
-	public void setAuditLogUri(String uri) {
-		auditLogUri = uri;
-	}
+    public void setAuditLogUri(String uri) {
+        auditLogUri = uri;
+    }
 
-	private void addContextScope(ReflexTreeWalker walker, CallingContext context) {
-		walker.currentScope.assign("_ctx", context == null ? new ReflexNullValue() : new ReflexValue(context));
-		KernelScript kh = new KernelScript();
-		kh.setCallingContext(context);
-		walker.getReflexHandler().setApi(kh);
-		// walker.currentScope.assign("_rk", new ReflexValue(kh));
-		walker.currentScope.assign("_cfg", new ReflexValue(ConfigLoader.getConf()));
-		// addStandard(walker, context, kh);
-	}
+    private void addContextScope(ReflexTreeWalker walker, CallingContext context) {
+        walker.currentScope.assign("_ctx", context == null ? new ReflexNullValue() : new ReflexValue(context));
+        KernelScript kh = new KernelScript();
+        kh.setCallingContext(context);
+        walker.getReflexHandler().setApi(kh);
+        // walker.currentScope.assign("_rk", new ReflexValue(kh));
+        walker.currentScope.assign("_cfg", new ReflexValue(ConfigLoader.getConf()));
+        // addStandard(walker, context, kh);
+    }
 
-	private void addObjectExtra(ReflexTreeWalker walker, Map<String, ?> extra) {
+    private void addObjectExtra(ReflexTreeWalker walker, Map<String, ?> extra) {
 
-		walker.currentScope.assign("_params", new ReflexValue(extra));
-	}
+        walker.currentScope.assign("_params", new ReflexValue(extra));
+    }
 
-	private ReflexTreeWalker getParserWithStandardContext(CallingContext context, String script, Map<String, ?> extra)
-			throws RecognitionException {
-		ReflexTreeWalker walker = getStandardWalker(context, script);
-		if (extra != null && !extra.isEmpty()) {
-			addObjectExtra(walker, extra);
-		}
-		addContextScope(walker, context);
-		return walker;
-	}
+    private ReflexTreeWalker getParserWithStandardContext(CallingContext context, String script, Map<String, ?> extra) throws RecognitionException {
+        ReflexTreeWalker walker = getStandardWalker(context, script);
+        if (extra != null && !extra.isEmpty()) {
+            addObjectExtra(walker, extra);
+        }
+        addContextScope(walker, context);
+        return walker;
+    }
 
-	public ReflexParser getParser(CallingContext ctx, String script) throws RecognitionException {
-		ReflexLexer lexer = new ReflexLexer();
-		lexer.dataHandler = new ReflexIncludeHelper(ctx);
-		lexer.setCharStream(new ANTLRStringStream(script));
-		CommonTokenStream tokens = new CommonTokenStream(lexer);
-		ReflexParser parser = new ReflexParser(tokens);
-		parser.parse();
-		return parser;
-	}
+    public ReflexParser getParser(CallingContext ctx, String script) throws RecognitionException {
+        ReflexLexer lexer = new ReflexLexer();
+        lexer.dataHandler = new ReflexIncludeHelper(ctx);
+        lexer.setCharStream(new ANTLRStringStream(script));
+        CommonTokenStream tokens = new CommonTokenStream(lexer);
+        ReflexParser parser = new ReflexParser(tokens);
+        parser.parse();
+        return parser;
+    }
 
-	private ReflexTreeWalker getStandardWalker(CallingContext ctx, String script) throws RecognitionException {
-		ReflexLexer lexer = new ReflexLexer();
-		lexer.dataHandler = new ReflexIncludeHelper(ctx);
-		lexer.setCharStream(new ANTLRStringStream(script));
-		CommonTokenStream tokens = new CommonTokenStream(lexer);
-		ReflexParser parser = new ReflexParser(tokens);
-		CommonTree tree;
-		tree = (CommonTree) parser.parse().getTree();
-		CommonTreeNodeStream nodes = new CommonTreeNodeStream(tree);
-		ReflexTreeWalker walker = new ReflexTreeWalker(nodes, parser.languageRegistry);
-		walker.setReflexHandler(new AddingOutputReflexHandler());
-		walker.getReflexHandler().setOutputHandler(new SimpleCollectingOutputHandler());
-		walker.getReflexHandler().setOutputHandler(new DummyReflexOutputHandler());
-		walker.getReflexHandler().setDataHandler(new ReflexDataHelper(ctx));
-		walker.getReflexHandler().setIOHandler(new BlobOnlyIOHandler());
-		return walker;
-	}
+    private ReflexTreeWalker getStandardWalker(CallingContext ctx, String script) throws RecognitionException {
+        ReflexLexer lexer = new ReflexLexer();
+        lexer.dataHandler = new ReflexIncludeHelper(ctx);
+        lexer.setCharStream(new ANTLRStringStream(script));
+        CommonTokenStream tokens = new CommonTokenStream(lexer);
+        ReflexParser parser = new ReflexParser(tokens);
+        CommonTree tree;
+        tree = (CommonTree) parser.parse().getTree();
+        CommonTreeNodeStream nodes = new CommonTreeNodeStream(tree);
+        ReflexTreeWalker walker = new ReflexTreeWalker(nodes, parser.languageRegistry);
+        walker.setReflexHandler(new AddingOutputReflexHandler());
+        walker.getReflexHandler().setOutputHandler(new SimpleCollectingOutputHandler());
+        walker.getReflexHandler().setOutputHandler(new DummyReflexOutputHandler());
+        walker.getReflexHandler().setDataHandler(new ReflexDataHelper(ctx));
+        walker.getReflexHandler().setIOHandler(new BlobOnlyIOHandler());
+        return walker;
+    }
 
-	@Override
-	public boolean runFilter(CallingContext context, RaptureScript script, RaptureDataContext data,
-			Map<String, Object> parameters) {
+    @Override
+    public boolean runFilter(CallingContext context, RaptureScript script, RaptureDataContext data, Map<String, Object> parameters) {
 
-		// A filter is basically a program that returns true or false. No return
-		// is equivalent to false
-		try {
-			ReflexTreeWalker walker = getParserWithStandardContext(context, script.getScript(), parameters);
-			ReflexNode res = walker.walk();
-			return res.evaluateWithoutScope(new NullDebugger()).asBoolean();
-		} catch (RecognitionException e) {
-			String message = getErrorInfo(e.getMessage(), script, e.line, e.charPositionInLine);
-			Kernel.writeAuditEntry(EXCEPTION, 2, message);
-			throw new ReflexException(e.line, message, e);
-		}
-	}
+        // A filter is basically a program that returns true or false. No return
+        // is equivalent to false
+        try {
+            ReflexTreeWalker walker = getParserWithStandardContext(context, script.getScript(), parameters);
+            ReflexNode res = walker.walk();
+            return res.evaluateWithoutScope(new NullDebugger()).asBoolean();
+        } catch (RecognitionException e) {
+            String message = getErrorInfo(e.getMessage(), script, e.line, e.charPositionInLine);
+            Kernel.writeAuditEntry(EXCEPTION, 2, message);
+            throw new ReflexException(e.line, message, e);
+        }
+    }
 
-	@Override
-	public void runIndexEntry(CallingContext context, RaptureScript script, IndexHandler indexHandler,
-			RaptureDataContext data) {
-		try {
-			ReflexTreeWalker walker = getParserWithStandardContext(context, script.getScript(), null);
-			walker.currentScope.assign("_data", new ReflexValue(JacksonUtil.getHashFromObject(data)));
-			walker.currentScope.assign("_index", new ReflexValue(indexHandler));
-			ReflexNode res = walker.walk();
-			res.evaluateWithoutScope(new NullDebugger());
-		} catch (RecognitionException e) {
-			String message = getErrorInfo(e.getMessage(), script, e.line, e.charPositionInLine);
-			Kernel.writeAuditEntry(EXCEPTION, 2, message);
-			throw new ReflexException(e.line, message, e);
-		}
-	}
+    @Override
+    public void runIndexEntry(CallingContext context, RaptureScript script, IndexHandler indexHandler, RaptureDataContext data) {
+        try {
+            ReflexTreeWalker walker = getParserWithStandardContext(context, script.getScript(), null);
+            walker.currentScope.assign("_data", new ReflexValue(JacksonUtil.getHashFromObject(data)));
+            walker.currentScope.assign("_index", new ReflexValue(indexHandler));
+            ReflexNode res = walker.walk();
+            res.evaluateWithoutScope(new NullDebugger());
+        } catch (RecognitionException e) {
+            String message = getErrorInfo(e.getMessage(), script, e.line, e.charPositionInLine);
+            Kernel.writeAuditEntry(EXCEPTION, 2, message);
+            throw new ReflexException(e.line, message, e);
+        }
+    }
 
-	@Override
-	public List<Object> runMap(CallingContext context, RaptureScript script, RaptureDataContext data,
-			Map<String, Object> parameters) {
-		try {
-			ReflexTreeWalker walker = getParserWithStandardContext(context, script.getScript(), parameters);
-			walker.currentScope.assign("_data", new ReflexValue(JacksonUtil.getHashFromObject(data)));
-			ReflexNode res = walker.walk();
-			List<ReflexValue> ret = res.evaluateWithoutScope(new NullDebugger()).asList();
-			List<Object> realRet = new ArrayList<Object>(ret.size());
-			for (ReflexValue v : ret) {
-				realRet.add(v.asObject());
-			}
-			return realRet;
-		} catch (RecognitionException e) {
-			String message = getErrorInfo(e.getMessage(), script, e.line, e.charPositionInLine);
-			Kernel.writeAuditEntry(EXCEPTION, 2, message);
-			throw new ReflexException(e.line, message, e);
-		}
-	}
+    @Override
+    public List<Object> runMap(CallingContext context, RaptureScript script, RaptureDataContext data, Map<String, Object> parameters) {
+        try {
+            ReflexTreeWalker walker = getParserWithStandardContext(context, script.getScript(), parameters);
+            walker.currentScope.assign("_data", new ReflexValue(JacksonUtil.getHashFromObject(data)));
+            ReflexNode res = walker.walk();
+            List<ReflexValue> ret = res.evaluateWithoutScope(new NullDebugger()).asList();
+            List<Object> realRet = new ArrayList<Object>(ret.size());
+            for (ReflexValue v : ret) {
+                realRet.add(v.asObject());
+            }
+            return realRet;
+        } catch (RecognitionException e) {
+            String message = getErrorInfo(e.getMessage(), script, e.line, e.charPositionInLine);
+            Kernel.writeAuditEntry(EXCEPTION, 2, message);
+            throw new ReflexException(e.line, message, e);
+        }
+    }
 
-	@Override
-	public String runOperation(CallingContext context, RaptureScript script, String ctx, Map<String, Object> params) {
-		try {
-			ReflexTreeWalker walker = getParserWithStandardContext(context, script.getScript(), params);
-			walker.currentScope.assign("_ctx", new ReflexValue(ctx));
-			ReflexNode res = walker.walk();
-			return res.evaluateWithoutScope(new NullDebugger()).toString();
-		} catch (RecognitionException e) {
-			String message = getErrorInfo(e.getMessage(), script, e.line, e.charPositionInLine);
-			Kernel.writeAuditEntry(EXCEPTION, 2, message);
-			throw new ReflexException(e.line, message, e);
-		}
-	}
+    @Override
+    public String runOperation(CallingContext context, RaptureScript script, String ctx, Map<String, Object> params) {
+        try {
+            ReflexTreeWalker walker = getParserWithStandardContext(context, script.getScript(), params);
+            walker.currentScope.assign("_ctx", new ReflexValue(ctx));
+            ReflexNode res = walker.walk();
+            return res.evaluateWithoutScope(new NullDebugger()).toString();
+        } catch (RecognitionException e) {
+            String message = getErrorInfo(e.getMessage(), script, e.line, e.charPositionInLine);
+            Kernel.writeAuditEntry(EXCEPTION, 2, message);
+            throw new ReflexException(e.line, message, e);
+        }
+    }
 
-	@Override
-	public String runProgram(CallingContext context, IActivityInfo activity, RaptureScript script,
-			Map<String, Object> extraVals) {
-		return runProgram(context, activity, script, extraVals, -1);
-	}
-	
-	// how many lines to show (if possible) each side of the error
-	private static final int DEBUG_CONTEXT = 5;
-	
-	private String getErrorInfo(String message, RaptureScript script, int lineNum, int posInLine) {
-		StringBuilder msg = new StringBuilder();
-		msg.append(message).append(" in script ").append(script.getName()).append("\n");
+    @Override
+    public String runProgram(CallingContext context, IActivityInfo activity, RaptureScript script, Map<String, Object> extraVals) {
+        return runProgram(context, activity, script, extraVals, -1);
+    }
 
-		if (lineNum > 0) {
-			String[] lines = script.getScript().split("\n");
+    // how many lines to show (if possible) each side of the error
+    private static final int DEBUG_CONTEXT = 5;
 
-			int start = (lineNum > DEBUG_CONTEXT) ? lineNum - DEBUG_CONTEXT : 0;
-			int end = lineNum + DEBUG_CONTEXT;
-			if (end > lines.length)
-				end = lines.length;
-			while (start < end) {
-				String l = lines[start++];
-				msg.append(start).append(": ").append(l).append("\n");
-				if (start == lineNum) {
-					for (int i = -4; i < posInLine; i++)
-						msg.append("-");
-					for (int i = posInLine; i < l.length(); i++)
-						msg.append("^");
-				}
-			}
-		}
-		return msg.toString();
-	}
+    private String getErrorInfo(String message, RaptureScript script, int lineNum, int posInLine) {
+        StringBuilder msg = new StringBuilder();
+        msg.append(message).append(" in script ").append(script.getName()).append("\n");
 
-	public String runProgram(CallingContext context, IActivityInfo activity, RaptureScript script,
-			Map<String, Object> extraVals, int timeout) {
-		String ret = null;
-		if (script == null)
-			log.info("in runProgram: RaptureScript is null");
-		else
-			try {
-				MDCService.INSTANCE.setReflexMDC(script.getName());
-				// At this point we want to collect some information about the
-				// running
-				// script and use that to generate a blob that we can
-				// record to the system blob.
-				// it will contain information about who run this script, what
-				// script it was
-				// when it was run
-				// the output from the script
-				// the instrumentation from the script
+        if (lineNum > 0) {
+            String[] lines = script.getScript().split("\n");
 
-				ReflexTreeWalker walker = getParserWithStandardContext(context, script.getScript(), extraVals);
-				ReflexNode res = walker.walk();
-				ScriptRunInfoCollector collector = ScriptRunInfoCollector.createServerCollector(context,
-						script.getAddressURI().getFullPath());
-				ProgressDebugger progress = (timeout < 0)
-						? new TimeoutReflexDebugger(activity, script.getScript(), timeout)
-						: new ProgressDebugger(activity, script.getScript());
-				log.info("Running script " + getScriptName(script));
-				ReflexExecutor.injectSystemIntoScope(walker.currentScope);
-				
-                for (Map.Entry<String, Object> val : extraVals.entrySet()) {
-                    log.debug("Looking to inject " + val.getKey());
-                    ReflexValue v = walker.currentScope.resolve(val.getKey());
-                    if (v != null && v.getValue() != ReflexValue.Internal.VOID
-                            && v.getValue() != ReflexValue.Internal.NULL) {
-                        log.debug("Injecting " + v.asObject() + " as " + val.getKey());
-                        val.setValue(v.asObject());
-                    } else
-                        walker.currentScope.assign(val.getKey(),
-                                val.getValue() == null ? new ReflexNullValue() : new ReflexValue(val.getValue()));
-
+            int start = (lineNum > DEBUG_CONTEXT) ? lineNum - DEBUG_CONTEXT : 0;
+            int end = lineNum + DEBUG_CONTEXT;
+            if (end > lines.length) end = lines.length;
+            while (start < end) {
+                String l = lines[start++];
+                msg.append(start).append(": ").append(l).append("\n");
+                if (start == lineNum) {
+                    for (int i = -4; i < posInLine; i++)
+                        msg.append("-");
+                    for (int i = posInLine; i < l.length(); i++)
+                        msg.append("^");
                 }
-                
-                if (timeout <= 0) {
-					ret = res.evaluateWithoutScope(progress).toString();
-				} else {
-					// TODO replace this with abortable invocation
-					ret = res.evaluateWithoutScope(progress).toString();
-				}
-				progress.getInstrumenter().log();
-				if (walker.getReflexHandler() instanceof AddingOutputReflexHandler) {
-					AddingOutputReflexHandler aorf = (AddingOutputReflexHandler) walker.getReflexHandler();
-					SimpleCollectingOutputHandler sc = aorf.getOutputHandlerLike(SimpleCollectingOutputHandler.class);
-					collector.addOutput(sc.getLog());
-				}
-				collector.addInstrumentationLog(progress.getInstrumenter().getTextLog());
-				// Now record collector
+            }
+        }
+        return msg.toString();
+    }
 
-				// Audit Log is NothingLog so this doesn't help
+    public String runProgram(CallingContext context, IActivityInfo activity, RaptureScript script, Map<String, Object> extraVals, int timeout) {
+        if (script == null) {
+            log.info("in runProgram: RaptureScript is null");
+            return null;
+        } else try {
+            MDCService.INSTANCE.setReflexMDC(script.getName());
+            ScriptRunInfoCollector collector = ScriptRunInfoCollector.createServerCollector(context, script.getAddressURI().getFullPath());
+            
+            log.info("Running script " + getScriptName(script));
 
-				if (auditLogUri != null) {
-					Kernel.getAudit().writeAuditEntry(context, auditLogUri, "debug", 1, collector.getBlobContent());
-				} else {
-					ScriptCollectorHelper.writeCollector(context, collector);
-				}
-			} catch (RecognitionException e) {
-				String message = getErrorInfo(e.getMessage(), script, e.line, e.charPositionInLine);
-				Kernel.writeAuditEntry(EXCEPTION, 2, message);
-				throw new ReflexException(e.line, message, e);
-			} catch (ReflexException e) {
-				throw new ReflexException(e.getLineNumber(), getErrorInfo(e.getMessage(), script, e.getLineNumber(), 0), e);
-			} finally {
-				MDCService.INSTANCE.clearReflexMDC();
-			}
-		return ret;
-	}
+            ScriptResult res = _doRunProgram(context, activity, script, extraVals, -1, ScriptRunInfoCollector.createServerCollector(context, "remote"));
+            if (auditLogUri != null) {
+                Kernel.getAudit().writeAuditEntry(context, auditLogUri, "debug", 1, collector.getBlobContent());
+            }
+            return res.getReturnValue();
+        } catch (RecognitionException e) {
+            String message = getErrorInfo(e.getMessage(), script, e.line, e.charPositionInLine);
+            Kernel.writeAuditEntry(EXCEPTION, 2, message);
+            throw new ReflexException(e.line, message, e);
+        } catch (ReflexException e) {
+            throw new ReflexException(e.getLineNumber(), getErrorInfo(e.getMessage(), script, e.getLineNumber(), 0), e);
+        } finally {
+            MDCService.INSTANCE.clearReflexMDC();
+        }
+    }
 
-	private String getScriptName(RaptureScript script) {
-		if (script.getAuthority() == null) {
-			return script.getName();
-		} else {
-			return script.getStorageLocation().toString();
-		}
-	}
+    private String getScriptName(RaptureScript script) {
+        if (script.getAuthority() == null) {
+            return script.getName();
+        } else {
+            return script.getStorageLocation().toString();
+        }
+    }
 
-	@Override
-	public ScriptResult runProgramExtended(CallingContext context, IActivityInfo activity, RaptureScript script,
-			Map<String, Object> params) {
-		ScriptResult res = new ScriptResult();
-		try {
-			ReflexTreeWalker walker = getParserWithStandardContext(context, script.getScript(), params);
-			ScriptRunInfoCollector collector = ScriptRunInfoCollector.createServerCollector(context, "remote");
-			ProgressDebugger progress = new ProgressDebugger(activity, script.getScript());
-			// Setup an alternate output handler, and a standard data handler
-			walker.getReflexHandler().setDataHandler(new ReflexDataHelper(context));
-			walker.getReflexHandler().setOutputHandler(new ScriptResultOutputHandler(res));
-			ReflexNode execRes = walker.walk();
-			ReflexValue val = execRes.evaluateWithoutScope(progress);
-			if (walker.getReflexHandler() instanceof AddingOutputReflexHandler) {
-				AddingOutputReflexHandler aorf = (AddingOutputReflexHandler) walker.getReflexHandler();
-				SimpleCollectingOutputHandler sc = aorf.getOutputHandlerLike(SimpleCollectingOutputHandler.class);
-				collector.addOutput(sc.getLog());
-			}
-			collector.addInstrumentationLog(progress.getInstrumenter().getTextLog());
-			// Now record collector
-			ScriptCollectorHelper.writeCollector(context, collector);
-			res.setReturnValue(val.asString());
-		} catch (RecognitionException e) {
-			String message = getErrorInfo(e.getMessage(), script, e.line, e.charPositionInLine);
-			Kernel.writeAuditEntry(EXCEPTION, 2, message);
-			throw new ReflexException(e.line, message, e);
-		} catch (ReflexException e) {
-			res.setInError(true);
-			res.setReturnValue(getErrorInfo(e.getMessage(), script, e.getLineNumber(), 0));
-			res.getOutput().add("Error when running script");
-		}
-		return res;
-	}
+    @Override
+    public ScriptResult runProgramExtended(CallingContext context, IActivityInfo activity, RaptureScript script, Map<String, Object> params) {
+        ScriptResult res = new ScriptResult();
 
-	public String runProgramWithScope(CallingContext context, String script, Scope s) throws RecognitionException {
-		IReflexHandler handler = new ReflexHandler(context);
-		ReflexTreeWalker walker = ReflexExecutor.getWalkerForProgram(script, handler);
-		walker.setReflexHandler(handler);
+        try {
+            res = _doRunProgram(context, activity, script, params, -1, ScriptRunInfoCollector.createServerCollector(context, "remote"));
+        } catch (RecognitionException e) {
+            String message = getErrorInfo(e.getMessage(), script, e.line, e.charPositionInLine);
+            Kernel.writeAuditEntry(EXCEPTION, 2, message);
+            throw new ReflexException(e.line, message, e);
+        } catch (ReflexException e) {
+            res.setInError(true);
+            res.setReturnValue(getErrorInfo(e.getMessage(), script, e.getLineNumber(), 0));
+            res.getOutput().add("Error when running script");
+        }
+        return res;
+    }
 
-		final StringBuilder sb = new StringBuilder();
-		walker.getReflexHandler().setOutputHandler(new IReflexOutputHandler() {
+    private ScriptResult _doRunProgram(CallingContext context, IActivityInfo activity, RaptureScript script, Map<String, Object> params, int timeout,
+            ScriptRunInfoCollector collector) throws RecognitionException, ReflexException {
+        ScriptResult res = new ScriptResult();
+            ReflexTreeWalker walker = getParserWithStandardContext(context, script.getScript(), params);
+            ProgressDebugger progress = (timeout > 0) ? new TimeoutReflexDebugger(activity, script.getScript(), timeout)
+                    : new ProgressDebugger(activity, script.getScript());
+            // Setup an alternate output handler, and a standard data handler
+            walker.getReflexHandler().setDataHandler(new ReflexDataHelper(context));
+            walker.getReflexHandler().setOutputHandler(new ScriptResultOutputHandler(res));
+            ReflexNode execRes = walker.walk();
 
-			@Override
-			public boolean hasCapability() {
-				return true;
-			}
+            ReflexExecutor.injectSystemIntoScope(walker.currentScope);
 
-			@Override
-			public void printLog(String text) {
-				sb.append(text);
-			}
+            for (Map.Entry<String, Object> val : params.entrySet()) {
+                log.debug("Looking to inject " + val.getKey());
+                ReflexValue v = walker.currentScope.resolve(val.getKey());
+                if (v != null && v.getValue() != ReflexValue.Internal.VOID && v.getValue() != ReflexValue.Internal.NULL) {
+                    log.debug("Injecting " + v.asObject() + " as " + val.getKey());
+                    val.setValue(v.asObject());
+                } else walker.currentScope.assign(val.getKey(), val.getValue() == null ? new ReflexNullValue() : new ReflexValue(val.getValue()));
 
-			@Override
-			public void printOutput(String text) {
-				sb.append(text);
-			}
+            }
+            // TODO replace this with abortable invocation
+            if (timeout > 0) log.info("Warning: script is not abortable");
+            ReflexValue val = execRes.evaluateWithoutScope(progress);
+            progress.getInstrumenter().log();
 
-			@Override
-			public void setApi(ScriptingApi api) {
+            if (walker.getReflexHandler() instanceof AddingOutputReflexHandler) {
+                AddingOutputReflexHandler aorf = (AddingOutputReflexHandler) walker.getReflexHandler();
+                SimpleCollectingOutputHandler sc = aorf.getOutputHandlerLike(SimpleCollectingOutputHandler.class);
+                collector.addOutput(sc.getLog());
+            }
+            collector.addInstrumentationLog(progress.getInstrumenter().getTextLog());
+            // Now record collector
+            ScriptCollectorHelper.writeCollector(context, collector);
+            res.setReturnValue(val.asString());
+        return res;
+    }
 
-			}
+    public String runProgramWithScope(CallingContext context, String script, Scope s) throws RecognitionException {
+        IReflexHandler handler = new ReflexHandler(context);
+        ReflexTreeWalker walker = ReflexExecutor.getWalkerForProgram(script, handler);
+        walker.setReflexHandler(handler);
 
-		});
-		ReflexNode res = walker.walk();
-		res.evaluate(new NullDebugger(), s);
-		s = walker.currentScope;
-		return sb.toString();
-	}
+        final StringBuilder sb = new StringBuilder();
+        walker.getReflexHandler().setOutputHandler(new IReflexOutputHandler() {
 
-	public ReflexValue runProgram(CallingContext context, ReflexTreeWalker walker, IActivityInfo activity,
-			Map<String, Object> extraVals, RaptureScript script) {
-		walker.getReflexHandler().setDataHandler(new ReflexDataHelper(context));
-		walker.currentScope.assign("_params", new ReflexValue(extraVals));
-		ReflexNode res;
-		try {
-			res = walker.walk();
-			return res.evaluateWithoutScope(new ProgressDebugger(activity, ""));
-		} catch (RecognitionException e) {
-			String message = getErrorInfo(e.getMessage(), script, e.line, e.charPositionInLine);
-			Kernel.writeAuditEntry(EXCEPTION, 2, message);
-			throw new ReflexException(e.line, message, e);
-		}
-	}
+            @Override
+            public boolean hasCapability() {
+                return true;
+            }
 
-	public String runProgramWithSuspend(CallingContext context, RaptureScript script, IActivityInfo activity,
-			Map<String, Object> extraVals, PipelineReflexSuspendHandler suspendHandler,
-			IReflexOutputHandler outputHandler) {
-		try {
-			ScriptResult result = new ScriptResult();
-			ReflexTreeWalker walker = getParserWithStandardContext(context, script.getScript(), extraVals);
-			walker.getReflexHandler().setSuspendHandler(suspendHandler);
-			if (outputHandler != null) {
-				walker.getReflexHandler().setOutputHandler(outputHandler);
-			} else {
-				walker.getReflexHandler().setOutputHandler(new ScriptResultOutputHandler(result));
-			}
-			ReflexNode res = walker.walk();
-			ProgressDebugger progress = new ProgressDebugger(activity, script.getScript());
-			String scriptName = getScriptName(script);
-			if (scriptName == null) {
-				log.info("Running anonymous Reflex script");
-			} else {
-				log.info(String.format("Running script with name '%s'", scriptName));
-			}
-			ReflexValue retVal = res.evaluateWithoutScope(progress);
-			for (Map.Entry<String, Object> val : extraVals.entrySet()) {
-				ReflexValue v = walker.currentScope.resolve(val.getKey());
-				if (v != null && v.getValue() != ReflexValue.Internal.VOID
-						&& v.getValue() != ReflexValue.Internal.NULL) {
-					val.setValue(v.asObject());
-				}
-			}
-			progress.getInstrumenter().log();
-			return retVal.toString();
-		} catch (RecognitionException e) {
-			String message = getErrorInfo(e.getMessage(), script, e.line, e.charPositionInLine);
-			Kernel.writeAuditEntry(EXCEPTION, 2, message);
-			throw new ReflexException(e.line, message, e);
-		}
-	}
+            @Override
+            public void printLog(String text) {
+                sb.append(text);
+            }
 
-	public String runProgramWithResume(CallingContext context, RaptureScript script, IActivityInfo activity,
-			Map<String, Object> extraVals, PipelineReflexSuspendHandler suspendHandler,
-			IReflexOutputHandler outputHandler, String scopeContext) {
-		try {
-			ReflexTreeWalker walker = getParserWithStandardContext(context, script.getScript(), extraVals);
-			walker.getReflexHandler().setSuspendHandler(suspendHandler);
-			walker.getReflexHandler().setOutputHandler(outputHandler);
-			ReflexNode res = walker.walk();
-			Scope scope = JacksonUtil.objectFromJson(scopeContext, Scope.class);
-			ProgressDebugger progress = new ProgressDebugger(activity, script.getScript());
-			log.info("Running script " + getScriptName(script));
-			res.evaluateWithResume(progress, scope);
-			for (Map.Entry<String, Object> val : extraVals.entrySet()) {
-				ReflexValue v = walker.currentScope.resolve(val.getKey());
-				if (v != null && v.getValue() != ReflexValue.Internal.VOID
-						&& v.getValue() != ReflexValue.Internal.NULL) {
-					val.setValue(v.asObject());
-				}
-			}
-			progress.getInstrumenter().log();
-			return JacksonUtil.jsonFromObject(res.getScope());
-		} catch (RecognitionException e) {
-			String message = getErrorInfo(e.getMessage(), script, e.line, e.charPositionInLine);
-			Kernel.writeAuditEntry(EXCEPTION, 2, message);
-			throw new ReflexException(e.line, message, e);
-		}
-	}
+            @Override
+            public void printOutput(String text) {
+                sb.append(text);
+            }
 
-	@Override
-	public String validateProgram(CallingContext context, RaptureScript script) {
-		try {
-			// We call this as it parses the program and throws an exception if
-			// the script
-			// is not parseable.
-			getStandardWalker(context, script.getScript());
-		} catch (Exception e) {
-			e.printStackTrace();
-			if (e.getMessage() == null) {
-				return e.getClass().toString();
-			} else {
-				return e.getMessage();
-			}
-		}
-		return "";
-	}
+            @Override
+            public void setApi(ScriptingApi api) {
+
+            }
+
+        });
+        ReflexNode res = walker.walk();
+        res.evaluate(new NullDebugger(), s);
+        s = walker.currentScope;
+        return sb.toString();
+    }
+
+    public ReflexValue runProgram(CallingContext context, ReflexTreeWalker walker, IActivityInfo activity, Map<String, Object> extraVals,
+            RaptureScript script) {
+        walker.getReflexHandler().setDataHandler(new ReflexDataHelper(context));
+        walker.currentScope.assign("_params", new ReflexValue(extraVals));
+        ReflexNode res;
+        try {
+            res = walker.walk();
+            return res.evaluateWithoutScope(new ProgressDebugger(activity, ""));
+        } catch (RecognitionException e) {
+            String message = getErrorInfo(e.getMessage(), script, e.line, e.charPositionInLine);
+            Kernel.writeAuditEntry(EXCEPTION, 2, message);
+            throw new ReflexException(e.line, message, e);
+        }
+    }
+
+    public String runProgramWithSuspend(CallingContext context, RaptureScript script, IActivityInfo activity, Map<String, Object> extraVals,
+            PipelineReflexSuspendHandler suspendHandler, IReflexOutputHandler outputHandler) {
+        try {
+            ScriptResult result = new ScriptResult();
+            ReflexTreeWalker walker = getParserWithStandardContext(context, script.getScript(), extraVals);
+            walker.getReflexHandler().setSuspendHandler(suspendHandler);
+            if (outputHandler != null) {
+                walker.getReflexHandler().setOutputHandler(outputHandler);
+            } else {
+                walker.getReflexHandler().setOutputHandler(new ScriptResultOutputHandler(result));
+            }
+            ReflexNode res = walker.walk();
+            ProgressDebugger progress = new ProgressDebugger(activity, script.getScript());
+            String scriptName = getScriptName(script);
+            if (scriptName == null) {
+                log.info("Running anonymous Reflex script");
+            } else {
+                log.info(String.format("Running script with name '%s'", scriptName));
+            }
+            ReflexValue retVal = res.evaluateWithoutScope(progress);
+            for (Map.Entry<String, Object> val : extraVals.entrySet()) {
+                ReflexValue v = walker.currentScope.resolve(val.getKey());
+                if (v != null && v.getValue() != ReflexValue.Internal.VOID && v.getValue() != ReflexValue.Internal.NULL) {
+                    val.setValue(v.asObject());
+                }
+            }
+            progress.getInstrumenter().log();
+            return retVal.toString();
+        } catch (RecognitionException e) {
+            String message = getErrorInfo(e.getMessage(), script, e.line, e.charPositionInLine);
+            Kernel.writeAuditEntry(EXCEPTION, 2, message);
+            throw new ReflexException(e.line, message, e);
+        }
+    }
+
+    public String runProgramWithResume(CallingContext context, RaptureScript script, IActivityInfo activity, Map<String, Object> extraVals,
+            PipelineReflexSuspendHandler suspendHandler, IReflexOutputHandler outputHandler, String scopeContext) {
+        try {
+            ReflexTreeWalker walker = getParserWithStandardContext(context, script.getScript(), extraVals);
+            walker.getReflexHandler().setSuspendHandler(suspendHandler);
+            walker.getReflexHandler().setOutputHandler(outputHandler);
+            ReflexNode res = walker.walk();
+            Scope scope = JacksonUtil.objectFromJson(scopeContext, Scope.class);
+            ProgressDebugger progress = new ProgressDebugger(activity, script.getScript());
+            log.info("Running script " + getScriptName(script));
+            res.evaluateWithResume(progress, scope);
+            for (Map.Entry<String, Object> val : extraVals.entrySet()) {
+                ReflexValue v = walker.currentScope.resolve(val.getKey());
+                if (v != null && v.getValue() != ReflexValue.Internal.VOID && v.getValue() != ReflexValue.Internal.NULL) {
+                    val.setValue(v.asObject());
+                }
+            }
+            progress.getInstrumenter().log();
+            return JacksonUtil.jsonFromObject(res.getScope());
+        } catch (RecognitionException e) {
+            String message = getErrorInfo(e.getMessage(), script, e.line, e.charPositionInLine);
+            Kernel.writeAuditEntry(EXCEPTION, 2, message);
+            throw new ReflexException(e.line, message, e);
+        }
+    }
+
+    @Override
+    public String validateProgram(CallingContext context, RaptureScript script) {
+        try {
+            // We call this as it parses the program and throws an exception if
+            // the script
+            // is not parseable.
+            getStandardWalker(context, script.getScript());
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (e.getMessage() == null) {
+                return e.getClass().toString();
+            } else {
+                return e.getMessage();
+            }
+        }
+        return "";
+    }
 }

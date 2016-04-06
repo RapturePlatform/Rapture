@@ -27,6 +27,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,20 +40,20 @@ import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.CommonTreeNodeStream;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import rapture.common.CallingContext;
 import rapture.common.RaptureConstants;
 import rapture.common.RaptureFolderInfo;
-import rapture.common.RaptureParameter;
 import rapture.common.RaptureScript;
 import rapture.common.RaptureScriptLanguage;
 import rapture.common.RaptureScriptPurpose;
 import rapture.common.RaptureSnippet;
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
+import rapture.common.ScriptResult;
 import rapture.common.api.ScriptingApi;
+import rapture.config.ConfigLoader;
 import reflex.IReflexHandler;
 import reflex.IReflexOutputHandler;
 import reflex.ReflexLexer;
@@ -89,8 +90,15 @@ public class ScriptApiFileTest extends AbstractFileTest {
         Kernel.INSTANCE.clearRepoCache(false);
         Kernel.getAudit().createAuditLog(ContextFactory.getKernelUser(), new RaptureURI(RaptureConstants.DEFAULT_AUDIT_URI, Scheme.LOG).getAuthority(),
                 "LOG {} using FILE {prefix=\"/tmp/" + auth + "\"}");
-        Kernel.getLock().createLockManager(ContextFactory.getKernelUser(), "lock://kernel", "LOCKING USING DUMMY {}", "");
+        Kernel.getLock().createLockManager(callingContext, "lock://kernel", "LOCKING USING DUMMY {}", "");
         scriptImpl = new ScriptApiImpl(Kernel.INSTANCE);
+        
+        Kernel.getIdGen().setupDefaultIdGens(callingContext, false);
+        String systemBlobRepo = "//sys.blob";
+        Kernel.getBlob().deleteBlobRepo(callingContext, systemBlobRepo);
+        Kernel.getBlob().createBlobRepo(callingContext, systemBlobRepo, ConfigLoader.getConf().DefaultSystemBlobConfig,
+                ConfigLoader.getConf().DefaultSystemBlobFoldersConfig);
+
     }
 
     @Test
@@ -100,7 +108,7 @@ public class ScriptApiFileTest extends AbstractFileTest {
         script.setAuthority(auth);
         script.setName("Three/Boats/Down/From/The/Candy");
         script.setPurpose(RaptureScriptPurpose.OPERATION);
-        script.setParameters(new ArrayList<RaptureParameter>());
+        script.setParameters(Collections.EMPTY_LIST);
         String scriptWrite = "// I'm a market square hero";
         script.setScript(scriptWrite);
         scriptImpl.putScript(ContextFactory.getKernelUser(), "//" + UUID.randomUUID(), script);
@@ -114,7 +122,7 @@ public class ScriptApiFileTest extends AbstractFileTest {
         script.setLanguage(RaptureScriptLanguage.REFLEX);
         script.setName("Grendel");
         script.setPurpose(RaptureScriptPurpose.PROGRAM);
-        script.setParameters(new ArrayList<RaptureParameter>());
+        script.setParameters(Collections.EMPTY_LIST);
         String scriptWrite = "// do nothing";
         script.setScript(scriptWrite);
         scriptImpl.putScript(ContextFactory.getKernelUser(), "//" + UUID.randomUUID(), script);
@@ -129,7 +137,7 @@ public class ScriptApiFileTest extends AbstractFileTest {
         script.setLanguage(RaptureScriptLanguage.REFLEX);
         script.setName("Candy");
         script.setPurpose(RaptureScriptPurpose.PROGRAM);
-        script.setParameters(new ArrayList<RaptureParameter>());
+        script.setParameters(Collections.EMPTY_LIST);
         String scriptWrite = "// do nothing";
         script.setScript(scriptWrite);
         scriptImpl.putScript(ContextFactory.getKernelUser(), script.getAddressURI().toString(), script);
@@ -159,7 +167,7 @@ public class ScriptApiFileTest extends AbstractFileTest {
         script.setLanguage(RaptureScriptLanguage.REFLEX);
         script.setAuthority(auth);
         script.setPurpose(RaptureScriptPurpose.OPERATION);
-        script.setParameters(new ArrayList<RaptureParameter>());
+        script.setParameters(Collections.EMPTY_LIST);
         String scriptWrite = "// I'm a market square hero";
         script.setScript(scriptWrite);
 
@@ -236,7 +244,7 @@ public class ScriptApiFileTest extends AbstractFileTest {
         script.setLanguage(RaptureScriptLanguage.REFLEX);
         script.setAuthority(auth);
         script.setPurpose(RaptureScriptPurpose.OPERATION);
-        script.setParameters(new ArrayList<RaptureParameter>());
+        script.setParameters(Collections.EMPTY_LIST);
         String scriptWrite = "// I'm a market square hero";
         script.setScript(scriptWrite);
 
@@ -267,9 +275,8 @@ public class ScriptApiFileTest extends AbstractFileTest {
         removed = scriptImpl.deleteScriptsByUriPrefix(callingContext, uriPrefix);
         assertEquals(4, removed.size());
     }
-    
-    public String runScript(String program, Map<String, Object> injectedVars)
-            throws RecognitionException, ReflexParseException {
+
+    public String runScript(String program, Map<String, Object> injectedVars) throws RecognitionException, ReflexParseException {
         final StringBuilder sb = new StringBuilder();
 
         ReflexLexer lexer = new ReflexLexer();
@@ -307,8 +314,7 @@ public class ScriptApiFileTest extends AbstractFileTest {
 
         if (injectedVars != null && !injectedVars.isEmpty()) {
             for (Map.Entry<String, Object> kv : injectedVars.entrySet()) {
-                walker.currentScope.assign(kv.getKey(),
-                        kv.getValue() == null ? new ReflexNullValue() : new ReflexValue(kv.getValue()));
+                walker.currentScope.assign(kv.getKey(), kv.getValue() == null ? new ReflexNullValue() : new ReflexValue(kv.getValue()));
             }
         }
 
@@ -330,8 +336,7 @@ public class ScriptApiFileTest extends AbstractFileTest {
         String output = runScript(program, map);
         assertEquals("onetwo", output.trim());
     }
-        
-    @Ignore // Fails with RaptureException: No such IdGen idgen://sys/activity/id
+
     @Test
     public void testScriptWithParams() {
         RaptureScript script = new RaptureScript();
@@ -340,20 +345,11 @@ public class ScriptApiFileTest extends AbstractFileTest {
         script.setLanguage(RaptureScriptLanguage.REFLEX);
         script.setName("Candy");
         script.setPurpose(RaptureScriptPurpose.PROGRAM);
-        script.setParameters(new ArrayList<RaptureParameter>());
-        String scriptWrite = "meta do \n"+
-                                "return string,'Just the parameters put together'; \n"+
-                                "param 'a',string,'The a parameter'; \n"+
-                                "param 'b',string,'The b parameter'; \n"+
-                                "param 'c',string,'The c parameter'; \n"+
-                                "param 'd',string,'The d parameter'; \n"+
-                                "property 'color','blue'; \n"+
-                                "end \n"+
-                                "println(\"a is ${a}\"); \n"+
-                                "println(\"b is ${b}\"); \n"+
-                                "println(\"c is ${c}\"); \n"+
-                                "println(\"d is ${d}\"); \n"+
-                                "return \"${a}${b}${c}${d}\"; \n";
+        script.setParameters(Collections.EMPTY_LIST);
+        String scriptWrite = "meta do \n" + "return string,'Just the parameters put together'; \n" + "param 'a',string,'The a parameter'; \n"
+                + "param 'b',string,'The b parameter'; \n" + "param 'c',string,'The c parameter'; \n" + "param 'd',string,'The d parameter'; \n"
+                + "property 'color','blue'; \n" + "end \n" + "println(\"a is ${a}\"); \n" + "println(\"b is ${b}\"); \n" + "println(\"c is ${c}\"); \n"
+                + "println(\"d is ${d}\"); \n" + "return \"${a}${b}${c}${d}\"; \n";
         script.setScript(scriptWrite);
         scriptImpl.putScript(ctx, script.getAddressURI().toString(), script);
         RaptureScript scriptRead = scriptImpl.getScript(ctx, script.getAddressURI().toString());
@@ -364,8 +360,36 @@ public class ScriptApiFileTest extends AbstractFileTest {
         parameters.put("b", "B");
         parameters.put("c", "C");
         parameters.put("d", "D");
-
+        String name = "key";
         String ret = Kernel.getScript().runScript(ctx, script.getAddressURI().toString(), parameters);
         assertEquals("ABCD", ret);
-    }       
+    }
+
+    @Test
+    public void testScriptExtendedWithParams() {
+        RaptureScript script = new RaptureScript();
+        CallingContext ctx = ContextFactory.getKernelUser();
+        script.setAuthority(auth);
+        script.setLanguage(RaptureScriptLanguage.REFLEX);
+        script.setName("Candy");
+        script.setPurpose(RaptureScriptPurpose.PROGRAM);
+        script.setParameters(Collections.EMPTY_LIST);
+        String scriptWrite = "meta do \n" + "return string,'Just the parameters put together'; \n" + "param 'a',string,'The a parameter'; \n"
+                + "param 'b',string,'The b parameter'; \n" + "param 'c',string,'The c parameter'; \n" + "param 'd',string,'The d parameter'; \n"
+                + "property 'color','blue'; \n" + "end \n" + "println(\"a is ${a}\"); \n" + "println(\"b is ${b}\"); \n" + "println(\"c is ${c}\"); \n"
+                + "println(\"d is ${d}\"); \n" + "return \"${a}${b}${c}${d}\"; \n";
+        script.setScript(scriptWrite);
+        scriptImpl.putScript(ctx, script.getAddressURI().toString(), script);
+        RaptureScript scriptRead = scriptImpl.getScript(ctx, script.getAddressURI().toString());
+        assertEquals(scriptWrite, scriptRead.getScript());
+
+        Map<String, String> parameters = new HashMap<>();
+        parameters.put("a", "A");
+        parameters.put("b", "B");
+        parameters.put("c", "C");
+        parameters.put("d", "D");
+        String name = "key";
+        ScriptResult ret = Kernel.getScript().runScriptExtended(ctx, script.getAddressURI().toString(), parameters);
+        assertEquals("ABCD", ret.getReturnValue());
+    }
 }
