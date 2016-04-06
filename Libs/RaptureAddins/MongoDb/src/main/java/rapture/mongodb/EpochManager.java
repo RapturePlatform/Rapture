@@ -23,10 +23,14 @@
  */
 package rapture.mongodb;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
+import java.util.Iterator;
+
+import org.bson.Document;
+
+import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.FindOneAndUpdateOptions;
+import com.mongodb.client.model.ReturnDocument;
 
 /**
  * Useful tools for handling all things epoch related in Mongo
@@ -62,13 +66,15 @@ public class EpochManager {
      * 1L.
      * 
      * @param collection
-     *            - the DBCollection to the get next epoch for
+     *            - the MongoCollection to the get next epoch for
      * @return Long - a unique epoch value for this collection
      */
-    public static Long nextEpoch(final DBCollection collection) {
+    public static Long nextEpoch(final MongoCollection<Document> collection) {
+        FindOneAndUpdateOptions options = new FindOneAndUpdateOptions().upsert(true).returnDocument(ReturnDocument.AFTER);
+
         MongoRetryWrapper<Long> wrapper = new MongoRetryWrapper<Long>() {
-            public Long action(DBCursor cursor) {
-                DBObject ret = collection.findAndModify(getEpochQueryObject(), null, null, false, getIncUpdateObject(getUpdateObject()), true, true);
+            public Long action(FindIterable<Document> cursor) {
+                Document ret = collection.findOneAndUpdate(getEpochQueryObject(), getIncUpdateObject(getUpdateObject()), options);
                 return (Long) ret.get(SEQ);
             }
         };
@@ -80,17 +86,18 @@ public class EpochManager {
      * the given collection.
      * 
      * @param collection
-     *            - the DBCollection to interrogate
+     *            - the MongoCollection to interrogate
      * @return Long - the latest epoch currently in use
      */
-    public static Long getLatestEpoch(final DBCollection collection) {
+    public static Long getLatestEpoch(final MongoCollection<Document> collection) {
         MongoRetryWrapper<Long> wrapper = new MongoRetryWrapper<Long>() {
-            public DBCursor makeCursor() {
+            public FindIterable<Document> makeCursor() {
                 return collection.find(getEpochQueryObject());
             }
 
-            public Long action(DBCursor cursor) {
-                return (cursor.hasNext()) ? (Long) cursor.next().get(SEQ) : 0L;
+            public Long action(FindIterable<Document> cursor) {
+                Iterator<Document> iterator = cursor.iterator();
+                return (iterator.hasNext()) ? (Long) iterator.next().get(SEQ) : 0L;
             }
         };
         return wrapper.doAction();
@@ -100,28 +107,27 @@ public class EpochManager {
      * Return the starting point for a query object in a collection that
      * contains epochs. We never want to return the epoch document in a query.
      * 
-     * @return BasicDBObject - starting query object for a collection with
-     *         epochs
+     * @return Document - starting query object for a collection with epochs
      */
-    public static BasicDBObject getNotEqualEpochQueryObject() {
-        return new BasicDBObject(_ID, new BasicDBObject("$ne", EPOCH_DOCUMENT));
+    public static Document getNotEqualEpochQueryObject() {
+        return new Document(_ID, new Document("$ne", EPOCH_DOCUMENT));
     }
 
     /**
      * Query by _id. Since _id is always indexed by Mongo, this is guaranteed to
      * be fast.
      * 
-     * @return BasicDBObject - query for the epoch document
+     * @return Document - query for the epoch document
      */
-    private static BasicDBObject getEpochQueryObject() {
-        return new BasicDBObject(_ID, EPOCH_DOCUMENT);
+    private static Document getEpochQueryObject() {
+        return new Document(_ID, EPOCH_DOCUMENT);
     }
 
-    private static BasicDBObject getIncUpdateObject(BasicDBObject update) {
-        return new BasicDBObject(DOLLARINC, update);
+    private static Document getIncUpdateObject(Document update) {
+        return new Document(DOLLARINC, update);
     }
 
-    private static BasicDBObject getUpdateObject() {
-        return new BasicDBObject(SEQ, 1L);
+    private static Document getUpdateObject() {
+        return new Document(SEQ, 1L);
     }
 }

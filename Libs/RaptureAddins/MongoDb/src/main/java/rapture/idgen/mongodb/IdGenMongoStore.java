@@ -23,19 +23,20 @@
  */
 package rapture.idgen.mongodb;
 
+import java.net.HttpURLConnection;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.bson.Document;
 
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.FindOneAndUpdateOptions;
+import com.mongodb.client.model.ReturnDocument;
+
+import rapture.common.Messages;
 import rapture.common.exception.RaptureExceptionFactory;
 import rapture.dsl.idgen.IdGenStore;
 import rapture.mongodb.MongoDBFactory;
-
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBCollection;
-import com.mongodb.DBObject;
-import com.mongodb.client.MongoCollection;
 
 /**
  * A idgen implemented on MongoDb
@@ -53,6 +54,7 @@ public class IdGenMongoStore implements IdGenStore {
     private String tableName;
     private String idGenName = "idgen";
     private String instanceName = "default";
+    private Messages mongoMsgCatalog = new Messages("Mongo");
 
     public IdGenMongoStore() {
     }
@@ -62,55 +64,62 @@ public class IdGenMongoStore implements IdGenStore {
         this.instanceName = instanceName;
     }
 
-    private DBCollection getIdGenCollection() {
+    private MongoCollection<Document> getIdGenCollection() {
         return MongoDBFactory.getCollection(instanceName, tableName);
     }
 
-    private BasicDBObject getIncUpdateObject(BasicDBObject update) {
-        BasicDBObject realUpdate = new BasicDBObject();
+    private Document getIncUpdateObject(Document update) {
+        Document realUpdate = new Document();
         realUpdate.put(DOLLARINC, update);
         return realUpdate;
     }
 
     @Override
     public Long getNextIdGen(Long interval) {
-        BasicDBObject realUpdate = getIncUpdateObject(getUpdateObject(interval));
-         DBObject ret = getIdGenCollection().findAndModify(getQueryObject(), null, null, false, realUpdate, true,
-                true);
+        Document realUpdate = getIncUpdateObject(getUpdateObject(interval));
+        FindOneAndUpdateOptions options = new FindOneAndUpdateOptions()
+                .upsert(true)
+                .returnDocument(ReturnDocument.AFTER);
+
+        Document ret = getIdGenCollection().findOneAndUpdate(getQueryObject(), realUpdate, options);
+        if (ret == null) return null;
+        
         Boolean valid = (Boolean) ret.get(VALID);
         if (valid != null && !valid) {
-            throw RaptureExceptionFactory.create("IdGenerator has been deleted");
+            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST,
+                    mongoMsgCatalog.getMessage("IdGenerator"));
         }
         return (Long) ret.get(SEQ);
     }
 
-    private BasicDBObject getQueryObject() {
-        BasicDBObject query = new BasicDBObject();
+    private Document getQueryObject() {
+        Document query = new Document();
         query.put(IDGEN, idGenName);
         return query;
     }
 
-    private BasicDBObject getUpdateObject(Long interval) {
-        BasicDBObject update = new BasicDBObject();
+    private Document getUpdateObject(Long interval) {
+        Document update = new Document();
         update.put(SEQ, interval);
         return update;
     }
 
-    private BasicDBObject getInvalidator() {
-        BasicDBObject invalidator = new BasicDBObject();
-        invalidator.append("$set", new BasicDBObject().append(VALID, false));
+    private Document getInvalidator() {
+        Document invalidator = new Document();
+        invalidator.append("$set", new Document().append(VALID, false));
         return invalidator;
     }
-    
-    private BasicDBObject getRevalidator() {
-        BasicDBObject invalidator = new BasicDBObject();
-        invalidator.append("$set", new BasicDBObject().append(VALID, true));
+
+    private Document getRevalidator() {
+        Document invalidator = new Document();
+        invalidator.append("$set", new Document().append(VALID, true));
         return invalidator;
     }
 
     @Override
     public void resetIdGen(Long number) {
-        // RAP-2109 Just use maths to change the value. Trying to replace the object does not work.
+        // RAP-2109 Just use maths to change the value. Trying to replace the
+        // object does not work.
         Long currentValue = getNextIdGen(0L);
         Long decrement = number - currentValue;
         getNextIdGen(decrement);
@@ -127,13 +136,13 @@ public class IdGenMongoStore implements IdGenStore {
 
     @Override
     public void invalidate() {
-        BasicDBObject invalidator = getInvalidator();
-        getIdGenCollection().findAndModify(getQueryObject(), null, null, false, invalidator, true, true);
+        Document invalidator = getInvalidator();
+        getIdGenCollection().findOneAndUpdate(getQueryObject(), invalidator, new FindOneAndUpdateOptions().upsert(true));
     }
-    
+
     public void makeValid() {
-        BasicDBObject invalidator = getRevalidator();
-        getIdGenCollection().findAndModify(getQueryObject(), null, null, false, invalidator, true, true);
+        Document invalidator = getRevalidator();
+        getIdGenCollection().findOneAndUpdate(getQueryObject(), invalidator, new FindOneAndUpdateOptions().upsert(true));
     }
 
     @Override
