@@ -45,7 +45,6 @@ public class MongoDBBlobStore extends BaseBlobStore {
     private Messages mongoMsgCatalog = new Messages("Mongo");
 
     private BlobHandler blobHandler;
-    private Map<String, String> config;
 
     @Override
     public Boolean storeBlob(CallingContext context, RaptureURI blobUri, Boolean append, InputStream content) {
@@ -80,7 +79,6 @@ public class MongoDBBlobStore extends BaseBlobStore {
 
     @Override
     public void setConfig(Map<String, String> config) {
-        this.config = config;
         String bucket;
         if (config.containsKey(PRIMARY_CONFIG)) {
             bucket = config.get(PRIMARY_CONFIG);
@@ -90,7 +88,8 @@ public class MongoDBBlobStore extends BaseBlobStore {
             bucket = null;
         }
         if (StringUtils.isEmpty(bucket)) {
-            throw RaptureExceptionFactory.create("No prefix or grid in mongodb blob repository configuration");
+            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST,
+                    mongoMsgCatalog.getMessage("PrefixOrGrid"));
         }
 
         if (Boolean.valueOf(config.get(MULTIPART))) {

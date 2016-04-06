@@ -55,6 +55,8 @@ public class GridFSBlobHandler implements BlobHandler {
         this.bucket = bucket;
     }
 
+    // GridFS support for MongoDatabase did not make it into 3.0 so we still need to use the deprecated call
+    // Should be available in 3.1
     public GridFS getGridFS() {
         DB db = MongoDBFactory.getDB(instanceName);
         return new GridFS(db, bucket);
