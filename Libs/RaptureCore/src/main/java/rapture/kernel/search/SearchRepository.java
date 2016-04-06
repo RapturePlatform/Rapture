@@ -42,4 +42,6 @@ public interface SearchRepository {
 
     SearchResponse searchWithCursor(String cursorId, int size, String query);
 
+	void setConfig(Map<String, String> config);
+
 }

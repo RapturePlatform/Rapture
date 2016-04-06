@@ -186,4 +186,10 @@ public class ElasticSearchSearchRepository implements SearchRepository {
         }
         index = connectionInfo.getDbName();
     }
+
+	@Override
+	public void setConfig(Map<String, String> config) {
+		// TODO Auto-generated method stub
+		
+	}
 }

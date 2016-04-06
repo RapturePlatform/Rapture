@@ -1,7 +1,7 @@
 include "RaptureAPI","RaptureCore","RaptureAddinCore","Reflex"
 include "CodeGen:CodeGenLib", "CodeGen:ApiGen", "CodeGen:PersistenceGen", "CodeGen:PersistenceGenLib"
 include "CodeGen:PythonLib"
-include "RaptureAddins:MongoDb","RaptureAddins:RabbitMQ","RaptureAddins:Cassandra"
+include "RaptureAddins:MongoDb","RaptureAddins:RabbitMQ","RaptureAddins:Cassandra","RaptureAddins:ElasticSearch"
 include "RaptureAddins:Postgres", "RaptureAddins:JDBC"
 include "RaptureAddins:ElasticSearch"
 include "RaptureWebServlet"
