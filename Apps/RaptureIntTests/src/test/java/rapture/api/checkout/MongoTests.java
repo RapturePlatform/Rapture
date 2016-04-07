@@ -27,6 +27,7 @@ import static org.testng.AssertJUnit.assertEquals;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.bson.Document;
@@ -45,6 +46,7 @@ import com.mongodb.client.MongoCollection;
 import rapture.audit.AuditLog;
 import rapture.audit.AuditLogFactory;
 import rapture.common.CallingContext;
+import rapture.common.RaptureFolderInfo;
 import rapture.common.RaptureScript;
 import rapture.common.RaptureScriptLanguage;
 import rapture.common.RaptureScriptPurpose;
@@ -286,6 +288,25 @@ public class MongoTests {
 
         Assert.assertEquals(dc.getFullName(), "RaptureMongoDB." + uuid.toString());
         Assert.assertEquals(mc.getNamespace().getFullName(), "RaptureMongoDB." + uuid.toString());
+
+    }
+
+    @Test
+    public void RAP4038() {
+        DocApi docApi = Kernel.getDoc();
+        CallingContext context = ContextFactory.getKernelUser();
+        UUID uuid = UUID.randomUUID();
+        RaptureURI authUri = new RaptureURI("//" + uuid, Scheme.DOCUMENT);
+        docApi.createDocRepo(context, authUri.toString(), "NREP {} using MONGODB {prefix=\"" + uuid + "\"}");
+        String docUri = RaptureURI.builder(authUri).docPath("test/this/please").build().toString();
+        String content = "{\"foo\":\"bar\"}";
+
+        docApi.putDoc(context, docUri, content);
+        Assert.assertEquals(content, docApi.getDoc(context, docUri));
+
+        Map<String, RaptureFolderInfo> allChildrenMap = docApi.listDocsByUriPrefix(context, authUri.toString(), 10);
+        System.out.println("size of childrenMap: " + allChildrenMap.size());
+        Assert.assertEquals(allChildrenMap.size(), 3);
 
     }
 }
