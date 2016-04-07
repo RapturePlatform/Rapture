@@ -26,8 +26,17 @@ public class RaptureSearchUpdateHandler implements QueueHandler {
             statusManager.startRunning(task);
             MimeSearchUpdateObject doc = JacksonUtil.objectFromJson(content, MimeSearchUpdateObject.class);
             
+            switch(doc.getType()) {
+            case CREATE:
+                Kernel.getSearch().getTrusted().writeSearchEntry(doc.getRepo(), doc.getDoc());
+                break;
+            case DELETE:
+            	Kernel.getSearch().getTrusted().deleteSearchEntry(doc.getRepo(), doc.getDoc().getDisplayName());
+            	break;
+            default:
+            	log.error("Don't know how to process this search update");
+            }
             // Call something in
-            Kernel.getSearch().getTrusted().writeSearchEntry(doc.getRepo(), doc.getDoc());
             statusManager.finishRunningWithSuccess(task);
 
         } catch (Exception e) {

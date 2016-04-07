@@ -57,6 +57,12 @@ public class SearchApiImpl extends KernelBase implements SearchApi {
     	r.put(doc);
     }
     
+    public void deleteSearchEntry(String repo, String displayName) {
+       	logger.info("Removing search entry to " + repo + " dn=" + displayName);
+    	SearchRepository r = Kernel.getRepoCacheManager().getSearchRepo(repo);
+    	r.remove(displayName);
+    }
+    
     @Override
     public SearchResponse search(CallingContext context, String query) {
     	// By default this searches the default search repository/index (search://main)
@@ -136,5 +142,7 @@ public class SearchApiImpl extends KernelBase implements SearchApi {
 	public void deleteSearchRepo(CallingContext context, String searchRepoUri) {
 	       SearchRepoConfigStorage.deleteByAddress(new RaptureURI(searchRepoUri, Scheme.SEARCH), context.getUser(), "Remove search repo");
 	}
+
+	
 
 }

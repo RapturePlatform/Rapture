@@ -13,22 +13,39 @@ import com.google.common.collect.ImmutableList;
  */
 public class SearchPublisher {
 
-    public static String CATEGORY = "alpha";
+	public static String CATEGORY = "alpha";
 
-    public static void publishMessage(CallingContext context,
-                                      String publishRepo, MimeSearchUpdateObject.ActionType type,
-                                      DocumentWithMeta doc) {
-        RapturePipelineTask task = new RapturePipelineTask();
-        task.setCategoryList(ImmutableList.of(CATEGORY));
-        task.setPriority(2);
-        task.setContentType(MimeSearchUpdateObject.getMimeType());
+	public static void publishCreateMessage(CallingContext context,
+			String publishRepo, DocumentWithMeta doc) {
+		RapturePipelineTask task = new RapturePipelineTask();
+		task.setCategoryList(ImmutableList.of(CATEGORY));
+		task.setPriority(2);
+		task.setContentType(MimeSearchUpdateObject.getMimeType());
 
-        MimeSearchUpdateObject object = new MimeSearchUpdateObject();
-        object.setRepo(publishRepo);
-        object.setType(type);
-        object.setDoc(doc);
-        task.addMimeObject(object);
+		MimeSearchUpdateObject object = new MimeSearchUpdateObject();
+		object.setRepo(publishRepo);
+		object.setType(MimeSearchUpdateObject.ActionType.CREATE);
+		object.setDoc(doc);
+		task.addMimeObject(object);
 
-        Kernel.getPipeline().publishMessageToCategory(context, task);
-    }
+		Kernel.getPipeline().publishMessageToCategory(context, task);
+	}
+
+	public static void publishDeleteMessage(CallingContext context,
+			String publishRepo, String uri) {
+		RapturePipelineTask task = new RapturePipelineTask();
+		task.setCategoryList(ImmutableList.of(CATEGORY));
+		task.setPriority(2);
+		task.setContentType(MimeSearchUpdateObject.getMimeType());
+
+		MimeSearchUpdateObject object = new MimeSearchUpdateObject();
+		object.setRepo(publishRepo);
+		object.setType(MimeSearchUpdateObject.ActionType.DELETE);
+		DocumentWithMeta doc = new DocumentWithMeta();
+		doc.setDisplayName(uri);
+		object.setDoc(doc);
+		task.addMimeObject(object);
+
+		Kernel.getPipeline().publishMessageToCategory(context, task);
+	}
 }

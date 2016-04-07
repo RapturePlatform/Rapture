@@ -44,4 +44,6 @@ public interface SearchRepository {
     // This is used to define the index used by this repo
 	void setConfig(Map<String, String> config);
 
+	void remove(String displayName);
+
 }

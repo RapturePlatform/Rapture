@@ -402,9 +402,19 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
     public Boolean deleteDoc(CallingContext context, String docUri) {
         RaptureURI internalUri = new RaptureURI(docUri, Scheme.DOCUMENT);
         Repository repository = getRepoFromCache(internalUri.getAuthority());
+        DocumentRepoConfig type = getConfigFromCache(internalUri.getAuthority());
+
         boolean ret = repository.removeDocument(internalUri.getDocPath(), context.getUser(), "");
         if (ret) {
-            //SearchPublisher.publishMessage(context, MimeSearchUpdateObject.ActionType.DELETE, null);
+        	String searchRepo = getSearchRepo(type);
+        	if (searchRepo != null) {
+        		// We must balance with the uri that's put in with saveDocument
+        		String realDocUri = docUri;
+        		if (realDocUri.startsWith("//")) {
+        			realDocUri = realDocUri.substring(2);
+        		}
+        		SearchPublisher.publishDeleteMessage(context, searchRepo,realDocUri); 
+        	}
         }
         return ret;
     }
@@ -601,17 +611,12 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
                 runIndex(context, indexScriptPair, internalUri.getAuthority(), internalUri.getDocPath(), content);
             }
 
-            if (ConfigLoader.getConf().FullTextSearchOn && type.getFtsIndex()) {
-            	String publishRepo = type.getFtsIndexRepo();
-            	if (publishRepo == null || publishRepo.length() == 0) {
-            		publishRepo = ConfigLoader.getConf().FullTextSearchDefaultRepo;
-            	}
+            String publishRepo = getSearchRepo(type);
+            if (publishRepo != null) {
             	
             	log.info("Publishing search update");
             	newDoc.setDisplayName(internalUri.getFullPath());
-            	// Need to get just written meta data, content
-            		// TODO: Needs to be a different call, and we still need the index
-            		SearchPublisher.publishMessage(context, publishRepo, MimeSearchUpdateObject.ActionType.CREATE,
+            		SearchPublisher.publishCreateMessage(context, publishRepo,
                         newDoc);
             	
             } else {
@@ -623,6 +628,17 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
         return handle;
     }
 
+    private String getSearchRepo(DocumentRepoConfig type) {
+        if (ConfigLoader.getConf().FullTextSearchOn && type.getFtsIndex()) {
+        	String publishRepo = type.getFtsIndexRepo();
+        	if (publishRepo == null || publishRepo.length() == 0) {
+        		publishRepo = ConfigLoader.getConf().FullTextSearchDefaultRepo;
+        	}
+        	return publishRepo;
+        }
+        return null;
+    }
+    
     @Override
     public Boolean putDocWithVersion(CallingContext context, String docUri, String content, int versionNumber) {
         RaptureURI internalUri = new RaptureURI(docUri, Scheme.DOCUMENT);

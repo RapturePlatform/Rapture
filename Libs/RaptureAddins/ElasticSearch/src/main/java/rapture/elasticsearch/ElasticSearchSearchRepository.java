@@ -95,6 +95,16 @@ public class ElasticSearchSearchRepository implements SearchRepository {
         ensureClient().prepareIndex(index, SearchRepoType.URI.toString(), uri).setSource(JacksonUtil.jsonFromObject(uriStore)).get();
     }
 
+    /**
+     * Remove this entry from elastic search
+     */
+    @Override
+	public void remove(String displayName) {
+		ensureClient().prepareDelete(index,  SearchRepoType.DOC.toString(), displayName).get();
+		ensureClient().prepareDelete(index,  SearchRepoType.META.toString(), displayName).get();
+		ensureClient().prepareDelete(index,  SearchRepoType.URI.toString(), displayName).get();
+	}
+    
     @Override
     public rapture.common.SearchResponse search(List<String> types, String query) {
         SearchResponse response = ensureClient().prepareSearch().setIndices(index).setTypes(types.toArray(new String[types.size()])).setQuery(QueryBuilders.queryStringQuery(query)).get();
@@ -208,4 +218,6 @@ public class ElasticSearchSearchRepository implements SearchRepository {
 	public void setConfig(Map<String, String> config) {
 		setIndex(config.get("index"));
 	}
+
+	
 }
