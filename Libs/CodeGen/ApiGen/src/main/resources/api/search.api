@@ -9,4 +9,28 @@ api(Search) {
     @entitle=/search/read
     @public SearchResponse searchWithCursor(String cursorId, int size, String query);
 
+    [Validates repository; requires write permission because it can cause files/tables to be created on first use.]
+    @entitle=/repo/write
+    @public Boolean validateSearchRepo(String searchRepoUri);
+    
+    [A FTSearchRepository is used to store full text search repos.]
+    @entitle=/repo/write
+    @public void createSearchRepo(String searchRepoUri, String config);
+
+    [This API call can be used to determine whether a given repository exists.]
+    @entitle=/repo/list
+    @public Boolean searchRepoExists(String searchRepoUri);
+
+    [Retrieves the configuration string for the given search repository.]
+    @entitle=/repo/read
+    @public SearchRepoConfig getSearchRepoConfig(String searchRepoUri);
+       
+    [Retrieves search repositories]
+    @entitle=/repo/read
+    @public List(SearchRepoConfig) getSearchRepoConfigs();
+
+    [This method removes a search repository and its data from the Rapture system. There is no undo.] 
+    @entitle=/repo/write
+    @public void deleteSearchRepo(String searchRepoUri);
+
 }

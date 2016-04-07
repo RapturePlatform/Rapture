@@ -67,6 +67,7 @@ import rapture.common.model.RaptureDocConfig;
 import rapture.common.model.RunEventHandle;
 import rapture.common.shared.doc.DeleteDocPayload;
 import rapture.common.shared.doc.GetDocPayload;
+import rapture.config.ConfigLoader;
 import rapture.dsl.dparse.AbsoluteVersion;
 import rapture.dsl.dparse.AsOfTimeDirective;
 import rapture.dsl.dparse.BaseDirective;
@@ -598,8 +599,16 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
                 runIndex(context, indexScriptPair, internalUri.getAuthority(), internalUri.getDocPath(), content);
             }
 
-            SearchPublisher.publishMessage(context, SearchUpdateObject.ActionType.CREATE,
-                    internalUri, content);
+            if (ConfigLoader.getConf().FullTextSearchOn && type.getFtsIndex()) {
+            	String publishRepo = type.getFtsIndexRepo();
+            	if (publishRepo == null || publishRepo.length() == 0) {
+            		publishRepo = ConfigLoader.getConf().FullTextSearchDefaultRepo;
+            	}
+            	// Need to get just written meta data, content
+                SearchPublisher.publishMessage(context, SearchUpdateObject.ActionType.CREATE,
+                        internalUri, content);
+            	
+            }
         }
         handle.setDocumentURI(internalUri.toString());
         handle.setIsSuccess(isSuccess);

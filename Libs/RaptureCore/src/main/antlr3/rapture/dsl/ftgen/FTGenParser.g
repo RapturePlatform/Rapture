@@ -24,7 +24,7 @@ onInfo     : ON x=ID { setInstance($x.text); };
 repdef	   : s=repstyle config { addProcessorConfig($s.text); };
 storedef   : s=storestyle config { addConfig($s.text); };
 
-repstyle   : FTREP;
+repstyle   : SEARCH;
 storestyle : s=(ELASTIC) { setStore($s); };
 
 config 	   : LBRACE entrylist RBRACE;

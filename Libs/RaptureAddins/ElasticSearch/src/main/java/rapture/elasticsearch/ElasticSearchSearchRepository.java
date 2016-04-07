@@ -43,8 +43,11 @@ import rapture.common.ConnectionInfo;
 import rapture.common.RaptureURI;
 import rapture.common.connection.ConnectionType;
 import rapture.common.exception.RaptureExceptionFactory;
+import rapture.common.impl.jackson.JacksonUtil;
+import rapture.common.model.DocumentWithMeta;
 import rapture.kernel.ContextFactory;
 import rapture.kernel.Kernel;
+import rapture.kernel.search.SearchRepoType;
 import rapture.kernel.search.SearchRepository;
 
 /**
@@ -71,29 +74,28 @@ public class ElasticSearchSearchRepository implements SearchRepository {
     private Client client;
 
     @Override
-    public void put(RaptureURI uri, String content) {
-        client.prepareIndex(index, getType(uri), uri.getDocPath()).setSource(content).get();
+    public void put(DocumentWithMeta docMeta) {
+    	String uri = docMeta.getDisplayName();
+        client.prepareIndex(index, SearchRepoType.DOC.toString(), uri).setSource(docMeta.getContent()).get();
+        String meta = JacksonUtil.jsonFromObject(docMeta.getMetaData());
+        client.prepareIndex(index, SearchRepoType.META.toString(), uri).setSource(meta).get();
     }
 
     @Override
-    public String get(RaptureURI uri) {
-        GetResponse response = client.prepareGet(index, getType(uri), uri.getDocPath()).get();
-        return response.getSourceAsString();
-    }
-
-    @Override
-    public rapture.common.SearchResponse search(String query) {
-        SearchResponse response = client.prepareSearch().setQuery(QueryBuilders.queryStringQuery(query)).get();
+    public rapture.common.SearchResponse search(String type, String query) {
+        SearchResponse response = client.prepareSearch().setIndices(index).setTypes(type).setQuery(QueryBuilders.queryStringQuery(query)).get();
         return convert(response);
     }
 
     @Override
-    public rapture.common.SearchResponse searchWithCursor(String cursorId, int size, String query) {
+    public rapture.common.SearchResponse searchWithCursor(String type, String cursorId, int size, String query) {
         SearchResponse response;
         if (StringUtils.isBlank(cursorId)) {
             response = client.prepareSearch()
                     .setQuery(QueryBuilders.queryStringQuery(query))
                     .setScroll(new TimeValue(CURSOR_KEEPALIVE))
+                    .setIndices(index)
+                    .setTypes(type)
                     .setSize(size)
                     .get();
         } else {
@@ -116,6 +118,7 @@ public class ElasticSearchSearchRepository implements SearchRepository {
     }
 
     void setIndex(String index) {
+    	log.info("Setting index to " + index);
         this.index = index;
     }
 
@@ -189,7 +192,6 @@ public class ElasticSearchSearchRepository implements SearchRepository {
 
 	@Override
 	public void setConfig(Map<String, String> config) {
-		// TODO Auto-generated method stub
-		
+		setIndex(config.get("index"));
 	}
 }

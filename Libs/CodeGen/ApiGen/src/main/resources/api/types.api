@@ -254,6 +254,17 @@ type DocumentRepoConfig(@package=rapture.common.model) {
     Set<FullTextIndexScriptPair> fullTextIndexes = new HashSet<FullTextIndexScriptPair>();
     String updateQueue;
     RaptureDocConfig documentRepo;
+    Boolean ftsIndex = true;
+    String ftsIndexRepo = ""; // Blank means "use default"
+}
+
+[Describes config info for a full text search repository.]
+@Addressable(scheme = SEARCH(true))
+@Storable(storagePath : {authority}, prefix="fttype")
+type SearchRepoConfig(@package=rapture.common.model) {
+	String description;
+	String config;
+	String authority;
 }
 
 [Describes config info for a single Rapture document.]

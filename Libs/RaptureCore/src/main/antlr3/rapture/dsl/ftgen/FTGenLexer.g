@@ -17,7 +17,7 @@ options {
 
 ELASTIC : 'ELASTIC';
 
-FTREP : 'FTREP';
+SEARCH : 'SEARCH';
 
 LBRACE : '{';
 RBRACE : '}';
