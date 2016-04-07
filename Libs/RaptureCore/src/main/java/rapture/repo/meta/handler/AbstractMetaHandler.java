@@ -113,7 +113,7 @@ public abstract class AbstractMetaHandler {
         });
     }
 
-    public long addDocument(String docPath, String value, String user, String comment, IndexProducer producer) {
+    public DocumentWithMeta addDocument(String docPath, String value, String user, String comment, IndexProducer producer) {
         // if docPath contains element #, which is the local file path,
         // remove element from docPath, as only FileDataStore uses that.
         // This is hacky: a cleaner solution should be in place after RAP-3587
@@ -130,11 +130,12 @@ public abstract class AbstractMetaHandler {
         // metaKeyStore)
         // (d) record the updated meta information for the latest version
         // (e) record this document in the store (for latest)
+        
         long versionToReturn = -1L;
         String latestKey = createLatestKey(docPath);
         // Do not do anything if the content is the same
         if (documentStore.matches(docPath, value)) {
-            return versionToReturn;
+            return null;
         } else {
             DocumentMetadata newMetaData = createNewMetadata(user, comment, docPath);
 
@@ -165,7 +166,11 @@ public abstract class AbstractMetaHandler {
                     log.error("We created an index record and there is no where to store it!");
                 }
             }
-            return versionToReturn;
+            DocumentWithMeta ret = new DocumentWithMeta();
+            ret.setMetaData(newMetaData);
+            ret.setContent(value);
+            ret.setDisplayName(docPath);
+            return ret;
         }
     }
 

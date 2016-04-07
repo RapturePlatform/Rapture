@@ -218,7 +218,7 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
         removeRepoFromCache(internalUri.getAuthority());
 
         SearchPublisher.publishMessage(context, SearchUpdateObject.ActionType.DELETE,
-                internalUri, null);
+               null);
     }
 
     public void updateDocumentRepo(CallingContext context, DocumentRepoConfig data) {
@@ -402,7 +402,7 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
         Repository repository = getRepoFromCache(internalUri.getAuthority());
         boolean ret = repository.removeDocument(internalUri.getDocPath(), context.getUser(), "");
         if (ret) {
-            SearchPublisher.publishMessage(context, SearchUpdateObject.ActionType.DELETE, internalUri, null);
+            SearchPublisher.publishMessage(context, SearchUpdateObject.ActionType.DELETE, null);
         }
         return ret;
     }
@@ -572,19 +572,19 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
                 throw e;
             }
         }
-        boolean isSuccess;
+        
+        DocumentWithMeta newDoc = null;
 
         if (expectedCurrentVersion == -1) {
-            repository.addDocument(internalUri.getDocPathWithElement(), content, context.getUser(), "", mustBeNew);
+            newDoc = repository.addDocument(internalUri.getDocPathWithElement(), content, context.getUser(), "", mustBeNew);
             // note: the repository throws an exception when it fails, so success can be implied by reaching here
-            isSuccess = true;
         } else {
-            isSuccess = repository
+            newDoc = repository
                     .addDocumentWithVersion(internalUri.getDocPathWithElement(), content, context.getUser(), "", mustBeNew, expectedCurrentVersion);
         }
 
         DocWriteHandle handle = new DocWriteHandle();
-        if (isSuccess) {
+        if (newDoc != null) {
             // TODO: Ben - this should be in the wrapper
             Map<String, String> eventContextMap = new HashMap<>();
             eventContextMap.put(DocEventConstants.VERSION, "" + expectedCurrentVersion);
@@ -606,12 +606,12 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
             	}
             	// Need to get just written meta data, content
                 SearchPublisher.publishMessage(context, SearchUpdateObject.ActionType.CREATE,
-                        internalUri, content);
+                        newDoc);
             	
             }
         }
         handle.setDocumentURI(internalUri.toString());
-        handle.setIsSuccess(isSuccess);
+        handle.setIsSuccess(newDoc != null);
         return handle;
     }
 

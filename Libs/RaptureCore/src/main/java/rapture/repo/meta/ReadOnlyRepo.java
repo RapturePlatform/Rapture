@@ -73,7 +73,7 @@ public class ReadOnlyRepo implements Repository {
     }
 
     @Override
-    public long addDocument(String key, String value, String user, String comment, boolean mustBeNew) {
+    public DocumentWithMeta addDocument(String key, String value, String user, String comment, boolean mustBeNew) {
         throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, READ_ONLY_REPOSITORY);
     }
 
@@ -287,7 +287,7 @@ public class ReadOnlyRepo implements Repository {
     }
 
     @Override
-    public boolean addDocumentWithVersion(String disp, String content, String user, String comment, boolean mustBeNew, int expectedVersion) {
+    public DocumentWithMeta addDocumentWithVersion(String disp, String content, String user, String comment, boolean mustBeNew, int expectedVersion) {
         throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, READ_ONLY_REPOSITORY);
     }
 

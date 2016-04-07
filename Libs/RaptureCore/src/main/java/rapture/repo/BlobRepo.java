@@ -33,6 +33,7 @@ import rapture.blob.file.FileBlobStore;
 import rapture.common.CallingContext;
 import rapture.common.RaptureFolderInfo;
 import rapture.common.RaptureURI;
+import rapture.common.model.DocumentWithMeta;
 import rapture.kernel.BlobApiImpl;
 
 /**
@@ -79,7 +80,7 @@ public class BlobRepo {
         return store.getBlobSize(context, blobUri);
     }
 
-    public long putMeta(String metaUri, String value, String user, String comment, boolean mustBeNew) {
+    public DocumentWithMeta putMeta(String metaUri, String value, String user, String comment, boolean mustBeNew) {
         return metaDataRepo.addDocument(metaUri, value, user, comment, mustBeNew);
     }
 

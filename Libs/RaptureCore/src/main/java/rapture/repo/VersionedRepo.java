@@ -151,7 +151,7 @@ public class VersionedRepo extends BaseRepo implements Repository {
     }
 
     @Override
-    public long addDocument(String key, String value, String user, String comment, boolean mustBeNew) {
+    public DocumentWithMeta addDocument(String key, String value, String user, String comment, boolean mustBeNew) {
         String context = IDGenerator.getUUID();
         LockHandle lockHandle = lockHandler.acquireLock(context, DEFAULT_STAGE, 5, 5);
         if (lockHandle != null) {
@@ -168,7 +168,7 @@ public class VersionedRepo extends BaseRepo implements Repository {
         } else {
             throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, "Could not get lock for write");
         }
-        return 1L; // Deprecated repository so don't do anything special here.
+        return null; // Deprecated repository so don't do anything special here.
     }
 
     @Override
@@ -1058,9 +1058,8 @@ public class VersionedRepo extends BaseRepo implements Repository {
     }
 
     @Override
-    public boolean addDocumentWithVersion(String disp, String content, String user, String comment, boolean mustBeNew, int expectedVersion) {
-        addDocument(disp, content, user, comment, mustBeNew);
-        return true;
+    public DocumentWithMeta addDocumentWithVersion(String disp, String content, String user, String comment, boolean mustBeNew, int expectedVersion) {
+        return addDocument(disp, content, user, comment, mustBeNew);
     }
 
     @Override
