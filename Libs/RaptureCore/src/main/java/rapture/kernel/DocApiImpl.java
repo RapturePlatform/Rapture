@@ -49,7 +49,6 @@ import rapture.common.RaptureIdGenConfig;
 import rapture.common.RaptureScript;
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
-import rapture.common.SearchUpdateObject;
 import rapture.common.XferDocumentAttribute;
 import rapture.common.api.DocApi;
 import rapture.common.event.DocEventConstants;
@@ -73,6 +72,7 @@ import rapture.dsl.dparse.AsOfTimeDirective;
 import rapture.dsl.dparse.BaseDirective;
 import rapture.index.IndexHandler;
 import rapture.kernel.context.ContextValidator;
+import rapture.kernel.pipeline.SearchPublisher;
 import rapture.kernel.schemes.RaptureScheme;
 import rapture.repo.NVersionedRepo;
 import rapture.repo.Repository;
@@ -80,6 +80,7 @@ import rapture.repo.VersionedRepo;
 import rapture.script.reflex.ReflexHandler;
 import rapture.script.reflex.ReflexRaptureScript;
 import rapture.table.TableScriptCache;
+import rapture.common.mime.MimeSearchUpdateObject;
 import reflex.IReflexHandler;
 import reflex.ReflexTreeWalker;
 import reflex.value.ReflexValue;
@@ -217,8 +218,9 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
         DocumentRepoConfigStorage.deleteByAddress(internalUri, context.getUser(), "Drop document repo");
         removeRepoFromCache(internalUri.getAuthority());
 
-        SearchPublisher.publishMessage(context, SearchUpdateObject.ActionType.DELETE,
-               null);
+        
+        //SearchPublisher.publishMessage(context, MimeSearchUpdateObject.ActionType.DELETE,
+        //       null);
     }
 
     public void updateDocumentRepo(CallingContext context, DocumentRepoConfig data) {
@@ -402,7 +404,7 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
         Repository repository = getRepoFromCache(internalUri.getAuthority());
         boolean ret = repository.removeDocument(internalUri.getDocPath(), context.getUser(), "");
         if (ret) {
-            SearchPublisher.publishMessage(context, SearchUpdateObject.ActionType.DELETE, null);
+            //SearchPublisher.publishMessage(context, MimeSearchUpdateObject.ActionType.DELETE, null);
         }
         return ret;
     }
@@ -604,10 +606,16 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
             	if (publishRepo == null || publishRepo.length() == 0) {
             		publishRepo = ConfigLoader.getConf().FullTextSearchDefaultRepo;
             	}
+            	
+            	log.info("Publishing search update");
+            	newDoc.setDisplayName(internalUri.getFullPath());
             	// Need to get just written meta data, content
-                SearchPublisher.publishMessage(context, SearchUpdateObject.ActionType.CREATE,
+            		// TODO: Needs to be a different call, and we still need the index
+            		SearchPublisher.publishMessage(context, publishRepo, MimeSearchUpdateObject.ActionType.CREATE,
                         newDoc);
             	
+            } else {
+            	log.info("No FTS for this update");
             }
         }
         handle.setDocumentURI(internalUri.toString());

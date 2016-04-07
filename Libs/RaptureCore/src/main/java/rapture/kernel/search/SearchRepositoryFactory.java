@@ -48,7 +48,7 @@ public final class SearchRepositoryFactory {
 
     static {
         Map<Integer, String> setupMap = new HashMap<Integer, String>();
-        setupMap.put(FTGenLexer.ELASTIC, "rapture.elasticsearch.ElasticSearchRepository");
+        setupMap.put(FTGenLexer.ELASTIC, "rapture.elasticsearch.ElasticSearchSearchRepository");
         implementationMap = Collections.unmodifiableMap(setupMap);
     }
 
@@ -61,7 +61,7 @@ public final class SearchRepositoryFactory {
             if (implementationMap.containsKey(implementationType)) {
                 ret = getStore(implementationMap.get(implementationType), parser.getInstance(), parser.getImplementionConfig());
             } else {
-                throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, "Unsupported blob store - " + parser.getImplementationName());
+                throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, "Unsupported search store - " + parser.getImplementationName());
             }
         } catch (RecognitionException e) {
             log.error("Error parsing config - " + e.getMessage());
@@ -70,6 +70,7 @@ public final class SearchRepositoryFactory {
     }
 
     private static SearchRepository getStore(String className, String instanceName, Map<String, String> config) {
+    	log.info("Trying to load " + className + " instanceName = " + instanceName + " config " + config.toString());
         try {
             Class<?> blobClass = Class.forName(className);
             Object fStore;
@@ -81,10 +82,10 @@ public final class SearchRepositoryFactory {
                 return ret;
             } else {
                 log.error(className + " is not an search store, cannot instantiate");
-                throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, "Could not create blob store");
+                throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, "Could not create search store");
             }
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, "Error retrieving blob", e);
+            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, "Error retrieving search", e);
         }
     }
 

@@ -54,9 +54,8 @@ public class RaptureExceptionFactory {
         return create(HttpStatus.SC_INTERNAL_SERVER_ERROR, message, null);
     }
 
-    @Deprecated
     /**
-     * @deprecated Do not use hard codes strings. Use rapture.kernel.Messages.getMessage
+     * Do not use hard codes strings. Use rapture.kernel.Messages.getMessage
      * and put the message in the property file. This ensures consistent error messages 
      * across the product and will ease localization efforts if the need ever arises.
      */
@@ -69,9 +68,8 @@ public class RaptureExceptionFactory {
         return e;
     }
 
-    @Deprecated
     /**
-     * @deprecated Do not use hard codes strings. Use rapture.kernel.Messages.getMessage
+     * Do not use hard codes strings. Use rapture.kernel.Messages.getMessage
      * and put the message in the property file. This ensures consistent error messages 
      * across the product and will ease localization efforts if the need ever arises.
      */
@@ -79,9 +77,8 @@ public class RaptureExceptionFactory {
         return create(status, message, null);
     }
 
-    @Deprecated
     /**
-     * @deprecated Do not use hard codes strings. Use rapture.kernel.Messages.getMessage
+     *  Do not use hard codes strings. Use rapture.kernel.Messages.getMessage
      * and put the message in the property file. This ensures consistent error messages 
      * across the product and will ease localization efforts if the need ever arises.
      */
@@ -89,9 +86,8 @@ public class RaptureExceptionFactory {
         return create(HttpStatus.SC_INTERNAL_SERVER_ERROR, message, null);
     }
 
-    @Deprecated
     /**
-     * @deprecated Do not use hard codes strings. Use rapture.kernel.Messages.getMessage
+     *  Do not use hard codes strings. Use rapture.kernel.Messages.getMessage
      * and put the message in the property file. This ensures consistent error messages 
      * across the product and will ease localization efforts if the need ever arises.
      */

@@ -38,6 +38,7 @@ import rapture.common.mime.MimeReflexScript;
 import rapture.common.mime.MimeReflexScriptRef;
 import rapture.common.mime.MimeReflexScriptResume;
 import rapture.common.mime.MimeScheduleReflexScriptRef;
+import rapture.common.mime.MimeSearchUpdateObject;
 import rapture.exchange.QueueHandler;
 import rapture.kernel.dp.RaptureDecisionProcessAdvanceHandler;
 
@@ -75,6 +76,7 @@ public class PipelineQueueHandler implements QueueHandler {
         setupMap.put(MimeScheduleReflexScriptRef.getMimeType(), new RaptureScheduleReflexScriptRefHandler());
         setupMap.put(MimeDecisionProcessAdvance.getMimeType(), new RaptureDecisionProcessAdvanceHandler());
         setupMap.put("application/vnd.rapture.event.alert", new RaptureAlertHandler());
+        setupMap.put(MimeSearchUpdateObject.getMimeType(), new RaptureSearchUpdateHandler());
         defaultHandlers = Collections.unmodifiableMap(setupMap);
     }
 

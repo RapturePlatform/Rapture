@@ -24,6 +24,7 @@
 package rapture.kernel;
 
 import java.net.HttpURLConnection;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -34,8 +35,12 @@ import rapture.common.Scheme;
 import rapture.common.SearchResponse;
 import rapture.common.api.SearchApi;
 import rapture.common.exception.RaptureExceptionFactory;
+import rapture.common.model.DocumentWithMeta;
 import rapture.common.model.SearchRepoConfig;
 import rapture.common.model.SearchRepoConfigStorage;
+import rapture.config.ConfigLoader;
+import rapture.kernel.search.SearchRepoType;
+import rapture.kernel.search.SearchRepository;
 
 public class SearchApiImpl extends KernelBase implements SearchApi {
     private static Logger logger = Logger.getLogger(SearchApiImpl.class);
@@ -44,21 +49,33 @@ public class SearchApiImpl extends KernelBase implements SearchApi {
         super(raptureKernel);
     }
 
+    // Trusted calls
+    
+    public void writeSearchEntry(String repo, DocumentWithMeta doc) {
+    	logger.info("Writing search entry to " + repo);
+    	SearchRepository r = Kernel.getRepoCacheManager().getSearchRepo(repo);
+    	r.put(doc);
+    }
+    
     @Override
     public SearchResponse search(CallingContext context, String query) {
     	// By default this searches the default search repository/index (search://main)
     	// And within that the "doc" table
     	
-        // return SearchRepositoryFactory.getDefault().search(query);
-        return null;
+    	List<String> types = Arrays.asList(SearchRepoType.DOC.toString(), SearchRepoType.META.toString(), SearchRepoType.URI.toString());
+        return Kernel.getRepoCacheManager().getSearchRepo(
+        		ConfigLoader.getConf().FullTextSearchDefaultRepo)
+        		.search(types,
+        				query);
     }
 
     @Override
     public SearchResponse searchWithCursor(CallingContext context, String cursorId, int size, String query) {
-    	// Again this searches the default search repository (search://main)
-    	// and the default "doc" table in that index
-        // return SearchRepositoryFactory.getDefault().searchWithCursor(cursorId, size, query);
-        return null;
+      	List<String> types = Arrays.asList(SearchRepoType.DOC.toString(), SearchRepoType.META.toString(), SearchRepoType.URI.toString());
+        return Kernel.getRepoCacheManager().getSearchRepo(
+        		ConfigLoader.getConf().FullTextSearchDefaultRepo)
+        		.searchWithCursor(types,cursorId, size,
+        				query);
     }
 
 	@Override

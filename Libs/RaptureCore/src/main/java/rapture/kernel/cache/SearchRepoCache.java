@@ -21,27 +21,28 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package rapture.kernel.search;
+package rapture.kernel.cache;
 
-import java.util.List;
-import java.util.Map;
+import rapture.common.Scheme;
+import rapture.common.model.SearchRepoConfig;
+import rapture.common.model.SearchRepoConfigStorage;
+import rapture.kernel.search.SearchRepository;
+import rapture.kernel.search.SearchRepositoryFactory;
 
-import rapture.common.SearchResponse;
-import rapture.common.model.DocumentWithMeta;
+public class SearchRepoCache extends AbstractRepoCache<SearchRepoConfig, SearchRepository> {
 
-public interface SearchRepository {
+    public SearchRepoCache() {
+        super(Scheme.SEARCH.toString());
+    }
 
-    void setInstanceName(String instanceName);
+    @Override
+    public SearchRepoConfig reloadConfig(String authority) {
+        return SearchRepoConfigStorage.readByFields(authority);
+    }
 
-    void start();
-
-    void put(DocumentWithMeta doc);
-
-    SearchResponse search(List<String> types, String query);
-
-    SearchResponse searchWithCursor(List<String> types, String cursorId, int size, String query);
-
-    // This is used to define the index used by this repo
-	void setConfig(Map<String, String> config);
-
+    @Override
+    public SearchRepository reloadRepository(SearchRepoConfig searchRepoConfig, boolean autoloadIndex) {
+        SearchRepository store = SearchRepositoryFactory.createSearchStore(searchRepoConfig.getConfig());
+        return store;
+    }
 }

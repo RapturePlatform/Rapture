@@ -48,7 +48,7 @@ public class RaptureException extends RuntimeException {
     }
 
     public String getMessage() {
-        return message;
+        return this.getClass().toString() + " - " + message;
     }
 
     public RaptureException(String exceptionId, Integer status, String message) {
