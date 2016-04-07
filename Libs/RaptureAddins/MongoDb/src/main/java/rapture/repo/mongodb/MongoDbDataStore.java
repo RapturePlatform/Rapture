@@ -264,7 +264,7 @@ public class MongoDbDataStore extends AbstractKeyStore implements KeyStore, Rapt
         Document query = new Document(KEY, key);
         Document toPut = new Document($SET, new Document(KEY, key).append(VALUE, value));
 
-        FindOneAndUpdateOptions options = new FindOneAndUpdateOptions().upsert(true).returnDocument(ReturnDocument.AFTER);
+        FindOneAndUpdateOptions options = new FindOneAndUpdateOptions().upsert(true).returnDocument(ReturnDocument.BEFORE);
         Document result = collection.findOneAndUpdate(query, toPut, options);
                 
         if (needsFolderHandling && result == null) {
