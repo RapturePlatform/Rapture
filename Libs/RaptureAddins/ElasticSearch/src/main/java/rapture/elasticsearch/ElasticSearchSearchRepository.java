@@ -88,6 +88,7 @@ public class ElasticSearchSearchRepository implements SearchRepository {
     	String[] parts = uri.split("/");
     	SimpleURI uriStore = new SimpleURI();
     	uriStore.setParts(Arrays.asList(parts));
+    	uriStore.setRepo(parts[0]);
     	
         ensureClient().prepareIndex(index, SearchRepoType.DOC.toString(), uri).setSource(docMeta.getContent()).get();
         String meta = JacksonUtil.jsonFromObject(docMeta.getMetaData());
@@ -103,6 +104,19 @@ public class ElasticSearchSearchRepository implements SearchRepository {
 		ensureClient().prepareDelete(index,  SearchRepoType.DOC.toString(), displayName).get();
 		ensureClient().prepareDelete(index,  SearchRepoType.META.toString(), displayName).get();
 		ensureClient().prepareDelete(index,  SearchRepoType.URI.toString(), displayName).get();
+	}
+    
+	@Override
+	public void dropIndexForRepo(String repoName) {
+		// Now the way we can find out the documents to delete is
+		// to do a search for "repo:repoName" which will return us
+		// the URI search hits
+		// We delete those, and can replace URI with META and DOC to delete in the other tables too
+		//ensureClient().prepare
+		
+		// So do a search with cursor, and page through it..., and do prepareDeletes (multideletes?) after extracting the displayeName
+		// ideally on a worker thread, but for now, right here (as we should be on a pipeline thread)
+		
 	}
     
     @Override
@@ -218,6 +232,8 @@ public class ElasticSearchSearchRepository implements SearchRepository {
 	public void setConfig(Map<String, String> config) {
 		setIndex(config.get("index"));
 	}
+
+
 
 	
 }

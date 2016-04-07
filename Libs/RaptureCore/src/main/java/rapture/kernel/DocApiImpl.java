@@ -219,6 +219,8 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
         removeRepoFromCache(internalUri.getAuthority());
 
         
+        // Yeah this is like "delete everything that is prefixed by //docRepoUri
+        
         //SearchPublisher.publishMessage(context, MimeSearchUpdateObject.ActionType.DELETE,
         //       null);
     }

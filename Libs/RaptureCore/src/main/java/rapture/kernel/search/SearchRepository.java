@@ -45,5 +45,6 @@ public interface SearchRepository {
 	void setConfig(Map<String, String> config);
 
 	void remove(String displayName);
+	void dropIndexForRepo(String repoName);
 
 }
