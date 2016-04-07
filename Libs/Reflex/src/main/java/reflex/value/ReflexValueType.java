@@ -24,7 +24,7 @@
 package reflex.value;
 
 public enum ReflexValueType {
-    STRING, NUMBER, DATE, MAP, LIST, COMPLEX(true), INTERNAL, ARCHIVE, BOOLEAN, FILE(true), LIB, PORT, PROCESS(true), TIME, STREAM(true), STRINGSTREAM(true), TIMER, SPARSEMATRIX, BYTEARRAY(true), MIME, STRUCT(true);
+    STRING, NUMBER, DATE, MAP, LIST, COMPLEX(true), INTERNAL, ARCHIVE, BOOLEAN, FILE(true), LIB, PORT, PROCESS(true), TIME, STREAM(true), STRINGSTREAM(true), TIMER, SPARSEMATRIX, BYTEARRAY(true), MIME, STRUCT(true), INTEGER;
     ReflexValueType() {
         amObject = false;
     }

@@ -24,22 +24,28 @@
 package rapture.common;
 
 /**
- * Note that this class is referenced in types.api - any changes to this file should be reflected there.
+ * Note that this class is referenced in types.api - any changes to this file
+ * should be reflected there.
  **/
 
+@Deprecated
 public class RaptureSheet {
+    @Deprecated
     public String getAuthority() {
         return authority;
     }
 
+    @Deprecated
     public void setAuthority(String authority) {
         this.authority = authority;
     }
 
+    @Deprecated
     public String getName() {
         return name;
     }
 
+    @Deprecated
     public void setName(String name) {
         this.name = name;
     }

@@ -44,6 +44,10 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 import org.joda.time.Period;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.google.common.base.Optional;
+import com.google.common.collect.Maps;
+
 import rapture.common.AppStatus;
 import rapture.common.AppStatusGroup;
 import rapture.common.AppStatusGroupStorage;
@@ -78,6 +82,7 @@ import rapture.common.dp.WorkOrderCancellationStorage;
 import rapture.common.dp.WorkOrderDebug;
 import rapture.common.dp.WorkOrderInitialArgsHash;
 import rapture.common.dp.WorkOrderInitialArgsHashStorage;
+import rapture.common.dp.WorkOrderPathBuilder;
 import rapture.common.dp.WorkOrderStatus;
 import rapture.common.dp.WorkOrderStorage;
 import rapture.common.dp.Worker;
@@ -105,10 +110,6 @@ import rapture.kernel.dp.WorkflowValidator;
 import rapture.log.management.LogManagerConnection;
 import rapture.log.management.LogReadException;
 import rapture.log.management.SessionExpiredException;
-
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.google.common.base.Optional;
-import com.google.common.collect.Maps;
 
 public class DecisionApiImpl extends KernelBase implements DecisionApi {
     private static final String ERROR_LIST_CONSTANT = "errorList";
@@ -312,7 +313,7 @@ public class DecisionApiImpl extends KernelBase implements DecisionApi {
             }
             String error = String
                     .format("Unable to acquire a permit for a new WorkOrder for Workflow %s, with lockKey %s. The lock is already being held by the following" +
-                                    " WorkOrder(s): %s",
+                            " WorkOrder(s): %s",
                             workflowURI, lockKey, StringUtils.join(existingWoDesc, ", "));
             logger.warn(error);
             CreateResponse ret = new CreateResponse();
@@ -470,7 +471,27 @@ public class DecisionApiImpl extends KernelBase implements DecisionApi {
         WorkOrder workOrder = WorkOrderFactory.getWorkOrderNotNull(context, workOrderURI);
         WorkOrderStatus retVal = new WorkOrderStatus();
         retVal.setStatus(workOrder.getStatus());
-        retVal.setWorkerIds(workOrder.getWorkerIds());
+        List<String> workerIds = workOrder.getWorkerIds();
+        Map<String, String> workerOutput = workOrder.getOutputs();
+        if (workerOutput == null) {
+            workerOutput = new HashMap<>();
+        }
+        retVal.setWorkerOutput(workerOutput);
+
+        DocApiImpl docApi = Kernel.getDoc().getTrusted();
+        String outputUri = RaptureURI.newScheme(workOrderURI, Scheme.DOCUMENT).toShortString();
+
+        for (String workerId : workerIds) {
+            String id = outputUri + "#" + workerId;
+            if (!workerOutput.containsKey(id)) {
+                String str = docApi.getDocEphemeral(context, outputUri);
+                if (str != null) {
+                    Map<String, Object> map = JacksonUtil.getMapFromJson(str);
+                    Object out = map.get(id);
+                    if (out != null) workerOutput.put(id, out.toString());
+                }
+            }
+        }
         return retVal;
     }
 
@@ -768,6 +789,35 @@ public class DecisionApiImpl extends KernelBase implements DecisionApi {
     public List<WorkOrder> getWorkOrdersByDay(CallingContext context, Long startTimeInstant) {
         String startDate = getStartOfDayEpoch(startTimeInstant);
         return WorkOrderStorage.readAll(startDate);
+    }
+
+    @Override
+    public List<String> getWorkOrdersByWorkflow(CallingContext context, Long startTimeInstant, String workflowUri) {
+        if (startTimeInstant == null) {
+            startTimeInstant = 0L;
+        }
+        DateTime startDate = new DateTime(startTimeInstant, DateTimeZone.UTC).withTimeAtStartOfDay();
+        DateTime nowDate = new DateTime(System.currentTimeMillis(), DateTimeZone.UTC).withTimeAtStartOfDay();
+        List<String> ret = new ArrayList<>();
+        RaptureURI uri = new RaptureURI(workflowUri, Scheme.WORKFLOW);
+        log.info(String.format("Requested startDate is [%s] and current date is [%s]", startDate.toString(), nowDate.toString()));
+
+        final String workOrderPrefix = new WorkOrderPathBuilder().buildStorageLocation().toString();
+        Map<String, RaptureFolderInfo> existingTimes = Kernel.getDoc().listDocsByUriPrefix(context, workOrderPrefix, 1);
+        Map<String, RaptureFolderInfo> existingTimesWithAuthority = Kernel.getDoc().listDocsByUriPrefix(context, workOrderPrefix, 2);
+
+        for (Map.Entry<String, RaptureFolderInfo> entry : existingTimes.entrySet()) {
+            DateTime potentialTimestamp = new DateTime(Long.parseLong(entry.getValue().getName()) * 1000, DateTimeZone.UTC);
+            // check if the timestamp is within range and also if there is an matching workflow authority
+            if (!startDate.isAfter(potentialTimestamp) && existingTimesWithAuthority.containsKey(String.format("%s%s/", entry.getKey(), uri.getAuthority()))) {
+                String prefix = String.format("%s/%s/%s", entry.getValue().getName(), uri.getAuthority(), uri.getDocPath());
+                List<WorkOrder> workOrders = WorkOrderStorage.readAll(prefix);
+                for (WorkOrder workOrder : workOrders) {
+                    ret.add(workOrder.getWorkOrderURI());
+                }
+            }
+        }
+        return ret;
     }
 
     @Override

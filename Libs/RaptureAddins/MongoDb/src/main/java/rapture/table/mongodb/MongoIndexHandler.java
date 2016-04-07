@@ -54,11 +54,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.bson.Document;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
+import com.mongodb.client.MongoCollection;
 
 import rapture.config.MultiValueConfigLoader;
 
@@ -83,7 +85,7 @@ public class MongoIndexHandler implements IndexHandler {
     public void setConfig(Map<String, String> config) {
         tableName = config.get(PREFIX);
         DBCollection collection = MongoDBFactory.getDB(instanceName).getCollection(tableName);
-        collection.ensureIndex(KEY);
+        collection.createIndex(KEY);
     }
 
     private String getKey(String rowId) {

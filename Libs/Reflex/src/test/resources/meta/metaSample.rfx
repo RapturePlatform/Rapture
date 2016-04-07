@@ -25,7 +25,7 @@
 
 meta do 
   return list,'csv';
-  param 'input',string,'Some input',FIXEDLIST,'A,B,C';
+  param 'input',string,'Some input';
   property 'alan','a value for Alan';
 end
 

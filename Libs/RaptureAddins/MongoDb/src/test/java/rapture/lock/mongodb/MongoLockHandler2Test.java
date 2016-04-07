@@ -39,12 +39,11 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import rapture.common.LockHandle;
-
 import com.github.fakemongo.Fongo;
-import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
+
+import rapture.common.LockHandle;
 
 public class MongoLockHandler2Test {
 

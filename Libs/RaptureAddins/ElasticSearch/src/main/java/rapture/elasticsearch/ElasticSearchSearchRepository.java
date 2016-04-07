@@ -26,11 +26,12 @@ package rapture.elasticsearch;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
@@ -43,8 +44,11 @@ import rapture.common.ConnectionInfo;
 import rapture.common.RaptureURI;
 import rapture.common.connection.ConnectionType;
 import rapture.common.exception.RaptureExceptionFactory;
+import rapture.common.impl.jackson.JacksonUtil;
+import rapture.common.model.DocumentWithMeta;
 import rapture.kernel.ContextFactory;
 import rapture.kernel.Kernel;
+import rapture.kernel.search.SearchRepoType;
 import rapture.kernel.search.SearchRepository;
 
 /**
@@ -68,36 +72,48 @@ public class ElasticSearchSearchRepository implements SearchRepository {
     private String index;
     private String instanceName;
     private ConnectionInfo connectionInfo;
-    private Client client;
+    private Client client = null;
 
+    private Client ensureClient() {
+    	if (client==null) {
+    		start();
+    		return client;
+    	}
+    	return client;
+    }
+    
     @Override
-    public void put(RaptureURI uri, String content) {
-        client.prepareIndex(index, getType(uri), uri.getDocPath()).setSource(content).get();
+    public void put(DocumentWithMeta docMeta) {
+    	String uri = docMeta.getDisplayName();
+    	String[] parts = uri.split("/");
+    	SimpleURI uriStore = new SimpleURI();
+    	uriStore.setParts(Arrays.asList(parts));
+    	
+        ensureClient().prepareIndex(index, SearchRepoType.DOC.toString(), uri).setSource(docMeta.getContent()).get();
+        String meta = JacksonUtil.jsonFromObject(docMeta.getMetaData());
+        ensureClient().prepareIndex(index, SearchRepoType.META.toString(), uri).setSource(meta).get();
+        ensureClient().prepareIndex(index, SearchRepoType.URI.toString(), uri).setSource(JacksonUtil.jsonFromObject(uriStore)).get();
     }
 
     @Override
-    public String get(RaptureURI uri) {
-        GetResponse response = client.prepareGet(index, getType(uri), uri.getDocPath()).get();
-        return response.getSourceAsString();
-    }
-
-    @Override
-    public rapture.common.SearchResponse search(String query) {
-        SearchResponse response = client.prepareSearch().setQuery(QueryBuilders.queryStringQuery(query)).get();
+    public rapture.common.SearchResponse search(List<String> types, String query) {
+        SearchResponse response = ensureClient().prepareSearch().setIndices(index).setTypes(types.toArray(new String[types.size()])).setQuery(QueryBuilders.queryStringQuery(query)).get();
         return convert(response);
     }
 
     @Override
-    public rapture.common.SearchResponse searchWithCursor(String cursorId, int size, String query) {
+    public rapture.common.SearchResponse searchWithCursor(List<String> types, String cursorId, int size, String query) {
         SearchResponse response;
         if (StringUtils.isBlank(cursorId)) {
-            response = client.prepareSearch()
+            response = ensureClient().prepareSearch()
                     .setQuery(QueryBuilders.queryStringQuery(query))
                     .setScroll(new TimeValue(CURSOR_KEEPALIVE))
+                    .setIndices(index)
+                    .setTypes(types.toArray(new String[types.size()]))
                     .setSize(size)
                     .get();
         } else {
-            response = client.prepareSearchScroll(cursorId).setScroll(new TimeValue(CURSOR_KEEPALIVE)).get();
+            response = ensureClient().prepareSearchScroll(cursorId).setScroll(new TimeValue(CURSOR_KEEPALIVE)).get();
         }
         return convert(response);
     }
@@ -177,6 +193,7 @@ public class ElasticSearchSearchRepository implements SearchRepository {
         if (StringUtils.isBlank(instanceName)) {
             instanceName = "default";
         }
+        
         Map<String, ConnectionInfo> map = Kernel.getSys().getConnectionInfo(
                 ContextFactory.getKernelUser(),
                 ConnectionType.ES.toString());
@@ -186,4 +203,9 @@ public class ElasticSearchSearchRepository implements SearchRepository {
         }
         index = connectionInfo.getDbName();
     }
+
+	@Override
+	public void setConfig(Map<String, String> config) {
+		setIndex(config.get("index"));
+	}
 }

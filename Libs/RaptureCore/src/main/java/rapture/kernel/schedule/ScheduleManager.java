@@ -69,7 +69,7 @@ import rapture.kernel.pipeline.TaskSubmitter;
  * The schedule manage handles the interaction between Jobs and their executions, and is used by a Scheduler application (an application that is a RaptureCore
  * app, so can access this class) to convert jobs to job-execs, and to handle the execution of a job-exec when its time has come. The schedule manage will use
  * the Kernel to retrieve documents and interact with the Pipeline for task submission.
- * <p/>
+ * <p>
  * The kernel schedule api will also interact with this class when jobs are updated or changed - so that their next execution job can be set correctly.
  * 
  * @author amkimian
@@ -79,7 +79,7 @@ public class ScheduleManager {
 
     /**
      * The definition of the RaptureJob has changed, so make sure it's still scheduled to run at the right time (upcoming job schedule etc)
-     * <p/>
+     * <p>
      * Need to watch out of the upcoming job exec is not WAITING though.
      * 
      * @param job
@@ -219,10 +219,10 @@ public class ScheduleManager {
 
     /**
      * Look at the latest job executions.
-     * <p/>
+     * <p>
      * They are either WAITING, so do we need to schedule this? (is its time for execution in the past) SCHEDULED, how long has it been on the pipeline? (abort
      * if too long?) RUNNING, how long has it been running? (abort if too long?)
-     * <p/>
+     * <p>
      * The main one is WAITING, and this will submit an appropriate task to the Pipeline engine to ultimately execute this task.
      */
     public static void manageJobExecStatus() {

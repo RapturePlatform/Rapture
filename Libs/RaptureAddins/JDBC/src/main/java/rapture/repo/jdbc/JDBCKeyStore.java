@@ -38,27 +38,27 @@ import org.apache.log4j.Logger;
 
 /**
  * A JDBCKeyStore is a key store implemented on a set of relational tables.
- * <p/>
+ * <p>
  * It is assumed that Rapture (and this add-in) owns the tables and no-one else
  * is going to manipulate them from left field.
- * <p/>
+ * <p>
  * The table structure is as follows.
- * <p/>
+ * <p>
  * PrimaryDataTable
- * <p/>
+ * <p>
  * keyName VARCHAR(512) content TEXT (?)
- * <p/>
+ * <p>
  * If folder handling is enabled a secondary table is created to support:
  * "give me the subkeys of this key" (files and folders)
  * "give me all of the subkeys below this point"
- * <p/>
+ * <p>
  * type hier prefix depth count
- * <p/>
+ * <p>
  * (See MongoDB FolderStructureStore for an example - a sub implementation
  * should follow this)
- * <p/>
+ * <p>
  * If the tables do not exist they need to be created.
- *
+ * <p>
  * @author amkimian
  */
 public class JDBCKeyStore implements KeyStore {

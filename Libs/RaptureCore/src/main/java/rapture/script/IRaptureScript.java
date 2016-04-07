@@ -33,9 +33,9 @@ import java.util.Map;
 
 /**
  * This is used to provide a standard interface to running scripts in Rapture
- * <p/>
+ * <p>
  * Scripts are stored pieces of execution code, and have a purpose.
- * <p/>
+ * <p>
  * Basically the RaptureScriptingEngine runs a script in a context, and given
  * the language associated with a Script an instance of IRaptureScript is
  * created which is then executed for the given purpose.

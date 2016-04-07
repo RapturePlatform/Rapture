@@ -1,0 +1,16 @@
+meta do
+  return string,'Just the parameters put together';
+  param 'a',string,'The a parameter';
+  param 'b',string,'The b parameter';
+  param 'c',string,'The c parameter';
+  param 'd',string,'The d parameter';
+  param 'e',number,'The e parameter';
+  property 'color','blue';
+end
+
+println("a is ${a}");
+println("b is ${b}");
+println("c is ${c}");
+println("d is ${d}");
+
+return "${a}${b}${c}${d}";

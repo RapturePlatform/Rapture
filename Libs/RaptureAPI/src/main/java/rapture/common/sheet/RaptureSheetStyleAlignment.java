@@ -23,6 +23,7 @@
  */
 package rapture.common.sheet;
 
+@Deprecated
 public enum RaptureSheetStyleAlignment {
     LEFT, RIGHT, CENTER;
 

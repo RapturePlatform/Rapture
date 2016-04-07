@@ -170,14 +170,7 @@ public class Scope {
                     mapper = (Map<String, Object>) val;
                 }
             } else {
-                if (i != (parts.length - 1)) {
-                    StringBuilder sb = new StringBuilder();
-                    sb.append(parts[0]);
-                    for (int j = 1; j <= i; j++) {
-                        sb.append(".").append(parts[j]);
-                    }
-                    throw new ReflexException(0, "Cannot assign a value to "+sb.toString()+" because it is not declared as a map ");
-                }
+            	// Auto-create the map
                 mapper.put(parts[i], new HashMap<String, Object>());
                 mapper = (Map<String, Object>) mapper.get(parts[i]);
             }
@@ -277,4 +270,11 @@ public class Scope {
     public Scope getGlobalScope() {
         return globalScope;
     }
+
+	@Override
+	public String toString() {
+		return "Scope [assignOnce=" + assignOnce + ", scopeName=" + scopeName + ", parent=" + parent + ", globalScope="
+				+ globalScope + ", constantScope=" + constantScope + ", pendingComment=" + pendingComment
+				+ ", variables=" + variables + "]";
+	}
 }

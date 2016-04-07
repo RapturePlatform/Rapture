@@ -38,5 +38,8 @@ res2 = splitwith(lessThan5, l2);
 println("SplitWith" + l1 + " less than 5 = " + res1);
 println("SplitWith" + l2 + " less than 5 = " + res2);
 
-assert(res1 == [[1.0, 2.0, 3.0], [7.0]]);
-assert(res2 == [[1.0], [7.0, 8.0, 9.0, 5.0, 10.0]]);
+println(res1);
+println(res2);
+
+assert(res1 == [[1, 2, 3], [7]]);
+assert(res2 == [[1], [7, 8, 9, 5, 10]]);

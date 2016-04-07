@@ -26,6 +26,7 @@ package rapture.idgen.mongodb;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.bson.Document;
 
 import rapture.common.exception.RaptureExceptionFactory;
 import rapture.dsl.idgen.IdGenStore;
@@ -34,6 +35,7 @@ import rapture.mongodb.MongoDBFactory;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
+import com.mongodb.client.MongoCollection;
 
 /**
  * A idgen implemented on MongoDb

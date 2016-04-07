@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Config>
+	<Global>
+		<RaptureUrl>http://localhost:8665/rapture</RaptureUrl>		
+		<RaptureUser>rapture</RaptureUser>
+		<RapturePassword>rapture</RapturePassword>
+		<RunnerUrl>http://localhost:8666/</RunnerUrl>
+		<RunnerUser>rapture</RunnerUser>
+		<RunnerPassword>rapture</RunnerPassword>
+		<AssertStore>reflexTest.validation</AssertStore>
+		<DocPath>testRun</DocPath>
+		<RepoConfig>REP {} using MONGODB {prefix="reflexTest.integration"}</RepoConfig>
+		<ScriptAuthority>reflexTest.scriptstore</ScriptAuthority>
+		<ScriptRepoConfig>REP {} using MONGODB {prefix="reflexTest.scriptStore"}</ScriptRepoConfig>
+		<ScriptPath>/reflex/</ScriptPath>
+		<ReflexRunnerDir>/Users/jesusarozamena/RaptureApps/ReflexRunner-1.1.8.20140107021226/bin</ReflexRunnerDir>
+		<ReflexRunnerUser>rapture</ReflexRunnerUser>
+		<ReflexRunnerPassword>rapture</ReflexRunnerPassword>
+		<LibraryScript>commonFuncs.rfx</LibraryScript>
+		<LibraryScriptPath>/reflex/library</LibraryScriptPath>
+		<ServerLibraries>BloombergData, ReutersDDL</ServerLibraries>
+		<ServerLibrariesVersion>1.1.7.20131223201547</ServerLibrariesVersion>
+		<ModsourceLocation>file:///opt/rapture/modules</ModsourceLocation>
+		<BloombergAuthority>bloomberg.configuration</BloombergAuthority>
+		<BloombergRepoConfig>NREP {} using MONGODB {prefix="bloomberg.configuration"}</BloombergRepoConfig>
+		<ReutersAuthority>reuters.configuration</ReutersAuthority>
+		<ReutersRepoConfig>NREP {} using MONGODB {prefix="reuters.configuration"}</ReutersRepoConfig>
+		<BloombergDataFile>/rapture_data.csv</BloombergDataFile>			
+	</Global>
+	<ScriptTest id="1" enabled="true">
+		<Authority>docReflex.storeTest</Authority>
+		<RepoConfig>NREP {} using MONGODB {prefix="data.docData"}</RepoConfig>
+		<DocPath>myDoc</DocPath>
+		<ScriptMode>Serial</ScriptMode>
+		<ScriptAuthority>reflexTest.scriptstore</ScriptAuthority>
+		<ScriptRepoConfig>REP {} using MONGODB {prefix="reflexTest.scriptStore"}</ScriptRepoConfig>
+		<ScriptPath>/reflex/serial/</ScriptPath>
+		<Assert>AssertTrue</Assert>
+		<UseAssertStore>true</UseAssertStore>
+	</ScriptTest>
+	<ScriptTest id="2" enabled="true">
+		<Authority>docReflex.storeTest</Authority>
+		<RepoConfig>NREP {} using MONGODB {prefix="data.docData"}</RepoConfig>
+		<DocPath>myDoc</DocPath>
+		<ScriptMode>Parallel</ScriptMode>
+		<ScriptAuthority>reflexTest.scriptstore</ScriptAuthority>
+		<ScriptRepoConfig>REP {} using MONGODB {prefix="reflexTest.scriptStore"}</ScriptRepoConfig>
+		<ScriptPath>/reflex/parallel/</ScriptPath>
+		<Assert>AssertTrue</Assert>
+		<UseAssertStore>true</UseAssertStore>
+	</ScriptTest>
+	<ScriptTest id="3" enabled="true">
+		<Authority>exceptionReflex.storeTest</Authority>
+		<RepoConfig>NREP {} using MONGODB {prefix="data.exceptionTestData"}</RepoConfig>
+		<DocPath>exceptionDoc</DocPath>
+		<ScriptMode>Exception</ScriptMode>
+		<ScriptAuthority>reflexTest.scriptstore</ScriptAuthority>
+		<ScriptRepoConfig>REP {} using MONGODB {prefix="reflexTest.scriptStore"}</ScriptRepoConfig>
+		<ScriptPath>/reflex/exception/</ScriptPath>
+		<Assert>AssertTrue</Assert>
+		<UseAssertStore>true</UseAssertStore>
+	</ScriptTest>
+	<ScriptTest id="4" enabled="true">
+		<Authority>exceptionReflex.storeTest</Authority>
+		<RepoConfig>NREP {} using MONGODB {prefix="data.exceptionTestData"}</RepoConfig>
+		<DocPath>exceptionDoc</DocPath>
+		<ScriptMode>Parser</ScriptMode>
+		<ScriptAuthority>reflexTest.scriptstore</ScriptAuthority>
+		<ScriptRepoConfig>REP {} using MONGODB {prefix="reflexTest.scriptStore"}</ScriptRepoConfig>
+		<ScriptPath>/reflex/exception/parser</ScriptPath>
+		<Assert>AssertTrue</Assert>
+		<UseAssertStore>true</UseAssertStore>
+	</ScriptTest>
+	<ScriptTest id="5" enabled="true">
+		<Authority>bloomberg.configuration</Authority>
+		<RepoConfig>NREP {} using MONGODB {prefix="bloomberg.configuration"}</RepoConfig>
+		<DocPath>importDoc</DocPath>
+		<ScriptMode>Import</ScriptMode>
+		<ScriptAuthority>reflexTest.scriptstore</ScriptAuthority>
+		<ScriptRepoConfig>REP {} using MONGODB {prefix="reflexTest.scriptStore"}</ScriptRepoConfig>
+		<ScriptPath>/reflex/import</ScriptPath>		
+		<Assert>AssertTrue</Assert>
+		<UseAssertStore>true</UseAssertStore>
+	</ScriptTest>
+	<ScriptTest id="6" enabled="true">
+		<ScriptMode>localExecution</ScriptMode>
+		<ScriptPath>/reflex/runner</ScriptPath>		
+		<Assert>AssertTrue</Assert>
+		<UseAssertStore>true</UseAssertStore>
+	</ScriptTest>
+	<ScriptTest id="7" enabled="true">
+		<ScriptMode>Builtin</ScriptMode>
+		<ScriptPath>/reflex/builtin</ScriptPath>
+		<DocPath>builtinDoc</DocPath>
+		<ScriptAuthority>reflexTest.scriptstore</ScriptAuthority>
+		<ScriptRepoConfig>REP {} using MONGODB {prefix="reflexTest.scriptStore"}</ScriptRepoConfig>		
+		<Assert>AssertTrue</Assert>
+		<UseAssertStore>true</UseAssertStore>
+	</ScriptTest>
+	<ScriptTest id="8" enabled="false">
+		<ScriptMode>Api</ScriptMode>
+		<ScriptPath>/reflex/api</ScriptPath>
+		<DocPath>apiDoc</DocPath>
+		<ScriptAuthority>reflexTest.scriptstore</ScriptAuthority>
+		<ScriptRepoConfig>REP {} using MONGODB {prefix="reflexTest.scriptStore"}</ScriptRepoConfig>		
+		<Assert>AssertTrue</Assert>
+		<UseAssertStore>true</UseAssertStore>
+	</ScriptTest>
+	<ScriptTest id="9" enabled="true">
+		<ScriptMode>Sheet</ScriptMode>
+		<ScriptPath>/reflex/sheet</ScriptPath>
+		<DocPath>apiSheet</DocPath>
+		<ScriptAuthority>reflexTest.scriptstore</ScriptAuthority>
+		<ScriptRepoConfig>REP {} using MONGODB {prefix="reflexTest.scriptStore"}</ScriptRepoConfig>		
+		<Assert>AssertTrue</Assert>
+		<UseAssertStore>true</UseAssertStore>
+	</ScriptTest>
+	<ScriptTest id="10" enabled="true">
+		<ScriptMode>Series</ScriptMode>
+		<ScriptPath>/reflex/series</ScriptPath>
+		<DocPath>apiSeries</DocPath>
+		<ScriptAuthority>reflexTest.scriptstore</ScriptAuthority>
+		<ScriptRepoConfig>REP {} using MONGODB {prefix="reflexTest.scriptStore"}</ScriptRepoConfig>		
+		<Assert>AssertTrue</Assert>
+		<UseAssertStore>true</UseAssertStore>
+	</ScriptTest>
+	<ScriptTest id="11" enabled="true">
+		<ScriptMode>Document</ScriptMode>
+		<ScriptPath>/reflex/document</ScriptPath>
+		<DocPath>apiDocument</DocPath>
+		<ScriptAuthority>reflexTest.scriptstore</ScriptAuthority>
+		<ScriptRepoConfig>REP {} using MONGODB {prefix="reflexTest.scriptStore"}</ScriptRepoConfig>		
+		<Assert>AssertTrue</Assert>
+		<UseAssertStore>true</UseAssertStore>
+	</ScriptTest>
+		<ScriptTest id="12" enabled="true">
+		<ScriptMode>Operators</ScriptMode>
+		<ScriptPath>/reflex/operators</ScriptPath>
+		<DocPath>apiOperator</DocPath>
+		<ScriptAuthority>reflexTest.scriptstore</ScriptAuthority>
+		<ScriptRepoConfig>REP {} using MONGODB {prefix="reflexTest.scriptStore"}</ScriptRepoConfig>		
+		<Assert>AssertTrue</Assert>
+		<UseAssertStore>true</UseAssertStore>
+	</ScriptTest>
+		<ScriptTest id="13" enabled="true">
+		<ScriptMode>Blob</ScriptMode>
+		<ScriptPath>/reflex/blob</ScriptPath>
+		<DocPath>apiBlob</DocPath>
+		<ScriptAuthority>reflexTest.scriptstore</ScriptAuthority>
+		<ScriptRepoConfig>REP {} using MONGODB {prefix="reflexTest.scriptStore"}</ScriptRepoConfig>		
+		<Assert>AssertTrue</Assert>
+		<UseAssertStore>true</UseAssertStore>
+	</ScriptTest>
+	
+	
+	<Sheet id="1" enabled="false">
+		<Authority>sheetAuthority.sheets_two</Authority>
+		<RepoConfig>SHEET {} using MONGODB {prefix="research.sheets_two"}</RepoConfig>
+		<DocPath>mySheet</DocPath>
+		<ScriptPath>/reflex/sheet</ScriptPath>
+		<Assert>AssertTrue</Assert>
+		<UseAssertStore>false</UseAssertStore>
+	</Sheet>
+	<Document id="1" enabled="true">
+		<Authority>docAuthority.docs</Authority>
+		<RepoConfig>NREP {} using MONGODB {prefix="data.docInfo"}</RepoConfig>
+		<DocPath>myDoc</DocPath>		
+		<ScriptPath>/reflex/document</ScriptPath>
+		<Assert>AssertTrue</Assert>
+		<UseAssertStore>false</UseAssertStore>
+	</Document>
+	<Index id="1" enabled="true">
+		<Authority>docAuthority.index</Authority>
+		<RepoConfig>INDEX {} USING MONGODB {prefix = "testDoc.index"}</RepoConfig>
+		<DocPath>testDoc</DocPath>
+		<ScriptPath>/reflex/</ScriptPath>
+		<Assert>AssertTrue</Assert>
+		<UseAssertStore>false</UseAssertStore>
+	</Index>
+	<Event id="1" enabled="false">
+		<Authority>eventAuthority.events1</Authority>
+		<DocPath>event</DocPath>
+		<ScriptPath>/reflex/</ScriptPath>
+		<Assert>AssertTrue</Assert>
+		<UseAssertStore>false</UseAssertStore>
+	</Event>
+	<Schedule id="1" enabled="true">
+		<Authority>scheduleAuthority.schedules1</Authority>
+		<RepoConfig>REP {} using MONGODB {prefix="reflexTest.scheduleLinkTest"}</RepoConfig>
+		<DocPath>testLinkJobs</DocPath>
+		<HelperAuthority>scheduledAuthority.trackScripts</HelperAuthority>
+		<HelperRepoConfig>REP {} using MONGODB {prefix="reflexTest.scheduleTrack"}</HelperRepoConfig>
+		<HelperDocPath>Test1Tracker</HelperDocPath>
+		<HelperInitScript>init.rfx</HelperInitScript>
+		<ScriptMode>Link</ScriptMode>
+		<ScriptPath>/reflex/scheduleLinks/</ScriptPath>		
+		<Assert>AssertTrue</Assert>
+		<UseAssertStore>false</UseAssertStore>
+	</Schedule>
+</Config>

@@ -29,6 +29,7 @@ import java.util.Map;
 import reflex.IReflexHandler;
 import reflex.Scope;
 import reflex.debug.IReflexDebugger;
+import reflex.value.ImmutableReflexValue;
 import reflex.value.ReflexSparseMatrixValue;
 import reflex.value.ReflexValue;
 import reflex.value.internal.ReflexNullValue;
@@ -64,7 +65,7 @@ public class AtomNode extends BaseNode {
         }
     }
 
-    private ReflexValue value;
+    private final ReflexValue value;
 
     public AtomNode(int lineNumber, IReflexHandler handler, Scope s) {
         super(lineNumber, handler, s);
@@ -73,12 +74,12 @@ public class AtomNode extends BaseNode {
     
     public AtomNode(int lineNumber, IReflexHandler handler, Scope s, MatrixDim dim) {
     	super(lineNumber, handler, s);
-    	value = new ReflexValue(new ReflexSparseMatrixValue(dim.getDimension()));
+    	value = new ImmutableReflexValue(new ReflexSparseMatrixValue(dim.getDimension()));
     }
     
     public AtomNode(int lineNumber, IReflexHandler handler, Scope s, Object v) {
         super(lineNumber, handler, s);
-        value = (v == null) ? new ReflexNullValue(lineNumber) : new ReflexValue(lineNumber, v);
+        value = (v == null) ? new ReflexNullValue(lineNumber) : new ImmutableReflexValue(lineNumber, v);
     }
 
     @Override
@@ -90,4 +91,29 @@ public class AtomNode extends BaseNode {
     public String toString() {
         return value.toString();
     }
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((value == null) ? 0 : value.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		AtomNode other = (AtomNode) obj;
+		if (value == null) {
+			if (other.value != null)
+				return false;
+		} else if (!value.equals(other.value))
+			return false;
+		return true;
+	}
 }

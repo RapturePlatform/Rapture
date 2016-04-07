@@ -1,0 +1,45 @@
+\chapter{Special operators}
+There are four special operators in \Reflex. They are \Verb+-->+ , \verb+<--+, \verb+-->>+ and \verb+<<--+. The operators are known as the push, pull, metapush and metapull operators.
+
+\Reflex scripts are primarily about taking data from \Rapture, manipulating it, and then putting that data back. The push and pull operators can be used to get data from \Rapture and to save it back. The meta versions of the pull and push operators return (or deliver) the metadata about the content, such as who wrote the document, its version and when it was written. Only repositories that support metadata can benefit from these meta operators.
+
+As an example, consider a \Rapture environment with a partition \Verb+test+ and a type in that partition with the name \verb+config+. The script in the following listing will save some data to \Rapture in a configuration document and then later on, retrieve that data and use the information within to control the script. The script also shows an example of initializing a map and writing values to it. When used in this form, the push and pull operators assume a map type on the left hand side and a string on the right.
+
+\begin{lstlisting}[caption={Push and Pull}]
+// Data push and pull
+config = {};
+config['option1'] = true;
+config['level'] = 42;
+
+displayName = 'test/official/config/main';
+
+config --> displayName; // Write the map to the document
+
+// Later on in a different script
+
+appConfig <-- displayName;
+if appConfig['option1'] do
+   println("Level is " + appConfig['level']);
+else do
+   println("Option1 is not set');
+end
+\end{lstlisting}
+
+The push and pull operators also work with either a \emph{queue} or a \emph{file} type on the right hand side. For a queue, the operator either puts an entry onto a \Rapture queue or takes one off. For a file, the pull operator returns the contents of the file (as a string) and the push operator writes the string to the file. These uses are discussed in more detail in the relevant sections below on IO.
+
+\section{Meta pull}
+
+The following example yields the output given below the listing:
+\begin{lstlisting}[caption={Meta pull}]
+meta <<-- 'c_smrs/official/physical/bond/861594AB5';
+
+println("Meta is " + meta);
+\end{lstlisting}
+
+\begin{Verbatim}
+Meta is {version=1,
+         writeTime=1351614168682,
+         user=alan,
+         comment=FeatureInstaller,
+         deleted=false}
+\end{Verbatim}

@@ -30,6 +30,6 @@ public class FromJsonTest extends ResourceBasedTest {
 
     @Test
     public void testFromJson() throws RecognitionException {
-        runTestFor("/fromJson.rfx");
+        runTestFor("/fromjson.rfx");
     }
 }

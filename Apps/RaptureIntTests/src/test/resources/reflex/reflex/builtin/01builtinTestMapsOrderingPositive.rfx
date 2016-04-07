@@ -1,0 +1,113 @@
+/**
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
+/******************************************************
+* This Reflex script will test the following Reflex built-in functions and keywords:
+* - merge() > maps
+* - mergeif() > maps
+* - 'map'.remove() - using java object function call
+* - keys() - needed in order to cycle through the map in a for loop
+* -
+*/
+
+// Reflex script
+
+// This is a test for Reflex to verify the flow of validating data created and 
+// retrieved by reflex
+//load common library
+require "//reflexTest.scriptstore/commonFuncs.rfx" as comm;
+
+// init the params we pass in
+if !defined(_params) do
+	_params = {};
+	_params['assertDocRepo'] =  '//reflexTest.validation/testRun';
+	_params['assertRepo'] =  '//reflexTest.validation';
+	_params['assertRepoConfig'] = 'NREP {} using MONGODB {prefix="validate.reflexTestData"}';	
+	_params['date'] = 'today';
+	_params['docRepoURI'] = '//someAuthority.testingReflex';
+	_params['config'] = 'NREP {} using MONGODB {prefix="data.docData"}';
+	_params['docPath'] = 'theDoc';
+	 
+end 
+
+assertDocRepoURI = _params['assertDocRepo'];
+assertRepoURI = _params['assertRepo'];
+assertConfig = _params['assertRepoConfig'];
+TODAY = _params['date'];
+docRepoConfig = _params['config']; 
+docPath = _params['docPath'];
+docRepoURI = _params['docRepoURI'];
+
+//println("our params: " + docRepoURI );
+
+//setup repos if they do not exist
+//comm.init(assertRepoURI, assertConfig, docRepoURI, docRepoConfig);
+//resultsData ={};
+returnVal = false;
+
+//---------- test -----------
+
+
+println ('Positive test for map ordering');
+myMap = {};
+myMap['order1'] = 1;
+myMap['order2'] = 2;
+myMap['order3'] = 3;
+myMap['order4'] = 4;
+myMap['order5'] = 5;
+myMap['order6'] = 6;
+myMap['order7'] = 7;
+myMap['order8'] = 8;
+myMap['order9'] = 9;
+myMap['order10'] = 10;
+
+//get keys
+mapKeys = keys(myMap);
+checkOrder = 1;
+
+testOrderPass=true;
+//check order
+for singleKey in mapKeys do
+	if (testOrderPass) do
+    	if (myMap[singleKey] != checkOrder) do
+    		testOrderPass=false;
+    	end
+    end
+    checkOrder += 1;
+end
+
+if (testOrderPass) do
+	//resultsData['map_order_positive']['result'] = 'pass';
+	returnVal = true;
+else do
+	//resultsData['map_order_positive']['result'] = 'fail';
+	returnVal = false;
+end
+
+
+//---------- test validation ----------
+
+//println ('Reporting results to: ' + assertDocRepoURI + '/01builtinTestMaps/'+TODAY);
+//resultsData --> assertDocRepoURI + '/01builtinTestMaps/'+TODAY;
+return returnVal;

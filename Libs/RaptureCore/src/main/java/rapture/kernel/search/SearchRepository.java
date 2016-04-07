@@ -23,10 +23,11 @@
  */
 package rapture.kernel.search;
 
+import java.util.List;
 import java.util.Map;
 
-import rapture.common.RaptureURI;
 import rapture.common.SearchResponse;
+import rapture.common.model.DocumentWithMeta;
 
 public interface SearchRepository {
 
@@ -34,12 +35,13 @@ public interface SearchRepository {
 
     void start();
 
-    void put(RaptureURI uri, String content);
+    void put(DocumentWithMeta doc);
 
-    String get(RaptureURI uri);
+    SearchResponse search(List<String> types, String query);
 
-    SearchResponse search(String query);
+    SearchResponse searchWithCursor(List<String> types, String cursorId, int size, String query);
 
-    SearchResponse searchWithCursor(String cursorId, int size, String query);
+    // This is used to define the index used by this repo
+	void setConfig(Map<String, String> config);
 
 }

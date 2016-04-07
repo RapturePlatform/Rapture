@@ -37,7 +37,26 @@ import reflex.value.ReflexValue;
  */
 public class QuotedStringNode extends BaseNode {
 
-    private String value;
+    @Override
+	public int hashCode() {
+		return (value == null) ? 0 : value.hashCode();
+	}
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (getClass() != obj.getClass())
+			return false;
+		QuotedStringNode other = (QuotedStringNode) obj;
+		if (value == null) {
+			if (other.value != null)
+				return false;
+		} else if (!value.equals(other.value))
+			return false;
+		return true;
+	}
+
+	private String value;
     private ReflexNode valueNode = null;
 
     public QuotedStringNode(int lineNumber, IReflexHandler handler, Scope s, ReflexNode valueNode) {

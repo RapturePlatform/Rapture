@@ -6,21 +6,21 @@ param(name, type) ::= <<
 
 // The entry for a single function
 docApiEntry(apitype, ret, name, apiparams, paramNames, doc, ent) ::= <<
-\subsection{<name; format="upcase">}
+\section{<name; format="upcase">}
 \index{<name; format="upcase">}
 \label{Api:<name; format="upcase">}
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    <ret> <name> (
       <apiparams; separator="\n">
    )
-\end{Verbatim}
+\end{lstlisting}
 \begin{Verbatim}[formatcom=\color{Maroon}]
   Entitlement: <ent>
 \end{Verbatim}
 %\begin{lstlisting}[language=reflex]
 %ret = #<apitype; format="lower">.<name>(<paramNames; separator=",">);
 %\end{lstlisting}
-\input{<apitype; format="lower">/<name>}
+\input{api/<apitype; format="lower">/<name>}
 
 
 \rule{12cm}{2pt}
@@ -28,7 +28,7 @@ docApiEntry(apitype, ret, name, apiparams, paramNames, doc, ent) ::= <<
 docApiList(apitype, apis, doc) ::= <<
 \chapter{<apitype> API}
 \index{<apitype> API}
-\input{<apitype; format="lower">/info}
+\input{api/<apitype; format="lower">/info}
 <apis; separator="\n">
 >>
 
@@ -41,11 +41,11 @@ docTypeDef(name, fields, doc) ::= <<
 \label{type:<name; format="upcase">}
 \index{<name; format="upcase">}
 
-\begin{Verbatim}
+\begin{lstlisting}[style=nonumbers]
    type <name> {
       <fields; separator="\n">
    }
-\end{Verbatim}
+\end{lstlisting}
 
 \rule{12cm}{2pt}
 >>

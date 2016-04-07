@@ -1,0 +1,876 @@
+\chapter{Structured API}
+\index{Structured API}
+\input{api/structured/info}
+\section{CreateStructuredRepo}
+\index{CreateStructuredRepo}
+\label{Api:CreateStructuredRepo}
+\begin{lstlisting}[style=nonumbers]
+   void createStructuredRepo (
+           String    uri
+           String    config
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /structured/write
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #structured.createStructuredRepo(uri,config);
+%\end{lstlisting}
+\input{api/structured/createStructuredRepo}
+
+
+\rule{12cm}{2pt}
+\section{DeleteStructuredRepo}
+\index{DeleteStructuredRepo}
+\label{Api:DeleteStructuredRepo}
+\begin{lstlisting}[style=nonumbers]
+   void deleteStructuredRepo (
+           String    uri
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /structured/write
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #structured.deleteStructuredRepo(uri);
+%\end{lstlisting}
+\input{api/structured/deleteStructuredRepo}
+
+
+\rule{12cm}{2pt}
+\section{StructuredRepoExists}
+\index{StructuredRepoExists}
+\label{Api:StructuredRepoExists}
+\begin{lstlisting}[style=nonumbers]
+   boolean structuredRepoExists (
+           String    uri
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /structured/read
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #structured.structuredRepoExists(uri);
+%\end{lstlisting}
+\input{api/structured/structuredRepoExists}
+
+
+\rule{12cm}{2pt}
+\section{GetStructuredRepoConfig}
+\index{GetStructuredRepoConfig}
+\label{Api:GetStructuredRepoConfig}
+\begin{lstlisting}[style=nonumbers]
+   StructuredRepoConfig getStructuredRepoConfig (
+           String    uri
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /structured/read
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #structured.getStructuredRepoConfig(uri);
+%\end{lstlisting}
+\input{api/structured/getStructuredRepoConfig}
+
+
+\rule{12cm}{2pt}
+\section{GetStructuredRepoConfigs}
+\index{GetStructuredRepoConfigs}
+\label{Api:GetStructuredRepoConfigs}
+\begin{lstlisting}[style=nonumbers]
+   List<StructuredRepoConfig> getStructuredRepoConfigs (
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /structured/read
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #structured.getStructuredRepoConfigs();
+%\end{lstlisting}
+\input{api/structured/getStructuredRepoConfigs}
+
+
+\rule{12cm}{2pt}
+\section{CreateTableUsingSql}
+\index{CreateTableUsingSql}
+\label{Api:CreateTableUsingSql}
+\begin{lstlisting}[style=nonumbers]
+   void createTableUsingSql (
+           String    schema
+           String    rawSql
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /structured/admin/$f(schema)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #structured.createTableUsingSql(schema,rawSql);
+%\end{lstlisting}
+\input{api/structured/createTableUsingSql}
+
+
+\rule{12cm}{2pt}
+\section{CreateTable}
+\index{CreateTable}
+\label{Api:CreateTable}
+\begin{lstlisting}[style=nonumbers]
+   void createTable (
+           String    tableUri
+           Map<String,String>    columns
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /structured/admin/$f(tableUri)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #structured.createTable(tableUri,columns);
+%\end{lstlisting}
+\input{api/structured/createTable}
+
+
+\rule{12cm}{2pt}
+\section{DropTable}
+\index{DropTable}
+\label{Api:DropTable}
+\begin{lstlisting}[style=nonumbers]
+   void dropTable (
+           String    tableUri
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /structured/admin/$f(tableUri)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #structured.dropTable(tableUri);
+%\end{lstlisting}
+\input{api/structured/dropTable}
+
+
+\rule{12cm}{2pt}
+\section{TableExists}
+\index{TableExists}
+\label{Api:TableExists}
+\begin{lstlisting}[style=nonumbers]
+   boolean tableExists (
+           String    tableUri
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /structured/read/$f(tableUri)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #structured.tableExists(tableUri);
+%\end{lstlisting}
+\input{api/structured/tableExists}
+
+
+\rule{12cm}{2pt}
+\section{GetSchemas}
+\index{GetSchemas}
+\label{Api:GetSchemas}
+\begin{lstlisting}[style=nonumbers]
+   List<String> getSchemas (
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /structured/read
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #structured.getSchemas();
+%\end{lstlisting}
+\input{api/structured/getSchemas}
+
+
+\rule{12cm}{2pt}
+\section{GetTables}
+\index{GetTables}
+\label{Api:GetTables}
+\begin{lstlisting}[style=nonumbers]
+   List<String> getTables (
+           String    repoUri
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /structured/read
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #structured.getTables(repoUri);
+%\end{lstlisting}
+\input{api/structured/getTables}
+
+
+\rule{12cm}{2pt}
+\section{DescribeTable}
+\index{DescribeTable}
+\label{Api:DescribeTable}
+\begin{lstlisting}[style=nonumbers]
+   Map<String,String> describeTable (
+           String    tableUri
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /structured/read/$f(tableUri)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #structured.describeTable(tableUri);
+%\end{lstlisting}
+\input{api/structured/describeTable}
+
+
+\rule{12cm}{2pt}
+\section{AddTableColumns}
+\index{AddTableColumns}
+\label{Api:AddTableColumns}
+\begin{lstlisting}[style=nonumbers]
+   void addTableColumns (
+           String    tableUri
+           Map<String,String>    columns
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /structured/admin/$f(tableUri)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #structured.addTableColumns(tableUri,columns);
+%\end{lstlisting}
+\input{api/structured/addTableColumns}
+
+
+\rule{12cm}{2pt}
+\section{DeleteTableColumns}
+\index{DeleteTableColumns}
+\label{Api:DeleteTableColumns}
+\begin{lstlisting}[style=nonumbers]
+   void deleteTableColumns (
+           String    tableUri
+           List<String>    columnNames
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /structured/admin/$f(tableUri)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #structured.deleteTableColumns(tableUri,columnNames);
+%\end{lstlisting}
+\input{api/structured/deleteTableColumns}
+
+
+\rule{12cm}{2pt}
+\section{UpdateTableColumns}
+\index{UpdateTableColumns}
+\label{Api:UpdateTableColumns}
+\begin{lstlisting}[style=nonumbers]
+   void updateTableColumns (
+           String    tableUri
+           Map<String,String>    columns
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /structured/admin/$f(tableUri)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #structured.updateTableColumns(tableUri,columns);
+%\end{lstlisting}
+\input{api/structured/updateTableColumns}
+
+
+\rule{12cm}{2pt}
+\section{RenameTableColumns}
+\index{RenameTableColumns}
+\label{Api:RenameTableColumns}
+\begin{lstlisting}[style=nonumbers]
+   void renameTableColumns (
+           String    tableUri
+           Map<String,String>    columnNames
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /structured/admin/$f(tableUri)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #structured.renameTableColumns(tableUri,columnNames);
+%\end{lstlisting}
+\input{api/structured/renameTableColumns}
+
+
+\rule{12cm}{2pt}
+\section{CreateIndex}
+\index{CreateIndex}
+\label{Api:CreateIndex}
+\begin{lstlisting}[style=nonumbers]
+   void createIndex (
+           String    tableUri
+           String    indexName
+           List<String>    columnNames
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /structured/admin/$f(tableUri)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #structured.createIndex(tableUri,indexName,columnNames);
+%\end{lstlisting}
+\input{api/structured/createIndex}
+
+
+\rule{12cm}{2pt}
+\section{DropIndex}
+\index{DropIndex}
+\label{Api:DropIndex}
+\begin{lstlisting}[style=nonumbers]
+   void dropIndex (
+           String    tableUri
+           String    indexName
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /structured/admin/$f(tableUri)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #structured.dropIndex(tableUri,indexName);
+%\end{lstlisting}
+\input{api/structured/dropIndex}
+
+
+\rule{12cm}{2pt}
+\section{GetIndexes}
+\index{GetIndexes}
+\label{Api:GetIndexes}
+\begin{lstlisting}[style=nonumbers]
+   List<TableIndex> getIndexes (
+           String    tableUri
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /structured/read/$f(tableUri)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #structured.getIndexes(tableUri);
+%\end{lstlisting}
+\input{api/structured/getIndexes}
+
+
+\rule{12cm}{2pt}
+\section{SelectJoinedRows}
+\index{SelectJoinedRows}
+\label{Api:SelectJoinedRows}
+\begin{lstlisting}[style=nonumbers]
+   List<Map<String,Object>> selectJoinedRows (
+           List<String>    tableUris
+           List<String>    columnNames
+           String    from
+           String    where
+           List<String>    order
+           boolean    ascending
+           int    limit
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /structured/read
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #structured.selectJoinedRows(tableUris,columnNames,from,where,order,ascending,limit);
+%\end{lstlisting}
+\input{api/structured/selectJoinedRows}
+
+
+\rule{12cm}{2pt}
+\section{SelectUsingSql}
+\index{SelectUsingSql}
+\label{Api:SelectUsingSql}
+\begin{lstlisting}[style=nonumbers]
+   List<Map<String,Object>> selectUsingSql (
+           String    schema
+           String    rawSql
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /structured/read/$f(schema)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #structured.selectUsingSql(schema,rawSql);
+%\end{lstlisting}
+\input{api/structured/selectUsingSql}
+
+
+\rule{12cm}{2pt}
+\section{SelectRows}
+\index{SelectRows}
+\label{Api:SelectRows}
+\begin{lstlisting}[style=nonumbers]
+   List<Map<String,Object>> selectRows (
+           String    tableUri
+           List<String>    columnNames
+           String    where
+           List<String>    order
+           boolean    ascending
+           int    limit
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /structured/read/$f(tableUri)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #structured.selectRows(tableUri,columnNames,where,order,ascending,limit);
+%\end{lstlisting}
+\input{api/structured/selectRows}
+
+
+\rule{12cm}{2pt}
+\section{InsertUsingSql}
+\index{InsertUsingSql}
+\label{Api:InsertUsingSql}
+\begin{lstlisting}[style=nonumbers]
+   void insertUsingSql (
+           String    schema
+           String    rawSql
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /structured/write/$f(schema)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #structured.insertUsingSql(schema,rawSql);
+%\end{lstlisting}
+\input{api/structured/insertUsingSql}
+
+
+\rule{12cm}{2pt}
+\section{InsertRow}
+\index{InsertRow}
+\label{Api:InsertRow}
+\begin{lstlisting}[style=nonumbers]
+   void insertRow (
+           String    tableUri
+           Map<String,Object>    values
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /structured/write/$f(tableUri)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #structured.insertRow(tableUri,values);
+%\end{lstlisting}
+\input{api/structured/insertRow}
+
+
+\rule{12cm}{2pt}
+\section{InsertRows}
+\index{InsertRows}
+\label{Api:InsertRows}
+\begin{lstlisting}[style=nonumbers]
+   void insertRows (
+           String    tableUri
+           List<Map<String,Object>>    values
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /structured/write/$f(tableUri)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #structured.insertRows(tableUri,values);
+%\end{lstlisting}
+\input{api/structured/insertRows}
+
+
+\rule{12cm}{2pt}
+\section{DeleteUsingSql}
+\index{DeleteUsingSql}
+\label{Api:DeleteUsingSql}
+\begin{lstlisting}[style=nonumbers]
+   void deleteUsingSql (
+           String    schema
+           String    rawSql
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /structured/write/$f(schema)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #structured.deleteUsingSql(schema,rawSql);
+%\end{lstlisting}
+\input{api/structured/deleteUsingSql}
+
+
+\rule{12cm}{2pt}
+\section{DeleteRows}
+\index{DeleteRows}
+\label{Api:DeleteRows}
+\begin{lstlisting}[style=nonumbers]
+   void deleteRows (
+           String    tableUri
+           String    where
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /structured/write/$f(tableUri)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #structured.deleteRows(tableUri,where);
+%\end{lstlisting}
+\input{api/structured/deleteRows}
+
+
+\rule{12cm}{2pt}
+\section{UpdateUsingSql}
+\index{UpdateUsingSql}
+\label{Api:UpdateUsingSql}
+\begin{lstlisting}[style=nonumbers]
+   void updateUsingSql (
+           String    schema
+           String    rawSql
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /structured/write/$f(schema)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #structured.updateUsingSql(schema,rawSql);
+%\end{lstlisting}
+\input{api/structured/updateUsingSql}
+
+
+\rule{12cm}{2pt}
+\section{UpdateRows}
+\index{UpdateRows}
+\label{Api:UpdateRows}
+\begin{lstlisting}[style=nonumbers]
+   void updateRows (
+           String    tableUri
+           Map<String,Object>    values
+           String    where
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /structured/write/$f(tableUri)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #structured.updateRows(tableUri,values,where);
+%\end{lstlisting}
+\input{api/structured/updateRows}
+
+
+\rule{12cm}{2pt}
+\section{Begin}
+\index{Begin}
+\label{Api:Begin}
+\begin{lstlisting}[style=nonumbers]
+   boolean begin (
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /structured/write
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #structured.begin();
+%\end{lstlisting}
+\input{api/structured/begin}
+
+
+\rule{12cm}{2pt}
+\section{Commit}
+\index{Commit}
+\label{Api:Commit}
+\begin{lstlisting}[style=nonumbers]
+   boolean commit (
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /structured/write
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #structured.commit();
+%\end{lstlisting}
+\input{api/structured/commit}
+
+
+\rule{12cm}{2pt}
+\section{Rollback}
+\index{Rollback}
+\label{Api:Rollback}
+\begin{lstlisting}[style=nonumbers]
+   boolean rollback (
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /structured/write
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #structured.rollback();
+%\end{lstlisting}
+\input{api/structured/rollback}
+
+
+\rule{12cm}{2pt}
+\section{Abort}
+\index{Abort}
+\label{Api:Abort}
+\begin{lstlisting}[style=nonumbers]
+   boolean abort (
+           String    transactionId
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /structured/admin
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #structured.abort(transactionId);
+%\end{lstlisting}
+\input{api/structured/abort}
+
+
+\rule{12cm}{2pt}
+\section{GetTransactions}
+\index{GetTransactions}
+\label{Api:GetTransactions}
+\begin{lstlisting}[style=nonumbers]
+   List<String> getTransactions (
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /structured/admin
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #structured.getTransactions();
+%\end{lstlisting}
+\input{api/structured/getTransactions}
+
+
+\rule{12cm}{2pt}
+\section{GetDdl}
+\index{GetDdl}
+\label{Api:GetDdl}
+\begin{lstlisting}[style=nonumbers]
+   String getDdl (
+           String    uri
+           boolean    includeTableData
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /structured/read/$f(uri)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #structured.getDdl(uri,includeTableData);
+%\end{lstlisting}
+\input{api/structured/getDdl}
+
+
+\rule{12cm}{2pt}
+\section{GetCursorUsingSql}
+\index{GetCursorUsingSql}
+\label{Api:GetCursorUsingSql}
+\begin{lstlisting}[style=nonumbers]
+   String getCursorUsingSql (
+           String    schema
+           String    rawSql
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /structured/read/$f(schema)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #structured.getCursorUsingSql(schema,rawSql);
+%\end{lstlisting}
+\input{api/structured/getCursorUsingSql}
+
+
+\rule{12cm}{2pt}
+\section{GetCursor}
+\index{GetCursor}
+\label{Api:GetCursor}
+\begin{lstlisting}[style=nonumbers]
+   String getCursor (
+           String    tableUri
+           List<String>    columnNames
+           String    where
+           List<String>    order
+           boolean    ascending
+           int    limit
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /structured/read/$f(tableUri)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #structured.getCursor(tableUri,columnNames,where,order,ascending,limit);
+%\end{lstlisting}
+\input{api/structured/getCursor}
+
+
+\rule{12cm}{2pt}
+\section{GetCursorForJoin}
+\index{GetCursorForJoin}
+\label{Api:GetCursorForJoin}
+\begin{lstlisting}[style=nonumbers]
+   String getCursorForJoin (
+           List<String>    tableUris
+           List<String>    columnNames
+           String    from
+           String    where
+           List<String>    order
+           boolean    ascending
+           int    limit
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /structured/read
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #structured.getCursorForJoin(tableUris,columnNames,from,where,order,ascending,limit);
+%\end{lstlisting}
+\input{api/structured/getCursorForJoin}
+
+
+\rule{12cm}{2pt}
+\section{Next}
+\index{Next}
+\label{Api:Next}
+\begin{lstlisting}[style=nonumbers]
+   List<Map<String,Object>> next (
+           String    tableUri
+           String    cursorId
+           int    count
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /structured/read/$f(tableUri)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #structured.next(tableUri,cursorId,count);
+%\end{lstlisting}
+\input{api/structured/next}
+
+
+\rule{12cm}{2pt}
+\section{Previous}
+\index{Previous}
+\label{Api:Previous}
+\begin{lstlisting}[style=nonumbers]
+   List<Map<String,Object>> previous (
+           String    tableUri
+           String    cursorId
+           int    count
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /structured/read/$f(tableUri)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #structured.previous(tableUri,cursorId,count);
+%\end{lstlisting}
+\input{api/structured/previous}
+
+
+\rule{12cm}{2pt}
+\section{CloseCursor}
+\index{CloseCursor}
+\label{Api:CloseCursor}
+\begin{lstlisting}[style=nonumbers]
+   void closeCursor (
+           String    tableUri
+           String    cursorId
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /structured/read/$f(tableUri)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #structured.closeCursor(tableUri,cursorId);
+%\end{lstlisting}
+\input{api/structured/closeCursor}
+
+
+\rule{12cm}{2pt}
+\section{CreateProcedureCallUsingSql}
+\index{CreateProcedureCallUsingSql}
+\label{Api:CreateProcedureCallUsingSql}
+\begin{lstlisting}[style=nonumbers]
+   void createProcedureCallUsingSql (
+           String    procUri
+           String    rawSql
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /structured/admin/$f(procUri)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #structured.createProcedureCallUsingSql(procUri,rawSql);
+%\end{lstlisting}
+\input{api/structured/createProcedureCallUsingSql}
+
+
+\rule{12cm}{2pt}
+\section{CallProcedure}
+\index{CallProcedure}
+\label{Api:CallProcedure}
+\begin{lstlisting}[style=nonumbers]
+   StoredProcedureResponse callProcedure (
+           String    procUri
+           StoredProcedureParams    params
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /structured/admin/$f(procUri)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #structured.callProcedure(procUri,params);
+%\end{lstlisting}
+\input{api/structured/callProcedure}
+
+
+\rule{12cm}{2pt}
+\section{DropProcedureUsingSql}
+\index{DropProcedureUsingSql}
+\label{Api:DropProcedureUsingSql}
+\begin{lstlisting}[style=nonumbers]
+   void dropProcedureUsingSql (
+           String    procUri
+           String    rawSql
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /structured/admin/$f(procUri)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #structured.dropProcedureUsingSql(procUri,rawSql);
+%\end{lstlisting}
+\input{api/structured/dropProcedureUsingSql}
+
+
+\rule{12cm}{2pt}
+\section{GetPrimaryKey}
+\index{GetPrimaryKey}
+\label{Api:GetPrimaryKey}
+\begin{lstlisting}[style=nonumbers]
+   String getPrimaryKey (
+           String    tableUri
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /structured/read/$f(tableUri)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #structured.getPrimaryKey(tableUri);
+%\end{lstlisting}
+\input{api/structured/getPrimaryKey}
+
+
+\rule{12cm}{2pt}
+\section{GetForeignKeys}
+\index{GetForeignKeys}
+\label{Api:GetForeignKeys}
+\begin{lstlisting}[style=nonumbers]
+   List<ForeignKey> getForeignKeys (
+           String    tableUri
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /structured/read/$f(tableUri)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #structured.getForeignKeys(tableUri);
+%\end{lstlisting}
+\input{api/structured/getForeignKeys}
+
+
+\rule{12cm}{2pt}

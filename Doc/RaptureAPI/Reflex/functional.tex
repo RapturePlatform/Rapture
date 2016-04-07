@@ -1,0 +1,195 @@
+\chapter{Functional Aspects of Reflex}
+Functions can be defined in \Reflex and these functions can be passed around as \emph{first class objects} to a number of special in-built functions. This chapter describes these special functions.
+\section{map}
+The \emph{map} built-in function takes two parameters -- a pre-defined function that takes a single parameter and returns a single value and an array. The \emph{map} function calls the pre-defined function for each element in the passed array, generating a new array which is formed by the return values from this invocation. The return value of the \emph{map} function is this \emph{transformed} array. The size of the array returned will match the size of the array passed as the second parameter.
+
+\begin{lstlisting}[caption={Reflex map function}]
+def mapfn(x)
+      return x*2;
+end
+
+res = map(mapfn, [ 1, 2, 3, 4, 5]);
+
+assert(res == [2,4,6,8,10]);
+\end{lstlisting}
+
+The example above demonstrates this. We first define a simple function that doubles its passed parameter "x". We then \emph{map} using this function an array of the first 5 integers. The result is an array of the first five even numbers, as each element in the first array has been multiplied by 2.
+
+\section{filter}
+The \emph{filter} built-in function takes two parameters -- a pre-defined function that takes a single parameter and returns either true or false. The \emph{filter} function calls the pre-defined function for each element in the passed array. If that function returns true the parameter passed to the filter function is added to an array that will be ultimately returned by the \emph{filter} function. In this way the return array will only contain the values in the passed array for which the "filter function" returns true.
+
+\begin{lstlisting}[caption={Reflex filter function}]
+def filterFn(x)
+      return x % 2 == 0;
+end
+
+res = filter(filterFn, [ 1, 2, 3, 4, 5]);
+
+assert(res == [2,4]);
+\end{lstlisting}
+
+In the above example we define a function that returns whether a passed number is even -- a number is even if the result after dividing by 2 is zero, and this is what this function returns.
+
+After passing this function and an array of the first five integers to the filter function we produce a new array that just contains those elements that are even -- in this case the numbers 2 and 4.
+
+\section{any}
+The \emph{any} built-in function takes two parameters -- the first is a built-in function similar to that used by the filter function, one that returns true or false. The second parameter is an array. The \emph{any} function returns true if \emph{any} of the elements in the input array returns \emph{true} when passed through the built-in function. Note that the test will stop as soon as \emph{any} element returns true, and the elements are tested in the order they are given in the passed array.
+
+\begin{lstlisting}[caption={Reflex any function}]
+def lessThan5(x)
+      return x < 5;
+end
+
+l1 = [ 1, 2 , 3, 7 ];
+l2 = [ 7, 8, 9, 10 ];
+
+res1 = any(lessThan5, l1);
+res2 = any(lessThan5, l2);
+
+assert(res1 == true);
+assert(res2 == false);
+\end{lstlisting}
+
+In this example we define a simple function "lessThan5" that returns true if the passed parameter is less than 5. We then call the \emph{any} function with two different arrays -- one where there is a number less than 5 (l1) and one where none of the numbers are less than 5 (l2). The first call returns true (there is at least one element in l1 that is less than 5) and the second call returns false (there are no elements in l2 that are less than 5).
+
+\section{all}
+The \emph{all} built-in function works in a similar way to the \emph{any} function. It takes two parameters -- the first is a built-in function similar to that used by the filter function, one that returns true or false. The second parameter is an array. The \emph{all} function returns true if \emph{all} of the elements in the input array returns \emph{true} when passed through the built-in function. It will return false if \emph{any} of the elements in the input array returns \emph{false} when passed through the built-in function. The function will stop checking if it sees any check returning false.
+
+\begin{lstlisting}[caption={Reflex all function}]
+def greaterThan(x)
+      return x > 5;
+end
+
+l1 = [ 1, 2 , 3, 7 ];
+l2 = [ 7, 8, 9, 10 ];
+
+res1 = all(greaterThan5, l1);
+res2 = all(greaterThan5, l2);
+
+assert(res1 == false);
+assert(res2 == true);
+\end{lstlisting}
+
+In this example we define a simple function "greaterThan5" that returns true if the passed parameter is greater than 5. We then call the \emph{all} function with two different arrays -- one where there is a number less than 5 (l1) and one where none of the numbers are less than 5 (l2). The first call returns false (all of the elements are not greater than 5 in l1) and the second call returns true (all of the elements are greater than 5).
+
+\section{takewhile}
+The \Reflex function \emph{takewhile} takes two parameters -- the first is a function that takes a single parameter and returns true or false. The second is an array. The return value of the function consists of all of the elements of the input array \emph{up to the point} at which the return value from passing the array element through the passed function retruns true. We in effect "take the elements of the input array while the test is true".
+
+\begin{lstlisting}[caption={Reflex takewhile example}]
+def lessThan5(x)
+      return x < 5;
+end
+
+l1 = [ 1, 2 , 3, 7 ];
+l2 = [ 1, 7, 8, 9, 5, 10 ];
+
+res1 = takewhile(lessThan5, l1);
+res2 = takewhile(lessThan5, l2);
+
+assert(res1 == [1,2,3]);
+assert(res2 == [1]);
+\end{lstlisting}
+
+In this example we use a standard "lessThan5" function that returns true if a number is less than 5. We than pass that to the \emph{takewhile} function using two different arrays. The first, \emph{l1}, has a 4th element (7) which is greater than 5, and the result of calling \emph{takewhile} is to return only the first 3 elements. The second, \emph{l2}, has the 2nd element greater than 5 and therefore the result of the \emph{takewhile} call is to only return the first element of the array.
+
+\section{dropwhile}
+The \Reflex \emph{dropwhile} function is similar to \emph{takewhile} -- it takes two parameters, a test function that accepts on parameter and returns true or false and an input array. The result of calling \emph{dropwhile} is to remove elements from the input array while the test function returns true. As soon as the test function returns false the checking is stopped and the remaining elements of the input array are returned. We are effectively "dropping elements of the array while the test function returns true".
+
+\begin{lstlisting}[caption={Reflex dropwhile example}]
+def lessThan5(x)
+      return x < 5;
+end
+
+l1 = [ 1, 2 , 3, 7 ];
+l2 = [ 1, 7, 8, 9, 5, 10 ];
+
+res1 = dropwhile(lessThan5, l1);
+res2 = dropwhile(lessThan5, l2);
+
+assert(res1 == [7]);
+assert(res2 == [7,8,9,5,10]);
+\end{lstlisting}
+
+This example is similar to the \emph{takewhile} example - and in this case the return value from the \emph{dropwhile} call is the exact complement of the \emph{takewhile} call. If we concatenated the result of a \emph{takewhile} call to the result of a \emph{dropwhile} call with the same parameters we would get the same input array passed in.
+
+\section{splitwith}
+The \Reflex \emph{splitwith} function works on the property that the \emph{takewhile} and \emph{dropwhile} functions are complementary -- they each select a different part of the passed input array. The result of \emph{splitwith} (which takes the same parameters as the other functions -- a function that returns either true or false, and an input array) is to return an array of two values -- one the result of calling \emph{takewhile} and one the result of calling \emph{dropwhile}.
+
+\begin{lstlisting}[caption={Reflex splitwith example}]
+def lessThan5(x)
+      return x < 5;
+end
+
+l1 = [ 1, 2 , 3, 7 ];
+l2 = [ 1, 7, 8, 9, 5, 10 ];
+
+res1 = splitwith(lessThan5, l1);
+res2 = splitwith(lessThan5, l2);
+
+assert(res1 == [[1.0, 2.0, 3.0], [7.0]]);
+assert(res2 == [[1.0], [7.0, 8.0, 9.0, 5.0, 10.0]]);
+\end{lstlisting}
+
+In the above example we split the array at the point where the first element is \emph{not} less than 5 - so that the first element in the return value is all the elements \emph{to the left} of that point, and the second element in the return value is all of the elements \emph{to the right} of that point.
+
+\section{fold}
+\emph{Fold} is a classic accumulator technique in functional programming -- it takes three parameters, the first being a function that takes two parameters (an accumulator and an input parameter, returning a value), the second being an initial value of an \emph{accumulator} and the third an input array.
+
+The function works by calling the passed function with the initial value of the accumulator and the first element of the input array. The return value of calling this function is the \emph{new} accumulator that is passed to the invocation of the passed function with the second element. This continues for all elements and the return value of the \emph{fold} function is the final return value of the final call for the final element.
+
+\begin{lstlisting}[caption={Reflex fold example}]
+def totalFn(total, x)
+      return total + x;
+end
+
+def multFn(total, x)
+      return total * x;
+end
+
+input = [ 1, 2, 3, 4, 5];
+res = fold(totalFn, 0, input);
+res2 = fold(multFn, 1, input);
+
+assert(res == 15);
+assert(res2 == 120);
+\end{lstlisting}
+
+In this example we define two functions -- one that adds the two passed parameters and returns their sum (\emph{totalFn}) and one that multiplies the two passed parameters and returns the result (\emph{multFn}). We then call the \emph{fold} function on a simple input array (the first 5 integers) with each of these functions. For the \emph{totalFn} we set the initial value of the accumulator to be zero and for the \emph{multFn} we set the initial value to be 1 (a value of zero would result in every number being multiplied by zero).
+
+The calls to the \emph{totalFn} work according to the table below:
+
+\begin{table}[!h]
+\centering
+\begin{tabular} { | r | r | r  | }
+\hline
+Input  & Accumulator & Result   \\
+\hline
+1 & 0 & 1 \\
+2 & 1 & 3 \\
+3 & 3 & 6 \\
+4 & 6 & 10 \\
+5 & 10 & 15 \\
+\hline
+\end{tabular}
+\caption{Total using fold}
+\end{table}
+
+With the result of 15 being returned by the fold function.
+
+For the \emph{multFn} we have the following steps:
+
+\begin{table}[!h]
+\centering
+\begin{tabular} { | r | r | r  | }
+\hline
+Input  & Accumulator & Result   \\
+\hline
+1 & 1 & 1 \\
+2 & 1 & 2 \\
+3 & 2 & 6 \\
+4 & 6 & 24 \\
+5 & 24 & 120 \\
+\hline
+\end{tabular}
+\caption{Multiply using fold}
+\end{table}

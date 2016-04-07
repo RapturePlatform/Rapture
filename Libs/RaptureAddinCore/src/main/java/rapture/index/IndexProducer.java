@@ -35,7 +35,7 @@ import java.util.Map;
 
 /**
  * //todo this needs to be updated to truly support multiple indices
- * <p/>
+ * <p>
  * An index producer can create index records (things that need to be stored)
  * from a RaptureURI, MetaData and Content
  *

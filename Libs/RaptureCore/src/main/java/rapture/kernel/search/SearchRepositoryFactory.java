@@ -23,6 +23,82 @@
  */
 package rapture.kernel.search;
 
-public enum SearchRepositoryFactory {
+import java.net.HttpURLConnection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.antlr.runtime.ANTLRStringStream;
+import org.antlr.runtime.CommonTokenStream;
+import org.antlr.runtime.RecognitionException;
+import org.apache.log4j.Logger;
+
+import rapture.common.exception.RaptureExceptionFactory;
+import rapture.generated.FTGenLexer;
+import rapture.generated.FTGenParser;
+
+/**
+ * A factory that creates search store interfaces
+ *
+ * @author amkimian
+ */
+public final class SearchRepositoryFactory {
+    private static Logger log = Logger.getLogger(SearchRepositoryFactory.class);
+    private static final Map<Integer, String> implementationMap;
+
+    static {
+        Map<Integer, String> setupMap = new HashMap<Integer, String>();
+        setupMap.put(FTGenLexer.ELASTIC, "rapture.elasticsearch.ElasticSearchSearchRepository");
+        implementationMap = Collections.unmodifiableMap(setupMap);
+    }
+
+    public static SearchRepository createSearchStore(String config) {
+        SearchRepository ret = null;
+        try {
+            log.info("Creating search store from config - " + config);
+            FTGenParser parser = getParserForConfig(config);
+            int implementationType = parser.getStoreType();
+            if (implementationMap.containsKey(implementationType)) {
+                ret = getStore(implementationMap.get(implementationType), parser.getInstance(), parser.getImplementionConfig());
+            } else {
+                throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, "Unsupported search store - " + parser.getImplementationName());
+            }
+        } catch (RecognitionException e) {
+            log.error("Error parsing config - " + e.getMessage());
+        }
+        return ret;
+    }
+
+    private static SearchRepository getStore(String className, String instanceName, Map<String, String> config) {
+    	log.info("Trying to load " + className + " instanceName = " + instanceName + " config " + config.toString());
+        try {
+            Class<?> blobClass = Class.forName(className);
+            Object fStore;
+            fStore = blobClass.newInstance();
+            if (fStore instanceof SearchRepository) {
+                SearchRepository ret = (SearchRepository) fStore;
+                ret.setConfig(config);
+                ret.setInstanceName(instanceName);
+                return ret;
+            } else {
+                log.error(className + " is not an search store, cannot instantiate");
+                throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, "Could not create search store");
+            }
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, "Error retrieving search", e);
+        }
+    }
+
+    private static FTGenParser getParserForConfig(String config) throws RecognitionException {
+        FTGenLexer lexer = new FTGenLexer();
+        lexer.setCharStream(new ANTLRStringStream(config));
+        CommonTokenStream tokens = new CommonTokenStream(lexer);
+        FTGenParser parser = new FTGenParser(tokens);
+        parser.repinfo();
+        return parser;
+    }
+
+    private SearchRepositoryFactory() {
+
+    }
 }

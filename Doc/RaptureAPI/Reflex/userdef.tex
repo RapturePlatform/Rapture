@@ -1,0 +1,29 @@
+\chapter{User-defined functions}
+User-defined functions \index{function} can also be built in \Reflex. The main structure of a function definition is show below:
+\begin{Verbatim}
+
+def functionName ( parameters )
+    block
+end
+
+functionName(parameters);
+
+\end{Verbatim}
+A simple example of a function being defined and used is in the following listing.
+
+\begin{lstlisting}[caption={Function definition}]
+
+const prefix = "I'll say ";
+
+def sayWhat(name, what)
+   println(prefix + what + " to " + name);
+end
+
+sayWhat('Alan', 'hello');
+sayWhat('Alan', 42);
+
+\end{lstlisting}
+
+Some important points about function declarations and invocations. When defining a function the parameter types are not defined, just their names. So a developer can be very free with the type of parameters as long as the body of the function can also tolerate the type differences. You can see an example of that in the listing above, where the \Verb+what+ parameter is also passed as a number as well as a string.
+
+Also variables defined outside the scope of a function are not normally accesible from within the function. You either need to pass the variable as a parameter or declare the variable as \Verb+const+ to ensure that it can be accessed within a function. The reason for this is to allow future optimizations of invocations of functions in \Reflex - where the function could actually be executed on a different machine than the one used for the outer script. You can see this in action in the script above with the \verb+prefix+ const.

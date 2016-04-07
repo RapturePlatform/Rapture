@@ -1,0 +1,1105 @@
+
+
+
+
+\chapter{Built-in functions}
+\Reflex has a large number of built-in functions that extend the power of the language in a more native way. The \Verb+println+ function was introduced earlier. This section describes all of the built-in functions in \Reflex.
+
+\section{Println}
+\index{println}
+\begin{Verbatim}
+println( expression )
+\end{Verbatim}
+
+The \Verb+println+ function prints to the registered output handler the single parameter passed, which is coerced to a string type if it is not already. In most implementations of \Reflex the output handler is wired to be either standard out (the console), the Eclipse console window or the standard log file.
+\begin{lstlisting}[caption={println}]
+// Println example
+println("Hello, world!");
+println(5);
+println({}); // Prints an empty map
+println("one two " + 3);
+\end{lstlisting}
+
+\section{Print}
+\index{print}
+\begin{Verbatim}
+print( expression )
+\end{Verbatim}
+
+The \Verb+print+ function is identical to \verb+println+ except that it does not automatically terminate the output with a carriage return.
+\begin{lstlisting}[caption={print}]
+// Print example
+print("Hello, world!");
+print(" And this would be on the same line.");
+println(""); // And now force a carriage return
+\end{lstlisting}
+
+\section{TypeOf}
+\index{typeof}
+
+\begin{Verbatim}
+typeof( expression )
+\end{Verbatim}
+
+The \Verb+typeof+ function can be used to determine the type of an expression, which can be a variable identifier as well. The return from the \verb+typeof+ function is a string, which can take the values in the table \vref{tab:TypeOf}.
+
+\begin{table}[h!]
+\centering
+\begin{tabular} { | c | c | }
+\hline
+Internal Type     &  Return Value \\
+\hline
+String & "string" \\
+Number &"number" \\
+Boolean & "bool" \\
+List & "list" \\
+Map & "map" \\
+Date & "date" \\
+Time & "time" \\
+File & "file" \\
+Queue & "queue" \\
+No value & "void" \\
+Null value & "null" \\
+All else & "object" \\
+\hline
+\end{tabular}
+\label{tab:TypeOf}
+\caption{typeof function return values}
+\end{table}
+
+An example of the use of \Verb+typeof+ function is shown below:
+
+\begin{lstlisting}[caption={Typeof example}]
+// typeof example
+a = "This is a string";
+
+if typeof(a) == "string" do
+   println("Yes, 'a' is a string");
+end
+
+\end{lstlisting}
+
+\section{Assert}
+\index{assert}
+\begin{Verbatim}
+assert( boolean-expression )
+\end{Verbatim}
+
+The \Verb+assert+ function is used to test its single parameter for truth. If the expression does not evaluate to true the \Reflex script will abort abnormally.
+
+\begin{lstlisting}[caption={Assert example}]
+// assert example
+
+assert(true);
+assert(typeof(" ") == "string");
+
+\end{lstlisting}
+
+\section{Size}
+\index{size}
+
+\begin{Verbatim}
+size( list-expression | string-expression )
+\end{Verbatim}
+
+The \Verb+size+ function returns the size of its single parameter. It is only applicable for strings and lists. For a string the size is the length of the string, for a list it is the size of the list (the number of elements in the list). For convenience, \verb+size(null)+ evaluates to zero.
+
+\begin{lstlisting}[caption={Size example}]
+// size example
+a = [1,2,3,4];
+
+if sizeof(a) == 4 do
+   println("Yes, that list has four elements");
+end
+
+\end{lstlisting}
+\section{Keys}
+\index{keys}
+
+\begin{Verbatim}
+keys( map-expression )
+\end{Verbatim}
+
+The \Verb+keys+ function takes a single map parameter, and returns a list of strings that corresponds to the keys of the associative map. It is useful when you need to iterate over a map.
+
+\begin{lstlisting}[caption={Keys example}]
+// keys example
+
+a = { 'one' : 1, 'two' : 2 };
+b = keys(a);
+
+for k in b do
+   println("Key = " + k + ", value is " + b[k]);
+end
+
+\end{lstlisting}
+
+\section{Debug}
+\index{debug}
+
+\begin{Verbatim}
+debug( expression )
+\end{Verbatim}
+
+The \Verb+debug+ function works in a similar way to the \verb+println+ function, except that the output is sent to any attached debugger instead of to the console. In some \Reflex installations this will mean the same thing.
+
+\begin{lstlisting}[caption={Debug example}]
+// debug example
+
+println("This will appear in one place");
+debug("This will appear in the debugger");
+
+\end{lstlisting}
+
+\section{Date}
+\index{date}
+
+\begin{Verbatim}
+date( )
+date( string-expression )
+\end{Verbatim}
+
+The \Verb+date+ function returns a date object. If called with zero parameters the object will be initialized to the current date. It can also take a single string parameter which must be a date formatted as "yyyyMMdd". The date object will be initialized to the date represented by that string.
+
+\begin{lstlisting}[caption={Date example}]
+
+today = date();
+aRealDate = date('20120101');
+
+println("Today is " + today + ", today is fun");
+println("The start of the year 2012 is " + aRealDate);
+
+\end{lstlisting}
+
+\section{Time}
+\index{time}
+
+\begin{Verbatim}
+time( )
+time( string-expession )
+\end{Verbatim}
+
+The \Verb+time+ function returns a time object. If called with zero parameters the object will be initialized to the current time. It can also take a single string parameter which must be a time formatted as "HH:mm:ss". The time object will be initialized to the time represented by that string.
+
+\begin{lstlisting}[caption={Time example}]
+// time example
+
+now = time();
+then = time('11:00:01');
+
+println("What time is now? " + now);
+
+\end{lstlisting}
+
+\section{ReadDir}
+\index{readdir}
+
+\begin{Verbatim}
+readdir( string-expression | file-expression)
+\end{Verbatim}
+
+The \Verb+readdir+ function returns the contents of a directory as a list of file values, although its behavior is really determined by the IO handler installed in the \Reflex environment. The function accepts either a string (which corresponds to the name of a folder available to the handler) or a file (returned by the \verb+file+ function or a different call to \verb+readdir+).
+
+\begin{lstlisting}[caption={readdir example}]
+// readdir example
+// Recursively look for folders
+
+def readFolder(folder)
+    println("Looking at " + folder);
+    filesAndFolders = readdir(folder);
+    for fAndF in filesAndFolders do
+        if isfolder(fAndF) do
+           readFolder(fAndF);
+        end
+    end
+end
+
+readFolder('/tmp');
+
+\end{lstlisting}
+
+This example starts with the \Verb+/tmp+ folder and enumerates all folders below that recursively, printing out the name of each folder found.
+
+\section{IsFile}
+\index{isfile}
+
+\begin{Verbatim}
+isfile( string-expression | file-expression )
+\end{Verbatim}
+
+The \Verb+isfile+ function evaluates its single argument (which needs to be a file or a string) and returns a boolean indicating whether the argument is actually a file.
+
+\begin{lstlisting}[caption={IsFile example}]
+// isfile example
+
+const name = '/tmp';
+
+if isfile(name) do
+   println(name + " is a file!");
+else do
+   println(name + " is not a file!");
+end
+
+\end{lstlisting}
+
+\section{IsFolder}
+\index{isfolder}
+
+\begin{Verbatim}
+isfolder( string-expession | file-expression)
+\end{Verbatim}
+
+The \Verb+isfolder+ function evaluates its single argument (which needs to be a file or a string) and returns a boolean indicating whether the argument is actually  folder.
+
+\begin{lstlisting}[caption={IsFolder example}]
+
+// isfolder example
+
+const name = '/tmp/out.log';
+
+if isfolder(name) do
+   println(name + " is a folder!");
+else do
+   println(name + " is not a folder!");
+end
+
+\end{lstlisting}
+
+\section{File}
+\index{file}
+\begin{Verbatim}
+file( string-expression )
+\end{Verbatim}
+
+The \Verb+file+ function creates a \Reflex file object from a string, where the string is assumed to be an absolute reference to a real file or folder. Files can be read by the \verb+pull+ operator ($<--$) and written to by the \verb+push+ operator ($-->$).
+
+\begin{lstlisting}[caption={File example}]
+// file example
+
+a = "/tmp/test.txt";
+data = "This is some text\n";
+
+aFile = file(a);
+
+data --> aFile;
+
+b = "/tmp/test.txt";
+bFile = file(b);
+
+data2 <-- bFile;
+
+assert(data == data2);
+\end{lstlisting}
+
+\section{Delete}
+\index{delete}
+\begin{Verbatim}
+delete(file or string expression);
+\end{Verbatim}
+
+The \Verb+delete+ function either attempts to remove a file from the file system (if supported) or removes a document from a repository.
+\begin{lstlisting}[caption={Delete example}]
+a = "/tmp/test.txt";
+data = "This is some text\n";
+
+aFile = file(a);
+
+data --> aFile;
+assert(isFile(aFile));
+
+delete(aFile);
+assert(!isFile(aFile));
+
+\end{lstlisting}
+\section{Difference}
+\begin{Verbatim}
+diff(list1, list2)
+\end{Verbatim}
+The difference function compares two lists and returns the elements that are not in both of them.
+\begin{lstlisting}[caption={Difference example}]
+a = [1,2,3];
+b = [3,4,5];
+
+diff = difference(a,b);
+
+println("diff is " + diff);
+// Returns 1,2,4,5
+\end{lstlisting}
+The function works on lists of numbers or lists of strings.
+\section{Unique}
+\begin{Verbatim}
+uniqueq(list1, list2)
+\end{Verbatim}
+The unique function compares two lists and returns only those elements that are not in common between the lists.
+\begin{lstlisting}[caption={Unique example}]
+a = [1,2,3];
+b = [3,4,5];
+
+un = unique(a,b);
+
+println("unique is " + un);
+// Returns 1,2,4,5
+\end{lstlisting}
+The function works on lists of numbers or lists of strings.
+\section{Json}
+\index{json}
+\begin{Verbatim}
+json( map-expression )
+\end{Verbatim}
+
+The \Verb+json+ function converts a map into a JSON formatted string that represents the contents of that map.
+
+\begin{lstlisting}[caption={Json example}]
+// json example
+a = { 'one' : 1, 'two' : 2 };
+
+a1 = "" + a;
+a2 = json(a);
+
+assert(a1 == '{ one=1, two=2 }';
+assert(a2 == '{ "one" : 1, "two" : 2 }';
+\end{lstlisting}
+
+Note that the default "string" representation of a map is not a json document, you must call the \Verb+json+ function for this.
+
+\section{FromJson}
+\index{fromjson}
+
+\begin{Verbatim}
+map = fromjson( string-expression )
+\end{Verbatim}
+
+The \Verb+fromjson+ function is the reverse of the \verb+json+ function. It takes a JSON formatted string and converts it to an associative map object.
+
+\begin{lstlisting}[caption={FromJson example}]
+// fromjson example
+a = '{ "alpha" : 1, "beta", 2 };
+
+b = fromjson(a);
+
+assert(b['alpha'] == 1);
+
+\end{lstlisting}
+
+\section{MD5}
+\index{md5}
+\begin{Verbatim}
+string = md5(string-value);
+\end{Verbatim}
+
+The \Verb+md5+ function returns a string that is an md5 hash of its passed string parameter. As elements in \Rapture such as passwords are never passed in none-hashed form, this function is useful in computing values that should be passed over an insecure link.
+
+\begin{lstlisting}[caption={MD5 example}]
+toHash = "password";
+hash = md5(toHash);
+
+println("Hash of " + toHash + " is " + hash);
+\end{lstlisting}
+
+\section{Uuid}
+\index{uuid}
+\begin{Verbatim}
+string = uuid( )
+\end{Verbatim}
+
+The \Verb+uuid+ function generates a new unique string that can be used as a unique id.
+
+\begin{lstlisting}[caption={UUID example}]
+// uuid example
+a = uuid();
+b = uuid();
+
+assert(a != b);
+
+println(a + " is not the same as " + b);
+
+\end{lstlisting}
+
+\section{Wait}
+\index{wait}
+
+\begin{Verbatim}
+wait( string )
+wait( string, int, int )
+wait( process )
+\end{Verbatim}
+
+The \Verb+wait+ function is a convenience function that waits for a document to exist in \Rapture. The document name is provided in the first parameter and the optional second and third parameters control the retry interval (wait between checks) and retry count (how many times to check). The return value for the function is either the contents of the document (as a map) or null (if the document did not exist after the interval requested).
+
+Finally, \Verb+wait+ can also be used to wait on a process object returned by the \verb+spawn+ command.
+
+\begin{lstlisting}[caption={Wait example}]
+// wait example
+
+displayName = 'test/official/config/testData';
+
+// Assume the above does not exist at the moment.
+
+result = wait(displayName);
+
+assert(result == null);
+
+value = {};
+value --> displayName;
+
+result = wait(displayName);
+
+assert(result == {});
+\end{lstlisting}
+
+\section{Chain}
+\index{chain}
+
+\begin{Verbatim}
+result = chain( string-expression )
+result = chain( string-expression, map-expression )
+\end{Verbatim}
+
+The \Verb+chain+ function is a way of executing a second script in \Reflex from a first script. The script is provided as the first string argument and can be passed in an optional parameter map as the second argument. The return value from \verb+chain+ is the return value from the called script.
+
+\begin{lstlisting}[caption={Chain example}]
+// chain example
+a = "println('The parameter is ' + p); return true;";
+
+res = chain(a, { 'p' : 42 });
+
+println(The result is " + res);
+
+\end{lstlisting}
+
+The output from executing the script above would be:
+\begin{Verbatim}
+The parameter is 42
+The result is true
+\end{Verbatim}
+
+\section{Signal}
+\index{signal}
+
+\begin{Verbatim}
+signal( string-expression, map-expression )
+\end{Verbatim}
+
+The \Verb+signal+ function is the mirror of the \verb+wait+ function in \Reflex. The \verb+signal+ function creates a document in \Rapture with the given displayname and value. It's really a synonym for \verb+ value --> displayName +.
+
+\begin{lstlisting}[caption={Signal example}]
+// signal example
+
+signal('test/official/config/doc', { 'hello' : 1 });
+
+assert(wait('test/official/config/doc') == { 'hello' : 1 });
+
+\end{lstlisting}
+
+\section{Sleep}
+\index{sleep}
+
+\begin{Verbatim}
+sleep( int-expression )
+\end{Verbatim}
+
+The \Verb+sleep+ function pauses the \Reflex script for the number of milliseconds specified in the passed parameter.
+
+\begin{lstlisting}[caption={Sleep example}]
+// typeof example
+
+for x = 0 to 10 do
+   sleep(100);
+   if null != wait('test/official/config/doc') do
+        x = 10;
+   end
+end
+
+\end{lstlisting}
+
+\section{Rand}
+\index{rand}
+
+\begin{Verbatim}
+rand( number-expession )
+\end{Verbatim}
+
+The \Verb+rand+ function returns an integer number between 0 and the passed parameter.
+
+\begin{lstlisting}[caption={Rand example}]
+values = [];
+for i = 1 to 10 do
+   values = values + rand(10);
+end
+
+println("Here is a list of random numbers - " + values);
+
+\end{lstlisting}
+
+\section{Spawn}
+\index{spawn}
+
+\begin{Verbatim}
+spawn( list-expression )
+spawn( list-expression, map-expression, file-expression)
+\end{Verbatim}
+
+The \Verb+spawn+ command, where supported, provides a mechansim for spawning a child process. The return value is a special \emph{process} object that can be used in a \emph{pull} context (to retrieve the standard output from the process) and by the \verb+wait+ function to wait for it to finish.
+
+The first parameter to the spawn command is a list of parameters to pass to the process. The first member of this list is the process to execute, the rest are parameters to pass to this process.
+
+The second parameter is a map expression that defines the \emph{environment} of the process.
+
+The third parameter is a file object that defines the folder the process should be run in.
+
+\begin{lstlisting}[caption={Spawn example}]
+env = { "PATH" : "/bin" };
+folder = file('/tmp');
+program = [ '/bin/ls' , '-l' ];
+
+p = spawn(program, env, folder);
+
+wait(p);
+
+out <-- p;
+
+println("output from process is " + out);
+\end{lstlisting}
+
+\section{Defined}
+\index{defined}
+
+\begin{Verbatim}
+boolean = defined( identifier )
+\end{Verbatim}
+
+The \Verb+defined+ function returns true if the variable identifier passed in is known to \Reflex at this point.
+
+\begin{lstlisting}[caption={Defined example}]
+a = "This is a string";
+
+assert(defined(a) == true);
+assert(defined(b) == false);
+
+\end{lstlisting}
+
+\section{Round}
+\index{round}
+
+\begin{Verbatim}
+integer = round( number-expression )
+\end{Verbatim}
+
+The \Verb+round+ function takes a floating point number argument and returns an integer result that is the closest integer to that value.
+
+\begin{lstlisting}[caption={Round example}]
+
+a = 1.23;
+b = 1.56;
+
+assert(round(a) == 1);
+assert(round(b) == 2);
+\end{lstlisting}
+
+\section{Lib}
+\index{lib}
+
+\begin{Verbatim}
+Library = lib( string-expression )
+\end{Verbatim}
+
+\Reflex has the ability to embed $3^{rd}$ party code within the language. The definition of how to do this is defined in a later section, but the \Verb+lib+ command is the way a $3^{rd}$ party library is linked in with \Reflex. The string parameter to the \verb+lib+ function is the name of a loadable class that implements the \verb+IReflexLibrary+ interface.
+
+The return value from this function is a special \emph{library} object that can be used in the \Verb+call+ function.
+
+\begin{lstlisting}[caption={Lib example}]
+
+mylib = lib('rapture.addins.BloombergData');
+
+\end{lstlisting}
+
+\section{Call}
+\index{call}
+
+\begin{Verbatim}
+result = call( library-expression,
+               string-expression,
+               map-expression )
+\end{Verbatim}
+
+The \Verb+call+ function takes a library loaded with the \verb+lib+ function and calls a function within that library. The function name is passed as the second parameter and any parameters to the internal function are passed in the third parameter. The result of calling the function is implementation specific.
+
+\begin{lstlisting}[caption={Call example}]
+
+mylib = lib('rapture.test');
+
+result = call(mylib, 'testFn', { 'param' : 42 } );
+
+\end{lstlisting}
+
+\section{Template}
+\index{template}
+
+\begin{Verbatim}
+result = template(string-expression, map-expression)
+\end{Verbatim}
+
+The \Verb+template+ function takes a string "template" and applies parameters to that template to generate a resulting string where the variables in the template have been replaced with the value of the parameters. Internally \Reflex uses the popular \emph{stringtemplate} library for this task.
+
+\begin{lstlisting}[caption={Template example}]
+
+tmp = 'Hello <what>';
+param = { 'what' : 'world' };
+
+val = template(tmp, param);
+
+println(val);
+
+assert(val == 'Hello world');
+
+\end{lstlisting}
+
+\section{Cast}
+\index{cast}
+
+\begin{Verbatim}
+value = cast ( expression, string-expression )
+\end{Verbatim}
+
+The \Verb+cast+ function attempts to coerce an expression into either a string or a number. When coercing to a string, a simple "toString" operator is called on the underlying data type. When converting to a number the "toString" value of the expression is passed into a number parser to attempt to convert it to the internal \Reflex number type.
+
+\begin{lstlisting}[caption={Cast example}]
+a = "1.0";
+b = cast(a, "number");
+assert(a == 1.0);
+
+y = 1.0;
+z = cast(y, "string");
+assert(z == '1.0');
+
+\end{lstlisting}
+
+\section{Merge}
+\index{merge}
+\begin{Verbatim}
+value = merge(map-expression, map-expression, ...)
+\end{Verbatim}
+
+The \Verb+merge+ function merges map variables together in \Reflex. The rules are that the right hand side of the merge operation will always "win" in such a merge, so that if a key is present in the left hand side \emph{and} the right hand size it will be the value of the right hand side that will contain the new value. The merge is recursive if the values being merged within the maps are themselves maps -- each lower level map is merged separately.
+
+\begin{lstlisting}[caption={Merge example}]
+a = { 'one' : 1 };
+b = { 'two' : 2 };
+c = merge(a, b);
+assert(c == { 'one' : 1, 'two' : 2 });
+
+a = { 'one' : 1 };
+b = { 'one' : 'un' };
+c = merge(a, b);
+assert(c == { 'one' : 'un' });
+
+a = { 'inner' : { 'one' : 1 }};
+b = { 'inner' : { 'two' : 2 }};
+c = merge(a,b);
+assert(c == { 'inner' : { 'one' : 1, 'two' : 2 }});
+
+\end{lstlisting}
+
+Merge can take any number of arguments. The first argument is merged with an empty map, which is then merged with the next parameter and so on. The return value is the merged value, the parameters are unchanged by this function.
+
+\section{Merge If}
+\index{mergeif}
+\begin{Verbatim}
+value = mergeif(map-expression, map-expression, ...)
+\end{Verbatim}
+
+The \Verb+mergeif+ function works in a very similar way to the \verb+merge+ function, except that it will not overwrite an existing value. If the same key exists in both maps and the values associated with those keys are also maps then it will also perform a recursive \verb+mergeif+ on those lower level maps.
+
+\begin{lstlisting}[caption={Merge If example}]
+a = { 'one' : 1 };
+b = { 'two' : 2 };
+c = mergeif(a, b);
+assert(c == { 'one' : 1, 'two' : 2 });
+
+a = { 'one' : 1 };
+b = { 'one' : 'un' };
+c = mergeif(a, b);
+assert(c == { 'one' : '1' });
+\end{lstlisting}
+
+\section{Archive}
+\index{archive}
+\begin{Verbatim}
+value = archive( string-expression )
+\end{Verbatim}
+The \Verb+archive+ command is used to create a special type of \verb+file+ object that tracks a ZIP archive. You can interact with the object in either read mode or write mode.
+\subsection{Write Mode}
+In write mode you use the push operator (\Verb+-->+) to send either a simple map to an entry in the file or a two element list - the first element being the name of the entry and the second element being the map data.
+
+After all of the data has been "pushed" to the zip archive the file should be closed through the \Verb+close+ function call.
+
+A typical use of an archive is shown in the listing below:
+\begin{lstlisting}[caption={Write to Archive example}]
+arcFile = archive("test.zip");
+
+dataEntry1 = { "dataField1" : 42, "data2" : "A string" };
+dataEntry2 = { "dataField1" : 34, "data3" : "A different string"};
+
+dataEntry1 --> arcFile;
+["DataEntryTwo", dataEntry2 ] --> arcFile;
+
+close(arcFile);
+\end{lstlisting}
+
+In this example we create a zip file with two "files" - the first "file" has a default name and the value of the variable \Verb+dataEntry1+. The second entry has the name "DataEntryTwo" with the value of the variable \verb+dataEntry2+. The \verb+archive+ command is useful for creating backups of large amounts of \Rapture data.
+
+\subsection{Read Mode}
+In read mode you use the pull operator (\Verb+<--+) to retrieve data from the zip file, in the same order you pushed it on. The returned value is a map with two entries - a \verb+data+ entry contains the value of this file (its contents as a map) and the \verb+displayName+ entry contains the name of the entry. Reading the archive generated in the listing above is show in the example below:
+
+\begin{lstlisting}[caption={Read from archive example}]
+arcFile = archive("test.zip");
+
+dataRecord1 <-- arcFile;
+dataRecord2 <-- arcFile;
+
+close(arcFile);
+
+println("First record data is " + dataRecord1['data']);
+println("Second record data is " + dataRecord2['data']);
+\end{lstlisting}
+
+\section{Sort}
+\index{sort}
+\begin{Verbatim}
+value = sort( map or list-expression, boolean-expression )
+\end{Verbatim}
+The sort function takes a map or a list and sorts it. The return value is the sorted array or map. The
+values of the list or the keys of the map must be strings and a simple lexical sort is performed. The second
+parameter is whether the return value should be sorted in ascending (true) or descending (false) order.
+
+\begin{lstlisting}[caption={Sort example}]
+x = ['a','c','d','b'];
+y = sort(x, true);
+assert(y == ['a','b','c','d']);
+\end{lstlisting}
+
+\section{Collate}
+\begin{Verbatim}
+value = collate( map or list-expression, string-expression )
+\end{Verbatim}
+
+The collate function works in a similar way to the sort function except that the second
+parameter specifies a \emph{locale} that should be used for the sorting collation function.
+The locale is specified using Java's Locale class, as an example the locale for the UK is
+\Verb+en_GB+.
+
+\begin{lstlisting}[caption={Collate example}]
+x = ['a','c','d','b'];
+y = collate(x, 'en_GB');
+assert(y == ['a','b','c','d']);
+\end{lstlisting}
+
+\section{GetLine}
+\begin{Verbatim}
+line = getline( )
+\end{Verbatim}
+
+The getline function reads the next line from the stdin io stream, assuming that the \Reflex container
+has an input handler. In most environments this is not the case, only the environment setup by \Verb+ReflexRunner+ has an
+input handler.
+
+\section{GetCh}
+\begin{Verbatim}
+ch = getch( )
+\end{Verbatim}
+
+The getch function reads the next character from the stdin io stream, assuming that the \Reflex container
+has an input handler. In most environments this is not the case, only the environment setup by \Verb+ReflexRunner+ has an
+input handler.
+
+\section{Capabilities}
+\begin{Verbatim}
+cap = capabilities( )
+\end{Verbatim}
+
+The capabilities function returns a map containing the status of each of the following capabilities present in the \Reflex container
+on which this script is running.
+
+\begin{table}[h!]
+\centering
+\small
+\begin{tabular} { | c | p{7cm} | }
+\hline
+Key     &  Meaning \\
+\hline
+DEBUG & Is there a debugger attached \\
+CACHE & Does the container have a cache \\
+DATA & Can the container retrieve data from \Rapture \\
+IO & Can the container perform file io? \\
+OUTPUT & Can the container write out information using print? \\
+SCRIPT & Can the container run other scripts? \\
+SUSPEND & Can the container suspend scripts for later resumption? \\
+\hline
+\end{tabular}
+\label{tab:Capabilities}
+\caption{Capabilities of a Reflex Container}
+\end{table}
+
+The return value is a map that contains two keys - "ON" and "OFF" with the values associated
+with that key being a list of the capabilties defined above. E.g.
+
+\begin{lstlisting}[caption={Capabilities example}, language=reflex]
+x = capabilities();
+println(x);
+// prints out {ON=[SCRIPT, PORT, IO, CACHE, OUTPUT, DATA, OFF=[DEBUG, SUSPEND]}
+\end{lstlisting}
+
+\section{HasCapability}
+\begin{Verbatim}
+hascapability(string-expression)
+\end{Verbatim}
+
+The hascapability function returns true or false depending on whether the \Reflex container
+has the given capability. The list of Table~\vref{tab:Capabilities} shows the possible choices for
+capabilities to be tested.
+
+\begin{lstlisting}[caption={HasCapability example}, language=reflex]
+x = hascapability('DEBUG');
+println("Debug is ${x}");
+\end{lstlisting}
+
+\section{Replace}
+\begin{Verbatim}
+string-or-list = replace( string-or-list-expression,
+      expression, expression )
+\end{Verbatim}
+
+The replace function is used to replace elements of a list or characters in a string. The
+first parameter is the value to be worked on. It can be a list or a string. The second parameter is
+an expression that is used to match either parts of the value string or elements in the value list. The third
+parameter is what those elements should be replaced with. The return value has the same type
+as the first parameter.
+
+\begin{lstlisting}[caption={replace example}]
+hello = 'Goodbye, world!';
+goodbye = replace(hello, 'Goodbye', 'Hello');
+// goodbye is now 'Hello, world!'
+
+lval = [1, 2, 3, 4];
+nval = replace(lval, 1, 5);
+// nval is now [5,2,3,4]
+\end{lstlisting}
+
+\section{Transpose}
+\begin{Verbatim}
+res = transpose( matrix )
+\end{Verbatim}
+
+Transpose takes a matrix value in \Reflex (a sparse array of values) and tranposes it
+into a new matrix.
+
+\begin{lstlisting}[caption={tranpose example}]
+x = [ - ];
+x[0,'A'] = 1;
+x[0,'B'] = 2;
+x[1,'A'] = 3;
+x[1,'B'] = 4;
+xt = transpose(x);
+println(xt);
+
+\end{lstlisting}
+
+\section{B64Compress}
+\begin{Verbatim}
+string-val = bcompress(string-val)
+\end{Verbatim}
+
+The B64Compress function compresses a string using a GZIP algorithm and then encodes the result as a Base64 string.
+\begin{lstlisting}[caption={bcompress example}]
+x = "Hello, world!"
+y = bcompress(x);
+// y is now H4sIAAAAAAAAAPNIzcnJVyjPL8pJUQQAlRmFGwwAAAA=
+
+\end{lstlisting}
+
+\section{B64Decompress}
+\begin{Verbatim}
+string-value = bdecompress(string-value)
+\end{Verbatim}
+
+The bdecompress function reverses the call to bcompress.
+
+\begin{lstlisting}[caption={bdecompress example}]
+x = "H4sIAAAAAAAAAPNIzcnJVyjPL8pJUQQAlRmFGwwAAAA="
+y = bdecompress(x);
+// y is now Hello world!
+
+\end{lstlisting}
+
+\section{Evals}
+\begin{Verbatim}
+string-vals = evals(string-value)
+\end{Verbatim}
+
+The evals function performs the same evaluation as for a quoted string but gives you
+the ability to store the variable. It's equivalent to simply assigning from a quoted string.
+
+\begin{lstlisting}[caption={evals example}]
+val = "world";
+msg1 = "Hello, ${val}";
+msg2 = evals('Hello, ${val}');
+// msg1 and msg2 are both "Hello, world"
+\end{lstlisting}
+
+\section{Remove}
+\begin{Verbatim}
+remove( map-identifier, key )
+\end{Verbatim}
+
+The remove function removes (deletes) the key from the given map value (in place).
+
+\begin{lstlisting}[caption={remove example}]
+val = {};
+val.x = 'Value of x';
+val.y = 'Value of y';
+
+println(val);
+
+remove(val, 'x');
+
+println(val);
+// Prints out
+// {x=Value of x, y=Value of y}
+// {y=Value of y}
+\end{lstlisting}
+
+\section{Join}
+\begin{Verbatim}
+string or list = join( items to join )
+\end{Verbatim}
+
+The join function takes a list of items and joins them together. If the
+list (which is simply the parameters to the function) is purely string based the return
+value is a string. Otherwise the function returns a list.
+
+\begin{lstlisting}[caption={join example}]
+val = join('a','b','c'); // val is 'abc'
+a = join(5, 2, 3); // val is [ 5, 2, 3]
+\end{lstlisting}
+
+
+\section{Copy}
+\begin{Verbatim}
+  copy(source-string, target-string)
+\end{Verbatim}
+
+The copy function copies a blob from \Rapture into a file. The source parameter is
+a reference to a blob in \Rapture and the target is a file name. Only scripts running
+with a container that allows file access will be able to use this function.
+
+\begin{lstlisting}[caption={copy example}]
+copy('blob://mytest/test.csv', 'output/file1.csv');
+\end{lstlisting}
+
+\section{Timer}
+\begin{Verbatim}
+  timer-handle = timer()
+  timer( timer-handle)
+\end{Verbatim}
+
+The timer call is used to record how much time has elapsed between two
+\Reflex statements. The first call to timer returns a timer handle and starts
+the timer. The second call (with the timer handle) returns the elapsed time since
+that first statement in milliseconds.
+
+\begin{lstlisting}[caption={timer example}]
+  t = timer();
+  for i = 0 to 100 do
+     print('.');
+  end
+  println();
+  elapsed = timer(t);
+  println("${elapsed} milliseconds have passed");
+\end{lstlisting}
+
+\section{Vars}
+\begin{Verbatim}
+map-value = vars()
+\end{Verbatim}
+
+The vars function returns a map with three keys reflecting the variables in scope at this point.
+
+The local key returns the variables in the innermost scope stack, the global key returns the variables
+that are globally available and the constant key returns the variables that are invariant.
+
+\begin{lstlisting}[caption={vars example}]
+  const a = 5;
+  b = 10;
+  println(json(vars));
+\end{lstlisting}
+
+Note that in the global scope the ENV and PROPS variables are usually present and reflect the system environment
+variables and the java properties of the environment.
+
+\section{Format}
+\begin{Verbatim}
+string-value = format( format-string, params, ... )
+\end{Verbatim}
+
+The format function simply calls the Java String.format method with the parameters
+as passed.
+
+\section{PutCache}
+\begin{Verbatim}
+putcache( key-string-value, cache-value )
+\end{Verbatim}
+
+A \Reflex container can maintain a short term in memory cache that can be used
+to improve the performance of repeating calls of a script. Often the script will call
+getcache to attempt to retrieve a value. If this returns null it will perform some fault loading
+routing and then call putcache on that value. In subsequent calls the "getcache" call \emph{may}
+return the value.
+
+\begin{lstlisting}[caption={cache example}]
+  c = getcache('test');
+  if c == null do
+     c = "a value that took a long time to compute";
+     putcache('test', c);
+  end
+  // c is now always "a value that took a long time to compute"
+\end{lstlisting}
+
+\section{GetCache}
+See putcache above.
+
+\begin{Verbatim}
+value = getcache( key-string-value )
+\end{Verbatim}
+
+\section{Matches}
+\begin{Verbatim}
+group = matches( str-exp, regex-expr )
+\end{Verbatim}
+
+The matches function performs a Regex match on the string passed given
+a regular expression. The return value is the group (or not) that matches the expression.
+
+\begin{lstlisting}[caption={matches example}]
+  res1 = matches('A test','t?s');
+  res2 = matches('A test','t?e');
+  // res1 size is 1
+  // res2 size is 0
+\end{lstlisting}
+
+\section{Rand}
+\begin{Verbatim}
+long-value = rand( long-value )
+\end{Verbatim}
+
+The rand function returns a random number between zero and the number passed as the
+first parameter.
+
+\begin{lstlisting}[caption={rand example}]
+  x= [];
+  for a = 0 to 10 do
+      x = x+ rand(10);
+  end
+
+  println(x);
+ // [1, 4, 1, 5, 2, 6, 7, 3, 2, 5, 7]
+\end{lstlisting}

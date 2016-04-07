@@ -29,6 +29,7 @@ import java.util.Date;
  * Note that this class is referenced in types.api - any changes to this file should be reflected there.
 **/
 
+@Deprecated
 public class RaptureSheetScript {
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
@@ -38,39 +39,51 @@ public class RaptureSheetScript {
         return "RaptureSheetScript [name=" + name + ", description=" + description + ", script=" + script + ", autoRun=" + autoRun + ", intervalInSeconds="
                 + intervalInSeconds + ", lastRun=" + lastRun + "]";
     }
+    @Deprecated
     public boolean isAutoRun() {
         return autoRun;
     }
+    @Deprecated
     public void setAutoRun(boolean autoRun) {
         this.autoRun = autoRun;
     }
+    @Deprecated
     public int getIntervalInSeconds() {
         return intervalInSeconds;
     }
+    @Deprecated
     public void setIntervalInSeconds(int intervalInSeconds) {
         this.intervalInSeconds = intervalInSeconds;
     }
+    @Deprecated
     public Date getLastRun() {
         return lastRun;
     }
+    @Deprecated
     public void setLastRun(Date lastRun) {
         this.lastRun = lastRun;
     }
+    @Deprecated
     public String getName() {
         return name;
     }
+    @Deprecated
     public void setName(String name) {
         this.name = name;
     }
+    @Deprecated
     public String getDescription() {
         return description;
     }
+    @Deprecated
     public void setDescription(String description) {
         this.description = description;
     }
+    @Deprecated
     public String getScript() {
         return script;
     }
+    @Deprecated
     public void setScript(String script) {
         this.script = script;
     }

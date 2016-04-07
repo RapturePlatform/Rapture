@@ -4,6 +4,6 @@ dependencies {
     compile project(':RaptureCore')
     compile project(':RaptureAPI')
     compile project(':RaptureAddinCore')
-    compile 'org.mongodb:mongo-java-driver:2.11.4'
-    testCompile 'com.github.fakemongo:fongo:1.4.5'
+    compile 'org.mongodb:mongodb-driver:3.2.2'
+    testCompile 'com.github.fakemongo:fongo:2.0.6'
 }

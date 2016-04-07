@@ -46,7 +46,7 @@ public class MetaDefinitionTest extends ResourceBasedTest {
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         ReflexParser parser = new ReflexParser(tokens);
         parser.parse();
-        assertTrue(parser.scriptInfo.getReturnInfo().getMeta().equals("csv"));
+        assertTrue(parser.scriptInfo.getReturnInfo().getDescription().equals("csv"));
         assertTrue(parser.scriptInfo.getReturnInfo().getType().equals("list"));
         assertEquals(parser.scriptInfo.getParameters().size(), 1);
         //'alan','a value for Alan';

@@ -12,10 +12,6 @@ api(Script) {
     @entitle=/script/write/$f(fromScriptURI)
     @public void removeScriptLink(String fromScriptURI);
     
-    [Sets the parameters that should be used for a script. Parameters are the names of the arguments that should be passed in, not the argument values themselves.]
-    @entitle=/script/write/$f(scriptURI)
-    @public RaptureScript setScriptParameters(String scriptURI, List(RaptureParameter) parameters);
-
     [Returns true the given script was found.]
     @entitle=/script/read/$f(scriptURI)
     @public Boolean doesScriptExist(String scriptURI);
