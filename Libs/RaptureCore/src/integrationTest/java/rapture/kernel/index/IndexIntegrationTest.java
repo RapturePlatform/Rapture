@@ -10,9 +10,12 @@
  *
  * Unless explicit permission obtained in writing this software cannot be distributed.
  */
-package rapture.kernel.index;
+package rapture.api.checkout;
+
+import java.util.Arrays;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -21,10 +24,10 @@ import rapture.common.CallingContext;
 import rapture.common.MongoDbTests;
 import rapture.common.TableQueryResult;
 import rapture.common.exception.RaptureException;
-import rapture.config.MultiValueConfigLoader;
-import rapture.config.ValueReader;
 import rapture.kernel.ContextFactory;
 import rapture.kernel.Kernel;
+import rapture.config.MultiValueConfigLoader;
+import rapture.config.ValueReader;
 
 /**
  * This integration test requires an attached MongoDB instance, and it uses this
@@ -63,7 +66,6 @@ public class IndexIntegrationTest {
         } catch (RaptureException e) {
             e.printStackTrace();
         }
-
     }
 
     @Test
@@ -75,12 +77,19 @@ public class IndexIntegrationTest {
         addDocument("Mars", "Deimos", "16", "2", "D");
 
         TableQueryResult res = Kernel.getIndex().findIndex(ctx, REPO, "SELECT planet, fieldOne WHERE fieldTwo=\"5\"");
-        System.out.println("Result is " + res);
-        res = Kernel.getIndex().findIndex(ctx, REPO, "SELECT DISTINCT planet");
-        System.out.println("Result is " + res);
-        res = Kernel.getIndex().findIndex(ctx, REPO, "SELECT planet WHERE fieldOne=\"10\" AND fieldTwo=\"5\"");
+        Assert.assertEquals(2, res.getRows().size());
+        Assert.assertTrue(res.getRows().contains(Arrays.asList(new String[] {"Mercury", "1"})));
+        Assert.assertTrue(res.getRows().contains(Arrays.asList(new String[] {"Venus", "10"})));
         System.out.println("Result is " + res);
         
+        res = Kernel.getIndex().findIndex(ctx, REPO, "SELECT DISTINCT planet");
+        System.out.println("Result is " + res);
+        Assert.assertEquals(4, res.getRows().size());   // because Mars appears twice
+        
+        res = Kernel.getIndex().findIndex(ctx, REPO, "SELECT planet WHERE fieldOne=\"10\" AND fieldTwo=\"5\"");
+        System.out.println("Result is " + res);
+        Assert.assertEquals(1, res.getRows().size());
+        Assert.assertTrue(res.getRows().contains(Arrays.asList(new String[] {"Venus"})));        
     }
 
     private void addDocument(String planet, String moon, String oneValue, String twoValue, String alphaValue) {
