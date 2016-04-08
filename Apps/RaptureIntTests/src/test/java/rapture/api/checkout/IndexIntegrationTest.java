@@ -12,7 +12,10 @@
  */
 package rapture.api.checkout;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.Arrays;
+import java.util.UUID;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -24,10 +27,11 @@ import rapture.common.CallingContext;
 import rapture.common.MongoDbTests;
 import rapture.common.TableQueryResult;
 import rapture.common.exception.RaptureException;
-import rapture.kernel.ContextFactory;
-import rapture.kernel.Kernel;
 import rapture.config.MultiValueConfigLoader;
 import rapture.config.ValueReader;
+import rapture.dsl.idef.IndexFieldType;
+import rapture.kernel.ContextFactory;
+import rapture.kernel.Kernel;
 
 /**
  * This integration test requires an attached MongoDB instance, and it uses this
@@ -102,5 +106,20 @@ public class IndexIntegrationTest {
     public void tearDown() {
         Kernel.getDoc().deleteDocRepo(ctx, REPO);
         Kernel.getIndex().deleteIndex(ctx, REPO);
+    }
+    
+    @Test
+    public void RAP4033() {
+        String uid = UUID.randomUUID().toString();
+        String rap4033repo = "//"+uid;
+        String rap4033repocfg = "NREP {} USING MONGODB { prefix=\""+uid+"\" }";
+        String rap4033index = "folder($0) string, datedata(data) date";
+        try {
+            Kernel.getDoc().createDocRepo(ctx, rap4033repo, rap4033repocfg);
+            Kernel.getIndex().createIndex(ctx, rap4033repo, rap4033index);
+            Kernel.getDoc().deleteDocRepo(ctx, rap4033repo);
+        } catch (IllegalArgumentException iae) {
+            assertEquals("date is not a recognised field type. Options are STRING BOOLEAN LONG INTEGER DOUBLE", iae.getMessage());
+        }
     }
 }
