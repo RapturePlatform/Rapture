@@ -1,0 +1,29 @@
+#set your language below
+language: java
+
+#set language version. This is only required if you use the default Shippable image for your build
+jdk:
+  - oraclejdk8
+
+build:
+    pre_ci:
+      - cd Libs/
+    ci:
+      - ./gradlew clean genAll install
+      - ./gradlew test
+      - cd ../Apps
+      - ./gradlew clean installApp -x test
+      - ./gradlew test
+    on_success:
+      - echo "success"
+    on_failure:
+      - echo "failure"
+    cache: true
+
+integrations:
+    hub:
+        - integrationName: dockerHub
+          type: docker
+          branches:
+            only:
+              - master
