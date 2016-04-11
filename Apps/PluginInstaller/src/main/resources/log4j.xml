@@ -35,6 +35,9 @@
 	<logger name="org.*">
 		<level value="WARN" />
 	</logger>
+	<logger name="rapture.plugin.install">
+		<level value="INFO" />
+	</logger>
 	<root>
 		<priority value="warn"></priority>
 		<appender-ref ref="stdout" />

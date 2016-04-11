@@ -32,11 +32,9 @@ import org.apache.log4j.Logger;
 import org.bson.Document;
 
 import com.mongodb.DB;
-import com.mongodb.DBCollection;
 import com.mongodb.Mongo;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
-import com.mongodb.MongoCredential;
 import com.mongodb.MongoException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
@@ -58,7 +56,7 @@ public enum MongoDBFactory {
     private static Logger log = Logger.getLogger(MongoDBFactory.class);
     private Map<String, Mongo> mongoInstances = new HashMap<>();
 
-    @Deprecated
+    // Legacy. Only still here because GridFS needs it.
     private Map<String, DB> mongoDBs = new HashMap<>();
     private Map<String, MongoDatabase> mongoDatabases = new HashMap<>();
     private static int retryCount = 3;
@@ -100,7 +98,6 @@ public enum MongoDBFactory {
         log.info("Collection is " + uri.getCollection());
 
         try {
-            MongoCredential credential = MongoCredential.createCredential(uri.getUsername(), uri.getDatabase(), uri.getPassword());
             MongoClient mongo = new MongoClient(uri);
             mongoDBs.put(instanceName, mongo.getDB(uri.getDatabase()));
             mongoDatabases.put(instanceName, mongo.getDatabase(uri.getDatabase()));
@@ -133,20 +130,16 @@ public enum MongoDBFactory {
         return !mongoInstances.isEmpty();
     }
 
-    @Deprecated
-    public static DBCollection getCollection(String instanceName, String name) {
-        return INSTANCE._getDB(instanceName).getCollection(name);
-    }
-
     /**
-     * get the database or throw a RaptureException -- never returns null
+     * @deprecated Use getMongoDatabase
+     * This is still needed because GridFS constructor requires a DB not a MongoDatabase.
+     * Once GridFS is updated (Mongo 3.1) this can be eliminated. 
      */
     @Deprecated
     public static DB getDB(String instanceName) {
         return INSTANCE._getDB(instanceName);
     }
 
-    @Deprecated
     private DB _getDB(String instanceName) {
         if (mongoDBs.containsKey(instanceName)) {
             return mongoDBs.get(instanceName);
@@ -160,14 +153,14 @@ public enum MongoDBFactory {
         }
     }
 
-    public static MongoCollection<Document> getMongoCollection(String instanceName, String name) {
+    public static MongoCollection<Document> getCollection(String instanceName, String name) {
         return INSTANCE._getMongoDatabase(instanceName).getCollection(name);
     }
 
     /**
      * get the database or throw a RaptureException -- never returns null
      */
-    public static MongoDatabase getMongoDatabase(String instanceName) {
+    public static MongoDatabase getDatabase(String instanceName) {
         return INSTANCE._getMongoDatabase(instanceName);
     }
 

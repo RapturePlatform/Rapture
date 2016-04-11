@@ -141,4 +141,18 @@ subprojects {
         testCompile 'org.powermock:powermock-api-easymock:1.5.1'
         testCompile 'org.easymock:easymock:3.2'
     }
+
+    startScripts {
+        // add etc folder to the classpath to pick up cfg files
+        if (System.getProperty("os.name").toLowerCase().contains("windows")) {
+            classpath = project.files(['%APP_HOME%\\etc'])
+        } else {
+            classpath = project.files(['$APP_HOME/lib/*', '$APP_HOME/etc'])
+        }
+        doLast {
+            // gradle always puts extra classpaths relative to the lib folder, so we have to replace
+            windowsScript.text = windowsScript.text.replace('%APP_HOME%\\lib\\etc', '%APP_HOME%\\lib\\*;%APP_HOME%\\etc')
+            unixScript.text = unixScript.text.replace('$APP_HOME/lib/etc', '$APP_HOME/etc')
+        }
+    }
 }

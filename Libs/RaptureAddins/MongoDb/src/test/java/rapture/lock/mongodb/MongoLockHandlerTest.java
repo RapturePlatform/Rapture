@@ -34,29 +34,29 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import org.bson.Document;
 import org.junit.Before;
 import org.junit.Test;
 
-import rapture.common.LockHandle;
-
 import com.github.fakemongo.Fongo;
-import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+
+import rapture.common.LockHandle;
 
 public class MongoLockHandlerTest {
 
-    private DBCollection collection;
+    private MongoCollection<Document> collection;
     private MongoLockHandler m;
 
     @Before
     public void setup() {
         Fongo fongo = new Fongo("mongoUnitTest");
-        DB db = fongo.getDB("mongoUnitTestDB");
+        MongoDatabase db = fongo.getDatabase("mongoUnitTestDB");
         collection = db.getCollection("mongoUnitTestCollection");
         m = new MongoLockHandler() {
             @Override
-            protected DBCollection getLockCollection() {
+            protected MongoCollection<Document> getLockCollection() {
                 return collection;
             }
         };
@@ -149,11 +149,11 @@ public class MongoLockHandlerTest {
     }
 
     private boolean lockExists(String lockName, String lockHolder) {
-        BasicDBObject query = m.getLockQuery(lockName);
-        BasicDBObject lock = new BasicDBObject(m.getCtxKey(), lockHolder);
-        BasicDBObject match = new BasicDBObject("$elemMatch", lock);
+        Document query = m.getLockQuery(lockName);
+        Document lock = new Document(m.getCtxKey(), lockHolder);
+        Document match = new Document("$elemMatch", lock);
         query.put(m.getLocksKey(), match);
-        return collection.find(query).count() > 0;
+        return collection.count(query) > 0;
     }
 
 }

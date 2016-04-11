@@ -27,22 +27,22 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Iterator;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
+import org.bson.Document;
+
+import com.mongodb.MongoException;
+import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.result.DeleteResult;
 
 import rapture.common.CallingContext;
 import rapture.common.exception.ExceptionToString;
-import rapture.mongodb.MongoDBFactory;
 import rapture.mongodb.MongoRetryWrapper;
-
-import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
-import com.mongodb.MongoException;
-import com.mongodb.WriteResult;
+import rapture.mongodb.MongoDBFactory;
 
 public class DocHandler implements BlobHandler {
     private static Logger log = Logger.getLogger(DocHandler.class);
@@ -50,7 +50,7 @@ public class DocHandler implements BlobHandler {
     private static final String BLOB_NAME = "blobName";
     private String instanceName;
     private String bucket;
-    private volatile DBCollection collection;
+    private volatile MongoCollection<Document> collection;
 
     public DocHandler(String instanceName, String bucket) {
         this.instanceName = instanceName;
@@ -63,11 +63,11 @@ public class DocHandler implements BlobHandler {
         byte[] toSave;
         try {
             toSave = IOUtils.toByteArray(content);
-            BasicDBObject toStore = new BasicDBObject();
+            Document toStore = new Document();
             toStore.append(BLOB_NAME, docPath);
             toStore.append(CONTENT, toSave);
             try {
-                getCollection().insert(toStore);
+                getCollection().insertOne(toStore);
                 return true;
             } catch (MongoException e) {
                 log.error("Could not store " + docPath + ": " + e.getMessage());
@@ -82,7 +82,7 @@ public class DocHandler implements BlobHandler {
 
     private static final Object collectionLock = new Object();
 
-    private DBCollection getCollection() {
+    private MongoCollection<Document> getCollection() {
         if (collection == null) {
             synchronized (collectionLock) {
                 if (collection == null) {
@@ -93,10 +93,10 @@ public class DocHandler implements BlobHandler {
         return collection;
     }
 
-    private DBCollection createCollection() {
-        DB db = MongoDBFactory.getDB(instanceName);
-        DBCollection tempCollection = db.getCollection(bucket);
-        DBObject blobNameIndex = new BasicDBObject(BLOB_NAME, 1).append("unique", false).append("sparse", true);
+    private MongoCollection<Document> createCollection() {
+        MongoDatabase db = MongoDBFactory.getDatabase(instanceName);
+        MongoCollection<Document> tempCollection = db.getCollection(bucket);
+        Document blobNameIndex = new Document(BLOB_NAME, 1).append("unique", false).append("sparse", true);
         tempCollection.createIndex(blobNameIndex);
         return tempCollection;
     }
@@ -104,11 +104,11 @@ public class DocHandler implements BlobHandler {
     @Override
     public Boolean deleteBlob(CallingContext context, String docPath) {
         log.debug("Removing " + docPath);
-        BasicDBObject query = new BasicDBObject();
+        Document query = new Document();
         query.append(BLOB_NAME, docPath);
         try {
-            WriteResult res = getCollection().remove(query);
-            return res.getN() != 0;
+            DeleteResult res = getCollection().deleteOne(query);
+            return res.getDeletedCount() != 0;
         } catch (MongoException e) {
             log.error("Could not delete " + docPath + ": " + e.getMessage());
             log.debug(ExceptionToString.format(e));
@@ -119,27 +119,24 @@ public class DocHandler implements BlobHandler {
     @Override
     public InputStream getBlob(CallingContext context, String docPath) {
         // For now get all of the binary contents and append them together
-        final BasicDBObject query = new BasicDBObject();
-        query.append(BLOB_NAME, docPath);
-
-        final BasicDBObject fields = new BasicDBObject();
-        fields.put(CONTENT, "1");
+        final Document query = new Document(BLOB_NAME, docPath);
+        final Document fields = new Document(CONTENT, "1");
 
         MongoRetryWrapper<ByteArrayInputStream> wrapper = new MongoRetryWrapper<ByteArrayInputStream>() {
 
-            public DBCursor makeCursor() {
-                return getCollection().find(query, fields);
+            public FindIterable<Document> makeCursor() {
+                return getCollection().find(query).projection(fields);
             }
 
-            public ByteArrayInputStream action(DBCursor cursor) {
+            public ByteArrayInputStream action(FindIterable<Document> cursor) {
                 ByteArrayOutputStream bao = new ByteArrayOutputStream();
                 if (cursor != null) {
-                    if (!cursor.hasNext()){
+                    Iterator<Document> iterator = cursor.iterator();
+                    if (!iterator.hasNext()){
                         // The result of the find is empty, so treat it as deleted.
                         return null;
                     }
-                    while (cursor.hasNext()) {
-                        DBObject rec = cursor.next();
+                    for (Document rec : cursor) {
                         byte[] data = (byte[]) rec.get(CONTENT);
                         try {
                             bao.write(data);

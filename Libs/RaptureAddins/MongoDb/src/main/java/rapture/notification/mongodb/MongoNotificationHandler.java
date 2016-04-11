@@ -27,20 +27,20 @@ import java.util.Date;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.bson.Document;
+
+import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.Projections;
 
 import rapture.common.CallingContext;
 import rapture.common.NotificationInfo;
 import rapture.common.NotificationResult;
 import rapture.mongodb.EpochManager;
-import rapture.mongodb.MongoDBFactory;
 import rapture.mongodb.MongoRetryWrapper;
+import rapture.mongodb.MongoDBFactory;
 import rapture.notification.INotificationHandler;
 import rapture.util.IDGenerator;
-
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
 
 /**
  * Implementation of Notification Handler in MongoDB
@@ -74,7 +74,7 @@ public class MongoNotificationHandler implements INotificationHandler {
     @Override
     public String publishNotification(CallingContext context, String referenceId, String content, String contentType) {
         log.debug("Mongo push notification - content");
-        BasicDBObject recordObject = new BasicDBObject();
+        Document recordObject = new Document();
         recordObject.put(RECORDTYPE, NOTIFICATION);
         recordObject.put("epoch", EpochManager.nextEpoch(getNotificationCollection()));
         String id = IDGenerator.getUUID();
@@ -85,7 +85,7 @@ public class MongoNotificationHandler implements INotificationHandler {
         recordObject.put("contentType", contentType);
         recordObject.put("who", context.getUser());
         recordObject.put("kernelId", context.getContext());
-        getNotificationCollection().insert(recordObject);
+        getNotificationCollection().insertOne(recordObject);
         return id;
     }
 
@@ -95,26 +95,20 @@ public class MongoNotificationHandler implements INotificationHandler {
         // the epoch is gt lastEpochSeen, returning just the ids
         // Return the current epoch and these ids.
 
-        final BasicDBObject queryObject = new BasicDBObject();
+        final Document queryObject = new Document();
         queryObject.put(RECORDTYPE, NOTIFICATION);
-        final BasicDBObject greaterEpochObject = new BasicDBObject();
+        final Document greaterEpochObject = new Document();
         greaterEpochObject.put("$gt", lastEpochSeen);
         queryObject.put("epoch", greaterEpochObject);
 
-        final BasicDBObject fields = new BasicDBObject();
-        fields.put("id", 1);
-        fields.put("kernelId", 1);
-
         MongoRetryWrapper<NotificationResult> wrapper = new MongoRetryWrapper<NotificationResult>() {
-
-            public DBCursor makeCursor() {
-                return getNotificationCollection().find(queryObject, fields);
+            public FindIterable<Document> makeCursor() {
+                return getNotificationCollection().find(queryObject).projection(Projections.include("id", "kernelId"));
             }
-            
-            public NotificationResult action(DBCursor cursor) {
+
+            public NotificationResult action(FindIterable<Document> cursor) {
                 NotificationResult res = new NotificationResult(getLatestNotificationEpoch());
-                while (cursor.hasNext()) {
-                    DBObject dobj = cursor.next();
+                for (Document dobj : cursor) {
                     String kernelId = (String) dobj.get("kernelId");
                     // ignore any notifications that came from this same kernel,
                     // which can cause race conditions
@@ -132,10 +126,10 @@ public class MongoNotificationHandler implements INotificationHandler {
     @Override
     public NotificationInfo getNotification(String id) {
         // Find the one record that has this as the id, that is a NOTIFICATION
-        BasicDBObject queryObject = new BasicDBObject();
+        Document queryObject = new Document();
         queryObject.put(RECORDTYPE, NOTIFICATION);
         queryObject.put("id", id);
-        DBObject one = getNotificationCollection().findOne(queryObject);
+        Document one = getNotificationCollection().find(queryObject).first();
         if (one != null) {
             NotificationInfo info = new NotificationInfo();
             info.setContent((String) one.get("content"));
@@ -153,7 +147,7 @@ public class MongoNotificationHandler implements INotificationHandler {
         return null;
     }
 
-    private DBCollection getNotificationCollection() {
+    private MongoCollection<Document> getNotificationCollection() {
         return MongoDBFactory.getCollection(instanceName, tableName);
     }
 

@@ -34,14 +34,15 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import org.bson.Document;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
 import com.github.fakemongo.Fongo;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
 
 import rapture.common.LockHandle;
 
@@ -52,9 +53,9 @@ public class MongoLockHandler2Test {
     @Before
     public void setup() {
         Fongo fongo = new Fongo("mongoUnitTest");
-        final DB db = fongo.getDB("mongoUnitTestDB");
+        final MongoDatabase db = fongo.getDatabase("mongoUnitTestDB");
         m = new MongoLockHandler2() {
-            @Override protected DBCollection getLockCollection(String lockName) {
+            @Override protected MongoCollection<Document> getLockCollection(String lockName) {
                 return db.getCollection("ffoonnggoo" + lockName);
             }
         };

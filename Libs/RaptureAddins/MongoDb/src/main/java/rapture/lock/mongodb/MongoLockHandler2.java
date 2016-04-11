@@ -26,17 +26,18 @@ package rapture.lock.mongodb;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.bson.Document;
+
+import com.mongodb.MongoServerException;
+import com.mongodb.WriteConcern;
+import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.result.DeleteResult;
 
 import rapture.common.LockHandle;
+import rapture.common.exception.ExceptionToString;
 import rapture.lock.ILockingHandler;
 import rapture.mongodb.MongoDBFactory;
-
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
-import com.mongodb.WriteConcern;
-import com.mongodb.WriteResult;
 
 /**
  *
@@ -57,13 +58,13 @@ public class MongoLockHandler2 implements ILockingHandler {
         log.debug("Mongo acquire lock2  " + lockName + ":" + secondsToHold + ":" + secondsToWait);
         long start = System.currentTimeMillis();
 
-        DBCollection coll = getLockCollection(lockName);
-        log.debug("lock COLLECTION for " + lockName + "IS " + coll.getFullName());
+        MongoCollection<Document> coll = getLockCollection(lockName);
+        log.debug("lock COLLECTION for " + lockName + "IS " + coll.getNamespace().getFullName());
 
         long bailTime = System.currentTimeMillis() + secondsToWait * 1000;
         long leaseTime = System.currentTimeMillis() + secondsToHold * 1000;
 
-        DBObject lockFile = new BasicDBObject();
+        Document lockFile = new Document();
         lockFile.put("lockName", lockName);
         lockFile.put("lockHolder", lockHolder);
         lockFile.put("lease", leaseTime);
@@ -79,13 +80,12 @@ public class MongoLockHandler2 implements ILockingHandler {
                 lockFile.put("_id", "" + myLockID);
                 lockFile.put("lease", myLockID + secondsToHold * 1000);
 
-                @SuppressWarnings("unused")
-				WriteResult result = coll.insert(WriteConcern.ACKNOWLEDGED, lockFile);
+                coll.withWriteConcern(WriteConcern.ACKNOWLEDGED).insertOne(lockFile);
                 log.debug("inserted file" + lockFile);
 
                 break;
-            } catch (Exception e) {
-                //              log.error(e.getCode());
+            } catch (MongoServerException e) {
+                log.error(ExceptionToString.format(e));
                 try {
                     Thread.sleep(50);
                 } catch (InterruptedException e1) {
@@ -94,38 +94,29 @@ public class MongoLockHandler2 implements ILockingHandler {
             }
         }
 
-        DBObject lock = null;
-
         // loop until we acquire lock or timeout
         while (bailTime > System.currentTimeMillis()) {
             // we have the lock if no lock file exists with a smaller number
-            DBCursor results = coll.find(new BasicDBObject("lease", new BasicDBObject("$gt", System.currentTimeMillis()))).sort(new BasicDBObject("_id", 1))
+            FindIterable<Document> results = coll.find(new Document("lease", new Document("$gt", System.currentTimeMillis()))).sort(new Document("_id", 1))
                     .limit(1);
 
-            try {
-                if (results.hasNext()) {
-                    lock = results.next();
+            Document lock = results.first();
+            if (lock != null && ((String) lock.get("_id")).equals("" + myLockID)) {
+                log.debug("* i have the lock" + lock.get("_id") + ":" + myLockID);
+                LockHandle lockHandle = new LockHandle();
+                lockHandle.setLockName(lockName);
+                lockHandle.setHandle("" + myLockID);
+                lockHandle.setLockHolder(lockHolder);
+                long end = System.currentTimeMillis();
+                log.debug("* NG acquired lock in " + (end - start));
+                return lockHandle;
+            } else {
+                // log.info("* waiting for lock held by "+ lock.get("_id"));
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
-
-                if (lock != null && ((String) lock.get("_id")).equals("" + myLockID)) {
-                    log.debug("* i have the lock" + lock.get("_id") + ":" + myLockID);
-                    LockHandle lockHandle = new LockHandle();
-                    lockHandle.setLockName(lockName);
-                    lockHandle.setHandle("" + myLockID);
-                    lockHandle.setLockHolder(lockHolder);
-                    long end = System.currentTimeMillis();
-                    log.debug("* NG acquired lock in " + (end - start));
-                    return lockHandle;
-                } else {
-                    //log.info("* waiting for lock held by "+ lock.get("_id"));
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            } finally {
-                results.close();
             }
 
         }
@@ -142,9 +133,9 @@ public class MongoLockHandler2 implements ILockingHandler {
         return releaseLock(lockHandle);
     }
 
-    protected DBCollection getLockCollection(String lockName) {
+    protected MongoCollection<Document> getLockCollection(String lockName) {
         // log.info("COLLECTION is " + tableName + lockName);
-        return MongoDBFactory.getDB(instanceName).getCollection(tableName + lockName);
+        return MongoDBFactory.getCollection(instanceName, tableName + lockName);
 
     }
 
@@ -162,17 +153,17 @@ public class MongoLockHandler2 implements ILockingHandler {
     }
 
     private Boolean releaseLockWithID(String lockName, String id) {
-        BasicDBObject lockFileQuery = new BasicDBObject();
+        Document lockFileQuery = new Document();
         lockFileQuery.put("_id", id);
-        DBCollection coll = getLockCollection(lockName);
-        WriteResult res = coll.remove(lockFileQuery);
+        MongoCollection<Document> coll = getLockCollection(lockName);
+        DeleteResult res = coll.deleteOne(lockFileQuery);
 
-        return (res.getN() == 1);
+        return (res.getDeletedCount() == 1);
     }
 
     @Override
     public Boolean forceReleaseLock(String lockName) {
-        DBCollection coll = getLockCollection(lockName);
+        MongoCollection<Document> coll = getLockCollection(lockName);
         if (coll != null) {
             coll.drop();
         }
@@ -184,26 +175,20 @@ public class MongoLockHandler2 implements ILockingHandler {
     }
 
     public LockHandle getLockForName(String lockName) {
-        //  a lock is the document with the smallest id number whose lease hasn't expired.
-        DBCursor results = getLockCollection(lockName).find(new BasicDBObject("lease", new BasicDBObject("$gt", System.currentTimeMillis())))
-                .sort(new BasicDBObject("_id", 1)).limit(1);
+        // a lock is the document with the smallest id number whose lease hasn't
+        // expired.
+        FindIterable<Document> results = getLockCollection(lockName).find(new Document("lease", new Document("$gt", System.currentTimeMillis())))
+                .sort(new Document("_id", 1)).limit(1);
 
-        DBObject lock = null;
-        try {
-            if (results.hasNext()) {
-                lock = results.next();
-            }
-            if (lock != null) {
-                LockHandle lockHandle = new LockHandle();
-                lockHandle.setLockName((String) lock.get("lockName"));
-                lockHandle.setHandle((String) lock.get("_id"));
-                lockHandle.setLockHolder((String) lock.get("lockHolder"));
-                return lockHandle;
-            } else {
-                return null;
-            }
-        } finally {
-            results.close();
+        Document lock = results.first();
+        if (lock != null) {
+            LockHandle lockHandle = new LockHandle();
+            lockHandle.setLockName((String) lock.get("lockName"));
+            lockHandle.setHandle((String) lock.get("_id"));
+            lockHandle.setLockHolder((String) lock.get("lockHolder"));
+            return lockHandle;
+        } else {
+            return null;
         }
     }
 }

@@ -23,6 +23,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.google.common.collect.ImmutableList;
+
 import rapture.common.BlobContainer;
 import rapture.common.CallingContext;
 import rapture.common.SeriesPoint;
@@ -30,18 +32,14 @@ import rapture.common.client.HttpBlobApi;
 import rapture.common.client.HttpDocApi;
 import rapture.common.client.HttpLoginApi;
 import rapture.common.client.HttpSeriesApi;
-import rapture.common.client.HttpSheetApi;
 import rapture.common.client.SimpleCredentialsProvider;
 import rapture.common.impl.jackson.JacksonUtil;
-
-import com.google.common.collect.ImmutableList;
 
 public class UriDocPathTest {
 
     private CallingContext ctx = ContextFactory.getKernelUser();
     private CallingContext localCtx = null;
     private HttpDocApi docApi;
-    private HttpSheetApi sheetApi;
     private HttpSeriesApi seriesApi;
     private HttpBlobApi blobApi;
     private String authority = "respect";
@@ -59,7 +57,6 @@ public class UriDocPathTest {
         System.out.println("Logged in");
         docApi = new HttpDocApi(login);
         seriesApi = new HttpSeriesApi(login);
-        sheetApi = new HttpSheetApi(login);
         blobApi = new HttpBlobApi(login);
 
         if (!docApi.docRepoExists(authority)) {
@@ -67,9 +64,6 @@ public class UriDocPathTest {
         }
         if (!seriesApi.seriesRepoExists(authority)) {
             seriesApi.createSeriesRepo(authority, "SREP {} USING CASSANDRA {keyspace=\"" + authority + "\", cf=\"series\"" + authority + "\"}");
-        }
-        if (!sheetApi.sheetRepoExists(authority)) {
-            sheetApi.createSheetRepo(authority, "SHEET {} USING MONGODB {prefix=\"" + authority + "\"}");
         }
         if (!blobApi.blobRepoExists(authority)) {
             blobApi.createBlobRepo(authority, "BLOB {} USING MONGODB { grid=\"" + authority + "\" }", "REP {} USING MONGODB {prefix=\"" + authority + "\"}");
@@ -83,9 +77,6 @@ public class UriDocPathTest {
         }
         if (seriesApi.seriesRepoExists(authority)) {
             seriesApi.deleteSeriesRepo(authority);
-        }
-        if (sheetApi.sheetRepoExists(authority)) {
-            sheetApi.deleteSheetRepo(authority);
         }
         if (blobApi.blobRepoExists(authority)) {
             blobApi.deleteBlobRepo(authority);
@@ -160,20 +151,9 @@ public class UriDocPathTest {
                         assertEquals(b1[j], b2[j]);
                     }
 
-                    sheetApi.createSheet(uri);
-                    sheetApi.setSheetCell(uri, i, i, "" + i, 0);
-                    assertEquals("" + i, sheetApi.getSheetCell(uri, i, i, 0));
-
             }
         }
     }
-
-    @Test
-    public void testRAP3446() {
-        sheetApi.createSheetRepo("Illegal", "SHEET {} USING MONGODB {prefix=\"ill\"egal\"}");
-        sheetApi.deleteSheetRepo("Illegal");
-    }
-    
     
     @Test
     public void testAuthority() {
@@ -236,9 +216,6 @@ public class UriDocPathTest {
                         seriesApi.createSeriesRepo(authVariable, "SREP {} USING CASSANDRA {keyspace=\"" + authority + "\", cf=\"series\"" + authority
                                 + "\"}");
                     }
-                    if (!sheetApi.sheetRepoExists(authVariable)) {
-                        sheetApi.createSheetRepo(authVariable, "SHEET {} USING MONGODB {prefix=\"" + authority + "\"}");
-                    }
                     if (!blobApi.blobRepoExists(authVariable)) {
                         blobApi.createBlobRepo(authVariable, "BLOB {} USING MONGODB { grid=\"" + authority + "\" }", "REP {} USING MONGODB {prefix=\""
                                 + authVariable + "\"}");
@@ -265,18 +242,12 @@ public class UriDocPathTest {
                     for (int j = 0; j < b1.length; j++) {
                         assertEquals(b1[j], b2[j]);
                     }
-                    sheetApi.createSheet(uri);
-                    sheetApi.setSheetCell(uri, i, i, "" + i, 0);
-                    assertEquals((String) "" + i, sheetApi.getSheetCell(uri, i, i, 0));
 
                     if (docApi.docRepoExists(authVariable)) {
                         docApi.deleteDocRepo(authVariable);
                     }
                     if (seriesApi.seriesRepoExists(authVariable)) {
                         seriesApi.deleteSeriesRepo(authVariable);
-                    }
-                    if (sheetApi.sheetRepoExists(authVariable)) {
-                        sheetApi.deleteSheetRepo(authVariable);
                     }
                     if (blobApi.blobRepoExists(authVariable)) {
                         blobApi.deleteBlobRepo(authVariable);
