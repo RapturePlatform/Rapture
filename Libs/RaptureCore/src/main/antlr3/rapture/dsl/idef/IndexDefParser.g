@@ -36,7 +36,16 @@ fieldLocator returns [FieldLocator locator] : (x=displayPos { $locator = $x.loca
 fieldDefinition returns [FieldDefinition def]
 @init {
    $def = new FieldDefinition();
-} : a=ID {$def.setName($a.text); } OBRAC fieldLocator { $def.setLocator($fieldLocator.locator); } CBRAC field=ID { $def.setType($field.text); };
+} : a=ID {$def.setName($a.text); } OBRAC fieldLocator { $def.setLocator($fieldLocator.locator); } CBRAC field=ID {
+try {
+  $def.setType($field.text); 
+} catch (IllegalArgumentException iae) {
+  StringBuilder sb = new StringBuilder();
+  sb.append($field.text).append(" is not a recognised field type. Options are");
+  for (IndexFieldType value : IndexFieldType.values()) sb.append(" ").append(value.name());
+  throw new IllegalArgumentException(sb.toString());
+}
+};
 
 indexDefinition returns [IndexDefinition idef] 
 @init {
