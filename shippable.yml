@@ -12,7 +12,7 @@ build:
     ci:
       - cd Libs/
       - ./gradlew clean genAll install
-      - ./gradlew test
+      - ./gradlew test --stacktrace
       - cd ../Apps
       - ./gradlew clean installDist -x test
       - ./gradlew test
