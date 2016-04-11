@@ -10,7 +10,7 @@ jdk:
 
 build:
   pre_ci_boot:
-    image_name: manishas/myImage
+    image_name: incapture/basetest
     image_tag: latest
     pull: true
     options: "-e HOME=/root"
