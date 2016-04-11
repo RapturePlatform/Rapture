@@ -12,7 +12,7 @@ build:
     ci:
       - cd Libs/
       - ./gradlew clean genAll install
-      - ./gradlew test --debug
+      - ./gradlew test
       - cd ../Apps
       - ./gradlew clean installDist -x test
       - ./gradlew test
@@ -20,8 +20,7 @@ build:
       - echo "success"
     on_failure:
       - echo "failure"
-      - cat file:///root/src/github.com/incapture-build/Rapture/Libs/RaptureCore/build/reports/tests/index.html
-    cache: false
+    cache: true
 
 integrations:
     hub:
