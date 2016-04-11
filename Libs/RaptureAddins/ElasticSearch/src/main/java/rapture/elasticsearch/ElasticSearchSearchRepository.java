@@ -85,6 +85,9 @@ public class ElasticSearchSearchRepository implements SearchRepository {
     @Override
     public void put(DocumentWithMeta docMeta) {
     	String uri = docMeta.getDisplayName();
+    	if (uri.startsWith("//")) {
+    		uri = uri.substring(2);
+    	}
     	String[] parts = uri.split("/");
     	SimpleURI uriStore = new SimpleURI();
     	uriStore.setParts(Arrays.asList(parts));
@@ -125,6 +128,13 @@ public class ElasticSearchSearchRepository implements SearchRepository {
         return convert(response);
     }
 
+    @Override
+	public rapture.common.SearchResponse searchForRepoUris(String docRepo,
+			String cursorId) {
+		String searchQuery = "repo:" + docRepo;
+		return searchWithCursor(Arrays.asList(SearchRepoType.URI.toString()), cursorId, 10, searchQuery);
+	}
+    
     @Override
     public rapture.common.SearchResponse searchWithCursor(List<String> types, String cursorId, int size, String query) {
         SearchResponse response;
@@ -207,6 +217,8 @@ public class ElasticSearchSearchRepository implements SearchRepository {
             rapture.common.SearchHit rHit = new rapture.common.SearchHit();
             rHit.setScore(Double.parseDouble(Float.toString(hit.getScore())));
             rHit.setSource(hit.getSourceAsString());
+            rHit.setIndexType(hit.getType());
+            rHit.setId(hit.getId());
             rHit.setUri(getUri(hit.getType(), hit.getId()));
             ret.getSearchHits().add(rHit);
         }
@@ -232,6 +244,8 @@ public class ElasticSearchSearchRepository implements SearchRepository {
 	public void setConfig(Map<String, String> config) {
 		setIndex(config.get("index"));
 	}
+
+	
 
 
 

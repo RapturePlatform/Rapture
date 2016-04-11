@@ -48,4 +48,32 @@ public class SearchPublisher {
 
 		Kernel.getPipeline().publishMessageToCategory(context, task);
 	}
+
+	public static void publishRebuildMessage(CallingContext context,
+			String docRepoUri) {
+		RapturePipelineTask task = new RapturePipelineTask();
+		task.setCategoryList(ImmutableList.of(CATEGORY));
+		task.setPriority(2);
+		task.setContentType(MimeSearchUpdateObject.getMimeType());
+
+		MimeSearchUpdateObject object = new MimeSearchUpdateObject();
+		object.setRepo(docRepoUri);
+		object.setType(MimeSearchUpdateObject.ActionType.REBUILD);
+		task.addMimeObject(object);
+		Kernel.getPipeline().publishMessageToCategory(context, task);
+	}
+
+	public static void publishDropRepoIndexMessage(CallingContext context,
+			String docRepoUri) {
+		RapturePipelineTask task = new RapturePipelineTask();
+		task.setCategoryList(ImmutableList.of(CATEGORY));
+		task.setPriority(2);
+		task.setContentType(MimeSearchUpdateObject.getMimeType());
+
+		MimeSearchUpdateObject object = new MimeSearchUpdateObject();
+		object.setRepo(docRepoUri);
+		object.setType(MimeSearchUpdateObject.ActionType.DROP);
+		task.addMimeObject(object);
+		Kernel.getPipeline().publishMessageToCategory(context, task);
+	}
 }

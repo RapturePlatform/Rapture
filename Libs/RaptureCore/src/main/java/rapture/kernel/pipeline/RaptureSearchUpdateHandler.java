@@ -33,6 +33,13 @@ public class RaptureSearchUpdateHandler implements QueueHandler {
             case DELETE:
             	Kernel.getSearch().getTrusted().deleteSearchEntry(doc.getRepo(), doc.getDoc().getDisplayName());
             	break;
+            case REBUILD:
+            	// What to do?
+            	Kernel.getSearch().getTrusted().rebuild(doc.getRepo());
+            	break;
+            case DROP:
+            	Kernel.getSearch().getTrusted().drop(doc.getRepo());
+            	break;
             default:
             	log.error("Don't know how to process this search update");
             }

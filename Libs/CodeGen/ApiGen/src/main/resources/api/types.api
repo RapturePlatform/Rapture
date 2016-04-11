@@ -1466,6 +1466,8 @@ type SearchResponse(@package=rapture.common) {
 [A SearchHit object represents each individual data object that is returned as part of a SearchResponse]
 @Bean
 type SearchHit(@package=rapture.common) {
+	String indexType;
+	String id;
 	String uri;
 	Double score;
 	String source;

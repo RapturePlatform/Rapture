@@ -12,7 +12,7 @@ public class MimeSearchUpdateObject implements RaptureTransferObject {
     public static enum ActionType {
         CREATE,
         UPDATE,
-        DELETE,
+        DELETE, REBUILD, DROP,
     }
 
     private ActionType type;

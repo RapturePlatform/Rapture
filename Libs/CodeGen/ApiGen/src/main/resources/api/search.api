@@ -33,4 +33,11 @@ api(Search) {
     @entitle=/repo/write
     @public void deleteSearchRepo(String searchRepoUri);
 
+    [This method rebuilds the search index associated with a document repo. By dropping it and recreating it (asynchronously).]
+    @entitle=/repo/write
+    @public void rebuildDocRepoIndex(String docRepoUri);
+    
+    [This method just drops the search index associated with a document repo. It is done asynchronously.]
+    @entitle=/repo/write
+    @public void dropDocRepoIndex(String docRepoUri);
 }

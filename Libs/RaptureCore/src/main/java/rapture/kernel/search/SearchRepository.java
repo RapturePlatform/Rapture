@@ -47,4 +47,7 @@ public interface SearchRepository {
 	void remove(String displayName);
 	void dropIndexForRepo(String repoName);
 
+	// We are storing things associated with a uri, so return the uris that start with this docRepo
+	SearchResponse searchForRepoUris(String docRepo, String cursorId);
+
 }

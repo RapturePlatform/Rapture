@@ -221,8 +221,7 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
         
         // Yeah this is like "delete everything that is prefixed by //docRepoUri
         
-        //SearchPublisher.publishMessage(context, MimeSearchUpdateObject.ActionType.DELETE,
-        //       null);
+        SearchPublisher.publishDropRepoIndexMessage(context, docRepoUri);
     }
 
     public void updateDocumentRepo(CallingContext context, DocumentRepoConfig data) {
