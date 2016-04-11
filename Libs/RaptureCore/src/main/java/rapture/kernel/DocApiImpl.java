@@ -80,7 +80,6 @@ import rapture.repo.VersionedRepo;
 import rapture.script.reflex.ReflexHandler;
 import rapture.script.reflex.ReflexRaptureScript;
 import rapture.table.TableScriptCache;
-import rapture.common.mime.MimeSearchUpdateObject;
 import reflex.IReflexHandler;
 import reflex.ReflexTreeWalker;
 import reflex.value.ReflexValue;
