@@ -154,6 +154,7 @@ public class MongoSeriesStore implements SeriesStore {
         try {
             @SuppressWarnings("unused")
             Document ret = collection.findOneAndUpdate(dbkey, dbval, options);
+            System.out.println(ret.toJson());
         } catch (MongoException me) {
             throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, new ExceptionToString(me));
         }

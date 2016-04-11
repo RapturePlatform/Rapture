@@ -30,6 +30,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -69,7 +71,8 @@ public class FileDataStore extends AbstractKeyStore implements KeyStore {
     /*
      * (non-Javadoc)
      * 
-     * @see rapture.repo.AbstractKeyStore#setRepoLockHandler(rapture.repo.RepoLockHandler)
+     * @see rapture.repo.AbstractKeyStore#setRepoLockHandler(rapture.repo.
+     * RepoLockHandler)
      */
     @Override
     public void setRepoLockHandler(RepoLockHandler repoLockHandler) {
@@ -113,7 +116,9 @@ public class FileDataStore extends AbstractKeyStore implements KeyStore {
     /*
      * (non-Javadoc)
      * 
-     * @see rapture.repo.AbstractKeyStore#runNativeQueryWithLimitAndBounds(java.lang.String, java.util.List, int, int)
+     * @see
+     * rapture.repo.AbstractKeyStore#runNativeQueryWithLimitAndBounds(java.lang.
+     * String, java.util.List, int, int)
      */
     @Override
     public RaptureNativeQueryResult runNativeQueryWithLimitAndBounds(String repoType, List<String> queryParams, int limit, int offset) {
@@ -124,7 +129,8 @@ public class FileDataStore extends AbstractKeyStore implements KeyStore {
     /*
      * (non-Javadoc)
      * 
-     * @see rapture.repo.AbstractKeyStore#visit(java.lang.String, rapture.repo.RepoVisitor)
+     * @see rapture.repo.AbstractKeyStore#visit(java.lang.String,
+     * rapture.repo.RepoVisitor)
      */
     @Override
     public void visit(String folderPrefix, RepoVisitor iRepoVisitor) {
@@ -135,7 +141,8 @@ public class FileDataStore extends AbstractKeyStore implements KeyStore {
     /*
      * (non-Javadoc)
      * 
-     * @see rapture.repo.AbstractKeyStore#matches(java.lang.String, java.lang.String)
+     * @see rapture.repo.AbstractKeyStore#matches(java.lang.String,
+     * java.lang.String)
      */
     @Override
     public boolean matches(String key, String value) {
@@ -254,7 +261,7 @@ public class FileDataStore extends AbstractKeyStore implements KeyStore {
         File dir = FileRepoUtils.makeGenericFile(parentDir, convertKeyToPath(prefix));
         if (!dir.exists()) {
             try {
-                File file = FileRepoUtils.makeGenericFile(parentDir, convertKeyToPath(prefix) +EXTENSION);
+                File file = FileRepoUtils.makeGenericFile(parentDir, convertKeyToPath(prefix) + EXTENSION);
                 if (file.exists()) {
                     iStoreKeyVisitor.visit(prefix + removeExtension(file.getName()), FileUtils.readFileToString(file));
                 }
@@ -307,30 +314,27 @@ public class FileDataStore extends AbstractKeyStore implements KeyStore {
     }
 
     /**
-     * Note that this only gets immediate children - it's not recursive. Should it be?
+     * Note that this only gets immediate children - it's not recursive. Should
+     * it be?
      */
     @Override
     public List<RaptureFolderInfo> getSubKeys(String prefix) {
-        String absolute = parentDir.getAbsolutePath();
-        int parentlen = absolute.length();
-        
-        File ddir = new File(parentDir, convertKeyToPath(prefix));
-        absolute = ddir.getAbsolutePath();
-
-
+        File maybeFile = FileRepoUtils.makeGenericFile(parentDir, convertKeyToPath(prefix) + EXTENSION);
         File dir = FileRepoUtils.makeGenericFile(parentDir, convertKeyToPath(prefix));
-        absolute = dir.getAbsolutePath();
+        List<RaptureFolderInfo> ret = new ArrayList<RaptureFolderInfo>();
 
-        
-        File[] files = dir.listFiles();
-        if (files == null) {
-            return new ArrayList<RaptureFolderInfo>();
+        if (maybeFile.isFile()) {
+            ret.add(new RaptureFolderInfo(removeExtension(FileRepoUtils.decode(dir.getName())), false));
         }
-        List<RaptureFolderInfo> ret = new ArrayList<RaptureFolderInfo>(files.length);
-        for (File f : files) {
-            String name = FileRepoUtils.decode(f.getName());
-            if (!f.isDirectory()) name = removeExtension(name);
-            ret.add(new RaptureFolderInfo(name, f.isDirectory()));
+        if (dir.isDirectory()) {
+            File[] files = dir.listFiles();
+            if (files != null) {
+                for (File f : files) {
+                    String name = FileRepoUtils.decode(f.getName());
+                    if (!f.isDirectory()) name = removeExtension(name);
+                    ret.add(new RaptureFolderInfo(name, f.isDirectory()));
+                }
+            }
         }
         return ret;
     }
