@@ -20,7 +20,7 @@ build:
       - echo "success"
     on_failure:
       - echo "failure"
-      - echo cat file:///root/src/github.com/incapture-build/Rapture/Libs/RaptureCore/build/reports/tests/index.html
+      - cat file:///root/src/github.com/incapture-build/Rapture/Libs/RaptureCore/build/reports/tests/index.html
     cache: false
 
 integrations:
