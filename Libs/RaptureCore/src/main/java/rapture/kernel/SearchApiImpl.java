@@ -70,23 +70,14 @@ public class SearchApiImpl extends KernelBase implements SearchApi {
     
     @Override
     public SearchResponse search(CallingContext context, String query) {
-    	// By default this searches the default search repository/index (search://main)
-    	// And within that the "doc" table
-    	
-    	List<String> types = Arrays.asList(SearchRepoType.DOC.toString(), SearchRepoType.META.toString(), SearchRepoType.URI.toString());
-        return Kernel.getRepoCacheManager().getSearchRepo(
-        		ConfigLoader.getConf().FullTextSearchDefaultRepo)
-        		.search(types,
-        				query);
+     	List<String> types = Arrays.asList(SearchRepoType.DOC.toString(), SearchRepoType.META.toString(), SearchRepoType.URI.toString());
+    	return qualifiedSearch(context, ConfigLoader.getConf().FullTextSearchDefaultRepo, types, query);
     }
 
     @Override
     public SearchResponse searchWithCursor(CallingContext context, String cursorId, int size, String query) {
       	List<String> types = Arrays.asList(SearchRepoType.DOC.toString(), SearchRepoType.META.toString(), SearchRepoType.URI.toString());
-        return Kernel.getRepoCacheManager().getSearchRepo(
-        		ConfigLoader.getConf().FullTextSearchDefaultRepo)
-        		.searchWithCursor(types,cursorId, size,
-        				query);
+        return qualifiedSearchWithCursor(context, ConfigLoader.getConf().FullTextSearchDefaultRepo, types, cursorId, size, query);
     }
 
 	@Override
@@ -223,5 +214,24 @@ public class SearchApiImpl extends KernelBase implements SearchApi {
 	        	return publishRepo;
 	        }
 	        return null;
+	}
+
+	@Override
+	public SearchResponse qualifiedSearch(CallingContext context,
+			String searchRepo, List<String> types, String query) {
+        return Kernel.getRepoCacheManager().getSearchRepo(
+        		searchRepo)
+        		.search(types,
+        				query);
+	}
+
+	@Override
+	public SearchResponse qualifiedSearchWithCursor(CallingContext context,
+			String searchRepo, List<String> types, String cursorId, int size,
+			String query) {
+        return Kernel.getRepoCacheManager().getSearchRepo(
+        		searchRepo)
+        		.searchWithCursor(types,cursorId, size,
+        				query);
 	}
 }
