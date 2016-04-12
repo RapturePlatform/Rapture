@@ -491,28 +491,21 @@ public class BlobApiImpl extends KernelBase implements BlobApi, RaptureScheme {
                 log.debug("No read permission on folder " + currParentDocPath);
                 continue;
             }
-            
 
-                List<RaptureFolderInfo> children = repo.listMetaByUriPrefix(currParentDocPath);
-                if ((children == null) || (children.isEmpty()) && (currDepth==0) && (internalUri.hasDocPath())) {
-                    //System.out.println("hello....inside BlobApiImpl new code..");
-                    //System.err.println("RaptureException thrown...");
-                    throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, apiMessageCatalog.getMessage("NoSuchBlob", internalUri.toString())); //$NON-NLS-1$
-                }
-                
-                else {
-
-                    for (RaptureFolderInfo child : children) {
-                        String childDocPath = currParentDocPath + (top ? "" : "/") + child.getName();
-                        if (child.getName().isEmpty()) continue;
-                        String childUri = BLOB + "://" + authority + "/" + childDocPath + (child.isFolder() ? "/" : "");
-                        ret.put(childUri, child);
-                        if (child.isFolder()) {
-                            parentsStack.push(childDocPath);
-                        }
+            List<RaptureFolderInfo> children = repo.listMetaByUriPrefix(currParentDocPath);
+            if ((children == null) || (children.isEmpty()) && (currDepth == 0) && (internalUri.hasDocPath())) {
+                throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, apiMessageCatalog.getMessage("NoSuchBlob", internalUri.toString())); //$NON-NLS-1$
+            } else {
+                for (RaptureFolderInfo child : children) {
+                    String childDocPath = currParentDocPath + (top ? "" : "/") + child.getName();
+                    if (child.getName().isEmpty()) continue;
+                    String childUri = BLOB + "://" + authority + "/" + childDocPath + (child.isFolder() ? "/" : "");
+                    ret.put(childUri, child);
+                    if (child.isFolder()) {
+                        parentsStack.push(childDocPath);
                     }
                 }
-            
+            }
             if (top) startDepth--; // special case
         }
         return ret;

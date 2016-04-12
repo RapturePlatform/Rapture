@@ -23,6 +23,25 @@
  */
 package rapture.series.file;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeSet;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+
 // TODO Not convinced that rapture.series.mem is the best package name for this
 // but if it moves then the class's full package name is hard coded as a String in a couple of places.
 
@@ -39,23 +58,6 @@ import rapture.kernel.file.FileRepoUtils;
 import rapture.series.SeriesPaginator;
 import rapture.series.SeriesStore;
 import rapture.series.children.ChildrenRepo;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeSet;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 
 /**
  * A file based version of a series repo, for testing
@@ -400,14 +402,23 @@ public class FileSeriesStore implements SeriesStore {
     @Override
     public List<RaptureFolderInfo> listSeriesByUriPrefix(String string) {
         File file = FileRepoUtils.makeGenericFile(parentDir, string);
-        File[] children = file.listFiles();
-        List<RaptureFolderInfo> info = new ArrayList<>((children == null) ? 0 : children.length);
-        if ((children != null) && (children.length > 0)) {
-            for (File kid : children) {
-                RaptureFolderInfo inf = new RaptureFolderInfo();
-                inf.setName(kid.getName());
-                inf.setFolder(kid.isDirectory());
-                info.add(inf);
+        List<RaptureFolderInfo> info = Collections.emptyList();
+        if (file.isFile()) {
+            RaptureFolderInfo inf = new RaptureFolderInfo();
+            inf.setName(file.getName());
+            inf.setFolder(false);
+            info = Arrays.asList(inf);
+        } else if (file.isDirectory()) {
+            File[] children = file.listFiles();
+            info = (children == null) ? Collections.emptyList() : new ArrayList<>(children.length);
+            if (children != null) {
+                info = new ArrayList<>(children.length);
+                for (File kid : children) {
+                    RaptureFolderInfo inf = new RaptureFolderInfo();
+                    inf.setName(kid.getName());
+                    inf.setFolder(kid.isDirectory());
+                    info.add(inf);
+                }
             }
         }
         return info;

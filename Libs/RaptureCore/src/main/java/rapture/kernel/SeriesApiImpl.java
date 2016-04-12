@@ -483,9 +483,16 @@ public class SeriesApiImpl extends KernelBase implements SeriesApi {
                 requestObj.setContext(context);
                 requestObj.setSeriesUri(currParentDocPath);
                 ContextValidator.validateContext(context, EntitlementSet.Series_listSeriesByUriPrefix, requestObj); 
-    
-                List<RaptureFolderInfo> children = repo.listSeriesByUriPrefix(currParentDocPath);
-    
+            } catch (RaptureException e) {
+                // permission denied
+                log.debug("No read permission on folder " + currParentDocPath);
+                continue;
+            }
+
+            List<RaptureFolderInfo> children = repo.listSeriesByUriPrefix(currParentDocPath);
+            if ((children == null) || (children.isEmpty()) && (currDepth == 0) && (internalUri.hasDocPath())) {
+                throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, apiMessageCatalog.getMessage("NoSuchSeries", internalUri.toString())); //$NON-NLS-1$
+            } else {
                 for (RaptureFolderInfo child : children) {
                     String childDocPath = currParentDocPath + (top ? "" : "/") + child.getName();
                     if (child.getName().isEmpty()) continue;
@@ -495,9 +502,6 @@ public class SeriesApiImpl extends KernelBase implements SeriesApi {
                         parentsStack.push(childDocPath);
                     }
                 }
-            } catch (RaptureException e) {
-                // permission denied
-                log.debug("No read permission on folder "+currParentDocPath);
             }
             if (top) startDepth--; // special case
         }
