@@ -25,11 +25,11 @@ package rapture.kernel;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.junit.Assert.assertNotEquals;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,15 +38,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import javax.swing.text.rtf.RTFEditorKit;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import rapture.common.BlobContainer;
 import rapture.common.CallingContext;
 import rapture.common.RaptureConstants;
 import rapture.common.RaptureFolderInfo;
@@ -101,7 +98,10 @@ public class DocApiFileTest extends AbstractFileTest {
         }
 
         // because the config gets stored even though it's not valid
-        docImpl.deleteDocRepo(callingContext, dummyAuthorityURI);
+        try {
+            docImpl.deleteDocRepo(callingContext, dummyAuthorityURI);
+        } catch (Exception e1) {
+        }
 
         try {
             docImpl.createDocRepo(callingContext, dummyAuthorityURI, "NREP {} USING FILE { prefix=\"\" }");
@@ -111,7 +111,10 @@ public class DocApiFileTest extends AbstractFileTest {
         }
 
         // because the config gets stored even though it's not valid
-        docImpl.deleteDocRepo(callingContext, dummyAuthorityURI);
+        try {
+            docImpl.deleteDocRepo(callingContext, dummyAuthorityURI);
+        } catch (Exception e1) {
+        }
 
         Map<String, String> hashMap = new HashMap<>();
         try {
@@ -122,7 +125,10 @@ public class DocApiFileTest extends AbstractFileTest {
         }
 
         // because the config gets stored even though it's not valid
-        docImpl.deleteDocRepo(callingContext, dummyAuthorityURI);
+        try {
+            docImpl.deleteDocRepo(callingContext, dummyAuthorityURI);
+        } catch (Exception e1) {
+        }
 
         hashMap.put("prefix", "  ");
         try {
@@ -423,4 +429,53 @@ public class DocApiFileTest extends AbstractFileTest {
         assertNotEquals(0, ret.size());
     }
 
+    // deleteDocsByUriPrefix called on a non-existent doc deletes all existing docs in folder
+    @Test
+    public void testRap4002() {
+        testCreateAndGetRepo();
+        String clydeUri = docAuthorityURI + "/PacMan/Wocka/Wocka/Wocka/Inky/Pinky/Blinky/Clyde";
+        String sueUri = docAuthorityURI + "/PacMan/Wocka/Wocka/Wocka/Sue";
+        
+        String content = "{\"foo\" : \"bar\" }";
+
+        docImpl.putDoc(callingContext, clydeUri, content);
+        docImpl.putDoc(callingContext, sueUri, content);
+        String doc = docImpl.getDoc(callingContext, clydeUri);
+        assertNotNull(doc);
+        assertEquals(content, doc);
+        
+        
+        docImpl.deleteDocsByUriPrefix(callingContext, clydeUri);
+        
+        try {
+            doc = docImpl.getDoc(callingContext, clydeUri);
+            // SHOULD FAIL OR DO NOTHING
+        } catch (Exception e) {
+            assertTrue(e.getMessage().equals("Doc or doc folder "+clydeUri+" does not exist"));
+        }
+        
+        Map<String, RaptureFolderInfo> docs = docImpl.listDocsByUriPrefix(callingContext, docAuthorityURI + "/PacMan", -1);
+        assertEquals(7, docs.size());
+        for (RaptureFolderInfo rfi : docs.values()) {
+            assertTrue(rfi.isFolder() || rfi.getName().equals("Sue"));
+        }
+        
+        
+        docImpl.putDoc(callingContext, clydeUri, content);
+        doc = docImpl.getDoc(callingContext, clydeUri);
+        assertNotNull(doc);
+        assertEquals(content, doc);
+        
+        docImpl.deleteDocsByUriPrefix2(callingContext, clydeUri, true);
+        
+        try {
+            doc = docImpl.getDoc(callingContext, clydeUri);
+            // SHOULD FAIL OR DO NOTHING
+        } catch (Exception e) {
+            assertTrue(e.getMessage().equals("Doc or doc folder "+clydeUri+" does not exist"));
+        }
+        
+        docs = docImpl.listDocsByUriPrefix(callingContext, docAuthorityURI + "/PacMan", -1);
+        assertEquals(4, docs.size());
+    }
 }

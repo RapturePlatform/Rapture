@@ -83,7 +83,7 @@ public abstract class ChildrenRepo {
             String fileKey = ChildKeyUtil.createRowKey(dirName.substring(0, lio));
             List<SeriesValue> points = getPoints(fileKey);
             if (!points.isEmpty()) {
-                String expect = "//FILE//"+dirName.substring(lio);
+                String expect = "//FILE//"+dirName.substring(lio+1);
                 for (SeriesValue point : points) {
                     if (point.getColumn().equals(expect)) {
                         RaptureFolderInfo folderInfo = new RaptureFolderInfo();

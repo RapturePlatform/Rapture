@@ -704,6 +704,11 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
 
     @Override
     public List<String> deleteDocsByUriPrefix(CallingContext context, String docUri) {
+        return deleteDocsByUriPrefix2(context, docUri, false);
+    }
+    
+    @Override
+    public List<String> deleteDocsByUriPrefix2(CallingContext context, String docUri, Boolean recurse) {
         Map<String, RaptureFolderInfo> docs = listDocsByUriPrefix(context, docUri, Integer.MAX_VALUE);
         List<String> folders = new ArrayList<>();
         Set<String> notEmpty = new HashSet<>();
@@ -742,6 +747,24 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
             if (notEmpty.contains(uri)) continue;
             deleteDoc(context, uri);
         }
+        
+        if (recurse) {
+            String auth = new RaptureURI(docUri).getAuthority();
+            int len = auth.length() + 4 + Scheme.DOCUMENT.toString().length();
+            Repository repository = getRepoFromCache(auth);
+            String duri = docUri;
+            while (duri.lastIndexOf('/') > 0) {
+                duri = duri.substring(0, duri.lastIndexOf('/'));
+                docs = listDocsByUriPrefix(context, duri, 2);
+                if (docs.size() == 0) {
+                    repository.removeChildren(duri.substring(len), true);
+                    deleteDoc(context, duri);
+                } else {
+                    System.out.println(docs.size());
+                    break;
+                }
+            }
+        }        
         return removed;
     }
     
@@ -813,9 +836,10 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
             }
 
             List<RaptureFolderInfo> children = repository.getChildren(currParentDocPath);
-            if (((children == null) || children.isEmpty()) && (currDepth == 0) && internalUri.hasDocPath()) 
-                throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, apiMessageCatalog.getMessage("NoSuchDoc", internalUri.toString())); //$NON-NLS-1$
-            else if (children != null) {
+//            if (((children == null) || children.isEmpty()) && (currDepth == 0) && internalUri.hasDocPath()) 
+//                throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, apiMessageCatalog.getMessage("NoSuchDoc", internalUri.toString())); //$NON-NLS-1$
+//            else
+            if (children != null) {
                 for (RaptureFolderInfo child : children) {
                     String name = child.getName();
                     String childDocPath = currParentDocPath + (top ? "" : "/") + name;
