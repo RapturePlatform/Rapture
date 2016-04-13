@@ -37,7 +37,6 @@ public class RaptureException extends RuntimeException {
     private static final long serialVersionUID = 1L;
     private String id;
     private Integer status;
-    private String message;
 
     public String getId() {
         return id;
@@ -47,22 +46,16 @@ public class RaptureException extends RuntimeException {
         return status;
     }
 
-    public String getMessage() {
-        return this.getClass().toString() + " - " + message;
-    }
-
     public RaptureException(String exceptionId, Integer status, String message) {
-        super();
+        super(message);
         this.id = exceptionId;
         this.status = status;
-        this.message = message;
     }
 
     public RaptureException(String exceptionId, Integer status, String message, Throwable cause) {
-        super(cause);
+        super(message, cause);
         this.id = exceptionId;
         this.status = status;
-        this.message = message;
     }
 
     /**

@@ -36,6 +36,12 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class RapturePipelineTask implements RaptureTransferObject {
+    @Override
+    public String toString() {
+        return "RapturePipelineTask [status=" + status + ", taskType=" + taskType + ", priority=" + priority + ", categoryList=" + categoryList + ", taskId="
+                + taskId + ", content=" + content + ", contentType=" + contentType + ", epoch=" + epoch + "]";
+    }
+
     public PipelineTaskType getTaskType() {
         return taskType;
     }
