@@ -413,6 +413,12 @@ public class SeriesApiFileTest extends AbstractFileTest {
             }
 
         List<SeriesRepoConfig> legacy = seriesImpl.getSeriesRepoConfigs(callingContext);
+        for (SeriesRepoConfig src : legacy) {
+            seriesImpl.deleteSeriesRepo(callingContext, src.getAuthority());
+        }
+        legacy = seriesImpl.getSeriesRepoConfigs(callingContext);
+        assertTrue(legacy.isEmpty());
+        
         ensureRepo(seriesAuthorityURI);
 
         String uriPrefix = seriesAuthorityURI + "/uriFragment/";
@@ -459,21 +465,21 @@ public class SeriesApiFileTest extends AbstractFileTest {
         assertEquals(uriPrefix, str);
 
         resultsMap = seriesImpl.listSeriesByUriPrefix(callingContext, "series://", 1);
-        assertEquals(legacy.size() + 1, resultsMap.size());
+        assertEquals(1, resultsMap.size());
         resultsMap = seriesImpl.listSeriesByUriPrefix(callingContext, "series://", 2);
-        assertEquals(legacy.size() + 2, resultsMap.size());
+        assertEquals(2, resultsMap.size());
         resultsMap = seriesImpl.listSeriesByUriPrefix(callingContext, "series://", 3);
-        assertEquals(legacy.size() + 5, resultsMap.size());
+        assertEquals(5, resultsMap.size());
         resultsMap = seriesImpl.listSeriesByUriPrefix(callingContext, "series://", 4);
-        assertEquals(legacy.size() + 8, resultsMap.size());
+        assertEquals(8, resultsMap.size());
         resultsMap = seriesImpl.listSeriesByUriPrefix(callingContext, "series://", 5);
-        assertEquals(legacy.size() + 10, resultsMap.size());
+        assertEquals(10, resultsMap.size());
         resultsMap = seriesImpl.listSeriesByUriPrefix(callingContext, "series://", 6);
-        assertEquals(legacy.size() + 10, resultsMap.size());
+        assertEquals(10, resultsMap.size());
         resultsMap = seriesImpl.listSeriesByUriPrefix(callingContext, "series://", 0);
-        assertEquals(legacy.size() + 10, resultsMap.size());
+        assertEquals(10, resultsMap.size());
         resultsMap = seriesImpl.listSeriesByUriPrefix(callingContext, "series://", -1);
-        assertEquals(legacy.size() + 10, resultsMap.size());
+        assertEquals(10, resultsMap.size());
 
     }
 
