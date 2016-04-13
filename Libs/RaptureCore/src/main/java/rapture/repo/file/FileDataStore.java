@@ -141,8 +141,7 @@ public class FileDataStore extends AbstractKeyStore implements KeyStore {
     /*
      * (non-Javadoc)
      * 
-     * @see rapture.repo.AbstractKeyStore#matches(java.lang.String,
-     * java.lang.String)
+     * @see rapture.repo.AbstractKeyStore#matches(java.lang.String, java.lang.String)
      */
     @Override
     public boolean matches(String key, String value) {
