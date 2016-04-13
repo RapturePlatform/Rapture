@@ -1,0 +1,6 @@
+This api call works in a similar way to the \verb+qualifiedSearch+ call. The
+call takes an additional cursor id parameter and the maximum size of the result set.
+
+For the first call to this method for a given search the cursor id should be left blank or null. The search response
+will contain a unique cursor id which can be used in subsequent calls. Cursors will ultimately be reaped from
+the underlying system after a period of inactivity.

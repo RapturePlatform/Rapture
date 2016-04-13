@@ -258,9 +258,9 @@ public class NVersionedRepo extends AbstractMetaBasedRepo<VersionedMetaHandler> 
     }
 
     @Override
-    public boolean addDocumentWithVersion(String docPath, String content, String user, String comment, boolean mustBeNew, int expectedVersion) {
+    public DocumentWithMeta addDocumentWithVersion(String docPath, String content, String user, String comment, boolean mustBeNew, int expectedVersion) {
         String lockHolder = repoLockHandler.generateLockHolder();
-        boolean ret = false;
+        DocumentWithMeta ret = null;
         LockHandle lockHandle = repoLockHandler.acquireLock(lockHolder);
         if (lockHandle != null) {
             try {

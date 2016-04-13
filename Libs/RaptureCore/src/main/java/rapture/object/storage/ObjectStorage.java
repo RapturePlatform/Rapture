@@ -31,6 +31,7 @@ import rapture.common.exception.RaptureException;
 import rapture.common.exception.RaptureExceptionFactory;
 import rapture.common.impl.jackson.JsonContent;
 import rapture.common.model.DocumentMetadata;
+import rapture.common.model.DocumentWithMeta;
 import rapture.kernel.Kernel;
 import rapture.object.Storable;
 import rapture.repo.RepoVisitor;
@@ -274,8 +275,8 @@ public abstract class ObjectStorage {
             throw RaptureExceptionFactory.create("Error converting storable to json", e);
         }
         if (repository != null) {
-            long version = repository.addDocument(path, jsonString, user, comment, false);
-            if (log.isTraceEnabled()) log.trace("addDocument returns version " + version);
+           DocumentWithMeta meta = repository.addDocument(path, jsonString, user, comment, false);
+            if (meta != null && log.isTraceEnabled()) log.trace("addDocument returns version " + meta.getMetaData().getVersion());
             getContentCache().put(storable.getStorageLocation(), Optional.of(jsonString));
         } else {
             log.error(String.format("Error, could not find repo for storable of type [%s]", storable.getClass().getName()));

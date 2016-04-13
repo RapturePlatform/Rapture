@@ -1,0 +1,70 @@
+The \verb+createSearchRepo+ is used to create a new search repository in \Rapture. The parameters to the call
+look straightforward -- simply the name of the new repository and a configuration string. The configuration string is
+in fact a complex instruction written in a search repository domain specific language (DSL) that is used to define the
+capabilities and underlying implementation of the repository.
+
+The typical configuration string for a versioned repository backed by MongoDB is reproduced below:
+
+\begin{Verbatim}
+SEARCH {} USING ELASTIC { index = 'test' }
+\end{Verbatim}
+
+The general form of the configuration is:
+
+\begin{Verbatim}
+SEARCH { [ search repo config] }
+     USING [underlying implementation] { [ config ]}
+     [ ON [ instance] ]
+\end{Verbatim}
+
+The search repo config part of the configuration string is currently blank for all search repo types.
+
+The second part of the configuration string defines the underlying implementation and its configuration. In
+most cases the configuration associated with the implementation has an \verb+index+ parameter that is used to
+define a table or a collection or a prefix for such entities in the underlying storage. The underlying implementation
+defines what lower level software is used to host the data managed by \Rapture. The following table shows the current
+implementations:
+
+\begin{table}[H]
+\small
+\begin{center}
+\begin{tabular}{r l p{8cm}}
+  Keyword & Underlying & Configuration \\
+  \hline
+  ELASTIC & ElasticSearch & The index parameter defines the name of the index used by this repository. \\
+\end{tabular}
+\end{center}
+\end{table}
+
+The \verb+ON+ directive defines which configuration will be used to connect to the underlying store. If
+not present the \verb+DEFAULT+ configuration will be used. These keywords are used by the underlying
+implementation to load a system specific configuration file, environment variables or property set.
+
+For example the default configuration for MongoDb (\verb+ON DEFAULT+) instructs the MongoDB implementation
+to look in three places for a connection string to a MongoDB server -
+
+\begin{itemize}
+\item{The environment variable RAPTUREES-DEFAULT.}
+\item{The java property RAPTURES-DEFAULT.}
+\item{The line beginning default= in the file RaptureES.cfg on the classpath of the application.}
+\end{itemize}
+
+In most cases the implementation will read the value from the file associated with the application server.
+
+Using this technique multiple underlying servers can be used and repositories attached to them using the
+\verb+ON+ keyword.
+
+The ON configuration can also be set using a Sys Api call, viz:
+
+\begin{lstlisting}
+	#sys.putConnectionInfo("ES", fromjson('{
+			"host" : "127.0.0.1",
+			"port" : 9300,
+			"username" : "rapture",
+			"password" : "rapture",
+			"dbName" : "default",
+			"instanceName" : "default",
+			"CLASS" : "rapture.common.ConnectionInfo"
+			}'
+			));
+\end{lstlisting}

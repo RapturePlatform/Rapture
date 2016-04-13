@@ -1,0 +1,19 @@
+The search function is a simple call that performs like a qualified search but against
+all of the tables associated with the index.
+
+The format of the search parameter varies with underlying implementation. For
+Elastic Search the implementation uses the QueryBuilder String format which allows
+for search strings similar to those reproduced below:
+
+\begin{Verbatim}
+	trader:AM
+	value:>10000
+	AM
+	BUY
+	US*
+	currency:US*
+\end{Verbatim}
+
+Here the term \emph{before} the colon refers to a field in the full text search
+index and these can correspond to top level field names in JSON content of a
+document, meta data or uri patterns.

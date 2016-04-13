@@ -110,18 +110,18 @@ public abstract class AbstractMetaBasedRepo<MH extends AbstractMetaHandler> exte
     }
 
     @Override
-    public long addDocument(String docPath, String value, String user, String comment, boolean mustBeNew) {
+    public DocumentWithMeta addDocument(String docPath, String value, String user, String comment, boolean mustBeNew) {
         Long startTime = System.currentTimeMillis();
 
         String lockHolder = repoLockHandler.generateLockHolder();
-        long versionAdded = 0L;
+        DocumentWithMeta ret = null;
         LockHandle lockHandle = repoLockHandler.acquireLock(lockHolder);
         if (lockHandle != null) {
             try {
                 if (log.isTraceEnabled()) {
                     log.trace("addDocument docPath=" + docPath + " value=" + value + " user=" + user + " comment=" + comment + " producer=" + producer);
                 }
-                versionAdded = metaHandler.addDocument(docPath, value, user, comment, producer);
+                ret = metaHandler.addDocument(docPath, value, user, comment, producer);
                 Kernel.getMetricsService().recordTimeDifference("repo.doc.single.wrote", System.currentTimeMillis() - startTime);
             } finally {
                 repoLockHandler.releaseLock(lockHolder, lockHandle);
@@ -129,7 +129,7 @@ public abstract class AbstractMetaBasedRepo<MH extends AbstractMetaHandler> exte
         } else {
             throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, Messages.getString("NVersionedRepo.nolockWrite")); //$NON-NLS-1$
         }
-        return versionAdded;
+        return ret;
     }
 
     @Override

@@ -65,7 +65,7 @@ public interface Repository {
      * @param mustBeNew
      * @return - Returns the version created by this addition
      */
-    long addDocument(String key, String value, String user, String comment, boolean mustBeNew);
+    DocumentWithMeta addDocument(String key, String value, String user, String comment, boolean mustBeNew);
 
     void addDocuments(List<String> dispNames, String content, String user, String comment);
 
@@ -205,7 +205,7 @@ public interface Repository {
     // Like addDocument, but if the repo supports versioning the version to be
     // overwritten
     // must exist at the version given
-    boolean addDocumentWithVersion(String disp, String content, String user, String comment, boolean mustBeNew, int expectedVersion);
+    DocumentWithMeta addDocumentWithVersion(String disp, String content, String user, String comment, boolean mustBeNew, int expectedVersion);
 
     List<RaptureFolderInfo> removeChildren(String area, Boolean force);
 

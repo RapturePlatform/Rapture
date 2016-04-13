@@ -1,0 +1,32 @@
+#Build environment
+build_environment: Ubuntu 14.04
+
+#set your language below
+language: java
+
+#set language version. This is only required if you use the default Shippable image for your build
+jdk:
+  - oraclejdk8
+
+build:
+    ci:
+      - cd Libs/
+      - ./gradlew clean genAll install
+      - ./gradlew test --debug
+      - cd ../Apps
+      - ./gradlew clean installDist -x test
+      - ./gradlew test
+    on_success:
+      - echo "success"
+    on_failure:
+      - echo "failure"
+      - cat file:///root/src/github.com/incapture-build/Rapture/Libs/RaptureCore/build/reports/tests/index.html
+    cache: false
+
+integrations:
+    hub:
+        - integrationName: dockerHub
+          type: docker
+          branches:
+            only:
+              - master

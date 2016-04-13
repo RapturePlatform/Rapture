@@ -31,6 +31,7 @@ import rapture.common.RaptureScript;
 import rapture.common.exception.RaptNotSupportedException;
 import rapture.common.exception.RaptureExceptionFactory;
 import rapture.common.impl.jackson.JacksonUtil;
+import rapture.common.model.DocumentWithMeta;
 import rapture.dsl.dparse.BaseDirective;
 import rapture.index.IndexHandler;
 import rapture.kernel.ContextFactory;
@@ -66,10 +67,10 @@ public class RRepo extends BaseSimpleRepo implements Repository {
     }
 
     @Override
-    public long addDocument(String key, String value, String user,
+    public DocumentWithMeta addDocument(String key, String value, String user,
             String comment, boolean mustBeNew) {
         // TODO Auto-generated method stub
-        return 0;
+        return null;
     }
 
     @Override
@@ -227,10 +228,10 @@ public class RRepo extends BaseSimpleRepo implements Repository {
     }
 
     @Override
-    public boolean addDocumentWithVersion(String disp, String content,
+    public DocumentWithMeta addDocumentWithVersion(String disp, String content,
             String user, String comment, boolean mustBeNew, int expectedVersion) {
         // TODO Auto-generated method stub
-        return false;
+        return null;
     }
 
     @Override
