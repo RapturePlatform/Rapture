@@ -439,14 +439,4 @@ public class MongoTests {
             }
         }
     }
-
-    @Test
-    public void rap4045() {
-//        BlobApi api = Kernel.getBlob();
-        CallingContext callingContext = ContextFactory.getKernelUser();
-        String url = "//sys.blob/decisionWorkflow.httpTests/20160412/simple/default/WO00000002/Step1";
-//        BlobContainer blob = api.getBlob(callingContext, url);
-        BlobContainer blob = blobApi.getBlob(callingContext, url);
-        assertNotNull(blob);
-    }
 }
