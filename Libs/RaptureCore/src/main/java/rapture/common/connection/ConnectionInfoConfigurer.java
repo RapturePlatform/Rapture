@@ -74,8 +74,9 @@ public abstract class ConnectionInfoConfigurer {
         // check connection is new
         Map<String, ConnectionInfo> map = getConnectionInfo(context);
         if(map.containsKey(info.getInstanceName())) {
-            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR,
-                        "Will not add. Connection already exists: " + info);
+        	//
+            //throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR,
+            //            "Will not add. Connection already exists: " + info);
         }
         // add connection info to sys.config
         map.put(info.getInstanceName(), info);

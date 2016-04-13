@@ -41,6 +41,9 @@ import java.util.jar.Manifest;
 
 import org.apache.log4j.Logger;
 
+import com.google.common.base.Optional;
+import com.google.common.cache.Cache;
+
 import rapture.api.hooks.ApiHooksService;
 import rapture.audit.AuditLog;
 import rapture.audit.AuditLogCache;
@@ -99,9 +102,6 @@ import rapture.util.DefaultConfigRetriever;
 import rapture.util.IConfigRetriever;
 import rapture.util.IDGenerator;
 import rapture.util.ResourceLoader;
-
-import com.google.common.base.Optional;
-import com.google.common.cache.Cache;
 
 /**
  * The Rapture kernel is a singleton and hosts the apis for Rapture
@@ -170,7 +170,6 @@ public enum Kernel {
         return INSTANCE.login;
     }
 
-
     public static ScheduleApiImplWrapper getSchedule() {
         return INSTANCE.schedule;
     }
@@ -215,11 +214,9 @@ public enum Kernel {
         return INSTANCE.decision;
     }
 
-
     public static DocApiImplWrapper getDoc() {
         return INSTANCE.doc;
     }
-
 
     public static EnvironmentApiImplWrapper getEnvironment() {
         return INSTANCE.environment;
@@ -227,6 +224,10 @@ public enum Kernel {
 
     public static StructuredApiImplWrapper getStructured() {
         return INSTANCE.structured;
+    }
+
+    public static SearchApiImplWrapper getSearch() {
+        return INSTANCE.search;
     }
 
     public static MetricsService getMetricsService() {
@@ -256,7 +257,7 @@ public enum Kernel {
     }
 
     public static void initBootstrap(Map<String, String> templates, Object context, boolean startScheduler) {
-         // AT THIS POINT, attempt to load and run a startup script
+        // AT THIS POINT, attempt to load and run a startup script
         // TODO: These strings need to be in a constant
         if (templates != null) {
             for (Map.Entry<String, String> e : templates.entrySet()) {
@@ -279,7 +280,6 @@ public enum Kernel {
         setupServerStatus();
     }
 
-
     private static void setupMachineID() {
         RaptureServerInfo info = INSTANCE.environment.getThisServer(ContextFactory.getKernelUser());
         if (info == null) {
@@ -293,7 +293,6 @@ public enum Kernel {
             log.info(String.format("This server is %s ( %s )", info.getServerId(), info.getName()));
         }
     }
-
 
     private static void setupServerStatus() {
         RaptureServerStatus status = new RaptureServerStatus();
@@ -392,7 +391,6 @@ public enum Kernel {
         return licenseInfo;
     }
 
-
     /**
      * Check the config for a passed api user to run the kernel as. If so, check that it is in fact a valid API user, and if it is, set the KernelUser in the
      * ContextFactory to this user.
@@ -448,7 +446,6 @@ public enum Kernel {
     private JarApiImplWrapper jar;
     private BlobApiImplWrapper blob;
 
-
     private PluginApiImplWrapper plugin;
     private PipelineApiImplWrapper pipeline;
     private AsyncApiImplWrapper async;
@@ -460,6 +457,7 @@ public enum Kernel {
     private DocApiImplWrapper doc;
     private EnvironmentApiImplWrapper environment;
     private StructuredApiImplWrapper structured;
+    private SearchApiImplWrapper search;
     private MetricsService metricsService = MetricsFactory.createDummyService(); // initialize to a dummy service initially, as this is not nullable
     private LogManagerConnection logManagerConnection;
 
@@ -475,7 +473,7 @@ public enum Kernel {
      * Run whatever additional scripts are available through this context
      *
      * @param path
-     *            @
+     * @
      */
     public static void runAdditional(Object context, String path) {
         INSTANCE.loadStartupScript(context, path);
@@ -732,6 +730,8 @@ public enum Kernel {
             kernelApis.add(environment);
             structured = new StructuredApiImplWrapper(this);
             kernelApis.add(structured);
+            search = new SearchApiImplWrapper(this);
+            kernelApis.add(search);
 
             // sys depends on series and doc
             sys = new SysApiImplWrapper(this);

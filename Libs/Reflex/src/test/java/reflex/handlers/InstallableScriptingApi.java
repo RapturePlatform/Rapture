@@ -46,6 +46,7 @@ import rapture.common.api.ScriptPluginApi;
 import rapture.common.api.ScriptRunnerApi;
 import rapture.common.api.ScriptScheduleApi;
 import rapture.common.api.ScriptScriptApi;
+import rapture.common.api.ScriptSearchApi;
 import rapture.common.api.ScriptSeriesApi;
 import rapture.common.api.ScriptStructuredApi;
 import rapture.common.api.ScriptSysApi;
@@ -131,7 +132,6 @@ public class InstallableScriptingApi implements ScriptingApi {
         return null;
     }
 
-
     @Override
     public ScriptFieldsApi getFields() {
         // TODO Auto-generated method stub
@@ -149,7 +149,6 @@ public class InstallableScriptingApi implements ScriptingApi {
         // TODO Auto-generated method stub
         return null;
     }
-
 
     @Override
     public ScriptPluginApi getPlugin() {
@@ -193,26 +192,22 @@ public class InstallableScriptingApi implements ScriptingApi {
         return null;
     }
 
-
     @Override
     public ScriptDocApi getDoc() {
         // TODO Auto-generated method stub
         return null;
     }
 
-
     @Override
     public InstallableKernel getInstalledKernel(String name) {
         return new TestSDK();
     }
-
 
     @Override
     public ScriptEnvironmentApi getEnvironment() {
         // TODO Auto-generated method stub
         return null;
     }
-
 
     @Override
     public String getEndPoint() {
@@ -228,6 +223,12 @@ public class InstallableScriptingApi implements ScriptingApi {
 
     @Override
     public ScriptStructuredApi getStructured() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public ScriptSearchApi getSearch() {
         // TODO Auto-generated method stub
         return null;
     }

@@ -105,6 +105,11 @@ public class RaptureConfig {
     public Boolean Configured = false;
 
     public Boolean randomizeDefaultPasswords = false;
+    
+    // Config around Full Text Search defaults
+    public Boolean FullTextSearchOn = false;
+    public String  FullTextSearchDefaultRepo = "search://main";
+    public String  FullTextSearchDefaultConfig = "SEARCH {} USING ELASTIC { index = \"rapturemain\" }";
 
     public void applyOverrides() {
         // Apply overrides to the public fields by looking for properties or env

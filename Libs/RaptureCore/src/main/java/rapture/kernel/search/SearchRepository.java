@@ -1,0 +1,53 @@
+/**
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+package rapture.kernel.search;
+
+import java.util.List;
+import java.util.Map;
+
+import rapture.common.SearchResponse;
+import rapture.common.model.DocumentWithMeta;
+
+public interface SearchRepository {
+
+    void setInstanceName(String instanceName);
+
+    void start();
+
+    void put(DocumentWithMeta doc);
+
+    SearchResponse search(List<String> types, String query);
+
+    SearchResponse searchWithCursor(List<String> types, String cursorId, int size, String query);
+
+    // This is used to define the index used by this repo
+	void setConfig(Map<String, String> config);
+
+	void remove(String displayName);
+	void dropIndexForRepo(String repoName);
+
+	// We are storing things associated with a uri, so return the uris that start with this docRepo
+	SearchResponse searchForRepoUris(String docRepo, String cursorId);
+
+}

@@ -254,6 +254,17 @@ type DocumentRepoConfig(@package=rapture.common.model) {
     Set<FullTextIndexScriptPair> fullTextIndexes = new HashSet<FullTextIndexScriptPair>();
     String updateQueue;
     RaptureDocConfig documentRepo;
+    Boolean ftsIndex = true;
+    String ftsIndexRepo = ""; // Blank means "use default"
+}
+
+[Describes config info for a full text search repository.]
+@Addressable(scheme = SEARCH(true))
+@Storable(storagePath : {authority}, prefix="fttype")
+type SearchRepoConfig(@package=rapture.common.model) {
+	String description;
+	String config;
+	String authority;
 }
 
 [Describes config info for a single Rapture document.]
@@ -1441,4 +1452,23 @@ type ChildrenTransferObject(@package=rapture.common) {
 @Bean
 type StructuredRow(@package=rapture.common){
     Map<String,Object> columns;
+}
+
+[A SearchResponse object encapsulates the important information returned by using the search api in Rapture]
+@Bean
+type SearchResponse(@package=rapture.common) {
+	Long total;
+	Double maxScore;
+	String cursorId;
+	List<SearchHit> searchHits;
+}
+
+[A SearchHit object represents each individual data object that is returned as part of a SearchResponse]
+@Bean
+type SearchHit(@package=rapture.common) {
+	String indexType;
+	String id;
+	String uri;
+	Double score;
+	String source;
 }

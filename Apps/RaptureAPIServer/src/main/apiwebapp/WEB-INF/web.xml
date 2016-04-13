@@ -319,6 +319,14 @@
 		<servlet-name>STRUCTURED</servlet-name>
 		<url-pattern>/structured/*</url-pattern>
 	</servlet-mapping>
+	<servlet>
+		<servlet-name>SEARCH</servlet-name>
+		<servlet-class>rapture.server.web.servlet.SearchServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>SEARCH</servlet-name>
+		<url-pattern>/search/*</url-pattern>
+	</servlet-mapping>
     <!-- end of WebServlet list -->
 </web-app>
 	

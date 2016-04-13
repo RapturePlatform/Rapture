@@ -1,0 +1,5 @@
+When a document repository is initially associated with a search repository the
+existing data will be need to be indexed. This api call can be used to
+asynchronously update the index for a document repository. The first step in
+the process is to remove (again asynchronously) all of the search data for
+the repository and \emph{then} to update the index.

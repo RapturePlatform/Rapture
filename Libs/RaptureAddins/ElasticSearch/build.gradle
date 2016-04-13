@@ -1,0 +1,9 @@
+jar.manifest.attributes "Implementation-Title" : "Rapture ElasticSearch Addin"
+
+dependencies {
+    compile project(':RaptureCore')
+    compile project(':RaptureAPI')
+    compile project(':RaptureAddinCore')
+    compile 'org.elasticsearch:elasticsearch:2.2.0'
+    testCompile 'net.java.dev.jna:jna:4.2.1'
+}
