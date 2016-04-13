@@ -1,0 +1,227 @@
+\chapter{Search API}
+\index{Search API}
+\input{api/search/info}
+\section{Search}
+\index{Search}
+\label{Api:Search}
+\begin{lstlisting}[style=nonumbers]
+   SearchResponse search (
+           String    query
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /search/read
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #search.search(query);
+%\end{lstlisting}
+\input{api/search/search}
+
+
+\rule{12cm}{2pt}
+\section{SearchWithCursor}
+\index{SearchWithCursor}
+\label{Api:SearchWithCursor}
+\begin{lstlisting}[style=nonumbers]
+   SearchResponse searchWithCursor (
+           String    cursorId
+           int    size
+           String    query
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /search/read
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #search.searchWithCursor(cursorId,size,query);
+%\end{lstlisting}
+\input{api/search/searchWithCursor}
+
+
+\rule{12cm}{2pt}
+\section{QualifiedSearch}
+\index{QualifiedSearch}
+\label{Api:QualifiedSearch}
+\begin{lstlisting}[style=nonumbers]
+   SearchResponse qualifiedSearch (
+           String    searchRepo
+           List<String>    types
+           String    query
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /search/read
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #search.qualifiedSearch(searchRepo,types,query);
+%\end{lstlisting}
+\input{api/search/qualifiedSearch}
+
+
+\rule{12cm}{2pt}
+\section{QualifiedSearchWithCursor}
+\index{QualifiedSearchWithCursor}
+\label{Api:QualifiedSearchWithCursor}
+\begin{lstlisting}[style=nonumbers]
+   SearchResponse qualifiedSearchWithCursor (
+           String    searchRepo
+           List<String>    types
+           String    cursorId
+           int    size
+           String    query
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /search/read
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #search.qualifiedSearchWithCursor(searchRepo,types,cursorId,size,query);
+%\end{lstlisting}
+\input{api/search/qualifiedSearchWithCursor}
+
+
+\rule{12cm}{2pt}
+\section{ValidateSearchRepo}
+\index{ValidateSearchRepo}
+\label{Api:ValidateSearchRepo}
+\begin{lstlisting}[style=nonumbers]
+   boolean validateSearchRepo (
+           String    searchRepoUri
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /repo/write
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #search.validateSearchRepo(searchRepoUri);
+%\end{lstlisting}
+\input{api/search/validateSearchRepo}
+
+
+\rule{12cm}{2pt}
+\section{CreateSearchRepo}
+\index{CreateSearchRepo}
+\label{Api:CreateSearchRepo}
+\begin{lstlisting}[style=nonumbers]
+   void createSearchRepo (
+           String    searchRepoUri
+           String    config
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /repo/write
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #search.createSearchRepo(searchRepoUri,config);
+%\end{lstlisting}
+\input{api/search/createSearchRepo}
+
+
+\rule{12cm}{2pt}
+\section{SearchRepoExists}
+\index{SearchRepoExists}
+\label{Api:SearchRepoExists}
+\begin{lstlisting}[style=nonumbers]
+   boolean searchRepoExists (
+           String    searchRepoUri
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /repo/list
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #search.searchRepoExists(searchRepoUri);
+%\end{lstlisting}
+\input{api/search/searchRepoExists}
+
+
+\rule{12cm}{2pt}
+\section{GetSearchRepoConfig}
+\index{GetSearchRepoConfig}
+\label{Api:GetSearchRepoConfig}
+\begin{lstlisting}[style=nonumbers]
+   SearchRepoConfig getSearchRepoConfig (
+           String    searchRepoUri
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /repo/read
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #search.getSearchRepoConfig(searchRepoUri);
+%\end{lstlisting}
+\input{api/search/getSearchRepoConfig}
+
+
+\rule{12cm}{2pt}
+\section{GetSearchRepoConfigs}
+\index{GetSearchRepoConfigs}
+\label{Api:GetSearchRepoConfigs}
+\begin{lstlisting}[style=nonumbers]
+   List<SearchRepoConfig> getSearchRepoConfigs (
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /repo/read
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #search.getSearchRepoConfigs();
+%\end{lstlisting}
+\input{api/search/getSearchRepoConfigs}
+
+
+\rule{12cm}{2pt}
+\section{DeleteSearchRepo}
+\index{DeleteSearchRepo}
+\label{Api:DeleteSearchRepo}
+\begin{lstlisting}[style=nonumbers]
+   void deleteSearchRepo (
+           String    searchRepoUri
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /repo/write
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #search.deleteSearchRepo(searchRepoUri);
+%\end{lstlisting}
+\input{api/search/deleteSearchRepo}
+
+
+\rule{12cm}{2pt}
+\section{RebuildDocRepoIndex}
+\index{RebuildDocRepoIndex}
+\label{Api:RebuildDocRepoIndex}
+\begin{lstlisting}[style=nonumbers]
+   void rebuildDocRepoIndex (
+           String    docRepoUri
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /repo/write
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #search.rebuildDocRepoIndex(docRepoUri);
+%\end{lstlisting}
+\input{api/search/rebuildDocRepoIndex}
+
+
+\rule{12cm}{2pt}
+\section{DropDocRepoIndex}
+\index{DropDocRepoIndex}
+\label{Api:DropDocRepoIndex}
+\begin{lstlisting}[style=nonumbers]
+   void dropDocRepoIndex (
+           String    docRepoUri
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /repo/write
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #search.dropDocRepoIndex(docRepoUri);
+%\end{lstlisting}
+\input{api/search/dropDocRepoIndex}
+
+
+\rule{12cm}{2pt}

@@ -59,14 +59,13 @@ public class VersionedMetaHandler extends AbstractMetaHandler {
         this.versionStore = versionStore;
     }
 
-    public boolean addDocumentWithExpectedVersion(String key, String value, String user, String comment, int expectedVersion, IndexProducer producer) {
+    public DocumentWithMeta addDocumentWithExpectedVersion(String key, String value, String user, String comment, int expectedVersion, IndexProducer producer) {
         // Check current version
         DocumentMetadata latestMeta = getLatestMeta(key);
         if (latestMeta != null && latestMeta.getVersion() != expectedVersion) {
-            return false;
+            return null;
         }
-        addDocument(key, value, user, comment, producer);
-        return true;
+        return addDocument(key, value, user, comment, producer);
     }
 
     @Override

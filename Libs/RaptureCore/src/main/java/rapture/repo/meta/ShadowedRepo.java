@@ -73,10 +73,10 @@ public class ShadowedRepo implements Repository {
     }
 
     @Override
-    public long addDocument(String key, String value, String user, String comment, boolean mustBeNew) {
-        long ver = main.addDocument(key, value, user, comment, mustBeNew);
+    public DocumentWithMeta addDocument(String key, String value, String user, String comment, boolean mustBeNew) {
+        DocumentWithMeta ret = main.addDocument(key, value, user, comment, mustBeNew);
         shadow.addDocument(key, value, user, comment, mustBeNew);
-        return ver;
+        return ret;
     }
 
     @Override
@@ -291,8 +291,8 @@ public class ShadowedRepo implements Repository {
     }
 
     @Override
-    public boolean addDocumentWithVersion(String disp, String content, String user, String comment, boolean mustBeNew, int expectedVersion) {
-        boolean ret = main.addDocumentWithVersion(disp, content, user, comment, mustBeNew, expectedVersion);
+    public DocumentWithMeta addDocumentWithVersion(String disp, String content, String user, String comment, boolean mustBeNew, int expectedVersion) {
+        DocumentWithMeta ret = main.addDocumentWithVersion(disp, content, user, comment, mustBeNew, expectedVersion);
         shadow.addDocumentWithVersion(disp, content, user, comment, mustBeNew, expectedVersion);
         return ret;
     }

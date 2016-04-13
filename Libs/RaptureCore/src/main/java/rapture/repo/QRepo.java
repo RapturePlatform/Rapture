@@ -30,6 +30,7 @@ import rapture.common.RaptureQueryResult;
 import rapture.common.exception.RaptNotSupportedException;
 import rapture.common.exception.RaptureExceptionFactory;
 import rapture.common.impl.jackson.JacksonUtil;
+import rapture.common.model.DocumentWithMeta;
 import rapture.common.sql.DisplayPoint;
 import rapture.common.sql.QRepoConfig;
 import rapture.common.sql.SQLField;
@@ -68,7 +69,7 @@ public class QRepo extends BaseSimpleRepo implements Repository {
     }
 
     @Override
-    public long addDocument(String key, String value, String user, String comment, boolean mustBeNew) {
+    public DocumentWithMeta addDocument(String key, String value, String user, String comment, boolean mustBeNew) {
         // The key defines the the field values
         // The document (the value), when converted to a map, defines some of
         // the field values also
@@ -98,7 +99,7 @@ public class QRepo extends BaseSimpleRepo implements Repository {
             List<WhereRestriction> whereClauses = getWhereClausesFromDisplayname(pathParts, depth);
             doUpdate(fieldValues, whereClauses);
         }
-        return 1;
+        return null;
     }
 
     private void doUpdate(List<FieldValue> fieldValues, List<WhereRestriction> whereClauses) {
@@ -324,9 +325,9 @@ public class QRepo extends BaseSimpleRepo implements Repository {
     }
 
     @Override
-    public boolean addDocumentWithVersion(String disp, String content, String user, String comment, boolean mustBeNew, int expectedVersion) {
+    public DocumentWithMeta addDocumentWithVersion(String disp, String content, String user, String comment, boolean mustBeNew, int expectedVersion) {
         // TODO Auto-generated method stub
-        return false;
+        return null;
     }
 
     @Override

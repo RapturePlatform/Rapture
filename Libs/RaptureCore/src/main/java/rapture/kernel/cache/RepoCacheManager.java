@@ -26,6 +26,7 @@ package rapture.kernel.cache;
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
 import rapture.common.model.DocumentRepoConfig;
+import rapture.kernel.search.SearchRepository;
 import rapture.object.storage.StorableIndexInfo;
 import rapture.repo.*;
 
@@ -41,6 +42,7 @@ public class RepoCacheManager {
     private DocRepoCache docRepoCache;
     private SeriesRepoCache seriesRepoCache;
     private StructuredRepoCache structuredRepoCache;
+    private SearchRepoCache searchRepoCache;
 
     public RepoCacheManager() {
         sysRepoCache = new SysRepoCache();
@@ -48,6 +50,7 @@ public class RepoCacheManager {
         docRepoCache = new DocRepoCache();
         seriesRepoCache = new SeriesRepoCache();
         structuredRepoCache = new StructuredRepoCache();
+        searchRepoCache = new SearchRepoCache();
     }
 
     /**
@@ -99,6 +102,9 @@ public class RepoCacheManager {
         return structuredRepoCache.getRepo(authority);
     }
 
+     public SearchRepository getSearchRepo(String authority) {
+    	 return searchRepoCache.getRepo(authority);
+     }
 
     /**
      * Backward compatible with Kernel.removeRepo
@@ -123,6 +129,8 @@ public class RepoCacheManager {
             seriesRepoCache.removeRepo(authority);
         } else if (Scheme.STRUCTURED.toString().equalsIgnoreCase(type)) {
             structuredRepoCache.removeRepo(authority);
+        } else if (Scheme.SEARCH.toString().equalsIgnoreCase(type)) {
+        	searchRepoCache.removeRepo(authority);
         }
     }
 
@@ -136,5 +144,6 @@ public class RepoCacheManager {
         docRepoCache = null;
         seriesRepoCache = null;
         structuredRepoCache = null;
+        searchRepoCache = null;
     }
 }

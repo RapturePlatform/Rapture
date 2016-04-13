@@ -380,6 +380,21 @@
           Set<FullTextIndexScriptPair>   fullTextIndexes
           String   updateQueue
           RaptureDocConfig   documentRepo
+          Boolean   ftsIndex
+          String   ftsIndexRepo
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{SearchRepoConfig}
+\label{type:SearchRepoConfig}
+\index{SearchRepoConfig}
+
+\begin{lstlisting}[style=nonumbers]
+   type SearchRepoConfig {
+          String   description
+          String   config
+          String   authority
    }
 \end{lstlisting}
 
@@ -2105,6 +2120,35 @@
 \begin{lstlisting}[style=nonumbers]
    type StructuredRow {
           Map<String,Object>   columns
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{SearchResponse}
+\label{type:SearchResponse}
+\index{SearchResponse}
+
+\begin{lstlisting}[style=nonumbers]
+   type SearchResponse {
+          Long   total
+          Double   maxScore
+          String   cursorId
+          List<SearchHit>   searchHits
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{SearchHit}
+\label{type:SearchHit}
+\index{SearchHit}
+
+\begin{lstlisting}[style=nonumbers]
+   type SearchHit {
+          String   indexType
+          String   id
+          String   uri
+          Double   score
+          String   source
    }
 \end{lstlisting}
 

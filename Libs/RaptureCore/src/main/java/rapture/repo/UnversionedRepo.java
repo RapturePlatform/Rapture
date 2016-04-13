@@ -49,7 +49,7 @@ public class UnversionedRepo extends AbstractMetaBasedRepo<UnversionedMetaHandle
         return false;
     }
 
-    @Override public boolean addDocumentWithVersion(String disp, String content, String user, String comment, boolean mustBeNew, int expectedVersion) {
+    @Override public DocumentWithMeta addDocumentWithVersion(String disp, String content, String user, String comment, boolean mustBeNew, int expectedVersion) {
         throw RaptureExceptionFactory.create("Not supported!");
     }
 
