@@ -61,6 +61,7 @@ public class KernelScript implements IRaptureScriptHelper, IRaptureKernelScriptH
     private final ScriptDoc doc;
     private final ScriptEnvironment environment;
     private final ScriptStructured structured;
+    private final ScriptSearch search;
 
     public KernelScript() {
         login = Kernel.getLogin();
@@ -90,6 +91,7 @@ public class KernelScript implements IRaptureScriptHelper, IRaptureKernelScriptH
         doc = new ScriptDoc(Kernel.getDoc());
         environment = new ScriptEnvironment(Kernel.getEnvironment());
         structured = new ScriptStructured(Kernel.getStructured());
+        search = new ScriptSearch(Kernel.getSearch());
     }
 
     public Login getLogin() {
@@ -185,7 +187,7 @@ public class KernelScript implements IRaptureScriptHelper, IRaptureKernelScriptH
     public ScriptStructured getStructured() {
         return structured;
     }
-    
+
     @Override
     public String getVersion() {
         return "1.0";
@@ -225,6 +227,7 @@ public class KernelScript implements IRaptureScriptHelper, IRaptureKernelScriptH
         getEnvironment().setCallingContext(ctx);
         getPlugin().setCallingContext(ctx);
         getStructured().setCallingContext(ctx);
+        getSearch().setCallingContext(ctx);
 
         for (InstallableKernel installedKernel : Kernel.getInstalledKernels()) {
             installedKernel.getKernelScript().setCallingContext(ctx);
@@ -270,6 +273,11 @@ public class KernelScript implements IRaptureScriptHelper, IRaptureKernelScriptH
     @Override
     public String getSerializedContext() {
         return JacksonUtil.jsonFromObject(ctx);
+    }
+
+    @Override
+    public ScriptSearch getSearch() {
+        return search;
     }
 
 }

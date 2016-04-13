@@ -66,11 +66,13 @@ import rapture.common.model.RaptureDocConfig;
 import rapture.common.model.RunEventHandle;
 import rapture.common.shared.doc.DeleteDocPayload;
 import rapture.common.shared.doc.GetDocPayload;
+import rapture.config.ConfigLoader;
 import rapture.dsl.dparse.AbsoluteVersion;
 import rapture.dsl.dparse.AsOfTimeDirective;
 import rapture.dsl.dparse.BaseDirective;
 import rapture.index.IndexHandler;
 import rapture.kernel.context.ContextValidator;
+import rapture.kernel.pipeline.SearchPublisher;
 import rapture.kernel.schemes.RaptureScheme;
 import rapture.repo.NVersionedRepo;
 import rapture.repo.Repository;
@@ -214,6 +216,11 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
 
         DocumentRepoConfigStorage.deleteByAddress(internalUri, context.getUser(), "Drop document repo");
         removeRepoFromCache(internalUri.getAuthority());
+
+        
+        // Yeah this is like "delete everything that is prefixed by //docRepoUri
+        
+        SearchPublisher.publishDropRepoIndexMessage(context, docRepoUri);
     }
 
     public void updateDocumentRepo(CallingContext context, DocumentRepoConfig data) {
@@ -395,7 +402,21 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
     public Boolean deleteDoc(CallingContext context, String docUri) {
         RaptureURI internalUri = new RaptureURI(docUri, Scheme.DOCUMENT);
         Repository repository = getRepoFromCache(internalUri.getAuthority());
-        return repository.removeDocument(internalUri.getDocPath(), context.getUser(), "");
+        DocumentRepoConfig type = getConfigFromCache(internalUri.getAuthority());
+
+        boolean ret = repository.removeDocument(internalUri.getDocPath(), context.getUser(), "");
+        if (ret) {
+        	String searchRepo = getSearchRepo(type);
+        	if (searchRepo != null) {
+        		// We must balance with the uri that's put in with saveDocument
+        		String realDocUri = docUri;
+        		if (realDocUri.startsWith("//")) {
+        			realDocUri = realDocUri.substring(2);
+        		}
+        		SearchPublisher.publishDeleteMessage(context, searchRepo,realDocUri); 
+        	}
+        }
+        return ret;
     }
 
     @Override
@@ -563,19 +584,19 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
                 throw e;
             }
         }
-        boolean isSuccess;
+        
+        DocumentWithMeta newDoc = null;
 
         if (expectedCurrentVersion == -1) {
-            repository.addDocument(internalUri.getDocPathWithElement(), content, context.getUser(), "", mustBeNew);
+            newDoc = repository.addDocument(internalUri.getDocPathWithElement(), content, context.getUser(), "", mustBeNew);
             // note: the repository throws an exception when it fails, so success can be implied by reaching here
-            isSuccess = true;
         } else {
-            isSuccess = repository
+            newDoc = repository
                     .addDocumentWithVersion(internalUri.getDocPathWithElement(), content, context.getUser(), "", mustBeNew, expectedCurrentVersion);
         }
 
         DocWriteHandle handle = new DocWriteHandle();
-        if (isSuccess) {
+        if (newDoc != null) {
             // TODO: Ben - this should be in the wrapper
             Map<String, String> eventContextMap = new HashMap<>();
             eventContextMap.put(DocEventConstants.VERSION, "" + expectedCurrentVersion);
@@ -589,12 +610,35 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
             for (IndexScriptPair indexScriptPair : type.getIndexes()) {
                 runIndex(context, indexScriptPair, internalUri.getAuthority(), internalUri.getDocPath(), content);
             }
+
+            String publishRepo = getSearchRepo(type);
+            if (publishRepo != null) {
+            	
+            	log.info("Publishing search update");
+            	newDoc.setDisplayName(internalUri.getFullPath());
+            		SearchPublisher.publishCreateMessage(context, publishRepo,
+                        newDoc);
+            	
+            } else {
+            	log.info("No FTS for this update");
+            }
         }
         handle.setDocumentURI(internalUri.toString());
-        handle.setIsSuccess(isSuccess);
+        handle.setIsSuccess(newDoc != null);
         return handle;
     }
 
+    private String getSearchRepo(DocumentRepoConfig type) {
+        if (ConfigLoader.getConf().FullTextSearchOn && type.getFtsIndex()) {
+        	String publishRepo = type.getFtsIndexRepo();
+        	if (publishRepo == null || publishRepo.length() == 0) {
+        		publishRepo = ConfigLoader.getConf().FullTextSearchDefaultRepo;
+        	}
+        	return publishRepo;
+        }
+        return null;
+    }
+    
     @Override
     public Boolean putDocWithVersion(CallingContext context, String docUri, String content, int versionNumber) {
         RaptureURI internalUri = new RaptureURI(docUri, Scheme.DOCUMENT);
