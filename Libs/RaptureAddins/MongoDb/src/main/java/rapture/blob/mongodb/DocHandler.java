@@ -32,6 +32,7 @@ import java.util.Iterator;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.bson.Document;
+import org.bson.types.Binary;
 
 import com.mongodb.MongoException;
 import com.mongodb.client.FindIterable;
@@ -41,8 +42,8 @@ import com.mongodb.client.result.DeleteResult;
 
 import rapture.common.CallingContext;
 import rapture.common.exception.ExceptionToString;
-import rapture.mongodb.MongoRetryWrapper;
 import rapture.mongodb.MongoDBFactory;
+import rapture.mongodb.MongoRetryWrapper;
 
 public class DocHandler implements BlobHandler {
     private static Logger log = Logger.getLogger(DocHandler.class);
@@ -137,11 +138,16 @@ public class DocHandler implements BlobHandler {
                         return null;
                     }
                     for (Document rec : cursor) {
-                        byte[] data = (byte[]) rec.get(CONTENT);
-                        try {
-                            bao.write(data);
-                        } catch (IOException e) {
-                            e.printStackTrace();
+                        Object content = rec.get(CONTENT);
+                        if (content instanceof Binary) {
+                            try {
+                                bao.write(((Binary) content).getData());
+                            } catch (IOException e) {
+                                log.error(e.getMessage());
+                                log.debug(ExceptionToString.format(e));
+                            }
+                        } else {
+                            log.error("Unexpected data type : expected org.bson.types.Binary but is "+content.getClass().getName());
                         }
                     }
                 }

@@ -23,11 +23,6 @@
  */
 package rapture.kernel.cache;
 
-import rapture.common.exception.ExceptionToString;
-import rapture.index.IndexProducer;
-import rapture.object.storage.StorableIndexInfo;
-import rapture.repo.Repository;
-
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -37,6 +32,12 @@ import org.apache.log4j.Logger;
 import com.google.common.base.Optional;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader.InvalidCacheLoadException;
+
+import rapture.common.exception.ExceptionToString;
+import rapture.index.IndexProducer;
+import rapture.object.storage.StorableIndexInfo;
+import rapture.repo.Repository;
 
 /**
  * @author bardhi
@@ -67,7 +68,7 @@ public abstract class AbstractStorableRepoCache<CONFIG> extends AbstractRepoCach
                     }
                 }
             }));
-        } catch (ExecutionException e) {
+        } catch (ExecutionException | InvalidCacheLoadException e) {
             log.error(String.format("Error initializing repo for name [%s]: %s", repoName, ExceptionToString.format(e)));
             return Optional.absent();
         }
