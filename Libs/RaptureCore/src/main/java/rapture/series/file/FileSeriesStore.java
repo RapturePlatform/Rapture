@@ -136,11 +136,7 @@ public class FileSeriesStore implements SeriesStore {
 
     @Override
     public void drop() {
-        if (parentDir != null) try {
-            FileUtils.deleteDirectory(parentDir);
-        } catch (IOException e) {
-            throw RaptureExceptionFactory.create("Unable to remove " + parentDir, e);
-        }
+        if (parentDir != null) FileUtils.deleteQuietly(parentDir);
         parentDir = null;
     }
 

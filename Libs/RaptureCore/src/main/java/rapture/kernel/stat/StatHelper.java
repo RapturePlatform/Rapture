@@ -50,7 +50,7 @@ public class StatHelper {
     private Thread updateThread;
 
     public StatHelper(Repository repository) {
-        String statConfig = repository.getDocument("stat/config");
+        String statConfig = (repository == null) ? null : repository.getDocument("stat/config");
         if (statConfig == null) {
             log.info("No stat config found, using default");
             statConfig = ConfigLoader.getConf().DefaultStatus;
