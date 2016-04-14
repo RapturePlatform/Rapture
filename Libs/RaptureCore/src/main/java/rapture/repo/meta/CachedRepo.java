@@ -416,4 +416,12 @@ public class CachedRepo implements Repository {
     public Optional<IndexHandler> getIndexHandler() {
         return main.getIndexHandler();
     }
+
+	@Override
+	public DocumentWithMeta addTagToDocument(String user, String docPath,
+			String tagUri, String value) {
+		DocumentWithMeta dwm = main.addTagToDocument(user, docPath, tagUri, value);
+		shadow.addTagToDocument(user, docPath, tagUri, value);
+		return dwm;
+	}
 }

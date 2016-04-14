@@ -327,6 +327,14 @@
 		<servlet-name>SEARCH</servlet-name>
 		<url-pattern>/search/*</url-pattern>
 	</servlet-mapping>
+		<servlet>
+		<servlet-name>TAG</servlet-name>
+		<servlet-class>rapture.server.web.servlet.TAGServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>TAG</servlet-name>
+		<url-pattern>/tag/*</url-pattern>
+	</servlet-mapping>
     <!-- end of WebServlet list -->
 </web-app>
 	

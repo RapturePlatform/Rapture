@@ -450,4 +450,10 @@ public abstract class AbstractMetaBasedRepo<MH extends AbstractMetaHandler> exte
     public Optional<IndexHandler> getIndexHandler() {
         return metaHandler.getIndexHandler();
     }
+    
+    @Override
+	public DocumentWithMeta addTagToDocument(String user, String docPath, String tagUri,
+			String value) {
+    	return metaHandler.addDocumentTag(user, docPath, tagUri, value);
+	}
 }

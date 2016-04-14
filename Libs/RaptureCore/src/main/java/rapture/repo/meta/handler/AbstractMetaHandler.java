@@ -46,6 +46,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import com.google.common.base.Optional;
+
 import rapture.repo.file.FileDataStore;
 
 /**
@@ -388,5 +389,10 @@ public abstract class AbstractMetaHandler {
 
     public Optional<IndexHandler> getIndexHandler() {
         return indexHandler;
+    }
+    
+    public DocumentWithMeta addDocumentTag(String user, String docPath, String tagUri,
+			String value) {
+    	return null;
     }
 }
