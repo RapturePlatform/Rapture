@@ -341,8 +341,8 @@ public class ScriptApiImpl extends KernelBase implements ScriptApi {
                     if (child.getName().isEmpty()) continue;
                     // Special case: for Scripts childDocPath includes the authority
 
-                    String childUri = Scheme.SCRIPT + "://" + childDocPath + (child.isFolder() ? "/" : "");
-                    ret.put(childUri, child);
+                    RaptureURI childUri = new RaptureURI(childDocPath + (child.isFolder() ? "/" : ""), Scheme.SCRIPT);
+                    ret.put(childUri.toString(), child);
                     if (child.isFolder()) {
                         parentsStack.push(childDocPath);
                     }

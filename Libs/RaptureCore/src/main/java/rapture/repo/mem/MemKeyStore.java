@@ -95,7 +95,6 @@ public class MemKeyStore extends AbstractKeyStore implements KeyStore {
     @Override
     public synchronized void put(String k, String v) {
         db.put(k, v);
-        System.out.println("Put "+k+", "+v+" into "+id);
     }
 
     @Override
