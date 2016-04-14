@@ -109,20 +109,16 @@ public class FileBlobStore extends BaseBlobStore implements BlobStore {
         return true;
     }
 
+    // Should be void
     @Override
     public Boolean deleteBlob(CallingContext context, RaptureURI blobUri) {
         File f = FileRepoUtils.makeGenericFile(parentDir, blobUri.getDocPath());
         if (f.exists()) {
-            try {
-                java.nio.file.Files.delete(f.toPath());
-                return true;
-            } catch (IOException e) {
-                logger.error("Unable to delete "+blobUri.getDocPath()+" because "+e.getMessage());
-            }
+            FileUtils.deleteQuietly(f);
+            return true;
         } else {
-            logger.error("Blob doesn't exist "+blobUri.getDocPath());
+            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, apiMessageCatalog.getMessage("NoSuchBlob", f.getAbsolutePath())); //$NON-NLS-1$
         }
-        return false;
     }
 
     @Override

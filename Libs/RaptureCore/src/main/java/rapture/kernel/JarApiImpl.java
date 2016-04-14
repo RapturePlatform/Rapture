@@ -28,8 +28,13 @@ import org.apache.log4j.Logger;
 import rapture.common.*;
 import rapture.common.api.JarApi;
 import rapture.common.exception.RaptureException;
+import rapture.common.exception.RaptureExceptionFactory;
 import rapture.config.ConfigLoader;
+import rapture.repo.BlobRepo;
 
+import static rapture.common.Scheme.BLOB;
+
+import java.net.HttpURLConnection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -86,6 +91,9 @@ public class JarApiImpl extends KernelBase implements JarApi {
 
     @Override
     public void deleteJar(CallingContext context, String jarUri) {
+        BlobRepo blobRepo = Kernel.getRepoCacheManager().getBlobRepo(RaptureConstants.JAR_REPO);
+        if (blobRepo == null) throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, apiMessageCatalog.getMessage("NoSuchRepo", "Jar")); //$NON-NLS-1$
+
         blobApi.deleteBlob(ContextFactory.getKernelUser(), getBlobUriFromJarUri(jarUri));
     }
 

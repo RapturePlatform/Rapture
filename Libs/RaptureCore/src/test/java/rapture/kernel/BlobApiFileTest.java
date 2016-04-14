@@ -237,7 +237,7 @@ public class BlobApiFileTest extends AbstractFileTest {
 
     @Test
     public void testDeleteBlob() {
-        testCreateAndGetRepo();
+        testPutAndGetBlob();
         blobImpl.deleteBlob(callingContext, blobURI);
         BlobContainer blob = blobImpl.getBlob(callingContext, blobURI);
         assertNull(blob);
@@ -309,7 +309,7 @@ public class BlobApiFileTest extends AbstractFileTest {
             blobImpl.deleteBlobsByUriPrefix(callingContext, blobURI5);
             // SHOULD FAIL OR DO NOTHING
         } catch (Exception e) {
-            assertTrue(e.getMessage().equals("Blob or blob folder "+blobURI5+" does not exist"));
+            assertEquals("Blob or folder "+blobURI5+" does not exist", e.getMessage());
         }
         blob = blobImpl.getBlob(callingContext, blobURI1);
         assertNotNull(blob);

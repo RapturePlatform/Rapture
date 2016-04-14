@@ -160,6 +160,7 @@ public abstract class BlobStoreContractTest {
         after = System.currentTimeMillis();
         printDiff("testCreateAndDelete: getBlob", before, after);
         assertNull(is);
+        result = getBlobStore().storeBlob(CONTEXT, TEST_URI, false, IOUtils.toInputStream(TEST_BLOB_CONTENT));
     }
 
     @Test

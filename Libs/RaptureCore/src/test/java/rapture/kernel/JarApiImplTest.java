@@ -62,7 +62,11 @@ public class JarApiImplTest {
             // as residual files on the filesystem.
             jarApi.putJar(rootContext, SAMPLE_JAR_URI, SAMPLE_JAR);
         }
-        blobApi.deleteBlobsByUriPrefix(rootContext, JarApiImpl.JAR_REPO_URI);
+        try {
+            blobApi.deleteBlobsByUriPrefix(rootContext, JarApiImpl.JAR_REPO_URI);
+        } catch (Exception e) {
+            // OK if it's already gone
+        }
         // End temporary workaround
         // ----------------------------------
 
@@ -86,9 +90,12 @@ public class JarApiImplTest {
 
     @Test
     public void testDeleteJar() {
-        // Just doing this to establish we don't get exceptions when the repo doesn't exist yet.
-        jarApi.deleteJar(rootContext, SAMPLE_JAR_URI);
-
+        try {
+            // Just doing this to establish we don't get exceptions when the repo doesn't exist yet.
+            jarApi.deleteJar(rootContext, SAMPLE_JAR_URI);
+        } catch (Exception e) {
+        }
+        assertFalse(jarApi.jarExists(rootContext, SAMPLE_JAR_URI));
         jarApi.putJar(rootContext, SAMPLE_JAR_URI, SAMPLE_JAR);
         assertTrue(jarApi.jarExists(rootContext, SAMPLE_JAR_URI));
         jarApi.deleteJar(rootContext, SAMPLE_JAR_URI);

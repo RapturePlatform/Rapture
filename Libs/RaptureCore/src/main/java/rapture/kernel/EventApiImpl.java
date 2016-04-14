@@ -65,7 +65,8 @@ public class EventApiImpl extends KernelBase implements EventApi {
 
     @Override
     public List<RaptureFolderInfo> listEventsByUriPrefix(CallingContext context, String eventUriPrefix) {
-        return RaptureEventStorage.getChildren(eventUriPrefix);
+        int c = eventUriPrefix.indexOf(':');
+        return RaptureEventStorage.getChildren((c > 0) ? eventUriPrefix.substring(c+1) : eventUriPrefix);
     }
 
     // [testing for SDK-5]

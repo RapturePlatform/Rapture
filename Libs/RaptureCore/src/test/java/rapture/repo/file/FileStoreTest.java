@@ -23,6 +23,9 @@
  */
 package rapture.repo.file;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -50,9 +53,10 @@ public class FileStoreTest {
 
     @Test
     public void testSimpleStore() {
-        store.put("a/b/c", "Hello there");
+        String hi = "Hello there"; 
+        store.put("a/b/c", hi);
         String val = store.get("a/b/c");
-        System.out.println(val);
+        assertEquals(hi, val);
     }
 
     @Test
@@ -60,28 +64,25 @@ public class FileStoreTest {
         store.put("a/b/c", "Hello there");
         store.put("a/b/d", "Hello there");
         List<RaptureFolderInfo> ret = store.getSubKeys("");
-        show(ret);
+        assertEquals(1, ret.size());
         ret = store.getSubKeys("a");
-        show(ret);
+        assertEquals(1, ret.size());
         ret = store.getSubKeys("a/b");
-        show(ret);
+        assertEquals(2, ret.size());
         ret = store.getSubKeys("c");
-        show(ret);
+        assertNull(ret);
     }
 
     @Test
-    public void showAll() {
+    public void fileAndFolder() {
         store.put("a/b/c", "Hello there");
-        store.put("a/b/d", "Hello there");
+        store.put("a/b", "Hello there");
         List<String> allKeys = store.getAllSubKeys("");
-        for (String a : allKeys) {
-            System.out.println(a);
-        }
-    }
+        assertEquals(2, allKeys.size());
+        
+        List<RaptureFolderInfo> ret = store.getSubKeys("a");
+        assertEquals(2, ret.size());
 
-    private void show(List<RaptureFolderInfo> ret) {
-        for (RaptureFolderInfo r : ret) {
-            System.out.println("Name=" + r.getName() + ",folder=" + r.isFolder());
-        }
+
     }
 }

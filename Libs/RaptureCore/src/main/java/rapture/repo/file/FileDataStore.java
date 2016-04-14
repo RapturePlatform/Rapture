@@ -322,10 +322,13 @@ public class FileDataStore extends AbstractKeyStore implements KeyStore {
         File dir = FileRepoUtils.makeGenericFile(parentDir, convertKeyToPath(prefix));
         List<RaptureFolderInfo> ret = new ArrayList<RaptureFolderInfo>();
 
+        if (!maybeFile.exists() && !dir.exists()) return null;
+        
         if (maybeFile.isFile()) {
             ret.add(new RaptureFolderInfo(removeExtension(FileRepoUtils.decode(dir.getName())), false));
         }
         if (dir.isDirectory()) {
+// //           ret.add(new RaptureFolderInfo(removeExtension(FileRepoUtils.decode(dir.getName())), true));
             File[] files = dir.listFiles();
             if (files != null) {
                 for (File f : files) {

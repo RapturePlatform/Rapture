@@ -39,6 +39,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
+import com.google.common.collect.Lists;
+
 import rapture.common.CallingContext;
 import rapture.common.EntitlementSet;
 import rapture.common.Messages;
@@ -84,8 +86,6 @@ import reflex.debug.NullDebugger;
 import reflex.node.ReflexNode;
 import reflex.util.ValueSerializer;
 import reflex.value.ReflexValue;
-
-import com.google.common.collect.Lists;
 
 public class ScriptApiImpl extends KernelBase implements ScriptApi {
     private static final Logger log = Logger.getLogger(ScriptApiImpl.class);
@@ -325,25 +325,28 @@ public class ScriptApiImpl extends KernelBase implements ScriptApi {
                 requestObj.setScriptURI(currParentDocPath);
                 ContextValidator.validateContext(context, EntitlementSet.Script_listScriptsByUriPrefix, requestObj); 
 
-                boolean top = currParentDocPath.isEmpty();
-                List<RaptureFolderInfo> children = RaptureScriptStorage.getChildren(currParentDocPath);
-
-                if (children != null) {
-                    for (RaptureFolderInfo child : children) {
-                        String childDocPath = currParentDocPath + (top ? "" : "/") + child.getName();
-                        if (child.getName().isEmpty()) continue;
-                        // Special case: for Scripts childDocPath includes the authority
-
-                        String childUri = Scheme.SCRIPT + "://" + childDocPath + (child.isFolder() ? "/" : "");
-                        ret.put(childUri, child);
-                        if (child.isFolder()) {
-                            parentsStack.push(childDocPath);
-                        }
-                    }
-                }
             } catch (RaptureException e) {
                 // permission denied
                 log.debug("No read permission on folder " + currParentDocPath);
+                continue;
+            }
+
+            boolean top = currParentDocPath.isEmpty();
+            List<RaptureFolderInfo> children = RaptureScriptStorage.getChildren(currParentDocPath);
+            if ((children == null) || (children.isEmpty()) && (currDepth == 0) && (internalUri.hasDocPath())) {
+                throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, apiMessageCatalog.getMessage("NoSuchScript", internalUri.toString())); //$NON-NLS-1$
+            } else {
+                for (RaptureFolderInfo child : children) {
+                    String childDocPath = currParentDocPath + (top ? "" : "/") + child.getName();
+                    if (child.getName().isEmpty()) continue;
+                    // Special case: for Scripts childDocPath includes the authority
+
+                    String childUri = Scheme.SCRIPT + "://" + childDocPath + (child.isFolder() ? "/" : "");
+                    ret.put(childUri, child);
+                    if (child.isFolder()) {
+                        parentsStack.push(childDocPath);
+                    }
+                }
             }
 
         }
