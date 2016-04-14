@@ -849,7 +849,6 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
         }
         
         Repository repository = getRepoFromCache(authority);
-        System.out.println("Repository for "+authority+" is "+repository.toString());
         if (repository == null) {
         	throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST,  apiMessageCatalog.getMessage("NoSuchRepo", internalUri.toAuthString())); //$NON-NLS-1$
         }
