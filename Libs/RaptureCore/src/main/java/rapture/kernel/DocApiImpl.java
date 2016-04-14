@@ -794,8 +794,8 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
         }
         
         if (recurse) {
-            String auth = new RaptureURI(docUri).getAuthority();
-            int len = auth.length() + 4 + Scheme.DOCUMENT.toString().length();
+            RaptureURI ruri = new RaptureURI(docUri);
+            String auth = ruri.getAuthority();
             Repository repository = getRepoFromCache(auth);
             String duri = docUri;
             while (duri.lastIndexOf('/') > 0) {
@@ -806,7 +806,7 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
                     docs = Collections.emptyMap();
                 }
                 if (docs.size() == 0) {
-                    repository.removeChildren(duri.substring(len), true);
+                    repository.removeChildren(new RaptureURI(duri, Scheme.DOCUMENT).getDocPath(), true);
                     deleteDoc(context, duri);
                 } else {
                     break;
