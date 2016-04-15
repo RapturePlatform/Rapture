@@ -1114,4 +1114,11 @@ public class VersionedRepo extends BaseRepo implements Repository {
     public Optional<IndexHandler> getIndexHandler() {
         return Optional.absent();
     }
+
+	@Override
+	public DocumentWithMeta addTagToDocument(String user, String docPath,
+			String tagUri, String value) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
