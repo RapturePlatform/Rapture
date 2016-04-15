@@ -424,10 +424,15 @@ public class PipelineApiImpl extends KernelBase implements PipelineApi, RaptureM
             log.debug("Publishing pipeline task: " + task.getTaskId());
             RaptureExchange exchangeConfig = ExchangeConfigFactory.createStandardDirect(task.getCategoryList().get(0));
             ExchangeHandler handler = getExchangeHandler(exchangeConfig);
-
-            String routingKey = ExchangeConfigFactory.createLoadBalancingRoutingKey(task.getCategoryList().get(0));
-            handler.putTaskOnExchange(exchangeConfig.getName(), task, routingKey);
-            log.debug("Publishing complete");
+            
+            // Should this be an exception? Seems to happen in unit tests executed from gradle but not from Eclipse.
+            if (handler == null) {
+                log.warn("Cannot publish message: No handler defined for "+exchangeConfig.toString()+" for task "+task.toString());
+            } else {
+                String routingKey = ExchangeConfigFactory.createLoadBalancingRoutingKey(task.getCategoryList().get(0));
+                handler.putTaskOnExchange(exchangeConfig.getName(), task, routingKey);
+                log.debug("Publishing complete");
+            }
         }
     }
 

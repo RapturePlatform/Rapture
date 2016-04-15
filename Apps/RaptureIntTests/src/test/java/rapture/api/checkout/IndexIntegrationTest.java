@@ -21,15 +21,12 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
 import rapture.common.CallingContext;
-import rapture.common.MongoDbTests;
 import rapture.common.TableQueryResult;
 import rapture.common.exception.RaptureException;
 import rapture.config.MultiValueConfigLoader;
 import rapture.config.ValueReader;
-import rapture.dsl.idef.IndexFieldType;
 import rapture.kernel.ContextFactory;
 import rapture.kernel.Kernel;
 
@@ -43,7 +40,6 @@ import rapture.kernel.Kernel;
  * @author amkimian
  * 
  */
-@Category(MongoDbTests.class) 
 public class IndexIntegrationTest {
     private static CallingContext ctx = ContextFactory.getKernelUser();
     private static String REPO = "//integration.testIndex";
