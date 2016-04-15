@@ -285,4 +285,25 @@ public class RRepo extends BaseSimpleRepo implements Repository {
 		return null;
 	}
 
+	@Override
+	public DocumentWithMeta addTagsToDocument(String user, String docPath,
+			Map<String, String> tagMap) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public DocumentWithMeta removeTagFromDocument(String user, String docPath,
+			String tagUri) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public DocumentWithMeta removeTagsFromDocument(String user, String docPath,
+			List<String> tags) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

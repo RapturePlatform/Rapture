@@ -456,4 +456,21 @@ public abstract class AbstractMetaBasedRepo<MH extends AbstractMetaHandler> exte
 			String value) {
     	return metaHandler.addDocumentTag(user, docPath, tagUri, value);
 	}
+    @Override
+    public DocumentWithMeta addTagsToDocument(String user, String docPath,
+			Map<String, String> tagMap) {
+    	return metaHandler.addDocumentTags(user, docPath, tagMap);
+    }
+
+    @Override
+	public DocumentWithMeta removeTagFromDocument(String user, String docPath,
+			String tagUri) {
+    	return metaHandler.removeDocumentTag(user, docPath, tagUri);
+    }
+
+    @Override
+	public DocumentWithMeta removeTagsFromDocument(String user, String docPath,
+			List<String> tags) {
+    	return metaHandler.removeDocumentTags(user, docPath, tags);
+    }
 }

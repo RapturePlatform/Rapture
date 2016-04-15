@@ -70,7 +70,7 @@ public class EpochManager {
      * @return Long - a unique epoch value for this collection
      */
     public static Long nextEpoch(final MongoCollection<Document> collection) {
-        FindOneAndUpdateOptions options = new FindOneAndUpdateOptions().upsert(true).returnDocument(ReturnDocument.AFTER);
+        final FindOneAndUpdateOptions options = new FindOneAndUpdateOptions().upsert(true).returnDocument(ReturnDocument.AFTER);
 
         MongoRetryWrapper<Long> wrapper = new MongoRetryWrapper<Long>() {
             public Long action(FindIterable<Document> cursor) {

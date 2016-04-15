@@ -329,7 +329,7 @@
 	</servlet-mapping>
 		<servlet>
 		<servlet-name>TAG</servlet-name>
-		<servlet-class>rapture.server.web.servlet.TAGServlet</servlet-class>
+		<servlet-class>rapture.server.web.servlet.TagServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>TAG</servlet-name>

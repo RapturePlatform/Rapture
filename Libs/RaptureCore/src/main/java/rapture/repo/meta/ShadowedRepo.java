@@ -394,4 +394,28 @@ public class ShadowedRepo implements Repository {
 		shadow.addTagToDocument(user, docPath, tagUri, value);
 		return dwm;
 	}
+	
+	@Override
+	public DocumentWithMeta addTagsToDocument(String user, String docPath,
+			Map<String, String> tagMap) {
+		DocumentWithMeta dwm = main.addTagsToDocument(user, docPath, tagMap);
+		shadow.addTagsToDocument(user, docPath, tagMap);
+		return dwm;
+	}
+
+	@Override
+	public DocumentWithMeta removeTagFromDocument(String user, String docPath,
+			String tagUri) {
+		DocumentWithMeta dwm = main.removeTagFromDocument(user, docPath, tagUri);
+		shadow.removeTagFromDocument(user, docPath, tagUri);
+		return dwm;
+	}
+
+	@Override
+	public DocumentWithMeta removeTagsFromDocument(String user, String docPath,
+			List<String> tags) {
+		DocumentWithMeta dwm = main.removeTagsFromDocument(user, docPath, tags);
+		shadow.removeTagsFromDocument(user, docPath, tags);
+		return dwm;
+	}
 }
