@@ -80,7 +80,9 @@ public class SimpleBranchTest {
         Kernel.initBootstrap();
         cleanUp();
     
-        Kernel.getDoc().createDocRepo(ctx, AUTHORITY, "NREP {} USING MEMORY {}");
+        if (!Kernel.getDoc().docRepoExists(ctx, AUTHORITY)) {
+            Kernel.getDoc().createDocRepo(ctx, AUTHORITY, "NREP {} USING MEMORY {}");
+        }
         Kernel.getBlob().createBlobRepo(ctx, systemBlobRepo, ConfigLoader.getConf().DefaultSystemBlobConfig,
                 ConfigLoader.getConf().DefaultSystemBlobFoldersConfig);
 
