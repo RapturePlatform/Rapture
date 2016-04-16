@@ -90,22 +90,19 @@ public class TagApiImpl extends KernelBase implements TagApi {
 	@Override
 	public DocumentMetadata applyTags(CallingContext context, String docUri,
 			Map<String, String> tagMap) {
-		// TODO Auto-generated method stub
-		return null;
+		return Kernel.getDoc().getTrusted().applyTags(context, docUri, tagMap);
 	}
 
 	@Override
 	public DocumentMetadata removeTag(CallingContext context, String docUri,
 			String tagUri) {
-		// TODO Auto-generated method stub
-		return null;
+		return Kernel.getDoc().getTrusted().removeTag(context, docUri, tagUri);
 	}
 
 	@Override
 	public DocumentMetadata removeTags(CallingContext context, String docUri,
 			List<String> tags) {
-		// TODO Auto-generated method stub
-		return null;
+		return Kernel.getDoc().getTrusted().removeTags(context, docUri, tags);
 	}
 
 
