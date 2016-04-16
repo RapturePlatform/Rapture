@@ -296,6 +296,30 @@ The startup script (a \Reflex script) makes the following statement:
 
 A similar approach can be used to configure Elastic Search on its real host in a production environment.
 
+\section{Tags}
+Tagging in \Rapture is a way of assigning arbitary metadata information to entities in the system. A tag consists of a
+"uri" naming the tag and a value associated with that tag. Tags are stored in the metadata of an entity and adding or
+removing a tag (or set of tags) is a version change to an entity.
+
+To aid UIs and classification you can also define tag descriptions that provide further information and insight to a tag uri. These
+are informational only - the internal \Rapture kernel does not enforce any of the recommendations in a tag description.
+
+With the meta data of an entity the tags field contains a "map of maps" that uses the tag uri as a pointer into this map. In this
+was a tag of \verb+//one/two+ will place the value in a map associated with "one" of the top level tags in an entry named "two". The
+reason for this is for when you combine the tagging concept with the full text search concept. A tag of:
+
+\begin{Verbatim}
+	//one/two/three -> "red"
+\end{Verbatim}
+
+could be found using a full text searches like the following:
+
+\begin{Verbatim}
+	tags.one.two.three:red
+	red
+	r*
+\end{Verbatim}
+
 
 \section{Jobs and Schedules}
 
