@@ -121,7 +121,7 @@ public abstract class RepoTestContract {
         map = Kernel.getDoc().listDocsByUriPrefix(ctx, top, 0);
         assertEquals(6, map.size());
 
-        Kernel.getDoc().deleteDocsByUriPrefix(ctx, middle);
+        Kernel.getDoc().deleteDocsByUriPrefix(ctx, middle, false);
 
         try {
             map = Kernel.getDoc().listDocsByUriPrefix(ctx, middle, 0);
@@ -143,7 +143,7 @@ public abstract class RepoTestContract {
         Map<String, RaptureFolderInfo> map = Kernel.getDoc().listDocsByUriPrefix(ctx, top, 0);
         assertEquals(6, map.size());
 
-        Kernel.getDoc().deleteDocsByUriPrefix(ctx, top);
+        Kernel.getDoc().deleteDocsByUriPrefix(ctx, top, false);
 
         try {
             map = Kernel.getDoc().listDocsByUriPrefix(ctx, top, 0);

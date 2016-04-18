@@ -176,9 +176,9 @@ public class SeriesApiImplTest {
         ensureSeries(REPO, "die/series");
         ensureSeries(REPO, "nested/die/series");
         ensureSeries(REPO, "die/nested/series");
-        Kernel.getSeries().deleteSeriesByUriPrefix(ctx, REPO + "/die");
-        Kernel.getSeries().deleteSeriesByUriPrefix(ctx, REPO + "/die");
-        Kernel.getSeries().deleteSeriesByUriPrefix(ctx, REPO + "/die");
+        Kernel.getSeries().deleteSeriesByUriPrefix(ctx, REPO + "/die", false);
+        Kernel.getSeries().deleteSeriesByUriPrefix(ctx, REPO + "/die", false);
+        Kernel.getSeries().deleteSeriesByUriPrefix(ctx, REPO + "/die", false);
     }
 
     private void ensureSeries(String repo, String name) {

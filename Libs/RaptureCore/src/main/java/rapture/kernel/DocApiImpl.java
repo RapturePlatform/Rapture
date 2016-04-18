@@ -25,6 +25,7 @@ package rapture.kernel;
 
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -751,9 +752,9 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
             }
         }
     }
-
+    
     @Override
-    public List<String> deleteDocsByUriPrefix(CallingContext context, String docUri) {
+    public List<String> deleteDocsByUriPrefix(CallingContext context, String docUri, Boolean recurse) {
         Map<String, RaptureFolderInfo> docs = listDocsByUriPrefix(context, docUri, Integer.MAX_VALUE);
         List<String> folders = new ArrayList<>();
         Set<String> notEmpty = new HashSet<>();
@@ -792,6 +793,27 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
             if (notEmpty.contains(uri)) continue;
             deleteDoc(context, uri);
         }
+        
+        if (recurse) {
+            RaptureURI ruri = new RaptureURI(docUri);
+            String auth = ruri.getAuthority();
+            Repository repository = getRepoFromCache(auth);
+            String duri = docUri;
+            while (duri.lastIndexOf('/') > 0) {
+                duri = duri.substring(0, duri.lastIndexOf('/'));
+                try {
+                    docs = listDocsByUriPrefix(context, duri, 2);
+                } catch (Exception e) {
+                    docs = Collections.emptyMap();
+                }
+                if (docs.size() == 0) {
+                    repository.removeChildren(new RaptureURI(duri, Scheme.DOCUMENT).getDocPath(), true);
+                    deleteDoc(context, duri);
+                } else {
+                    break;
+                }
+            }
+        }        
         return removed;
     }
     
@@ -865,16 +887,18 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
             List<RaptureFolderInfo> children = repository.getChildren(currParentDocPath);
             if (((children == null) || children.isEmpty()) && (currDepth == 0) && internalUri.hasDocPath()) 
                 throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, apiMessageCatalog.getMessage("NoSuchDoc", internalUri.toString())); //$NON-NLS-1$
-            else if (children != null) {
-                for (RaptureFolderInfo child : children) {
-                    String name = child.getName();
-                    String childDocPath = currParentDocPath + (top ? "" : "/") + name;
-                    if (name.isEmpty()) continue;
-    
-                    String uri = Scheme.DOCUMENT+"://" + authority + "/" + childDocPath + (child.isFolder() ? "/" : "");
-    
-                    ret.put(uri, child);
-                    if (child.isFolder()) parentsStack.push(childDocPath);
+            else {
+                if (children != null) {
+                    for (RaptureFolderInfo child : children) {
+                        String name = child.getName();
+                        String childDocPath = currParentDocPath + (top ? "" : "/") + name;
+                        if (name.isEmpty()) continue;
+        
+                        String uri = Scheme.DOCUMENT+"://" + authority + "/" + childDocPath + (child.isFolder() ? "/" : "");
+        
+                        ret.put(uri, child);
+                        if (child.isFolder()) parentsStack.push(childDocPath);
+                    }
                 }
             }
             if (top) startDepth--; // special case

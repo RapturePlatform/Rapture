@@ -109,7 +109,7 @@ public class ConfigLoaderTest {
         Assert.assertEquals("test COMMENTARY {} USING MONGODB { prefix=\"sys.commentary.main\" }", rc.DefaultCommentary);
         Assert.assertEquals("EXCHANGE {} USING RABBITMQ {} test", rc.DefaultExchange);
         Assert.assertEquals("test NOTIFICATION USING MEMORY {}", rc.DefaultNotification);
-        Assert.assertEquals("test INDEX {} USING MONGODB { prefix=\"pipelineTaskStatus\" }", rc.DefaultPipelineTaskStatus);
+        Assert.assertEquals("test TABLE {} USING MONGODB { prefix=\"pipelineTaskStatus\" }", rc.DefaultPipelineTaskStatus);
         Assert.assertEquals("test STATUS {} USING MEMORY {}", rc.DefaultStatus);
         Assert.assertEquals("NREP {} USING MONGODB test { prefix=\"sys.config\"}", rc.InitSysConfig);
         Assert.assertEquals("REP {} USING MONGODB { prefix=\"test.emphemeral\"}", rc.InitSysEphemeral);

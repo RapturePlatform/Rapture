@@ -38,6 +38,7 @@ import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import rapture.common.CallingContext;
@@ -176,7 +177,21 @@ public class SeriesApiFileTest extends AbstractFileTest {
         if (seriesImpl.seriesRepoExists(callingContext, seriesAuthorityURI)) seriesImpl.deleteSeriesRepo(callingContext, seriesAuthorityURI);
         Map<String, String> hashMap = new HashMap<>();
         hashMap.put("prefix", "/tmp/foo");
-        seriesImpl.createSeriesRepo(callingContext, seriesAuthorityURI, "SREP {} USING FILE { prefix=\"/tmp/foo\"");
+        seriesImpl.createSeriesRepo(callingContext, seriesAuthorityURI, "SREP {} USING FILE { prefix=\"/tmp/foo\"}");
+    }
+
+    @Ignore // This doesn't get caught correctly
+    @Test
+    public void testInvalidDocStore() {
+        if (seriesImpl.seriesRepoExists(callingContext, seriesAuthorityURI)) seriesImpl.deleteSeriesRepo(callingContext, seriesAuthorityURI);
+        Map<String, String> hashMap = new HashMap<>();
+        hashMap.put("prefix", "/tmp/foo");
+        try {
+            seriesImpl.createSeriesRepo(callingContext, seriesAuthorityURI, "SREP {} USING FILE { prefix=\"/tmp/foo\"");
+            fail("That config isn't valid");
+        } catch (Exception e) {
+            assertEquals("TBD", e.getMessage());
+        }
     }
 
     @Test
@@ -329,9 +344,9 @@ public class SeriesApiFileTest extends AbstractFileTest {
         resultsMap = seriesImpl.listSeriesByUriPrefix(callingContext, seriesAuthorityURI, 0);
         assertEquals(10, resultsMap.size());
 
-        List<String> removed = seriesImpl.deleteSeriesByUriPrefix(callingContext, seriesAuthorityURI + "/die");
+        List<String> removed = seriesImpl.deleteSeriesByUriPrefix(callingContext, seriesAuthorityURI + "/die", false);
         assertEquals(2, removed.size());
-        removed = seriesImpl.deleteSeriesByUriPrefix(callingContext, seriesAuthorityURI + "/die");
+        removed = seriesImpl.deleteSeriesByUriPrefix(callingContext, seriesAuthorityURI + "/die", false);
         assertEquals(0, removed.size());
 
         resultsMap = seriesImpl.listSeriesByUriPrefix(callingContext, seriesAuthorityURI, 0);
@@ -342,6 +357,7 @@ public class SeriesApiFileTest extends AbstractFileTest {
     private void ensureSeries(String repo, String name) {
         String uri = repo + (name.startsWith("/") ? "" : "/") + name;
         seriesImpl.addDoubleToSeries(callingContext, uri, "mel", 45.0);
+        Object o = seriesImpl.getPoints(callingContext, uri);
     }
 
     private void ensureRepo(String repo) {

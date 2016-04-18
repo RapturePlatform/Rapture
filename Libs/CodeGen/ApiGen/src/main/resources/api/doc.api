@@ -112,7 +112,7 @@ api(Doc) {
 
     [Removes a folder and its contents recursively, including empty subfolders. Validates entitlement on individual docs and folders. Returns a list of the documents and folders removed.]
     @entitle=/data/write/$f(docUri)
-    @public List(String) deleteDocsByUriPrefix(String docUri);
+    @public List(String) deleteDocsByUriPrefix(String docUri, Boolean recurse);
    
     [Returns a list of Uris of all documents and folders below this point, mapping the Uri to a RaptureFolderInfo object]
     @entitle=/data/read/$f(docUri)

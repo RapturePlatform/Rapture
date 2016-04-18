@@ -93,7 +93,7 @@ api(Script) {
 
     [Removes a folder and its contents recursively, including empty subfolders. Returns a list of the scripts and folders removed.]
     @entitle=/script/write/$f(scriptUri)
-    @public List(String) deleteScriptsByUriPrefix(String scriptUri);
+    @public List(String) deleteScriptsByUriPrefix(String scriptUri, Boolean recurse);
 
 }
 

@@ -24,6 +24,7 @@
 package rapture.kernel;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -65,7 +66,7 @@ public class EventApiImpl extends KernelBase implements EventApi {
 
     @Override
     public List<RaptureFolderInfo> listEventsByUriPrefix(CallingContext context, String eventUriPrefix) {
-        return RaptureEventStorage.getChildren(eventUriPrefix);
+        return RaptureEventStorage.getChildren(new RaptureURI(eventUriPrefix, Scheme.EVENT).getShortPath());
     }
 
     // [testing for SDK-5]
@@ -421,12 +422,28 @@ public class EventApiImpl extends KernelBase implements EventApi {
     }
 
     @Override
-    public List<String> deleteEventsByUriPrefix(CallingContext context, String uriPrefix){
+    public List<String> deleteEventsByUriPrefix(CallingContext context, String uriPrefix, Boolean recurse) {
         List<RaptureFolderInfo> rfis = RaptureEventStorage.removeFolder(uriPrefix);
         List<String> deletedEvents = new ArrayList<String>();
         for(RaptureFolderInfo rfi : rfis) {
             deletedEvents.add(rfi.getName());
         }
+        if (recurse) {
+            RaptureURI ruri = new RaptureURI(uriPrefix);
+            String auth = ruri.getAuthority();
+            String duri = uriPrefix;
+            while (duri.lastIndexOf('/') > 0) {
+                duri = duri.substring(0, duri.lastIndexOf('/'));
+                rfis = listEventsByUriPrefix(context, duri);
+                if (rfis.size() == 0) {
+                    RaptureEventStorage.removeFolder(uriPrefix);
+                } else {
+                    break;
+                }                        
+            }
+        }        
+
+
         return deletedEvents;
     }
 }

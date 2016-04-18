@@ -31,11 +31,13 @@ import java.util.Arrays;
 import org.apache.commons.io.IOUtils;
 
 import rapture.common.CallingContext;
+import rapture.common.Messages;
 import rapture.common.RaptureURI;
 
 public abstract class BaseBlobStore implements BlobStore {
 
     private String instanceName;
+    protected Messages apiMessageCatalog = new Messages("Api");
 
     @Override
     public void setInstanceName(String instanceName) {

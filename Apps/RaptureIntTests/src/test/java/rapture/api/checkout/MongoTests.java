@@ -26,10 +26,10 @@ package rapture.api.checkout;
 import static org.testng.AssertJUnit.assertEquals;
 import static org.testng.AssertJUnit.assertNotNull;
 import static org.testng.AssertJUnit.assertNull;
-import static org.testng.AssertJUnit.assertTrue;
 import static org.testng.internal.junit.ArrayAsserts.assertArrayEquals;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -44,12 +44,14 @@ import org.testng.annotations.Optional;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 
+import com.google.common.net.MediaType;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.client.MongoCollection;
 
 import rapture.audit.AuditLog;
 import rapture.audit.AuditLogFactory;
+import rapture.common.BlobContainer;
 import rapture.common.CallingContext;
 import rapture.common.RaptureFolderInfo;
 import rapture.common.RaptureScript;
@@ -58,7 +60,11 @@ import rapture.common.RaptureScriptPurpose;
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
 import rapture.common.SeriesPoint;
+import rapture.common.api.BlobApi;
 import rapture.common.api.DocApi;
+import rapture.common.api.EventApi;
+import rapture.common.api.JarApi;
+import rapture.common.api.NotificationApi;
 import rapture.common.api.ScriptApi;
 import rapture.common.api.SeriesApi;
 import rapture.common.client.HttpBlobApi;
@@ -72,7 +78,6 @@ import rapture.common.client.SimpleCredentialsProvider;
 import rapture.common.exception.RaptureException;
 import rapture.common.model.AuditLogEntry;
 import rapture.common.model.BlobRepoConfig;
-
 import rapture.dsl.idgen.IdGenFactory;
 import rapture.dsl.idgen.RaptureIdGen;
 import rapture.kernel.ContextFactory;
@@ -144,8 +149,8 @@ public class MongoTests {
         System.out.println("Found " + entries.size() + " log entries");
         log.writeLog("category", 0, message.toString(), "user");
         List<AuditLogEntry> newEntries = log.getRecentEntries(Integer.MAX_VALUE);
-        assertEquals(1 + entries.size(), newEntries.size());
-        assertEquals(message.toString(), newEntries.get(entries.size()).getMessage());
+        AssertJUnit.assertEquals(1 + entries.size(), newEntries.size());
+        AssertJUnit.assertEquals(message.toString(), newEntries.get(entries.size()).getMessage());
     }
 
     @Test(groups = { "mongo" }, enabled = true, description = "Simple Mongo document read/write test")
@@ -161,10 +166,10 @@ public class MongoTests {
         String content2 = "{\"foo\" : \"FOO\", \"bar\" : 2}";
         docApi.putDoc(context, uri, content);
         String get = docApi.getDoc(context, uri);
-        Assert.assertEquals(content, get);
+        AssertJUnit.assertEquals(content, get);
         docApi.putDoc(context, uri, content2);
         get = docApi.getDoc(context, uri);
-        Assert.assertEquals(content2, get);
+        AssertJUnit.assertEquals(content2, get);
         docApi.deleteDoc(context, uri);
         get = docApi.getDoc(context, uri);
         Assert.assertNull(get, "Document was deleted");
@@ -188,7 +193,7 @@ public class MongoTests {
 
         scriptApi.putScript(context, uri, script);
         RaptureScript get = scriptApi.getScript(context, uri);
-        assertEquals(script, get);
+        AssertJUnit.assertEquals(script, get);
         scriptApi.deleteScript(context, uri);
         get = scriptApi.getScript(context, uri);
         Assert.assertNull(get, "Script has been deleted");
@@ -199,15 +204,15 @@ public class MongoTests {
         UUID uuid = UUID.randomUUID();
         RaptureIdGen f = IdGenFactory.getIdGen("IDGEN { initial=\"143\", base=\"36\", length=\"8\", prefix=\"FOO\" } USING MONGO { prefix=\"" + uuid + "\"}");
         String result = f.incrementIdGen(14500L);
-        Assert.assertEquals("FOO00000BAR", result);
+        AssertJUnit.assertEquals("FOO00000BAR", result);
         result = f.incrementIdGen(2L);
-        Assert.assertEquals("FOO00000BAT", result);
+        AssertJUnit.assertEquals("FOO00000BAT", result);
         f.invalidate();
         try {
             result = f.incrementIdGen(2L);
-            Assert.fail("ID Generator was invalidated");
+            AssertJUnit.fail("ID Generator was invalidated");
         } catch (RaptureException e) {
-            assertEquals("IdGenerator has been deleted", e.getMessage());
+            AssertJUnit.assertEquals("IdGenerator has been deleted", e.getMessage());
         }
     }
 
@@ -225,10 +230,10 @@ public class MongoTests {
         String content2 = "{\"foo\" : \"FOO\", \"bar\" : 2}";
         docApi.putDoc(context, uri, content);
         String get = docApi.getDoc(context, uri);
-        Assert.assertEquals(content, get);
+        AssertJUnit.assertEquals(content, get);
         docApi.putDoc(context, uri, content2);
         get = docApi.getDoc(context, uri);
-        Assert.assertEquals(content2, get);
+        AssertJUnit.assertEquals(content2, get);
         docApi.deleteDoc(context, uri);
         get = docApi.getDoc(context, uri);
         Assert.assertNull(get, "Document was deleted");
@@ -256,7 +261,7 @@ public class MongoTests {
 
         serApi.addStringsToSeries(context, uri, points, pointVals);
         List<SeriesPoint> check = serApi.getPoints(context, uri);
-        assertEquals(2, check.size());
+        AssertJUnit.assertEquals(2, check.size());
 
         for (SeriesPoint p : check) {
             Assert.assertTrue(points.contains(p.getColumn()));
@@ -274,7 +279,7 @@ public class MongoTests {
 
         serApi.addStringsToSeries(context, uri, points2, pointVals2);
         check = serApi.getPoints(context, uri);
-        assertEquals(4, check.size());
+        AssertJUnit.assertEquals(4, check.size());
 
         for (SeriesPoint p : check) {
             Assert.assertTrue(points.contains(p.getColumn()));
@@ -296,8 +301,8 @@ public class MongoTests {
         DBCollection dc = db.getCollection(uuid.toString());
         MongoCollection<Document> mc = MongoDBFactory.getCollection("default", uuid.toString());
 
-        Assert.assertEquals(dc.getFullName(), "RaptureMongoDB." + uuid.toString());
-        Assert.assertEquals(mc.getNamespace().getFullName(), "RaptureMongoDB." + uuid.toString());
+        AssertJUnit.assertEquals(dc.getFullName(), "RaptureMongoDB." + uuid.toString());
+        AssertJUnit.assertEquals(mc.getNamespace().getFullName(), "RaptureMongoDB." + uuid.toString());
 
     }
 
@@ -312,12 +317,11 @@ public class MongoTests {
         String content = "{\"foo\":\"bar\"}";
 
         docApi.putDoc(context, docUri, content);
-        Assert.assertEquals(content, docApi.getDoc(context, docUri));
+        AssertJUnit.assertEquals(content, docApi.getDoc(context, docUri));
 
         Map<String, RaptureFolderInfo> allChildrenMap = docApi.listDocsByUriPrefix(context, authUri.toString(), 10);
         System.out.println("size of childrenMap: " + allChildrenMap.size());
         AssertJUnit.assertEquals(allChildrenMap.size(), 3);
-
     }
 
     // deleteBlobsByUriPrefix called on a non-existent blob deletes all existing
@@ -373,7 +377,7 @@ public class MongoTests {
             blobImpl.deleteBlobsByUriPrefix(callingContext, blobURI5);
             // SHOULD FAIL OR DO NOTHING
         } catch (Exception e) {
-            assertTrue(e.getMessage().equals("Blob or blob folder " + blobURI5 + " does not exist"));
+            assertEquals("Blob or folder " + blobURI5 + " does not exist", e.getMessage());
         }
         blob = blobImpl.getBlob(callingContext, blobURI1);
         assertNotNull(blob);
@@ -396,7 +400,7 @@ public class MongoTests {
                 impl.deleteBlobsByUriPrefix(callingContext, auth + "/spurious");
                 Assert.fail("Exception expected");
             } catch (Exception e) {
-                assertEquals(e.getMessage(), "Blob or blob folder " + auth + "/spurious does not exist");
+                assertEquals("Blob or folder " + auth + "/spurious does not exist", e.getMessage());
             }
         }
 
@@ -409,7 +413,7 @@ public class MongoTests {
                 impl.deleteDocsByUriPrefix(callingContext, auth + "/spurious");
                 Assert.fail("Exception expected");
             } catch (Exception e) {
-                assertEquals(e.getMessage(), "Document or folder " + auth + "/spurious does not exist");
+                assertEquals("Document or folder " + auth + "/spurious does not exist", e.getMessage());
             }
         }
 
@@ -422,7 +426,7 @@ public class MongoTests {
                 impl.deleteSeriesByUriPrefix(callingContext, auth + "/spurious");
                 Assert.fail("Exception expected");
             } catch (Exception e) {
-                assertEquals(e.getMessage(), "Series or folder " + auth + "/spurious does not exist");
+                assertEquals("Series or folder " + auth + "/spurious does not exist", e.getMessage());
             }
         }
 
@@ -433,18 +437,125 @@ public class MongoTests {
                 impl.deleteScriptsByUriPrefix(callingContext, auth + "/spurious");
                 Assert.fail("Exception expected");
             } catch (Exception e) {
-                assertEquals(e.getMessage(), "Series or folder " + auth + "/spurious does not exist");
+                assertEquals("Script or folder " + auth + "/spurious does not exist", e.getMessage());
+            }
+        }
+        
+        {
+            EventApi impl = Kernel.getEvent();
+            String auth = Scheme.EVENT.toString() + "://" + uuid;
+            impl.addEventMessage(callingContext, auth+"/derek", "Jeff", "Brian", new HashMap<>());
+            List<RaptureFolderInfo> rfi = impl.listEventsByUriPrefix(callingContext, auth);
+            
+            Assert.assertNotNull(rfi);
+            Assert.assertFalse(rfi.isEmpty());
+            Assert.assertEquals(rfi.get(0).getName(), "derek");
+            
+            // Should we delete events?
+        }
+        
+        // Fields don't work. See RAP-4050
+        
+        {
+            JarApi impl = Kernel.getJar();
+            String auth = Scheme.JAR.toString() + "://" + uuid;
+            try {
+                impl.putJar(callingContext, auth+"/marmalade", "Marmalade".getBytes());
+                Assert.assertNotNull(impl.getJar(callingContext, auth+"/marmalade"));
+                impl.deleteJar(callingContext, auth + "/spurious");
+                Assert.fail("Exception expected");
+            } catch (Exception e) {
+                assertEquals("Blob or folder " + auth + "/spurious does not exist", e.getMessage());
             }
         }
     }
-
+    
+    
     @Test
-    public void rap4045() {
-        // BlobApi api = Kernel.getBlob();
+    public void testRap3958() {
         CallingContext callingContext = ContextFactory.getKernelUser();
-        String url = "//sys.blob/decisionWorkflow.httpTests/20160412/simple/default/WO00000002/Step1";
-        // BlobContainer blob = api.getBlob(callingContext, url);
-        BlobContainer blob = blobApi.getBlob(callingContext, url);
-        assertNotNull(blob);
+        Kernel.initBootstrap();
+        String uuid = UUID.randomUUID().toString();
+
+        {
+            BlobApi impl = Kernel.getBlob();
+            String auth = Scheme.BLOB.toString() + "://" + uuid;
+            impl.createBlobRepo(callingContext, auth, "BLOB {} USING MONGODB {prefix=\"" + uuid + "\"}", "NREP {} USING MONGODB {prefix=\"Meta" + uuid + "\"}");
+            assertNotNull(impl.getBlobRepoConfig(callingContext, auth));
+            impl.putBlob(callingContext, auth+"/foo", auth.getBytes(), MediaType.ANY_TEXT_TYPE.toString());
+            impl.deleteBlobsByUriPrefix(callingContext, auth);
+        }
+        
+        
+        
+        /// COPYPASTA NOT EDITED YET
+        
+        
+        
+        
+        {
+            DocApi impl = Kernel.getDoc();
+            String auth = Scheme.DOCUMENT.toString() + "://" + uuid;
+            impl.createDocRepo(callingContext, auth, "NREP {} USING MONGODB {prefix=\"" + uuid + "\"}");
+            assertNotNull(impl.getDocRepoConfig(callingContext, auth));
+            try {
+                impl.deleteDocsByUriPrefix(callingContext, auth + "/spurious");
+                Assert.fail("Exception expected");
+            } catch (Exception e) {
+                assertEquals("Document or folder " + auth + "/spurious does not exist", e.getMessage());
+            }
+        }
+
+        {
+            SeriesApi impl = Kernel.getSeries();
+            String auth = Scheme.SERIES.toString() + "://" + uuid;
+            impl.createSeriesRepo(callingContext, auth, "SREP {} USING MONGODB {prefix=\"" + uuid + "\"}");
+            assertNotNull(impl.getSeriesRepoConfig(callingContext, auth));
+            try {
+                impl.deleteSeriesByUriPrefix(callingContext, auth + "/spurious");
+                Assert.fail("Exception expected");
+            } catch (Exception e) {
+                assertEquals("Series or folder " + auth + "/spurious does not exist", e.getMessage());
+            }
+        }
+
+        {
+            ScriptApi impl = Kernel.getScript();
+            String auth = Scheme.SCRIPT.toString() + "://" + uuid;
+            try {
+                impl.deleteScriptsByUriPrefix(callingContext, auth + "/spurious");
+                Assert.fail("Exception expected");
+            } catch (Exception e) {
+                assertEquals("Script or folder " + auth + "/spurious does not exist", e.getMessage());
+            }
+        }
+        
+        {
+            EventApi impl = Kernel.getEvent();
+            String auth = Scheme.EVENT.toString() + "://" + uuid;
+            impl.addEventMessage(callingContext, auth+"/derek", "Jeff", "Brian", new HashMap<>());
+            List<RaptureFolderInfo> rfi = impl.listEventsByUriPrefix(callingContext, auth);
+            
+            Assert.assertNotNull(rfi);
+            Assert.assertFalse(rfi.isEmpty());
+            Assert.assertEquals(rfi.get(0).getName(), "derek");
+            
+            // Should we delete events?
+        }
+        
+        // Fields don't work. See RAP-4050
+        
+        {
+            JarApi impl = Kernel.getJar();
+            String auth = Scheme.JAR.toString() + "://" + uuid;
+            try {
+                impl.putJar(callingContext, auth+"/marmalade", "Marmalade".getBytes());
+                Assert.assertNotNull(impl.getJar(callingContext, auth+"/marmalade"));
+                impl.deleteJar(callingContext, auth + "/spurious");
+                Assert.fail("Exception expected");
+            } catch (Exception e) {
+                assertEquals("Blob or folder " + auth + "/spurious does not exist", e.getMessage());
+            }
+        }
     }
 }
