@@ -9,15 +9,10 @@ jdk:
   - oraclejdk8
 
 build:
-  pre_ci_boot:
-    image_name: incapture/basetest
-    image_tag: latest
-    pull: true
-    options: "-e HOME=/root"
   ci:
     - cd Libs/
-    - gradle clean install
-    - gradle test
+    - ./gradlew clean genAll Install
+    - ./test.sh
     - cd ../Apps
     - gradle clean installApp
     - gradle test
