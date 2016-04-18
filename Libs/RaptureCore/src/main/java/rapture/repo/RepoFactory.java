@@ -185,12 +185,9 @@ public class RepoFactory {
                 return createKeyRepo(parser);
             }
 
-        } catch (RecognitionException e) {
-            log.error(ExceptionToString.format(e));
-            log.error("Error parsing config - " + e.getMessage());
-        } catch (RaptureException e) {
-            log.error(ExceptionToString.format(e));
+        } catch (RecognitionException | RaptureException e) {
             log.error("Error when initializing repo - " + e.getMessage());
+            log.debug(ExceptionToString.format(e));
         }
         return null;
     }
