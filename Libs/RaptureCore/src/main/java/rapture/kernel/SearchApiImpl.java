@@ -165,10 +165,10 @@ public class SearchApiImpl extends KernelBase implements SearchApi {
 		for(Map.Entry<String, RaptureFolderInfo> e : info.entrySet()) {
 			String newPrefix = prefix + "/" + e.getValue().getName();
 			if (e.getValue().isFolder()) {				
-				log.info("Diving into " + newPrefix);
+				log.debug("Diving into " + newPrefix);
 				workOn(searchRepo, newPrefix);
 			} else {
-				log.info("Placing " + newPrefix);
+				log.debug("Placing " + newPrefix);
 				DocumentWithMeta dm = Kernel.getDoc().getDocAndMeta(ContextFactory.getKernelUser(), newPrefix);
 				dm.setDisplayName(newPrefix);
 //				log.info("Content is " + dm.getContent());
@@ -189,7 +189,7 @@ public class SearchApiImpl extends KernelBase implements SearchApi {
 				SearchResponse resp = r.searchForRepoUris(docRepo, "");
 				while(!resp.getSearchHits().isEmpty()) {
 					for(SearchHit h : resp.getSearchHits()) {
-						log.info("URI is " + h.getId());
+						log.debug("URI is " + h.getId());
 						r.remove(h.getId());
 					}					
 //					log.info("Searching again using cursor id " + resp.getCursorId());
