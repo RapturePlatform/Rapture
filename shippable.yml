@@ -16,12 +16,9 @@ build:
     options: "-e HOME=/root"
   ci:
     - cd Libs/
-    - ./gradlew clean genAll install
-    - chmod +x test.sh
-    - ./test.sh
+    - gradle clean install
     - cd ../Apps
-    - ./gradlew clean installDist -x test
-    - ./gradlew test
+    - gradle clean installApp
   on_success:
     - echo "success"
   on_failure:
