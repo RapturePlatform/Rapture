@@ -17,8 +17,10 @@ build:
   ci:
     - cd Libs/
     - gradle clean install
+    - gradle test
     - cd ../Apps
     - gradle clean installApp
+    - gradle test
   on_success:
     - echo "success"
   on_failure:
