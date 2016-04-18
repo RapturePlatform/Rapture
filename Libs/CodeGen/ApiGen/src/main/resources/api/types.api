@@ -515,6 +515,7 @@ type DocumentMetadata(@package=rapture.common.model) {
 	String user;
 	String comment;
 	Boolean deleted;
+	Map<String, Object> tags = new HashMap<String, Object>();
 }
 
 [Contains a Rapture document and its metadata.]
@@ -1472,3 +1473,26 @@ type SearchHit(@package=rapture.common) {
 	Double score;
 	String source;
 }
+
+
+[Defines a Tag Description.]
+@Addressable(scheme = TAG(true))
+@Storable(storagePath : {name}, prefix="tagDesc")
+type TagDescription(@package=rapture.common.model) {
+  String name;
+  String description;
+  TagValueType valueType;
+  String valueSet;
+}
+
+[Tag Value types]
+type TagValueType (@package=rapture.common) {
+   String STRING;
+   String NUMBER;
+   String BOOLEAN;
+   String ARRAY;
+   String MAP;
+   String COMPLEX;
+}
+
+
