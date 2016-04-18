@@ -79,6 +79,7 @@ crudTypeExpr scope {
         BeanAnnotation bean;
         AddressableAnnotation addressable;
         StorableAnnotation storable;
+        SearchableAnnotation searchable;
         ExtendsAnnotation extend;
         DeprecatedAnnotation deprecated;
     } :
@@ -89,6 +90,9 @@ crudTypeExpr scope {
             }
         |   storableAnnotation {
                 $crudTypeExpr::storable = $storableAnnotation.result;
+            }
+        |   searchableAnnotation {
+                $crudTypeExpr::searchable = $searchableAnnotation.result;
             }
         |   extendsAnnotation {
                 $crudTypeExpr::extend = $extendsAnnotation.result;
@@ -138,6 +142,7 @@ typeExpr
         BeanAnnotation bean;
         AddressableAnnotation addressable;
         StorableAnnotation storable;
+        SearchableAnnotation searchable;
         ExtendsAnnotation extend;
         DeprecatedAnnotation deprecated;
         IndexedAnnotation indexed;
@@ -151,6 +156,9 @@ typeExpr
             }
         |   storableAnnotation {
                 $typeExpr::storable = $storableAnnotation.result;
+            }
+        |   searchableAnnotation {
+                $typeExpr::searchable = $searchableAnnotation.result;
             }
         |   extendsAnnotation {
                 $typeExpr::extend = $extendsAnnotation.result.narrow();
