@@ -198,19 +198,6 @@ public class ElasticSearchSearchRepository implements SearchRepository {
     }
 
     /**
-     * A 'type' in ElasticSearch is equivalent to a table name in Sql or a collection name in mongo. We will simply use <scheme>.<authority> as our type.
-     * 
-     * @param uri
-     * @return
-     */
-    String getType(RaptureURI uri) {
-        if (uri.hasScheme()) {
-            return String.format("%s.%s", uri.getScheme().toString(), uri.getAuthority());
-        }
-        throw RaptureExceptionFactory.create("No scheme in URI, cannot extract type for indexing.");
-    }
-
-    /**
      * Convert from scheme.authority and id back to scheme://authority/id
      * 
      * @param type
