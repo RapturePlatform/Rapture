@@ -1,0 +1,3 @@
+#To build RaptureAPIServer
+1.) cp -R ../build/install/RaptureAPIServer/ RaptureAPIServer/
+2.) docker build -t incapture/raptureapiserver .
