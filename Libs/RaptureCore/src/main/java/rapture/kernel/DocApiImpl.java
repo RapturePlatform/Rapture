@@ -599,15 +599,12 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
             for (IndexScriptPair indexScriptPair : type.getIndexes()) {
                 runIndex(context, indexScriptPair, internalUri.getAuthority(), internalUri.getDocPath(), content);
             }
-
             newDoc.setDisplayName(internalUri.getFullPath());
             SearchPublisher.publishCreateMessage(context, type, newDoc);
-
         }
         handle.setDocumentURI(internalUri.toString());
         handle.setIsSuccess(newDoc != null);
         return handle;
-
     }
 
     @Override
@@ -1045,6 +1042,50 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
         } catch (RaptureException e) {
             return false;
         }
+    }
+
+    public DocumentMetadata applyTag(CallingContext context, String docUri, String tagUri, String value) {
+        RaptureURI internalUri = new RaptureURI(docUri, Scheme.DOCUMENT);
+        Repository repository = getRepoFromCache(internalUri.getAuthority());
+        DocumentWithMeta dwm = repository.addTagToDocument(context.getUser(), internalUri.getDocPath(), tagUri, value);
+        // Now apply search update
+        DocumentRepoConfig type = getConfigFromCache(internalUri.getAuthority());
+        dwm.setDisplayName(internalUri.getFullPath());
+        SearchPublisher.publishCreateMessage(context, type, dwm);
+        return dwm.getMetaData();
+    }
+
+    public DocumentMetadata applyTags(CallingContext context, String docUri, Map<String, String> tagMap) {
+        RaptureURI internalUri = new RaptureURI(docUri, Scheme.DOCUMENT);
+        Repository repository = getRepoFromCache(internalUri.getAuthority());
+        DocumentWithMeta dwm = repository.addTagsToDocument(context.getUser(), internalUri.getDocPath(), tagMap);
+        // Now apply search update
+        DocumentRepoConfig type = getConfigFromCache(internalUri.getAuthority());
+        dwm.setDisplayName(internalUri.getFullPath());
+        SearchPublisher.publishCreateMessage(context, type, dwm);
+        return dwm.getMetaData();
+    }
+
+    public DocumentMetadata removeTag(CallingContext context, String docUri, String tagUri) {
+        RaptureURI internalUri = new RaptureURI(docUri, Scheme.DOCUMENT);
+        Repository repository = getRepoFromCache(internalUri.getAuthority());
+        DocumentWithMeta dwm = repository.removeTagFromDocument(context.getUser(), internalUri.getDocPath(), tagUri);
+        // Now apply search update
+        DocumentRepoConfig type = getConfigFromCache(internalUri.getAuthority());
+        dwm.setDisplayName(internalUri.getFullPath());
+        SearchPublisher.publishCreateMessage(context, type, dwm);
+        return dwm.getMetaData();
+    }
+
+    public DocumentMetadata removeTags(CallingContext context, String docUri, List<String> tags) {
+        RaptureURI internalUri = new RaptureURI(docUri, Scheme.DOCUMENT);
+        Repository repository = getRepoFromCache(internalUri.getAuthority());
+        DocumentWithMeta dwm = repository.removeTagsFromDocument(context.getUser(), internalUri.getDocPath(), tags);
+        // Now apply search update
+        DocumentRepoConfig type = getConfigFromCache(internalUri.getAuthority());
+        dwm.setDisplayName(internalUri.getFullPath());
+        SearchPublisher.publishCreateMessage(context, type, dwm);
+        return dwm.getMetaData();
     }
 
 }

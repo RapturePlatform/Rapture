@@ -62,6 +62,7 @@ public class KernelScript implements IRaptureScriptHelper, IRaptureKernelScriptH
     private final ScriptEnvironment environment;
     private final ScriptStructured structured;
     private final ScriptSearch search;
+    private final ScriptTag tag;
 
     public KernelScript() {
         login = Kernel.getLogin();
@@ -92,6 +93,7 @@ public class KernelScript implements IRaptureScriptHelper, IRaptureKernelScriptH
         environment = new ScriptEnvironment(Kernel.getEnvironment());
         structured = new ScriptStructured(Kernel.getStructured());
         search = new ScriptSearch(Kernel.getSearch());
+        tag = new ScriptTag(Kernel.getTag());
     }
 
     public Login getLogin() {
@@ -187,6 +189,10 @@ public class KernelScript implements IRaptureScriptHelper, IRaptureKernelScriptH
     public ScriptStructured getStructured() {
         return structured;
     }
+    
+    public ScriptTag getTag() {
+    	return tag;
+    }
 
     @Override
     public String getVersion() {
@@ -228,6 +234,7 @@ public class KernelScript implements IRaptureScriptHelper, IRaptureKernelScriptH
         getPlugin().setCallingContext(ctx);
         getStructured().setCallingContext(ctx);
         getSearch().setCallingContext(ctx);
+        getTag().setCallingContext(ctx);
 
         for (InstallableKernel installedKernel : Kernel.getInstalledKernels()) {
             installedKernel.getKernelScript().setCallingContext(ctx);

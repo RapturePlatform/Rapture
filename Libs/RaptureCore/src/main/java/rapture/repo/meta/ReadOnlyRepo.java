@@ -365,4 +365,28 @@ public class ReadOnlyRepo implements Repository {
     public Boolean validate() {
         return realRepo.validate();
     }
+
+	@Override
+	public DocumentWithMeta addTagToDocument(String user, String docPath,
+			String tagUri, String value) {
+        throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, READ_ONLY_REPOSITORY);
+	}
+
+	@Override
+	public DocumentWithMeta addTagsToDocument(String user, String docPath,
+			Map<String, String> tagMap) {
+        throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, READ_ONLY_REPOSITORY);
+	}
+
+	@Override
+	public DocumentWithMeta removeTagFromDocument(String user, String docPath,
+			String tagUri) {
+        throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, READ_ONLY_REPOSITORY);
+	}
+
+	@Override
+	public DocumentWithMeta removeTagsFromDocument(String user, String docPath,
+			List<String> tags) {
+        throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, READ_ONLY_REPOSITORY);
+	}
 }

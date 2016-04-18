@@ -242,4 +242,16 @@ public interface Repository {
     Map<String, String> getStatus();
 
     Optional<IndexHandler> getIndexHandler();
+
+	DocumentWithMeta addTagToDocument(String user, String docPath,
+			String tagUri, String value);
+
+	DocumentWithMeta addTagsToDocument(String user, String docPath,
+			Map<String, String> tagMap);
+
+	DocumentWithMeta removeTagFromDocument(String user, String docPath,
+			String tagUri);
+
+	DocumentWithMeta removeTagsFromDocument(String user, String docPath,
+			List<String> tags);
 }

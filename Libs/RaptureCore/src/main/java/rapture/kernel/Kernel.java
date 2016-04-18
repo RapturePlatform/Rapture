@@ -229,6 +229,10 @@ public enum Kernel {
     public static SearchApiImplWrapper getSearch() {
         return INSTANCE.search;
     }
+    
+    public static TagApiImplWrapper getTag() {
+    	return INSTANCE.tag;
+    }
 
     public static MetricsService getMetricsService() {
         return INSTANCE.metricsService;
@@ -458,6 +462,8 @@ public enum Kernel {
     private EnvironmentApiImplWrapper environment;
     private StructuredApiImplWrapper structured;
     private SearchApiImplWrapper search;
+    private TagApiImplWrapper tag;
+    
     private MetricsService metricsService = MetricsFactory.createDummyService(); // initialize to a dummy service initially, as this is not nullable
     private LogManagerConnection logManagerConnection;
 
@@ -732,6 +738,8 @@ public enum Kernel {
             kernelApis.add(structured);
             search = new SearchApiImplWrapper(this);
             kernelApis.add(search);
+            tag = new TagApiImplWrapper(this);
+            kernelApis.add(tag);
 
             // sys depends on series and doc
             sys = new SysApiImplWrapper(this);

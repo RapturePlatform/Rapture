@@ -15,14 +15,23 @@ RUN tar xvfz /tmp/s6-overlay.tar.gz -C / && \
   addgroup -g 999 app && \
   adduser -D  -G app -s /bin/false -u 999 app
 
-# Install openjdk7
+# Install certificates. See https://github.com/denvazh/java/blob/master/openjdk7-jdk/Dockerfile for refrence
 RUN apk --update upgrade
-RUN apk-install bash openjdk7 ca-certificates && apk-install bash
+RUN apk-install bash openjdk8-jre ca-certificates && \
+  find /usr/share/ca-certificates/mozilla/ -name *.crt -exec keytool -import -trustcacerts \
+  -keystore /usr/lib/jvm/java-1.8-openjdk/jre/lib/security/cacerts -storepass changeit -noprompt \
+  -file {} -alias {} \; && \
+  keytool -list -keystore /usr/lib/jvm/java-1.8-openjdk/jre/lib/security/cacerts --storepass changeit
 
-# Expose reference to JAVA_HOME
-ENV JAVA_HOME /usr/lib/jvm/java-1.7-openjdk
-# Adjust PATH to include all JDK related executables
-ENV PATH $JAVA_HOME/bin:$PATH
+
+# Test repository for Alpine linux
+# Install python
+ADD ./repositories /etc/apk/repositories
+RUN apk add --update gcc
+RUN apk add --update python-dev
+RUN apk add --update py-pip
+RUN apk add --update py-numpy@testing
+RUN pip install requests && rm -rf /var/cache/apk/*
 
 # Setup up required resources
 COPY RaptureAPIServer /opt/rapture/RaptureAPIServer

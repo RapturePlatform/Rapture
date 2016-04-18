@@ -269,7 +269,7 @@ public class MongoIndexHandler implements IndexHandler {
                     }
                 }
 
-                ret = collection.find(query).projection(Projections.include((projection == null) ? Collections.emptyList() : projection));
+                ret = collection.find(query).projection(Projections.include((List<String>) ((projection == null) ? Collections.emptyList() : projection)));
 
                 if (!sort.isEmpty()) {
                     ret = ret.sort(sort);

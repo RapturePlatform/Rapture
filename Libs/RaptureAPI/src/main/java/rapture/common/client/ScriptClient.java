@@ -65,6 +65,7 @@ public class ScriptClient implements ScriptingApi {
     private final HttpLoginApi login;
     private final HttpStructuredApi structured;
     private final HttpSearchApi search;
+    private final HttpTagApi tag;
 
     public ScriptClient(HttpLoginApi loginApi) {
         login = loginApi;
@@ -95,6 +96,7 @@ public class ScriptClient implements ScriptingApi {
         environment = new HttpEnvironmentApi(loginApi);
         structured = new HttpStructuredApi(loginApi);
         search = new HttpSearchApi(loginApi);
+        tag = new HttpTagApi(loginApi);
     }
 
     public HttpLoginApi getLogin() {
@@ -225,5 +227,10 @@ public class ScriptClient implements ScriptingApi {
     @Override
     public HttpSearchApi getSearch() {
         return search;
+    }
+    
+    @Override
+    public HttpTagApi getTag() {
+    	return tag;
     }
 }

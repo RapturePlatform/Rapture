@@ -50,6 +50,7 @@ import rapture.common.api.ScriptSearchApi;
 import rapture.common.api.ScriptSeriesApi;
 import rapture.common.api.ScriptStructuredApi;
 import rapture.common.api.ScriptSysApi;
+import rapture.common.api.ScriptTagApi;
 import rapture.common.api.ScriptUserApi;
 import rapture.common.api.ScriptingApi;
 
@@ -232,4 +233,10 @@ public class InstallableScriptingApi implements ScriptingApi {
         // TODO Auto-generated method stub
         return null;
     }
+
+	@Override
+	public ScriptTagApi getTag() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
