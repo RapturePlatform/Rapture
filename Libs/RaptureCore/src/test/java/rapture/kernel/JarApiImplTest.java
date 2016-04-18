@@ -63,7 +63,7 @@ public class JarApiImplTest {
             jarApi.putJar(rootContext, SAMPLE_JAR_URI, SAMPLE_JAR);
         }
         try {
-            blobApi.deleteBlobsByUriPrefix(rootContext, JarApiImpl.JAR_REPO_URI);
+            blobApi.deleteBlobsByUriPrefix(rootContext, JarApiImpl.JAR_REPO_URI, false);
         } catch (Exception e) {
             // OK if it's already gone
         }

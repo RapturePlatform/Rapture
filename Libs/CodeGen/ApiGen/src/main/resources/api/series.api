@@ -36,7 +36,7 @@ api(Series) {
 
    [Recursively removes all series repositories that are children of the given Uri.]
    @entitle=/data/write/$f(seriesUri)
-   @public List(String) deleteSeriesByUriPrefix(String seriesUri);
+   @public List(String) deleteSeriesByUriPrefix(String seriesUri, Boolean recurse);
 
    [Adds one point of floating-point data to a given series.]
    @entitle=/data/write/$f(seriesUri)

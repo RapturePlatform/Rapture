@@ -469,4 +469,93 @@ public class MongoTests {
             }
         }
     }
+    
+    
+    @Test
+    public void testRap3958() {
+        CallingContext callingContext = ContextFactory.getKernelUser();
+        Kernel.initBootstrap();
+        String uuid = UUID.randomUUID().toString();
+
+        {
+            BlobApi impl = Kernel.getBlob();
+            String auth = Scheme.BLOB.toString() + "://" + uuid;
+            impl.createBlobRepo(callingContext, auth, "BLOB {} USING MONGODB {prefix=\"" + uuid + "\"}", "NREP {} USING MONGODB {prefix=\"Meta" + uuid + "\"}");
+            assertNotNull(impl.getBlobRepoConfig(callingContext, auth));
+            impl.putBlob(callingContext, auth+"/foo", auth.getBytes(), MediaType.ANY_TEXT_TYPE.toString());
+            impl.deleteBlobsByUriPrefix(callingContext, auth);
+        }
+        
+        
+        
+        /// COPYPASTA NOT EDITED YET
+        
+        
+        
+        
+        {
+            DocApi impl = Kernel.getDoc();
+            String auth = Scheme.DOCUMENT.toString() + "://" + uuid;
+            impl.createDocRepo(callingContext, auth, "NREP {} USING MONGODB {prefix=\"" + uuid + "\"}");
+            assertNotNull(impl.getDocRepoConfig(callingContext, auth));
+            try {
+                impl.deleteDocsByUriPrefix(callingContext, auth + "/spurious");
+                Assert.fail("Exception expected");
+            } catch (Exception e) {
+                assertEquals("Document or folder " + auth + "/spurious does not exist", e.getMessage());
+            }
+        }
+
+        {
+            SeriesApi impl = Kernel.getSeries();
+            String auth = Scheme.SERIES.toString() + "://" + uuid;
+            impl.createSeriesRepo(callingContext, auth, "SREP {} USING MONGODB {prefix=\"" + uuid + "\"}");
+            assertNotNull(impl.getSeriesRepoConfig(callingContext, auth));
+            try {
+                impl.deleteSeriesByUriPrefix(callingContext, auth + "/spurious");
+                Assert.fail("Exception expected");
+            } catch (Exception e) {
+                assertEquals("Series or folder " + auth + "/spurious does not exist", e.getMessage());
+            }
+        }
+
+        {
+            ScriptApi impl = Kernel.getScript();
+            String auth = Scheme.SCRIPT.toString() + "://" + uuid;
+            try {
+                impl.deleteScriptsByUriPrefix(callingContext, auth + "/spurious");
+                Assert.fail("Exception expected");
+            } catch (Exception e) {
+                assertEquals("Script or folder " + auth + "/spurious does not exist", e.getMessage());
+            }
+        }
+        
+        {
+            EventApi impl = Kernel.getEvent();
+            String auth = Scheme.EVENT.toString() + "://" + uuid;
+            impl.addEventMessage(callingContext, auth+"/derek", "Jeff", "Brian", new HashMap<>());
+            List<RaptureFolderInfo> rfi = impl.listEventsByUriPrefix(callingContext, auth);
+            
+            Assert.assertNotNull(rfi);
+            Assert.assertFalse(rfi.isEmpty());
+            Assert.assertEquals(rfi.get(0).getName(), "derek");
+            
+            // Should we delete events?
+        }
+        
+        // Fields don't work. See RAP-4050
+        
+        {
+            JarApi impl = Kernel.getJar();
+            String auth = Scheme.JAR.toString() + "://" + uuid;
+            try {
+                impl.putJar(callingContext, auth+"/marmalade", "Marmalade".getBytes());
+                Assert.assertNotNull(impl.getJar(callingContext, auth+"/marmalade"));
+                impl.deleteJar(callingContext, auth + "/spurious");
+                Assert.fail("Exception expected");
+            } catch (Exception e) {
+                assertEquals("Blob or folder " + auth + "/spurious does not exist", e.getMessage());
+            }
+        }
+    }
 }

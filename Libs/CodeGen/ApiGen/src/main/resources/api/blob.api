@@ -58,7 +58,7 @@ api(Blob) {
 
    [Removes a folder and its contents recursively, including empty subfolders. Validates entitlement on individual blobs and folders. Returns a list of the blobs and folders removed.]
    @entitle=/data/write/$f(blobUri)
-   @public List(String) deleteBlobsByUriPrefix(String blobUri);
+   @public List(String) deleteBlobsByUriPrefix(String blobUri, Boolean recurse);
 
 
 }

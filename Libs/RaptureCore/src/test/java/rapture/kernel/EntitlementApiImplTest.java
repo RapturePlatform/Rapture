@@ -273,10 +273,10 @@ public class EntitlementApiImplTest {
         assertTrue("At this point Ozzy should have access", api.isPermitted(ozzyContext, "doc.putDoc", neverSayDie));
         assertFalse("At this point Ozzy should not have access", api.isPermitted(ozzyContext, "doc.putDoc", heavenAndHell));
 
-        List<String> deleted = docApi.deleteDocsByUriPrefix(ozzyContext, "document://Black");
+        List<String> deleted = docApi.deleteDocsByUriPrefix(ozzyContext, "document://Black", false);
         assertEquals("Deleted one document", deleted.size(), 1);
 
-        deleted = docApi.deleteDocsByUriPrefix(ozzyContext, "document://Black");
+        deleted = docApi.deleteDocsByUriPrefix(ozzyContext, "document://Black", false);
         assertEquals("Should be zero because we just deleted it", deleted.size(), 0);
     }
 

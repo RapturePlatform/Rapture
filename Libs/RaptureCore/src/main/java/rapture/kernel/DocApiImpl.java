@@ -746,14 +746,9 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
             }
         }
     }
-
-    @Override
-    public List<String> deleteDocsByUriPrefix(CallingContext context, String docUri) {
-        return deleteDocsByUriPrefix2(context, docUri, false);
-    }
     
     @Override
-    public List<String> deleteDocsByUriPrefix2(CallingContext context, String docUri, Boolean recurse) {
+    public List<String> deleteDocsByUriPrefix(CallingContext context, String docUri, Boolean recurse) {
         Map<String, RaptureFolderInfo> docs = listDocsByUriPrefix(context, docUri, Integer.MAX_VALUE);
         List<String> folders = new ArrayList<>();
         Set<String> notEmpty = new HashSet<>();

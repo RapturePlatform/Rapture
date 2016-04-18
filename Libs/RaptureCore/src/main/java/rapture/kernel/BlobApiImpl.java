@@ -31,6 +31,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -43,6 +44,8 @@ import java.util.Stack;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+
+import com.google.common.base.Preconditions;
 
 import rapture.common.BlobContainer;
 import rapture.common.CallingContext;
@@ -61,8 +64,6 @@ import rapture.common.shared.blob.ListBlobsByUriPrefixPayload;
 import rapture.kernel.context.ContextValidator;
 import rapture.kernel.schemes.RaptureScheme;
 import rapture.repo.BlobRepo;
-
-import com.google.common.base.Preconditions;
 
 public class BlobApiImpl extends KernelBase implements BlobApi, RaptureScheme {
     public static final String WRITE_TIME = "writeTime";
@@ -520,7 +521,7 @@ public class BlobApiImpl extends KernelBase implements BlobApi, RaptureScheme {
     }
     
     @Override
-    public List<String> deleteBlobsByUriPrefix(CallingContext context, String uriPrefix) {
+    public List<String> deleteBlobsByUriPrefix(CallingContext context, String uriPrefix, Boolean recurse) {
         Map<String, RaptureFolderInfo> docs = listBlobsByUriPrefix(context, uriPrefix, Integer.MAX_VALUE);
         List<String> folders = new ArrayList<>();
         Set<String> notEmpty = new HashSet<>();
@@ -559,7 +560,30 @@ public class BlobApiImpl extends KernelBase implements BlobApi, RaptureScheme {
             if (notEmpty.contains(uri)) continue;
             deleteBlob(context, uri);
         }
+        
+        if (recurse) {
+            RaptureURI ruri = new RaptureURI(uriPrefix);
+            String auth = ruri.getAuthority();
+//            BlobRepo repository = getRepoFromCache(auth);
+            String duri = uriPrefix;
+            while (duri.lastIndexOf('/') > 0) {
+                duri = duri.substring(0, duri.lastIndexOf('/'));
+                try {
+                    docs = listBlobsByUriPrefix(context, duri, 2);
+                } catch (Exception e) {
+                    docs = Collections.emptyMap();
+                }
+                if (docs.size() == 0) {
+//                    repository.removeChildren(new RaptureURI(duri, Scheme.BLOB).getDocPath(), true);
+                    deleteBlob(context, duri);
+                } else {
+                    break;
+                }
+            }
+        }        
+
         return removed;
     }
 
+    
 }

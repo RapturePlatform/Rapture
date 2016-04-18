@@ -25,6 +25,7 @@ package rapture.kernel;
 
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -354,7 +355,7 @@ public class ScriptApiImpl extends KernelBase implements ScriptApi {
     }
 
     @Override
-    public List<String> deleteScriptsByUriPrefix(CallingContext context, String uriPrefix) {
+    public List<String> deleteScriptsByUriPrefix(CallingContext context, String uriPrefix, Boolean recurse) {
         Map<String, RaptureFolderInfo> docs = listScriptsByUriPrefix(context, uriPrefix, Integer.MAX_VALUE);
         List<String> folders = new ArrayList<>();
         Set<String> notEmpty = new HashSet<>();
@@ -394,6 +395,28 @@ public class ScriptApiImpl extends KernelBase implements ScriptApi {
             if (notEmpty.contains(uri)) continue;
             deleteScript(context, uri);
         }
+        
+        if (recurse) {
+            RaptureURI ruri = new RaptureURI(uriPrefix);
+            String auth = ruri.getAuthority();
+//            SeriesRepo repository = getRepoFromCache(auth);
+            String duri = uriPrefix;
+            while (duri.lastIndexOf('/') > 0) {
+                duri = duri.substring(0, duri.lastIndexOf('/'));
+                try {
+                    docs = listScriptsByUriPrefix(context, duri, 2);
+                } catch (Exception e) {
+                    docs = Collections.emptyMap();
+                }
+                if (docs.size() == 0) {
+//                    repository.removeChildren(new RaptureURI(duri, Scheme.SERIES).getDocPath(), true);
+                    deleteScript(context, duri);
+                } else {
+                    break;
+                }
+            }
+        }        
+        
         return removed;
     }
 

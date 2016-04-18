@@ -344,9 +344,9 @@ public class SeriesApiFileTest extends AbstractFileTest {
         resultsMap = seriesImpl.listSeriesByUriPrefix(callingContext, seriesAuthorityURI, 0);
         assertEquals(10, resultsMap.size());
 
-        List<String> removed = seriesImpl.deleteSeriesByUriPrefix(callingContext, seriesAuthorityURI + "/die");
+        List<String> removed = seriesImpl.deleteSeriesByUriPrefix(callingContext, seriesAuthorityURI + "/die", false);
         assertEquals(2, removed.size());
-        removed = seriesImpl.deleteSeriesByUriPrefix(callingContext, seriesAuthorityURI + "/die");
+        removed = seriesImpl.deleteSeriesByUriPrefix(callingContext, seriesAuthorityURI + "/die", false);
         assertEquals(0, removed.size());
 
         resultsMap = seriesImpl.listSeriesByUriPrefix(callingContext, seriesAuthorityURI, 0);

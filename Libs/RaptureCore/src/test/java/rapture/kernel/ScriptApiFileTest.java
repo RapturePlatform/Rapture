@@ -266,13 +266,13 @@ public class ScriptApiFileTest extends AbstractFileTest {
         resultsMap = scriptImpl.listScriptsByUriPrefix(callingContext, uriPrefix, 0);
         assertEquals(8, resultsMap.size());
 
-        List<String> removed = scriptImpl.deleteScriptsByUriPrefix(callingContext, uriPrefix + "/folder1/folder2");
+        List<String> removed = scriptImpl.deleteScriptsByUriPrefix(callingContext, uriPrefix + "/folder1/folder2", false);
         assertEquals(2, removed.size());
         resultsMap = scriptImpl.listScriptsByUriPrefix(callingContext, uriPrefix, 0);
         int size = resultsMap.size();
         Set<String> uris = resultsMap.keySet();
         assertEquals(5, size);
-        removed = scriptImpl.deleteScriptsByUriPrefix(callingContext, uriPrefix);
+        removed = scriptImpl.deleteScriptsByUriPrefix(callingContext, uriPrefix, false);
         assertEquals(4, removed.size());
     }
 

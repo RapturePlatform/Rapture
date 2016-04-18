@@ -298,7 +298,7 @@ public class BlobApiFileTest extends AbstractFileTest {
         
         assertNull(blobImpl.getBlob(callingContext, blobURI5));
         
-        blobImpl.deleteBlobsByUriPrefix(callingContext, blobURI4);
+        blobImpl.deleteBlobsByUriPrefix(callingContext, blobURI4, true);
         blob = blobImpl.getBlob(callingContext, blobURI1);
         assertNotNull(blob);
         assertNotNull(blob.getContent());
@@ -306,7 +306,7 @@ public class BlobApiFileTest extends AbstractFileTest {
         assertNull(blobImpl.getBlob(callingContext, blobURI4));
         
         try {
-            blobImpl.deleteBlobsByUriPrefix(callingContext, blobURI5);
+            blobImpl.deleteBlobsByUriPrefix(callingContext, blobURI5, false);
             // SHOULD FAIL OR DO NOTHING
         } catch (Exception e) {
             assertEquals("Blob or folder "+blobURI5+" does not exist", e.getMessage());

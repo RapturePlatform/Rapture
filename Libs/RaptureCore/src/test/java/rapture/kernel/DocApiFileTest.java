@@ -292,7 +292,7 @@ public class DocApiFileTest extends AbstractFileTest {
         assertEquals(json, content);
 
         docImpl.putDoc(callingContext, docAuthorityURI + "/folder1/file2", json);
-        List<String> removedUris = docImpl.deleteDocsByUriPrefix(callingContext, docAuthorityURI + "/folder1/folder2");
+        List<String> removedUris = docImpl.deleteDocsByUriPrefix(callingContext, docAuthorityURI + "/folder1/folder2", true);
         assertFalse(docImpl.docExists(callingContext, docAuthorityURI + "/folder1/folder2/file3"));
 
         File meta = new File("/tmp" + docAuthorityURI + "_meta/folder1/folder2/file3-3f-2d1.txt");
@@ -445,7 +445,7 @@ public class DocApiFileTest extends AbstractFileTest {
         assertEquals(content, doc);
         
         
-        docImpl.deleteDocsByUriPrefix(callingContext, clydeUri);
+        docImpl.deleteDocsByUriPrefix(callingContext, clydeUri, false);
         
         try {
             doc = docImpl.getDoc(callingContext, clydeUri);
@@ -466,7 +466,7 @@ public class DocApiFileTest extends AbstractFileTest {
         assertNotNull(doc);
         assertEquals(content, doc);
         
-        docImpl.deleteDocsByUriPrefix2(callingContext, clydeUri, true);
+        docImpl.deleteDocsByUriPrefix(callingContext, clydeUri, true);
         
         try {
             doc = docImpl.getDoc(callingContext, clydeUri);

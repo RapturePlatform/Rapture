@@ -27,6 +27,7 @@ import static rapture.common.Scheme.SERIES;
 
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -37,6 +38,9 @@ import java.util.Stack;
 import org.antlr.runtime.RecognitionException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+
+import com.google.common.base.Function;
+import com.google.common.collect.Lists;
 
 import rapture.common.CallingContext;
 import rapture.common.EntitlementSet;
@@ -55,7 +59,6 @@ import rapture.common.api.SeriesApi;
 import rapture.common.exception.RaptureException;
 import rapture.common.exception.RaptureExceptionFactory;
 import rapture.common.impl.jackson.JacksonUtil;
-import rapture.common.shared.doc.GetDocPayload;
 import rapture.common.shared.series.DeleteSeriesPayload;
 import rapture.common.shared.series.ListSeriesByUriPrefixPayload;
 import rapture.dsl.serfun.HoseArg;
@@ -65,9 +68,6 @@ import rapture.kernel.context.ContextValidator;
 import rapture.repo.SeriesRepo;
 import rapture.series.config.ConfigValidatorService;
 import rapture.series.config.InvalidConfigException;
-
-import com.google.common.base.Function;
-import com.google.common.collect.Lists;
 
 public class SeriesApiImpl extends KernelBase implements SeriesApi {
 
@@ -517,7 +517,7 @@ public class SeriesApiImpl extends KernelBase implements SeriesApi {
     }
 
     @Override
-    public List<String> deleteSeriesByUriPrefix(CallingContext context, String uriPrefix) {
+    public List<String> deleteSeriesByUriPrefix(CallingContext context, String uriPrefix, Boolean recurse) {
         
         Map<String, RaptureFolderInfo> map = listSeriesByUriPrefix(context, uriPrefix, Integer.MAX_VALUE);
         List<String> folders = new ArrayList<>();
@@ -558,6 +558,28 @@ public class SeriesApiImpl extends KernelBase implements SeriesApi {
             if (notEmpty.contains(uri)) continue;
             deleteSeries(context, uri);
         }
+        
+        if (recurse) {
+            RaptureURI ruri = new RaptureURI(uriPrefix);
+            String auth = ruri.getAuthority();
+//            SeriesRepo repository = getRepoFromCache(auth);
+            String duri = uriPrefix;
+            while (duri.lastIndexOf('/') > 0) {
+                duri = duri.substring(0, duri.lastIndexOf('/'));
+                try {
+                    map = listSeriesByUriPrefix(context, duri, 2);
+                } catch (Exception e) {
+                    map = Collections.emptyMap();
+                }
+                if (map.size() == 0) {
+//                    repository.removeChildren(new RaptureURI(duri, Scheme.SERIES).getDocPath(), true);
+                    deleteSeries(context, duri);
+                } else {
+                    break;
+                }
+            }
+        }        
+        
         return removed;
 
     }
