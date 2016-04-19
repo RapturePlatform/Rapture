@@ -14,8 +14,8 @@ build:
     - ./gradlew clean genAll Install
     - ./test.sh
     - cd ../Apps
-    - gradle clean installApp
-    - gradle test
+    - ./gradlew clean installApp -x test
+    - ./gradlew test
   on_success:
     - echo "success"
   on_failure:
