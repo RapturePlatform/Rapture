@@ -21,34 +21,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package rapture.kernel.pipeline;
+package com.incapture.rapgen.annotations;
 
-import org.apache.log4j.Logger;
-
-import rapture.common.RapturePipelineTask;
-import rapture.exchange.QueueHandler;
-
-public class RaptureSearchHandler implements QueueHandler {
-
-    private static final Logger log = Logger.getLogger(RaptureSearchHandler.class);
-
-    private final PipelineTaskStatusManager statusManager;
-
-    public RaptureSearchHandler() {
-        statusManager = new PipelineTaskStatusManager();
-    }
-
-    @Override
-    public boolean handleMessage(String tag, String routing, String contentType, RapturePipelineTask task) {
-        try {
-            statusManager.startRunning(task);
-            // SearchRepositoryFactory.get();
-            statusManager.finishRunningWithSuccess(task);
-        } catch (Exception e) {
-            log.error(e);
-            statusManager.finishRunningWithFailure(task);
-        }
-        return true;
-    }
+public class SearchableAnnotation {
 
 }

@@ -82,6 +82,7 @@ SCHEME 			: 'scheme';
 STORABLE 		: 'Storable';
 CACHEABLE 		: 'Cacheable';
 ADDRESSABLE 	: 'Addressable';
+SEARCHABLE 	    : 'Searchable';
 DEPRECATED 		: ('d'|'D') 'eprecated';
 EXTENDS 		: 'Extends';
 BEAN 			: 'Bean';
