@@ -82,6 +82,7 @@ crudTypeExpr scope {
         BeanAnnotation bean;
         AddressableAnnotation addressable;
         StorableAnnotation storable;
+        SearchableAnnotation searchable;
         ExtendsAnnotation extend;
         DeprecatedAnnotation deprecated;
     } :
@@ -92,6 +93,9 @@ crudTypeExpr scope {
             }
         |   storableAnnotation {
                 $crudTypeExpr::storable = $storableAnnotation.result;
+            }
+        |   searchableAnnotation {
+                $crudTypeExpr::searchable = $searchableAnnotation.result;
             }
         |   extendsAnnotation {
                 $crudTypeExpr::extend = $extendsAnnotation.result;
@@ -148,6 +152,7 @@ typeExpr
         BeanAnnotation bean;
         AddressableAnnotation addressable;
         StorableAnnotation storable;
+        SearchableAnnotation searchable;
         ExtendsAnnotation extend;
         DeprecatedAnnotation deprecated;
         List<IndexedAnnotation> indices;
@@ -164,6 +169,9 @@ typeExpr
             }
         |   storableAnnotation {
                 $typeExpr::storable = $storableAnnotation.result;
+            }
+        |   searchableAnnotation {
+                $typeExpr::searchable = $searchableAnnotation.result;
             }
         |   extendsAnnotation {
                 $typeExpr::extend = $extendsAnnotation.result;
@@ -183,7 +191,7 @@ typeExpr
         )*
         name=ID typeAspect typeFields) {
             // Record the type for later use, also build class for it
-            addType($name.text, $typeAspect.name, $typeExpr::bean, $typeExpr::cacheable, $typeExpr::addressable, $typeExpr::storable, $typeExpr::extend, $typeExpr::deprecated, $typeExpr::indices, sdkName, $typeFields.fieldNameToType,
+            addType($name.text, $typeAspect.name, $typeExpr::bean, $typeExpr::cacheable, $typeExpr::addressable, $typeExpr::storable, $typeExpr::searchable, $typeExpr::extend, $typeExpr::deprecated, $typeExpr::indices, sdkName, $typeFields.fieldNameToType,
                 $typeFields.beans, $typeFields.constructors);
     };
 

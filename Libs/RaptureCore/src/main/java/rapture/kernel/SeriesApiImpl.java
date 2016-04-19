@@ -27,6 +27,7 @@ import static rapture.common.Scheme.SERIES;
 
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -37,6 +38,9 @@ import java.util.Stack;
 import org.antlr.runtime.RecognitionException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+
+import com.google.common.base.Function;
+import com.google.common.collect.Lists;
 
 import rapture.common.CallingContext;
 import rapture.common.EntitlementSet;
@@ -55,29 +59,26 @@ import rapture.common.api.SeriesApi;
 import rapture.common.exception.RaptureException;
 import rapture.common.exception.RaptureExceptionFactory;
 import rapture.common.impl.jackson.JacksonUtil;
-import rapture.common.shared.doc.GetDocPayload;
+import rapture.common.series.SeriesUpdateObject;
 import rapture.common.shared.series.DeleteSeriesPayload;
 import rapture.common.shared.series.ListSeriesByUriPrefixPayload;
 import rapture.dsl.serfun.HoseArg;
 import rapture.dsl.serfun.HoseProgram;
 import rapture.dsl.serfun.LoadHose;
 import rapture.kernel.context.ContextValidator;
+import rapture.kernel.pipeline.SearchPublisher;
 import rapture.repo.SeriesRepo;
 import rapture.series.config.ConfigValidatorService;
 import rapture.series.config.InvalidConfigException;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Lists;
-
 public class SeriesApiImpl extends KernelBase implements SeriesApi {
 
     private static Logger log = Logger.getLogger(SeriesApiImpl.class);
-    
+
     public SeriesApiImpl(Kernel raptureKernel) {
         super(raptureKernel);
     }
-    
-        
+
     @Override
     public void createSeriesRepo(CallingContext context, String seriesURI, String config) {
         checkParameter("Repository URI", seriesURI);
@@ -115,7 +116,7 @@ public class SeriesApiImpl extends KernelBase implements SeriesApi {
         RaptureURI uri = new RaptureURI(seriesURI, Scheme.SERIES);
         if (uri.hasDocPath()) {
             throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, apiMessageCatalog.getMessage("NoDocPath", seriesURI)); //$NON-NLS-1$
- //$NON-NLS-1$
+            // $NON-NLS-1$
         }
         SeriesRepo series = getRepoFromCache(uri.getAuthority());
         return series != null;
@@ -149,6 +150,7 @@ public class SeriesApiImpl extends KernelBase implements SeriesApi {
 
         SeriesRepoConfigStorage.deleteByAddress(internalURI, context.getUser(), Messages.getString("Admin.RemoveType")); //$NON-NLS-1$ //$NON-NLS-2$
         removeRepoFromCache(internalURI.getAuthority());
+        SearchPublisher.publishDropMessage(context, internalURI.toString());
     }
 
     @Override
@@ -278,24 +280,28 @@ public class SeriesApiImpl extends KernelBase implements SeriesApi {
     public void addDoubleToSeries(CallingContext context, String seriesURI, String pointKey, Double pointValue) {
         RaptureURI internalURI = new RaptureURI(seriesURI, Scheme.SERIES);
         getRepoOrFail(internalURI).addDoubleToSeries(internalURI.getDocPath(), pointKey, pointValue);
+        processSearchUpdate(context, internalURI, pointKey, pointValue);
     }
 
     @Override
     public void addLongToSeries(CallingContext context, String seriesURI, String pointKey, Long pointValue) {
         RaptureURI internalURI = new RaptureURI(seriesURI, Scheme.SERIES);
         getRepoOrFail(internalURI).addLongToSeries(internalURI.getDocPath(), pointKey, pointValue);
+        processSearchUpdate(context, internalURI, pointKey, pointValue);
     }
 
     @Override
     public void addStringToSeries(CallingContext context, String seriesURI, String pointKey, String pointValue) {
         RaptureURI internalURI = new RaptureURI(seriesURI, Scheme.SERIES);
         getRepoOrFail(internalURI).addStringToSeries(internalURI.getDocPath(), pointKey, pointValue);
+        processSearchUpdate(context, internalURI, pointKey, pointValue);
     }
 
     @Override
     public void addStructureToSeries(CallingContext context, String seriesURI, String pointKey, String pointValue) {
         RaptureURI internalURI = new RaptureURI(seriesURI, Scheme.SERIES);
         getRepoOrFail(internalURI).addStructureToSeries(internalURI.getDocPath(), pointKey, pointValue);
+        processSearchUpdate(context, internalURI, pointKey, pointValue);
     }
 
     @Override
@@ -307,11 +313,11 @@ public class SeriesApiImpl extends KernelBase implements SeriesApi {
             throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, apiMessageCatalog.getMessage("ArgSizeNotEqual")); //$NON-NLS-1$
         }
         for (Double v : pointValues) {
-            if (v == null)
-                throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, apiMessageCatalog.getMessage("NullEmpty", "pointValue")); //$NON-NLS-1$
+            if (v == null) throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, apiMessageCatalog.getMessage("NullEmpty", "pointValue")); //$NON-NLS-1$
         }
         RaptureURI internalURI = new RaptureURI(seriesURI, Scheme.SERIES);
         getRepoOrFail(internalURI).addDoublesToSeries(internalURI.getDocPath(), pointKeys, pointValues);
+        processSearchUpdate(context, internalURI, pointKeys, pointValues);
     }
 
     @Override
@@ -323,11 +329,11 @@ public class SeriesApiImpl extends KernelBase implements SeriesApi {
             throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, apiMessageCatalog.getMessage("ArgSizeNotEqual")); //$NON-NLS-1$
         }
         for (Long v : pointValues) {
-            if (v == null)
-                throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, apiMessageCatalog.getMessage("NullEmpty", "pointValue")); //$NON-NLS-1$
+            if (v == null) throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, apiMessageCatalog.getMessage("NullEmpty", "pointValue")); //$NON-NLS-1$
         }
         RaptureURI internalURI = new RaptureURI(seriesURI, Scheme.SERIES);
         getRepoOrFail(internalURI).addLongsToSeries(internalURI.getDocPath(), pointKeys, pointValues);
+        processSearchUpdate(context, internalURI, pointKeys, pointValues);
     }
 
     @Override
@@ -340,6 +346,7 @@ public class SeriesApiImpl extends KernelBase implements SeriesApi {
         }
         RaptureURI internalURI = new RaptureURI(seriesURI, Scheme.SERIES);
         getRepoOrFail(internalURI).addStringsToSeries(internalURI.getDocPath(), pointKeys, pointValues);
+        processSearchUpdate(context, internalURI, pointKeys, pointValues);
     }
 
     @Override
@@ -352,11 +359,11 @@ public class SeriesApiImpl extends KernelBase implements SeriesApi {
             throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, apiMessageCatalog.getMessage("ArgSizeNotEqual")); //$NON-NLS-1$
         }
         for (String v : pointValues) {
-            if (v == null)
-                throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, apiMessageCatalog.getMessage("NullEmpty", "pointValue")); //$NON-NLS-1$
+            if (v == null) throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, apiMessageCatalog.getMessage("NullEmpty", "pointValue")); //$NON-NLS-1$
         }
         RaptureURI internalURI = new RaptureURI(seriesURI, Scheme.SERIES);
         getRepoOrFail(internalURI).addStructuresToSeries(internalURI.getDocPath(), pointKeys, pointValues);
+        processSearchUpdate(context, internalURI, pointKeys, pointValues);
     }
 
     @Override
@@ -429,29 +436,29 @@ public class SeriesApiImpl extends KernelBase implements SeriesApi {
         RaptureURI internalUri = new RaptureURI(uriPrefix, SERIES);
         String authority = internalUri.getAuthority();
         Map<String, RaptureFolderInfo> ret = new HashMap<String, RaptureFolderInfo>();
-        
+
         // Schema level is special case.
         if (authority.isEmpty()) {
             --depth;
             try {
                 List<SeriesRepoConfig> configs = getSeriesRepoConfigs(context);
                 for (SeriesRepoConfig config : configs) {
-                     authority = config.getAuthority();
-                     // NULL or empty string should not exist. 
-                     if ((authority == null) || authority.isEmpty()) {
-                         log.warn("Invalid authority (null or empty string) found for "+JacksonUtil.jsonFromObject(config));
-                         continue;
-                     }
-                     String uri = SERIES+"://"+authority;
-                     ret.put(uri, new RaptureFolderInfo(authority, true));
-                     if (depth != 0) {
-                         ret.putAll(listSeriesByUriPrefix(context, uri, depth));
-                     }
+                    authority = config.getAuthority();
+                    // NULL or empty string should not exist.
+                    if ((authority == null) || authority.isEmpty()) {
+                        log.warn("Invalid authority (null or empty string) found for " + JacksonUtil.jsonFromObject(config));
+                        continue;
+                    }
+                    String uri = SERIES + "://" + authority;
+                    ret.put(uri, new RaptureFolderInfo(authority, true));
+                    if (depth != 0) {
+                        ret.putAll(listSeriesByUriPrefix(context, uri, depth));
+                    }
                 }
 
             } catch (RaptureException e) {
                 // permission denied
-                log.debug("No read permission for "+uriPrefix);
+                log.debug("No read permission for " + uriPrefix);
             }
             return ret;
         }
@@ -459,7 +466,7 @@ public class SeriesApiImpl extends KernelBase implements SeriesApi {
         SeriesRepo repo = getRepoFromCache(internalUri.getAuthority());
         Boolean getAll = false;
         if (repo == null) {
-            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST,  apiMessageCatalog.getMessage("NoSuchRepo", internalUri.toAuthString())); //$NON-NLS-1$
+            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, apiMessageCatalog.getMessage("NoSuchRepo", internalUri.toAuthString())); //$NON-NLS-1$
         }
         String parentDocPath = internalUri.getDocPath() == null ? "" : internalUri.getDocPath();
         int startDepth = StringUtils.countMatches(parentDocPath, "/");
@@ -482,14 +489,14 @@ public class SeriesApiImpl extends KernelBase implements SeriesApi {
                 ListSeriesByUriPrefixPayload requestObj = new ListSeriesByUriPrefixPayload();
                 requestObj.setContext(context);
                 requestObj.setSeriesUri(currParentDocPath);
-                ContextValidator.validateContext(context, EntitlementSet.Series_listSeriesByUriPrefix, requestObj); 
-    
+                ContextValidator.validateContext(context, EntitlementSet.Series_listSeriesByUriPrefix, requestObj);
+
                 List<RaptureFolderInfo> children = repo.listSeriesByUriPrefix(currParentDocPath);
-    
+
                 for (RaptureFolderInfo child : children) {
                     String childDocPath = currParentDocPath + (top ? "" : "/") + child.getName();
                     if (child.getName().isEmpty()) continue;
-                    String childUri = Scheme.SERIES+"://" + authority + "/" + childDocPath + (child.isFolder() ? "/" : "");
+                    String childUri = Scheme.SERIES + "://" + authority + "/" + childDocPath + (child.isFolder() ? "/" : "");
                     ret.put(childUri, child);
                     if (child.isFolder()) {
                         parentsStack.push(childDocPath);
@@ -497,7 +504,7 @@ public class SeriesApiImpl extends KernelBase implements SeriesApi {
                 }
             } catch (RaptureException e) {
                 // permission denied
-                log.debug("No read permission on folder "+currParentDocPath);
+                log.debug("No read permission on folder " + currParentDocPath);
             }
             if (top) startDepth--; // special case
         }
@@ -508,13 +515,17 @@ public class SeriesApiImpl extends KernelBase implements SeriesApi {
         return Kernel.getRepoCacheManager().getSeriesRepo(authority);
     }
 
+    private SeriesRepoConfig getConfigFromCache(String authority) {
+        return Kernel.getRepoCacheManager().getSeriesRepoConfig(authority);
+    }
+
     private void removeRepoFromCache(String authority) {
         Kernel.getRepoCacheManager().removeRepo(Scheme.SERIES.toString(), authority);
     }
 
     @Override
     public List<String> deleteSeriesByUriPrefix(CallingContext context, String uriPrefix) {
-        
+
         Map<String, RaptureFolderInfo> map = listSeriesByUriPrefix(context, uriPrefix, Integer.MAX_VALUE);
         List<String> folders = new ArrayList<>();
         Set<String> notEmpty = new HashSet<>();
@@ -612,5 +623,15 @@ public class SeriesApiImpl extends KernelBase implements SeriesApi {
         RaptureURI uri = new RaptureURI(seriesURI, Scheme.SERIES);
         SeriesRepo repository = getRepoOrFail(uri);
         repository.createSeries(uri.getDocPath());
+        processSearchUpdate(context, uri, new ArrayList<>(), new ArrayList<>());
     }
+
+    private void processSearchUpdate(CallingContext ctx, RaptureURI seriesUri, String key, Object value) {
+        processSearchUpdate(ctx, seriesUri, Arrays.asList(key), Arrays.asList(value));
+    }
+
+    private void processSearchUpdate(CallingContext ctx, RaptureURI seriesUri, List<String> keys, List<? extends Object> values) {
+        SearchPublisher.publishCreateMessage(ctx, getConfigFromCache(seriesUri.getAuthority()), new SeriesUpdateObject(seriesUri.getShortPath(), keys, values));
+    }
+
 }
