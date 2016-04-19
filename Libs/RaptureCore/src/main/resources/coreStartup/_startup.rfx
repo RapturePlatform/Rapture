@@ -101,10 +101,6 @@ end
 
 #event.addEventMessage("//event/alert", 'application/vnd.rapture.event.alert', 'alpha', {});
 
-// set up elastic search
-#sys.putConnectionInfo("ES", fromjson("{ \"host\" : \"127.0.0.1\", \"port\" : 9300, \"username\" : \"rapture\", \"password\" : \"rapture\", \"dbName\" : \"default\", \"instanceName\" : \"default\", \"CLASS\" : \"rapture.common.ConnectionInfo\" }"));
-
-
 if _cfg.FullTextSearchOn() do
 	if !#search.searchRepoExists(_cfg.FullTextSearchDefaultRepo()) do
 	   println("Creating search repo " + _cfg.FullTextSearchDefaultRepo());

@@ -11,7 +11,7 @@ import rapture.kernel.Kernel;
 public class RaptureSearchUpdateHandler implements QueueHandler {
 
     private static final Logger log = Logger.getLogger(RaptureSearchUpdateHandler.class);
- 
+
     private final PipelineTaskStatusManager statusManager;
 
     public RaptureSearchUpdateHandler() {
@@ -24,24 +24,29 @@ public class RaptureSearchUpdateHandler implements QueueHandler {
         log.info("Processing search update request"); //$NON-NLS-1$
         try {
             statusManager.startRunning(task);
-            MimeSearchUpdateObject doc = JacksonUtil.objectFromJson(content, MimeSearchUpdateObject.class);
-            
-            switch(doc.getType()) {
+            MimeSearchUpdateObject payload = JacksonUtil.objectFromJson(content, MimeSearchUpdateObject.class);
+
+            switch (payload.getType()) {
             case CREATE:
-                Kernel.getSearch().getTrusted().writeSearchEntry(doc.getRepo(), doc.getDoc());
+                if (payload.getDoc() != null) {
+                    Kernel.getSearch().getTrusted().writeSearchEntry(payload.getRepo(), payload.getDoc());
+                } else if (payload.getSeriesUpdateObject() != null) {
+                    Kernel.getSearch().getTrusted().writeSearchEntry(payload.getRepo(), payload.getSeriesUpdateObject());
+                } else {
+                    log.error("Empty payload.  Doing nothing.");
+                }
                 break;
             case DELETE:
-            	Kernel.getSearch().getTrusted().deleteSearchEntry(doc.getRepo(), doc.getDoc().getDisplayName());
-            	break;
+                Kernel.getSearch().getTrusted().deleteSearchEntry(payload.getRepo(), payload.getUri());
+                break;
             case REBUILD:
-            	// What to do?
-            	Kernel.getSearch().getTrusted().rebuild(doc.getRepo());
-            	break;
+                Kernel.getSearch().getTrusted().rebuild(payload.getRepo());
+                break;
             case DROP:
-            	Kernel.getSearch().getTrusted().drop(doc.getRepo());
-            	break;
+                Kernel.getSearch().getTrusted().drop(payload.getRepo());
+                break;
             default:
-            	log.error("Don't know how to process this search update");
+                log.error("Don't know how to process this search update");
             }
             // Call something in
             statusManager.finishRunningWithSuccess(task);
@@ -53,7 +58,5 @@ public class RaptureSearchUpdateHandler implements QueueHandler {
         }
         return true;
     }
-
-	
 
 }

@@ -244,6 +244,7 @@ type RaptureAuthority(@package=rapture.common) {
 [Describes config info for a repository that stores Rapture documents.]
 @Addressable(scheme = DOCUMENT(true))
 @Storable(storagePath : {authority}, prefix="type")
+@Searchable
 type DocumentRepoConfig(@package=rapture.common.model) {
     String description;
     String config;
@@ -254,8 +255,6 @@ type DocumentRepoConfig(@package=rapture.common.model) {
     Set<FullTextIndexScriptPair> fullTextIndexes = new HashSet<FullTextIndexScriptPair>();
     String updateQueue;
     RaptureDocConfig documentRepo;
-    Boolean ftsIndex = true;
-    String ftsIndexRepo = ""; // Blank means "use default"
 }
 
 [Describes config info for a full text search repository.]
@@ -927,6 +926,7 @@ type ForeignKey(@package=rapture.common) {
 [Configuration info for a repository that stores series data.]
 @Addressable(scheme = SERIES(true))
 @Storable(storagePath : {authority}, prefix="series")
+@Searchable
 type SeriesRepoConfig(@package=rapture.common) {
 	String description;
 	String config;
