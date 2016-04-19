@@ -72,6 +72,11 @@ subprojects {
 
         // set JVM arguments for the test JVM(s)
         jvmArgs '-noverify'
+
+        // print out the currently running test 
+        beforeTest { descriptor ->
+            logger.lifecycle("Running test: " + descriptor)
+        }
     }
 
     jar {
