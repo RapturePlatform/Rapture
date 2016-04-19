@@ -27,9 +27,21 @@ import static org.elasticsearch.node.NodeBuilder.nodeBuilder;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.log4j.Logger;
+import org.elasticsearch.action.admin.cluster.health.ClusterHealthRequest;
+import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.client.ClusterAdminClient;
+import org.elasticsearch.cluster.health.ClusterHealthStatus;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.node.Node;
 
@@ -40,6 +52,8 @@ import org.elasticsearch.node.Node;
  *
  */
 public class EmbeddedServer {
+
+    private static final Logger log = Logger.getLogger(EmbeddedServer.class);
 
     private static final String DEFAULT_DATA_DIRECTORY = "build/elasticsearch-data";
 
@@ -68,7 +82,25 @@ public class EmbeddedServer {
     }
 
     public Client getClient() {
-        return node.client();
+        Client client = node.client();
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Future<Void> future = executor.submit(new Callable<Void>() {
+            @Override
+            public Void call() {
+                ClusterAdminClient clusterAdmin = client.admin().cluster();
+                ClusterHealthResponse res = clusterAdmin.health(new ClusterHealthRequest()).actionGet(1000);
+                while (res.getStatus().equals(ClusterHealthStatus.RED)) {
+                    res = clusterAdmin.health(new ClusterHealthRequest()).actionGet(1000);
+                }
+                return null;
+            }
+        });
+        try {
+            future.get(3, TimeUnit.SECONDS);
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            log.error("Failed to wait for cluster to startup synchronously.  Unit tests may fail", e);
+        }
+        return client;
     }
 
     public void shutdown() {
