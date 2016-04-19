@@ -12,6 +12,7 @@ build:
   ci:
     - cd Libs/
     - ./gradlew clean genAll Install
+    - chmod +x test.sh
     - ./test.sh
     - cd ../Apps
     - ./gradlew clean installApp -x test
