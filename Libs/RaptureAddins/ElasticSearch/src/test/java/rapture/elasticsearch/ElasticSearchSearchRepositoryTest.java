@@ -25,9 +25,7 @@ package rapture.elasticsearch;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
 
-import java.io.IOException;
 import java.util.Arrays;
 
 import org.elasticsearch.action.search.SearchResponse;
@@ -39,9 +37,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.google.common.collect.ImmutableMap;
+
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
-import rapture.common.impl.jackson.JacksonUtil;
 import rapture.common.model.DocumentMetadata;
 import rapture.common.model.DocumentWithMeta;
 import rapture.common.series.SeriesUpdateObject;
@@ -58,15 +57,10 @@ public class ElasticSearchSearchRepositoryTest {
         e.setIndex("unittest");
         es = new EmbeddedServer();
         e.setClient(es.getClient());
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            fail(e.toString());
-        }
     }
 
     @Test
-    public void testEasySearch() throws InterruptedException {
+    public void testEasySearch() {
         String json = "{" +
                 "\"user\":\"kimchy\"," +
                 "\"postDate\":\"2014-01-30\"," +
@@ -75,7 +69,7 @@ public class ElasticSearchSearchRepositoryTest {
         RaptureURI uri = new RaptureURI("document://unittest/doc1", Scheme.DOCUMENT);
         DocumentWithMeta d = createDummyDocumentWithMeta(uri.getFullPath(), json);
         e.put(d);
-        Thread.sleep(1000);
+        e.refresh();
         rapture.common.SearchResponse response = e.search(Arrays.asList(SearchRepoType.DOC.toString()), "kimchy");
         assertEquals(1, response.getTotal().longValue());
         assertEquals(1, response.getSearchHits().size());
@@ -87,11 +81,12 @@ public class ElasticSearchSearchRepositoryTest {
     public void testGetUri() {
         assertEquals("document://unittest/doc38", e.getUri(SearchRepoType.DOC.toString(), "unittest/doc38", null));
         assertEquals("document://unittest.testme/doc38", e.getUri(SearchRepoType.DOC.toString(), "unittest.testme/doc38", null));
-
+        assertEquals("series://a/b/c/d", e.getUri(SearchRepoType.SERIES.toString(), "a/b/c/d", null));
+        assertEquals("document://already/there", e.getUri(SearchRepoType.URI.toString(), "already/there", ImmutableMap.of("a", "b", "scheme", "document")));
     }
 
     @Test
-    public void testSearchWithCursor() throws InterruptedException {
+    public void testSearchWithCursor() {
         insertTestDocs();
         int size = 25;
         String query = "u*er*";
@@ -107,7 +102,7 @@ public class ElasticSearchSearchRepositoryTest {
         int counter = size;
         while (true) {
             res = e.searchWithCursor(Arrays.asList(SearchRepoType.DOC.toString()), res.getCursorId(), size, query);
-            if (res.getSearchHits().size() == 0) {
+            if (res.getSearchHits().isEmpty()) {
                 break;
             }
             assertNotNull(res.getCursorId());
@@ -120,11 +115,10 @@ public class ElasticSearchSearchRepositoryTest {
             }
             counter += size;
         }
-
     }
 
     @Test
-    public void testSearchAndConvert() throws IOException, InterruptedException {
+    public void testSearchAndConvert() {
         insertTestDocs();
         String query = "*";
         Client c = es.getClient();
@@ -149,11 +143,11 @@ public class ElasticSearchSearchRepositoryTest {
     }
 
     @Test
-    public void testDocPut() throws InterruptedException {
+    public void testDocPut() {
         String docPath = "dubnation/d2/d1";
         DocumentWithMeta d = createDummyDocumentWithMeta(docPath, "{\"k1\":\"v1\"}");
         e.put(d);
-        Thread.sleep(1000);
+        e.refresh();
         rapture.common.SearchResponse r = e.search(Arrays.asList(SearchRepoType.DOC.toString()), "v1");
         assertEquals(1L, r.getTotal().longValue());
         assertEquals(1, r.getSearchHits().size());
@@ -172,11 +166,11 @@ public class ElasticSearchSearchRepositoryTest {
     }
 
     @Test
-    public void testSeriesPut() throws InterruptedException {
+    public void testSeriesPut() {
         String docPath = "testme/x/y";
         SeriesUpdateObject s = new SeriesUpdateObject(docPath, Arrays.asList("k1"), Arrays.asList("v1"));
         e.put(s);
-        Thread.sleep(1000);
+        e.refresh();
         rapture.common.SearchResponse r = e.search(Arrays.asList(SearchRepoType.SERIES.toString()), "v1");
         assertEquals(1L, r.getTotal().longValue());
         assertEquals(1, r.getSearchHits().size());
@@ -186,7 +180,7 @@ public class ElasticSearchSearchRepositoryTest {
         assertEquals("{\"k1\":\"v1\"}", r.getSearchHits().get(0).getSource());
         s = new SeriesUpdateObject("testme/x/y", Arrays.asList("k2"), Arrays.asList("v2"));
         e.put(s);
-        Thread.sleep(1000);
+        e.refresh();
         r = e.search(Arrays.asList(SearchRepoType.SERIES.toString()), "v1");
         assertEquals(1L, r.getTotal().longValue());
         assertEquals(1, r.getSearchHits().size());
@@ -195,9 +189,71 @@ public class ElasticSearchSearchRepositoryTest {
         assertEquals("series://" + docPath, r.getSearchHits().get(0).getUri());
         assertEquals("{\"k1\":\"v1\",\"k2\":\"v2\"}", r.getSearchHits().get(0).getSource());
 
+        r = e.search(Arrays.asList(SearchRepoType.URI.toString()), "x");
+        assertEquals(1L, r.getTotal().longValue());
+        assertEquals(1, r.getSearchHits().size());
+        assertEquals(SearchRepoType.URI.toString(), r.getSearchHits().get(0).getIndexType());
+        assertEquals(docPath, r.getSearchHits().get(0).getId());
+        assertEquals("series://" + docPath, r.getSearchHits().get(0).getUri());
+        assertEquals("{\"parts\":[\"x\",\"y\"],\"repo\":\"testme\",\"scheme\":\"series\"}", r.getSearchHits().get(0).getSource());
     }
 
-    private void insertTestDocs() throws InterruptedException {
+    @Test
+    public void testSearchForRepoUris() {
+        String repo = "unittest";
+        String seriesDocPath = repo + "/x/y";
+        String docDocPath = repo + "/doc0";
+        SeriesUpdateObject s = new SeriesUpdateObject(seriesDocPath, Arrays.asList("k1", "k2", "k3"), Arrays.asList(1.0, 2.0, 4.0));
+        e.put(s);
+        insertTestDocs();
+        rapture.common.SearchResponse r = e.searchForRepoUris(Scheme.SERIES.toString(), repo, null);
+        assertEquals(1L, r.getTotal().longValue());
+        assertEquals(1, r.getSearchHits().size());
+        assertEquals(SearchRepoType.URI.toString(), r.getSearchHits().get(0).getIndexType());
+        assertEquals(seriesDocPath, r.getSearchHits().get(0).getId());
+        assertEquals("series://" + seriesDocPath, r.getSearchHits().get(0).getUri());
+        assertEquals("{\"parts\":[\"x\",\"y\"],\"repo\":\"" + repo + "\",\"scheme\":\"series\"}", r.getSearchHits().get(0).getSource());
+        r = e.searchForRepoUris(Scheme.DOCUMENT.toString(), repo, null);
+        assertEquals(100, r.getTotal().longValue());
+        assertEquals(10, r.getSearchHits().size());
+        assertEquals(SearchRepoType.URI.toString(), r.getSearchHits().get(0).getIndexType());
+        assertEquals(docDocPath, r.getSearchHits().get(0).getId());
+        assertEquals("document://" + docDocPath, r.getSearchHits().get(0).getUri());
+        assertEquals("{\"parts\":[\"doc0\"],\"repo\":\"" + repo + "\",\"scheme\":\"document\"}", r.getSearchHits().get(0).getSource());
+    }
+
+    @Test
+    public void testRemove() {
+        insertTestDocs();
+        rapture.common.SearchResponse r = e.search(Arrays.asList(SearchRepoType.DOC.toString()), "trying out Elasticsearch");
+        assertEquals(100, r.getTotal().longValue());
+
+        e.remove(new RaptureURI("document://unittest/doc24"));
+        e.remove(new RaptureURI("document://unittest/doc69"));
+        e.remove(new RaptureURI("document://unittest/doc77"));
+        e.refresh();
+
+        r = e.search(Arrays.asList(SearchRepoType.DOC.toString()), "trying out Elasticsearch");
+        assertEquals(97, r.getTotal().longValue());
+
+        SeriesUpdateObject s = new SeriesUpdateObject("removerepo/a/b/c", Arrays.asList("k1", "k2", "k3"), Arrays.asList(1.0, 2.0, 4.0));
+        e.put(s);
+        e.refresh();
+
+        r = e.search(Arrays.asList(SearchRepoType.SERIES.toString()), "4.0");
+        assertEquals(1, r.getTotal().longValue());
+
+        e.remove(new RaptureURI("series://removerepo/a/b/c"));
+        e.refresh();
+
+        r = e.search(Arrays.asList(SearchRepoType.SERIES.toString()), "v3");
+        assertEquals(0, r.getTotal().longValue());
+        r = e.search(Arrays.asList(SearchRepoType.DOC.toString()), "trying out Elasticsearch");
+        assertEquals(97, r.getTotal().longValue());
+
+    }
+
+    private void insertTestDocs() {
         for (int i = 0; i < 100; i++) {
             String json = "{" +
                     "\"user\":\"user" + i + "\"," +
@@ -208,17 +264,17 @@ public class ElasticSearchSearchRepositoryTest {
             DocumentWithMeta d = createDummyDocumentWithMeta(uri.getFullPath(), json);
             e.put(d);
         }
-        Thread.sleep(1000);
+        e.refresh();
     }
 
-    private DocumentWithMeta createDummyDocumentWithMeta(String uri, String json) {
+    private DocumentWithMeta createDummyDocumentWithMeta(String uriDocPath, String json) {
         DocumentWithMeta d = new DocumentWithMeta();
         DocumentMetadata dm = new DocumentMetadata();
         dm.setComment("comment");
         dm.setUser("user");
         dm.setVersion(1);
         d.setMetaData(dm);
-        d.setDisplayName(uri);
+        d.setDisplayName(uriDocPath);
         d.setContent(json);
         return d;
     }
