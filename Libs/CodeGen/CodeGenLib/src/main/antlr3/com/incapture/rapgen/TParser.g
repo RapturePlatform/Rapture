@@ -237,7 +237,7 @@ typeExpr  :
 
 typeAnnotation
     : AT! 
-    (beanAnnotation|cacheableAnnotation|storableAnnotation|addressableAnnotation|extendsAnnotation|deprecatedAnnotation|indexedAnnotation)  
+    (beanAnnotation|cacheableAnnotation|storableAnnotation|addressableAnnotation|searchableAnnotation|extendsAnnotation|deprecatedAnnotation|indexedAnnotation)  
     ;
     
 crudPackageAnnotation
@@ -301,6 +301,11 @@ storableAnnotation
 //example Storable(storagePath : {partition, documentPath, id})
     : STORABLE LBRAC! storagePath (COMMA! storableAnnotationField)*  RBRAC!
     ; 
+    
+searchableAnnotation
+//example: Searchable
+	: SEARCHABLE
+	;
     
 storableAnnotationField
 scope {

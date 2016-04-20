@@ -29,6 +29,7 @@
 package <package>;
 
 import rapture.common.*;
+import rapture.object.Searchable;
 import rapture.object.Storable;
 import rapture.object.Debugable;
 import rapture.common.version.ApiVersion;
@@ -41,7 +42,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 * <if(deprecated)> @deprecated Replaced by <deprecated> <endif>
 **/
 @SuppressWarnings("all")
-public class <name> <if(extend)> extends <extend> <endif> implements RaptureTransferObject, Debugable <if(storable)>,Storable <potentialAddressable><endif> {
+public class <name> <if(extend)> extends <extend> <endif> implements RaptureTransferObject, Debugable <if(storable)>,Storable <potentialAddressable><endif><if(searchable)>, Searchable<endif> {
     <fields; separator="\n">
    
     <addressMethod>
@@ -67,6 +68,32 @@ public class <name> <if(extend)> extends <extend> <endif> implements RaptureTran
          <adders; separator="\n">
          .buildStorageLocation();
     }
+    
+    <if (searchable)>
+    
+    private Boolean ftsIndex = true;
+    private String ftsIndexRepo;
+    
+    @Override
+    public Boolean getFtsIndex() {
+    	return ftsIndex;
+    }
+    
+    @Override
+    public void setFtsIndex(boolean ftsIndex) {
+    	this.ftsIndex = ftsIndex;
+   	}
+    
+    @Override
+    public String getFtsIndexRepo() {
+        return ftsIndexRepo;
+    }
+    
+    @Override
+    public void setFtsIndexRepo(String ftsIndexRepo) {
+    	this.ftsIndexRepo = ftsIndexRepo;
+    }
+    <endif>
     
  <else>
 

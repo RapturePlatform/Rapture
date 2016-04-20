@@ -23,14 +23,18 @@
  */
 package rapture.kernel.cache;
 
+import com.google.common.base.Optional;
+
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
+import rapture.common.SeriesRepoConfig;
 import rapture.common.model.DocumentRepoConfig;
 import rapture.kernel.search.SearchRepository;
 import rapture.object.storage.StorableIndexInfo;
-import rapture.repo.*;
-
-import com.google.common.base.Optional;
+import rapture.repo.BlobRepo;
+import rapture.repo.Repository;
+import rapture.repo.SeriesRepo;
+import rapture.repo.StructuredRepo;
 
 /**
  * Created by yanwang on 6/26/14.
@@ -54,8 +58,7 @@ public class RepoCacheManager {
     }
 
     /**
-     * Backward compatible with Kernel.getRepo()
-     * Historically it's used for Document repo and Sys repo
+     * Backward compatible with Kernel.getRepo() Historically it's used for Document repo and Sys repo
      *
      * @param repoName
      * @return
@@ -98,17 +101,20 @@ public class RepoCacheManager {
         return seriesRepoCache.getRepo(authority);
     }
 
-     public StructuredRepo getStructuredRepo(String authority) {
+    public SeriesRepoConfig getSeriesRepoConfig(String authority) {
+        return seriesRepoCache.getConfig(authority);
+    }
+
+    public StructuredRepo getStructuredRepo(String authority) {
         return structuredRepoCache.getRepo(authority);
     }
 
-     public SearchRepository getSearchRepo(String authority) {
-    	 return searchRepoCache.getRepo(authority);
-     }
+    public SearchRepository getSearchRepo(String authority) {
+        return searchRepoCache.getRepo(authority);
+    }
 
     /**
-     * Backward compatible with Kernel.removeRepo
-     * Historically it's used for Sys and Document repo
+     * Backward compatible with Kernel.removeRepo Historically it's used for Sys and Document repo
      *
      * @param authority
      */
@@ -130,7 +136,7 @@ public class RepoCacheManager {
         } else if (Scheme.STRUCTURED.toString().equalsIgnoreCase(type)) {
             structuredRepoCache.removeRepo(authority);
         } else if (Scheme.SEARCH.toString().equalsIgnoreCase(type)) {
-        	searchRepoCache.removeRepo(authority);
+            searchRepoCache.removeRepo(authority);
         }
     }
 

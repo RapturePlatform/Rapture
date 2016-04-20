@@ -21,38 +21,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package rapture.kernel.search;
+package rapture.object;
 
-import java.util.List;
-import java.util.Map;
+public interface Searchable {
 
-import rapture.common.RaptureURI;
-import rapture.common.SearchResponse;
-import rapture.common.model.DocumentWithMeta;
-import rapture.common.series.SeriesUpdateObject;
+    Boolean getFtsIndex();
 
-public interface SearchRepository {
+    void setFtsIndex(boolean ftsIndex);
 
-    void setInstanceName(String instanceName);
+    String getFtsIndexRepo();
 
-    void start();
-
-    void put(DocumentWithMeta doc);
-
-    void put(SeriesUpdateObject seriesUpdateObject);
-
-    SearchResponse search(List<String> types, String query);
-
-    SearchResponse searchWithCursor(List<String> types, String cursorId, int size, String query);
-
-    // This is used to define the index used by this repo
-    void setConfig(Map<String, String> config);
-
-    void remove(RaptureURI uri);
-
-    void dropIndexForRepo(String repoName);
-
-    // We are storing things associated with a uri, so return the uris that have this scheme and repo
-    SearchResponse searchForRepoUris(String scheme, String repo, String cursorId);
+    void setFtsIndexRepo(String ftsIndexRepo);
 
 }

@@ -34,10 +34,15 @@ minVerExpr returns [int major, int minor, int micro]: ^(def=MINVERSIONDEF majorL
 
 
 beanAnnotation returns [BeanAnnotation result]
-//This is just a marker annotaiton. example: Bean
+//This is just a marker annotation. example: Bean
     : BEAN { $result = new BeanAnnotation(); }
     ;
 
+searchableAnnotation returns [SearchableAnnotation result]
+//This is just a marker annotation. example: Searchable
+    : SEARCHABLE { $result = new SearchableAnnotation(); }
+    ;
+    
 cacheableAnnotation returns [CacheableAnnotation result]
     : CACHEABLE { $result = new CacheableAnnotation(); } (LBRAC ID EQUAL (TRUE { $result.setShouldCacheNulls(true); } | FALSE) RBRAC)?
     ;
