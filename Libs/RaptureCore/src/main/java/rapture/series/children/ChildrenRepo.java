@@ -75,8 +75,30 @@ public abstract class ChildrenRepo {
     }
 
     public List<RaptureFolderInfo> getChildren(String dirName) {
+        // is it a file?
+        List<RaptureFolderInfo> folderInfoList = new ArrayList<>();
+
+        int lio = dirName.lastIndexOf('/');
+        if (lio > 0) {
+            String fileKey = ChildKeyUtil.createRowKey(dirName.substring(0, lio));
+            List<SeriesValue> points = getPoints(fileKey);
+            if (!points.isEmpty()) {
+                String expect = "//FILE//"+dirName.substring(lio);
+                for (SeriesValue point : points) {
+                    if (point.getColumn().equals(expect)) {
+                        RaptureFolderInfo folderInfo = new RaptureFolderInfo();
+                        String name = ChildKeyUtil.fromColumnFile(point.getColumn());
+                        if (name != null) {
+                            folderInfo.setName(name);
+                            folderInfo.setFolder(false);
+                            folderInfoList.add(folderInfo);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
         List<SeriesValue> points = getPoints(ChildKeyUtil.createRowKey(dirName));
-        List<RaptureFolderInfo> folderInfoList = new ArrayList<RaptureFolderInfo>(points.size());
         for (SeriesValue val : points) {
             RaptureFolderInfo folderInfo = new RaptureFolderInfo();
             String columnName = val.getColumn();
