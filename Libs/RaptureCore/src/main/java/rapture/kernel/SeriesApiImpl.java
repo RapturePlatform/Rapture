@@ -147,10 +147,9 @@ public class SeriesApiImpl extends KernelBase implements SeriesApi {
         if (repo != null) {
             repo.drop();
         }
-
+        SearchPublisher.publishDropMessage(context, internalURI.toString());
         SeriesRepoConfigStorage.deleteByAddress(internalURI, context.getUser(), Messages.getString("Admin.RemoveType")); //$NON-NLS-1$ //$NON-NLS-2$
         removeRepoFromCache(internalURI.getAuthority());
-        SearchPublisher.publishDropMessage(context, internalURI.toString());
     }
 
     @Override

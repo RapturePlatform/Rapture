@@ -49,7 +49,6 @@ import rapture.config.ConfigLoader;
 import rapture.kernel.pipeline.SearchPublisher;
 import rapture.kernel.search.SearchRepoType;
 import rapture.kernel.search.SearchRepository;
-import rapture.object.Searchable;
 
 public class SearchApiImpl extends KernelBase implements SearchApi {
     private static Logger logger = Logger.getLogger(SearchApiImpl.class);
@@ -60,19 +59,19 @@ public class SearchApiImpl extends KernelBase implements SearchApi {
 
     // Trusted calls
 
-    public void writeSearchEntry(String repo, DocumentWithMeta doc) {
-        logger.info("Writing doc search entry to " + repo);
-        Kernel.getRepoCacheManager().getSearchRepo(repo).put(doc);
+    public void writeSearchEntry(String searchRepo, DocumentWithMeta doc) {
+        logger.debug(String.format("Writing doc search entry to [%s]", searchRepo));
+        Kernel.getRepoCacheManager().getSearchRepo(searchRepo).put(doc);
     }
 
-    public void writeSearchEntry(String repo, SeriesUpdateObject seriesUpdateObject) {
-        logger.info("Writing series search entry to " + repo);
-        Kernel.getRepoCacheManager().getSearchRepo(repo).put(seriesUpdateObject);
+    public void writeSearchEntry(String searchRepo, SeriesUpdateObject seriesUpdateObject) {
+        logger.debug(String.format("Writing series search entry to [%s]", searchRepo));
+        Kernel.getRepoCacheManager().getSearchRepo(searchRepo).put(seriesUpdateObject);
     }
 
-    public void deleteSearchEntry(String repo, RaptureURI uri) {
-        logger.info("Removing search entry to " + repo + " uri=" + uri.toString());
-        SearchRepository r = Kernel.getRepoCacheManager().getSearchRepo(repo);
+    public void deleteSearchEntry(String searchRepo, RaptureURI uri) {
+        logger.debug(String.format("Removing uri [%s] search entry from search repo [%s]", uri.toString(), searchRepo));
+        SearchRepository r = Kernel.getRepoCacheManager().getSearchRepo(searchRepo);
         r.remove(uri);
     }
 
@@ -164,11 +163,12 @@ public class SearchApiImpl extends KernelBase implements SearchApi {
     }
 
     // In get trusted - these are called asynchronously from the above calls
-    public void rebuild(String repoUriStr) {
-        drop(repoUriStr);
+    public void rebuild(String repoUriStr, String searchRepoUriStr) {
+        drop(repoUriStr, searchRepoUriStr);
         RaptureURI repoUri = new RaptureURI(repoUriStr);
-        String searchRepo = getSearchRepo(repoUri);
-        workOn(searchRepo, repoUri.toShortString(), repoUri.getScheme());
+        if (StringUtils.isNotBlank(searchRepoUriStr)) {
+            workOn(searchRepoUriStr, repoUri.toShortString(), repoUri.getScheme());
+        }
     }
 
     private void workOn(String searchRepo, String prefix, Scheme scheme) {
@@ -185,10 +185,10 @@ public class SearchApiImpl extends KernelBase implements SearchApi {
         for (Map.Entry<String, RaptureFolderInfo> e : info.entrySet()) {
             String newPrefix = prefix + "/" + e.getValue().getName();
             if (e.getValue().isFolder()) {
-                log.info("Diving into " + newPrefix);
+                log.debug("Diving into " + newPrefix);
                 workOn(searchRepo, newPrefix, scheme);
             } else {
-                log.info("Placing " + newPrefix);
+                log.debug("Placing " + newPrefix);
                 switch (scheme) {
                 case SERIES:
                     List<SeriesPoint> pts = Kernel.getSeries().getPoints(ContextFactory.getKernelUser(), newPrefix);
@@ -211,23 +211,20 @@ public class SearchApiImpl extends KernelBase implements SearchApi {
         }
     }
 
-    public void drop(String repoUriStr) {
-        // 1. Work out search repo for doc repo
-        // 2. Search for documents in that repo in the URI area that match this docRepo
-        // 3. For each one, drop that from the index
+    public void drop(String repo, String searchRepo) {
+        // 1. Search for documents in the given search repo in the URI area that match this repo
+        // 2. For each one, drop that from the index
         // (with appropriate batching)
-        RaptureURI repoUri = new RaptureURI(repoUriStr);
-        String searchRepo = getSearchRepo(repoUri);
+        RaptureURI repoUri = new RaptureURI(repo);
         if (searchRepo != null) {
             SearchRepository r = Kernel.getRepoCacheManager().getSearchRepo(searchRepo);
             if (r != null) {
                 SearchResponse resp = r.searchForRepoUris(repoUri.getScheme().toString(), repoUri.getAuthority(), null);
                 while (!resp.getSearchHits().isEmpty()) {
                     for (SearchHit h : resp.getSearchHits()) {
-                        log.info("URI is " + h.getUri());
+                        log.debug("URI is " + h.getUri());
                         r.remove(new RaptureURI(h.getUri()));
                     }
-                    // log.info("Searching again using cursor id " + resp.getCursorId());
                     resp = r.searchForRepoUris(repoUri.getScheme().toString(), repoUri.getAuthority(), resp.getCursorId());
                 }
                 log.info("End of drop");
@@ -237,26 +234,6 @@ public class SearchApiImpl extends KernelBase implements SearchApi {
         } else {
             logger.info("No search repo for " + repoUri);
         }
-    }
-
-    private String getSearchRepo(RaptureURI uri) {
-        Searchable searchableRepo;
-        switch (uri.getScheme()) {
-        case SERIES:
-            searchableRepo = Kernel.getRepoCacheManager().getSeriesRepoConfig(uri.getAuthority());
-            break;
-        default:
-            searchableRepo = Kernel.getRepoCacheManager().getDocConfig(uri.getAuthority());
-            break;
-        }
-        if (ConfigLoader.getConf().FullTextSearchOn && searchableRepo.getFtsIndex()) {
-            String publishRepo = searchableRepo.getFtsIndexRepo();
-            if (StringUtils.isBlank(publishRepo)) {
-                publishRepo = ConfigLoader.getConf().FullTextSearchDefaultRepo;
-            }
-            return publishRepo;
-        }
-        return null;
     }
 
     @Override

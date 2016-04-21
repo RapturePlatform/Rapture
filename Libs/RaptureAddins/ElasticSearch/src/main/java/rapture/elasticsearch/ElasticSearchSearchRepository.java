@@ -32,6 +32,9 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.elasticsearch.action.ActionFuture;
+import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
+import org.elasticsearch.action.admin.indices.refresh.RefreshResponse;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
@@ -255,6 +258,14 @@ public class ElasticSearchSearchRepository implements SearchRepository {
             throw RaptureExceptionFactory.create("Elastic search for instance " + instanceName + " is not defined.");
         }
         index = connectionInfo.getDbName();
+    }
+
+    /**
+     * Used for synchronous unit-testing, not to be used for regular code
+     */
+    RefreshResponse refresh() {
+        ActionFuture<RefreshResponse> future = client.admin().indices().refresh(new RefreshRequest(index));
+        return future.actionGet(1000);
     }
 
     @Override
