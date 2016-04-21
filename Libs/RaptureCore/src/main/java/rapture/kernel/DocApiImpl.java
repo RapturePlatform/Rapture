@@ -214,12 +214,10 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
                 Kernel.getSchedule().getTrusted().deleteJob(context, jobUri);
             }
         }
-
-        DocumentRepoConfigStorage.deleteByAddress(internalUri, context.getUser(), "Drop document repo");
-        removeRepoFromCache(internalUri.getAuthority());
-
         // Yeah this is like "delete everything that is prefixed by //docRepoUri
         SearchPublisher.publishDropMessage(context, internalUri.toString());
+        DocumentRepoConfigStorage.deleteByAddress(internalUri, context.getUser(), "Drop document repo");
+        removeRepoFromCache(internalUri.getAuthority());
     }
 
     public void updateDocumentRepo(CallingContext context, DocumentRepoConfig data) {

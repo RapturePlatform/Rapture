@@ -29,21 +29,21 @@ public class RaptureSearchUpdateHandler implements QueueHandler {
             switch (payload.getType()) {
             case CREATE:
                 if (payload.getDoc() != null) {
-                    Kernel.getSearch().getTrusted().writeSearchEntry(payload.getRepo(), payload.getDoc());
+                    Kernel.getSearch().getTrusted().writeSearchEntry(payload.getSearchRepo(), payload.getDoc());
                 } else if (payload.getSeriesUpdateObject() != null) {
-                    Kernel.getSearch().getTrusted().writeSearchEntry(payload.getRepo(), payload.getSeriesUpdateObject());
+                    Kernel.getSearch().getTrusted().writeSearchEntry(payload.getSearchRepo(), payload.getSeriesUpdateObject());
                 } else {
                     log.error("Empty payload.  Doing nothing.");
                 }
                 break;
             case DELETE:
-                Kernel.getSearch().getTrusted().deleteSearchEntry(payload.getRepo(), payload.getUri());
+                Kernel.getSearch().getTrusted().deleteSearchEntry(payload.getSearchRepo(), payload.getUri());
                 break;
             case REBUILD:
-                Kernel.getSearch().getTrusted().rebuild(payload.getRepo());
+                Kernel.getSearch().getTrusted().rebuild(payload.getRepo(), payload.getSearchRepo());
                 break;
             case DROP:
-                Kernel.getSearch().getTrusted().drop(payload.getRepo());
+                Kernel.getSearch().getTrusted().drop(payload.getRepo(), payload.getSearchRepo());
                 break;
             default:
                 log.error("Don't know how to process this search update");

@@ -19,6 +19,7 @@ public class MimeSearchUpdateObject implements RaptureTransferObject {
     private SeriesUpdateObject seriesUpdateObject;
     private RaptureURI uri;
     private String repo;
+    private String searchRepo;
 
     public ActionType getType() {
         return type;
@@ -40,12 +41,12 @@ public class MimeSearchUpdateObject implements RaptureTransferObject {
         return "application/vnd.rapture.searchupdate";
     }
 
-    public String getRepo() {
-        return repo;
+    public String getSearchRepo() {
+        return searchRepo;
     }
 
-    public void setRepo(String repo) {
-        this.repo = repo;
+    public void setSearchRepo(String searchRepo) {
+        this.searchRepo = searchRepo;
     }
 
     public SeriesUpdateObject getSeriesUpdateObject() {
@@ -62,5 +63,13 @@ public class MimeSearchUpdateObject implements RaptureTransferObject {
 
     public void setUri(RaptureURI uri) {
         this.uri = uri;
+    }
+
+    public String getRepo() {
+        return repo;
+    }
+
+    public void setRepo(String repo) {
+        this.repo = repo;
     }
 }
