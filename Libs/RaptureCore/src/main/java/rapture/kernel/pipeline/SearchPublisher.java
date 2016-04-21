@@ -108,7 +108,7 @@ public class SearchPublisher {
 
     private static boolean shouldPublish(Searchable searchableRepo, String uri) {
         if (ConfigLoader.getConf().FullTextSearchOn && searchableRepo.getFtsIndex()) {
-            log.info(String.format("Publishing search update for uri [%s] to search repo [%s] ...", uri, SearchRepoUtils.getSearchRepo(searchableRepo)));
+            log.debug(String.format("Publishing search update for uri [%s] to search repo [%s] ...", uri, SearchRepoUtils.getSearchRepo(searchableRepo)));
             return true;
         }
         return false;

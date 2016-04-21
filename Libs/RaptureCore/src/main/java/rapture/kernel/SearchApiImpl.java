@@ -60,17 +60,17 @@ public class SearchApiImpl extends KernelBase implements SearchApi {
     // Trusted calls
 
     public void writeSearchEntry(String searchRepo, DocumentWithMeta doc) {
-        logger.info(String.format("Writing doc search entry to [%s]", searchRepo));
+        logger.debug(String.format("Writing doc search entry to [%s]", searchRepo));
         Kernel.getRepoCacheManager().getSearchRepo(searchRepo).put(doc);
     }
 
     public void writeSearchEntry(String searchRepo, SeriesUpdateObject seriesUpdateObject) {
-        logger.info(String.format("Writing series search entry to [%s]", searchRepo));
+        logger.debug(String.format("Writing series search entry to [%s]", searchRepo));
         Kernel.getRepoCacheManager().getSearchRepo(searchRepo).put(seriesUpdateObject);
     }
 
     public void deleteSearchEntry(String searchRepo, RaptureURI uri) {
-        logger.info(String.format("Removing uri [%s] search entry from search repo [%s]", uri.toString(), searchRepo));
+        logger.debug(String.format("Removing uri [%s] search entry from search repo [%s]", uri.toString(), searchRepo));
         SearchRepository r = Kernel.getRepoCacheManager().getSearchRepo(searchRepo);
         r.remove(uri);
     }
