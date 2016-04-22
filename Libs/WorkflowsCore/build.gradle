@@ -1,14 +1,7 @@
 jar.manifest.attributes "Implementation-Title": "Common Workflows used by the Rapture Kernel"
 
-repositories {
-    maven {
-        url "http://repo.c24io.net/nexus/content/groups/public"
-    }
-}
-
 dependencies {
     compile project(':RaptureCore')
-    testCompile 'biz.c24.io:c24-io-api:4.8.3'
     testCompile 'xmlunit:xmlunit:1.6'
 }
 

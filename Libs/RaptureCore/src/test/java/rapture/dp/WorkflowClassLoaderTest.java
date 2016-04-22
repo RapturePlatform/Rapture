@@ -56,7 +56,7 @@ public class WorkflowClassLoaderTest {
     public void testClassLoader() throws ClassNotFoundException, InstantiationException, IllegalAccessException, IOException, IllegalArgumentException,
             InvocationTargetException, NoSuchMethodException, SecurityException, ExecutionException {
         // this test.jar is created in the WorkflowsCore project by running the testJar gradle task
-        // it has references to xmlunit and c24, so we add those jars to the classloader below
+        // it has references to xmlunit so we add that jar to the classloader below
         byte[] jarBytes = IOUtils.toByteArray(this.getClass().getResourceAsStream("/workflowTestJars/test.jar"));
         String jarUri1 = "jar://somerepo/test.jar";
         Kernel.getJar().putJar(ctx, jarUri1, jarBytes);
@@ -67,12 +67,7 @@ public class WorkflowClassLoaderTest {
         Kernel.getJar().putJar(ctx, jarUri2, jarBytes);
         assertArrayEquals(jarBytes, Kernel.getJar().getJar(ctx, jarUri2).getContent());
 
-        jarBytes = IOUtils.toByteArray(this.getClass().getResourceAsStream("/workflowTestJars/c24-io-api-4.8.3.jar"));
-        String jarUri3 = "jar://anotherrepo/c24-io-api-4.8.3.jar";
-        Kernel.getJar().putJar(ctx, jarUri3, jarBytes);
-        assertArrayEquals(jarBytes, Kernel.getJar().getJar(ctx, jarUri3).getContent());
-
-        WorkflowClassLoader w = new WorkflowClassLoader(ctx, Arrays.asList(jarUri1, jarUri2, jarUri3));
+        WorkflowClassLoader w = new WorkflowClassLoader(ctx, Arrays.asList(jarUri1, jarUri2));
         Class class1 = w.loadClass("rapture.dp.ClassLoaderTest1");
         Class class2 = w.loadClass("rapture.dp.ClassLoaderTest2");
 
@@ -86,7 +81,7 @@ public class WorkflowClassLoaderTest {
         assertEquals("2", a2.invoke(ctx));
 
         // Using a new classloader you should lose the static variables and the counter is reset back to 0
-        WorkflowClassLoader w2 = new WorkflowClassLoader(ctx, Arrays.asList(jarUri1, jarUri2, jarUri3));
+        WorkflowClassLoader w2 = new WorkflowClassLoader(ctx, Arrays.asList(jarUri1, jarUri2));
         Class class1x = w2.loadClass("rapture.dp.ClassLoaderTest1");
         Class class2x = w2.loadClass("rapture.dp.ClassLoaderTest2");
 

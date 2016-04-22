@@ -25,12 +25,11 @@ package rapture.dp;
 
 import org.custommonkey.xmlunit.XMLUnit;
 
-import biz.c24.io.api.C24;
 import rapture.common.CallingContext;
 import rapture.common.dp.AbstractInvocable;
 
 /**
- * Test class with referenecs to external jars c24 and xmlunit for ClassLoader test purposes in the RaptureCore project. See class WorkflowClassLoaderTest in
+ * Test class with referenecs to the external jar xmlunit for ClassLoader test purposes in the RaptureCore project. See class WorkflowClassLoaderTest in
  * RaptureCore
  * 
  * @author dukenguyen
@@ -51,9 +50,6 @@ public class ClassLoaderTest1 extends AbstractInvocable<Object> {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        C24.init();
-
         return String.valueOf(++x1);
     }
 }
