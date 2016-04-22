@@ -21,7 +21,7 @@ public class RaptureSearchUpdateHandler implements QueueHandler {
     @Override
     public boolean handleMessage(String tag, String routing, String contentType, RapturePipelineTask task) {
         String content = task.getContent();
-        log.info("Processing search update request"); //$NON-NLS-1$
+        log.debug("Processing search update request"); //$NON-NLS-1$
         try {
             statusManager.startRunning(task);
             MimeSearchUpdateObject payload = JacksonUtil.objectFromJson(content, MimeSearchUpdateObject.class);
