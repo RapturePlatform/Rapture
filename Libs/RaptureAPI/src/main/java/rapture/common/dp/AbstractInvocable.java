@@ -36,12 +36,14 @@ import rapture.common.CallingContext;
 public abstract class AbstractInvocable<T> implements Steps {
     public static final String ABORT = "__reserved__ABORTED";
     public static final String TIMEOUT = "__reserved__TIMEOUT";
-    private String workerURI;
+    private String workerUri;
     private Long stepStartTime;
     private String stepName;
+    private ClassLoader classLoader;
 
-    public AbstractInvocable(String workerURI) {
-        this.workerURI = workerURI;
+    public AbstractInvocable(String workerUri, String stepName) {
+        this.workerUri = workerUri;
+        this.stepName = stepName;
     }
 
     public Long getStepStartTime() {
@@ -61,7 +63,7 @@ public abstract class AbstractInvocable<T> implements Steps {
     }
 
     public String getWorkerURI() {
-        return workerURI;
+        return workerUri;
     }
 
     public abstract String invoke(CallingContext ctx);
@@ -108,5 +110,13 @@ public abstract class AbstractInvocable<T> implements Steps {
 
     public String invokeHook(CallingContext ctx, T handle) {
         return invoke(ctx);
+    }
+
+    public ClassLoader getClassLoader() {
+        return classLoader;
+    }
+
+    public void setClassLoader(ClassLoader classLoader) {
+        this.classLoader = classLoader;
     }
 }

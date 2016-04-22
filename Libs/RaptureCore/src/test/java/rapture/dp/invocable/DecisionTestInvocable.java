@@ -38,8 +38,8 @@ import rapture.kernel.Kernel;
 
 public class DecisionTestInvocable extends AbstractInvocable {
 
-    public DecisionTestInvocable(String workerURI) {
-        super(workerURI);
+    public DecisionTestInvocable(String workerURI, String stepName) {
+        super(workerURI, stepName);
     }
 
     @Override
@@ -82,11 +82,11 @@ public class DecisionTestInvocable extends AbstractInvocable {
         Kernel.getDecision().setContextLiteral(context, getWorkerURI(), DecisionProcessExecutorTest.CONTEXT_VARIABLE_1, "value1");
         Kernel.getDecision().setContextLiteral(context, getWorkerURI(), DecisionProcessExecutorTest.CONTEXT_VARIABLE_2, "value2");
 
-        retVal = Kernel.getDecision().getContextValue(context, getWorkerURI(), 
-                "%template/${"+DecisionProcessExecutorTest.VARIABLE_ALIAS+"}/${"+DecisionProcessExecutorTest.CONTEXT_VARIABLE_2+"}");
+        retVal = Kernel.getDecision().getContextValue(context, getWorkerURI(),
+                "%template/${" + DecisionProcessExecutorTest.VARIABLE_ALIAS + "}/${" + DecisionProcessExecutorTest.CONTEXT_VARIABLE_2 + "}");
 
         assertEquals("template/value1/value2", retVal);
-        
+
         return "next";
     }
 }

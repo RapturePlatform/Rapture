@@ -117,13 +117,13 @@ public class CheckPrerequisiteStepTest {
 
         Kernel.getLock().createLockManager(ContextFactory.getKernelUser(), "lock://kernel", "LOCKING USING DUMMY {}", "");
 
-        CheckPrerequisiteStep cps = new CheckPrerequisiteStep(workOrderURI);
+        CheckPrerequisiteStep cps = new CheckPrerequisiteStep(workOrderURI, null);
         String nextStep = cps.invoke(context);
         long duration = System.currentTimeMillis() - time;
         System.out.println(nextStep + " " + duration);
 
         assertTrue(duration >= (TIMEOUT - 1000));
-        assertTrue("Duration "+duration+" Timeout "+TIMEOUT+ " (TIMEOUT + 2000) "+(TIMEOUT + 2000), duration < (TIMEOUT + 2000));
+        assertTrue("Duration " + duration + " Timeout " + TIMEOUT + " (TIMEOUT + 2000) " + (TIMEOUT + 2000), duration < (TIMEOUT + 2000));
         assertEquals("quit", nextStep);
     }
 
@@ -157,7 +157,7 @@ public class CheckPrerequisiteStepTest {
             @Override
             public void run() {
                 try {
-                    sleep(TIMEOUT/3);
+                    sleep(TIMEOUT / 3);
                 } catch (InterruptedException e) {
                 }
                 bapi.putBlob(context, uri, "foo".getBytes(), "text/csv");
@@ -165,7 +165,7 @@ public class CheckPrerequisiteStepTest {
         };
         thread.start();
 
-        CheckPrerequisiteStep cps = new CheckPrerequisiteStep(workOrderURI);
+        CheckPrerequisiteStep cps = new CheckPrerequisiteStep(workOrderURI, null);
         String nextStep = cps.invoke(context);
         long duration = System.currentTimeMillis() - time;
         System.out.println(nextStep + " " + duration);
@@ -223,7 +223,7 @@ public class CheckPrerequisiteStepTest {
             @Override
             public void run() {
                 try {
-                    sleep(TIMEOUT/7);
+                    sleep(TIMEOUT / 7);
                 } catch (InterruptedException e) {
                 }
                 bapi.putBlob(context, barUri, "foo".getBytes(), "text/csv");
@@ -235,7 +235,7 @@ public class CheckPrerequisiteStepTest {
             @Override
             public void run() {
                 try {
-                    sleep(TIMEOUT/5);
+                    sleep(TIMEOUT / 5);
                 } catch (InterruptedException e) {
                 }
                 bapi.putBlob(context, brianUri, "jeff".getBytes(), "text/csv");
@@ -247,7 +247,7 @@ public class CheckPrerequisiteStepTest {
             @Override
             public void run() {
                 try {
-                    sleep(TIMEOUT/2);
+                    sleep(TIMEOUT / 2);
                 } catch (InterruptedException e) {
                 }
                 serapi.addStringToSeries(context, montyUri, dateStr, dateStr);
@@ -256,13 +256,13 @@ public class CheckPrerequisiteStepTest {
             }
         };
         montyThread.start();
-        
-        CheckPrerequisiteStep cps = new CheckPrerequisiteStep(workOrderURI);
+
+        CheckPrerequisiteStep cps = new CheckPrerequisiteStep(workOrderURI, null);
         String nextStep = cps.invoke(context);
         long duration = System.currentTimeMillis() - time;
         System.out.println(nextStep + " " + duration);
 
-        assertTrue(duration > (TIMEOUT/2));
+        assertTrue(duration > (TIMEOUT / 2));
         assertTrue(duration < TIMEOUT);
         assertEquals("next", nextStep);
         bapi.deleteBlob(context, barUri);
@@ -300,7 +300,7 @@ public class CheckPrerequisiteStepTest {
                 bapi.putBlob(context, "blob://foo/20140101/bar", "foo".getBytes(), "text/csv");
                 bapi.putBlob(context, "blob://foo/20140103/bar", "foo".getBytes(), "text/csv");
                 try {
-                    sleep(TIMEOUT/3);
+                    sleep(TIMEOUT / 3);
                 } catch (InterruptedException e) {
                 }
                 bapi.putBlob(context, "blob://foo/20140102/bar", "foo".getBytes(), "text/csv");
@@ -309,7 +309,7 @@ public class CheckPrerequisiteStepTest {
         };
         thread.start();
 
-        CheckPrerequisiteStep cps = new CheckPrerequisiteStep(workOrderURI);
+        CheckPrerequisiteStep cps = new CheckPrerequisiteStep(workOrderURI, null);
         String nextStep = cps.invoke(context);
         long duration = System.currentTimeMillis() - time;
         System.out.println(nextStep + " " + duration);
@@ -320,7 +320,7 @@ public class CheckPrerequisiteStepTest {
         bapi.deleteBlob(context, "blob://foo/20140102/bar");
         bapi.deleteBlob(context, "blob://foo/20140103/bar");
     }
-    
+
     @Test
     public void testCheckPrereqSpecificDateFail() {
         long time = System.currentTimeMillis();
@@ -352,14 +352,14 @@ public class CheckPrerequisiteStepTest {
                 bapi.putBlob(context, "blob://foo/20140101/bar", "foo".getBytes(), "text/csv");
                 bapi.putBlob(context, "blob://foo/20140103/bar", "foo".getBytes(), "text/csv");
                 try {
-                    sleep(TIMEOUT/3);
+                    sleep(TIMEOUT / 3);
                 } catch (InterruptedException e) {
                 }
             }
         };
         thread.start();
 
-        CheckPrerequisiteStep cps = new CheckPrerequisiteStep(workOrderURI);
+        CheckPrerequisiteStep cps = new CheckPrerequisiteStep(workOrderURI, null);
         String nextStep = cps.invoke(context);
         long duration = System.currentTimeMillis() - time;
         System.out.println(nextStep + " " + duration);
