@@ -128,6 +128,29 @@ public class RaptureURI implements Cloneable {
         }
         return sb.toString();
     }
+    
+    public RaptureURI getParentURI() {
+        if (this.hasDocPath() == false) return null;
+        RaptureURI ret = null;
+        try {
+            ret = (RaptureURI) clone();
+        } catch (CloneNotSupportedException e) {
+        	// it is.
+        }
+        if (ret.docPath.charAt(ret.docPath.length()-1) == Parser.SEPARATOR_CHAR) {
+            ret.docPath.substring(0, ret.docPath.length()-1);
+        }
+        int lastIndex = ret.docPath.lastIndexOf(Parser.SEPARATOR_CHAR);
+        ret.docPath = (lastIndex > 0) ? ret.docPath.substring(0,lastIndex) : "";
+        return ret;
+    }
+
+    // For scheme://auth/path/leaf return leaf
+    public String getLeafName() {
+        if (hasDocPath() == false) return null;
+        int lastIndex = docPath.lastIndexOf(Parser.SEPARATOR_CHAR);
+        return (lastIndex > 0) ? docPath.substring(0,lastIndex) : docPath;
+    }
 
     public Scheme getScheme() {
         return scheme;

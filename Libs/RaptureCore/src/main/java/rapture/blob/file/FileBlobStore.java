@@ -43,6 +43,7 @@ import rapture.blob.BaseBlobStore;
 import rapture.blob.BlobStore;
 import rapture.common.CallingContext;
 import rapture.common.RaptureURI;
+import rapture.common.RaptureURI.Parser;
 import rapture.common.exception.RaptureExceptionFactory;
 import rapture.kernel.file.FileRepoUtils;
 
@@ -82,7 +83,8 @@ public class FileBlobStore extends BaseBlobStore implements BlobStore {
         }
 
         try {
-            File f = FileRepoUtils.makeGenericFile(parentDir, blobUri.getDocPathWithElement());
+            File f = FileRepoUtils.makeGenericFile(parentDir, blobUri.getDocPathWithElement()+Parser.COLON_CHAR);
+            // Should be impossible
             if (f.isDirectory())
                 throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, f.getCanonicalPath()+" exists and is a directory");
             FileUtils.forceMkdir(f.getParentFile());
@@ -98,11 +100,11 @@ public class FileBlobStore extends BaseBlobStore implements BlobStore {
 
     private Boolean createSymLink(String fromDisplayName, String toFilePath) {
         try {
-            File fromFile = FileRepoUtils.makeGenericFile(parentDir, fromDisplayName);
+            File fromFile = FileRepoUtils.makeGenericFile(parentDir, fromDisplayName+Parser.COLON_CHAR);
             Path fromFilePath = Paths.get(fromFile.getAbsolutePath());
             Files.deleteIfExists(fromFilePath);
             FileUtils.forceMkdir(fromFilePath.getParent().toFile());
-            Files.createSymbolicLink(fromFilePath, Paths.get(toFilePath));
+            Files.createSymbolicLink(fromFilePath, Paths.get(toFilePath+Parser.COLON_CHAR));
         } catch (IOException e) {
             throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, "Fail to read blob content", e);
         }
@@ -111,7 +113,7 @@ public class FileBlobStore extends BaseBlobStore implements BlobStore {
 
     @Override
     public Boolean deleteBlob(CallingContext context, RaptureURI blobUri) {
-        File f = FileRepoUtils.makeGenericFile(parentDir, blobUri.getDocPath());
+        File f = FileRepoUtils.makeGenericFile(parentDir, blobUri.getDocPath()+Parser.COLON_CHAR);
         if (f.exists()) {
             try {
                 java.nio.file.Files.delete(f.toPath());
@@ -121,6 +123,29 @@ public class FileBlobStore extends BaseBlobStore implements BlobStore {
             }
         } else {
             logger.error("Blob doesn't exist "+blobUri.getDocPath());
+        }
+        return false;
+    }
+
+    /**
+     * Delete folder only if empty
+     */
+    @Override
+    public Boolean deleteFolder(CallingContext context, RaptureURI blobUri) {
+        File f = FileRepoUtils.makeGenericFile(parentDir, blobUri.getDocPath());
+        if (f.exists() && f.isDirectory()) {
+        	if (f.list().length == 0) {
+	            try {
+	                java.nio.file.Files.delete(f.toPath());
+	                return true;
+	            } catch (IOException e) {
+	                logger.error("Unable to delete "+blobUri.getDocPath()+" because "+e.getMessage());
+	            }
+	        } else {
+	            logger.debug("Folder is not empty "+blobUri.getDocPath());
+	        }
+        } else {
+            logger.debug("Not a folder "+blobUri.getDocPath());
         }
         return false;
     }
@@ -143,7 +168,7 @@ public class FileBlobStore extends BaseBlobStore implements BlobStore {
 
     @Override
     public InputStream getBlob(CallingContext context, RaptureURI blobUri) {
-        File f = FileRepoUtils.makeGenericFile(parentDir, blobUri.getDocPath());
+        File f = FileRepoUtils.makeGenericFile(parentDir, blobUri.getDocPath()+Parser.COLON_CHAR);
         try {
             if (f.exists()) {
                 return new FileInputStream(f);

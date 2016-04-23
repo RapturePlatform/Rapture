@@ -23,16 +23,16 @@
  */
 package rapture.kernel;
 
+import static rapture.common.Scheme.BLOB;
+
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.Stack;
 
 import org.apache.commons.lang3.StringUtils;
@@ -713,45 +713,43 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
     }
 
     @Override
-    public List<String> deleteDocsByUriPrefix(CallingContext context, String docUri) {
-        Map<String, RaptureFolderInfo> docs = listDocsByUriPrefix(context, docUri, Integer.MAX_VALUE);
-        List<String> folders = new ArrayList<>();
-        Set<String> notEmpty = new HashSet<>();
+    public List<String> deleteDocsByUriPrefix(CallingContext context, String uriPrefix) {
+        Map<String, RaptureFolderInfo> docs = listDocsByUriPrefix(context, uriPrefix, Integer.MAX_VALUE);
+        List<RaptureURI> folders = new ArrayList<>();
         List<String> removed = new ArrayList<>();
+        RaptureURI docURI = new RaptureURI(uriPrefix, Scheme.DOCUMENT);
+//        Repository repository = getRepoFromCache(docURI.getAuthority());
 
         DeleteDocPayload requestObj = new DeleteDocPayload();
         requestObj.setContext(context);
 
-        folders.add(docUri.endsWith("/") ? docUri : docUri + "/");
+        folders.add(docURI);
         for (Entry<String, RaptureFolderInfo> entry : docs.entrySet()) {
             String uri = entry.getKey();
+        	RaptureURI ruri = new RaptureURI(uri);
             boolean isFolder = entry.getValue().isFolder();
             try {
                 requestObj.setDocUri(uri);
                 if (isFolder) {
                     ContextValidator.validateContext(context, EntitlementSet.Doc_deleteDocsByUriPrefix, requestObj);
-                    folders.add(0, uri.substring(0, uri.length() - 1));
+                    folders.add(0, ruri);
                 } else {
                     ContextValidator.validateContext(context, EntitlementSet.Doc_deleteDoc, requestObj);
-                    deleteDoc(context, uri);
-                    removed.add(uri);
+                    if (deleteDoc(context, uri)) {
+                    	removed.add(uri);
+                    }
                 }
             } catch (RaptureException e) {
                 // permission denied
                 log.debug("Unable to delete " + uri + " : " + e.getMessage());
-                int colon = uri.indexOf(":") + 3;
-                while (true) {
-                    int slash = uri.lastIndexOf('/');
-                    if (slash < colon) break;
-                    uri = uri.substring(0, slash);
-                    notEmpty.add(uri);
-                }
             }
         }
-        for (String uri : folders) {
-            if (notEmpty.contains(uri)) continue;
-            deleteDoc(context, uri);
-        }
+//        for (RaptureURI uri : folders) {
+//            while ((uri != null) && repository.removeFolder(uri.getDocPath(), context.getUser(), "")) {
+//                // getParentURI returns null if the URI has no doc path
+//            	uri = uri.getParentURI();
+//        	}
+//    	}
         return removed;
     }
 
@@ -830,11 +828,11 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
                     String name = child.getName();
                     String childDocPath = currParentDocPath + (top ? "" : "/") + name;
                     if (name.isEmpty()) continue;
-
-                    String uri = Scheme.DOCUMENT + "://" + authority + "/" + childDocPath + (child.isFolder() ? "/" : "");
-
+                    String uri = RaptureURI.builder(Scheme.DOCUMENT, authority).docPath(childDocPath).asString() + (child.isFolder() ? "/" : "");
                     ret.put(uri, child);
-                    if (child.isFolder()) parentsStack.push(childDocPath);
+                    if (child.isFolder()) {
+                    	parentsStack.push(childDocPath);
+                    }
                 }
             }
             if (top) startDepth--; // special case

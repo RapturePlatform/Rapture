@@ -31,6 +31,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -445,7 +446,7 @@ public class BlobApiImpl extends KernelBase implements BlobApi, RaptureScheme {
                         log.warn("Invalid authority (null or empty string) found for " + JacksonUtil.jsonFromObject(config));
                         continue;
                     }
-                    String uri = BLOB + "://" + authority;
+                    String uri = new RaptureURI(authority, BLOB).toString();
                     ret.put(uri, new RaptureFolderInfo(authority, true));
                     if (depth != 0) {
                         ret.putAll(listBlobsByUriPrefix(context, uri, depth));
@@ -491,27 +492,21 @@ public class BlobApiImpl extends KernelBase implements BlobApi, RaptureScheme {
                 log.debug("No read permission on folder " + currParentDocPath);
                 continue;
             }
-            
-
-                List<RaptureFolderInfo> children = repo.listMetaByUriPrefix(currParentDocPath);
-                if ((children == null) || (children.isEmpty()) && (currDepth==0) && (internalUri.hasDocPath())) {
-                    //System.out.println("hello....inside BlobApiImpl new code..");
-                    //System.err.println("RaptureException thrown...");
-                    throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, apiMessageCatalog.getMessage("NoSuchBlob", internalUri.toString())); //$NON-NLS-1$
-                }
-                
-                else {
-
-                    for (RaptureFolderInfo child : children) {
-                        String childDocPath = currParentDocPath + (top ? "" : "/") + child.getName();
-                        if (child.getName().isEmpty()) continue;
-                        String childUri = BLOB + "://" + authority + "/" + childDocPath + (child.isFolder() ? "/" : "");
-                        ret.put(childUri, child);
-                        if (child.isFolder()) {
-                            parentsStack.push(childDocPath);
-                        }
+        
+            List<RaptureFolderInfo> children = repo.listMetaByUriPrefix(currParentDocPath);
+            if ((children == null) || (children.isEmpty()) && (currDepth==0) && (internalUri.hasDocPath())) {
+                throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, apiMessageCatalog.getMessage("NoSuchFolder", internalUri.toString())); //$NON-NLS-1$
+            } else {
+                for (RaptureFolderInfo child : children) {
+                    String childDocPath = currParentDocPath + (top ? "" : "/") + child.getName();
+                    if (child.getName().isEmpty()) continue;
+                    String childUri = RaptureURI.builder(BLOB, authority).docPath(childDocPath).asString() + (child.isFolder() ? "/" : "");
+                    ret.put(childUri, child);
+                    if (child.isFolder()) {
+                        parentsStack.push(childDocPath);
                     }
                 }
+            }
             
             if (top) startDepth--; // special case
         }
@@ -529,44 +524,48 @@ public class BlobApiImpl extends KernelBase implements BlobApi, RaptureScheme {
     @Override
     public List<String> deleteBlobsByUriPrefix(CallingContext context, String uriPrefix) {
         Map<String, RaptureFolderInfo> docs = listBlobsByUriPrefix(context, uriPrefix, Integer.MAX_VALUE);
-        List<String> folders = new ArrayList<>();
-        Set<String> notEmpty = new HashSet<>();
+        List<RaptureURI> folders = new ArrayList<>();
         List<String> removed = new ArrayList<>();
+
+        RaptureURI blobURI = new RaptureURI(uriPrefix, BLOB);
+        BlobRepo blobRepo = getRepoFromCache(blobURI.getAuthority());
+        if (blobRepo == null) {
+        	return removed;
+        }
 
         DeleteBlobPayload requestObj = new DeleteBlobPayload();
         requestObj.setContext(context);
 
-        folders.add(uriPrefix.endsWith("/") ? uriPrefix : uriPrefix + "/");
+        folders.add(blobURI);
         for (Map.Entry<String, RaptureFolderInfo> entry : docs.entrySet()) {
             String uri = entry.getKey();
+        	RaptureURI ruri = new RaptureURI(uri);
             boolean isFolder = entry.getValue().isFolder();
             try {
                 requestObj.setBlobUri(uri);
                 if (isFolder) {
                     ContextValidator.validateContext(context, EntitlementSet.Blob_deleteBlobsByUriPrefix, requestObj);
-                    folders.add(0, uri.substring(0, uri.length() - 1));
+                    folders.add(0, ruri);
                 } else {
                     ContextValidator.validateContext(context, EntitlementSet.Blob_deleteBlob, requestObj);
-                    deleteBlob(context, uri);
-                    removed.add(uri);
+                    if (blobRepo.deleteBlob(context, ruri)) {
+                        deleteMeta(context, ruri);
+                        removed.add(uri);
+                    }
                 }
             } catch (RaptureException e) {
                 // permission denied
                 log.debug("Unable to delete " + uri + " : " + e.getMessage());
-                int colon = uri.indexOf(":") + 3;
-                while (true) {
-                    int slash = uri.lastIndexOf('/');
-                    if (slash < colon) break;
-                    uri = uri.substring(0, slash);
-                    notEmpty.add(uri);
-                }
             }
         }
-        for (String uri : folders) {
-            if (notEmpty.contains(uri)) continue;
-            deleteBlob(context, uri);
+        for (RaptureURI uri : folders) {
+            // deleteFolder returns true if the folder was deleted. 
+            // It won't delete a folder that isn't empty.
+            while ((uri != null) && blobRepo.deleteFolder(context, uri)) {
+                // getParentURI returns null if the URI has no doc path
+            	uri = uri.getParentURI();
+            }
         }
         return removed;
     }
-
 }
