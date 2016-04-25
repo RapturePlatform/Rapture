@@ -23,18 +23,6 @@
  */
 package rapture.dp.invocable.purge;
 
-import rapture.common.CallingContext;
-import rapture.common.RaptureURI;
-import rapture.common.dp.AbstractInvocable;
-import rapture.common.exception.ExceptionToString;
-import rapture.common.impl.jackson.JsonContent;
-import rapture.common.model.DocumentMetadata;
-import rapture.common.apigen.purge.PurgeInfoReader;
-import rapture.object.storage.ObjectStorage;
-import rapture.object.storage.StorableIndexInfo;
-import rapture.object.storage.StorablePurgeInfo;
-import rapture.repo.RepoVisitor;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Date;
@@ -53,6 +41,18 @@ import org.joda.time.format.PeriodFormatterBuilder;
 
 import com.google.common.base.Optional;
 
+import rapture.common.CallingContext;
+import rapture.common.RaptureURI;
+import rapture.common.apigen.purge.PurgeInfoReader;
+import rapture.common.dp.AbstractInvocable;
+import rapture.common.exception.ExceptionToString;
+import rapture.common.impl.jackson.JsonContent;
+import rapture.common.model.DocumentMetadata;
+import rapture.object.storage.ObjectStorage;
+import rapture.object.storage.StorableIndexInfo;
+import rapture.object.storage.StorablePurgeInfo;
+import rapture.repo.RepoVisitor;
+
 /**
  * @author bardhi
  * @since 11/14/14.
@@ -60,8 +60,8 @@ import com.google.common.base.Optional;
 public class PurgeOldStorablesStep extends AbstractInvocable {
     private static final Logger log = Logger.getLogger(PurgeOldStorablesStep.class);
 
-    public PurgeOldStorablesStep(String workerURI) {
-        super(workerURI);
+    public PurgeOldStorablesStep(String workerURI, String stepName) {
+        super(workerURI, stepName);
     }
 
     @Override

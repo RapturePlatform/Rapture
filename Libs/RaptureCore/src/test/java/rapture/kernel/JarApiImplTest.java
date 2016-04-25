@@ -23,105 +23,113 @@
  */
 package rapture.kernel;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
-import org.junit.After;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.jar.Attributes;
+import java.util.jar.JarEntry;
+import java.util.jar.JarOutputStream;
+import java.util.jar.Manifest;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
+
 import rapture.common.CallingContext;
 import rapture.common.RaptureFolderInfo;
-import rapture.common.api.BlobApi;
 import rapture.common.api.JarApi;
-
-import java.util.Arrays;
-import java.util.Map;
+import rapture.common.exception.RaptureException;
+import rapture.kernel.jar.JarCache;
 
 public class JarApiImplTest {
+
+    private static final Logger log = Logger.getLogger(JarApiImplTest.class);
+
     private static final String SAMPLE_JAR_URI = "jar://testjar.jar";
     private static final byte[] SAMPLE_JAR = "Wesa got a grand army. That’s why you no liking us meesa thinks.".getBytes();
 
-    JarApi jarApi = null;
-    CallingContext rootContext;
+    private JarApi jarApi;
+    private CallingContext ctx = ContextFactory.getKernelUser();
+    private static final String TEST_JAR_PATH = StringUtils.join(new String[] { "build", "classes", "test" }, File.separator);
 
     @Before
     public void setUp() {
+        Kernel.getKernel().restart();
+        Kernel.initBootstrap();
         jarApi = Kernel.getJar();
-        rootContext = ContextFactory.getKernelUser();
-        tearDown();
-    }
-
-    @After
-    public void tearDown() {
-        BlobApi blobApi = Kernel.getBlob();
-
-        // ----------------------------------
-        // Temporary workaround to deleteBlobRepo not removing files from the filesystem
-        // Implemented 11/2015 to allow test to pass in spite of RAP-3878
-        if (!blobApi.blobRepoExists(rootContext, JarApiImpl.JAR_REPO_URI)) {
-            // Has side effect of creating jar repo, making it exist officially and not just
-            // as residual files on the filesystem.
-            jarApi.putJar(rootContext, SAMPLE_JAR_URI, SAMPLE_JAR);
-        }
-        blobApi.deleteBlobsByUriPrefix(rootContext, JarApiImpl.JAR_REPO_URI);
-        // End temporary workaround
-        // ----------------------------------
-
-        blobApi.deleteBlobRepo(rootContext, JarApiImpl.JAR_REPO_URI);
+        Kernel.setCategoryMembership("alpha");
     }
 
     @Test
     public void testJarExists() {
-        assertFalse(jarApi.jarExists(rootContext, SAMPLE_JAR_URI));
-        jarApi.putJar(rootContext, SAMPLE_JAR_URI, SAMPLE_JAR);
-        assertTrue(jarApi.jarExists(rootContext, SAMPLE_JAR_URI));
-        assertFalse(jarApi.jarExists(rootContext, "jar://something/i/just/made/up.jar"));
+        assertFalse(jarApi.jarExists(ctx, SAMPLE_JAR_URI));
+        jarApi.putJar(ctx, SAMPLE_JAR_URI, SAMPLE_JAR);
+        assertTrue(jarApi.jarExists(ctx, SAMPLE_JAR_URI));
+        assertFalse(jarApi.jarExists(ctx, "jar://something/i/just/made/up.jar"));
     }
 
     @Test
     public void testPutAndGetJar() {
-        assertNull(jarApi.getJar(rootContext, SAMPLE_JAR_URI));
-        jarApi.putJar(rootContext, SAMPLE_JAR_URI, SAMPLE_JAR);
-        assertTrue(Arrays.equals(SAMPLE_JAR, jarApi.getJar(rootContext, SAMPLE_JAR_URI).getContent()));
+        byte[] testJar = createTestJar();
+        if (testJar == null) {
+            return;
+        }
+        String uri = "jar://mytest/testjar1.jar";
+        jarApi.putJar(ctx, uri, testJar);
+        assertArrayEquals(testJar, jarApi.getJar(ctx, uri).getContent());
     }
 
     @Test
     public void testDeleteJar() {
-        // Just doing this to establish we don't get exceptions when the repo doesn't exist yet.
-        jarApi.deleteJar(rootContext, SAMPLE_JAR_URI);
-
-        jarApi.putJar(rootContext, SAMPLE_JAR_URI, SAMPLE_JAR);
-        assertTrue(jarApi.jarExists(rootContext, SAMPLE_JAR_URI));
-        jarApi.deleteJar(rootContext, SAMPLE_JAR_URI);
-        assertFalse(jarApi.jarExists(rootContext, SAMPLE_JAR_URI));
+        jarApi.deleteJar(ctx, SAMPLE_JAR_URI);
+        jarApi.putJar(ctx, SAMPLE_JAR_URI, SAMPLE_JAR);
+        assertTrue(jarApi.jarExists(ctx, SAMPLE_JAR_URI));
+        jarApi.deleteJar(ctx, SAMPLE_JAR_URI);
+        assertFalse(jarApi.jarExists(ctx, SAMPLE_JAR_URI));
     }
 
     @Test
     public void testGetJarSize() {
-        assertNull(jarApi.getJarSize(rootContext, SAMPLE_JAR_URI));
-        jarApi.putJar(rootContext, SAMPLE_JAR_URI, SAMPLE_JAR);
-        assertEquals(SAMPLE_JAR.length, (long)jarApi.getJarSize(rootContext, SAMPLE_JAR_URI));
+        assertEquals(-1L, (long) jarApi.getJarSize(ctx, SAMPLE_JAR_URI));
+        jarApi.putJar(ctx, SAMPLE_JAR_URI, SAMPLE_JAR);
+        assertEquals(SAMPLE_JAR.length, (long) jarApi.getJarSize(ctx, SAMPLE_JAR_URI));
     }
 
     @Test
-    public void testGetJarMetaData() {
-        assertNull(jarApi.getJarMetaData(rootContext, SAMPLE_JAR_URI));
-        jarApi.putJar(rootContext, SAMPLE_JAR_URI, SAMPLE_JAR);
-
-        Map<String, String> metaData = jarApi.getJarMetaData(rootContext, SAMPLE_JAR_URI);
+    public void testGetJarMetaData() throws ExecutionException {
+        assertTrue(jarApi.getJarMetaData(ctx, SAMPLE_JAR_URI).isEmpty());
+        jarApi.putJar(ctx, SAMPLE_JAR_URI, SAMPLE_JAR);
+        Map<String, String> metaData = jarApi.getJarMetaData(ctx, SAMPLE_JAR_URI);
         assertEquals(new Integer(SAMPLE_JAR.length).toString(), metaData.get("Content-Length"));
         assertEquals(JarApiImpl.CONTENT_TYPE, metaData.get("Content-Type"));
+        assertTrue(JarCache.getInstance().get(ctx, SAMPLE_JAR_URI).isEmpty());
     }
 
     @Test
     public void testListJarsByUriPrefix() {
-        assertNull(jarApi.listJarsByUriPrefix(rootContext, "jar://bogus", -1));
+        try {
+            jarApi.listJarsByUriPrefix(ctx, "jar://bogus", -1);
+            fail("Should have thrown error since this doesn't exist");
+        } catch (RaptureException e) {
+        }
 
-        jarApi.putJar(rootContext, "jar://folder1/jar-1.jar", SAMPLE_JAR);
-        jarApi.putJar(rootContext, "jar://folder1/jar-2.jar", SAMPLE_JAR);
-        jarApi.putJar(rootContext, "jar://folder1/folder2/jar-3.jar", SAMPLE_JAR);
-        jarApi.putJar(rootContext, "jar://folder1/folder2/jar-4.jar", SAMPLE_JAR);
+        jarApi.putJar(ctx, "jar://folder1/jar-1.jar", SAMPLE_JAR);
+        jarApi.putJar(ctx, "jar://folder1/jar-2.jar", SAMPLE_JAR);
+        jarApi.putJar(ctx, "jar://folder1/folder2/jar-3.jar", SAMPLE_JAR);
+        jarApi.putJar(ctx, "jar://folder1/folder2/jar-4.jar", SAMPLE_JAR);
 
-        Map<String, RaptureFolderInfo> folderMap = jarApi.listJarsByUriPrefix(rootContext, "jar://folder1", -1);
+        Map<String, RaptureFolderInfo> folderMap = jarApi.listJarsByUriPrefix(ctx, "jar://folder1", -1);
         assertEquals(5, folderMap.size());
 
         // Make sure hyphens are properly decoded for FILE repos (there are other special chars,
@@ -131,22 +139,67 @@ public class JarApiImplTest {
         assertTrue(folderMap.containsKey("jar://folder1/folder2/jar-3.jar"));
         assertTrue(folderMap.containsKey("jar://folder1/folder2/jar-4.jar"));
 
-        folderMap = jarApi.listJarsByUriPrefix(rootContext, "jar://folder1/folder2", -1);
+        folderMap = jarApi.listJarsByUriPrefix(ctx, "jar://folder1/folder2", -1);
         assertEquals(2, folderMap.size());
 
-        folderMap = jarApi.listJarsByUriPrefix(rootContext, "jar://folder1", 1);
+        folderMap = jarApi.listJarsByUriPrefix(ctx, "jar://folder1", 1);
         assertEquals(3, folderMap.size());
     }
 
-    @Test
-    public void testEnableDisableJar() {
-        jarApi.putJar(rootContext, SAMPLE_JAR_URI, SAMPLE_JAR);
-        assertFalse(jarApi.jarIsEnabled(rootContext, SAMPLE_JAR_URI));
+    private byte[] createTestJar() {
+        Manifest manifest = new Manifest();
+        manifest.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION, "1.0");
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try (JarOutputStream target = new JarOutputStream(baos, manifest)) {
+            File testJar = new File(TEST_JAR_PATH);
+            if (!testJar.exists() || !testJar.canRead()) {
+                return null;
+            }
+            add(testJar, target);
+        } catch (IOException e) {
+            log.error(e);
+        }
+        return baos.toByteArray();
+    }
 
-        jarApi.enableJar(rootContext, SAMPLE_JAR_URI);
-        assertTrue(jarApi.jarIsEnabled(rootContext, SAMPLE_JAR_URI));
+    private void add(File source, JarOutputStream target) throws IOException {
+        BufferedInputStream in = null;
+        try {
+            if (source.isDirectory()) {
+                String name = source.getPath().replace("\\", "/");
+                if (!name.isEmpty()) {
+                    if (!name.endsWith("/")) {
+                        name += "/";
+                    }
+                    JarEntry entry = new JarEntry(name);
+                    entry.setTime(source.lastModified());
+                    target.putNextEntry(entry);
+                    target.closeEntry();
+                }
+                for (File nestedFile : source.listFiles()) {
+                    add(nestedFile, target);
+                }
+                return;
+            }
 
-        jarApi.disableJar(rootContext, SAMPLE_JAR_URI);
-        assertFalse(jarApi.jarIsEnabled(rootContext, SAMPLE_JAR_URI));
+            JarEntry entry = new JarEntry(source.getPath().replace("\\", "/"));
+            entry.setTime(source.lastModified());
+            target.putNextEntry(entry);
+            in = new BufferedInputStream(new FileInputStream(source));
+
+            byte[] buffer = new byte[1024];
+            while (true) {
+                int count = in.read(buffer);
+                if (count == -1) {
+                    break;
+                }
+                target.write(buffer, 0, count);
+            }
+            target.closeEntry();
+        } finally {
+            if (in != null) {
+                in.close();
+            }
+        }
     }
 }

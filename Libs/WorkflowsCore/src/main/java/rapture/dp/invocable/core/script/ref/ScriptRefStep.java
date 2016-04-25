@@ -23,7 +23,10 @@
  */
 package rapture.dp.invocable.core.script.ref;
 
+import java.util.Map;
+
 import org.apache.log4j.Logger;
+
 import rapture.common.CallingContext;
 import rapture.common.RaptureScript;
 import rapture.common.dp.AbstractInvocable;
@@ -35,8 +38,6 @@ import rapture.script.reflex.ReflexRaptureScript;
 import rapture.workflow.script.WorkflowScriptConstants;
 import rapture.workflow.script.ref.WorkflowScriptRefConstants;
 
-import java.util.Map;
-
 /**
  * @author bardhi
  * @since 8/19/14.
@@ -44,11 +45,12 @@ import java.util.Map;
 public class ScriptRefStep extends AbstractInvocable {
     private static final Logger log = Logger.getLogger(ScriptRefStep.class);
 
-    public ScriptRefStep(String workerURI) {
-        super(workerURI);
+    public ScriptRefStep(String workerURI, String stepName) {
+        super(workerURI, stepName);
     }
 
-    @Override public String invoke(CallingContext context) {
+    @Override
+    public String invoke(CallingContext context) {
         String scriptURI = Kernel.getDecision().getContextValue(context, getWorkerURI(), WorkflowScriptRefConstants.SCRIPT_URI);
         log.info(String.format("Attempting to run Reflex Script at URI %s", scriptURI));
         RaptureScript script = Kernel.getScript().getScript(context, scriptURI);

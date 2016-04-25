@@ -18,8 +18,8 @@ import rapture.kernel.Kernel;
 
 public class TestInvocable extends AbstractInvocable {
 
-    public TestInvocable(String workerURI) {
-        super(workerURI);
+    public TestInvocable(String workerURI, String stepName) {
+        super(workerURI, stepName);
     }
 
     @Override

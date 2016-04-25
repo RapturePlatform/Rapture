@@ -23,172 +23,103 @@
  */
 package rapture.kernel;
 
-import com.google.common.base.Preconditions;
-import org.apache.log4j.Logger;
-import rapture.common.*;
-import rapture.common.api.JarApi;
-import rapture.common.exception.RaptureException;
-import rapture.config.ConfigLoader;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import rapture.common.BlobContainer;
+import rapture.common.CallingContext;
+import rapture.common.RaptureConstants;
+import rapture.common.RaptureFolderInfo;
+import rapture.common.RapturePipelineTask;
+import rapture.common.RaptureURI;
+import rapture.common.Scheme;
+import rapture.common.api.BlobApi;
+import rapture.common.api.JarApi;
+import rapture.common.mime.MimeJarCacheUpdate;
 
 /**
  * Created by zanniealvarez on 9/21/15.
  */
 public class JarApiImpl extends KernelBase implements JarApi {
-    private static Logger logger = Logger.getLogger(JarApiImpl.class);
 
-    final static String JAR_REPO_URI = "blob://" + RaptureConstants.JAR_REPO + RaptureURI.Parser.SEPARATOR_CHAR;
+    private final static String JAR_REPO_URI = "blob://" + RaptureConstants.JAR_REPO + RaptureURI.Parser.SEPARATOR_CHAR;
     final static String CONTENT_TYPE = "application/java-archive";
-    final static String ENABLED_HEADER = "Jar-Enabled";
 
-    private BlobApiImpl blobApi;
+    private BlobApi blobApi;
 
     public JarApiImpl(Kernel raptureKernel) {
         super(raptureKernel);
-        blobApi = Kernel.getBlob().getTrusted();
+        blobApi = Kernel.getBlob();
     }
 
     @Override
     public Boolean jarExists(CallingContext context, String jarUri) {
-        return blobApi.blobExists(ContextFactory.getKernelUser(), getBlobUriFromJarUri(jarUri));
+        return blobApi.blobExists(context, getBlobUriFromJarUri(jarUri));
     }
 
     @Override
     public void putJar(CallingContext context, String jarUri, byte[] jarContent) {
-        try {
-            blobApi.putBlob(ContextFactory.getKernelUser(), getBlobUriFromJarUri(jarUri), jarContent, CONTENT_TYPE);
-            disableJar(ContextFactory.getKernelUser(), jarUri);
-        }
-        catch (RaptureException e) {
-            if (!isNoSuchRepoException(e))
-                throw e;
-
-            createJarRepo();
-            blobApi.putBlob(ContextFactory.getKernelUser(), getBlobUriFromJarUri(jarUri), jarContent, CONTENT_TYPE);
-            disableJar(ContextFactory.getKernelUser(), jarUri);
-        }
+        String blobUri = getBlobUriFromJarUri(jarUri);
+        blobApi.putBlob(context, blobUri, jarContent, CONTENT_TYPE);
+        sendCacheUpdateMessage(context, jarUri, false);
     }
 
     @Override
     public BlobContainer getJar(CallingContext context, String jarUri) {
-        try {
-            return blobApi.getBlob(ContextFactory.getKernelUser(), getBlobUriFromJarUri(jarUri));
-        }
-        catch (RaptureException e) {
-            if (!isNoSuchRepoException(e))
-                throw e;
-
-            return null;
-        }
+        return blobApi.getBlob(context, getBlobUriFromJarUri(jarUri));
     }
 
     @Override
     public void deleteJar(CallingContext context, String jarUri) {
-        blobApi.deleteBlob(ContextFactory.getKernelUser(), getBlobUriFromJarUri(jarUri));
+        blobApi.deleteBlob(context, getBlobUriFromJarUri(jarUri));
+        sendCacheUpdateMessage(context, jarUri, true);
+
     }
 
     @Override
     public Long getJarSize(CallingContext context, String jarUri) {
-        try {
-            return blobApi.getBlobSize(ContextFactory.getKernelUser(), getBlobUriFromJarUri(jarUri));
-        }
-        catch (RaptureException e) {
-            if (!isNoSuchRepoException(e))
-                throw e;
-
-            return null;
-        }
+        return blobApi.getBlobSize(context, getBlobUriFromJarUri(jarUri));
     }
 
     @Override
     public Map<String, String> getJarMetaData(CallingContext context, String jarUri) {
-        try {
-            return blobApi.getBlobMetaData(ContextFactory.getKernelUser(), getBlobUriFromJarUri(jarUri));
-        }
-        catch (RaptureException e) {
-            if (!isNoSuchRepoException(e))
-                throw e;
-
-            return null;
-        }
+        return blobApi.getBlobMetaData(context, getBlobUriFromJarUri(jarUri));
     }
 
     @Override
     public Map<String, RaptureFolderInfo> listJarsByUriPrefix(CallingContext context, String uriPrefix, int depth) {
-        try {
-            Map<String, RaptureFolderInfo> blobsByPrefix = blobApi.listBlobsByUriPrefix(ContextFactory.getKernelUser(), getBlobUriFromJarUri(uriPrefix), depth);
-
-            Map<String, RaptureFolderInfo> jarsByPrefix = new HashMap<>();
-            for (Map.Entry<String, RaptureFolderInfo> entry : blobsByPrefix.entrySet()) {
-                jarsByPrefix.put(getJarUriFromBlobUri(entry.getKey()), entry.getValue());
-            }
-
-            return jarsByPrefix;
+        Map<String, RaptureFolderInfo> blobsByPrefix = blobApi.listBlobsByUriPrefix(context, getBlobUriFromJarUri(uriPrefix), depth);
+        Map<String, RaptureFolderInfo> jarsByPrefix = new HashMap<>();
+        for (Map.Entry<String, RaptureFolderInfo> entry : blobsByPrefix.entrySet()) {
+            jarsByPrefix.put(getJarUriFromBlobUri(entry.getKey()), entry.getValue());
         }
-        catch (RaptureException e) {
-            if (!isNoSuchRepoException(e))
-                throw e;
-
-            return null;
-        }
-    }
-
-    @Override
-    public Boolean jarIsEnabled(CallingContext context, String jarUri) {
-        Map<String, String> meta = blobApi.getBlobMetaData(ContextFactory.getKernelUser(), getBlobUriFromJarUri(jarUri));
-        String enabled = meta.get(ENABLED_HEADER);
-        return Boolean.valueOf(enabled);
-    }
-
-    @Override
-    public void enableJar(CallingContext context, String jarUri) {
-        setIsEnabled(context, jarUri, true);
-    }
-
-    @Override
-    public void disableJar(CallingContext context, String jarUri) {
-        setIsEnabled(context, jarUri, false);
-    }
-
-    private void setIsEnabled(CallingContext context, String jarUri, Boolean enabled) {
-        RaptureURI interimUri = new RaptureURI(getBlobUriFromJarUri(jarUri), Scheme.BLOB);
-        Preconditions.checkNotNull(interimUri);
-
-        Map<String, String> meta = blobApi.getBlobMetaData(ContextFactory.getKernelUser(), getBlobUriFromJarUri(jarUri));
-        meta.put(ENABLED_HEADER, "" + enabled);
-        blobApi.putMeta(meta, interimUri, ContextFactory.getKernelUser());
-    }
-
-    private void createJarRepo() {
-        if (blobApi.blobRepoExists(ContextFactory.getKernelUser(), JAR_REPO_URI)) {
-            logger.info("Attempted to create JAR repo when it already exists. Skipping.");
-            return;
-        }
-
-        logger.info("JAR repo does not exist, creating");
-
-        String configBase = " {} USING " + ConfigLoader.getConf().JarStorage +
-                " { prefix=\"" + RaptureConstants.JAR_REPO + "\"}";
-
-        String config = "BLOB" + configBase;
-        String metaConfig = "REP" + configBase;
-
-        blobApi.createBlobRepo(ContextFactory.getKernelUser(), JAR_REPO_URI, config, metaConfig);
-    }
-
-    private Boolean isNoSuchRepoException(RaptureException e) {
-        return e.getMessage().equals(
-                apiMessageCatalog.getMessage("NoSuchRepo", "blob://" + RaptureConstants.JAR_REPO).toString());
+        return jarsByPrefix;
     }
 
     String getBlobUriFromJarUri(String jarUri) {
-        RaptureURI raptureURI = new RaptureURI(jarUri);
-        return JAR_REPO_URI + raptureURI.getShortPath();
+        return JAR_REPO_URI + new RaptureURI(jarUri, Scheme.JAR).getShortPath();
     }
 
     String getJarUriFromBlobUri(String blobUri) {
         return blobUri.replace(JAR_REPO_URI, "jar://");
+    }
+
+    /**
+     * Tell all Rapture Kernels to update their JarCache instance
+     * 
+     * @param ctx
+     * @param jarUri
+     *            - the uri of the jar that has been updated
+     * @param isDeletion
+     *            - true, if this is for removal of a jarUri
+     */
+    private void sendCacheUpdateMessage(CallingContext ctx, String jarUri, boolean isDeletion) {
+        RapturePipelineTask task = new RapturePipelineTask();
+        MimeJarCacheUpdate mime = new MimeJarCacheUpdate();
+        mime.setJarUri(new RaptureURI(jarUri, Scheme.JAR));
+        mime.setDeletion(isDeletion);
+        task.setContentType(MimeJarCacheUpdate.getMimeType());
+        task.addMimeObject(mime);
+        Kernel.getPipeline().broadcastMessageToAll(ctx, task);
     }
 }

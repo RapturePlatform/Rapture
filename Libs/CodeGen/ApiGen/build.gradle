@@ -75,9 +75,9 @@ project.tasks.create(name: 'genCurtisDoc',  type: JavaExec, group: taskGroup) {
             '-l',
             'CurtisDoc',
             '-o',
-            "../../../RaptureSamples/Curtis/CurtisApiDoc/src/main/resources/FEATURE/content/curtis.api",
+            "../../../../RaptureSamples/Curtis/CurtisApiDoc/src/main/resources/FEATURE/content/curtis.api",
             '-a',
-            "../../../RaptureSamples/Curtis/CurtisApiDoc/src/main/resources/FEATURE/content/curtis.api",
+            "../../../../RaptureSamples/Curtis/CurtisApiDoc/src/main/resources/FEATURE/content/curtis.api",
             '-g',
             "API",
     ]

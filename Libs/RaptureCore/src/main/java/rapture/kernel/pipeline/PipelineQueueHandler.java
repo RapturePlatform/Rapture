@@ -29,6 +29,8 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
+import com.google.common.collect.ImmutableMap;
+
 import rapture.common.RapturePipelineTask;
 import rapture.common.mime.MimeDecisionProcessAdvance;
 import rapture.common.mime.MimeDocumentIndexRebuild;
@@ -39,17 +41,14 @@ import rapture.common.mime.MimeReflexScriptRef;
 import rapture.common.mime.MimeReflexScriptResume;
 import rapture.common.mime.MimeScheduleReflexScriptRef;
 import rapture.common.mime.MimeSearchUpdateObject;
+import rapture.common.mime.MimeJarCacheUpdate;
 import rapture.exchange.QueueHandler;
 import rapture.kernel.dp.RaptureDecisionProcessAdvanceHandler;
 
-import com.google.common.collect.ImmutableMap;
-
 /**
- * Instances of this class are used to invoke an appropriate response to manage
- * a message on a pipeline task queue.
+ * Instances of this class are used to invoke an appropriate response to manage a message on a pipeline task queue.
  * <p>
- * The appropriate content handler is determined by the contentType field, this
- * class simply routes to the appropriate one.
+ * The appropriate content handler is determined by the contentType field, this class simply routes to the appropriate one.
  *
  * @author amkimian
  */
@@ -77,6 +76,7 @@ public class PipelineQueueHandler implements QueueHandler {
         setupMap.put(MimeDecisionProcessAdvance.getMimeType(), new RaptureDecisionProcessAdvanceHandler());
         setupMap.put("application/vnd.rapture.event.alert", new RaptureAlertHandler());
         setupMap.put(MimeSearchUpdateObject.getMimeType(), new RaptureSearchUpdateHandler());
+        setupMap.put(MimeJarCacheUpdate.getMimeType(), new JarCacheUpdateHandler());
         defaultHandlers = Collections.unmodifiableMap(setupMap);
     }
 

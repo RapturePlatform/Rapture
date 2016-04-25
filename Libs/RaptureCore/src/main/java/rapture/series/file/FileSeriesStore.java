@@ -405,8 +405,13 @@ public class FileSeriesStore implements SeriesStore {
         if ((children != null) && (children.length > 0)) {
             for (File kid : children) {
                 RaptureFolderInfo inf = new RaptureFolderInfo();
-                inf.setName(kid.getName().substring(0, kid.getName().length()-1));	// remove trailing colon
-                inf.setFolder(kid.isDirectory());
+                if (kid.isDirectory()) {
+	                inf.setName(kid.getName());
+	                inf.setFolder(true);
+                } else {
+	                inf.setName(kid.getName().substring(0, kid.getName().length()-1));	// remove trailing colon
+	                inf.setFolder(false);
+                }
                 info.add(inf);
             }
         }
