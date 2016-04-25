@@ -987,6 +987,7 @@ type Workflow(@package=rapture.common.dp) {
     Map<String, String> view = new HashMap<String, String>();
     List<ExpectedArgument> expectedArguments = new ArrayList<ExpectedArgument>();
     List<String> jarUriDependencies = new ArrayList<>();
+    Boolean useParentFirstClassLoader = false;
     String defaultAppStatusNamePattern; //appstatus name pattern, to be used if nothing passed in to workorder 
 }
 

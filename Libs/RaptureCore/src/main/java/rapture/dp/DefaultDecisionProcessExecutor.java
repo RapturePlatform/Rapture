@@ -94,6 +94,8 @@ import rapture.kernel.LockApiImpl;
 import rapture.kernel.dp.ExecutionContextUtil;
 import rapture.kernel.dp.StepRecordUtil;
 import rapture.kernel.dp.WorkOrderStatusUtil;
+import rapture.kernel.jar.ChildFirstClassLoader;
+import rapture.kernel.jar.ParentFirstClassLoader;
 import rapture.log.MDCService;
 import rapture.script.reflex.ReflexRaptureScript;
 import rapture.server.dp.JoinCountdown;
@@ -420,7 +422,7 @@ public class DefaultDecisionProcessExecutor implements DecisionProcessExecutor {
                 ExecutionContextUtil.treatValueAsDefaultLiteral(value));
     }
 
-    @SuppressWarnings("rawtypes")
+    @SuppressWarnings({ "rawtypes", "resource" })
     private AbstractInvocable findInvocable(CallingContext ctx, Step step, Workflow workflow, RaptureURI executableUri, String workerUri,
             StepRecord stepRecord) {
         String className = String.format("rapture.dp.invocable.%s", executableUri.getAuthority());
@@ -429,7 +431,11 @@ public class DefaultDecisionProcessExecutor implements DecisionProcessExecutor {
         try {
             List<String> stepAndWorkflowDeps = new ArrayList<>(step.getJarUriDependencies());
             stepAndWorkflowDeps.addAll(workflow.getJarUriDependencies());
-            classLoader = new WorkflowClassLoader(ctx, stepAndWorkflowDeps);
+            if (workflow.getUseParentFirstClassLoader()) {
+                classLoader = new ParentFirstClassLoader(this.getClass().getClassLoader(), ctx, stepAndWorkflowDeps);
+            } else {
+                classLoader = new ChildFirstClassLoader(this.getClass().getClassLoader(), ctx, stepAndWorkflowDeps);
+            }
             invocableImpl = classLoader.loadClass(className);
         } catch (ClassNotFoundException | ExecutionException e) {
             log.error("Cannot load class " + className, e);
