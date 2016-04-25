@@ -497,7 +497,7 @@ public class BlobApiImpl extends KernelBase implements BlobApi, RaptureScheme {
         
             List<RaptureFolderInfo> children = repo.listMetaByUriPrefix(currParentDocPath);
             if ((children == null) || (children.isEmpty()) && (currDepth==0) && (internalUri.hasDocPath())) {
-                throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, apiMessageCatalog.getMessage("NoSuchBlob", internalUri.toString())); //$NON-NLS-1$
+                throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, apiMessageCatalog.getMessage("NoSuchFolder", internalUri.toString())); //$NON-NLS-1$
             } else {
                 for (RaptureFolderInfo child : children) {
                     String childDocPath = currParentDocPath + (top ? "" : "/") + child.getName();
