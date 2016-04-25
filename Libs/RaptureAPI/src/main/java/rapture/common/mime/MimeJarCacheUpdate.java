@@ -21,11 +21,40 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package rapture.dp.invocable;
+package rapture.common.mime;
 
-public class HelloWorld extends SignalInvocable {
+import rapture.common.RaptureTransferObject;
+import rapture.common.RaptureURI;
 
-    public HelloWorld(String workerURI, String stepName) {
-        super(workerURI, stepName, "Hello World", 0);
+/**
+ * Payload object on the pipeline for updating jar caches for all Rapture Kernels
+ * 
+ * @author dukenguyen
+ *
+ */
+public class MimeJarCacheUpdate implements RaptureTransferObject {
+
+    private RaptureURI jarUri;
+
+    private boolean deletion;
+
+    public RaptureURI getJarUri() {
+        return jarUri;
+    }
+
+    public void setJarUri(RaptureURI jarUri) {
+        this.jarUri = jarUri;
+    }
+
+    public static String getMimeType() {
+        return "application/vnd.rapture.jarcacheupdate";
+    }
+
+    public boolean isDeletion() {
+        return deletion;
+    }
+
+    public void setDeletion(boolean deletion) {
+        this.deletion = deletion;
     }
 }

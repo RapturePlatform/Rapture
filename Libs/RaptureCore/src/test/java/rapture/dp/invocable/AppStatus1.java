@@ -28,12 +28,14 @@ import org.apache.log4j.Logger;
 import rapture.common.CallingContext;
 import rapture.common.dp.AbstractInvocable;
 
-public class AppStatus1 extends AbstractInvocable{
+public class AppStatus1 extends AbstractInvocable {
 
-    public AppStatus1(String workerURI) {
-        super(workerURI);
+    public AppStatus1(String workerURI, String stepName) {
+        super(workerURI, stepName);
     }
+
     private static final Logger logger = Logger.getLogger(AppStatus1.class);
+
     @Override
     public String invoke(CallingContext ctx) {
         logger.info("Running");

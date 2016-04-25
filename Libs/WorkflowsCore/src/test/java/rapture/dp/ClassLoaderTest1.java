@@ -21,59 +21,35 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package rapture.dp.invocable;
+package rapture.dp;
 
-import java.util.Set;
-
-import org.apache.log4j.Logger;
-
-import com.google.common.collect.Sets;
+import org.custommonkey.xmlunit.XMLUnit;
 
 import rapture.common.CallingContext;
 import rapture.common.dp.AbstractInvocable;
 
 /**
- * This is a test class for single-node workflow tests
+ * Test class with referenecs to the external jar xmlunit for ClassLoader test purposes in the RaptureCore project. See class WorkflowClassLoaderTest in
+ * RaptureCore
  * 
- * @author mel
+ * @author dukenguyen
+ *
  */
-public class SignalInvocable extends AbstractInvocable {
-    private static Logger log = Logger.getLogger(SignalInvocable.class);
-    private final String key;
-    private final long delay;
+public class ClassLoaderTest1 extends AbstractInvocable<Object> {
 
-    public SignalInvocable(String workerURI, String stepName, String key, long delay) {
+    public ClassLoaderTest1(String workerURI, String stepName) {
         super(workerURI, stepName);
-        this.key = key;
-        this.delay = delay;
     }
+
+    public static int x1;
 
     @Override
     public String invoke(CallingContext ctx) {
-        log.info("Signal " + key);
-        if (delay > 0) try {
-            Thread.sleep(delay);
-        } catch (InterruptedException e) {
-            throw new IllegalStateException("Test received unexpected user interrupt");
+        try {
+            XMLUnit.buildControlDocument("<x></x>");
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        if (key.startsWith("~")) Singleton.clearSignal(key.substring(1));
-        else Singleton.setSignal(key);
-        return "ok";
-    }
-
-    public static class Singleton {
-        static Set<String> on = Sets.newHashSet();
-
-        synchronized static public void setSignal(String key) {
-            on.add(key);
-        }
-
-        synchronized static public void clearSignal(String key) {
-            on.remove(key);
-        }
-
-        synchronized static public boolean testSignal(String key) {
-            return on.contains(key);
-        }
+        return String.valueOf(++x1);
     }
 }
