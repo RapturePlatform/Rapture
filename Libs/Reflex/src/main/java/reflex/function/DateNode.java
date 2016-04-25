@@ -24,6 +24,7 @@
 package reflex.function;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import reflex.IReflexHandler;
@@ -69,6 +70,8 @@ public class DateNode extends BaseNode {
             }
             if (initValue.isDate()) {
                 val = new ReflexDateValue(initValue.asDate(), calendarString);
+            } else if (initValue.isNumber()) {
+                val = new ReflexDateValue(new Date(initValue.asLong()), calendarString);
             } else {
                 val = new ReflexDateValue(initValue.asString(), calendarString);
             }
