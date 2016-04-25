@@ -68,7 +68,6 @@ public class JarApiImplTest {
         Kernel.getKernel().restart();
         Kernel.initBootstrap();
         jarApi = Kernel.getJar();
-        Kernel.getKernel();
         Kernel.setCategoryMembership("alpha");
     }
 
