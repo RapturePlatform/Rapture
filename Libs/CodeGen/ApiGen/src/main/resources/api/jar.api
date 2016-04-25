@@ -29,18 +29,6 @@ api(Jar) {
    [Returns full pathnames for an entire subtree as a map of the path to RFI.]
    @entitle=/data/list/$f(uriPrefix)
    @public Map(String,RaptureFolderInfo) listJarsByUriPrefix(String uriPrefix, int depth);
-
-   [Indicates whether a given JAR is enabled on this server.]
-   @entitle=/data/list/$f(jarUri)
-   @public Boolean jarIsEnabled(String jarUri);
-
-   [Enables a JAR to be used on this server.]
-   @entitle=/admin/jar
-   @public void enableJar(String jarUri);
-
-   [Disables a JAR from being used on this server.]
-   @entitle=/admin/jar
-   @public void disableJar(String jarUri);
 }
 
 

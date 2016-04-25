@@ -48,6 +48,10 @@ api(Blob) {
    @entitle=/data/list/$f(blobUri)
    @public Long getBlobSize(String blobUri);
    
+   [Store metadata associated with a blob]
+   @entitle=/data/write/$f(blobUri)
+   @public void putBlobMetaData(String blobUri, Map(String, String) metadata);
+   
    [Retrieves all metadata associated with a blob.]
    @entitle=/data/list/$f(blobUri)
    @public Map(String,String) getBlobMetaData(String blobUri);

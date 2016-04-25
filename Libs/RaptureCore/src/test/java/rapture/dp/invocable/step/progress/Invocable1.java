@@ -23,20 +23,21 @@
  */
 package rapture.dp.invocable.step.progress;
 
+import org.apache.log4j.Logger;
+
 import rapture.common.CallingContext;
 import rapture.common.dp.AbstractInvocable;
 import rapture.kernel.Kernel;
-
-import org.apache.log4j.Logger;
 
 /**
  * @author bardhi
  * @since 3/20/15.
  */
-public class Invocable1 extends AbstractInvocable{
+public class Invocable1 extends AbstractInvocable {
     private static final Logger log = Logger.getLogger(Invocable1.class);
-    public Invocable1(String workerURI) {
-        super(workerURI);
+
+    public Invocable1(String workerURI, String stepName) {
+        super(workerURI, stepName);
     }
 
     @Override

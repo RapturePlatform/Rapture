@@ -23,6 +23,16 @@
  */
 package rapture.kernel.pipeline;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.http.HttpStatus;
+import org.apache.log4j.Logger;
+
 import rapture.common.PipelineTaskStatus;
 import rapture.common.RapturePipelineTask;
 import rapture.common.TableQuery;
@@ -36,16 +46,6 @@ import rapture.dsl.iqry.IndexQuery;
 import rapture.dsl.iqry.IndexQueryFactory;
 import rapture.index.IndexHandler;
 import rapture.util.NetworkUtil;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.http.HttpStatus;
-import org.apache.log4j.Logger;
 
 public final class PipelineTaskStatusManager {
 
@@ -92,7 +92,7 @@ public final class PipelineTaskStatusManager {
 
     public PipelineTaskStatus getStatus(String taskId) {
         // TODO: Allow double or single quotes in table handler parsing
-        //    	String query = "SELECT content WHERE rowId=\"" + taskId + "\"";
+        // String query = "SELECT content WHERE rowId=\"" + taskId + "\"";
         String query = "SELECT content WHERE rowId='" + taskId + "'";
         TableQueryResult res = indexHandler.query(query);
         if (res != null && res.getRows().size() != 0) {

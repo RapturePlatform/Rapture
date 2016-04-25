@@ -2,4 +2,10 @@ jar.manifest.attributes "Implementation-Title": "Common Workflows used by the Ra
 
 dependencies {
     compile project(':RaptureCore')
+    testCompile 'xmlunit:xmlunit:1.6'
+}
+
+task testJar(type: Jar) {
+    classifier = 'tests'
+    from sourceSets.test.output
 }

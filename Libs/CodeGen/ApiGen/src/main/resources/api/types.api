@@ -986,6 +986,7 @@ type Workflow(@package=rapture.common.dp) {
                                // RaptureComputeServer 
     Map<String, String> view = new HashMap<String, String>();
     List<ExpectedArgument> expectedArguments = new ArrayList<ExpectedArgument>();
+    List<String> jarUriDependencies = new ArrayList<>();
     String defaultAppStatusNamePattern; //appstatus name pattern, to be used if nothing passed in to workorder 
 }
 
@@ -1036,6 +1037,7 @@ type Step(@package=rapture.common.dp) {
     List<Transition> transitions = new ArrayList<Transition>();
     String categoryOverride; //category associated with this step, if it overrides the workflow category
     Integer softTimeout = -1;
+    List<String> jarUriDependencies = new ArrayList<>();
 }
 
 [Each time a Workflow is executed, the execution is identified by a matching WorkOrder. A WorkOrderURI may be qualified with an id (index) of a particular Worker, e.g. workorder://myProj/myFlow#0]
