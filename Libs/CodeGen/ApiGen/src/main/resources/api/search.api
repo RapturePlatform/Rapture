@@ -41,11 +41,11 @@ api(Search) {
     @entitle=/repo/write
     @public void deleteSearchRepo(String searchRepoUri);
 
-    [This method rebuilds the search index associated with a document repo. By dropping it and recreating it (asynchronously).]
+    [This method rebuilds the search index associated with a repo (authority) by dropping it and recreating it (asynchronously). The repoUri passed in must have the scheme as the prefix e.g. document://myrepo or series://myrepo2]
     @entitle=/repo/write
-    @public void rebuildDocRepoIndex(String docRepoUri);
+    @public void rebuildRepoIndex(String repoUri);
     
-    [This method just drops the search index associated with a document repo. It is done asynchronously.]
+    [This method just drops the search index associated with a repo (authority).  The repoUri passed in must have the scheme as the prefix e.g. document://myrepo or series://myrepo2. It is done asynchronously.]
     @entitle=/repo/write
-    @public void dropDocRepoIndex(String docRepoUri);
+    @public void dropRepoIndex(String repoUri);
 }

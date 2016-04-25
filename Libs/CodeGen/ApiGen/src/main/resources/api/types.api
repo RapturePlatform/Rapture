@@ -244,6 +244,7 @@ type RaptureAuthority(@package=rapture.common) {
 [Describes config info for a repository that stores Rapture documents.]
 @Addressable(scheme = DOCUMENT(true))
 @Storable(storagePath : {authority}, prefix="type")
+@Searchable
 type DocumentRepoConfig(@package=rapture.common.model) {
     String description;
     String config;
@@ -254,8 +255,6 @@ type DocumentRepoConfig(@package=rapture.common.model) {
     Set<FullTextIndexScriptPair> fullTextIndexes = new HashSet<FullTextIndexScriptPair>();
     String updateQueue;
     RaptureDocConfig documentRepo;
-    Boolean ftsIndex = true;
-    String ftsIndexRepo = ""; // Blank means "use default"
 }
 
 [Describes config info for a full text search repository.]
@@ -927,6 +926,7 @@ type ForeignKey(@package=rapture.common) {
 [Configuration info for a repository that stores series data.]
 @Addressable(scheme = SERIES(true))
 @Storable(storagePath : {authority}, prefix="series")
+@Searchable
 type SeriesRepoConfig(@package=rapture.common) {
 	String description;
 	String config;
@@ -986,6 +986,7 @@ type Workflow(@package=rapture.common.dp) {
                                // RaptureComputeServer 
     Map<String, String> view = new HashMap<String, String>();
     List<ExpectedArgument> expectedArguments = new ArrayList<ExpectedArgument>();
+    List<String> jarUriDependencies = new ArrayList<>();
     String defaultAppStatusNamePattern; //appstatus name pattern, to be used if nothing passed in to workorder 
 }
 
@@ -1036,6 +1037,7 @@ type Step(@package=rapture.common.dp) {
     List<Transition> transitions = new ArrayList<Transition>();
     String categoryOverride; //category associated with this step, if it overrides the workflow category
     Integer softTimeout = -1;
+    List<String> jarUriDependencies = new ArrayList<>();
 }
 
 [Each time a Workflow is executed, the execution is identified by a matching WorkOrder. A WorkOrderURI may be qualified with an id (index) of a particular Worker, e.g. workorder://myProj/myFlow#0]

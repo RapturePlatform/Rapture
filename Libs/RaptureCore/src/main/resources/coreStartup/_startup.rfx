@@ -82,7 +82,7 @@ end
 if _cfg.SystemBlobConfigOn() do
     systemBlobRepo = "//sys.blob";
    if !#blob.blobRepoExists(systemBlobRepo) do
-      println("Blob repo does not exist, creating...");
+      println("System blob repo does not exist, creating...");
       #blob.createBlobRepo(systemBlobRepo, _cfg.DefaultSystemBlobConfig(), _cfg.DefaultSystemBlobFoldersConfig());
    end
 end  
@@ -97,13 +97,16 @@ if (!#audit.doesAuditLogExist("//perf")) do
     #audit.createAuditLog("//perf", _cfg.DefaultPerfAuditLog());
 end
 
+// set up the default Jar repo for the Jar API
+systemJarRepo = "blob://sys.RaptureJars";
+if !#blob.blobRepoExists(systemJarRepo) do
+	println("System Jar repo does not exist, creating...");
+    #blob.createBlobRepo(systemJarRepo, _cfg.DefaultJarRepoConfig(), _cfg.DefaultJarRepoMetaConfig());
+end
+
 #async.setupDefaultWorkflows(false);
 
 #event.addEventMessage("//event/alert", 'application/vnd.rapture.event.alert', 'alpha', {});
-
-// set up elastic search
-#sys.putConnectionInfo("ES", fromjson("{ \"host\" : \"127.0.0.1\", \"port\" : 9300, \"username\" : \"rapture\", \"password\" : \"rapture\", \"dbName\" : \"default\", \"instanceName\" : \"default\", \"CLASS\" : \"rapture.common.ConnectionInfo\" }"));
-
 
 if _cfg.FullTextSearchOn() do
 	if !#search.searchRepoExists(_cfg.FullTextSearchDefaultRepo()) do
@@ -111,3 +114,4 @@ if _cfg.FullTextSearchOn() do
 	   #search.createSearchRepo(_cfg.FullTextSearchDefaultRepo(), _cfg.FullTextSearchDefaultConfig());
 	end
 end
+

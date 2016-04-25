@@ -26,8 +26,10 @@ package rapture.kernel.search;
 import java.util.List;
 import java.util.Map;
 
+import rapture.common.RaptureURI;
 import rapture.common.SearchResponse;
 import rapture.common.model.DocumentWithMeta;
+import rapture.common.series.SeriesUpdateObject;
 
 public interface SearchRepository {
 
@@ -37,17 +39,20 @@ public interface SearchRepository {
 
     void put(DocumentWithMeta doc);
 
+    void put(SeriesUpdateObject seriesUpdateObject);
+
     SearchResponse search(List<String> types, String query);
 
     SearchResponse searchWithCursor(List<String> types, String cursorId, int size, String query);
 
     // This is used to define the index used by this repo
-	void setConfig(Map<String, String> config);
+    void setConfig(Map<String, String> config);
 
-	void remove(String displayName);
-	void dropIndexForRepo(String repoName);
+    void remove(RaptureURI uri);
 
-	// We are storing things associated with a uri, so return the uris that start with this docRepo
-	SearchResponse searchForRepoUris(String docRepo, String cursorId);
+    void dropIndexForRepo(String repoName);
+
+    // We are storing things associated with a uri, so return the uris that have this scheme and repo
+    SearchResponse searchForRepoUris(String scheme, String repo, String cursorId);
 
 }

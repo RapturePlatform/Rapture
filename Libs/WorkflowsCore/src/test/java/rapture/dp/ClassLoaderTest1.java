@@ -21,34 +21,38 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package rapture.kernel.pipeline;
+package rapture.dp;
 
-import org.apache.log4j.Logger;
+import java.io.IOException;
 
-import rapture.common.RapturePipelineTask;
-import rapture.exchange.QueueHandler;
+import org.custommonkey.xmlunit.XMLUnit;
+import org.xml.sax.SAXException;
 
-public class RaptureSearchHandler implements QueueHandler {
+import rapture.common.CallingContext;
+import rapture.common.dp.AbstractInvocable;
 
-    private static final Logger log = Logger.getLogger(RaptureSearchHandler.class);
+/**
+ * Test class with referenecs to the external jar xmlunit for ClassLoader test purposes in the RaptureCore project. See class WorkflowClassLoaderTest in
+ * RaptureCore
+ * 
+ * @author dukenguyen
+ *
+ */
+public class ClassLoaderTest1 extends AbstractInvocable<Object> {
 
-    private final PipelineTaskStatusManager statusManager;
-
-    public RaptureSearchHandler() {
-        statusManager = new PipelineTaskStatusManager();
+    public ClassLoaderTest1(String workerURI, String stepName) {
+        super(workerURI, stepName);
     }
+
+    public static int x1;
 
     @Override
-    public boolean handleMessage(String tag, String routing, String contentType, RapturePipelineTask task) {
+    public String invoke(CallingContext ctx) {
         try {
-            statusManager.startRunning(task);
-            // SearchRepositoryFactory.get();
-            statusManager.finishRunningWithSuccess(task);
-        } catch (Exception e) {
-            log.error(e);
-            statusManager.finishRunningWithFailure(task);
+            XMLUnit.buildControlDocument("<x></x>");
+        } catch (SAXException | IOException e) {
+            e.printStackTrace();
         }
-        return true;
+        return String.valueOf(++x1);
     }
-
 }

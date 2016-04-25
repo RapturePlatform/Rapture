@@ -48,6 +48,7 @@ import com.incapture.rapgen.annotations.CacheableAnnotation;
 import com.incapture.rapgen.annotations.DeprecatedAnnotation;
 import com.incapture.rapgen.annotations.ExtendsAnnotation;
 import com.incapture.rapgen.annotations.IndexedAnnotation;
+import com.incapture.rapgen.annotations.SearchableAnnotation;
 import com.incapture.rapgen.annotations.StorableAnnotation;
 import com.incapture.rapgen.annotations.storable.EncodingMap;
 import com.incapture.rapgen.annotations.storable.StorableField;
@@ -118,8 +119,10 @@ public abstract class AbstractTTree extends TreeParser {
     /**
      * Add a package to the type-&gt;package map for imports into the API file
      *
-     * @param type - the type of object
-     * @param pkg  - the package where the type belongs
+     * @param type
+     *            - the type of object
+     * @param pkg
+     *            - the package where the type belongs
      */
     protected void addTypeImport(String type, String pkg) {
         typeToPackage.put(type, pkg);
@@ -141,8 +144,10 @@ public abstract class AbstractTTree extends TreeParser {
      * We need to break up the entitlement to parse out the dynamic entitlements and their associated arguments. So now we need a way to re-assemble for
      * documentation etc. Example string: /user/read/$d(docURI)
      *
-     * @param regularEntitlements - list of regular entitlement paths e.g. /user /read
-     * @param dynamicEntitlements - map of Strings where key is the wildcard and value is the URI arg
+     * @param regularEntitlements
+     *            - list of regular entitlement paths e.g. /user /read
+     * @param dynamicEntitlements
+     *            - map of Strings where key is the wildcard and value is the URI arg
      * @return - full entitlement string
      */
     protected String reassembleFullEntitlmentPath(List<String> regularEntitlements, Map<String, String> dynamicEntitlements) {
@@ -234,10 +239,12 @@ public abstract class AbstractTTree extends TreeParser {
     }
 
     protected void addType(String typeName, String packageName, BeanAnnotation bean, CacheableAnnotation cacheable, AddressableAnnotation addressable,
-            StorableAnnotation storable, ExtendsAnnotation extend, DeprecatedAnnotation deprecated, List<IndexedAnnotation> indices, String sdkName,
+            StorableAnnotation storable, SearchableAnnotation searchable, ExtendsAnnotation extend, DeprecatedAnnotation deprecated,
+            List<IndexedAnnotation> indices, String sdkName,
             Map<String, String> fieldNameToType, List<StringTemplate> beanFields, List<String> constructors) {
 
         boolean isBean = bean != null || storable != null;
+        boolean isSearchable = searchable != null;
 
         typeToPackage.put(typeName, packageName);
 
@@ -282,6 +289,7 @@ public abstract class AbstractTTree extends TreeParser {
                 List<StringTemplate> storageMethods = new LinkedList<StringTemplate>();
 
                 if (storable != null) {
+                    beanClassAttributes.put("searchable", isSearchable);
                     beanClassAttributes.put("storable", Boolean.TRUE);
 
                     List<StorableField> pathFields = storable.getFields();
@@ -480,7 +488,8 @@ public abstract class AbstractTTree extends TreeParser {
     /**
      * Create a new parser instance, pre-supplying the input token stream.
      *
-     * @param input The stream of tokens that will be pulled from the lexer
+     * @param input
+     *            The stream of tokens that will be pulled from the lexer
      */
     protected AbstractTTree(TreeNodeStream input) {
         super(input);
@@ -491,8 +500,10 @@ public abstract class AbstractTTree extends TreeParser {
      * <p>
      * This is only used when a grammar is imported into another grammar, but we must supply this constructor to satisfy the super class contract.
      *
-     * @param input The stream of tokesn that will be pulled from the lexer
-     * @param state The shared state object created by an interconnectd grammar
+     * @param input
+     *            The stream of tokesn that will be pulled from the lexer
+     * @param state
+     *            The shared state object created by an interconnectd grammar
      */
     protected AbstractTTree(TreeNodeStream input, RecognizerSharedState state) {
         super(input, state);
@@ -502,8 +513,10 @@ public abstract class AbstractTTree extends TreeParser {
      * Creates the error/warning message that we need to show users/IDEs when ANTLR has found a parsing error, has recovered from it and is now telling us that
      * a parsing exception occurred.
      *
-     * @param tokenNames token names as known by ANTLR (which we ignore)
-     * @param e          The exception that was thrown
+     * @param tokenNames
+     *            token names as known by ANTLR (which we ignore)
+     * @param e
+     *            The exception that was thrown
      */
     @Override
     public void displayRecognitionError(String[] tokenNames, RecognitionException e) {
@@ -572,10 +585,12 @@ public abstract class AbstractTTree extends TreeParser {
      * Returns a generated path under build/generated-sources/main/java/rapture for the current file. The path will be slightly different if we have an sdkName
      * defined
      *
-     * @param sdkName      The name of the SDK. If set, then sdkPackage will be appended to this. If null, noSdkPackage will be used instead
+     * @param sdkName
+     *            The name of the SDK. If set, then sdkPackage will be appended to this. If null, noSdkPackage will be used instead
      * @param sdkPackage
      * @param noSdkPackage
-     * @param constantPart This is always appended at the end
+     * @param constantPart
+     *            This is always appended at the end
      * @return
      */
     protected String getGeneratedFilePath(String sdkName, String sdkPackage, String noSdkPackage, String constantPart) {

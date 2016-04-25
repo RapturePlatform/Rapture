@@ -35,7 +35,7 @@ hmxdef returns [List types]
 };
 
 typeExpr :
-	^(TYPEDEF doc=DOC (beanAnnotation|cacheableAnnotation|extendsAnnotation|deprecatedAnnotation|addressableAnnotation|storableAnnotation|indexedAnnotation)* name=ID typeAspect typeFields) {
+	^(TYPEDEF doc=DOC (beanAnnotation|cacheableAnnotation|extendsAnnotation|deprecatedAnnotation|addressableAnnotation|storableAnnotation|searchableAnnotation|indexedAnnotation)* name=ID typeAspect typeFields) {
 	   String d = doc.getText();
      d = d.substring(1,d.length()-1);
 	   $st = %docTypeDef(name={$ID}, fields={$typeFields.fields}, doc={d});

@@ -23,8 +23,9 @@
  */
 package rapture.dp.invocable;
 
-import org.apache.log4j.Logger;
 import static org.junit.Assert.assertFalse;
+
+import org.apache.log4j.Logger;
 
 import rapture.common.CallingContext;
 import rapture.common.dp.AbstractInvocable;
@@ -32,8 +33,9 @@ import rapture.kernel.Kernel;
 
 public class ViewSignal extends AbstractInvocable {
     private static Logger log = Logger.getLogger(ViewSignal.class);
-    public ViewSignal(String workerURI) {
-        super(workerURI);
+
+    public ViewSignal(String workerURI, String stepName) {
+        super(workerURI, stepName);
     }
 
     @Override
