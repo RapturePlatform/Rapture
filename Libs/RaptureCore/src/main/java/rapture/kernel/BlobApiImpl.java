@@ -22,6 +22,7 @@
  * SOFTWARE.
  */
 package rapture.kernel;
+
 import static rapture.common.Scheme.BLOB;
 
 import java.io.ByteArrayInputStream;
@@ -44,12 +45,15 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
+import com.google.common.base.Preconditions;
+
 import rapture.common.BlobContainer;
 import rapture.common.CallingContext;
 import rapture.common.ContentEnvelope;
 import rapture.common.EntitlementSet;
 import rapture.common.RaptureFolderInfo;
 import rapture.common.RaptureURI;
+import rapture.common.Scheme;
 import rapture.common.api.BlobApi;
 import rapture.common.exception.RaptureException;
 import rapture.common.exception.RaptureExceptionFactory;
@@ -61,8 +65,6 @@ import rapture.common.shared.blob.ListBlobsByUriPrefixPayload;
 import rapture.kernel.context.ContextValidator;
 import rapture.kernel.schemes.RaptureScheme;
 import rapture.repo.BlobRepo;
-
-import com.google.common.base.Preconditions;
 
 public class BlobApiImpl extends KernelBase implements BlobApi, RaptureScheme {
     public static final String WRITE_TIME = "writeTime";
@@ -147,7 +149,7 @@ public class BlobApiImpl extends KernelBase implements BlobApi, RaptureScheme {
             }
             meta.put(ContentEnvelope.CONTENT_SIZE, Integer.toString(content.length));
             meta.putAll(newMeta);
-            putMeta(meta, interimUri, ContextFactory.getKernelUser());
+            putBlobMetaData(ContextFactory.getKernelUser(), interimUri.toString(), meta);
             blobRepo.storeBlob(context, interimUri, true, new ByteArrayInputStream(content));
 
         } else {
@@ -187,7 +189,7 @@ public class BlobApiImpl extends KernelBase implements BlobApi, RaptureScheme {
         meta.put(WRITE_TIME, newMeta.get(WRITE_TIME));
         meta.put(MODIFIED_TIMESTAMP, newMeta.get(MODIFIED_TIMESTAMP));
         meta.put(USER, newMeta.get(USER));
-        putMeta(meta, interimUri, context);
+        putBlobMetaData(context, interimUri.toString(), meta);
     }
 
     private void lowerStoreBlob(CallingContext context, String blobUri, byte[] content, String contentType, boolean append) {
@@ -228,7 +230,7 @@ public class BlobApiImpl extends KernelBase implements BlobApi, RaptureScheme {
                 attributes.put(MODIFIED_TIMESTAMP, newMeta.get(MODIFIED_TIMESTAMP));
                 attributes.put(USER, newMeta.get(USER));
                 attributes.put(ContentEnvelope.CONTENT_SIZE, Integer.toString(content.length));
-                putMeta(attributes, interimUri, context);
+                putBlobMetaData(context, interimUri.toString(), attributes);
             }
         }
     }
@@ -376,14 +378,14 @@ public class BlobApiImpl extends KernelBase implements BlobApi, RaptureScheme {
         }
     }
 
-    // TODO: Ben - should this become part of the API?
-    // Package visibility to give access to JarApiImpl
-    void putMeta(Map<String, String> attributes, RaptureURI blobMetaUri, CallingContext context) {
+    @Override
+    public void putBlobMetaData(CallingContext context, String blobUri, Map<String, String> metadata) {
+        if (metadata == null) {
+            return;
+        }
+        RaptureURI blobMetaUri = new RaptureURI(blobUri, Scheme.BLOB);
         BlobRepo repo = getRepoFromCache(blobMetaUri.getAuthority());
-        // TODO: Ben - move this type conversion into it's own thing.
-        String attributesAsJSON = JacksonUtil.jsonFromObject(attributes);
-        logger.debug("Meta attributes path is " + blobMetaUri.getDocPath());
-        repo.putMeta(blobMetaUri.getDocPath(), attributesAsJSON, context.getUser(), null, false);
+        repo.putMeta(blobMetaUri.getDocPath(), JacksonUtil.jsonFromObject(metadata), context.getUser(), null, false);
     }
 
     private boolean deleteMeta(CallingContext context, RaptureURI blobMetaUri) {
@@ -417,8 +419,8 @@ public class BlobApiImpl extends KernelBase implements BlobApi, RaptureScheme {
         // But listBlobsByUriPrefix could be slow for a large number of blobs too.
 
         /***
-         * try { RaptureURI uri = new RaptureURI(seriesUri, BLOB); String respectMah = uri.getAuthority(); for (String rfi : listBlobsByUriPrefix
-         * (context, respectMah).keySet()) { if (rfi.equals(seriesUri)) return true; } return false; } catch (Exception e) { return false; }
+         * try { RaptureURI uri = new RaptureURI(seriesUri, BLOB); String respectMah = uri.getAuthority(); for (String rfi : listBlobsByUriPrefix (context,
+         * respectMah).keySet()) { if (rfi.equals(seriesUri)) return true; } return false; } catch (Exception e) { return false; }
          ***/
         try {
             return (getBlob(context, blobUri) != null);
@@ -491,28 +493,27 @@ public class BlobApiImpl extends KernelBase implements BlobApi, RaptureScheme {
                 log.debug("No read permission on folder " + currParentDocPath);
                 continue;
             }
-            
 
-                List<RaptureFolderInfo> children = repo.listMetaByUriPrefix(currParentDocPath);
-                if ((children == null) || (children.isEmpty()) && (currDepth==0) && (internalUri.hasDocPath())) {
-                    //System.out.println("hello....inside BlobApiImpl new code..");
-                    //System.err.println("RaptureException thrown...");
-                    throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, apiMessageCatalog.getMessage("NoSuchBlob", internalUri.toString())); //$NON-NLS-1$
-                }
-                
-                else {
+            List<RaptureFolderInfo> children = repo.listMetaByUriPrefix(currParentDocPath);
+            if ((children == null) || (children.isEmpty()) && (currDepth == 0) && (internalUri.hasDocPath())) {
+                // System.out.println("hello....inside BlobApiImpl new code..");
+                // System.err.println("RaptureException thrown...");
+                throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, apiMessageCatalog.getMessage("NoSuchBlob", internalUri.toString())); //$NON-NLS-1$
+            }
 
-                    for (RaptureFolderInfo child : children) {
-                        String childDocPath = currParentDocPath + (top ? "" : "/") + child.getName();
-                        if (child.getName().isEmpty()) continue;
-                        String childUri = BLOB + "://" + authority + "/" + childDocPath + (child.isFolder() ? "/" : "");
-                        ret.put(childUri, child);
-                        if (child.isFolder()) {
-                            parentsStack.push(childDocPath);
-                        }
+            else {
+
+                for (RaptureFolderInfo child : children) {
+                    String childDocPath = currParentDocPath + (top ? "" : "/") + child.getName();
+                    if (child.getName().isEmpty()) continue;
+                    String childUri = BLOB + "://" + authority + "/" + childDocPath + (child.isFolder() ? "/" : "");
+                    ret.put(childUri, child);
+                    if (child.isFolder()) {
+                        parentsStack.push(childDocPath);
                     }
                 }
-            
+            }
+
             if (top) startDepth--; // special case
         }
         return ret;
@@ -525,7 +526,7 @@ public class BlobApiImpl extends KernelBase implements BlobApi, RaptureScheme {
     private void removeRepoFromCache(String authority) {
         Kernel.getRepoCacheManager().removeRepo(BLOB.toString(), authority);
     }
-    
+
     @Override
     public List<String> deleteBlobsByUriPrefix(CallingContext context, String uriPrefix) {
         Map<String, RaptureFolderInfo> docs = listBlobsByUriPrefix(context, uriPrefix, Integer.MAX_VALUE);

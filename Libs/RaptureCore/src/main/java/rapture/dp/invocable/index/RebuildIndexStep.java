@@ -35,15 +35,15 @@ import rapture.repo.Repository;
 public class RebuildIndexStep extends AbstractInvocable {
     private static Logger log = Logger.getLogger(RebuildIndexStep.class.getName());
 
-    public RebuildIndexStep(String workerURI) {
-        super(workerURI);
+    public RebuildIndexStep(String workerURI, String stepName) {
+        super(workerURI, stepName);
     }
 
     @Override
     public String invoke(CallingContext ctx) {
         log.info("Rebuilding index");
         KernelScript ks = new KernelScript();
-        ks.setCallingContext(ctx); 
+        ks.setCallingContext(ctx);
         String authority = ks.getDecision().getContextValue(getWorkerURI(), "Authority");
         log.info("Rebuilding for " + authority);
         Repository repo = Kernel.getKernel().getRepo(authority);
