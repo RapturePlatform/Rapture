@@ -72,4 +72,9 @@ public class ReflexTest extends ResourceBasedTest {
     public void testTypeOf() throws RecognitionException {
         runTestFor("/typeof.rfx");
     }
+
+    @Test
+    public void testConst() throws RecognitionException {
+        runTestFor("/const.rfx");
+    }
 }
