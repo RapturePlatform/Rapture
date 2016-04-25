@@ -23,7 +23,10 @@
  */
 package rapture.dp;
 
+import java.io.IOException;
+
 import org.custommonkey.xmlunit.XMLUnit;
+import org.xml.sax.SAXException;
 
 import rapture.common.CallingContext;
 import rapture.common.dp.AbstractInvocable;
@@ -47,7 +50,7 @@ public class ClassLoaderTest1 extends AbstractInvocable<Object> {
     public String invoke(CallingContext ctx) {
         try {
             XMLUnit.buildControlDocument("<x></x>");
-        } catch (Exception e) {
+        } catch (SAXException | IOException e) {
             e.printStackTrace();
         }
         return String.valueOf(++x1);
