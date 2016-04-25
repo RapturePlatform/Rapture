@@ -713,45 +713,38 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
     }
 
     @Override
-    public List<String> deleteDocsByUriPrefix(CallingContext context, String uriPrefix) {
-        Map<String, RaptureFolderInfo> docs = listDocsByUriPrefix(context, uriPrefix, Integer.MAX_VALUE);
-        List<RaptureURI> folders = new ArrayList<>();
-        List<String> removed = new ArrayList<>();
-        RaptureURI docURI = new RaptureURI(uriPrefix, Scheme.DOCUMENT);
-//        Repository repository = getRepoFromCache(docURI.getAuthority());
+	public List<String> deleteDocsByUriPrefix(CallingContext context, String uriPrefix) {
+		Map<String, RaptureFolderInfo> docs = listDocsByUriPrefix(context, uriPrefix, Integer.MAX_VALUE);
+		List<RaptureURI> folders = new ArrayList<>();
+		List<String> removed = new ArrayList<>();
+		RaptureURI docURI = new RaptureURI(uriPrefix, Scheme.DOCUMENT);
 
-        DeleteDocPayload requestObj = new DeleteDocPayload();
-        requestObj.setContext(context);
+		DeleteDocPayload requestObj = new DeleteDocPayload();
+		requestObj.setContext(context);
 
-        folders.add(docURI);
-        for (Entry<String, RaptureFolderInfo> entry : docs.entrySet()) {
-            String uri = entry.getKey();
-        	RaptureURI ruri = new RaptureURI(uri);
-            boolean isFolder = entry.getValue().isFolder();
-            try {
-                requestObj.setDocUri(uri);
-                if (isFolder) {
-                    ContextValidator.validateContext(context, EntitlementSet.Doc_deleteDocsByUriPrefix, requestObj);
-                    folders.add(0, ruri);
-                } else {
-                    ContextValidator.validateContext(context, EntitlementSet.Doc_deleteDoc, requestObj);
-                    if (deleteDoc(context, uri)) {
-                    	removed.add(uri);
-                    }
-                }
-            } catch (RaptureException e) {
-                // permission denied
-                log.debug("Unable to delete " + uri + " : " + e.getMessage());
-            }
-        }
-//        for (RaptureURI uri : folders) {
-//            while ((uri != null) && repository.removeFolder(uri.getDocPath(), context.getUser(), "")) {
-//                // getParentURI returns null if the URI has no doc path
-//            	uri = uri.getParentURI();
-//        	}
-//    	}
-        return removed;
-    }
+		folders.add(docURI);
+		for (Entry<String, RaptureFolderInfo> entry : docs.entrySet()) {
+			String uri = entry.getKey();
+			RaptureURI ruri = new RaptureURI(uri);
+			boolean isFolder = entry.getValue().isFolder();
+			try {
+				requestObj.setDocUri(uri);
+				if (isFolder) {
+					ContextValidator.validateContext(context, EntitlementSet.Doc_deleteDocsByUriPrefix, requestObj);
+					folders.add(0, ruri);
+				} else {
+					ContextValidator.validateContext(context, EntitlementSet.Doc_deleteDoc, requestObj);
+					if (deleteDoc(context, uri)) {
+						removed.add(uri);
+					}
+				}
+			} catch (RaptureException e) {
+				// permission denied
+				log.debug("Unable to delete " + uri + " : " + e.getMessage());
+			}
+		}
+		return removed;
+	}
 
     @Override
     public Map<String, RaptureFolderInfo> listDocsByUriPrefix(CallingContext context, String uriPrefix, int depth) {

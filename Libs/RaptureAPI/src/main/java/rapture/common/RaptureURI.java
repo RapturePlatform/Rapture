@@ -149,7 +149,7 @@ public class RaptureURI implements Cloneable {
     public String getLeafName() {
         if (hasDocPath() == false) return null;
         int lastIndex = docPath.lastIndexOf(Parser.SEPARATOR_CHAR);
-        return (lastIndex > 0) ? docPath.substring(0,lastIndex) : docPath;
+        return (lastIndex > 0) ? docPath.substring(lastIndex+1) : docPath;
     }
 
     public Scheme getScheme() {
@@ -282,7 +282,10 @@ public class RaptureURI implements Cloneable {
         }
 
         public Builder docPath(String docPath) {
-            result.docPath = docPath;
+        	if (!StringUtils.isEmpty(docPath)) {
+        		while (docPath.endsWith("/")) docPath = docPath.substring(0, docPath.length()-1);
+        	}
+        	result.docPath = docPath;
             return this;
         }
 

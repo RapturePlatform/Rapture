@@ -23,6 +23,8 @@
  */
 package rapture.common;
 
+import org.apache.commons.lang3.StringUtils;
+
 import rapture.common.RaptureURI.Parser;
 
 /**
@@ -65,11 +67,13 @@ public class RaptureFolderInfo implements RaptureTransferObject {
 
 	// Remove any prepended path from the name
 	public RaptureFolderInfo trimName() {
-		if (name.charAt(name.length() - 1) == Parser.SEPARATOR_CHAR)
-			name = name.substring(0, name.length() - 1);
-		int last = name.lastIndexOf('/');
-		if (last >= 0)
-			name = name.substring(last + 1);
+		if (!StringUtils.isEmpty(name)) {
+			if (name.charAt(name.length() - 1) == Parser.SEPARATOR_CHAR)
+				name = name.substring(0, name.length() - 1);
+			int last = name.lastIndexOf('/');
+			if (last >= 0)
+				name = name.substring(last + 1);
+		}
 		return this;
 	}
 

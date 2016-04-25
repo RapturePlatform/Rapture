@@ -23,6 +23,7 @@
  */
 package rapture.api.checkout;
 
+import static org.testng.AssertJUnit.assertFalse;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -179,10 +180,10 @@ public class ConsistencyTest {
     }
     
     void createSeries(String path) {
-        seriesApi.addStringToSeries(callingContext, path, "foo", "bar");
-        assertEquals("'bar", seriesApi.getLastPoint(callingContext, path).getValue());
-        seriesApi.addStringToSeries(callingContext, path+WIBBLE, "foo", "bar");
-        assertEquals("'bar", seriesApi.getLastPoint(callingContext, path+WIBBLE).getValue());
+        seriesApi.addStringToSeries(callingContext, path, "Sierra", "Nevada");
+        assertEquals("'Nevada", seriesApi.getLastPoint(callingContext, path).getValue());
+        seriesApi.addStringToSeries(callingContext, path+WIBBLE, "Anchor", "Steam");
+        assertEquals("'Steam", seriesApi.getLastPoint(callingContext, path+WIBBLE).getValue());
     }
     
     void createScripts(String path) {
@@ -449,6 +450,10 @@ public class ConsistencyTest {
             assertTrue(docApi.docExists(callingContext, authMem+FOOBARBAZ));
             assertTrue(docApi.docExists(callingContext, authMongo+FOOBARBAZ));
             
+            assertFalse(docApi.docExists(callingContext, authFile+FOOBARBAZ+WIBBLE));
+            assertFalse(docApi.docExists(callingContext, authMem+FOOBARBAZ+WIBBLE));
+            assertFalse(docApi.docExists(callingContext, authMongo+FOOBARBAZ+WIBBLE));
+            
             listMem = docApi.listDocsByUriPrefix(callingContext, authMem+FOOBAR, 2);
             listFile = docApi.listDocsByUriPrefix(callingContext, authFile+FOOBAR, 2);
             listMong = docApi.listDocsByUriPrefix(callingContext, authMongo+FOOBAR, 2);
@@ -522,9 +527,9 @@ public class ConsistencyTest {
             assertTrue(seriesApi.seriesExists(callingContext, authFile+FOOBARBAZ+WIBBLE));
             assertTrue(seriesApi.seriesExists(callingContext, authMem+FOOBARBAZ+WIBBLE));
 
-            removeMong = seriesApi.deleteSeriesByUriPrefix(callingContext, authMongo+FOOBARBAZ);
-            removeFile = seriesApi.deleteSeriesByUriPrefix(callingContext, authFile+FOOBARBAZ);
             removeMem = seriesApi.deleteSeriesByUriPrefix(callingContext, authMem+FOOBARBAZ);
+            removeFile = seriesApi.deleteSeriesByUriPrefix(callingContext, authFile+FOOBARBAZ);
+            removeMong = seriesApi.deleteSeriesByUriPrefix(callingContext, authMongo+FOOBARBAZ);
             
             // The node FOOBARBAZ/WIBBLE should have been deleted 
             // (along with the empty folder FOOBARBAZ if recursion applies)
@@ -538,15 +543,16 @@ public class ConsistencyTest {
             assertTrue(seriesApi.seriesExists(callingContext, authMem+FOOBARBAZ));
             assertTrue(seriesApi.seriesExists(callingContext, authMongo+FOOBARBAZ));
             
+            assertFalse(seriesApi.seriesExists(callingContext, authFile+FOOBARBAZ+WIBBLE));
+            assertFalse(seriesApi.seriesExists(callingContext, authMem+FOOBARBAZ+WIBBLE));
+            assertFalse(seriesApi.seriesExists(callingContext, authMongo+FOOBARBAZ+WIBBLE));
+            
             listMem = seriesApi.listSeriesByUriPrefix(callingContext, authMem+FOOBAR, 2);
             listFile = seriesApi.listSeriesByUriPrefix(callingContext, authFile+FOOBAR, 2);
             listMong = seriesApi.listSeriesByUriPrefix(callingContext, authMongo+FOOBAR, 2);
 
-            // TODO Mongo fails to delete the folder
-//             assertEquals(JacksonUtil.jsonFromObject(listMong), 1, listMong.size());
-            
-            // TODO memory fails to delete the folder
-//            assertEquals(JacksonUtil.jsonFromObject(listMem), 1, listMem.size());
+            assertEquals(JacksonUtil.jsonFromObject(listMong), 1, listMong.size());
+            assertEquals(JacksonUtil.jsonFromObject(listMem), 1, listMem.size());
             assertEquals(JacksonUtil.jsonFromObject(listFile), 1, listFile.size());
             
             removeMong = seriesApi.deleteSeriesByUriPrefix(callingContext, authMongo+FOOBAR);
