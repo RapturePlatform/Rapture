@@ -79,7 +79,8 @@ public class Scope {
     /**
      * Creates a {@link Scope} that does not contain any of the variables inside Scope, but still knows about the global and constant scopes
      *
-     * @param seedScope The {@link Scope} that has the global and constant scopes we want to use
+     * @param seedScope
+     *            The {@link Scope} that has the global and constant scopes we want to use
      * @return
      */
     public static Scope createIsolatedScope(Scope seedScope) {
@@ -112,6 +113,10 @@ public class Scope {
     }
 
     public void assign(String var, ReflexValue value, String namespacePrefix) {
+        ReflexValue constant = constantScope.resolve(var, namespacePrefix);
+        if (constant != null) {
+            throw new ReflexException(0, "Assignment into constant variable");
+        }
         if (resolve(var, namespacePrefix) != null) {
             // There is already such a variable, re-assign it
             if (assignOnce) {
@@ -170,7 +175,7 @@ public class Scope {
                     mapper = (Map<String, Object>) val;
                 }
             } else {
-            	// Auto-create the map
+                // Auto-create the map
                 mapper.put(parts[i], new HashMap<String, Object>());
                 mapper = (Map<String, Object>) mapper.get(parts[i]);
             }
@@ -230,10 +235,16 @@ public class Scope {
 
     public ReflexValue resolve(String var, String namespacePrefix) {
         ReflexValue value;
+        
         if (assignOnce) { // constants always contain a prefix, if there is any
             value = variables.get(namespacePrefix + var);
         } else {
-            value = variables.get(var);
+            // Look for a constant first.
+            value = constantScope.resolve(var, namespacePrefix);
+            if (value == null) {
+                // No constant found 
+                value = variables.get(var);
+            }
         }
 
         if (value != null) {
@@ -271,10 +282,9 @@ public class Scope {
         return globalScope;
     }
 
-	@Override
-	public String toString() {
-		return "Scope [assignOnce=" + assignOnce + ", scopeName=" + scopeName + ", parent=" + parent + ", globalScope="
-				+ globalScope + ", constantScope=" + constantScope + ", pendingComment=" + pendingComment
-				+ ", variables=" + variables + "]";
-	}
+    @Override
+    public String toString() {
+        return "Scope [assignOnce=" + assignOnce + ", scopeName=" + scopeName + ", parent=" + parent + ", globalScope=" + globalScope + ", constantScope=" + constantScope
+                + ", pendingComment=" + pendingComment + ", variables=" + variables + "]";
+    }
 }
