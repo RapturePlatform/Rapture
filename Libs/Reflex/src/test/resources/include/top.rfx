@@ -27,7 +27,7 @@ jenner = "Caitlyn";
 assert (jenner == 'Caitlyn');
 
 println("Now include the Reflex that declares it as a const");
-include "bottom3.rfx";
+include "bottom.rfx";
 
 println("jenner is now ${jenner}");
 assert (jenner == 'Bruce');

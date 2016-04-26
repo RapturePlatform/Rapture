@@ -30,7 +30,7 @@ catch e do
   println("Thought so");
 end
 
-require "bottom3.rfx" as other;
+require "bottom.rfx" as other;
 
 jenner = "Kylie"; // different person
 println("jenner is ${jenner}");
