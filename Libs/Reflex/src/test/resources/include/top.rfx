@@ -21,9 +21,24 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-include "bottom.rfx";
-include 'bottom.rfx';  // Can include both ways...
 
-println("Hello, this is top");
+println("Define the variable locally");
+jenner = "Caitlyn";
+assert (jenner == 'Caitlyn');
 
-assert(x == 14);
+println("Now include the Reflex that declares it as a const");
+include "bottom3.rfx";
+
+println("jenner is now ${jenner}");
+assert (jenner == 'Bruce');
+
+try do
+  println("It should be a const so this should fail");
+  jenner = "Caitlyn";
+  assert (false, "That should not have succeeded");
+end
+catch e do
+  println("Yes, it failed because you cannot reassign a const in Reflex");
+end
+println("jenner is still ${jenner}");
+assert (jenner == 'Bruce');

@@ -82,4 +82,9 @@ public class ReflexTest extends ResourceBasedTest {
     public void testDate() throws RecognitionException {
         runTestFor("/date.rfx");
     }
+
+    @Test
+    public void testCall() throws RecognitionException {
+        runTestFor("/call.rfx");
+    }
 }

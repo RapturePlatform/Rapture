@@ -24,3 +24,5 @@
 println("Hello, this is bottom");
 
 x = 14;
+
+const jenner = "Bruce";
