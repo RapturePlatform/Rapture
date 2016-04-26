@@ -30,11 +30,16 @@ import static rapture.dp.DPTestUtil.initPipeline;
 import static rapture.dp.DPTestUtil.makeSignalStep;
 import static rapture.dp.DPTestUtil.makeTransition;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 
 import rapture.common.CallingContext;
 import rapture.common.RaptureURI;
@@ -47,9 +52,6 @@ import rapture.common.dp.Workflow;
 import rapture.dp.invocable.SignalInvocable;
 import rapture.kernel.ContextFactory;
 import rapture.kernel.Kernel;
-
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
 
 public class SimpleForkStepTest {
     private CallingContext ctx = ContextFactory.getKernelUser();
@@ -74,6 +76,14 @@ public class SimpleForkStepTest {
         }
         initPipeline(ctx);
         createWorkflow();
+    }
+
+    @After
+    public void tearDown() {
+        String[] signals = { HELLO, ALPHA, FORK_STEP, MAIN_CONTINUE, LEFT_STEP, RIGHT_STEP, LEFT_CONTINUE };
+        for (String signal : Arrays.asList(signals)) {
+            SignalInvocable.Singleton.clearSignal(signal);
+        }
     }
 
     private void createWorkflow() {
@@ -134,6 +144,7 @@ public class SimpleForkStepTest {
     private void assertStatus(final String workOrderUri, final CallingContext context, int timeout, final WorkOrderExecutionState expectedStatus)
             throws InterruptedException {
         WaitingTestHelper.retry(new Runnable() {
+            @Override
             public void run() {
                 WorkOrderStatus status = Kernel.getDecision().getWorkOrderStatus(context, workOrderUri);
                 assertEquals(expectedStatus, status.getStatus());
