@@ -40,9 +40,4 @@ public class ImportTest extends ResourceBasedTest {
         retVal = runTestForWithScriptHandler("/imports/import.rfx", new TestScriptHandler(this, "imports"));
         assertEquals("33", retVal.split("--RETURNS--")[1]);
     }
-
-    @Test
-    public void testImportConstant() throws RecognitionException {
-
-    }
 }
