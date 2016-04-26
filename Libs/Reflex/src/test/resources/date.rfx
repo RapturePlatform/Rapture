@@ -1,0 +1,4 @@
+birthday = date("19640504");
+epoch = birthday.getEpoch();
+mayTheFourthBeWithYou = date(epoch);
+assert(birthday == mayTheFourthBeWithYou);
