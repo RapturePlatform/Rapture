@@ -27,7 +27,7 @@ public class ReflexCallTest extends ResourceBasedTest {
         KernelScript ks = new KernelScript();
         ks.setCallingContext(ContextFactory.getKernelUser());
         scriptApi = ks;
-        String output = runTestFor("/call6.rfx");
+        String output = runTestFor("/call.rfx");
         System.out.println(output);
         ;
     }
