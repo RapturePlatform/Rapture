@@ -30,3 +30,12 @@ public static Boolean deleteByAddress(RaptureURI addressURI, String user, String
 public static RaptureURI addressToStorageLocation(RaptureURI addressURI) {
     return StorageLocationFactory.createStorageURI(<name>PathBuilder.getRepoName(), <name>PathBuilder.getPrefix(), addressURI);
 }
+
+/**
+ * Retrieve the document and metadata for this entity
+ */
+ 
+public static DocumentWithMeta getDocumentWithMeta(RaptureURI addressURI) {
+    RaptureURI storageLocation = StorageLocationFactory.createStorageURI(<name>PathBuilder.getRepoName(), <name>PathBuilder.getPrefix(), addressURI);
+	return ObjectStorage.getDocumentWithMeta(storageLocation, storableInfo.getIndexInfo());
+}

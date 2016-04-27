@@ -31,9 +31,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -43,26 +40,34 @@ import rapture.common.ConnectionInfo;
 import rapture.common.NodeEnum;
 import rapture.common.RaptureFolderInfo;
 import rapture.common.RaptureIdGenConfig;
+import rapture.common.RaptureScriptPathBuilder;
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
 import rapture.common.api.SysApi;
 import rapture.common.connection.ConnectionInfoConfigurer;
+import rapture.common.connection.ConnectionType;
 import rapture.common.connection.ESConnectionInfoConfigurer;
 import rapture.common.connection.MongoConnectionInfoConfigurer;
 import rapture.common.connection.PostgresConnectionInfoConfigurer;
-import rapture.common.connection.ConnectionType;
 import rapture.common.dp.Workflow;
 import rapture.common.exception.RaptureException;
 import rapture.common.exception.RaptureExceptionFactory;
 import rapture.common.impl.jackson.JacksonUtil;
+import rapture.common.model.DocumentWithMeta;
 import rapture.common.model.RaptureEntitlement;
 import rapture.common.model.RaptureEntitlementGroup;
 import rapture.config.MultiValueConfigLoader;
 import rapture.kernel.sys.SysArea;
+import rapture.object.storage.ObjectStorage;
+import rapture.object.storage.SchemeToPathBuilder;
+import rapture.object.storage.StorageLocationFactory;
+import rapture.object.storage.StoragePathBuilder;
 import rapture.repo.Repository;
 import rapture.util.IDGenerator;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 
 /**
  * Low level config settings manipulation
@@ -519,4 +524,18 @@ public class SysApiImpl extends KernelBase implements SysApi {
             throw RaptureExceptionFactory.create("Unsupported store type " + storeType);
         }
     }
+
+	@Override
+	public DocumentWithMeta getSysDocumentMeta(CallingContext context,
+			String raptureURI) {
+		// Depending on the raptureURI scheme, call the appropriate object storage technique
+		// to get at the DocumentWithMeta
+		RaptureURI uri = new RaptureURI(raptureURI);
+		StoragePathBuilder x = SchemeToPathBuilder.getStoragePathBuilder(uri);
+		if (x == null) {
+			return null;
+		}
+        RaptureURI storageLocation = StorageLocationFactory.createStorageURI(x.getIRepoName(), x.getIPrefix(), uri);
+        return ObjectStorage.getDocumentWithMeta(storageLocation, indexInfo);
+	}
 }

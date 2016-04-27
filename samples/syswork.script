@@ -1,0 +1,5 @@
+println(json(#sys.getSystemFolders('CONFIG','script/curtis')));
+
+println(json(#sys.getSysDocumentMeta('script://curtis/getMOTD')));
+
+

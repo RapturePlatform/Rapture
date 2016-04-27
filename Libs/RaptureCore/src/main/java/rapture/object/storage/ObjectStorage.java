@@ -318,6 +318,17 @@ public abstract class ObjectStorage {
             return Optional.absent();
         }
     }
+    
+    public static DocumentWithMeta getDocumentWithMeta(RaptureURI storageLocation, StorableIndexInfo indexInfo) {
+        String path = storageLocation.getDocPath();
+        Repository repository = getRepo(storageLocation.getAuthority(), indexInfo);
+        if (repository != null) {
+            return repository.getDocAndMeta(path, null);
+        } else {
+            log.error(String.format("Error, could not find repo name [%s]", storageLocation.getAuthority()));
+            return null;
+        }  	
+    }
 
     private static Cache<RaptureURI, Optional<String>> getContentCache() {
         return Kernel.getObjectStorageCache();

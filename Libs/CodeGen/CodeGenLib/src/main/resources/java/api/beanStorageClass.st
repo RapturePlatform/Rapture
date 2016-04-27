@@ -36,6 +36,7 @@ import rapture.common.TableQueryResult;
 import rapture.object.storage.StorageLocationFactory;
 
 import rapture.common.impl.jackson.JsonContent;
+import rapture.common.model.DocumentWithMeta;
 import rapture.object.storage.ObjectFilter;
 import rapture.object.storage.ObjectStorage;
 import rapture.persistence.storable.mapper.impl.jackson.StorableObjectMapper;
