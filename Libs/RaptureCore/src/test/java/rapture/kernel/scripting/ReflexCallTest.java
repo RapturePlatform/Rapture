@@ -8,7 +8,6 @@ import org.junit.Test;
 import rapture.kernel.ContextFactory;
 import rapture.kernel.Kernel;
 import rapture.kernel.script.KernelScript;
-import reflex.ResourceBasedTest;
 
 public class ReflexCallTest extends ResourceBasedTest {
 
@@ -29,6 +28,5 @@ public class ReflexCallTest extends ResourceBasedTest {
         scriptApi = ks;
         String output = runTestFor("/call.rfx");
         System.out.println(output);
-        ;
     }
 }
