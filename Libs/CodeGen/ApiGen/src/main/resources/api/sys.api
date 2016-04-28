@@ -67,5 +67,9 @@ api(Sys) {
     @entitle=/repo/write
     @public void setConnectionInfo(String connectionType, ConnectionInfo connectionInfo);
 
+    [Retrieves the metadata for a storable object. e.g. script, workflow, workorder]
+    @entitle=/repo/read
+    @public DocumentWithMeta getSysDocumentMeta(String raptureURI);
+    
 }
 

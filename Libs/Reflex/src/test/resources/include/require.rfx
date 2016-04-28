@@ -21,26 +21,32 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package reflex;
 
-import org.antlr.runtime.RecognitionException;
-import org.junit.Test;
+try do
+   println("jenner is not set so this may fail");
+   println("jenner is ${jenner}");
+end
+catch e do
+  println("Thought so");
+end
 
-import reflex.handlers.TestScriptHandler;
+require "bottom.rfx" as other;
 
-public class IncludeTest extends ResourceBasedTest {
-    @Test
-    public void testStandalone() throws RecognitionException {
-        runTestForWithScriptHandler("/include/bottom.rfx", new TestScriptHandler(this, "include"));
-    }
+jenner = "Kylie"; // different person
+println("jenner is ${jenner}");
+assert (jenner == 'Kylie');
+jenner = "Kendall";
+println("jenner is ${jenner} - They are interchangeable");
+assert (jenner == 'Kendall');
 
-    @Test
-    public void testInclude() throws RecognitionException {
-        runTestForWithScriptHandler("/include/top.rfx", new TestScriptHandler(this, "include"));
-    }
+assert (other.jenner == 'Bruce');
+try do
+  println("It should be a const so this should fail");
+  other.jenner = "Caitlyn";
+  assert (false, "That should not have succeeded");
+end
+catch e do
+  println("Yes, it failed because you cannot reassign a const in Reflex");
+  end
+assert (other.jenner == 'Bruce');
 
-    @Test
-    public void testRequire() throws RecognitionException {
-        runTestForWithScriptHandler("/include/require.rfx", new TestScriptHandler(this, "include"));
-    }
-}

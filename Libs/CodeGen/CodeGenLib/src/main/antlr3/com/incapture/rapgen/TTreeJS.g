@@ -37,7 +37,7 @@ hmxdef returns[List vals, List headers]
 
 
 typeExpr :
-	^(TYPEDEF doc=DOC (beanAnnotation|cacheableAnnotation|extendsAnnotation|deprecatedAnnotation|addressableAnnotation|storableAnnotation|searchableAnnotation|indexedAnnotation)*  name=ID typeAspect typeFields);
+	^(TYPEDEF doc=DOC (beanAnnotation|cacheableAnnotation|extendsAnnotation|deprecatedAnnotation|ftsAnnotation|addressableAnnotation|storableAnnotation|searchableAnnotation|indexedAnnotation)*  name=ID typeAspect typeFields);
 	
 typeAspect returns [String name]: 
     ^(TYPEASPECT p=PACKAGENAME);

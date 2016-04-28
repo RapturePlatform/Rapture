@@ -143,6 +143,7 @@ typeExpr
         AddressableAnnotation addressable;
         StorableAnnotation storable;
         SearchableAnnotation searchable;
+        FTSAnnotation fts;
         ExtendsAnnotation extend;
         DeprecatedAnnotation deprecated;
         IndexedAnnotation indexed;
@@ -160,6 +161,9 @@ typeExpr
         |   searchableAnnotation {
                 $typeExpr::searchable = $searchableAnnotation.result;
             }
+        |   ftsAnnotation {
+        		$typeExpr::fts = $ftsAnnotation.result;
+        	}
         |   extendsAnnotation {
                 $typeExpr::extend = $extendsAnnotation.result.narrow();
             }

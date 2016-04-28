@@ -21,26 +21,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package reflex;
+package com.incapture.rapgen.annotations;
 
-import org.antlr.runtime.RecognitionException;
-import org.junit.Test;
+public class FTSAnnotation {
 
-import reflex.handlers.TestScriptHandler;
-
-public class IncludeTest extends ResourceBasedTest {
-    @Test
-    public void testStandalone() throws RecognitionException {
-        runTestForWithScriptHandler("/include/bottom.rfx", new TestScriptHandler(this, "include"));
-    }
-
-    @Test
-    public void testInclude() throws RecognitionException {
-        runTestForWithScriptHandler("/include/top.rfx", new TestScriptHandler(this, "include"));
-    }
-
-    @Test
-    public void testRequire() throws RecognitionException {
-        runTestForWithScriptHandler("/include/require.rfx", new TestScriptHandler(this, "include"));
-    }
 }
