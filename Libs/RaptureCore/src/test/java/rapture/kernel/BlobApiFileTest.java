@@ -40,6 +40,8 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import com.google.common.net.MediaType;
+
 import rapture.common.BlobContainer;
 import rapture.common.CallingContext;
 import rapture.common.Messages;
@@ -50,8 +52,6 @@ import rapture.common.Scheme;
 import rapture.common.exception.RaptureException;
 import rapture.common.impl.jackson.JacksonUtil;
 import rapture.common.model.BlobRepoConfig;
-
-import com.google.common.net.MediaType;
 
 public class BlobApiFileTest extends AbstractFileTest {
 
@@ -302,7 +302,7 @@ public class BlobApiFileTest extends AbstractFileTest {
             blobImpl.deleteBlobsByUriPrefix(callingContext, blobURI5);
             // SHOULD FAIL OR DO NOTHING
         } catch (Exception e) {
-            assertEquals("Blob "+blobURI5+" does not exist", e.getMessage());
+            assertEquals("Folder " + blobURI5 + " does not exist", e.getMessage());
         }
         blob = blobImpl.getBlob(callingContext, blobURI1);
         assertNotNull(blob);
