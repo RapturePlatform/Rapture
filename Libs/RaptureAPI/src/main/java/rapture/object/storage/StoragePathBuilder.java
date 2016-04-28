@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2016 Incapture Technologies LLC
+ * Copyright (C) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,23 +21,19 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package reflex;
+ 
+package rapture.object.storage;
 
-import static org.junit.Assert.assertEquals;
 
-import org.antlr.runtime.RecognitionException;
-import org.junit.Test;
 
-import reflex.handlers.TestScriptHandler;
+import rapture.common.RaptureURI;
 
-public class ImportTest extends ResourceBasedTest {
-    @Test
-    public void testStandalone() throws RecognitionException {
-        String retVal = runTestForWithScriptHandler("/imports/import.rfx", new TestScriptHandler(this, "imports"));
-        assertEquals("33", retVal.split("--RETURNS--")[1]);
-        retVal = runTestForWithScriptHandler("/imports/returnNull.rfx", new TestScriptHandler(this, "imports"));
-        assertEquals("NULL", retVal.split("--RETURNS--")[1]);
-        retVal = runTestForWithScriptHandler("/imports/import.rfx", new TestScriptHandler(this, "imports"));
-        assertEquals("33", retVal.split("--RETURNS--")[1]);
-    }
+public interface StoragePathBuilder {
+
+    public String buildStoragePath();
+ 
+    public RaptureURI buildStorageLocation();
+
+    public String getIPrefix();
+    public String getIRepoName();
 }

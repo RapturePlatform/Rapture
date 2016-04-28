@@ -237,7 +237,7 @@ typeExpr  :
 
 typeAnnotation
     : AT! 
-    (beanAnnotation|cacheableAnnotation|storableAnnotation|addressableAnnotation|searchableAnnotation|extendsAnnotation|deprecatedAnnotation|indexedAnnotation)  
+    (beanAnnotation|cacheableAnnotation|storableAnnotation|addressableAnnotation|searchableAnnotation|ftsAnnotation|extendsAnnotation|deprecatedAnnotation|indexedAnnotation)  
     ;
     
 crudPackageAnnotation
@@ -302,11 +302,15 @@ storableAnnotation
     : STORABLE LBRAC! storagePath (COMMA! storableAnnotationField)*  RBRAC!
     ; 
     
+ftsAnnotation
+	: FTS
+	;
+	
 searchableAnnotation
 //example: Searchable
 	: SEARCHABLE
 	;
-    
+	    
 storableAnnotationField
 scope {
     boolean isSeparator;

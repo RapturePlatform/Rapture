@@ -1,0 +1,155 @@
+\chapter{Tag API}
+\index{Tag API}
+\input{api/tag/info}
+\section{GetChildren}
+\index{GetChildren}
+\label{Api:GetChildren}
+\begin{lstlisting}[style=nonumbers]
+   List<RaptureFolderInfo> getChildren (
+           String    tagUri
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /tag/read/$f(tagUri)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #tag.getChildren(tagUri);
+%\end{lstlisting}
+\input{api/tag/getChildren}
+
+
+\rule{12cm}{2pt}
+\section{CreateTagDescription}
+\index{CreateTagDescription}
+\label{Api:CreateTagDescription}
+\begin{lstlisting}[style=nonumbers]
+   TagDescription createTagDescription (
+           String    tagUri
+           String    description
+           String    valueType
+           String    valueSet
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /tag/write/$f(tagUri)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #tag.createTagDescription(tagUri,description,valueType,valueSet);
+%\end{lstlisting}
+\input{api/tag/createTagDescription}
+
+
+\rule{12cm}{2pt}
+\section{DeleteTagDescription}
+\index{DeleteTagDescription}
+\label{Api:DeleteTagDescription}
+\begin{lstlisting}[style=nonumbers]
+   boolean deleteTagDescription (
+           String    tagUri
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /tag/write/$f(tagUri)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #tag.deleteTagDescription(tagUri);
+%\end{lstlisting}
+\input{api/tag/deleteTagDescription}
+
+
+\rule{12cm}{2pt}
+\section{GetTagDescription}
+\index{GetTagDescription}
+\label{Api:GetTagDescription}
+\begin{lstlisting}[style=nonumbers]
+   TagDescription getTagDescription (
+           String    tagUri
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /tag/read/$f(tagUri)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #tag.getTagDescription(tagUri);
+%\end{lstlisting}
+\input{api/tag/getTagDescription}
+
+
+\rule{12cm}{2pt}
+\section{ApplyTag}
+\index{ApplyTag}
+\label{Api:ApplyTag}
+\begin{lstlisting}[style=nonumbers]
+   DocumentMetadata applyTag (
+           String    docUri
+           String    tagUri
+           String    value
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /tag/add/$f(docUri)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #tag.applyTag(docUri,tagUri,value);
+%\end{lstlisting}
+\input{api/tag/applyTag}
+
+
+\rule{12cm}{2pt}
+\section{ApplyTags}
+\index{ApplyTags}
+\label{Api:ApplyTags}
+\begin{lstlisting}[style=nonumbers]
+   DocumentMetadata applyTags (
+           String    docUri
+           Map<String,String>    tagMap
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /tag/add/$f(docUri)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #tag.applyTags(docUri,tagMap);
+%\end{lstlisting}
+\input{api/tag/applyTags}
+
+
+\rule{12cm}{2pt}
+\section{RemoveTag}
+\index{RemoveTag}
+\label{Api:RemoveTag}
+\begin{lstlisting}[style=nonumbers]
+   DocumentMetadata removeTag (
+           String    docUri
+           String    tagUri
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /tag/add/$f(docUri)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #tag.removeTag(docUri,tagUri);
+%\end{lstlisting}
+\input{api/tag/removeTag}
+
+
+\rule{12cm}{2pt}
+\section{RemoveTags}
+\index{RemoveTags}
+\label{Api:RemoveTags}
+\begin{lstlisting}[style=nonumbers]
+   DocumentMetadata removeTags (
+           String    docUri
+           List<String>    tags
+   )
+\end{lstlisting}
+\begin{Verbatim}[formatcom=\color{Maroon}]
+  Entitlement: /tag/add/$f(docUri)
+\end{Verbatim}
+%\begin{lstlisting}[language=reflex]
+%ret = #tag.removeTags(docUri,tags);
+%\end{lstlisting}
+\input{api/tag/removeTags}
+
+
+\rule{12cm}{2pt}

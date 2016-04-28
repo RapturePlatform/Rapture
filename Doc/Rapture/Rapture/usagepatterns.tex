@@ -1,0 +1,135 @@
+\chapter{Usage patterns}
+There is no \emph{typical} use of \Rapture. \Rapture is open and extensible and in some respects
+is a set of building blocks for creating applications or solutions. Not all of the features of
+\Rapture will be used in every solution at the beginning. As solutions grow and expand some of
+the unused features may be brought to bear with little effort. Also, because of its extensible
+nature any part of \Rapture can be replaced by a home grown implementation - taking advantage of
+already existing code and infrastructure.
+
+Often a \Rapture \emph{solution} is a set of applications running on a common framework of data
+and processing. The starting point could be simply a data abstraction layer that then expands to
+hosting and running applications that take advantage of that abstraction.
+
+This chapter describes some of the application patterns used when \Rapture forms part of a solution.
+A \emph{typical} solution on \Rapture may combine a number of these together -- this chapter describes
+them in isolation for simplicity.
+
+\section{Data Abstraction}
+
+\Rapture has an abstraction for four different types of data. Key/Value \emph{document centric} data where the
+content is structured (a json text document for example) or binary (a blob). Series data takes that approach and
+efficiently lays out a whole set of data usually keyed in a columnar way by time or event. Finally structured
+relationship stores can be used to abstract relational databases across the same \emph{fabric}.
+
+When using \Rapture for data abstraction there are a number of different flavors.
+
+\subsection{Rapture owned data}
+With this approach the only way to save and retrieve data is through the \Rapture API. The abstraction means that
+you can use any number of different underlying implementations to store the data. As all modifications are made through
+the API, \Rapture can manage versioning, caching and provenance (who changed what). Applications on \Rapture that generate
+content will often use a \Rapture owned data abstraction.
+
+\subsection{Rapture replicated data}
+With this approach the data is read by applications using the \Rapture API but the content itself comes from an external source.
+This is similar to the \Rapture owned data approach -- in fact the data is written to the internal store using API calls. However it
+is acknowledged that the \emph{master} location of this data is off platform - changes are likely to be made by external processes
+and those changes are communicated to the \Rapture store through some kind of feed. Often these stores are "read only" to the main
+\Rapture application users.
+
+One advantage of this type of approach is that the data can be transformed, merged, enriched and so on as it is fed into \Rapture. The data
+can be more fit for purpose for the \Rapture applications and can contain information that isn't actually in the source data. Mapping fields into
+a common, canonical form is a typical approach for this type of data store -- where similar data is fed from a disparate set of data sources and
+\Rapture contains a standard and consistent form for delivery to applications.
+
+\subsection{Pass through data}
+With this approach a \Rapture repository is essentially \emph{virtual}. Every API call translates to a downstream call to an external data store.
+This approach is often used with the structured store repository -- as it closely matches the typical layout of an external database store. This type
+of abstraction is less useful for applications to use the data direct (except as providing a single API set instead of an application switching contexts). Typical uses
+are for providing mapping and lookup data stores for enrichment of the \Rapture replicated data.
+
+\subsection{Benefits}
+Data abstraction is a very important benefit of \Rapture. By isolating (abstracting) underlying data with the applications that use that data the dependencies
+are less tightly coupled. Applications can innovate without waiting for longer term strategic data moves to take place -- when those changes happen they occur in the mapping
+and the applications are ideally unchanged and unaffected. Finally there is quite a nice benefit of simply having a clean API and abstraction for storing document and series
+data that is independent of the latest fashion and trends in the document centric "nosql" world. Application developers can get on with writing applications and plug in the
+most appropriate data store (the mapping) at a later point in time. As new data stores emerge \Rapture will adopt them as needed by providing new drivers -- with the migration
+from one to another a much more straightforward activity.
+
+\section{Data Acquisition and Transformation}
+This usage goes hand in hand with the \emph{Rapture replicated data} approach in an earlier section. The idea here is
+that the workflow concept in \Rapture is an excellent way of coordinating complex tasks in a consistent and repeatable way. This pattern is about applying those
+workflows to the tasks of obtaining data, transforming that data and then optionally sending that data on. An added advantage is that
+the data can be stored in \Rapture for later analysis and for audit purposes.
+
+Typically the approach follows these steps:
+
+\subsection{Acquiring data}
+Data is usually either already being published by a remote system onto some queuing system, or perhaps there is an API through which an application
+can poll or retrieve data to be acquired. In some cases the data is an extract produced by an external process that is then dropped as a file to
+a shared location, or retrievable through a protocol such as FTP. The main takeaway from this is that there are many different ways to get data -- the extensible and open
+nature of \Rapture allows developers to build custom code to encapsulate a technique into a discrete parameterized "step" that can be incorporated into a workflow.
+
+Typically the output of such a step is a message (data object) or a larger blob object such as a CSV file. In most implementations this data would be stored \emph{raw} into
+a \Rapture blob repository - if only temporarily. The reason for this is twofold - first it allows for long running workflows to be restarted \emph{after} the data acquisition
+step. The data is often lifted from a remote system that may not be owned by the application - this storage approach allows for consistency and less dependency on systems that
+are out of the application's control. Secondly having a store of the data received in its unprocessed form is an excellent forensic technique for post analysis in the event
+of an issue. Understanding how an external raw data file looked like six months ago vs. today can help understand what has changed and why a process that used to work
+does not work now.
+
+\subsection{Transforming and enriching}
+In this step the raw data is converted to one or more records that are now consistent with respect to other/different data acquisitions. In this way large flat files are
+broken down into their records, the records are enriched with related data or mappings applied between how the external system views information and how the application wishes
+to canonically store the records. As an example, trades coming from a trade feed may have marketplace ids for the trader of the trade -- we would want to map that "id" to a consistent
+field that refers to who the trader actually is internally. Or the sense of a trade may be reversed - it may be from the perspective of the market instead of our application.
+
+The output from this step is usually also stored in a \Rapture managed repository, for the same reasons outlined above. In some cases this is where the workflow ends - the data is now
+available to applications using \Rapture. In other cases there is then a final stage - the delivery of the data out of \Rapture into a remote system.
+
+\subsection{Transformation and delivery}
+In this step our internal/canonical view of the records acquired are to be sent to a remote system for processing. Often the canonical form and the remote system form will differ - the reason
+for this is so that the data can be sent to many different remote systems without necessarily being formatted specially for each one. This step is very similar to the previous step - data is transformed for the
+target system and then sent on a queue or delivered to a file as needed. Again the transformed "binary" data can be stored in \Rapture for a true audit record of the complete process.
+
+\subsection{Scheduling and monitoring}
+Once we have our workflows defined in this way another area of \Rapture can be used to provide operational resilience and control. Workflows in \Rapture can be initiated on a schedule (e.g. every workday at 5pm New York time)
+or from an event (when this event fires, run this workflow) or manually (click this button to run this workflow). There are also many \Rapture API calls that can be used to monitor a workflow when it is running.
+These can be used to build an operator view of the world and this type of approach is used in Incapture's Rapture Operators console.
+
+\section{Micro services}
+Micro services in this context are small discrete functions that take parameters and return a set of values back. The implementation of the function can be simple or
+complex. Ideally the set of microservices is extendable at run-time. Micro services are also very useful for providing the back end of modern web applications.
+
+The \Reflex scripting language (part of \Rapture) is ideally suited to creating a micro service framework. Services can be named (have endpoints) at locations based on the URI
+of the script itself, and can accept parameters from the invoking URI (GET or POST request). Return values from the microservice are often formatted in JSON so that they
+can be easily parsed by calling applications.
+
+As an example, consider the script in \Rapture with the URI name //areaA/testMe :
+
+\begin{lstlisting}
+name = _web['name'];
+answer = {};
+answer.ret = "Your name is ${name}";
+println(json(answer));
+\end{lstlisting}
+
+When suitably configured, a \Rapture server can present a microservices endpoint at, say, "/micro". It does this by configuring a specific servlet in the
+\Rapture environment. That configuration can also define whether authentication is needed to run the service or whether anonymous access is allowed.
+
+Once setup, invoking the microservice is as simple as making the following HTTP call :
+
+\begin{Verbatim}
+  http://myrapturehost/micro/areaA/testMe?name=Alan
+\end{Verbatim}
+
+The return value (the content returned by the HTTP call) would be:
+
+\begin{Verbatim}
+  {
+     "answer" : "Your name is Alan"
+  }
+\end{Verbatim}
+
+As an example, Incapture's "Etienne" product - an application written on \Rapture that has the ability to spawn \Rapture demonstration environments on demand, uses
+this microservice technique to communicate between the rich web application environment and the \Rapture back end. Tables, actions (forms), reports and the like are
+all run on the server based on parameters provided by the client (the web browser). The return value from the microservice is usually a json formatted data structure
+which is very easily parsed by the web application for display.

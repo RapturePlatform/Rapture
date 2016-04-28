@@ -100,7 +100,7 @@ public enum HooksConfigRepo {
      * @param comment
      */
     public void storeHooksConfig(HooksConfig config, String user, String comment) {
-        HooksConfigStorage.add(config, user, comment);
+        HooksConfigStorage.add(null, config, user, comment);
     }
 
 }

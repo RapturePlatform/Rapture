@@ -49,6 +49,7 @@ import com.incapture.rapgen.annotations.DeprecatedAnnotation;
 import com.incapture.rapgen.annotations.ExtendsAnnotation;
 import com.incapture.rapgen.annotations.IndexedAnnotation;
 import com.incapture.rapgen.annotations.SearchableAnnotation;
+import com.incapture.rapgen.annotations.FTSAnnotation;
 import com.incapture.rapgen.annotations.StorableAnnotation;
 import com.incapture.rapgen.annotations.storable.EncodingMap;
 import com.incapture.rapgen.annotations.storable.StorableField;
@@ -239,12 +240,13 @@ public abstract class AbstractTTree extends TreeParser {
     }
 
     protected void addType(String typeName, String packageName, BeanAnnotation bean, CacheableAnnotation cacheable, AddressableAnnotation addressable,
-            StorableAnnotation storable, SearchableAnnotation searchable, ExtendsAnnotation extend, DeprecatedAnnotation deprecated,
+            StorableAnnotation storable, SearchableAnnotation searchable, FTSAnnotation fts, ExtendsAnnotation extend, DeprecatedAnnotation deprecated,
             List<IndexedAnnotation> indices, String sdkName,
             Map<String, String> fieldNameToType, List<StringTemplate> beanFields, List<String> constructors) {
 
         boolean isBean = bean != null || storable != null;
         boolean isSearchable = searchable != null;
+        boolean isFTS = fts != null;
 
         typeToPackage.put(typeName, packageName);
 
@@ -291,7 +293,7 @@ public abstract class AbstractTTree extends TreeParser {
                 if (storable != null) {
                     beanClassAttributes.put("searchable", isSearchable);
                     beanClassAttributes.put("storable", Boolean.TRUE);
-
+                    storageMethodAttributes.put("searchable", isSearchable);
                     List<StorableField> pathFields = storable.getFields();
                     for (StorableField field : pathFields) {
                         STAttrMap builderAdderMap = new STAttrMap().put("name", field.getName()).put("separator", storable.getSeparator());
@@ -348,6 +350,7 @@ public abstract class AbstractTTree extends TreeParser {
 
                     storageMethods.add(getTemplateLib().getInstanceOf("beanStorageAddressableMethods", storageMethodAttributes));
                     storageClassAttributes.put("importFactory", "import rapture.object.storage.StorageLocationFactory;");
+                    storageClassAttributes.put("fts", isFTS);
                 }
 
                 if (deprecated != null) {

@@ -38,4 +38,9 @@ public class IncludeTest extends ResourceBasedTest {
     public void testInclude() throws RecognitionException {
         runTestForWithScriptHandler("/include/top.rfx", new TestScriptHandler(this, "include"));
     }
+
+    @Test
+    public void testRequire() throws RecognitionException {
+        runTestForWithScriptHandler("/include/require.rfx", new TestScriptHandler(this, "include"));
+    }
 }

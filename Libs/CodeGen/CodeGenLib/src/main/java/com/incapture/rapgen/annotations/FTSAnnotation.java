@@ -21,23 +21,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package reflex;
+package com.incapture.rapgen.annotations;
 
-import static org.junit.Assert.assertEquals;
+public class FTSAnnotation {
 
-import org.antlr.runtime.RecognitionException;
-import org.junit.Test;
-
-import reflex.handlers.TestScriptHandler;
-
-public class ImportTest extends ResourceBasedTest {
-    @Test
-    public void testStandalone() throws RecognitionException {
-        String retVal = runTestForWithScriptHandler("/imports/import.rfx", new TestScriptHandler(this, "imports"));
-        assertEquals("33", retVal.split("--RETURNS--")[1]);
-        retVal = runTestForWithScriptHandler("/imports/returnNull.rfx", new TestScriptHandler(this, "imports"));
-        assertEquals("NULL", retVal.split("--RETURNS--")[1]);
-        retVal = runTestForWithScriptHandler("/imports/import.rfx", new TestScriptHandler(this, "imports"));
-        assertEquals("33", retVal.split("--RETURNS--")[1]);
-    }
 }

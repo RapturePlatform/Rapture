@@ -83,6 +83,7 @@ STORABLE 		: 'Storable';
 CACHEABLE 		: 'Cacheable';
 ADDRESSABLE 	: 'Addressable';
 SEARCHABLE 	    : 'Searchable';
+FTS				: 'FTS';
 DEPRECATED 		: ('d'|'D') 'eprecated';
 EXTENDS 		: 'Extends';
 BEAN 			: 'Bean';
