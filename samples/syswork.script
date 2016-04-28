@@ -1,5 +1,10 @@
-println(json(#sys.getSystemFolders('CONFIG','script/curtis')));
+uri = 'script://curtis/getWhoAmi';
 
-println(json(#sys.getSysDocumentMeta('script://curtis/getMOTD')));
+printMeta(uri);
+#tag.applyTag(uri, 'other', 'four');
+printMeta(uri);
 
+def printMeta(uri)
+   println(json(#sys.getSysDocumentMeta(uri)));
+end
 

@@ -41,6 +41,7 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
@@ -262,7 +263,7 @@ public abstract class ObjectStorage {
      * @param user     The user doing the storing
      * @param comment
      */
-    public static void write(Storable storable, String user, StorableInfo storableInfo, String comment, ObjectMapper mapper) {
+    public static DocumentWithMeta write(Storable storable, String user, StorableInfo storableInfo, String comment, ObjectMapper mapper) {
         RaptureURI storageLocation = storable.getStorageLocation();
         if (log.isTraceEnabled()) log.trace("ObjectStorage.addDoc called. Storage location is " + storageLocation.toString() + " user " + user + " comment "
                 + comment);
@@ -278,9 +279,11 @@ public abstract class ObjectStorage {
            DocumentWithMeta meta = repository.addDocument(path, jsonString, user, comment, false);
             if (meta != null && log.isTraceEnabled()) log.trace("addDocument returns version " + meta.getMetaData().getVersion());
             getContentCache().put(storable.getStorageLocation(), Optional.of(jsonString));
+            return meta;
         } else {
             log.error(String.format("Error, could not find repo for storable of type [%s]", storable.getClass().getName()));
         }
+        return null;
     }
 
     public static boolean delete(String user, RaptureURI storageLocation, StorableIndexInfo indexInfo) {
@@ -333,4 +336,33 @@ public abstract class ObjectStorage {
     private static Cache<RaptureURI, Optional<String>> getContentCache() {
         return Kernel.getObjectStorageCache();
     }
+
+	public static DocumentWithMeta applyTag(RaptureURI storageLocation,StorableIndexInfo indexInfo,
+			String user, String tagUri, String tagValue) {
+	    String path = storageLocation.getDocPath();
+	    Repository repository = getRepo(storageLocation.getAuthority(), indexInfo);
+	    DocumentWithMeta dm = repository.addTagToDocument(user, path, tagUri, tagValue);
+		return dm;
+	}
+	
+	public static DocumentWithMeta applyTags(RaptureURI storageLocation,StorableIndexInfo indexInfo,
+			String user, Map<String, String> tagMap) {
+	    String path = storageLocation.getDocPath();
+	    Repository repository = getRepo(storageLocation.getAuthority(), indexInfo);
+	    return repository.addTagsToDocument(user, path, tagMap);
+	}
+	
+	public static DocumentWithMeta removeTag(RaptureURI storageLocation,StorableIndexInfo indexInfo,
+			String user, String tagUri) {
+	    String path = storageLocation.getDocPath();
+	    Repository repository = getRepo(storageLocation.getAuthority(), indexInfo);
+	    return repository.removeTagFromDocument(user, path, tagUri);
+	}
+	
+	public static DocumentWithMeta removeTags(RaptureURI storageLocation,StorableIndexInfo indexInfo,
+			String user, List<String> tags) {
+	    String path = storageLocation.getDocPath();
+	    Repository repository = getRepo(storageLocation.getAuthority(), indexInfo);
+	    return repository.removeTagsFromDocument(user, path, tags);
+	}
 }

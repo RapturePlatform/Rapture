@@ -34,8 +34,10 @@ import rapture.common.RaptureFolderInfo;
 import rapture.common.RaptureURI;
 import rapture.common.TableQueryResult;
 import rapture.object.storage.StorageLocationFactory;
+import rapture.kernel.pipeline.ObjectStorageSearchPublisher;
 
 import rapture.common.impl.jackson.JsonContent;
+import rapture.common.model.DocumentMetadata;
 import rapture.common.model.DocumentWithMeta;
 import rapture.object.storage.ObjectFilter;
 import rapture.object.storage.ObjectStorage;
@@ -43,6 +45,7 @@ import rapture.persistence.storable.mapper.impl.jackson.StorableObjectMapper;
 import rapture.repo.RepoVisitor;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
@@ -50,6 +53,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 <serDeserImports>
 
+// FTS is : <fts>
 @SuppressWarnings("all")
 public class <name>Storage {
     private static final Logger log = Logger.getLogger(<name>Storage.class);

@@ -39,3 +39,64 @@ public static DocumentWithMeta getDocumentWithMeta(RaptureURI addressURI) {
     RaptureURI storageLocation = StorageLocationFactory.createStorageURI(<name>PathBuilder.getRepoName(), <name>PathBuilder.getPrefix(), addressURI);
 	return ObjectStorage.getDocumentWithMeta(storageLocation, storableInfo.getIndexInfo());
 }
+
+public DocumentWithMeta i_getDocumentWithMeta(RaptureURI addressURI) {
+   return getDocumentWithMeta(addressURI);
+}
+
+/**
+ * Tags
+ */
+ 
+public static DocumentMetadata applyTag(RaptureURI addressURI, String user, String tagUri, String tagValue) {
+    RaptureURI storageLocation = StorageLocationFactory.createStorageURI(<name>PathBuilder.getRepoName(), <name>PathBuilder.getPrefix(), addressURI);
+	DocumentWithMeta dwm = ObjectStorage.applyTag(storageLocation,  storableInfo.getIndexInfo(), user, tagUri, tagValue);
+	if (dwm != null) {
+<if(fts)>
+	   	dwm.getMetaData().setSemanticUri(addressURI.toString());
+		ObjectStorageSearchPublisher.publishCreateMessage(dwm);
+<endif>
+		return dwm.getMetaData();
+	}
+	return null;
+}
+
+public static DocumentMetadata applyTags(RaptureURI addressURI, String user, Map\<String, String\> tagMap) {
+    RaptureURI storageLocation = StorageLocationFactory.createStorageURI(<name>PathBuilder.getRepoName(), <name>PathBuilder.getPrefix(), addressURI);
+	DocumentWithMeta dwm = ObjectStorage.applyTags(storageLocation,  storableInfo.getIndexInfo(), user, tagMap);
+	if (dwm != null) {
+<if(fts)>
+	   	dwm.getMetaData().setSemanticUri(addressURI.toString());
+		ObjectStorageSearchPublisher.publishCreateMessage(dwm);
+<endif>
+		return dwm.getMetaData();
+	}
+	return null;
+}
+
+public static DocumentMetadata removeTag(RaptureURI addressURI, String user, String tagUri) {
+    RaptureURI storageLocation = StorageLocationFactory.createStorageURI(<name>PathBuilder.getRepoName(), <name>PathBuilder.getPrefix(), addressURI);
+	DocumentWithMeta dwm = ObjectStorage.removeTag(storageLocation,  storableInfo.getIndexInfo(), user, tagUri);
+	if (dwm != null) {
+<if(fts)>
+	   	dwm.getMetaData().setSemanticUri(addressURI.toString());
+		ObjectStorageSearchPublisher.publishCreateMessage(dwm);
+<endif>
+		return dwm.getMetaData();
+	}
+	return null;
+}
+
+public static DocumentMetadata removeTags(RaptureURI addressURI, String user, List\<String\> tags) {
+    RaptureURI storageLocation = StorageLocationFactory.createStorageURI(<name>PathBuilder.getRepoName(), <name>PathBuilder.getPrefix(), addressURI);
+	DocumentWithMeta dwm = ObjectStorage.removeTags(storageLocation,  storableInfo.getIndexInfo(), user, tags);
+	if (dwm != null) {
+<if(fts)>
+	   	dwm.getMetaData().setSemanticUri(addressURI.toString());
+		ObjectStorageSearchPublisher.publishCreateMessage(dwm);
+<endif>
+		return dwm.getMetaData();
+	}
+	return null;
+}
+

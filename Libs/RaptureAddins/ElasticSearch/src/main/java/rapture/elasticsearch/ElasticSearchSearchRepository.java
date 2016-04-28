@@ -89,7 +89,14 @@ public class ElasticSearchSearchRepository implements SearchRepository {
 
     @Override
     public void put(DocumentWithMeta docMeta) {
-        String uri = new RaptureURI(docMeta.getDisplayName(), Scheme.DOCUMENT).getFullPath();
+    	RaptureURI indexUri = null;
+    	if (docMeta.getMetaData().getSemanticUri().length() > 0) {
+    		indexUri = new RaptureURI(docMeta.getMetaData().getSemanticUri());
+    	} else {
+    		indexUri = new RaptureURI(docMeta.getDisplayName(), Scheme.DOCUMENT);
+    	}
+        String uri = indexUri.toString();
+        log.info("URI for indexing is " + uri);
         putUriStore(uri, Scheme.DOCUMENT);
         ensureClient().prepareIndex(index, SearchRepoType.DOC.toString(), uri).setSource(docMeta.getContent()).get();
         String meta = JacksonUtil.jsonFromObject(docMeta.getMetaData());

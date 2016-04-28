@@ -203,7 +203,7 @@ public class DefaultDecisionProcessExecutor implements DecisionProcessExecutor {
                 }
                 nextId++;
             }
-            WorkOrderStorage.add(workOrder, ContextFactory.getKernelUser().getUser(), "Update for fork");
+            WorkOrderStorage.add(new RaptureURI(workOrderUri, Scheme.WORKORDER), workOrder, ContextFactory.getKernelUser().getUser(), "Update for fork");
             saveWorker(worker);
         } finally {
             releaseMultiWorkerLock(workOrder, worker, FORCE);
@@ -255,12 +255,12 @@ public class DefaultDecisionProcessExecutor implements DecisionProcessExecutor {
             for (Worker child : stillborn) {
                 workOrder.getWorkerIds().add(child.getId());
             }
-            WorkOrderStorage.add(workOrder, ContextFactory.getKernelUser().getUser(), "Update for split");
+            WorkOrderStorage.add(new RaptureURI(workOrderUri, Scheme.WORKORDER), workOrder, ContextFactory.getKernelUser().getUser(), "Update for split");
             JoinCountdown countdown = new JoinCountdown();
             countdown.setParentId(parent.getId());
             countdown.setWorkOrderURI(parent.getWorkOrderURI());
             countdown.setWaitCount(children.size());
-            JoinCountdownStorage.add(countdown, ContextFactory.getKernelUser().getUser(), "Starting Countdown");
+            JoinCountdownStorage.add(null, countdown, ContextFactory.getKernelUser().getUser(), "Starting Countdown");
         } finally {
             releaseMultiWorkerLock(workOrder, parent, FORCE);
         }
@@ -330,13 +330,15 @@ public class DefaultDecisionProcessExecutor implements DecisionProcessExecutor {
         worker.setStatus(WorkerExecutionState.RUNNING);
         saveWorker(worker);
 
+        String workerURI = createWorkerURI(worker.getWorkOrderURI(), worker.getId()).toString();
+        
         workOrder.setStatus(WorkOrderStatusUtil.computeStatus(workOrder, false));
-        WorkOrderStorage.add(workOrder, ContextFactory.getKernelUser().getUser(), "Updating status");
+        WorkOrderStorage.add(new RaptureURI(workOrder.getWorkOrderURI(), Scheme.WORKORDER), workOrder, ContextFactory.getKernelUser().getUser(), "Updating status");
 
         String stepURI = stack.get(0); // don't pop stack just yet -- we are
         // currently executing this
         log.info("Processing step: " + stepURI);
-        String workerURI = createWorkerURI(worker.getWorkOrderURI(), worker.getId()).toString();
+  
         CallingContext kernelUser = ContextFactory.getKernelUser();
         Pair<Workflow, Step> pair = Kernel.getDecision().getTrusted().getWorkflowWithStep(kernelUser, stepURI);
         Workflow flow = pair.getLeft();
@@ -382,7 +384,7 @@ public class DefaultDecisionProcessExecutor implements DecisionProcessExecutor {
                         saveWorker(worker);
 
                         workOrder.setStatus(WorkOrderStatusUtil.computeStatus(workOrder, false));
-                        WorkOrderStorage.add(workOrder, ContextFactory.getKernelUser().getUser(), "Updating status");
+                        WorkOrderStorage.add(new RaptureURI(workOrder.getWorkOrderURI(), Scheme.WORKORDER), workOrder, ContextFactory.getKernelUser().getUser(), "Updating status");
                     } else {
                         log.trace("no suppress " + transitionName);
                         transitionWorker(worker, workOrder, step, stepURI, transitionName);
@@ -511,12 +513,12 @@ public class DefaultDecisionProcessExecutor implements DecisionProcessExecutor {
                     JoinCountdownStorage.deleteByFields(worker.getWorkOrderURI(), group, ContextFactory.getKernelUser().getUser(), "remove old counter");
                 } else {
                     countdown.setWaitCount(count - 1);
-                    JoinCountdownStorage.add(countdown, ContextFactory.getKernelUser().getUser(), "decrement join countdown");
+                    JoinCountdownStorage.add(null, countdown, ContextFactory.getKernelUser().getUser(), "decrement join countdown");
                 }
             } else if (ids.size() == 1 && ids.get(0).equals(id)) {
                 workOrder.setEndTime(System.currentTimeMillis());
                 try {
-                    WorkOrderStorage.add(workOrder, kernelUser.getUser(), "Finished execution");
+                    WorkOrderStorage.add(new RaptureURI(workOrder.getWorkOrderURI(), Scheme.WORKORDER), workOrder, kernelUser.getUser(), "Finished execution");
                 } finally {
                     Kernel.getDecision().getTrusted().releaseWorkOrderLock(kernelUser, workOrder);
                     WorkOrderExecutionState overallStatus = WorkOrderStatusUtil.computeStatus(workOrder, true);
@@ -547,7 +549,7 @@ public class DefaultDecisionProcessExecutor implements DecisionProcessExecutor {
                     outputs.put(key, map.get(key).toString());
                 }
             }
-            WorkOrderStorage.add(workOrder, ContextFactory.getKernelUser().getUser(), "Updating status");
+            WorkOrderStorage.add(new RaptureURI(workOrder.getWorkOrderURI(), Scheme.WORKORDER), workOrder, ContextFactory.getKernelUser().getUser(), "Updating status");
         } finally {
             releaseMultiWorkerLock(workOrder, worker, NO_FORCE);
         }
@@ -774,7 +776,7 @@ public class DefaultDecisionProcessExecutor implements DecisionProcessExecutor {
         }
         recordAppStatusStepFinish(workOrder, worker, step);
         worker.setViewOverlay(emptyMap);
-        WorkerStorage.add(worker, ContextFactory.getKernelUser().getUser(), "Post execute step");
+        WorkerStorage.add(null, worker, ContextFactory.getKernelUser().getUser(), "Post execute step");
         if (log.isDebugEnabled()) {
             log.debug(String.format("POST: Saving worker: \n%s", JacksonUtil.jsonFromObject(worker)));
         }
@@ -793,7 +795,7 @@ public class DefaultDecisionProcessExecutor implements DecisionProcessExecutor {
     public StepRecord preExecuteStep(WorkOrder workOrder, Worker worker, Step step, String stepURI) {
         worker.setViewOverlay(step.getView());
         recordAppStatusStepStart(workOrder, worker, step);
-        WorkerStorage.add(worker, ContextFactory.getKernelUser().getUser(), "Pre execute step");
+        WorkerStorage.add(null, worker, ContextFactory.getKernelUser().getUser(), "Pre execute step");
 
         StepRecord stepRecord = new StepRecord();
         stepRecord.setStepURI(stepURI);

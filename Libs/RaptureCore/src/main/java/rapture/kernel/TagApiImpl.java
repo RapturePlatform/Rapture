@@ -31,11 +31,14 @@ import org.apache.log4j.Logger;
 import rapture.common.CallingContext;
 import rapture.common.Messages;
 import rapture.common.RaptureFolderInfo;
+import rapture.common.RaptureJobStorage;
 import rapture.common.RaptureScriptStorage;
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
 import rapture.common.TagValueType;
 import rapture.common.api.TagApi;
+import rapture.common.dp.WorkOrderStorage;
+import rapture.common.dp.WorkflowStorage;
 import rapture.common.model.DocumentMetadata;
 import rapture.common.model.TagDescription;
 import rapture.common.model.TagDescriptionStorage;
@@ -84,25 +87,86 @@ public class TagApiImpl extends KernelBase implements TagApi {
 	public DocumentMetadata applyTag(CallingContext context, String docUri,
 			String tagUri, String value) {
 		// apply tag is basically a trusted call on the doc interface (in this case)
-		return Kernel.getDoc().getTrusted().applyTag(context, docUri, tagUri, value);
+		RaptureURI uri = new RaptureURI(docUri, Scheme.DOCUMENT);
+		switch(uri.getScheme()) {
+		case DOCUMENT:
+			return Kernel.getDoc().getTrusted().applyTag(context, docUri, tagUri, value);
+		case SCRIPT:
+			return RaptureScriptStorage.applyTag(uri, context.getUser(), tagUri, value);
+		case WORKFLOW:
+			return WorkflowStorage.applyTag(uri, context.getUser(), tagUri, value);
+		case WORKORDER:
+			return WorkOrderStorage.applyTag(uri, context.getUser(), tagUri, value);
+		case JOB:
+			return RaptureJobStorage.applyTag(uri, context.getUser(), tagUri, value);
+		default:
+			log.error("Do not know how to work with " + uri);
+			return null;
+		}
+			
 	}
 
 	@Override
 	public DocumentMetadata applyTags(CallingContext context, String docUri,
 			Map<String, String> tagMap) {
-		return Kernel.getDoc().getTrusted().applyTags(context, docUri, tagMap);
+		RaptureURI uri = new RaptureURI(docUri, Scheme.DOCUMENT);
+		switch(uri.getScheme()) {
+		case DOCUMENT:
+			return Kernel.getDoc().getTrusted().applyTags(context, docUri, tagMap);
+		case SCRIPT:
+			return RaptureScriptStorage.applyTags(uri, context.getUser(), tagMap);
+		case WORKFLOW:
+			return WorkflowStorage.applyTags(uri, context.getUser(), tagMap);
+		case WORKORDER:
+			return WorkOrderStorage.applyTags(uri, context.getUser(), tagMap);
+		case JOB:
+			return RaptureJobStorage.applyTags(uri, context.getUser(), tagMap);
+		default:
+			log.error("Do not know how to work with " + uri);
+			return null;
+		}
 	}
 
 	@Override
 	public DocumentMetadata removeTag(CallingContext context, String docUri,
 			String tagUri) {
-		return Kernel.getDoc().getTrusted().removeTag(context, docUri, tagUri);
+		RaptureURI uri = new RaptureURI(docUri, Scheme.DOCUMENT);
+		switch(uri.getScheme()) {
+		case DOCUMENT:
+			return Kernel.getDoc().getTrusted().removeTag(context, docUri, tagUri);
+		case SCRIPT:
+			return RaptureScriptStorage.removeTag(uri, context.getUser(), tagUri);
+		case WORKFLOW:
+			return WorkflowStorage.removeTag(uri, context.getUser(), tagUri);
+		case WORKORDER:
+			return WorkOrderStorage.removeTag(uri, context.getUser(), tagUri);
+		case JOB:
+			return RaptureJobStorage.removeTag(uri, context.getUser(), tagUri);
+		default:
+			log.error("Do not know how to work with " + uri);
+			return null;
+		}
 	}
 
 	@Override
 	public DocumentMetadata removeTags(CallingContext context, String docUri,
 			List<String> tags) {
-		return Kernel.getDoc().getTrusted().removeTags(context, docUri, tags);
+		RaptureURI uri = new RaptureURI(docUri, Scheme.DOCUMENT);
+		switch(uri.getScheme()) {
+		case DOCUMENT:
+			return Kernel.getDoc().getTrusted().removeTags(context, docUri, tags);
+		case SCRIPT:
+			return RaptureScriptStorage.removeTags(uri, context.getUser(), tags);
+		case WORKFLOW:
+			return WorkflowStorage.removeTags(uri, context.getUser(), tags);
+		case WORKORDER:
+			return WorkOrderStorage.removeTags(uri, context.getUser(), tags);
+		case JOB:
+			return RaptureJobStorage.removeTags(uri, context.getUser(), tags);
+		default:
+			log.error("Do not know how to work with " + uri);
+			return null;
+		}
 	}
 
 
