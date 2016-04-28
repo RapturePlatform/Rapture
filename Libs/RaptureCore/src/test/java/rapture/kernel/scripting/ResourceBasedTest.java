@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package reflex;
+package rapture.kernel.scripting;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -46,6 +46,14 @@ import rapture.common.api.ScriptingApi;
 import rapture.common.client.HttpLoginApi;
 import rapture.common.client.ScriptClient;
 import rapture.common.client.SimpleCredentialsProvider;
+import reflex.IReflexDataHandler;
+import reflex.IReflexHandler;
+import reflex.IReflexOutputHandler;
+import reflex.IReflexScriptHandler;
+import reflex.ReflexLexer;
+import reflex.ReflexParser;
+import reflex.ReflexScriptDataHandler;
+import reflex.ReflexTreeWalker;
 import reflex.debug.NullDebugger;
 import reflex.debug.ReflexPrintingDebugger;
 import reflex.node.ReflexNode;
