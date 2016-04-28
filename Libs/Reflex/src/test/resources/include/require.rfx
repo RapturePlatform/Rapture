@@ -21,23 +21,32 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package reflex;
 
-import static org.junit.Assert.assertEquals;
+try do
+   println("jenner is not set so this may fail");
+   println("jenner is ${jenner}");
+end
+catch e do
+  println("Thought so");
+end
 
-import org.antlr.runtime.RecognitionException;
-import org.junit.Test;
+require "bottom.rfx" as other;
 
-import reflex.handlers.TestScriptHandler;
+jenner = "Kylie"; // different person
+println("jenner is ${jenner}");
+assert (jenner == 'Kylie');
+jenner = "Kendall";
+println("jenner is ${jenner} - They are interchangeable");
+assert (jenner == 'Kendall');
 
-public class ImportTest extends ResourceBasedTest {
-    @Test
-    public void testStandalone() throws RecognitionException {
-        String retVal = runTestForWithScriptHandler("/imports/import.rfx", new TestScriptHandler(this, "imports"));
-        assertEquals("33", retVal.split("--RETURNS--")[1]);
-        retVal = runTestForWithScriptHandler("/imports/returnNull.rfx", new TestScriptHandler(this, "imports"));
-        assertEquals("NULL", retVal.split("--RETURNS--")[1]);
-        retVal = runTestForWithScriptHandler("/imports/import.rfx", new TestScriptHandler(this, "imports"));
-        assertEquals("33", retVal.split("--RETURNS--")[1]);
-    }
-}
+assert (other.jenner == 'Bruce');
+try do
+  println("It should be a const so this should fail");
+  other.jenner = "Caitlyn";
+  assert (false, "That should not have succeeded");
+end
+catch e do
+  println("Yes, it failed because you cannot reassign a const in Reflex");
+  end
+assert (other.jenner == 'Bruce');
+
