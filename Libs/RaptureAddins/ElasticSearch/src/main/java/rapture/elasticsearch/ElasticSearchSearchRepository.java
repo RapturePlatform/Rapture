@@ -89,12 +89,12 @@ public class ElasticSearchSearchRepository implements SearchRepository {
 
     @Override
     public void put(DocumentWithMeta docMeta) {
-    	RaptureURI indexUri = null;
-    	if (docMeta.getMetaData().getSemanticUri().length() > 0) {
-    		indexUri = new RaptureURI(docMeta.getMetaData().getSemanticUri());
-    	} else {
-    		indexUri = new RaptureURI(docMeta.getDisplayName(), Scheme.DOCUMENT);
-    	}
+        RaptureURI indexUri = null;
+        if (docMeta.getMetaData().getSemanticUri().length() > 0) {
+            indexUri = new RaptureURI(docMeta.getMetaData().getSemanticUri());
+        } else {
+            indexUri = new RaptureURI(docMeta.getDisplayName(), Scheme.DOCUMENT);
+        }
         String uri = indexUri.toString();
         log.info("URI for indexing is " + uri);
         putUriStore(uri, Scheme.DOCUMENT);
@@ -132,8 +132,8 @@ public class ElasticSearchSearchRepository implements SearchRepository {
             ensureClient().prepareDelete(index, SearchRepoType.SERIES.toString(), uri.getShortPath()).get();
             break;
         case DOCUMENT:
-            ensureClient().prepareDelete(index, SearchRepoType.DOC.toString(), uri.getFullPath()).get();
-            ensureClient().prepareDelete(index, SearchRepoType.META.toString(), uri.getFullPath()).get();
+            ensureClient().prepareDelete(index, SearchRepoType.DOC.toString(), uri.toString()).get();
+            ensureClient().prepareDelete(index, SearchRepoType.META.toString(), uri.toString()).get();
             break;
         default:
             log.warn("Called remove() on an unsupported scheme: " + uri.getScheme().toString());
