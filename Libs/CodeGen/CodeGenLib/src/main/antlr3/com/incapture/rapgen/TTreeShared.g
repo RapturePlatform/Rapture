@@ -38,6 +38,10 @@ beanAnnotation returns [BeanAnnotation result]
     : BEAN { $result = new BeanAnnotation(); }
     ;
 
+ftsAnnotation returns [FTSAnnotation result]
+	: FTS { $result = new FTSAnnotation(); }
+	;
+	
 searchableAnnotation returns [SearchableAnnotation result]
 //This is just a marker annotation. example: Searchable
     : SEARCHABLE { $result = new SearchableAnnotation(); }
