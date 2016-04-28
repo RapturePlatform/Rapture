@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package rapture.kernel.jar;
+package rapture.common.jar;
 
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -35,7 +35,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
-import rapture.common.CallingContext;
+import rapture.common.api.ScriptingApi;
 
 /**
  * Class loader for workflows that uses Rapture's internal Jar system to add dependencies. Dependencies are listed in the workflow definition at either the step
@@ -49,19 +49,19 @@ public abstract class AbstractClassLoader extends URLClassLoader {
 
     private static final Logger log = Logger.getLogger(AbstractClassLoader.class);
 
-    protected CallingContext ctx;
+    protected ScriptingApi api;
     protected Map<String, String> classNameMap = new HashMap<>();
 
-    public AbstractClassLoader(ClassLoader parent, CallingContext ctx, List<String> jarUris) throws ExecutionException {
+    public AbstractClassLoader(ClassLoader parent, ScriptingApi api, List<String> jarUris) throws ExecutionException {
         super(new URL[0], parent);
-        this.ctx = ctx;
+        this.api = api;
         if (CollectionUtils.isNotEmpty(jarUris)) {
             // reverse the list, so that jars given first take precedence since the map will overwrite duplicate names last
             Collections.reverse(jarUris);
             for (String jarUri : jarUris) {
-                List<String> expandedUris = JarUtils.expandWildcardUri(ctx, jarUri);
+                List<String> expandedUris = JarUtils.expandWildcardUri(api, jarUri);
                 for (String expandedUri : expandedUris) {
-                    List<String> classNames = JarCache.getInstance().getClassNames(ctx, expandedUri);
+                    List<String> classNames = JarCache.getInstance().getClassNames(api, expandedUri);
                     for (String className : classNames) {
                         classNameMap.put(className, expandedUri);
                     }
@@ -79,7 +79,7 @@ public abstract class AbstractClassLoader extends URLClassLoader {
             return super.findClass(className);
         }
         try {
-            byte[] classBytes = JarCache.getInstance().getClassBytes(ctx, jarUri, className);
+            byte[] classBytes = JarCache.getInstance().getClassBytes(api, jarUri, className);
             return defineClass(className, classBytes, 0, classBytes.length);
         } catch (ExecutionException e) {
             throw new ClassNotFoundException("Could not get class bytes from the cache", e);

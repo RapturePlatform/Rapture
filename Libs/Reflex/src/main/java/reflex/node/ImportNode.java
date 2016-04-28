@@ -25,8 +25,13 @@ package reflex.node;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
+import org.apache.commons.collections.CollectionUtils;
+
+import rapture.common.jar.ChildFirstClassLoader;
 import reflex.IReflexHandler;
+import reflex.ReflexException;
 import reflex.Scope;
 import reflex.debug.IReflexDebugger;
 import reflex.importer.ImportHandler;
@@ -39,13 +44,16 @@ public class ImportNode extends BaseNode {
     private String importName;
     private String aliasName;
     private List<ReflexNode> configParams;
+    private List<String> jarUris;
 
-    public ImportNode(int lineNumber, IReflexHandler handler, Scope s, ImportHandler importHandler, String importId, String alias, List<ReflexNode> configParams) {
+    public ImportNode(int lineNumber, IReflexHandler handler, Scope s, ImportHandler importHandler, String importId, String alias,
+            List<ReflexNode> configParams, List<String> jarUris) {
         super(lineNumber, handler, s);
         this.importHandler = importHandler;
         this.importName = importId;
         this.aliasName = alias;
         this.configParams = configParams;
+        this.jarUris = jarUris;
     }
 
     @Override
@@ -57,10 +65,19 @@ public class ImportNode extends BaseNode {
                 config.add(n.evaluate(debugger, scope));
             }
         }
+        // load a classloader using any jarUris specified in the import 'from' directive
+        ClassLoader classLoader = this.getClass().getClassLoader();
+        if (CollectionUtils.isNotEmpty(jarUris) && handler.getApi() != null) {
+            try {
+                classLoader = new ChildFirstClassLoader(this.getClass().getClassLoader(), handler.getApi(), jarUris);
+            } catch (ExecutionException e) {
+                throw new ReflexException(-1, "Failed to import jars", e);
+            }
+        }
         if (aliasName != null) {
-            importHandler.addImportModuleWithAlias(importName, aliasName, config, debugger);
+            importHandler.addImportModuleWithAlias(importName, aliasName, config, debugger, classLoader);
         } else {
-            importHandler.addImportModule(importName, config, debugger);
+            importHandler.addImportModule(importName, config, debugger, classLoader);
         }
         debugger.stepEnd(this, new ReflexVoidValue(lineNumber), scope);
         return new ReflexNullValue();

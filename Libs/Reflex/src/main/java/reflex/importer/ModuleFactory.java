@@ -34,14 +34,14 @@ public class ModuleFactory {
 
     }
 
-    public static Module createModule(String name, String alias, IReflexHandler handler, IReflexDebugger debugger) {
+    public static Module createModule(String name, String alias, IReflexHandler handler, IReflexDebugger debugger, ClassLoader classLoader) {
         synchronized (syncPoint) {
             Module ret = null;
-            ret = createModuleFromClassName("reflex.module." + name.substring(0, 1).toUpperCase() + name.substring(1), handler, debugger);
+            ret = createModuleFromClassName("reflex.module." + name.substring(0, 1).toUpperCase() + name.substring(1), handler, debugger, classLoader);
             if (ret != null) {
                 return ret;
             }
-            ret = createModuleFromClassName(name, handler, debugger);
+            ret = createModuleFromClassName(name, handler, debugger, classLoader);
             if (ret != null) {
                 return ret;
             }
@@ -50,10 +50,10 @@ public class ModuleFactory {
         throw new ReflexException(-1, "Cannot find module named " + name);
     }
 
-    private static Module createModuleFromClassName(String className, IReflexHandler handler, IReflexDebugger debugger) {
+    private static Module createModuleFromClassName(String className, IReflexHandler handler, IReflexDebugger debugger, ClassLoader classLoader) {
         Module ret = null;
         try {
-            Class<?> moduleClass = Module.class.getClassLoader().loadClass(className);
+            Class<?> moduleClass = classLoader.loadClass(className);
             // if (Module.class.isAssignableFrom(moduleClass)) {
             ret = (Module) moduleClass.newInstance();
 

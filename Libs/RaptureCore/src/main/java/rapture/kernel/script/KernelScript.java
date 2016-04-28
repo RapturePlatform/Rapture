@@ -189,9 +189,9 @@ public class KernelScript implements IRaptureScriptHelper, IRaptureKernelScriptH
     public ScriptStructured getStructured() {
         return structured;
     }
-    
+
     public ScriptTag getTag() {
-    	return tag;
+        return tag;
     }
 
     @Override
@@ -235,6 +235,7 @@ public class KernelScript implements IRaptureScriptHelper, IRaptureKernelScriptH
         getStructured().setCallingContext(ctx);
         getSearch().setCallingContext(ctx);
         getTag().setCallingContext(ctx);
+        getJar().setCallingContext(ctx);
 
         for (InstallableKernel installedKernel : Kernel.getInstalledKernels()) {
             installedKernel.getKernelScript().setCallingContext(ctx);

@@ -34,8 +34,12 @@ import java.util.Map;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
+import rapture.common.RaptureURI;
+import rapture.common.Scheme;
+import rapture.common.jar.JarUtils;
 import rapture.kernel.ContextFactory;
 import rapture.kernel.Kernel;
+import rapture.kernel.script.KernelScript;
 
 public class JarUtilsTest {
 
@@ -56,19 +60,28 @@ public class JarUtilsTest {
     }
 
     @Test
-    public void testExpandWildcardUri() {
+    public void testExpandWildcardUriWithScheme() {
+        testExpandWildcardUri("jar://someJars/");
+    }
+
+    @Test
+    public void testExpandWildcardUriWithoutScheme() {
+        testExpandWildcardUri("//jarswithoutscheme/xsdf/df/");
+    }
+
+    private void testExpandWildcardUri(String uriPrefix) {
         Kernel.getKernel().restart();
         Kernel.initBootstrap();
         int num = 9;
-        String uriPrefix = "jar://someJars/";
         for (int i = 0; i < num; i++) {
             Kernel.getJar().putJar(ContextFactory.getKernelUser(), uriPrefix + i, new byte[0]);
         }
-        List<String> ret = JarUtils.expandWildcardUri(ContextFactory.getKernelUser(), uriPrefix + "*");
+        KernelScript ks = new KernelScript();
+        ks.setCallingContext(ContextFactory.getKernelUser());
+        List<String> ret = JarUtils.expandWildcardUri(ks, uriPrefix + "*");
         assertFalse(ret.isEmpty());
         for (int i = 0; i < num; i++) {
-            assertEquals(uriPrefix + i, ret.get(i));
+            assertEquals(new RaptureURI(uriPrefix + i, Scheme.JAR).toString(), ret.get(i));
         }
     }
-
 }

@@ -82,6 +82,8 @@ import rapture.common.event.EventConstants;
 import rapture.common.exception.RaptureException;
 import rapture.common.exception.RaptureExceptionFactory;
 import rapture.common.impl.jackson.JacksonUtil;
+import rapture.common.jar.ChildFirstClassLoader;
+import rapture.common.jar.ParentFirstClassLoader;
 import rapture.common.mime.MimeDecisionProcessAdvance;
 import rapture.config.LocalConfigService;
 import rapture.dp.event.WorkOrderStatusUpdateEvent;
@@ -94,8 +96,7 @@ import rapture.kernel.LockApiImpl;
 import rapture.kernel.dp.ExecutionContextUtil;
 import rapture.kernel.dp.StepRecordUtil;
 import rapture.kernel.dp.WorkOrderStatusUtil;
-import rapture.kernel.jar.ChildFirstClassLoader;
-import rapture.kernel.jar.ParentFirstClassLoader;
+import rapture.kernel.script.KernelScript;
 import rapture.log.MDCService;
 import rapture.script.reflex.ReflexRaptureScript;
 import rapture.server.dp.JoinCountdown;
@@ -431,10 +432,12 @@ public class DefaultDecisionProcessExecutor implements DecisionProcessExecutor {
         try {
             List<String> stepAndWorkflowDeps = new ArrayList<>(step.getJarUriDependencies());
             stepAndWorkflowDeps.addAll(workflow.getJarUriDependencies());
+            KernelScript ks = new KernelScript();
+            ks.setCallingContext(ctx);
             if (workflow.getUseParentFirstClassLoader()) {
-                classLoader = new ParentFirstClassLoader(this.getClass().getClassLoader(), ctx, stepAndWorkflowDeps);
+                classLoader = new ParentFirstClassLoader(this.getClass().getClassLoader(), ks, stepAndWorkflowDeps);
             } else {
-                classLoader = new ChildFirstClassLoader(this.getClass().getClassLoader(), ctx, stepAndWorkflowDeps);
+                classLoader = new ChildFirstClassLoader(this.getClass().getClassLoader(), ks, stepAndWorkflowDeps);
             }
             invocableImpl = classLoader.loadClass(className);
         } catch (ClassNotFoundException | ExecutionException e) {
