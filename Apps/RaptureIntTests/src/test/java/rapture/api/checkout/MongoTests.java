@@ -346,7 +346,7 @@ public class MongoTests {
         String blobURI5 = blobAuthorityURI + "/PacMan/Wocka/Wocka/Wocka/Sue";
 
         blobImpl.putBlob(callingContext, blobURI1, sample, MediaType.CSS_UTF_8.toString());
-        blobImpl.putBlob(callingContext, blobURI2, sample, MediaType.EOT.toString());
+        blobImpl.putBlob(callingContext, blobURI2, sample, MediaType.ANY_TEXT_TYPE.toString());
         blobImpl.putBlob(callingContext, blobURI3, sample, MediaType.GIF.toString());
         blobImpl.putBlob(callingContext, blobURI4, sample, MediaType.JPEG.toString());
 
@@ -439,5 +439,4 @@ public class MongoTests {
             }
         }
     }
-
 }

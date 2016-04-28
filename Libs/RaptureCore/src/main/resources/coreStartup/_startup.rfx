@@ -100,7 +100,7 @@ end
 // set up the default Jar repo for the Jar API
 systemJarRepo = "blob://sys.RaptureJars";
 if !#blob.blobRepoExists(systemJarRepo) do
-	println("System Jar repo does not exist, creating...");
+    println("System jar repo does not exist, creating...");
     #blob.createBlobRepo(systemJarRepo, _cfg.DefaultJarRepoConfig(), _cfg.DefaultJarRepoMetaConfig());
 end
 

@@ -21,23 +21,22 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package reflex;
+package rapture.kernel.jar;
 
-import static org.junit.Assert.assertEquals;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
+import java.util.concurrent.ExecutionException;
 
-import org.antlr.runtime.RecognitionException;
 import org.junit.Test;
 
-import reflex.handlers.TestScriptHandler;
+public class ChildFirstClassLoaderTest extends AbstractClassLoaderTest {
 
-public class ImportTest extends ResourceBasedTest {
     @Test
-    public void testStandalone() throws RecognitionException {
-        String retVal = runTestForWithScriptHandler("/imports/import.rfx", new TestScriptHandler(this, "imports"));
-        assertEquals("33", retVal.split("--RETURNS--")[1]);
-        retVal = runTestForWithScriptHandler("/imports/returnNull.rfx", new TestScriptHandler(this, "imports"));
-        assertEquals("NULL", retVal.split("--RETURNS--")[1]);
-        retVal = runTestForWithScriptHandler("/imports/import.rfx", new TestScriptHandler(this, "imports"));
-        assertEquals("33", retVal.split("--RETURNS--")[1]);
+    public void testClassLoader() throws ClassNotFoundException, InstantiationException, IllegalAccessException, IOException, IllegalArgumentException,
+            InvocationTargetException, NoSuchMethodException, SecurityException, ExecutionException {
+        ChildFirstClassLoader cl1 = new ChildFirstClassLoader(this.getClass().getClassLoader(), ctx, Arrays.asList(JAR_URI1, JAR_URI2));
+        ChildFirstClassLoader cl2 = new ChildFirstClassLoader(this.getClass().getClassLoader(), ctx, Arrays.asList(JAR_URI1, JAR_URI2));
+        testClassLoader(cl1, cl2);
     }
 }

@@ -165,6 +165,7 @@ public class SeriesApiImpl extends KernelBase implements SeriesApi {
         RaptureURI internalURI = new RaptureURI(seriesURI, Scheme.SERIES);
         SeriesRepo repo = getRepoOrFail(internalURI);
         repo.deletePointsFromSeries(internalURI.getDocPath());
+        SearchPublisher.publishDeleteMessage(context, getConfigFromCache(internalURI.getAuthority()), internalURI);
     }
 
     @Override
@@ -609,6 +610,7 @@ public class SeriesApiImpl extends KernelBase implements SeriesApi {
         RaptureURI uri = new RaptureURI(seriesURI, Scheme.SERIES);
         SeriesRepo repository = getRepoOrFail(uri);
         repository.deleteSeries(uri.getDocPath());
+        SearchPublisher.publishDeleteMessage(context, getConfigFromCache(uri.getAuthority()), uri);
     }
 
     @Override

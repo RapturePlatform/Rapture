@@ -21,23 +21,22 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package reflex;
+package rapture.kernel.jar;
 
-import static org.junit.Assert.assertEquals;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 
-import org.antlr.runtime.RecognitionException;
-import org.junit.Test;
+import rapture.common.CallingContext;
 
-import reflex.handlers.TestScriptHandler;
+/**
+ * Load all jars in the parent first, then the Rapture jar uris last
+ * 
+ * @author dukenguyen
+ *
+ */
+public class ParentFirstClassLoader extends AbstractClassLoader {
 
-public class ImportTest extends ResourceBasedTest {
-    @Test
-    public void testStandalone() throws RecognitionException {
-        String retVal = runTestForWithScriptHandler("/imports/import.rfx", new TestScriptHandler(this, "imports"));
-        assertEquals("33", retVal.split("--RETURNS--")[1]);
-        retVal = runTestForWithScriptHandler("/imports/returnNull.rfx", new TestScriptHandler(this, "imports"));
-        assertEquals("NULL", retVal.split("--RETURNS--")[1]);
-        retVal = runTestForWithScriptHandler("/imports/import.rfx", new TestScriptHandler(this, "imports"));
-        assertEquals("33", retVal.split("--RETURNS--")[1]);
+    public ParentFirstClassLoader(ClassLoader parent, CallingContext ctx, List<String> jarUris) throws ExecutionException {
+        super(parent, ctx, jarUris);
     }
 }

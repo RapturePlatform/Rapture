@@ -1,0 +1,15 @@
+#How to build or update pypi raptureAPI package:
+#Maintainer: Joe Grabenstein <joe.grabenstein@incapturetechnologies.com>
+
+
+1.) cd Rapture/Libs/
+2.) gradle genPython
+3.) cd CodeGen/PythonLib/src/main/python/
+4.) set version in __init__.py
+5.) ensure multipart.py & newly generated raptureAPI.py are in the RaptureAPI/ dir
+6.) python setup.py bdist_wheel
+7.) pip install twine (if you don't already have it)
+8.) twine upload dist/*
+
+to install:
+1.) pip install raptureAPI

@@ -27,8 +27,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
 import rapture.common.CallingContext;
 import rapture.common.RaptureFolderInfo;
+import rapture.common.exception.RaptureException;
 import rapture.common.impl.jackson.JacksonUtil;
 import rapture.event.RaptureAlertEvent;
 import rapture.kernel.ContextFactory;
@@ -37,7 +40,8 @@ import rapture.kernel.alert.email.EmailAlerter;
 
 public class AlerterFactory {
     private static final String RULES_FOLDER = "//sys.config/dp/alert/rule/";
-
+    private static Logger log = Logger.getLogger(AlerterFactory.class);
+            
     public static List<EventAlerter> getAlerters(RaptureAlertEvent event) {
         List<EventAlerter> alerters = new ArrayList<>();
         for(AlertRule rule : getAlertRules()) {
@@ -60,13 +64,17 @@ public class AlerterFactory {
     private static List<AlertRule> getAlertRules() {
         List<AlertRule> rules = new ArrayList<>();
         CallingContext context = ContextFactory.getKernelUser();
-        Map<String, RaptureFolderInfo> allChildren = Kernel.getDoc().listDocsByUriPrefix(context, RULES_FOLDER, 0);
-        for(String key : allChildren.keySet()) {
-            RaptureFolderInfo info = allChildren.get(key);
-            if(!info.isFolder()) {
-                String configString = Kernel.getDoc().getDoc(context, key);
-                rules.add(JacksonUtil.objectFromJson(configString, AlertRule.class));
+        try {
+            Map<String, RaptureFolderInfo> allChildren = Kernel.getDoc().listDocsByUriPrefix(context, RULES_FOLDER, 0);
+            for(String key : allChildren.keySet()) {
+                RaptureFolderInfo info = allChildren.get(key);
+                if(!info.isFolder()) {
+                    String configString = Kernel.getDoc().getDoc(context, key);
+                    rules.add(JacksonUtil.objectFromJson(configString, AlertRule.class));
+                }
             }
+        } catch (RaptureException e) {
+            log.debug("No alert rules defined");
         }
         return rules;
     }

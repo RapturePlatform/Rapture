@@ -23,16 +23,17 @@
  */
 package rapture.dp;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static rapture.dp.DPTestUtil.ALPHA;
 import static rapture.dp.DPTestUtil.initPipeline;
 import static rapture.dp.DPTestUtil.makeSignalStep;
 import static rapture.dp.DPTestUtil.makeTransition;
-import static rapture.dp.DPTestUtil.ALPHA;
 
+import java.util.Arrays;
 import java.util.List;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -40,7 +41,6 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 
 import rapture.common.CallingContext;
-import rapture.common.WorkOrderExecutionState;
 import rapture.common.dp.Step;
 import rapture.common.dp.Workflow;
 import rapture.dp.invocable.SignalInvocable;
@@ -69,6 +69,14 @@ public class SimpleSplitStepTest {
         createWorkflow();
     }
     
+    @After
+    public void tearDown() {
+        String[] signals = { HELLO, SPLIT_STEP, AFTER_SPLIT, LEFT, LEFT_CONTINUE, LEFT_FINISH, RIGHT };
+        for (String signal : Arrays.asList(signals)) {
+            SignalInvocable.Singleton.clearSignal(signal);
+        }
+    }
+
     private void createWorkflow() {
         List<Step> steps = Lists.newArrayList();
         
