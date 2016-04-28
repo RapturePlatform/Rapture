@@ -152,7 +152,7 @@ public class ElasticSearchSearchRepositoryTest {
         assertEquals(1L, r.getTotal().longValue());
         assertEquals(1, r.getSearchHits().size());
         assertEquals(SearchRepoType.DOC.toString(), r.getSearchHits().get(0).getIndexType());
-        assertEquals(docPath, r.getSearchHits().get(0).getId());
+        assertEquals("document://" + docPath, r.getSearchHits().get(0).getId());
         assertEquals("document://" + docPath, r.getSearchHits().get(0).getUri());
         assertEquals("{\"k1\":\"v1\"}", r.getSearchHits().get(0).getSource());
 
