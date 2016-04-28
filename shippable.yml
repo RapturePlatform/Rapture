@@ -11,7 +11,7 @@ jdk:
 build:
   ci:
     - cd Libs/
-    - ./gradlew clean genAll build Install
+    - ./gradlew clean genAll Install
     - cd ../Apps
     - ./gradlew clean installApp -x test
     - ./gradlew test
