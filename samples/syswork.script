@@ -1,0 +1,10 @@
+uri = 'script://curtis/getWhoAmi';
+
+printMeta(uri);
+#tag.applyTag(uri, 'other', 'four');
+printMeta(uri);
+
+def printMeta(uri)
+   println(json(#sys.getSysDocumentMeta(uri)));
+end
+

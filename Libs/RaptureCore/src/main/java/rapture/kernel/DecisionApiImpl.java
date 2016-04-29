@@ -793,12 +793,16 @@ public class DecisionApiImpl extends KernelBase implements DecisionApi {
 
     @Override
     public List<String> getWorkOrdersByWorkflow(CallingContext context, Long startTimeInstant, String workflowUri) {
+        List<String> ret = new ArrayList<>();
+        // if the document://WorkOrder repo doesn't exist, aka no workflows have been run yet, just return empty
+        if (!Kernel.getDoc().docRepoExists(context, WorkOrderPathBuilder.getRepoName())) {
+            return ret;
+        }
         if (startTimeInstant == null) {
             startTimeInstant = 0L;
         }
         DateTime startDate = new DateTime(startTimeInstant, DateTimeZone.UTC).withTimeAtStartOfDay();
         DateTime nowDate = new DateTime(System.currentTimeMillis(), DateTimeZone.UTC).withTimeAtStartOfDay();
-        List<String> ret = new ArrayList<>();
         RaptureURI uri = new RaptureURI(workflowUri, Scheme.WORKFLOW);
         log.info(String.format("Requested startDate is [%s] and current date is [%s]", startDate.toString(), nowDate.toString()));
 

@@ -110,7 +110,7 @@ public class ScriptApiImpl extends KernelBase implements ScriptApi {
             s.setScript(script);
             s.setAuthority(internalURI.getAuthority());
 
-            RaptureScriptStorage.add(s, context.getUser(), Messages.getString("Script.createdScript")); //$NON-NLS-1$
+            RaptureScriptStorage.add(internalURI, s, context.getUser(), Messages.getString("Script.createdScript")); //$NON-NLS-1$
             return s;
         }
     }
@@ -130,7 +130,7 @@ public class ScriptApiImpl extends KernelBase implements ScriptApi {
             s.setScript(toScriptURI);
             s.setAuthority(internalURI.getAuthority());
 
-            RaptureScriptStorage.add(s, context.getUser(), Messages.getString("Script.createdScript")); //$NON-NLS-1$
+            RaptureScriptStorage.add(internalURI, s, context.getUser(), Messages.getString("Script.createdScript")); //$NON-NLS-1$
         }
     }
 

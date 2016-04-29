@@ -155,11 +155,15 @@ public class DecisionProcessExecutorTest {
         steps.add(s2);
 
         Workflow workflow = new Workflow();
+        String description = "This is a description of a workflow.  I am putting it in here to test";
+        workflow.setDescription(description);
         workflow.setSteps(steps);
         workflow.setWorkflowURI(wuri);
         workflow.setStartStep("start");
 
         Kernel.getDecision().putWorkflow(CONTEXT, workflow);
+        Workflow retWf = Kernel.getDecision().getWorkflow(CONTEXT, wuri);
+        assertEquals(description, retWf.getDescription());
         final String workOrderUri = Kernel.getDecision().createWorkOrder(CONTEXT, wuri, null);
         assertNotNull(workOrderUri);
         WaitingTestHelper.retry(new Runnable() {

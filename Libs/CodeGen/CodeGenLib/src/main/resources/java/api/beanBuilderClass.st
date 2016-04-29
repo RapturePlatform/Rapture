@@ -31,13 +31,14 @@ package <package>;
 import rapture.common.RaptureConstants;
 import rapture.common.RaptureURI;
 import rapture.object.storage.StorageLocationFactory;
+import rapture.object.storage.StoragePathBuilder;
 
 import org.apache.log4j.Logger;
 <if (encodeImport)>
 import <encodeImport>;
 <endif>
 
-public class <name>PathBuilder {
+public class <name>PathBuilder implements StoragePathBuilder {
     <fields; separator="\n">
     
     private static final Logger log = Logger.getLogger(<name>PathBuilder.class);
@@ -97,6 +98,10 @@ public class <name>PathBuilder {
     public static String getPrefix() {
         return PREFIX;
     }
+    
+    public String getIPrefix() {
+    	return getPrefix();
+    }
 
     public static String getRepoName() {
 <if(sdkName)>
@@ -112,4 +117,7 @@ public class <name>PathBuilder {
 
     }
 
+    public String getIRepoName() {
+     	return getRepoName();
+    }
 }

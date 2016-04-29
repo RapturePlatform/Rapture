@@ -91,6 +91,7 @@ type DocWriteHandle(@package=rapture.common.model) {
 @Addressable(scheme = SCRIPT(false))
 @Storable(storagePath : {authority, name}, prefix="script")
 @Cacheable
+@FTS
 type RaptureScript (@package=rapture.common) {
    String name;
    String script;
@@ -515,6 +516,7 @@ type DocumentMetadata(@package=rapture.common.model) {
 	String comment;
 	Boolean deleted;
 	Map<String, Object> tags = new HashMap<String, Object>();
+	String semanticUri = "";
 }
 
 [Contains a Rapture document and its metadata.]
@@ -547,6 +549,7 @@ type PipelineTaskStatus(@package=rapture.common) {
 [Contains info for a script-driven job in Rapture.]
 @Addressable(scheme = JOB(false))
 @Storable(storagePath : {jobURI}, prefix="versioned/schedule/job/v2")
+@FTS
 type RaptureJob(@package=rapture.common) {
     JobURI jobURI;
     String description;
@@ -974,11 +977,13 @@ type TypeArchiveConfig(@package=rapture.common) {
 @Storable(storagePath : {workflowURI}, prefix="dp/workflow")
 @Addressable(scheme = WORKFLOW(false))
 @Cacheable
+@FTS
 type Workflow(@package=rapture.common.dp) {
     WorkflowURI workflowURI;
     //the semaphore type and config below is used when creating Work Orders
     SemaphoreType semaphoreType = SemaphoreType.UNLIMITED;
     String semaphoreConfig;
+    String description;
     List<Step> steps = new ArrayList<Step>();
     String startStep; // name of the step to start on by default
     String category = "alpha"; // name of the category associated with this workflow. defaults 
@@ -1045,6 +1050,7 @@ type Step(@package=rapture.common.dp) {
 @Storable(storagePath: {workOrderURI}, prefix="dp/workorder")
 @Addressable(scheme = WORKORDER(false))
 @Indexable(name: "default", fields: {workOrderURI, priority, startTime, endTime})
+@FTS
 type WorkOrder(@package=rapture.common.dp) {
     WorkOrderURI workOrderURI;
     WorkflowURI workflowURI; //uri of Workflow used when creating this WorkOrder

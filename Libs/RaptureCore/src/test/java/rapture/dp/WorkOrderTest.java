@@ -24,6 +24,8 @@
 package rapture.dp;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,6 +52,13 @@ public class WorkOrderTest {
     @Before
     public void setup() {
         Kernel.initBootstrap();
+    }
+
+    @Test
+    public void testGetWorkOrderByWorkflowOnEmptySystem() {
+        List<String> ret = Kernel.getDecision().getWorkOrdersByWorkflow(ctx, System.currentTimeMillis(), "//doesntexist/soidontcare/coolstorybro");
+        assertNotNull(ret);
+        assertTrue(ret.isEmpty());
     }
 
     @Test

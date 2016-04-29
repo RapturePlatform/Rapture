@@ -20,20 +20,20 @@ api(Tag) {
  	// Now code to manage tags themselves
  	
  	[Apply a tag to an entity]
- 	@entitle=/tag/add/$f(docUri)
- 	@public DocumentMetadata applyTag(String docUri, String tagUri, String value);
+ 	@entitle=/tag/add/$f(uri)
+ 	@public DocumentMetadata applyTag(String uri, String tagUri, String value);
  	
  	[Apply a set of tags to an entity (in one go)]
- 	@entitle=/tag/add/$f(docUri)
- 	@public DocumentMetadata applyTags(String docUri, Map<String, String> tagMap);
+ 	@entitle=/tag/add/$f(uri)
+ 	@public DocumentMetadata applyTags(String uri, Map<String, String> tagMap);
  	
  	[Remove a tag]
- 	@entitle=/tag/add/$f(docUri)
- 	@public DocumentMetadata removeTag(String docUri, String tagUri);
+ 	@entitle=/tag/add/$f(uri)
+ 	@public DocumentMetadata removeTag(String uri, String tagUri);
  	
  	[Remove a set of tags]
- 	@entitle=/tag/add/$f(docUri)
- 	@public DocumentMetadata removeTags(String docUri, List<String> tags);
+ 	@entitle=/tag/add/$f(uri)
+ 	@public DocumentMetadata removeTags(String uri, List<String> tags);
  	
  	
 }

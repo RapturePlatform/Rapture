@@ -750,6 +750,7 @@
           String   user
           String   comment
           Boolean   deleted
+          Map<String, Object>   tags
    }
 \end{lstlisting}
 
@@ -2149,6 +2150,36 @@
           String   uri
           Double   score
           String   source
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{TagDescription}
+\label{type:TagDescription}
+\index{TagDescription}
+
+\begin{lstlisting}[style=nonumbers]
+   type TagDescription {
+          String   name
+          String   description
+          TagValueType   valueType
+          String   valueSet
+   }
+\end{lstlisting}
+
+\rule{12cm}{2pt}
+\section{TagValueType}
+\label{type:TagValueType}
+\index{TagValueType}
+
+\begin{lstlisting}[style=nonumbers]
+   type TagValueType {
+          String   STRING
+          String   NUMBER
+          String   BOOLEAN
+          String   ARRAY
+          String   MAP
+          String   COMPLEX
    }
 \end{lstlisting}
 
