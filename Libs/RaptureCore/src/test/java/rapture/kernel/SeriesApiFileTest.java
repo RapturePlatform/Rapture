@@ -35,6 +35,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -324,6 +325,8 @@ public class SeriesApiFileTest extends AbstractFileTest {
         ensureSeries(seriesAuthorityURI, "die/series");
         ensureSeries(seriesAuthorityURI, "nested/die/series");
         ensureSeries(seriesAuthorityURI, "die/nested/series");
+        
+        assertNotNull(seriesImpl.getLastPoint(callingContext, seriesAuthorityURI+"/top"));
 
         Map<String, RaptureFolderInfo> resultsMap;
         resultsMap = seriesImpl.listSeriesByUriPrefix(callingContext, seriesAuthorityURI, 0);
@@ -331,17 +334,28 @@ public class SeriesApiFileTest extends AbstractFileTest {
 
         List<String> removed = seriesImpl.deleteSeriesByUriPrefix(callingContext, seriesAuthorityURI + "/die");
         assertEquals(2, removed.size());
-        removed = seriesImpl.deleteSeriesByUriPrefix(callingContext, seriesAuthorityURI + "/die");
-        assertEquals(0, removed.size());
-
+        String s1 = seriesAuthorityURI+"/die/series";
+        String s2 = seriesAuthorityURI+"/die/nested/series";
+        
+        assertTrue(removed.contains(s1));
+        assertTrue(removed.contains(s2));
+        
         resultsMap = seriesImpl.listSeriesByUriPrefix(callingContext, seriesAuthorityURI, 0);
-        // SeriesApi doesn't delete empty folders
-        assertEquals(8, resultsMap.size());
+        Set<String> keys = resultsMap.keySet();
+        assertNotNull(seriesImpl.getLastPoint(callingContext, seriesAuthorityURI+"/top"));
+
+        assertTrue(keys.contains(seriesAuthorityURI+"/top"));
+        assertTrue(keys.contains(seriesAuthorityURI+"/live/series"));
+        assertTrue(keys.contains(seriesAuthorityURI+"/nested/die/series"));
+
+        assertEquals(6, resultsMap.size());
     }
 
     private void ensureSeries(String repo, String name) {
         String uri = repo + (name.startsWith("/") ? "" : "/") + name;
         seriesImpl.addDoubleToSeries(callingContext, uri, "mel", 45.0);
+        assertNotNull(seriesImpl.getLastPoint(callingContext, uri));
+
     }
 
     private void ensureRepo(String repo) {

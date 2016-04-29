@@ -28,10 +28,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.testng.AssertJUnit.assertEquals;
-import static org.testng.AssertJUnit.assertNotNull;
-import static org.testng.AssertJUnit.assertNull;
-import static org.testng.AssertJUnit.assertTrue;
-import static org.testng.internal.junit.ArrayAsserts.assertArrayEquals;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -79,7 +75,6 @@ import rapture.common.client.SimpleCredentialsProvider;
 import rapture.common.exception.RaptureException;
 import rapture.common.model.AuditLogEntry;
 import rapture.common.model.BlobRepoConfig;
-
 import rapture.dsl.idgen.IdGenFactory;
 import rapture.dsl.idgen.RaptureIdGen;
 import rapture.kernel.ContextFactory;
@@ -351,7 +346,7 @@ public class MongoTests {
         String blobURI5 = blobAuthorityURI + "/PacMan/Wocka/Wocka/Wocka/Sue";
 
         blobImpl.putBlob(callingContext, blobURI1, sample, MediaType.CSS_UTF_8.toString());
-        blobImpl.putBlob(callingContext, blobURI2, sample, MediaType.EOT.toString());
+        blobImpl.putBlob(callingContext, blobURI2, sample, MediaType.ANY_TEXT_TYPE.toString());
         blobImpl.putBlob(callingContext, blobURI3, sample, MediaType.GIF.toString());
         blobImpl.putBlob(callingContext, blobURI4, sample, MediaType.JPEG.toString());
 
@@ -444,73 +439,4 @@ public class MongoTests {
             }
         }
     }
-
-    @Test
-    public void rap4045() {
-        // BlobApi api = Kernel.getBlob();
-        CallingContext callingContext = ContextFactory.getKernelUser();
-        String url = "//sys.blob/decisionWorkflow.httpTests/20160412/simple/default/WO00000002/Step1";
-        // BlobContainer blob = api.getBlob(callingContext, url);
-        BlobContainer blob = blobApi.getBlob(callingContext, url);
-        assertNotNull(blob);
-    }
-    
-    // deleteBlobsByUriPrefix called on a non-existent blob deletes all existing blobs in folder
-    @Test
-    public void testRap3945() {
-        CallingContext callingContext = ContextFactory.getKernelUser();
-        Kernel.initBootstrap();
-//        Kernel.getLock().createLockManager(callingContext, lock.getStoragePath(), lock.getConfig(), lock.getPathPosition());
-        BlobApi blobImpl = Kernel.getBlob();
-        String uuid = UUID.randomUUID().toString();
-        byte[] sample = "Wocka Wocka Wocka".getBytes();
-        String blobAuthorityURI = "blob://"+uuid;
-        blobImpl.createBlobRepo(callingContext, blobAuthorityURI, "BLOB {} USING MONGODB {prefix=\""+uuid+"\"}", "NREP {} USING MONGODB {prefix=\"Meta"+uuid+"\"}");
-        BlobRepoConfig blobRepoConfig = blobImpl.getBlobRepoConfig(callingContext, blobAuthorityURI);
-        assertNotNull(blobRepoConfig);
-
-        String blobURI1 = blobAuthorityURI + "/PacMan/Wocka/Wocka/Wocka/Inky";
-        String blobURI2 = blobAuthorityURI + "/PacMan/Wocka/Wocka/Wocka/Pinky";
-        String blobURI3 = blobAuthorityURI + "/PacMan/Wocka/Wocka/Wocka/Blinky";
-        String blobURI4 = blobAuthorityURI + "/PacMan/Wocka/Wocka/Wocka/Clyde";
-        String blobURI5 = blobAuthorityURI + "/PacMan/Wocka/Wocka/Wocka/Sue";
-
-        blobImpl.putBlob(callingContext, blobURI1, sample, MediaType.CSS_UTF_8.toString());
-        blobImpl.putBlob(callingContext, blobURI2, sample, MediaType.EOT.toString());
-        blobImpl.putBlob(callingContext, blobURI3, sample, MediaType.GIF.toString());
-        blobImpl.putBlob(callingContext, blobURI4, sample, MediaType.JPEG.toString());
-        
-        BlobContainer blob;
-        
-        blob = blobImpl.getBlob(callingContext, blobURI1);
-        assertNotNull(blob);
-        assertNotNull(blob.getContent());
-        assertArrayEquals(sample, blob.getContent());
-        
-        blob = blobImpl.getBlob(callingContext, blobURI4);
-        assertNotNull(blob);
-        assertNotNull(blob.getContent());
-        assertArrayEquals(sample, blob.getContent());
-        
-        assertNull(blobImpl.getBlob(callingContext, blobURI5));
-        
-        blobImpl.deleteBlobsByUriPrefix(callingContext, blobURI4);
-        blob = blobImpl.getBlob(callingContext, blobURI1);
-        assertNotNull(blob);
-        assertNotNull(blob.getContent());
-        assertArrayEquals(sample, blob.getContent());
-        assertNull(blobImpl.getBlob(callingContext, blobURI4));
-        
-        try {
-            blobImpl.deleteBlobsByUriPrefix(callingContext, blobURI5);
-            // SHOULD FAIL OR DO NOTHING
-        } catch (Exception e) {
-            assertTrue(e.getMessage().equals("Blob or blob folder "+blobURI5+" does not exist"));
-        }
-        blob = blobImpl.getBlob(callingContext, blobURI1);
-        assertNotNull(blob);
-        assertNotNull(blob.getContent());
-        assertArrayEquals(sample, blob.getContent());        
-    }
-
 }

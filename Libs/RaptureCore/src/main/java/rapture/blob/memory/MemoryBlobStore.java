@@ -80,6 +80,13 @@ public class MemoryBlobStore extends BaseBlobStore implements BlobStore {
     }
 
     @Override
+    public Boolean deleteFolder(CallingContext context, RaptureURI blobUri) {
+    	// Memory folders automatically cease to exist when the blob is deleted.
+    	// Return false because nothing was deleted, not because there was a problem
+        return false;
+    }
+
+    @Override
     public InputStream getBlob(CallingContext context, RaptureURI blobUri) {
         if (contentMap.containsKey(blobUri.getDocPath())) {
             return new ByteArrayInputStream(contentMap.get(blobUri.getDocPath()));

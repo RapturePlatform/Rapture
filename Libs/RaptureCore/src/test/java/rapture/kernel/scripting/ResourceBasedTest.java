@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package reflex;
+package rapture.kernel.scripting;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -46,6 +46,15 @@ import rapture.common.api.ScriptingApi;
 import rapture.common.client.HttpLoginApi;
 import rapture.common.client.ScriptClient;
 import rapture.common.client.SimpleCredentialsProvider;
+import rapture.common.impl.jackson.JacksonUtil;
+import reflex.IReflexDataHandler;
+import reflex.IReflexHandler;
+import reflex.IReflexOutputHandler;
+import reflex.IReflexScriptHandler;
+import reflex.ReflexLexer;
+import reflex.ReflexParser;
+import reflex.ReflexScriptDataHandler;
+import reflex.ReflexTreeWalker;
 import reflex.debug.NullDebugger;
 import reflex.debug.ReflexPrintingDebugger;
 import reflex.node.ReflexNode;
@@ -203,7 +212,7 @@ public class ResourceBasedTest {
                 System.out.println("null");
             } else {
                 retVal = returned.evaluateWithoutScope(instrument);
-                sb.append("--RETURNS--").append(retVal.asString());
+                sb.append("--RETURNS--").append(JacksonUtil.jsonFromObject(retVal));
             }
             instrument.getInstrumenter().log();
             System.out.println(sb.toString());
@@ -253,7 +262,7 @@ public class ResourceBasedTest {
         runTestForWithApi(fileName, api, new ReflexScriptDataHandler(api));
     }
 
-    protected String runTestForWithApi(String fileName, ScriptingApi api, IReflexDataHandler dataHandler) throws RecognitionException {
+    protected void runTestForWithApi(String fileName, ScriptingApi api, IReflexDataHandler dataHandler) throws RecognitionException {
         ReflexLexer lexer = new ReflexLexer();
         lexer.setCharStream(new ANTLRStringStream(getResourceAsString(this, fileName)));
         CommonTokenStream tokens = new CommonTokenStream(lexer);
@@ -267,6 +276,6 @@ public class ResourceBasedTest {
         walker.getReflexHandler().setDataHandler(dataHandler);
 
         ReflexNode returned = walker.walk();
-        return returned.evaluateWithoutScope(new ReflexPrintingDebugger()).asString();
+        System.out.println(returned == null ? "null" : returned.evaluateWithoutScope(new ReflexPrintingDebugger()));
     }
 }

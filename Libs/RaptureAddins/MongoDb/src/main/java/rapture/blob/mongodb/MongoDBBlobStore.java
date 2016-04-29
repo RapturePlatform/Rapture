@@ -67,6 +67,11 @@ public class MongoDBBlobStore extends BaseBlobStore {
     }
 
     @Override
+    public Boolean deleteFolder(CallingContext context, RaptureURI blobUri) {
+        return false; // not yet implemented
+    }
+
+    @Override
     public InputStream getBlob(CallingContext context, RaptureURI blobUri) {
         try {
             return blobHandler.getBlob(context, blobUri.getDocPath());

@@ -34,6 +34,8 @@ public interface BlobStore {
 
     Boolean deleteBlob(CallingContext context, RaptureURI blobUri);
 
+    Boolean deleteFolder(CallingContext context, RaptureURI blobUri);
+
     InputStream getBlob(CallingContext context, RaptureURI blobUri);
 
     InputStream getBlobPart(CallingContext context, RaptureURI blobUri, Long start, Long size);

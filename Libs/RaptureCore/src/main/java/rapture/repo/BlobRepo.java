@@ -59,6 +59,11 @@ public class BlobRepo {
         return store.deleteBlob(context, blobUri);
     }
 
+    public Boolean deleteFolder(CallingContext context, RaptureURI blobUri) {
+    	// Note: does not delete metadata repo
+        return store.deleteFolder(context, blobUri);
+    }
+
     public Boolean deleteBlobRepo(CallingContext context, RaptureURI blobUri) {
         if (blobUri.hasDocPath()) {
             logger.warn("URI should not have a doc path "+blobUri);

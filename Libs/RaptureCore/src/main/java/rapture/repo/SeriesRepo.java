@@ -23,12 +23,14 @@
  */
 package rapture.repo;
 
-import rapture.common.RaptureFolderInfo;
-import rapture.common.SeriesValue;
-import rapture.series.SeriesStore;
-
 import java.util.List;
 import java.util.Map;
+
+import rapture.common.RaptureFolderInfo;
+import rapture.common.RaptureURI;
+import rapture.common.SeriesValue;
+import rapture.series.SeriesStore;
+import rapture.series.file.FileSeriesStore;
 
 /**
  * Created by seanchen on 7/2/15.
@@ -167,5 +169,11 @@ public class SeriesRepo {
 
     public void deleteSeries(String key) {
         store.deleteSeries(key);
+    }
+
+    public boolean deleteFolder(RaptureURI uri) {
+    	if (store instanceof FileSeriesStore)
+    		return ((FileSeriesStore)store).deleteFolder(uri);
+    	return false;
     }
 }
