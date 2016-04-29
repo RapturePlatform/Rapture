@@ -29,8 +29,6 @@ import java.net.URLDecoder;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -53,8 +51,7 @@ import reflex.ReflexException;
 import reflex.ReflexExecutor;
 
 /**
- * The Reflex script page servlet is kind of like jsps but for Reflex scripts
- * (Files with extension rfx)
+ * The Reflex script page servlet is kind of like jsps but for Reflex scripts (Files with extension rfx)
  *
  * @author alan
  */
@@ -91,14 +88,15 @@ public abstract class BaseReflexScriptPageServlet extends BaseServlet {
             if (key.endsWith("[]")) {
                 arg = val;
                 key = key.substring(0, key.length() - 2);
-            } else
+            } else {
                 arg = val[0];
-            
+            }
+
             parameterMap.put(key, arg);
 
             int idx = key.lastIndexOf("[");
             while (idx > 0) {
-                String v = key.substring(idx+1, key.length()-1);
+                String v = key.substring(idx + 1, key.length() - 1);
                 String k = key.substring(0, idx);
                 Map<String, Object> map = paramSet.get(k);
                 if (map == null) {
@@ -108,7 +106,7 @@ public abstract class BaseReflexScriptPageServlet extends BaseServlet {
                 map.put(v, arg);
                 arg = map;
                 parameterMap.put(k, map);
-                
+
                 key = k;
                 idx = key.lastIndexOf("[");
             }
@@ -117,8 +115,7 @@ public abstract class BaseReflexScriptPageServlet extends BaseServlet {
     }
 
     /**
-     * Returns a printable version of the script. E.g. the script has a URI, that's what this returns. Otherwise, it
-     * returns a subset of the script body.
+     * Returns a printable version of the script. E.g. the script has a URI, that's what this returns. Otherwise, it returns a subset of the script body.
      *
      * @param req
      * @return
@@ -136,13 +133,13 @@ public abstract class BaseReflexScriptPageServlet extends BaseServlet {
             resp.setStatus(HttpStatus.SC_NOT_FOUND);
             return;
         }
-        Properties props = getParams(req);
-        Map<String, Object> parameterMap = new HashMap<String, Object>();
-
-        Set<Object> keys = props.keySet();
-        for (Object k : keys) {
-            String key = k.toString();
-            String val = URLDecoder.decode(props.getProperty(key), "UTF-8");
+        Map<String, Object> props = getParams(req);
+        Map<String, Object> parameterMap = new HashMap<>();
+        for (String key : props.keySet()) {
+            Object val = props.get(key);
+            if (val instanceof String) {
+                val = URLDecoder.decode((String) val, "UTF-8");
+            }
             parameterMap.put(key, val);
         }
         process(script, parameterMap, req, resp);
@@ -152,7 +149,6 @@ public abstract class BaseReflexScriptPageServlet extends BaseServlet {
 
     private static final Logger logger = Logger.getLogger(BaseReflexScriptPageServlet.class);
 
-    @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
     void process(String script, Map<String, Object> parameterMap, HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
         logger.debug("script is " + script);
