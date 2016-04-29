@@ -983,6 +983,7 @@ type Workflow(@package=rapture.common.dp) {
     //the semaphore type and config below is used when creating Work Orders
     SemaphoreType semaphoreType = SemaphoreType.UNLIMITED;
     String semaphoreConfig;
+    String description;
     List<Step> steps = new ArrayList<Step>();
     String startStep; // name of the step to start on by default
     String category = "alpha"; // name of the category associated with this workflow. defaults 
