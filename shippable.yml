@@ -19,7 +19,7 @@ build:
     - echo "success"
   on_failure:
     - mkdir -p shippable
-    - tar cf - `find . -name reports` | (cd shippable ; tar xf - )
+    - tar cf - `find . -name reports` | (cd ../shippable ; tar xf - )
     - echo "That did not go well"
   cache: true
 
