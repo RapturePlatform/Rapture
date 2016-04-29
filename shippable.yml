@@ -18,7 +18,7 @@ build:
   on_success:
     - echo "success"
   on_failure:
-    - mkdir -p shippable
+    - mkdir -p ../shippable
     - tar cf - `find . -name reports` | (cd ../shippable ; tar xf - )
     - echo "That did not go well"
   cache: true
