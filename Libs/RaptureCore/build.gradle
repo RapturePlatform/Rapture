@@ -22,7 +22,7 @@ dependencies {
     compile group: 'org.apache.commons', name: 'commons-digester3', version: '3.2'
     compile 'com.timgroup:java-statsd-client:3.0.2'
     compile 'net.redhogs.cronparser:cron-parser:2.8'
-
+    testRuntime 'net.rapture:WorkflowsCore:3+'
 }
 
 //task buildinfo (type: com.rapture.gradle.bootstrap.plugin.JavaBuildInfoTask) { module_name = 'Core' }
@@ -65,6 +65,7 @@ task testJar(type: Jar) {
     classifier "test"
     from sourceSets.test.output
 }
+
 artifacts {
     testArtifacts testJar
 }

@@ -91,9 +91,9 @@ public class ReflexCallTest extends ResourceBasedTest {
         assertNotNull(wos);
         Map<String, Object> map = wos.asMap();
         assertNotNull(map);
-        assertEquals(WorkOrderExecutionState.FINISHED.toString(), map.get("status"));
+        assertEquals(output, WorkOrderExecutionState.FINISHED.toString(), map.get("status"));
         String workerOutput = map.get("workerOutput").toString();
         assertNotNull(workerOutput);
-        assertEquals("Hello world\n}", workerOutput.substring(workerOutput.indexOf('=') + 1));
+        assertEquals(output, "Hello world\n}", workerOutput.substring(workerOutput.indexOf('=') + 1));
     }
 }
