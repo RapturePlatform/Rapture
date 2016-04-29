@@ -46,6 +46,7 @@ import rapture.common.api.ScriptingApi;
 import rapture.common.client.HttpLoginApi;
 import rapture.common.client.ScriptClient;
 import rapture.common.client.SimpleCredentialsProvider;
+import rapture.common.impl.jackson.JacksonUtil;
 import reflex.IReflexDataHandler;
 import reflex.IReflexHandler;
 import reflex.IReflexOutputHandler;
@@ -211,7 +212,7 @@ public class ResourceBasedTest {
                 System.out.println("null");
             } else {
                 retVal = returned.evaluateWithoutScope(instrument);
-                sb.append("--RETURNS--").append(retVal.asString());
+                sb.append("--RETURNS--").append(JacksonUtil.jsonFromObject(retVal));
             }
             instrument.getInstrumenter().log();
             System.out.println(sb.toString());
