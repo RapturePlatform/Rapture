@@ -33,7 +33,7 @@ scope { List<StringTemplate> ents; }
 
 typeExpr returns [StringTemplate typeDef]
 :
-	^(TYPEDEF doc=DOC (beanAnnotation|cacheableAnnotation|extendsAnnotation|deprecatedAnnotation|addressableAnnotation|storableAnnotation|searchableAnnotation|indexedAnnotation)*   name=ID typeAspect typeFields) { 
+	^(TYPEDEF doc=DOC (beanAnnotation|cacheableAnnotation|extendsAnnotation|deprecatedAnnotation|addressableAnnotation|ftsAnnotation|storableAnnotation|searchableAnnotation|indexedAnnotation)*   name=ID typeAspect typeFields) { 
 	   $typeDef = %GoStruct(name={$name.text}, fields={$typeFields.typeFields}); 
 	};
 	

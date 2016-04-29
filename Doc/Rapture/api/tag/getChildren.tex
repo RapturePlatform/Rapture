@@ -1,0 +1,21 @@
+The \verb+getChildren+ call is normally used by user interfaces that wish
+to present a browser type interface on a document repository. The call returns all documents
+and "sub folders" (to a given depth) below a given point in the hierarchy implied
+by the naming conventions used in uris. Typically an interface will use \verb+/+ as
+the initial prefix and then append onto that prefix the names of either tag descriptions
+or folders for further \verb+getChildren+ calls or \verb+getTagDescription+ if the location
+maps to a real document.
+
+The \verb+RaptureFolderInfo+ structure returned by this call is described below:
+
+\begin{table}[H]
+  \small
+\begin{center}
+\begin{tabular}{r l p{8cm}}
+  Field & Type & Description \\
+  \hline
+  name & String & The name of this element. \\
+  folder & Boolean & Whether the name refers to a document or a sub-folder \\
+\end{tabular}
+\end{center}
+\end{table}

@@ -40,7 +40,7 @@ scope {
 :
 	^(TYPEDEF doc=DOC (beanAnnotation|cacheableAnnotation|extendsAnnotation|
 	(deprecatedAnnotation { $typeExpr::isDeprecated = true; })
-	|addressableAnnotation|storableAnnotation|searchableAnnotation|indexedAnnotation)*  name=ID typeAspect typeFields) {
+	|addressableAnnotation|ftsAnnotation|storableAnnotation|searchableAnnotation|indexedAnnotation)*  name=ID typeAspect typeFields) {
 	   String d = doc.getText();
      d = d.substring(1,d.length()-1);
      addType($typeAspect.name, $ID.text, $typeFields.fields, d, $typeExpr::isDeprecated, $deprecatedAnnotation.text);

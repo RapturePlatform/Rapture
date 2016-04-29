@@ -13,6 +13,7 @@ public static <name> readByFields(<fields; separator=", ">) {
         return ObjectStorage.read(storageLocation, <name>.class, storableInfo, getObjectMapper());
 }
 
+
 /**
  * Get the folders or {@link <name>} objects under parentFolderPath.
  * Searches the tree of objects of type {@link <name>}
@@ -23,6 +24,11 @@ public static <name> readByFields(<fields; separator=", ">) {
 public static List\<RaptureFolderInfo\> getChildren(String parentFolderPath) {
     return ObjectStorage.getChildren(<name>PathBuilder.getRepoName(), <name>PathBuilder.getPrefix(), storableInfo, parentFolderPath);
 }
+
+public List\<RaptureFolderInfo\> i_getChildren(String parentFolderPath) {
+    return <name>Storage.getChildren(parentFolderPath);
+}
+
 
 /**
  * Removes the documents and folders {@link <name>} objects under parentFolderPath.
@@ -131,8 +137,20 @@ public static Boolean deleteByStorageLocation(RaptureURI storageLocation, String
  *            The user doing the storing
  * @param comment
  */
+public static void add(RaptureURI semanticUri, <name> storable, String user, String comment) {
+    DocumentWithMeta dwm = ObjectStorage.write(storable, user, storableInfo, comment, getObjectMapper());
+    <if(fts)>
+	if (dwm != null) {
+		if (semanticUri != null) {
+	   		 dwm.getMetaData().setSemanticUri(semanticUri.toString());
+	   	}
+		ObjectStorageSearchPublisher.publishCreateMessage(dwm);
+	}
+	<endif>
+}
+
 public static void add(<name> storable, String user, String comment) {
-    ObjectStorage.write(storable, user, storableInfo, comment, getObjectMapper());
+   add(null, storable, user, comment);
 }
 
 /**
