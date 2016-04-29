@@ -26,6 +26,7 @@ package rapture.series.mem;
 import rapture.common.RaptureFolderInfo;
 import rapture.common.SeriesValue;
 import rapture.common.exception.RaptureExceptionFactory;
+import rapture.common.impl.jackson.JacksonUtil;
 import rapture.dsl.serfun.DecimalSeriesValue;
 import rapture.dsl.serfun.LongSeriesValue;
 import rapture.dsl.serfun.StringSeriesValue;
@@ -42,6 +43,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
+
+import org.apache.commons.lang3.StringUtils;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
@@ -180,8 +183,15 @@ public class MemorySeriesStore implements SeriesStore {
     }
 
     private void dropSeries(String key) {
-        seriesStore.remove(key);
-        childrenRepo.dropFileEntry(key);
+        SortedMap<String, SeriesValue> val = seriesStore.remove(key);
+        if (val != null) {
+        	while (!StringUtils.isEmpty(key)) {
+        		System.out.println(key + " parent "+JacksonUtil.jsonFromObject(val));
+        		break;
+        	}
+	        // TODO remove empty folder here
+	        childrenRepo.dropFileEntry(key);
+        }
     }
 
     @Override

@@ -23,6 +23,7 @@
  */
 package rapture.kernel;
 
+import static rapture.common.Scheme.BLOB;
 import static rapture.common.Scheme.SERIES;
 
 import java.net.HttpURLConnection;
@@ -449,7 +450,7 @@ public class SeriesApiImpl extends KernelBase implements SeriesApi {
                         log.warn("Invalid authority (null or empty string) found for " + JacksonUtil.jsonFromObject(config));
                         continue;
                     }
-                    String uri = SERIES + "://" + authority;
+                    String uri = new RaptureURI(authority, SERIES).toString();
                     ret.put(uri, new RaptureFolderInfo(authority, true));
                     if (depth != 0) {
                         ret.putAll(listSeriesByUriPrefix(context, uri, depth));
@@ -490,21 +491,25 @@ public class SeriesApiImpl extends KernelBase implements SeriesApi {
                 requestObj.setContext(context);
                 requestObj.setSeriesUri(currParentDocPath);
                 ContextValidator.validateContext(context, EntitlementSet.Series_listSeriesByUriPrefix, requestObj);
-
-                List<RaptureFolderInfo> children = repo.listSeriesByUriPrefix(currParentDocPath);
-
-                for (RaptureFolderInfo child : children) {
-                    String childDocPath = currParentDocPath + (top ? "" : "/") + child.getName();
-                    if (child.getName().isEmpty()) continue;
-                    String childUri = Scheme.SERIES + "://" + authority + "/" + childDocPath + (child.isFolder() ? "/" : "");
-                    ret.put(childUri, child);
-                    if (child.isFolder()) {
-                        parentsStack.push(childDocPath);
-                    }
-                }
             } catch (RaptureException e) {
                 // permission denied
                 log.debug("No read permission on folder " + currParentDocPath);
+                continue;
+            }
+
+            List<RaptureFolderInfo> children = repo.listSeriesByUriPrefix(currParentDocPath);
+            if ((children == null) || (children.isEmpty()) && (currDepth==0) && (internalUri.hasDocPath())) {
+                throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, apiMessageCatalog.getMessage("NoSuchFolder", internalUri.toString())); //$NON-NLS-1$
+            } else {
+            	for (RaptureFolderInfo child : children) {   
+	                String childDocPath = currParentDocPath + (top ? "" : "/") + child.getName();
+	                if (child.getName().isEmpty()) continue;
+	                String childUri = RaptureURI.builder(Scheme.SERIES, authority).docPath(childDocPath).asString() + (child.isFolder() ? "/" : "");
+	                ret.put(childUri, child);
+	                if (child.isFolder()) {
+	                	parentsStack.push(childDocPath);
+	                }
+            	}
             }
             if (top) startDepth--; // special case
         }
@@ -527,22 +532,25 @@ public class SeriesApiImpl extends KernelBase implements SeriesApi {
     public List<String> deleteSeriesByUriPrefix(CallingContext context, String uriPrefix) {
 
         Map<String, RaptureFolderInfo> map = listSeriesByUriPrefix(context, uriPrefix, Integer.MAX_VALUE);
-        List<String> folders = new ArrayList<>();
+        List<RaptureURI> folders = new ArrayList<>();
         Set<String> notEmpty = new HashSet<>();
         List<String> removed = new ArrayList<>();
+        RaptureURI serUri = new RaptureURI(uriPrefix, SERIES);
+        SeriesRepo repository = getRepoOrFail(serUri);
 
         DeleteSeriesPayload requestObj = new DeleteSeriesPayload();
         requestObj.setContext(context);
 
-        folders.add(uriPrefix.endsWith("/") ? uriPrefix : uriPrefix + "/");
+        folders.add(serUri);
         for (Map.Entry<String, RaptureFolderInfo> entry : map.entrySet()) {
             String uri = entry.getKey();
+        	RaptureURI ruri = new RaptureURI(uri);
             boolean isFolder = entry.getValue().isFolder();
             try {
                 requestObj.setSeriesUri(uri);
                 if (isFolder) {
                     ContextValidator.validateContext(context, EntitlementSet.Series_deleteSeriesByUriPrefix, requestObj);
-                    folders.add(0, uri.substring(0, uri.length() - 1));
+                    folders.add(0, ruri);
                 } else {
                     ContextValidator.validateContext(context, EntitlementSet.Series_deleteSeries, requestObj);
                     deletePointsFromSeries(context, uri);
@@ -552,18 +560,16 @@ public class SeriesApiImpl extends KernelBase implements SeriesApi {
             } catch (RaptureException e) {
                 // permission denied
                 log.debug("Unable to delete " + uri + " : " + e.getMessage());
-                int colon = uri.indexOf(":") + 3;
-                while (true) {
-                    int slash = uri.lastIndexOf('/');
-                    if (slash < colon) break;
-                    uri = uri.substring(0, slash);
-                    notEmpty.add(uri);
-                }
             }
         }
-        for (String uri : folders) {
-            if (notEmpty.contains(uri)) continue;
-            deleteSeries(context, uri);
+        for (RaptureURI uri : folders) {
+            // deleteFolder returns true if the folder was deleted. 
+            // It won't delete a folder that isn't empty.
+            while (uri != null) {
+            	if (!repository.deleteFolder(uri)) break;
+                // getParentURI returns null if the URI has no doc path
+            	uri = uri.getParentURI();
+            }
         }
         return removed;
 
@@ -587,24 +593,12 @@ public class SeriesApiImpl extends KernelBase implements SeriesApi {
             if (uri.getAuthority().isEmpty() || uri.getDocPathDepth() < 2) {
                 return false;
             }
-            if (!listSeriesByUriPrefix(context, seriesURI, 1).isEmpty()) {
+            if (getLastPoint(context, seriesURI) != null) {
                 return true;
             }
-            int lastSlash = seriesURI.lastIndexOf("/");
-            if (lastSlash < 0 || lastSlash == seriesURI.length() - 1) {
-                return false;
-            }
-            String parentUri = seriesURI.substring(0, lastSlash);
-            String name = seriesURI.substring(lastSlash + 1, seriesURI.length());
-
-            log.debug("parentUri: " + parentUri);
-            log.debug("seriesUri: " + seriesURI);
-            for (RaptureFolderInfo folder : listSeriesByUriPrefix(context, parentUri, 1).values()) {
-                if (folder.getName().equals(name)) {
-                    return true;
-                }
-            }
-            return false;
+            RaptureURI parent = uri.getParentURI();
+            Map<String, RaptureFolderInfo> siblings = listSeriesByUriPrefix(context, parent.toString(), 1);
+            return (siblings.get(uri.toString()) != null);
         } catch (Exception e) {
             log.info(e);
             return false;

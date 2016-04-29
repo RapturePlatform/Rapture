@@ -393,4 +393,21 @@ public class RaptureURITest {
             }
         }
     }
+    
+    @Test
+    public void testGetLeafName() {
+    	assertEquals("c", RaptureURI.builder(Scheme.BLOB, "foo").docPath("a/b/c").build().getLeafName());
+    	assertEquals("d", RaptureURI.builder(Scheme.BLOB, "foo").docPath("d").build().getLeafName());
+    	assertEquals(null, RaptureURI.builder(Scheme.BLOB, "foo").docPath("/").build().getLeafName());
+    	assertEquals(null, RaptureURI.builder(Scheme.BLOB, "foo").docPath("").build().getLeafName());
+    	assertEquals(null, RaptureURI.builder(Scheme.BLOB, "foo").docPath(null).build().getLeafName());
+    }
+    
+    @Test
+    public void testGetParentURI() {
+    	assertEquals(RaptureURI.builder(Scheme.BLOB, "foo").docPath("a/b").build(), RaptureURI.builder(Scheme.BLOB, "foo").docPath("a/b/c").build().getParentURI());
+    	assertEquals(RaptureURI.builder(Scheme.BLOB, "foo").docPath("").build(), RaptureURI.builder(Scheme.BLOB, "foo").docPath("d").build().getParentURI());
+    	assertEquals(null, RaptureURI.builder(Scheme.BLOB, "foo").docPath("").build().getParentURI());
+    	assertEquals(null, RaptureURI.builder(Scheme.BLOB, "foo").docPath(null).build().getParentURI());
+    }
 }

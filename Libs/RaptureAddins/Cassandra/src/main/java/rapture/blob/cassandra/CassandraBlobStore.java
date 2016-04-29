@@ -131,6 +131,11 @@ public class CassandraBlobStore extends BaseBlobStore {
             throw new IllegalStateException(e);
         }
     }
+    
+    @Override
+    public Boolean deleteFolder(CallingContext context, RaptureURI blobUri) {
+        return false; // not yet implemented
+    }
 
     @Override
     public InputStream getBlob(CallingContext context, RaptureURI blobUri) {

@@ -130,6 +130,10 @@ public abstract class ChildrenRepo {
         String child = ChildKeyUtil.createColumnFile(SeriesPathParser.getChild(filePath));
         try {
             dropPoints(ChildKeyUtil.createRowKey(parent), ImmutableList.of(child));
+            List<RaptureFolderInfo> orphans = getChildren(parent);
+            if ((orphans == null) || orphans.isEmpty()) {
+                dropFolderEntry(parent);
+            }
             FolderCleanupService.getInstance().addForReview(getUniqueId(), SeriesPathParser.getParent(filePath));
         } catch (Exception e) {
             throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST,
