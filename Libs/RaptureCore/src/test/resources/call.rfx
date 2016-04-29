@@ -1,0 +1,8 @@
+program = "println('Hello world');";
+handle = @call(program, {}); 
+runResult=@status(handle);
+println("Before wait "+runResult);
+@wait(1000, handle);
+runResult=@status(handle);
+println("After wait "+runResult);
+

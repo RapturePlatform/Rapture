@@ -12,15 +12,15 @@ build:
   ci:
     - cd Libs/
     - ./gradlew clean genAll Install
-    - chmod +x test.sh
-    - ./test.sh
     - cd ../Apps
     - ./gradlew clean installApp -x test
     - ./gradlew test
   on_success:
     - echo "success"
   on_failure:
-    - echo "failure"
+    - mkdir -p shippable
+    - tar cf - `find . -name reports` | (cd shippable ; tar xf - )
+    - echo "That did not go well"
   cache: true
 
 integrations:
