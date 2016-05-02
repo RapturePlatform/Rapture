@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2016 Incapture Technologies LLC
+ * Copyright (C) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,14 +23,16 @@
  */
 package rapture.log;
 
+import java.io.IOException;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Appender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
+import org.apache.log4j.RollingFileAppender;
 
 import rapture.config.MultiValueConfigLoader;
-import net.logstash.log4j.JSONEventLayoutV1;
 
 /**
  * A simple log manager to setup log file locations if we so desire.
@@ -40,10 +42,10 @@ import net.logstash.log4j.JSONEventLayoutV1;
 
 public class LogManager {
 
-    private static final String DEFAULT_PATTERN = "%d{ABSOLUTE} %5p [%t] (%F:%L) <%X{" + MDCService.RFX_SCRIPT + "}> [%X{" + MDCService.WORKFLOW_FORMATTED + "}] - %m%n";
+    private static final String DEFAULT_PATTERN = "%d{ABSOLUTE} %5p [%t] (%F:%L) <%X{" + MDCService.RFX_SCRIPT + "}> [%X{" + MDCService.WORKFLOW_FORMATTED
+            + "}] - %m%n";
 
     public static void configureLogging() {
-        String logDir = MultiValueConfigLoader.getConfig("LOGGER-logDir", "");
         String fileName = MultiValueConfigLoader.getConfig("LOGGER-file");
         String maxFileSize = MultiValueConfigLoader.getConfig("LOGGER-maxLogSize", "10MB");
         int maxBackups = Integer.parseInt(MultiValueConfigLoader.getConfig("LOGGER-maxBackups", "5"));
@@ -55,6 +57,36 @@ public class LogManager {
             PatternLayout layout = new PatternLayout();
             layout.setConversionPattern(logPattern);
             stdoutAppender.setLayout(layout);
+        }
+        setupTextFileLogger(fileName, maxFileSize, maxBackups, logLevel, logPattern);
+    }
+
+    /**
+     * Set up an appender that will write rolling file logs. The logs will be human-readable text, which will follow a pattern specified in the layout. The log
+     * file will exist in the same directory as the binary executable (we may want to eventually move this to a proper log dir)
+     *
+     * @param fileName
+     * @param maxFileSize
+     * @param maxBackups
+     * @param logLevel
+     * @param logPattern
+     */
+    private static void setupTextFileLogger(String fileName, String maxFileSize, int maxBackups, String logLevel, String logPattern) {
+        if (!StringUtils.isBlank(fileName)) {
+            PatternLayout patternLayout = new PatternLayout();
+            patternLayout.setConversionPattern(logPattern);
+            RollingFileAppender appender;
+            try {
+                appender = new RollingFileAppender(patternLayout, fileName, true);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return;
+            }
+            appender.setMaxFileSize(maxFileSize);
+            appender.setMaxBackupIndex(maxBackups);
+            Logger logger = Logger.getRootLogger();
+            logger.addAppender(appender);
+            logger.setLevel(Level.toLevel(logLevel));
         }
     }
 }
