@@ -52,8 +52,7 @@ public class RaptureSearchUpdateHandler implements QueueHandler {
             statusManager.finishRunningWithSuccess(task);
 
         } catch (Exception e) {
-            log.error(String.format("Failed to process update %s", //$NON-NLS-1$
-                    e.getMessage()));
+            log.error("Failed to process update", e);
             statusManager.finishRunningWithFailure(task);
         }
         return true;

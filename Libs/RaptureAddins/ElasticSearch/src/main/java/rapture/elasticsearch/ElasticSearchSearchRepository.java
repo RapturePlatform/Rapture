@@ -72,9 +72,9 @@ public class ElasticSearchSearchRepository implements SearchRepository {
     private static final long CURSOR_KEEPALIVE = 600000;
 
     /*
-     * Default number of times to retry on version confict for optimistic concurrency control
+     * Default number of times to retry on version confict for optimistic concurrency control, matches default number of pipeline threads
      */
-    private static final int DEFAULT_RETRY_ON_CONFLICT = 5;
+    private static final int DEFAULT_RETRY_ON_CONFLICT = 50;
 
     /*
      * An ElasticSearch 'index' is akin to a database in SQL or a database in mongo
@@ -114,8 +114,10 @@ public class ElasticSearchSearchRepository implements SearchRepository {
         putUriStore(uri, Scheme.SERIES);
         Map<String, Object> map = seriesUpdateObject.asMap();
         if (!map.isEmpty()) {
-            ensureClient().prepareUpdate(index, SearchRepoType.SERIES.toString(), uri).setDoc(map).setUpsert(map).setRetryOnConflict(DEFAULT_RETRY_ON_CONFLICT)
-                    .get();
+            synchronized (client) {
+                ensureClient().prepareUpdate(index, SearchRepoType.SERIES.toString(), uri).setDoc(map).setUpsert(map)
+                        .setRetryOnConflict(DEFAULT_RETRY_ON_CONFLICT).get();
+            }
         }
     }
 
