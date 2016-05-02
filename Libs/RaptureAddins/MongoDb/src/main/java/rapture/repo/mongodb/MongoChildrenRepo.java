@@ -23,12 +23,12 @@
  */
 package rapture.repo.mongodb;
 
+import java.util.List;
+import java.util.Map;
+
 import rapture.common.SeriesValue;
 import rapture.series.children.ChildrenRepo;
 import rapture.series.mongo.MongoSeriesStore;
-
-import java.util.List;
-import java.util.Map;
 
 public class MongoChildrenRepo extends ChildrenRepo {
     private final MongoSeriesStore seriesStore;
@@ -62,8 +62,8 @@ public class MongoChildrenRepo extends ChildrenRepo {
     }
 
     @Override
-    public void dropRow(String key) {
-        seriesStore.deletePointsFromSeries(key);
+    public boolean dropRow(String key) {
+        return seriesStore.deletePointsFromSeries(key);
     }
 
     @Override

@@ -26,8 +26,9 @@ package rapture.api.checkout;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 import static org.testng.AssertJUnit.assertEquals;
+import static org.testng.AssertJUnit.assertFalse;
+import static org.testng.AssertJUnit.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,6 +61,7 @@ import rapture.common.RaptureScriptPurpose;
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
 import rapture.common.SeriesPoint;
+import rapture.common.SeriesString;
 import rapture.common.api.BlobApi;
 import rapture.common.api.DocApi;
 import rapture.common.api.ScriptApi;
@@ -73,6 +75,7 @@ import rapture.common.client.HttpScriptApi;
 import rapture.common.client.HttpSeriesApi;
 import rapture.common.client.SimpleCredentialsProvider;
 import rapture.common.exception.RaptureException;
+import rapture.common.impl.jackson.JacksonUtil;
 import rapture.common.model.AuditLogEntry;
 import rapture.common.model.BlobRepoConfig;
 import rapture.dsl.idgen.IdGenFactory;
@@ -95,6 +98,8 @@ public class MongoTests {
     private HttpEventApi event = null;
     private HttpIdGenApi fountain = null;
     private HttpBlobApi blobApi = null;
+
+    public CallingContext context = null;
 
     /**
      * Setup TestNG method to create Rapture login object and objects.
@@ -125,6 +130,8 @@ public class MongoTests {
         event = new HttpEventApi(raptureLogin);
         fountain = new HttpIdGenApi(raptureLogin);
         blobApi = new HttpBlobApi(raptureLogin);
+        Kernel.initBootstrap();
+        context = ContextFactory.getKernelUser();
     }
 
     /**
@@ -153,7 +160,7 @@ public class MongoTests {
     @Test(groups = { "mongo" }, enabled = true, description = "Simple Mongo document read/write test")
     public void testSimpleDocument() {
         UUID uuid = UUID.randomUUID();
-        CallingContext context = ContextFactory.getKernelUser();
+
         DocApi docApi = Kernel.getDoc();
         RaptureURI docUri = new RaptureURI("//" + uuid, Scheme.DOCUMENT);
 
@@ -176,7 +183,7 @@ public class MongoTests {
     @Test(groups = { "mongo" }, enabled = true, description = "Simple Mongo script read/write test")
     public void testSimpleScript() {
         UUID uuid = UUID.randomUUID();
-        CallingContext context = ContextFactory.getKernelUser();
+
         ScriptApi scriptApi = Kernel.getScript();
         RaptureURI scriptUri = new RaptureURI("//" + uuid, Scheme.SCRIPT);
         String uri = scriptUri.toString() + "/test";
@@ -217,7 +224,7 @@ public class MongoTests {
     public void testIndexHandler() {
 
         UUID uuid = UUID.randomUUID();
-        CallingContext context = ContextFactory.getKernelUser();
+
         DocApi docApi = Kernel.getDoc();
         RaptureURI docUri = new RaptureURI("//" + uuid, Scheme.DOCUMENT);
 
@@ -241,12 +248,9 @@ public class MongoTests {
     public void testSimpleSeries() {
         UUID uuid = UUID.randomUUID();
         RaptureURI seriesUri = new RaptureURI("//" + uuid, Scheme.SERIES);
-
         SeriesApi serApi = Kernel.getSeries();
-        CallingContext context = ContextFactory.getKernelUser();
 
         serApi.createSeriesRepo(context, seriesUri.toString(), "SREP {} using MONGODB {prefix=\"" + uuid + "\"}");
-
         String uri = seriesUri.toString() + "/test";
         serApi.createSeries(context, uri);
         List<String> points = new ArrayList<>();
@@ -306,7 +310,6 @@ public class MongoTests {
     @Test
     public void RAP4038() {
         DocApi docApi = Kernel.getDoc();
-        CallingContext context = ContextFactory.getKernelUser();
         UUID uuid = UUID.randomUUID();
         RaptureURI authUri = new RaptureURI("//" + uuid, Scheme.DOCUMENT);
         docApi.createDocRepo(context, authUri.toString(), "NREP {} using MONGODB {prefix=\"" + uuid + "\"}");
@@ -326,17 +329,15 @@ public class MongoTests {
     // blobs in folder
     @Test
     public void testRap3945() {
-        CallingContext callingContext = ContextFactory.getKernelUser();
-        Kernel.initBootstrap();
-        // Kernel.getLock().createLockManager(callingContext,
+        // Kernel.getLock().createLockManager(context,
         // lock.getStoragePath(), lock.getConfig(), lock.getPathPosition());
         BlobApi blobImpl = Kernel.getBlob();
         String uuid = UUID.randomUUID().toString();
         byte[] sample = "Wocka Wocka Wocka".getBytes();
         String blobAuthorityURI = "blob://" + uuid;
-        blobImpl.createBlobRepo(callingContext, blobAuthorityURI, "BLOB {} USING MONGODB {prefix=\"" + uuid + "\"}",
+        blobImpl.createBlobRepo(context, blobAuthorityURI, "BLOB {} USING MONGODB {prefix=\"" + uuid + "\"}",
                 "NREP {} USING MONGODB {prefix=\"Meta" + uuid + "\"}");
-        BlobRepoConfig blobRepoConfig = blobImpl.getBlobRepoConfig(callingContext, blobAuthorityURI);
+        BlobRepoConfig blobRepoConfig = blobImpl.getBlobRepoConfig(context, blobAuthorityURI);
         assertNotNull(blobRepoConfig);
 
         String blobURI1 = blobAuthorityURI + "/PacMan/Wocka/Wocka/Wocka/Inky";
@@ -345,39 +346,32 @@ public class MongoTests {
         String blobURI4 = blobAuthorityURI + "/PacMan/Wocka/Wocka/Wocka/Clyde";
         String blobURI5 = blobAuthorityURI + "/PacMan/Wocka/Wocka/Wocka/Sue";
 
-        blobImpl.putBlob(callingContext, blobURI1, sample, MediaType.CSS_UTF_8.toString());
-        blobImpl.putBlob(callingContext, blobURI2, sample, MediaType.ANY_TEXT_TYPE.toString());
-        blobImpl.putBlob(callingContext, blobURI3, sample, MediaType.GIF.toString());
-        blobImpl.putBlob(callingContext, blobURI4, sample, MediaType.JPEG.toString());
+        blobImpl.putBlob(context, blobURI1, sample, MediaType.CSS_UTF_8.toString());
+        blobImpl.putBlob(context, blobURI2, sample, MediaType.ANY_TEXT_TYPE.toString());
+        blobImpl.putBlob(context, blobURI3, sample, MediaType.GIF.toString());
+        blobImpl.putBlob(context, blobURI4, sample, MediaType.JPEG.toString());
 
         BlobContainer blob;
 
-        blob = blobImpl.getBlob(callingContext, blobURI1);
+        blob = blobImpl.getBlob(context, blobURI1);
         assertNotNull(blob);
         assertNotNull(blob.getContent());
         assertArrayEquals(sample, blob.getContent());
 
-        blob = blobImpl.getBlob(callingContext, blobURI4);
+        blob = blobImpl.getBlob(context, blobURI4);
         assertNotNull(blob);
         assertNotNull(blob.getContent());
         assertArrayEquals(sample, blob.getContent());
 
-        assertNull(blobImpl.getBlob(callingContext, blobURI5));
-
-        blobImpl.deleteBlobsByUriPrefix(callingContext, blobURI4);
-        blob = blobImpl.getBlob(callingContext, blobURI1);
-        assertNotNull(blob);
-        assertNotNull(blob.getContent());
-        assertArrayEquals(sample, blob.getContent());
-        assertNull(blobImpl.getBlob(callingContext, blobURI4));
+        assertNull(blobImpl.getBlob(context, blobURI5));
 
         try {
-            blobImpl.deleteBlobsByUriPrefix(callingContext, blobURI5);
+            blobImpl.deleteBlobsByUriPrefix(context, blobURI5);
             // SHOULD FAIL OR DO NOTHING
         } catch (Exception e) {
-            assertTrue(e.getMessage().equals("Blob or blob folder " + blobURI5 + " does not exist"));
+            assertEquals(e.getMessage(), "Folder " + blobURI5 + " does not exist");
         }
-        blob = blobImpl.getBlob(callingContext, blobURI1);
+        blob = blobImpl.getBlob(context, blobURI1);
         assertNotNull(blob);
         assertNotNull(blob.getContent());
         assertArrayEquals(sample, blob.getContent());
@@ -385,46 +379,43 @@ public class MongoTests {
 
     @Test
     public void testRap3952() {
-        CallingContext callingContext = ContextFactory.getKernelUser();
-        Kernel.initBootstrap();
         String uuid = UUID.randomUUID().toString();
-
         {
             BlobApi impl = Kernel.getBlob();
             String auth = Scheme.BLOB.toString() + "://" + uuid;
-            impl.createBlobRepo(callingContext, auth, "BLOB {} USING MONGODB {prefix=\"" + uuid + "\"}", "NREP {} USING MONGODB {prefix=\"Meta" + uuid + "\"}");
-            assertNotNull(impl.getBlobRepoConfig(callingContext, auth));
+            impl.createBlobRepo(context, auth, "BLOB {} USING MONGODB {prefix=\"" + uuid + "\"}", "NREP {} USING MONGODB {prefix=\"Meta" + uuid + "\"}");
+            assertNotNull(impl.getBlobRepoConfig(context, auth));
             try {
-                impl.deleteBlobsByUriPrefix(callingContext, auth + "/spurious");
+                impl.deleteBlobsByUriPrefix(context, auth + "/spurious");
                 Assert.fail("Exception expected");
             } catch (Exception e) {
-                assertEquals(e.getMessage(), "Blob or blob folder " + auth + "/spurious does not exist");
+                assertEquals("Folder " + auth + "/spurious does not exist", e.getMessage());
             }
         }
 
         {
             DocApi impl = Kernel.getDoc();
             String auth = Scheme.DOCUMENT.toString() + "://" + uuid;
-            impl.createDocRepo(callingContext, auth, "NREP {} USING MONGODB {prefix=\"" + uuid + "\"}");
-            assertNotNull(impl.getDocRepoConfig(callingContext, auth));
+            impl.createDocRepo(context, auth, "NREP {} USING MONGODB {prefix=\"" + uuid + "\"}");
+            assertNotNull(impl.getDocRepoConfig(context, auth));
             try {
-                impl.deleteDocsByUriPrefix(callingContext, auth + "/spurious");
+                impl.deleteDocsByUriPrefix(context, auth + "/spurious");
                 Assert.fail("Exception expected");
             } catch (Exception e) {
-                assertEquals(e.getMessage(), "Document or folder " + auth + "/spurious does not exist");
+                assertEquals("Folder " + auth + "/spurious does not exist", e.getMessage());
             }
         }
 
         {
             SeriesApi impl = Kernel.getSeries();
             String auth = Scheme.SERIES.toString() + "://" + uuid;
-            impl.createSeriesRepo(callingContext, auth, "SREP {} USING MONGODB {prefix=\"" + uuid + "\"}");
-            assertNotNull(impl.getSeriesRepoConfig(callingContext, auth));
+            impl.createSeriesRepo(context, auth, "SREP {} USING MONGODB {prefix=\"" + uuid + "\"}");
+            assertNotNull(impl.getSeriesRepoConfig(context, auth));
             try {
-                impl.deleteSeriesByUriPrefix(callingContext, auth + "/spurious");
+                impl.deleteSeriesByUriPrefix(context, auth + "/spurious");
                 Assert.fail("Exception expected");
             } catch (Exception e) {
-                assertEquals(e.getMessage(), "Series or folder " + auth + "/spurious does not exist");
+                assertEquals("Folder " + auth + "/spurious does not exist", e.getMessage());
             }
         }
 
@@ -432,11 +423,82 @@ public class MongoTests {
             ScriptApi impl = Kernel.getScript();
             String auth = Scheme.SCRIPT.toString() + "://" + uuid;
             try {
-                impl.deleteScriptsByUriPrefix(callingContext, auth + "/spurious");
+                impl.deleteScriptsByUriPrefix(context, auth + "/spurious");
                 Assert.fail("Exception expected");
             } catch (Exception e) {
-                assertEquals(e.getMessage(), "Series or folder " + auth + "/spurious does not exist");
+                assertEquals("Folder " + auth + "/spurious does not exist", e.getMessage());
             }
+        }
+    }
+
+    @Test
+    public void RAP4071() {
+        String uuid = UUID.randomUUID().toString();
+        RaptureURI authUri = RaptureURI.builder(Scheme.SERIES, uuid).build();
+        series.createSeriesRepo(authUri.toString(), "SREP {} USING MONGODB {prefix=\"" + uuid + "\"}");
+        assertNotNull(series.getSeriesRepoConfig(authUri.toString()));
+        String path = "vini/reilly";
+        String column = "Durutti";
+
+        String seriesURIDoc = RaptureURI.builder(authUri).docPath(path).asString();
+
+        Double LC = 50.100D;
+        series.addDoubleToSeries(seriesURIDoc, column, LC);
+        List<SeriesString> pointValues = series.getPointsAfterAsStrings(seriesURIDoc, column, 1);
+        Assert.assertNotNull(pointValues);
+
+        String folder = RaptureURI.builder(authUri).docPath("vini").asString();
+        Map<String, RaptureFolderInfo> ser = series.listSeriesByUriPrefix(folder, 20);
+        assertFalse(ser.isEmpty());
+
+        series.deletePointsFromSeries(seriesURIDoc);
+
+        // Deleting series deletes the empty folder.
+        List<SeriesPoint> points = series.getPoints(seriesURIDoc);
+        assertTrue(points.isEmpty());
+
+        try {
+            series.listSeriesByUriPrefix(folder, 20);
+            Assert.fail("Exception expected");
+        } catch (Exception e) {
+            assertEquals("Folder " + folder + " does not exist", e.getMessage());
+        }
+
+        series.deleteSeriesRepo(authUri.toString());
+    }
+
+    @Test
+    public void RAP4072() {
+        String uuid = UUID.randomUUID().toString();
+        RaptureURI authUri = RaptureURI.builder(Scheme.SERIES, uuid).build();
+        String currBlobURI = authUri.toString();
+        try {
+            blobApi.createBlobRepo(context, authUri.toString(), "BLOB {} USING MONGODB {prefix=\"" + uuid + "\"}",
+                    "NREP {} USING MONGODB {prefix=\"Meta" + uuid + "\"}");
+
+            System.out.println("Creating folders and blobs under " + currBlobURI);
+            blobApi.putBlob(currBlobURI + "/f1/b1", "TEST".getBytes(), "application/text");
+            blobApi.putBlob(currBlobURI + "/f1/b2", "TEST".getBytes(), "application/text");
+            blobApi.putBlob(currBlobURI + "/f4/b2", "TEST".getBytes(), "application/text");
+            blobApi.putBlob(currBlobURI + "/f2/f1/b1", "TEST".getBytes(), "application/text");
+            blobApi.putBlob(currBlobURI + "/f2/f1/b2", "TEST".getBytes(), "application/text");
+            blobApi.putBlob(currBlobURI + "/f2/f2/b2", "TEST".getBytes(), "application/text");
+            blobApi.putBlob(currBlobURI + "/f3/f2/b2", "TEST".getBytes(), "application/text");
+            blobApi.putBlob(currBlobURI + "/f9/f6/f7/b2", "TEST".getBytes(), "application/text");
+            System.out.println("Deleting folders and blobs under " + currBlobURI);
+            blobApi.deleteBlobsByUriPrefix(currBlobURI);
+            Map<String, RaptureFolderInfo> blobs;
+            do {
+                try {
+                    Thread.sleep(1000);
+                } catch (Exception e) {
+                }
+                blobs = blobApi.listBlobsByUriPrefix(currBlobURI, 30);
+                System.out.println("Found " + blobs.size());
+            } while (blobs.size() > 0);
+            Assert.assertEquals(blobs.size(), 0, JacksonUtil.jsonFromObject(blobs));
+        } catch (Exception e) {
+            System.out.println("Exception thrown: " + e);
         }
     }
 }

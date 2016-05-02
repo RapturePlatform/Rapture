@@ -23,7 +23,6 @@
  */
 package rapture.kernel;
 
-import static rapture.common.Scheme.BLOB;
 import static rapture.common.Scheme.SERIES;
 
 import java.net.HttpURLConnection;
@@ -57,6 +56,7 @@ import rapture.common.SeriesRepoConfigStorage;
 import rapture.common.SeriesString;
 import rapture.common.SeriesValue;
 import rapture.common.api.SeriesApi;
+import rapture.common.exception.ExceptionToString;
 import rapture.common.exception.RaptureException;
 import rapture.common.exception.RaptureExceptionFactory;
 import rapture.common.impl.jackson.JacksonUtil;
@@ -181,6 +181,7 @@ public class SeriesApiImpl extends KernelBase implements SeriesApi {
     }
 
     private Function<SeriesValue, SeriesPoint> sv2xsf = new Function<SeriesValue, SeriesPoint>() {
+        @Override
         public SeriesPoint apply(SeriesValue in) {
             SeriesPoint result = new SeriesPoint();
             result.setColumn(in.getColumn());
@@ -190,6 +191,7 @@ public class SeriesApiImpl extends KernelBase implements SeriesApi {
     };
 
     private Function<SeriesValue, SeriesDouble> sv2sd = new Function<SeriesValue, SeriesDouble>() {
+        @Override
         public SeriesDouble apply(SeriesValue in) {
             SeriesDouble result = new SeriesDouble();
             result.setKey(in.getColumn());
@@ -199,6 +201,7 @@ public class SeriesApiImpl extends KernelBase implements SeriesApi {
     };
 
     private Function<SeriesValue, SeriesString> sv2ss = new Function<SeriesValue, SeriesString>() {
+        @Override
         public SeriesString apply(SeriesValue in) {
             SeriesString result = new SeriesString();
             result.setKey(in.getColumn());
@@ -208,6 +211,7 @@ public class SeriesApiImpl extends KernelBase implements SeriesApi {
     };
 
     private Function<String, HoseArg> xsf2sv = new Function<String, HoseArg>() {
+        @Override
         public HoseArg apply(String in) {
             if (Character.isDigit(in.charAt(0))) {
                 return in.contains(".") ? HoseArg.makeDecimal(in) : HoseArg.makeLong(in);
@@ -600,7 +604,7 @@ public class SeriesApiImpl extends KernelBase implements SeriesApi {
             Map<String, RaptureFolderInfo> siblings = listSeriesByUriPrefix(context, parent.toString(), 1);
             return (siblings.get(uri.toString()) != null);
         } catch (Exception e) {
-            log.info(e);
+            log.info(ExceptionToString.format(e));
             return false;
         }
     }

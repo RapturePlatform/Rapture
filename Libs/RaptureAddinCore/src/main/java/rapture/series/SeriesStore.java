@@ -69,7 +69,7 @@ public interface SeriesStore {
 
     void addPointsToSeries(String key, List<SeriesValue> value);
 
-    Boolean deletePointsFromSeriesByPointKey(String key, List<String> pointKeys);
+    boolean deletePointsFromSeriesByPointKey(String key, List<String> pointKeys);
 
     /**
      * Drop all points from a series and delete it.
@@ -77,7 +77,7 @@ public interface SeriesStore {
      * @param key
      * @return
      */
-    void deletePointsFromSeries(String key);
+    boolean deletePointsFromSeries(String key);
 
     List<SeriesValue> getPoints(String key);
 
@@ -99,9 +99,9 @@ public interface SeriesStore {
 
     List<RaptureFolderInfo> listSeriesByUriPrefix(String string);
 
-    void unregisterKey(String key);
+    boolean unregisterKey(String key);
 
-    void unregisterKey(String key, boolean isFolder);
+    boolean unregisterKey(String key, boolean isFolder);
 
     SeriesValue getLastPoint(String key);
     
