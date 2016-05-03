@@ -119,8 +119,8 @@ public class FileSeriesStore implements SeriesStore {
             }
 
             @Override
-            public void dropRow(String key) {
-                FileSeriesStore.this.deletePointsFromSeries(key);
+            public boolean dropRow(String key) {
+                return FileSeriesStore.this.deletePointsFromSeries(key);
             }
         };
     }
@@ -279,7 +279,7 @@ public class FileSeriesStore implements SeriesStore {
     }
 
     @Override
-    public Boolean deletePointsFromSeriesByPointKey(String key, List<String> pointKeys) {
+    public boolean deletePointsFromSeriesByPointKey(String key, List<String> pointKeys) {
         File seriesFile = FileRepoUtils.makeGenericFile(parentDir, key+Parser.COLON_CHAR);
         if ((pointKeys == null) || pointKeys.isEmpty() || !seriesFile.isFile()) return true;
         List<SeriesValue> series = getPoints(key);
@@ -296,10 +296,10 @@ public class FileSeriesStore implements SeriesStore {
     }
 
     @Override
-    public void deletePointsFromSeries(String key) {
+    public boolean deletePointsFromSeries(String key) {
         File seriesFile = FileRepoUtils.makeGenericFile(parentDir, key+Parser.COLON_CHAR);
-        if (!seriesFile.isFile()) return;
-        seriesFile.delete();
+        if (!seriesFile.isFile()) return false;
+        return seriesFile.delete();
     }
 
     @Override
@@ -419,14 +419,14 @@ public class FileSeriesStore implements SeriesStore {
     }
 
     @Override
-    public void unregisterKey(String key) {
-        childrenRepo.dropFileEntry(key);
+    public boolean unregisterKey(String key) {
+        return childrenRepo.dropFileEntry(key);
     }
 
     @Override
-    public void unregisterKey(String key, boolean isFolder) {
+    public boolean unregisterKey(String key, boolean isFolder) {
         if (isFolder) childrenRepo.dropFolderEntry(key);
-        unregisterKey(key);
+        return unregisterKey(key);
     }
 
     @Override

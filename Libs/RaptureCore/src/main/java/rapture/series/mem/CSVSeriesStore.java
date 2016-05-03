@@ -23,13 +23,6 @@
  */
 package rapture.series.mem;
 
-import rapture.common.SeriesValue;
-import rapture.common.exception.RaptureException;
-import rapture.common.exception.RaptureExceptionFactory;
-import rapture.common.exception.RaptureExceptionFormatter;
-import rapture.parser.CSVExtractor;
-import rapture.util.ResourceLoader;
-
 import java.net.HttpURLConnection;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +31,13 @@ import org.antlr.runtime.RecognitionException;
 import org.apache.log4j.Logger;
 
 import com.google.common.base.Preconditions;
+
+import rapture.common.SeriesValue;
+import rapture.common.exception.RaptureException;
+import rapture.common.exception.RaptureExceptionFactory;
+import rapture.common.exception.RaptureExceptionFormatter;
+import rapture.parser.CSVExtractor;
+import rapture.util.ResourceLoader;
 
 public class CSVSeriesStore extends MemorySeriesStore {
 
@@ -100,12 +100,12 @@ public class CSVSeriesStore extends MemorySeriesStore {
     }
 
     @Override
-    public Boolean deletePointsFromSeriesByPointKey(String key, List<String> pointKeys) {
+    public boolean deletePointsFromSeriesByPointKey(String key, List<String> pointKeys) {
         throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, "Read Only Repo");
     }
 
     @Override
-    public void deletePointsFromSeries(String key) {
+    public boolean deletePointsFromSeries(String key) {
         throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, "Read Only Repo");
     }
 
