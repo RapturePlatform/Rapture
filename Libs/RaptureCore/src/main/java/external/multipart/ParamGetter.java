@@ -25,15 +25,16 @@ package external.multipart;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.Properties;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
 public class ParamGetter {
     private static final Logger log = Logger.getLogger(ParamGetter.class.getName());
 
-    public static Properties getProps(MultipartParser parser) throws IOException {
-        Properties props = new Properties();
+    public static Map<String, Object> getProps(MultipartParser parser) throws IOException {
+        Map<String, Object> props = new HashMap<>();
         while (true) {
             System.out.println("Looping in getProps");
             Part p = parser.readNextPart();
@@ -57,8 +58,8 @@ public class ParamGetter {
         return props;
     }
 
-    public static Properties getProps(String url) {
-        Properties props = new Properties();
+    public static Map<String, Object> getProps(String url) {
+        Map<String, Object> props = new HashMap<>();
         String[] parts = url.split("&");
         for (String p : parts) {
             String[] bits = p.split("=");

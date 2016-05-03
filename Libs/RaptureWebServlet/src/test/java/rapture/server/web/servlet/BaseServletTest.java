@@ -28,14 +28,11 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.security.Principal;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 
@@ -45,7 +42,6 @@ import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletInputStream;
-import javax.servlet.ServletOutputStream;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.Cookie;
@@ -54,41 +50,16 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
 
-import org.junit.Before;
+import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
-public class BaseReflexScriptPageServletTest {
+public class BaseServletTest {
 
-    @Before
-    public void setUp() throws Exception {
-    }
-
-    Map<String, Object> globalParameterMap = null;
-
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     @Test
-    public void testDoGetParameters() {
-        BaseReflexScriptPageServlet brsps = new BaseReflexScriptPageServlet() {
-
-            private static final long serialVersionUID = 5289673110762074930L;
-
-            @Override
-            protected String getPrintableScript(HttpServletRequest req) {
-                return "//foo";
-            }
-
-            @Override
-            protected String getReflexScript(HttpServletRequest req) {
-                return "//foo";
-            }
-
-            @Override
-            void process(String script, Map<String, Object> parameterMap, HttpServletRequest req, HttpServletResponse resp) throws IOException {
-                globalParameterMap = parameterMap;
-            }
-        };
-
-        HttpServletRequest fakeReq = new HttpServletRequest() {
+    public void testGetParamsForJson() throws UnsupportedEncodingException, IOException, ServletException {
+        BaseServlet b = new BaseServlet();
+        Map<String, Object> props = b.getParams(new HttpServletRequest() {
 
             @Override
             public Object getAttribute(String name) {
@@ -98,7 +69,8 @@ public class BaseReflexScriptPageServletTest {
 
             @Override
             public Enumeration<String> getAttributeNames() {
-                return Collections.enumeration(new HashSet<String>());
+                // TODO Auto-generated method stub
+                return null;
             }
 
             @Override
@@ -121,14 +93,56 @@ public class BaseReflexScriptPageServletTest {
 
             @Override
             public String getContentType() {
-                // TODO Auto-generated method stub
-                return null;
+                return "application/json; charset=utf-8";
             }
 
             @Override
             public ServletInputStream getInputStream() throws IOException {
-                // TODO Auto-generated method stub
-                return null;
+                String source = "{\n" +
+                        "  \"id\": \"evt_1853r6HeTEznmvLm6D3dcJkQ\",\n" +
+                        "  \"object\": \"event\",\n" +
+                        "  \"api_version\": \"2016-03-07\",\n" +
+                        "  \"created\": 1461806532,\n" +
+                        "  \"data\": {\n" +
+                        "    \"object\": {\n" +
+                        "      \"id\": \"card_1853dOHeTEznmvLm2Ddb7dZS\",\n" +
+                        "      \"object\": \"card\",\n" +
+                        "      \"address_city\": null,\n" +
+                        "      \"address_country\": null,\n" +
+                        "      \"address_line1\": null,\n" +
+                        "      \"address_line1_check\": null,\n" +
+                        "      \"address_line2\": null,\n" +
+                        "      \"address_state\": null,\n" +
+                        "      \"address_zip\": null,\n" +
+                        "      \"address_zip_check\": null,\n" +
+                        "      \"brand\": \"Visa\",\n" +
+                        "      \"country\": \"US\",\n" +
+                        "      \"customer\": \"cus_8Ll2p6F1MgLu9j\",\n" +
+                        "      \"cvc_check\": \"pass\",\n" +
+                        "      \"dynamic_last4\": null,\n" +
+                        "      \"exp_month\": 12,\n" +
+                        "      \"exp_year\": 2017,\n" +
+                        "      \"fingerprint\": \"Q8EtGncFBXfbxV9I\",\n" +
+                        "      \"funding\": \"credit\",\n" +
+                        "      \"last4\": \"4242\",\n" +
+                        "      \"metadata\": {\n" +
+                        "      },\n" +
+                        "      \"name\": null,\n" +
+                        "      \"tokenization_method\": null\n" +
+                        "    }\n" +
+                        "  },\n" +
+                        "  \"livemode\": false,\n" +
+                        "  \"pending_webhooks\": 2,\n" +
+                        "  \"request\": \"req_8LlNQlFsRjJEwP\",\n" +
+                        "  \"type\": \"customer.source.deleted\"\n" +
+                        "}";
+                final InputStream is = IOUtils.toInputStream(source, "UTF-8");
+                return new ServletInputStream() {
+                    @Override
+                    public int read() throws IOException {
+                        return is.read();
+                    }
+                };
             }
 
             @Override
@@ -137,32 +151,22 @@ public class BaseReflexScriptPageServletTest {
                 return null;
             }
 
-            Map<String, String[]> parameters = null;
-
-            void parseParameters() {
-                if (parameters == null) {
-                    parameters = new HashMap<>();
-                    parameters.put("Foo[0][xxx]", new String[] { "X0" });
-                    parameters.put("Foo[0][yyy]", new String[] { "Y0" });
-                    parameters.put("Foo[1][xxx]", new String[] { "X1" });
-                    parameters.put("Foo[1][yyy]", new String[] { "Y1" });
-                }
-            }
-
             @Override
             public Enumeration<String> getParameterNames() {
-                parseParameters();
-                return Collections.enumeration(parameters.keySet());
+                // TODO Auto-generated method stub
+                return null;
             }
 
             @Override
             public String[] getParameterValues(String name) {
-                return parameters.get(name);
+                // TODO Auto-generated method stub
+                return null;
             }
 
             @Override
             public Map<String, String[]> getParameterMap() {
-                return parameters;
+                // TODO Auto-generated method stub
+                return null;
             }
 
             @Override
@@ -227,7 +231,8 @@ public class BaseReflexScriptPageServletTest {
 
             @Override
             public Enumeration<Locale> getLocales() {
-                return Collections.enumeration(new HashSet<Locale>());
+                // TODO Auto-generated method stub
+                return null;
             }
 
             @Override
@@ -340,12 +345,14 @@ public class BaseReflexScriptPageServletTest {
 
             @Override
             public Enumeration<String> getHeaders(String name) {
-                return Collections.enumeration(new HashSet<String>());
+                // TODO Auto-generated method stub
+                return null;
             }
 
             @Override
             public Enumeration<String> getHeaderNames() {
-                return Collections.enumeration(new HashSet<String>());
+                // TODO Auto-generated method stub
+                return null;
             }
 
             @Override
@@ -492,270 +499,15 @@ public class BaseReflexScriptPageServletTest {
                 return null;
             }
 
-        };
-        HttpServletResponse fakeResp = new HttpServletResponse() {
-
-            @Override
-            public String getCharacterEncoding() {
-                // TODO Auto-generated method stub
-                return null;
-            }
-
-            @Override
-            public String getContentType() {
-                // TODO Auto-generated method stub
-                return null;
-            }
-
-            @Override
-            public ServletOutputStream getOutputStream() throws IOException {
-                // TODO Auto-generated method stub
-                return null;
-            }
-
-            @Override
-            public PrintWriter getWriter() throws IOException {
-                // TODO Auto-generated method stub
-                return null;
-            }
-
-            @Override
-            public void setCharacterEncoding(String charset) {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public void setContentLength(int len) {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public void setContentType(String type) {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public void setBufferSize(int size) {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public int getBufferSize() {
-                // TODO Auto-generated method stub
-                return 0;
-            }
-
-            @Override
-            public void flushBuffer() throws IOException {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public void resetBuffer() {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public boolean isCommitted() {
-                // TODO Auto-generated method stub
-                return false;
-            }
-
-            @Override
-            public void reset() {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public void setLocale(Locale loc) {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public Locale getLocale() {
-                // TODO Auto-generated method stub
-                return null;
-            }
-
-            @Override
-            public void addCookie(Cookie cookie) {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public boolean containsHeader(String name) {
-                // TODO Auto-generated method stub
-                return false;
-            }
-
-            @Override
-            public String encodeURL(String url) {
-                // TODO Auto-generated method stub
-                return null;
-            }
-
-            @Override
-            public String encodeRedirectURL(String url) {
-                // TODO Auto-generated method stub
-                return null;
-            }
-
-            @Override
-            public String encodeUrl(String url) {
-                // TODO Auto-generated method stub
-                return null;
-            }
-
-            @Override
-            public String encodeRedirectUrl(String url) {
-                // TODO Auto-generated method stub
-                return null;
-            }
-
-            @Override
-            public void sendError(int sc, String msg) throws IOException {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public void sendError(int sc) throws IOException {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public void sendRedirect(String location) throws IOException {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public void setDateHeader(String name, long date) {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public void addDateHeader(String name, long date) {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public void setHeader(String name, String value) {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public void addHeader(String name, String value) {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public void setIntHeader(String name, int value) {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public void addIntHeader(String name, int value) {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public void setStatus(int sc) {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public void setStatus(int sc, String sm) {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public int getStatus() {
-                // TODO Auto-generated method stub
-                return 0;
-            }
-
-            @Override
-            public String getHeader(String name) {
-                // TODO Auto-generated method stub
-                return null;
-            }
-
-            @Override
-            public Collection<String> getHeaders(String name) {
-                // TODO Auto-generated method stub
-                return null;
-            }
-
-            @Override
-            public Collection<String> getHeaderNames() {
-                // TODO Auto-generated method stub
-                return null;
-            }
-
-        };
-
-        try {
-            brsps.doGet(fakeReq, fakeResp);
-            Enumeration<String> e = fakeReq.getParameterNames();
-            while (e.hasMoreElements()) {
-                String key = e.nextElement();
-                assertTrue(globalParameterMap.containsKey(key));
-            }
-
-            assertTrue(globalParameterMap.containsKey("Foo"));
-            assertTrue(globalParameterMap.containsKey("Foo[0]"));
-            assertTrue(globalParameterMap.containsKey("Foo[1]"));
-
-            Object o = globalParameterMap.get("Foo[0]");
-            assertTrue(o instanceof Map);
-            Map<String, Object> map = (Map<String, Object>) o;
-            assertEquals("X0", map.get("xxx").toString());
-            assertEquals("Y0", map.get("yyy").toString());
-
-            o = globalParameterMap.get("Foo[1]");
-            assertTrue(o instanceof Map);
-            map = (Map<String, Object>) o;
-            assertEquals("X1", map.get("xxx").toString());
-            assertEquals("Y1", map.get("yyy").toString());
-
-            o = globalParameterMap.get("Foo");
-            assertTrue(o instanceof Map);
-            map = (Map<String, Object>) o;
-            o = map.get("0");
-            assertTrue(o instanceof Map);
-            Map<String, Object> map1 = (Map<String, Object>) o;
-            assertEquals("X0", map1.get("xxx").toString());
-            assertEquals("Y0", map1.get("yyy").toString());
-
-            o = map.get("1");
-            assertTrue(o instanceof Map);
-            map1 = (Map<String, Object>) o;
-            assertEquals("X1", map1.get("xxx").toString());
-            assertEquals("Y1", map1.get("yyy").toString());
-
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        });
+
+        // test a few values for type and content
+        assertTrue(props.get("object") instanceof String);
+        assertEquals("event", props.get("object"));
+        assertEquals("Visa", ((Map) ((Map) props.get("data")).get("object")).get("brand"));
+        assertTrue(((Map) ((Map) props.get("data")).get("object")).get("exp_month") instanceof Integer);
+        assertEquals(12, ((Map) ((Map) props.get("data")).get("object")).get("exp_month"));
+        assertEquals(null, ((Map) ((Map) props.get("data")).get("object")).get("dynamic_last4"));
+        assertEquals("cus_8Ll2p6F1MgLu9j", ((Map) ((Map) props.get("data")).get("object")).get("customer"));
     }
-
 }
