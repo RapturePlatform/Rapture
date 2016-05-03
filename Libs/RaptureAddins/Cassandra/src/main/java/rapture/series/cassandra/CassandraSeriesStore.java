@@ -28,6 +28,8 @@ import java.net.HttpURLConnection;
 import java.util.List;
 import java.util.Map;
 
+import com.netflix.astyanax.connectionpool.exceptions.ConnectionException;
+
 import rapture.cassandra.CassandraConstants;
 import rapture.common.Messages;
 import rapture.common.RaptureFolderInfo;
@@ -39,8 +41,6 @@ import rapture.dsl.serfun.StringSeriesValue;
 import rapture.dsl.serfun.StructureSeriesValueImpl;
 import rapture.series.SeriesPaginator;
 import rapture.series.SeriesStore;
-
-import com.netflix.astyanax.connectionpool.exceptions.ConnectionException;
 
 /**
  * A Cassandra implementation of a series store
@@ -122,13 +122,13 @@ public class CassandraSeriesStore implements SeriesStore {
     }
 
     @Override
-    public Boolean deletePointsFromSeriesByPointKey(String key, List<String> pointKeys) {
+    public boolean deletePointsFromSeriesByPointKey(String key, List<String> pointKeys) {
         return cass.dropPoints(key, pointKeys);
     }
 
     @Override
-    public void deletePointsFromSeries(String key) {
-        cass.dropAllPoints(key);
+    public boolean deletePointsFromSeries(String key) {
+        return cass.dropAllPoints(key);
     }
 
     @Override
@@ -220,13 +220,13 @@ public class CassandraSeriesStore implements SeriesStore {
     }
 
     @Override
-    public void unregisterKey(String key) {
-        cass.unregisterKey(key, false);
+    public boolean unregisterKey(String key) {
+        return cass.unregisterKey(key, false);
     }
 
     @Override
-    public void unregisterKey(String key, boolean isFolder) {
-        cass.unregisterKey(key, isFolder);
+    public boolean unregisterKey(String key, boolean isFolder) {
+        return cass.unregisterKey(key, isFolder);
     }
 
     @Override

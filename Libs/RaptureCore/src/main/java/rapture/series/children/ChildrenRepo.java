@@ -23,14 +23,6 @@
  */
 package rapture.series.children;
 
-import rapture.common.RaptureFolderInfo;
-import rapture.common.SeriesValue;
-import rapture.common.exception.RaptureExceptionFactory;
-import rapture.dsl.serfun.StringSeriesValue;
-import rapture.repo.RepoLockHandler;
-import rapture.series.children.cleanup.FolderCleanupFactory;
-import rapture.series.children.cleanup.FolderCleanupService;
-
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -40,6 +32,14 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.google.common.collect.ImmutableList;
+
+import rapture.common.RaptureFolderInfo;
+import rapture.common.SeriesValue;
+import rapture.common.exception.RaptureExceptionFactory;
+import rapture.dsl.serfun.StringSeriesValue;
+import rapture.repo.RepoLockHandler;
+import rapture.series.children.cleanup.FolderCleanupFactory;
+import rapture.series.children.cleanup.FolderCleanupService;
 
 public abstract class ChildrenRepo {
     private static final Logger log = Logger.getLogger(ChildrenRepo.class);
@@ -125,20 +125,24 @@ public abstract class ChildrenRepo {
         return folderInfoList;
     }
 
-    public void dropFileEntry(String filePath) {
+    public boolean dropFileEntry(String filePath) {
         String parent = SeriesPathParser.getParent(filePath);
         String child = ChildKeyUtil.createColumnFile(SeriesPathParser.getChild(filePath));
+        boolean ret = false;
         try {
-            dropPoints(ChildKeyUtil.createRowKey(parent), ImmutableList.of(child));
-            List<RaptureFolderInfo> orphans = getChildren(parent);
-            if ((orphans == null) || orphans.isEmpty()) {
-                dropFolderEntry(parent);
+            ret = dropPoints(ChildKeyUtil.createRowKey(parent), ImmutableList.of(child));
+            if (ret) {
+                List<RaptureFolderInfo> orphans = getChildren(parent);
+                if ((orphans == null) || orphans.isEmpty()) {
+                    dropFolderEntry(parent);
+                }
+                FolderCleanupService.getInstance().addForReview(getUniqueId(), SeriesPathParser.getParent(filePath));
             }
-            FolderCleanupService.getInstance().addForReview(getUniqueId(), SeriesPathParser.getParent(filePath));
         } catch (Exception e) {
             throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST,
                     "Error communicating with the database", e);
         }
+        return ret;
     }
 
     private String getUniqueId() {
@@ -158,15 +162,16 @@ public abstract class ChildrenRepo {
         this.repoDescription = repoName;
     }
 
-    public void dropFolderEntry(String folderPath) {
+    public boolean dropFolderEntry(String folderPath) {
         String rowName = ChildKeyUtil.createRowKey(folderPath);
         dropRow(rowName);
         // And remove this entry from the entry above
         List<String> pathParts = SeriesPathParser.getPathParts(folderPath);
         String parent = StringUtils.join(pathParts.subList(0, pathParts.size() - 1), PathConstants.PATH_SEPARATOR);
         String point = ChildKeyUtil.createColumnFolder(pathParts.get(pathParts.size() - 1));
-        dropPoints(ChildKeyUtil.createRowKey(parent), Collections.singletonList(point));
+        boolean ret = dropPoints(ChildKeyUtil.createRowKey(parent), Collections.singletonList(point));
         FolderCleanupService.getInstance().addForReview(getUniqueId(), SeriesPathParser.getParent(folderPath));
+        return ret;
     }
 
     public void setRepoLockHandler(RepoLockHandler repoLockHandler) {
@@ -183,7 +188,7 @@ public abstract class ChildrenRepo {
 
     public abstract boolean dropPoints(String key, List<String> points);
 
-    public abstract void dropRow(String key);
+    public abstract boolean dropRow(String key);
 
     public void drop() {
         FolderCleanupService.getInstance().unregister(getUniqueId());

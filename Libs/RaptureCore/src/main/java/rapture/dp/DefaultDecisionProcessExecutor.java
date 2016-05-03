@@ -101,6 +101,7 @@ import rapture.log.MDCService;
 import rapture.script.reflex.ReflexRaptureScript;
 import rapture.server.dp.JoinCountdown;
 import rapture.server.dp.JoinCountdownStorage;
+import reflex.value.ReflexValue;
 
 /**
  * Default implementation that submits steps sequentially to the pipeline. Steps are picked up and acted upon and this is repeated until the process has
@@ -122,8 +123,6 @@ public class DefaultDecisionProcessExecutor implements DecisionProcessExecutor {
 
     private static final ExecutorService metricsExecutor = Executors
             .newSingleThreadExecutor(new ThreadFactoryBuilder().setNameFormat("DP-Metrics-Executor").build());
-
-    private static final String SUSPEND = "__reserved__SUSPEND";
 
     static {
         RETURN.setName("$RETURN");
@@ -382,7 +381,7 @@ public class DefaultDecisionProcessExecutor implements DecisionProcessExecutor {
                         markAsFinished(workOrder, worker, WorkerExecutionState.CANCELLED, EXCEPTION_ABSENT);
                     } else if (REPUBLISHED.equals(transitionName)) {
                         // we don't do anything in this case -- don't want to republish
-                    } else if (SUSPEND.equals(transitionName)) {
+                    } else if (ReflexValue.Internal.SUSPEND.toString().equals(transitionName)) {
                         worker.setStatus(WorkerExecutionState.BLOCKED);
                         saveWorker(worker);
 
@@ -958,7 +957,7 @@ public class DefaultDecisionProcessExecutor implements DecisionProcessExecutor {
                 }
             default:
                 log.error("Unsupported executable URI: " + executable);
-                return SUSPEND;
+                return ReflexValue.Internal.SUSPEND.toString();
             }
         }
     }

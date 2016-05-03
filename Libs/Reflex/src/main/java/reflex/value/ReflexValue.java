@@ -44,11 +44,12 @@ public class ReflexValue implements Comparable<ReflexValue> {
     String NOTNULL = "Argument to ReflexValue cannot be null. Use ReflexNullValue";
 
     public enum Internal {
-        NULL,
-        VOID,
-        BREAK,
-        CONTINUE,
-        SUSPEND
+        NULL, VOID, BREAK, CONTINUE, SUSPEND;
+        
+        @Override
+        public String toString() {
+            return "__reserved__" + this.name();
+        }
     }
 
     public Object getValue() {
