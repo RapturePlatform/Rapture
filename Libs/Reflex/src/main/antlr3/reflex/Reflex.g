@@ -23,6 +23,8 @@ tokens {
   EXP;
   EXP_LIST;
   KEYVAL_LIST;
+  JARURI_LIST;
+  JARURI;
   ID_LIST;
   IF;
   TERNARY;
@@ -54,6 +56,7 @@ tokens {
   IMPORT;
   IMPORTAS;
   IMPORTPARAMS;
+  IMPORTFROM;
   EXPORT;
   PATCH;
   MATCH;
@@ -425,7 +428,7 @@ continueStatement
   ;
 
 importStatement
-  : Import l=Identifier ('as' r=Identifier)? ('with' '(' p=exprList ')')?-> ^(IMPORT[$Import] $l ^(IMPORTAS $r?) ^(IMPORTPARAMS $p?))
+  : Import l=Identifier ('as' r=Identifier)? ('with' '(' p=exprList ')')? ('from' j=jarUriList)? -> ^(IMPORT[$Import] $l ^(IMPORTAS $r?) ^(IMPORTPARAMS $p?) ^(IMPORTFROM $j?))
   ;
 
 port
@@ -783,6 +786,14 @@ keyValList
 
 keyVal
   :  k=expression ':' v=expression -> ^(KEYVAL[$k.start] $k $v)
+  ;
+
+jarUriList
+  : OParen jarUri (',' jarUri)* CParen -> ^(JARURI_LIST jarUri+)
+  ;
+  
+jarUri
+  :  (j=String | j=QuotedString) -> ^(JARURI $j)
   ;
 
 lookup

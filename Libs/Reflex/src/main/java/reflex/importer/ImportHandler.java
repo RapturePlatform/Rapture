@@ -60,14 +60,14 @@ public class ImportHandler {
         this.handler = handler;
     }
 
-    public void addImportModule(String name, List<ReflexValue> config, IReflexDebugger debugger) {
-        Module module = ModuleFactory.createModule(name, "", handler, debugger);
+    public void addImportModule(String name, List<ReflexValue> config, IReflexDebugger debugger, ClassLoader classLoader) {
+        Module module = ModuleFactory.createModule(name, "", handler, debugger, classLoader);
         module.configure(config);
         modules.put(name, module);
     }
 
-    public void addImportModuleWithAlias(String name, String alias, List<ReflexValue> configParams, IReflexDebugger debugger) {
-        Module module = ModuleFactory.createModule(name, alias, handler, debugger);
+    public void addImportModuleWithAlias(String name, String alias, List<ReflexValue> configParams, IReflexDebugger debugger, ClassLoader classLoader) {
+        Module module = ModuleFactory.createModule(name, alias, handler, debugger, classLoader);
         module.configure(configParams);
         modules.put(alias, module);
     }
@@ -115,7 +115,7 @@ public class ImportHandler {
                     if (m.getParameterTypes().length == 1) {
                         ret = m.invoke(module, parameters);
                     } else {
-                        ret = m.invoke(module,  debugger, node, scope, parameters);
+                        ret = m.invoke(module, debugger, node, scope, parameters);
                     }
                     if (ret instanceof ReflexValue) {
                         return (ReflexValue) ret;

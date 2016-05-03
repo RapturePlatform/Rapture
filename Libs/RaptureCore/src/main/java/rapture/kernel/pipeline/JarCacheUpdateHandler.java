@@ -29,10 +29,11 @@ import org.apache.log4j.Logger;
 
 import rapture.common.RapturePipelineTask;
 import rapture.common.impl.jackson.JacksonUtil;
+import rapture.common.jar.JarCache;
 import rapture.common.mime.MimeJarCacheUpdate;
 import rapture.exchange.QueueHandler;
 import rapture.kernel.ContextFactory;
-import rapture.kernel.jar.JarCache;
+import rapture.kernel.script.KernelScript;
 
 /**
  * Pipeline handler responsible for updating the jar cache of the local JVM (Rapture Kernel) when it receives a message off of the pipeline
@@ -59,7 +60,9 @@ public class JarCacheUpdateHandler implements QueueHandler {
         JarCache.getInstance().invalidate(jarUri);
         if (!payload.isDeletion()) {
             try {
-                JarCache.getInstance().get(ContextFactory.getKernelUser(), jarUri);
+                KernelScript ks = new KernelScript();
+                ks.setCallingContext(ContextFactory.getKernelUser());
+                JarCache.getInstance().get(ks, jarUri);
             } catch (ExecutionException e) {
                 log.error(String.format("Failed to update jar cache for jar uri [%s]", jarUri), e);
                 statusManager.finishRunningWithFailure(task);
