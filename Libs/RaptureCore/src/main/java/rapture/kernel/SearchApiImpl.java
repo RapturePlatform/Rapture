@@ -40,6 +40,7 @@ import rapture.common.SearchHit;
 import rapture.common.SearchResponse;
 import rapture.common.SeriesPoint;
 import rapture.common.api.SearchApi;
+import rapture.common.exception.RaptureException;
 import rapture.common.exception.RaptureExceptionFactory;
 import rapture.common.model.DocumentWithMeta;
 import rapture.common.model.SearchRepoConfig;
@@ -61,18 +62,17 @@ public class SearchApiImpl extends KernelBase implements SearchApi {
 
     public void writeSearchEntry(String searchRepo, DocumentWithMeta doc) {
         logger.debug(String.format("Writing doc search entry to [%s]", searchRepo));
-        Kernel.getRepoCacheManager().getSearchRepo(searchRepo).put(doc);
+        getRepoOrFail(searchRepo).put(doc);
     }
 
     public void writeSearchEntry(String searchRepo, SeriesUpdateObject seriesUpdateObject) {
         logger.debug(String.format("Writing series search entry to [%s]", searchRepo));
-        Kernel.getRepoCacheManager().getSearchRepo(searchRepo).put(seriesUpdateObject);
+        getRepoOrFail(searchRepo).put(seriesUpdateObject);
     }
 
     public void deleteSearchEntry(String searchRepo, RaptureURI uri) {
         logger.debug(String.format("Removing uri [%s] search entry from search repo [%s]", uri.toString(), searchRepo));
-        SearchRepository r = Kernel.getRepoCacheManager().getSearchRepo(searchRepo);
-        r.remove(uri);
+        getRepoOrFail(searchRepo).remove(uri);
     }
 
     @Override
@@ -90,14 +90,12 @@ public class SearchApiImpl extends KernelBase implements SearchApi {
     }
 
     @Override
-    public Boolean validateSearchRepo(CallingContext context,
-            String searchRepoUri) {
+    public Boolean validateSearchRepo(CallingContext context, String searchRepoUri) {
         return true; // for now
     }
 
     @Override
-    public void createSearchRepo(CallingContext context, String searchRepoUri,
-            String config) {
+    public void createSearchRepo(CallingContext context, String searchRepoUri, String config) {
         checkParameter("Repository URI", searchRepoUri);
         checkParameter("Config", config);
 
@@ -118,9 +116,7 @@ public class SearchApiImpl extends KernelBase implements SearchApi {
         rbc.setConfig(config);
         rbc.setAuthority(interimUri.getAuthority());
         SearchRepoConfigStorage.add(rbc, context.getUser(), "create repo");
-
-        // blob repo will be cached when it's accessed the first time
-        logger.info("Creating Repository " + searchRepoUri);
+        logger.info("Created search repository config for uri: " + searchRepoUri);
     }
 
     @Override
@@ -129,8 +125,7 @@ public class SearchApiImpl extends KernelBase implements SearchApi {
     }
 
     @Override
-    public SearchRepoConfig getSearchRepoConfig(CallingContext context,
-            String searchRepoUri) {
+    public SearchRepoConfig getSearchRepoConfig(CallingContext context, String searchRepoUri) {
         RaptureURI uri = new RaptureURI(searchRepoUri, Scheme.SEARCH);
         if (uri.hasDocPath()) {
             throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, apiMessageCatalog.getMessage("NoDocPath", searchRepoUri)); //$NON-NLS-1$
@@ -172,7 +167,7 @@ public class SearchApiImpl extends KernelBase implements SearchApi {
     }
 
     private void workOn(String searchRepo, String prefix, Scheme scheme) {
-        SearchRepository r = Kernel.getRepoCacheManager().getSearchRepo(searchRepo);
+        SearchRepository r = getRepoOrFail(searchRepo);
         Map<String, RaptureFolderInfo> info;
         switch (scheme) {
         case SERIES:
@@ -217,7 +212,7 @@ public class SearchApiImpl extends KernelBase implements SearchApi {
         // (with appropriate batching)
         RaptureURI repoUri = new RaptureURI(repo);
         if (searchRepo != null) {
-            SearchRepository r = Kernel.getRepoCacheManager().getSearchRepo(searchRepo);
+            SearchRepository r = getRepoOrFail(searchRepo);
             if (r != null) {
                 SearchResponse resp = r.searchForRepoUris(repoUri.getScheme().toString(), repoUri.getAuthority(), null);
                 while (!resp.getSearchHits().isEmpty()) {
@@ -238,11 +233,46 @@ public class SearchApiImpl extends KernelBase implements SearchApi {
 
     @Override
     public SearchResponse qualifiedSearch(CallingContext context, String searchRepo, List<String> types, String query) {
-        return Kernel.getRepoCacheManager().getSearchRepo(searchRepo).search(types, query);
+        return getRepoOrFail(searchRepo).search(types, query);
     }
 
     @Override
     public SearchResponse qualifiedSearchWithCursor(CallingContext context, String searchRepo, List<String> types, String cursorId, int size, String query) {
-        return Kernel.getRepoCacheManager().getSearchRepo(searchRepo).searchWithCursor(types, cursorId, size, query);
+        return getRepoOrFail(searchRepo).searchWithCursor(types, cursorId, size, query);
+    }
+
+    /**
+     * Return the {@link SearchRepository} for the given uri or throw a {@link RaptureException} with an error message
+     *
+     * @param uri
+     * @return
+     */
+    private SearchRepository getRepoOrFail(RaptureURI uri) {
+        SearchRepository repo = getRepoFromCache(uri.getAuthority());
+        if (repo == null) {
+            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, apiMessageCatalog.getMessage("NoSuchRepo", uri.toAuthString()));
+        } else {
+            return repo;
+        }
+    }
+
+    private SearchRepository getRepoOrFail(String searchRepoUri) {
+        return getRepoOrFail(new RaptureURI(searchRepoUri, Scheme.SEARCH));
+    }
+
+    private SearchRepository getRepoFromCache(String authority) {
+        return Kernel.getRepoCacheManager().getSearchRepo(authority);
+    }
+
+    /**
+     * We need to start all the search repos at startup
+     */
+    public void startSearchRepos() {
+        if (ConfigLoader.getConf().FullTextSearchOn) {
+            List<SearchRepoConfig> configs = getSearchRepoConfigs(ContextFactory.getKernelUser());
+            for (SearchRepoConfig config : configs) {
+                getRepoOrFail(config.getAuthority()).start();
+            }
+        }
     }
 }
