@@ -66,6 +66,7 @@ import rapture.common.api.ScriptTagApi;
 import rapture.common.api.ScriptUserApi;
 import rapture.common.api.ScriptingApi;
 import reflex.handlers.TestScriptHandler;
+import reflex.value.ReflexValue;
 
 public class ImportTest extends ResourceBasedTest {
     @Test
@@ -73,7 +74,7 @@ public class ImportTest extends ResourceBasedTest {
         String retVal = runTestForWithScriptHandler("/imports/import.rfx", new TestScriptHandler(this, "imports"));
         assertEquals("33", retVal.split("--RETURNS--")[1]);
         retVal = runTestForWithScriptHandler("/imports/returnNull.rfx", new TestScriptHandler(this, "imports"));
-        assertEquals("NULL", retVal.split("--RETURNS--")[1]);
+        assertEquals(ReflexValue.Internal.NULL.toString(), retVal.split("--RETURNS--")[1]);
         retVal = runTestForWithScriptHandler("/imports/import.rfx", new TestScriptHandler(this, "imports"));
         assertEquals("33", retVal.split("--RETURNS--")[1]);
     }
