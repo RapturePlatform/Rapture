@@ -278,6 +278,9 @@ public enum Kernel {
         INSTANCE.startMonitor();
         DefaultEntitlementCreator.ensureEntitlementSetup(getEntitlement());
 
+        // start all of our search repos
+        getSearch().getTrusted().startSearchRepos();
+
         // populate an initial server status
         setupServerStatus();
     }
