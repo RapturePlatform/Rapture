@@ -27,6 +27,7 @@ type ConnectionInfo(@package=rapture.common) {
 [Defines a BlobRepository.]
 @Addressable(scheme = BLOB(true))
 @Storable(storagePath : {authority}, prefix="blobConf")
+@Searchable
 type BlobRepoConfig(@package=rapture.common.model) {
   String description;
   String config;

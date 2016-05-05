@@ -24,7 +24,7 @@ public enum Scheme {
     
     public static Scheme getScheme(String name) {
         try {
-            return Scheme.valueOf(name);
+            return Scheme.valueOf(name.toUpperCase());
           } catch (IllegalArgumentException e) {
             return null;
           }

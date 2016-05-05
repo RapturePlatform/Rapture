@@ -32,14 +32,11 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.Stack;
 
 import org.apache.commons.io.IOUtils;
@@ -49,6 +46,7 @@ import org.apache.log4j.Logger;
 import com.google.common.base.Preconditions;
 
 import rapture.common.BlobContainer;
+import rapture.common.BlobUpdateObject;
 import rapture.common.CallingContext;
 import rapture.common.ContentEnvelope;
 import rapture.common.EntitlementSet;
@@ -64,6 +62,7 @@ import rapture.common.model.BlobRepoConfigStorage;
 import rapture.common.shared.blob.DeleteBlobPayload;
 import rapture.common.shared.blob.ListBlobsByUriPrefixPayload;
 import rapture.kernel.context.ContextValidator;
+import rapture.kernel.pipeline.SearchPublisher;
 import rapture.kernel.schemes.RaptureScheme;
 import rapture.repo.BlobRepo;
 
@@ -239,6 +238,10 @@ public class BlobApiImpl extends KernelBase implements BlobApi, RaptureScheme {
     @Override
     public void putBlob(CallingContext context, String blobUri, byte[] content, String contentType) {
         lowerStoreBlob(context, blobUri, content, contentType, false);
+        RaptureURI uri = new RaptureURI(blobUri);
+        BlobRepoConfig repoConfig = Kernel.getRepoCacheManager().getBlobConfig(uri.getAuthority());
+        BlobUpdateObject buo = new BlobUpdateObject(uri, content, contentType);
+        SearchPublisher.publishCreateMessage(context, repoConfig, buo);
     }
 
     @Override

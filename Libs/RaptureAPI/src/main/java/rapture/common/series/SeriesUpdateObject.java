@@ -28,53 +28,42 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import rapture.common.AbstractUpdateObject;
+import rapture.common.RaptureURI;
+import rapture.common.Scheme;
+
 /**
  * Used to update the search repository for new series updates
  * 
  * @author dukenguyen
  *
  */
-public class SeriesUpdateObject {
+public class SeriesUpdateObject extends AbstractUpdateObject {
 
-    private String uri;
     private List<String> keys = new ArrayList<>();
     private List<? extends Object> values = new ArrayList<>();
 
     public SeriesUpdateObject() {
     }
 
+    public SeriesUpdateObject(RaptureURI uri) {
+        super(uri);
+        assert (uri.getScheme() == Scheme.SERIES);
+    }
+
     public SeriesUpdateObject(String uri) {
-        this.uri = uri;
+        super(new RaptureURI(uri, Scheme.SERIES));
     }
 
     public SeriesUpdateObject(String uri, List<String> keys, List<? extends Object> values) {
-        this.uri = uri;
+        super(new RaptureURI(uri, Scheme.SERIES));
         this.keys = keys;
         this.values = values;
-    }
-
-    public String getUri() {
-        return uri;
-    }
-
-    public void setUri(String uri) {
-        this.uri = uri;
-    }
-
-    public List<String> getKeys() {
-        return keys;
-    }
-
-    public void setKeys(List<String> keys) {
-        this.keys = keys;
-    }
-
-    public List<? extends Object> getValues() {
-        return values;
-    }
-
-    public void setValues(List<? extends Object> values) {
-        this.values = values;
+        Map<String, Object> ret = new HashMap<>();
+        for (int i = 0; i < keys.size(); i++) {
+            ret.put(keys.get(i), values.get(i));
+        }
+        this.setPayload(asMap());
     }
 
     public Map<String, Object> asMap() {
