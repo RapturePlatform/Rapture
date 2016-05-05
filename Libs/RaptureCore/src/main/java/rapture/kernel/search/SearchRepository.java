@@ -26,10 +26,9 @@ package rapture.kernel.search;
 import java.util.List;
 import java.util.Map;
 
+import rapture.common.AbstractUpdateObject;
 import rapture.common.RaptureURI;
 import rapture.common.SearchResponse;
-import rapture.common.model.DocumentWithMeta;
-import rapture.common.series.SeriesUpdateObject;
 
 public interface SearchRepository {
 
@@ -37,9 +36,7 @@ public interface SearchRepository {
 
     void start();
 
-    void put(DocumentWithMeta doc);
-
-    void put(SeriesUpdateObject seriesUpdateObject);
+    void put(AbstractUpdateObject updateObject);
 
     SearchResponse search(List<String> types, String query);
 

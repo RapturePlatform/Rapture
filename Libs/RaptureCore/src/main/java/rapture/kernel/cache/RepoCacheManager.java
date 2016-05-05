@@ -28,6 +28,7 @@ import com.google.common.base.Optional;
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
 import rapture.common.SeriesRepoConfig;
+import rapture.common.model.BlobRepoConfig;
 import rapture.common.model.DocumentRepoConfig;
 import rapture.kernel.search.SearchRepository;
 import rapture.object.storage.StorableIndexInfo;
@@ -87,6 +88,10 @@ public class RepoCacheManager {
 
     public BlobRepo getBlobRepo(String authority) {
         return blobRepoCache.getRepo(authority);
+    }
+
+    public BlobRepoConfig getBlobConfig(String authority) {
+        return blobRepoCache.getConfig(authority);
     }
 
     public Repository getDocRepo(String authority) {

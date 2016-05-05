@@ -27,6 +27,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
@@ -38,9 +40,13 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.net.MediaType;
 
+import rapture.common.BlobUpdateObject;
+import rapture.common.DocUpdateObject;
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
+import rapture.common.impl.jackson.JacksonUtil;
 import rapture.common.model.DocumentMetadata;
 import rapture.common.model.DocumentWithMeta;
 import rapture.common.series.SeriesUpdateObject;
@@ -61,14 +67,10 @@ public class ElasticSearchSearchRepositoryTest {
 
     @Test
     public void testEasySearch() {
-        String json = "{" +
-                "\"user\":\"kimchy\"," +
-                "\"postDate\":\"2014-01-30\"," +
-                "\"message\":\"trying out Elasticsearch\"" +
-                "}";
+        String json = "{" + "\"user\":\"kimchy\"," + "\"postDate\":\"2014-01-30\"," + "\"message\":\"trying out Elasticsearch\"" + "}";
         RaptureURI uri = new RaptureURI("document://unittest/doc1", Scheme.DOCUMENT);
         DocumentWithMeta d = createDummyDocumentWithMeta(uri.getFullPath(), json);
-        e.put(d);
+        e.put(new DocUpdateObject(d));
         e.refresh();
         rapture.common.SearchResponse response = e.search(Arrays.asList(SearchRepoType.DOC.toString()), "kimchy");
         assertEquals(1, response.getTotal().longValue());
@@ -122,12 +124,8 @@ public class ElasticSearchSearchRepositoryTest {
         insertTestDocs();
         String query = "*";
         Client c = es.getClient();
-        SearchResponse response = c.prepareSearch().setExplain(false)
-                .setQuery(QueryBuilders.queryStringQuery(query))
-                .setTypes(SearchRepoType.DOC.toString())
-                .setScroll(new TimeValue(60000))
-                .setSize(20)
-                .get();
+        SearchResponse response = c.prepareSearch().setExplain(false).setQuery(QueryBuilders.queryStringQuery(query)).setTypes(SearchRepoType.DOC.toString())
+                .setScroll(new TimeValue(60000)).setSize(20).get();
         rapture.common.SearchResponse ret = e.convert(response);
         assertEquals(response.getHits().getTotalHits(), ret.getTotal().longValue());
         assertEquals(response.getScrollId(), ret.getCursorId());
@@ -146,7 +144,7 @@ public class ElasticSearchSearchRepositoryTest {
     public void testDocPut() {
         String docPath = "dubnation/d2/d1";
         DocumentWithMeta d = createDummyDocumentWithMeta(docPath, "{\"k1\":\"v1\"}");
-        e.put(d);
+        e.put(new DocUpdateObject(d));
         e.refresh();
         rapture.common.SearchResponse r = e.search(Arrays.asList(SearchRepoType.DOC.toString()), "v1");
         assertEquals(1L, r.getTotal().longValue());
@@ -175,7 +173,10 @@ public class ElasticSearchSearchRepositoryTest {
         assertEquals(1L, r.getTotal().longValue());
         assertEquals(1, r.getSearchHits().size());
         assertEquals(SearchRepoType.SERIES.toString(), r.getSearchHits().get(0).getIndexType());
-        assertEquals(docPath, r.getSearchHits().get(0).getId());
+        // getId used to return docPath, now it returns series://docpath -
+        // this new behaviour seems to be consistent with document (see above)
+        // so I'm not considering it to be a regression.
+        assertEquals("series://" + docPath, r.getSearchHits().get(0).getId());
         assertEquals("series://" + docPath, r.getSearchHits().get(0).getUri());
         assertEquals("{\"k1\":\"v1\"}", r.getSearchHits().get(0).getSource());
         s = new SeriesUpdateObject("testme/x/y", Arrays.asList("k2"), Arrays.asList("v2"));
@@ -185,7 +186,10 @@ public class ElasticSearchSearchRepositoryTest {
         assertEquals(1L, r.getTotal().longValue());
         assertEquals(1, r.getSearchHits().size());
         assertEquals(SearchRepoType.SERIES.toString(), r.getSearchHits().get(0).getIndexType());
-        assertEquals(docPath, r.getSearchHits().get(0).getId());
+        // getId used to return docPath, now it returns series://docpath -
+        // this new behaviour seems to be consistent with document (see above)
+        // so I'm not considering it to be a regression.
+        assertEquals("series://" + docPath, r.getSearchHits().get(0).getId());
         assertEquals("series://" + docPath, r.getSearchHits().get(0).getUri());
         assertEquals("{\"k1\":\"v1\",\"k2\":\"v2\"}", r.getSearchHits().get(0).getSource());
 
@@ -193,6 +197,7 @@ public class ElasticSearchSearchRepositoryTest {
         assertEquals(1L, r.getTotal().longValue());
         assertEquals(1, r.getSearchHits().size());
         assertEquals(SearchRepoType.URI.toString(), r.getSearchHits().get(0).getIndexType());
+        // Hmm. Inconsistent.
         assertEquals(docPath, r.getSearchHits().get(0).getId());
         assertEquals("series://" + docPath, r.getSearchHits().get(0).getUri());
         assertEquals("{\"parts\":[\"x\",\"y\"],\"repo\":\"testme\",\"scheme\":\"series\"}", r.getSearchHits().get(0).getSource());
@@ -250,19 +255,90 @@ public class ElasticSearchSearchRepositoryTest {
         assertEquals(0, r.getTotal().longValue());
         r = e.search(Arrays.asList(SearchRepoType.DOC.toString()), "trying out Elasticsearch");
         assertEquals(97, r.getTotal().longValue());
+    }
+
+    @Test
+    public void blob() {
+        String premier = "1,Leicester,36,30,77\n2,Tottenham,36,39,70\n3,Arsenal,36,25,67\n4,Man City,36,30,64\n5,Man Utd,35,12,60\n"
+                + "6,West Ham,35,17,59\n7,Southampton,36,14,57\n8,Liverpool,35,11,55\n9,Chelsea,35,7,48\n10,Stoke,36,-14,48\n"
+                + "11,Everton,35,6,44\n12,Watford,35,-6,44\n13,Swansea,36,-13,43\n14,West Brom,36,-14,41\n15,Bournemouth,36,-20,41\n1"
+                + "6,Crystal Palace,36,-10,39\n17,Newcastle,36,-25,33\n18,Sunderland,35,-18,32\n19,Norwich,35,-26,31\n20,Aston Villa,36,-45,16\n";
+
+        String championship = "1,Burnley,45,34,90\n2,Middlesbrough,45,32,88\n3,Brighton,45,30,88\n4,Hull,45,30,80\n"
+                + "5,Derby,45,24,78\n6,Sheff Wed,45,22,74\n7,Cardiff,45,5,67\n8,Ipswich,45,1,66\n9,Birmingham,45,4,62\n"
+                + "10,Brentford,45,1,62\n11,Preston,45,0,61\n12,Leeds,45,-8,58\n13,QPR,45,-1,57\n14,Wolves,45,-6,55\n"
+                + "15,Blackburn,45,-2,52\n16,Reading,45,-5,52\n17,Nottm Forest,45,-5,52\n18,Bristol City,45,-16,52\n19,Huddersfield,45,-7,51\n"
+                + "20,Rotherham,45,-14,49\n21,Fulham,45,-14,48\n22,Charlton,45,-37,40\n23,MK Dons,45,-29,39\n24,Bolton,45,-39,30\n";
+
+        // @SuppressWarnings("unchecked")
+        // ImmutableList<ImmutableList<String>> leagueList = ImmutableList.of(
+        // ImmutableList.of("1", "Leicester", "36", "30", "77"),
+        // ImmutableList.of("2", "Tottenham", "36", "39", "70"),
+        // ImmutableList.of("3", "Arsenal", "36", "25", "67"),
+        // ImmutableList.of("4", "Man City", "36", "30", "64"),
+        // ImmutableList.of("5", "Man Utd", "35", "12", "60"),
+        // ImmutableList.of("6", "West Ham", "35", "17", "59"),
+        // ImmutableList.of("7", "Southampton", "36", "14", "57"),
+        // ImmutableList.of("8", "Liverpool", "35", "11", "55"),
+        // ImmutableList.of("9", "Chelsea", "35", "7", "48"),
+        // ImmutableList.of("10", "Stoke", "36", "-14", "48"),
+        // ImmutableList.of("11", "Everton", "35", "6", "44"),
+        // ImmutableList.of("12", "Watford", "35", "-6", "44"),
+        // ImmutableList.of("13", "Swansea", "36", "-13", "43"),
+        // ImmutableList.of("14", "West Brom", "36", "-14", "41"),
+        // ImmutableList.of("15", "Bournemouth", "36", "-20", "41"),
+        // ImmutableList.of("16", "Crystal Palace", "36", "-10", "39"),
+        // ImmutableList.of("17", "Newcastle", "36", "-25", "33"),
+        // ImmutableList.of("18", "Sunderland", "35", "-18", "32"),
+        // ImmutableList.of("19", "Norwich", "35", "-26", "31"),
+        // ImmutableList.of("20", "Aston Villa", "36", "-45", "16"));
+        // String leagueJson = JacksonUtil.jsonFromObject(leagueList);
+
+        // Unfortunately it seems that ElasticSearch requires a JSON document.
+        // It won't accept a JSON list or a CSV. So we have to munge it.
+
+        // This is a minimal PDF. Next step is to have one with data in it and show that we can index the contents
+        String minimalPdf = "%PDF-1.0\n"
+                + "1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj 2 0 obj<</Type/Pages/Kids[3 0 R]/Count 1>>endobj 3 0 obj<</Type/Page/MediaBox[0 0 3 3]>>endobj\n"
+                + "xref\n" + "0 4\n" + "0000000000 65535 f\n" + "0000000010 00000 n\n" + "0000000053 00000 n\n" + "0000000102 00000 n\n"
+                + "trailer<</Size 4/Root 1 0 R>>\n" + "startxref\n" + "149\n" + "%EOF\n";
+
+        Map<String, String> copout = new HashMap<>();
+        copout.put("premier", premier);
+        String leagueJson = JacksonUtil.jsonFromObject(copout);
+        RaptureURI epl = new RaptureURI.Builder(Scheme.BLOB, "unittest").docPath("English/Premier").build();
+        e.put(new BlobUpdateObject(epl, leagueJson.getBytes(), MediaType.JSON_UTF_8.toString()));
+
+        RaptureURI champ = new RaptureURI.Builder(Scheme.BLOB, "unittest").docPath("English/Championship").build();
+        e.put(new BlobUpdateObject(champ, championship.getBytes(), MediaType.CSV_UTF_8.toString()));
+
+        RaptureURI firstDiv = new RaptureURI.Builder(Scheme.BLOB, "unittest").docPath("English/First").build();
+        e.put(new BlobUpdateObject(firstDiv, minimalPdf.getBytes(), MediaType.PDF.toString()));
+
+        rapture.common.SearchResponse r = e.searchForRepoUris(Scheme.BLOB.toString(), epl.getAuthority(), null);
+        assertEquals(3L, r.getTotal().longValue());
+        assertEquals(3, r.getSearchHits().size());
+        assertEquals(SearchRepoType.URI.toString(), r.getSearchHits().get(0).getIndexType());
+        assertEquals(epl.getShortPath(), r.getSearchHits().get(0).getId());
+        assertEquals(epl.toString(), r.getSearchHits().get(0).getUri());
+        assertEquals("{\"parts\":[\"English\",\"Premier\"],\"repo\":\"" + epl.getAuthority() + "\",\"scheme\":\"blob\"}", r.getSearchHits().get(0).getSource());
+        r = e.searchForRepoUris(Scheme.BLOB.toString(), epl.getAuthority(), null);
+        assertEquals(3, r.getSearchHits().size());
+        assertEquals(SearchRepoType.URI.toString(), r.getSearchHits().get(0).getIndexType());
+        assertEquals(epl.getShortPath(), r.getSearchHits().get(0).getId());
+        assertEquals(epl.toString(), r.getSearchHits().get(0).getUri());
+        assertEquals("{\"parts\":[\"English\",\"Premier\"],\"repo\":\"" + epl.getAuthority() + "\",\"scheme\":\"blob\"}", r.getSearchHits().get(0).getSource());
+
+        // So far we haven't demonstrated that we can search inside a blob, which is kind of the point
 
     }
 
     private void insertTestDocs() {
         for (int i = 0; i < 100; i++) {
-            String json = "{" +
-                    "\"user\":\"user" + i + "\"," +
-                    "\"postDate\":\"2014-01-30\"," +
-                    "\"message\":\"trying out Elasticsearch\"" +
-                    "}";
+            String json = "{" + "\"user\":\"user" + i + "\"," + "\"postDate\":\"2014-01-30\"," + "\"message\":\"trying out Elasticsearch\"" + "}";
             RaptureURI uri = new RaptureURI("document://unittest/doc" + i, Scheme.DOCUMENT);
             DocumentWithMeta d = createDummyDocumentWithMeta(uri.getFullPath(), json);
-            e.put(d);
+            e.put(new DocUpdateObject(d));
         }
         e.refresh();
     }
