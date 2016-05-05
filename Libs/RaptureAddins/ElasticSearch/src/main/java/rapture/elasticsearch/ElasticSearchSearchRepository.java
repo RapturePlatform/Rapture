@@ -23,10 +23,14 @@
  */
 package rapture.elasticsearch;
 
+import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
+
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -40,13 +44,19 @@ import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.common.unit.TimeValue;
+import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 
+import com.google.common.net.MediaType;
+
+import rapture.common.AbstractUpdateObject;
 import rapture.common.ConnectionInfo;
+import rapture.common.DocUpdateObject;
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
 import rapture.common.connection.ConnectionType;
+import rapture.common.exception.RaptNotSupportedException;
 import rapture.common.exception.RaptureExceptionFactory;
 import rapture.common.impl.jackson.JacksonUtil;
 import rapture.common.model.DocumentWithMeta;
@@ -87,46 +97,69 @@ public class ElasticSearchSearchRepository implements SearchRepository {
     private Client ensureClient() {
         if (client == null) {
             start();
-            return client;
         }
         return client;
     }
 
     @Override
-    public void put(DocumentWithMeta docMeta) {
-        RaptureURI indexUri = null;
-        if (docMeta.getMetaData().getSemanticUri().length() > 0) {
-            indexUri = new RaptureURI(docMeta.getMetaData().getSemanticUri());
-        } else {
-            indexUri = new RaptureURI(docMeta.getDisplayName(), Scheme.DOCUMENT);
-        }
-        String uri = indexUri.toString();
-        log.info("URI for indexing is " + uri);
-        putUriStore(uri, Scheme.DOCUMENT);
-        ensureClient().prepareIndex(index, SearchRepoType.DOC.toString(), uri).setSource(docMeta.getContent()).get();
-        String meta = JacksonUtil.jsonFromObject(docMeta.getMetaData());
-        ensureClient().prepareIndex(index, SearchRepoType.META.toString(), uri).setSource(meta).get();
-    }
-
-    @Override
-    public void put(SeriesUpdateObject seriesUpdateObject) {
-        String uri = seriesUpdateObject.getUri();
-        putUriStore(uri, Scheme.SERIES);
-        Map<String, Object> map = seriesUpdateObject.asMap();
-        if (!map.isEmpty()) {
-            synchronized (client) {
-                ensureClient().prepareUpdate(index, SearchRepoType.SERIES.toString(), uri).setDoc(map).setUpsert(map)
-                        .setRetryOnConflict(DEFAULT_RETRY_ON_CONFLICT).get();
+    public void put(AbstractUpdateObject updateObject) {
+        RaptureURI uri = updateObject.getUri();
+        log.info("URI for indexing is " + uri.toString());
+        putUriStore(uri);
+        switch (uri.getScheme()) {
+        case DOCUMENT:
+            DocumentWithMeta docMeta = ((DocUpdateObject) updateObject).getDoc();
+            ensureClient().prepareIndex(index, SearchRepoType.DOC.toString(), uri.toString()).setSource(docMeta.getContent()).get();
+            String meta = JacksonUtil.jsonFromObject(docMeta.getMetaData());
+            ensureClient().prepareIndex(index, SearchRepoType.META.toString(), uri.toString()).setSource(meta).get();
+            break;
+        case SERIES:
+            Map<String, Object> map = ((SeriesUpdateObject) updateObject).asMap();
+            if (!map.isEmpty()) {
+                synchronized (client) {
+                    ensureClient().prepareUpdate(index, SearchRepoType.SERIES.toString(), uri.toString()).setDoc(map).setUpsert(map)
+                            .setRetryOnConflict(DEFAULT_RETRY_ON_CONFLICT).get();
+                }
             }
+            break;
+        case BLOB:
+            byte[] content = (byte[]) updateObject.getPayload();
+            /**
+             * You have to give ElasticSearch a JSON document. We can determine what it is by checking updateObject.getMimeType()
+             **/
+
+            /**
+             * Do we need to index the blob's mime type and metadata too?
+             */
+            String contentStr = null;
+            if (updateObject.getMimeType().equals(MediaType.PDF.toString())) {
+                String data64 = org.elasticsearch.common.Base64.encodeBytes(content);
+                try {
+                    XContentBuilder source = jsonBuilder().startObject().field("file", data64).endObject();
+                    ensureClient().prepareIndex(index, SearchRepoType.BLOB.toString(), uri.toString()).setSource(source).get();
+                } catch (IOException e) {
+                    throw RaptureExceptionFactory.create("Cannot index PDF", e);
+                }
+            } else {
+                if (updateObject.getMimeType().equals(MediaType.CSV_UTF_8.toString())) {
+                    Map<String, String> copout = new HashMap<>();
+                    copout.put("content", new String(content));
+                    contentStr = JacksonUtil.jsonFromObject(copout);
+                } else contentStr = new String(content);
+                ensureClient().prepareIndex(index, SearchRepoType.BLOB.toString(), uri.toString()).setSource(contentStr).get();
+            }
+
+            break;
+        default:
+            throw new RaptNotSupportedException("Indexing not yet supported for " + uri.getScheme());
         }
     }
 
-    private void putUriStore(String uriStr, Scheme scheme) {
-        RaptureURI uri = new RaptureURI(uriStr, scheme);
+    private void putUriStore(RaptureURI uri) {
         SimpleURI uriStore = new SimpleURI();
         uriStore.setParts(Arrays.asList(uri.getDocPath().split("/")));
         uriStore.setRepo(uri.getAuthority());
-        uriStore.setScheme(scheme.toString());
+        uriStore.setScheme(uri.getScheme().toString());
         ensureClient().prepareIndex(index, SearchRepoType.URI.toString(), uri.getShortPath()).setSource(JacksonUtil.jsonFromObject(uriStore)).get();
     }
 
@@ -143,6 +176,9 @@ public class ElasticSearchSearchRepository implements SearchRepository {
             ensureClient().prepareDelete(index, SearchRepoType.DOC.toString(), uri.toString()).get();
             ensureClient().prepareDelete(index, SearchRepoType.META.toString(), uri.toString()).get();
             break;
+        case BLOB:
+            ensureClient().prepareDelete(index, SearchRepoType.BLOB.toString(), uri.getShortPath()).get();
+            break;
         default:
             log.warn("Called remove() on an unsupported scheme: " + uri.getScheme().toString());
             break;
@@ -152,9 +188,7 @@ public class ElasticSearchSearchRepository implements SearchRepository {
 
     @Override
     public void dropIndexForRepo(String repoName) {
-        // Now the way we can find out the documents to delete is
-        // to do a search for "repo:repoName" which will return us
-        // the URI search hits
+        // Now the way we can find out the documents to delete is to do a search for "repo:repoName" which will return us the URI search hits
         // We delete those, and can replace URI with META and DOC to delete in the other tables too
         // ensureClient().prepare
 
@@ -180,13 +214,8 @@ public class ElasticSearchSearchRepository implements SearchRepository {
     public rapture.common.SearchResponse searchWithCursor(List<String> types, String cursorId, int size, String query) {
         SearchResponse response;
         if (StringUtils.isBlank(cursorId)) {
-            response = ensureClient().prepareSearch()
-                    .setQuery(QueryBuilders.queryStringQuery(query))
-                    .setScroll(new TimeValue(CURSOR_KEEPALIVE))
-                    .setIndices(index)
-                    .setTypes(types.toArray(new String[types.size()]))
-                    .setSize(size)
-                    .get();
+            response = ensureClient().prepareSearch().setQuery(QueryBuilders.queryStringQuery(query)).setScroll(new TimeValue(CURSOR_KEEPALIVE))
+                    .setIndices(index).setTypes(types.toArray(new String[types.size()])).setSize(size).get();
         } else {
             response = ensureClient().prepareSearchScroll(cursorId).setScroll(new TimeValue(CURSOR_KEEPALIVE)).get();
         }
@@ -224,11 +253,22 @@ public class ElasticSearchSearchRepository implements SearchRepository {
      * @return
      */
     String getUri(String type, String id, Map<String, Object> map) {
-        Scheme scheme = Scheme.DOCUMENT;
-        if (type.equals(SearchRepoType.SERIES.toString())) {
-            scheme = Scheme.SERIES;
-        } else if (type.equals(SearchRepoType.URI.toString())) {
-            scheme = Scheme.getScheme(map.get("scheme").toString().toUpperCase());
+        Scheme scheme = Scheme.getScheme(map.get("scheme").toString());
+
+        if (scheme == null) {
+            switch (SearchRepoType.valueOf(type)) {
+            case META:
+            case URI:
+            case DOC:
+                scheme = Scheme.DOCUMENT;
+                break;
+            case SERIES:
+                scheme = Scheme.SERIES;
+                break;
+            case BLOB:
+                scheme = Scheme.SERIES;
+                break;
+            }
         }
         return new RaptureURI(id, scheme).toShortString();
     }
@@ -265,9 +305,7 @@ public class ElasticSearchSearchRepository implements SearchRepository {
             instanceName = "default";
         }
 
-        Map<String, ConnectionInfo> map = Kernel.getSys().getConnectionInfo(
-                ContextFactory.getKernelUser(),
-                ConnectionType.ES.toString());
+        Map<String, ConnectionInfo> map = Kernel.getSys().getConnectionInfo(ContextFactory.getKernelUser(), ConnectionType.ES.toString());
         connectionInfo = map.get(instanceName);
         if (connectionInfo == null) {
             throw RaptureExceptionFactory.create("Elastic search for instance " + instanceName + " is not defined.");

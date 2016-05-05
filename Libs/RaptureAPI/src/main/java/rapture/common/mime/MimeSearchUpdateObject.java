@@ -1,9 +1,9 @@
 package rapture.common.mime;
 
+import rapture.common.AbstractUpdateObject;
 import rapture.common.RaptureTransferObject;
 import rapture.common.RaptureURI;
 import rapture.common.model.DocumentWithMeta;
-import rapture.common.series.SeriesUpdateObject;
 
 /**
  * Created by yanwang on 3/15/16. Updated by AM
@@ -15,8 +15,12 @@ public class MimeSearchUpdateObject implements RaptureTransferObject {
     }
 
     private ActionType type;
+
+    // TODO These should be one interface
+    @Deprecated
     private DocumentWithMeta doc;
-    private SeriesUpdateObject seriesUpdateObject;
+    private AbstractUpdateObject updateObject;
+
     private RaptureURI uri;
     private String repo;
     private String searchRepo;
@@ -27,14 +31,6 @@ public class MimeSearchUpdateObject implements RaptureTransferObject {
 
     public void setType(ActionType type) {
         this.type = type;
-    }
-
-    public DocumentWithMeta getDoc() {
-        return doc;
-    }
-
-    public void setDoc(DocumentWithMeta doc) {
-        this.doc = doc;
     }
 
     public static String getMimeType() {
@@ -49,12 +45,12 @@ public class MimeSearchUpdateObject implements RaptureTransferObject {
         this.searchRepo = searchRepo;
     }
 
-    public SeriesUpdateObject getSeriesUpdateObject() {
-        return seriesUpdateObject;
+    public AbstractUpdateObject getUpdateObject() {
+        return updateObject;
     }
 
-    public void setSeriesUpdateObject(SeriesUpdateObject seriesUpdateObject) {
-        this.seriesUpdateObject = seriesUpdateObject;
+    public void setUpdateObject(AbstractUpdateObject updateObject) {
+        this.updateObject = updateObject;
     }
 
     public RaptureURI getUri() {

@@ -28,10 +28,8 @@ public class RaptureSearchUpdateHandler implements QueueHandler {
 
             switch (payload.getType()) {
             case CREATE:
-                if (payload.getDoc() != null) {
-                    Kernel.getSearch().getTrusted().writeSearchEntry(payload.getSearchRepo(), payload.getDoc());
-                } else if (payload.getSeriesUpdateObject() != null) {
-                    Kernel.getSearch().getTrusted().writeSearchEntry(payload.getSearchRepo(), payload.getSeriesUpdateObject());
+                if (payload.getUpdateObject() != null) {
+                    Kernel.getSearch().getTrusted().writeSearchEntry(payload.getSearchRepo(), payload.getUpdateObject());
                 } else {
                     log.error("Empty payload.  Doing nothing.");
                 }
