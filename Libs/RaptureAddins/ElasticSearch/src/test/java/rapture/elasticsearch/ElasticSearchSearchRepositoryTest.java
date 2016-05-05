@@ -25,6 +25,7 @@ package rapture.elasticsearch;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -258,17 +259,17 @@ public class ElasticSearchSearchRepositoryTest {
     }
 
     @Test
-    public void blob() {
-        String premier = "1,Leicester,36,30,77\n2,Tottenham,36,39,70\n3,Arsenal,36,25,67\n4,Man City,36,30,64\n5,Man Utd,35,12,60\n"
-                + "6,West Ham,35,17,59\n7,Southampton,36,14,57\n8,Liverpool,35,11,55\n9,Chelsea,35,7,48\n10,Stoke,36,-14,48\n"
-                + "11,Everton,35,6,44\n12,Watford,35,-6,44\n13,Swansea,36,-13,43\n14,West Brom,36,-14,41\n15,Bournemouth,36,-20,41\n1"
-                + "6,Crystal Palace,36,-10,39\n17,Newcastle,36,-25,33\n18,Sunderland,35,-18,32\n19,Norwich,35,-26,31\n20,Aston Villa,36,-45,16\n";
+    public void testSearchBlob() {
+        String premier = "1,Leicester City,36,30,77\n2,Tottenham Hotspur,36,39,70\n3,Arsenal,36,25,67\n4,Manchester City,36,30,64\n5,Manchester United,35,12,60\n"
+                + "6,West Ham United,35,17,59\n7,Southampton,36,14,57\n8,Liverpool,35,11,55\n9,Chelsea,35,7,48\n10,Stoke City,36,-14,48\n"
+                + "11,Everton,35,6,44\n12,Watford,35,-6,44\n13,Swansea City,36,-13,43\n14,West Bromwich Albion,36,-14,41\n15,Bournemouth,36,-20,41\n1"
+                + "6,Crystal Palace,36,-10,39\n17,Newcastle United,36,-25,33\n18,Sunderland,35,-18,32\n19,Norwich City,35,-26,31\n20,Aston Villa,36,-45,16\n";
 
-        String championship = "1,Burnley,45,34,90\n2,Middlesbrough,45,32,88\n3,Brighton,45,30,88\n4,Hull,45,30,80\n"
-                + "5,Derby,45,24,78\n6,Sheff Wed,45,22,74\n7,Cardiff,45,5,67\n8,Ipswich,45,1,66\n9,Birmingham,45,4,62\n"
-                + "10,Brentford,45,1,62\n11,Preston,45,0,61\n12,Leeds,45,-8,58\n13,QPR,45,-1,57\n14,Wolves,45,-6,55\n"
-                + "15,Blackburn,45,-2,52\n16,Reading,45,-5,52\n17,Nottm Forest,45,-5,52\n18,Bristol City,45,-16,52\n19,Huddersfield,45,-7,51\n"
-                + "20,Rotherham,45,-14,49\n21,Fulham,45,-14,48\n22,Charlton,45,-37,40\n23,MK Dons,45,-29,39\n24,Bolton,45,-39,30\n";
+        String championship = "1,Burnley,45,34,90\n2,Middlesbrough,45,32,88\n3,Brighton & Hove Albion,45,30,88\n4,Hull City,45,30,80\n"
+                + "5,Derby County,45,24,78\n6,Sheffield Wednesday,45,22,74\n7,Cardiff City,45,5,67\n8,Ipswich Town,45,1,66\n9,Birmingham City,45,4,62\n"
+                + "10,Brentford,45,1,62\n11,Preston North End,45,0,61\n12,Leeds United,45,-8,58\n13,Queens Park Rangers,45,-1,57\n14,Wolverhampton Wanderers,45,-6,55\n"
+                + "15,Blackburn Rovers,45,-2,52\n16,Reading,45,-5,52\n17,Nottingham Forest,45,-5,52\n18,Bristol City,45,-16,52\n19,Huddersfield Town,45,-7,51\n"
+                + "20,Rotherham United,45,-14,49\n21,Fulham,45,-14,48\n22,Charlton Athletic,45,-37,40\n23,Milton Keynes Dons,45,-29,39\n24,Bolton Wanderers,45,-39,30\n";
 
         // @SuppressWarnings("unchecked")
         // ImmutableList<ImmutableList<String>> leagueList = ImmutableList.of(
@@ -315,6 +316,12 @@ public class ElasticSearchSearchRepositoryTest {
         RaptureURI firstDiv = new RaptureURI.Builder(Scheme.BLOB, "unittest").docPath("English/First").build();
         e.put(new BlobUpdateObject(firstDiv, minimalPdf.getBytes(), MediaType.PDF.toString()));
 
+        try {
+            Thread.sleep(3000);
+            // Indexing happens in a separate thread so give it a chance
+        } catch (InterruptedException e1) {
+
+        }
         rapture.common.SearchResponse r = e.searchForRepoUris(Scheme.BLOB.toString(), epl.getAuthority(), null);
         assertEquals(3L, r.getTotal().longValue());
         assertEquals(3, r.getSearchHits().size());
@@ -331,6 +338,19 @@ public class ElasticSearchSearchRepositoryTest {
 
         // So far we haven't demonstrated that we can search inside a blob, which is kind of the point
 
+        String query = "*City";
+        rapture.common.SearchResponse res = e.searchWithCursor(Arrays.asList(SearchRepoType.BLOB.toString()), null, 10, query);
+        assertNotNull(res.getCursorId());
+        // The PDF has no data yet so shouldn't match
+        assertEquals(2, res.getSearchHits().size());
+        assertNotNull(res.getMaxScore());
+
+        // Can we assume anything about the ordering?
+
+        for (int i = 0; i < res.getSearchHits().size(); i++) {
+            rapture.common.SearchHit hit = res.getSearchHits().get(i);
+            assertTrue(hit.getUri().startsWith("blob://unittest/English/"));
+        }
     }
 
     private void insertTestDocs() {

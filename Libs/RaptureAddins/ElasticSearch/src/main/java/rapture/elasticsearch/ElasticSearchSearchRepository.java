@@ -253,7 +253,12 @@ public class ElasticSearchSearchRepository implements SearchRepository {
      * @return
      */
     String getUri(String type, String id, Map<String, Object> map) {
-        Scheme scheme = Scheme.getScheme(map.get("scheme").toString());
+        Scheme scheme = null;
+
+        if (map != null) {
+            Object schemeName = map.get("scheme");
+            if (schemeName != null) scheme = Scheme.getScheme(schemeName.toString());
+        }
 
         if (scheme == null) {
             switch (SearchRepoType.valueOf(type)) {
