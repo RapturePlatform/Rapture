@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package rapture.kernel.jar;
+package rapture.common.jar;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -36,8 +36,7 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
 import rapture.common.BlobContainer;
-import rapture.common.CallingContext;
-import rapture.kernel.Kernel;
+import rapture.common.api.ScriptingApi;
 
 /**
  * Cache all the jar entries by jarUri --> map of (className to className bytes). Classloaders require access to individual classnames so have them ready for
@@ -57,12 +56,12 @@ public enum JarCache {
         return INSTANCE;
     }
 
-    public Map<String, byte[]> get(CallingContext ctx, String jarUri) throws ExecutionException {
+    public Map<String, byte[]> get(ScriptingApi api, String jarUri) throws ExecutionException {
         return cache.get(jarUri, new Callable<Map<String, byte[]>>() {
             @Override
             public Map<String, byte[]> call() throws Exception {
                 log.info(String.format("Cache miss, loading classes for jar [%s]", jarUri));
-                BlobContainer bc = Kernel.getJar().getJar(ctx, jarUri);
+                BlobContainer bc = api.getJar().getJar(jarUri);
                 if (bc == null) {
                     throw new ExecutionException(String.format("No jar found at uri [%s]", jarUri), null);
                 }
@@ -75,12 +74,12 @@ public enum JarCache {
         });
     }
 
-    public byte[] getClassBytes(CallingContext ctx, String jarUri, String className) throws ExecutionException {
-        return get(ctx, jarUri).get(className);
+    public byte[] getClassBytes(ScriptingApi api, String jarUri, String className) throws ExecutionException {
+        return get(api, jarUri).get(className);
     }
 
-    public List<String> getClassNames(CallingContext ctx, String jarUri) throws ExecutionException {
-        return new ArrayList<>(get(ctx, jarUri).keySet());
+    public List<String> getClassNames(ScriptingApi api, String jarUri) throws ExecutionException {
+        return new ArrayList<>(get(api, jarUri).keySet());
     }
 
     public void put(String jarUri, Map<String, byte[]> classNamesToBytes) {

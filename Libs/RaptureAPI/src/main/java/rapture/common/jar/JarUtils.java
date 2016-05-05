@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package rapture.kernel.jar;
+package rapture.common.jar;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -35,9 +35,10 @@ import java.util.Map;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 
-import rapture.common.CallingContext;
 import rapture.common.RaptureFolderInfo;
-import rapture.kernel.Kernel;
+import rapture.common.RaptureURI;
+import rapture.common.Scheme;
+import rapture.common.api.ScriptingApi;
 
 /**
  * General purpose jar-related methods go in here
@@ -77,13 +78,14 @@ public class JarUtils {
         return name.replace("/", ".");
     }
 
-    public static List<String> expandWildcardUri(CallingContext ctx, String jarUri) {
-        if (!jarUri.trim().endsWith("*")) {
+    public static List<String> expandWildcardUri(ScriptingApi api, String jarUriStr) {
+        String jarUri = new RaptureURI(jarUriStr, Scheme.JAR).toString();
+        if (!jarUri.endsWith("*")) {
             return Arrays.asList(jarUri);
         }
         List<String> ret = new ArrayList<>();
         String prefix = jarUri.substring(0, jarUri.indexOf("*"));
-        Map<String, RaptureFolderInfo> jars = Kernel.getJar().listJarsByUriPrefix(ctx, prefix, 1);
+        Map<String, RaptureFolderInfo> jars = api.getJar().listJarsByUriPrefix(prefix, 1);
         for (Map.Entry<String, RaptureFolderInfo> entry : jars.entrySet()) {
             if (entry.getValue().isFolder()) {
                 continue;

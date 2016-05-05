@@ -1,11 +1,11 @@
-package rapture.kernel.jar;
+package rapture.common.jar;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import org.apache.log4j.Logger;
 
-import rapture.common.CallingContext;
+import rapture.common.api.ScriptingApi;
 
 /**
  * Load all jars referenced in the Rapture jar uris first before consulting the jars in the parent
@@ -19,8 +19,8 @@ public class ChildFirstClassLoader extends AbstractClassLoader {
 
     private ClassLoader system;
 
-    public ChildFirstClassLoader(ClassLoader parent, CallingContext ctx, List<String> jarUris) throws ExecutionException {
-        super(parent, ctx, jarUris);
+    public ChildFirstClassLoader(ClassLoader parent, ScriptingApi api, List<String> jarUris) throws ExecutionException {
+        super(parent, api, jarUris);
         system = getSystemClassLoader();
     }
 
@@ -36,13 +36,13 @@ public class ChildFirstClassLoader extends AbstractClassLoader {
             try {
                 c = findClass(name);
             } catch (ClassNotFoundException e) {
-                log.debug("Not found in local", e);
+                log.debug("Not found in local");
             }
             if (c == null) {
                 try {
                     c = super.loadClass(name, resolve);
                 } catch (ClassNotFoundException e) {
-                    log.debug("Not found in parent", e);
+                    log.debug("Not found in parent");
                 }
                 if (c == null) {
                     if (system != null) {

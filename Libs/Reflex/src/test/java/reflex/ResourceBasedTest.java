@@ -253,7 +253,7 @@ public class ResourceBasedTest {
         runTestForWithApi(fileName, api, new ReflexScriptDataHandler(api));
     }
 
-    protected void runTestForWithApi(String fileName, ScriptingApi api, IReflexDataHandler dataHandler) throws RecognitionException {
+    protected String runTestForWithApi(String fileName, ScriptingApi api, IReflexDataHandler dataHandler) throws RecognitionException {
         ReflexLexer lexer = new ReflexLexer();
         lexer.setCharStream(new ANTLRStringStream(getResourceAsString(this, fileName)));
         CommonTokenStream tokens = new CommonTokenStream(lexer);
@@ -267,6 +267,6 @@ public class ResourceBasedTest {
         walker.getReflexHandler().setDataHandler(dataHandler);
 
         ReflexNode returned = walker.walk();
-        System.out.println(returned == null ? "null" : returned.evaluateWithoutScope(new ReflexPrintingDebugger()));
+        return returned.evaluateWithoutScope(new ReflexPrintingDebugger()).asString();
     }
 }

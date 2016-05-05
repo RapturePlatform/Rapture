@@ -245,7 +245,7 @@ importStatement returns [ReflexNode node]
     CommonTree ahead = (CommonTree) input.LT(1);
     int line = ahead.getToken().getLine();
 }
-  : ^(IMPORT l=Identifier ^(IMPORTAS alias=Identifier?) ^(IMPORTPARAMS params=exprList?)) { node = new ImportNode(line, handler, currentScope, importHandler, $l.text, $alias.text, $exprList.e); }
+  : ^(IMPORT l=Identifier ^(IMPORTAS alias=Identifier?) ^(IMPORTPARAMS params=exprList?) ^(IMPORTFROM jarUris=jarUriList?)) { node = new ImportNode(line, handler, currentScope, importHandler, $l.text, $alias.text, $exprList.e, $jarUris.jarUris); }
   ;
 
 port returns [ReflexNode node]
@@ -518,6 +518,17 @@ mapdef returns [ReflexNode node]
     int line = ahead.getToken().getLine();
 }
   : ^(MAPDEF keyValList?) { node = new MapNode(line, handler,currentScope,  $keyValList.e); }
+  ;
+
+jarUriList returns [java.util.List<String> jarUris]
+@init {
+   jarUris = new java.util.ArrayList<String>();
+}
+  :  ^(JARURI_LIST (jarUri { jarUris.add($jarUri.uri); })+)
+  ;
+
+jarUri returns [String uri]
+  :  ^(JARURI (j=String | j=QuotedString)) { $uri = $j.text; }
   ;
 
 keyValList returns [java.util.List<ReflexNode> e]

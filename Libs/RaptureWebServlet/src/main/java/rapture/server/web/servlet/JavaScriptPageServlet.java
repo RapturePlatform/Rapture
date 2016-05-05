@@ -29,7 +29,6 @@ import java.net.URLDecoder;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -52,6 +51,9 @@ import rapture.server.BaseDispatcher;
  * Created by yanwang on 6/3/15.
  */
 public class JavaScriptPageServlet extends BaseServlet {
+
+    private static final long serialVersionUID = 8271972998410468347L;
+
     private static Logger logger = Logger.getLogger(JavaScriptPageServlet.class);
 
     private String scriptPrefix;
@@ -80,11 +82,16 @@ public class JavaScriptPageServlet extends BaseServlet {
     @Override
     public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
         Map<String, String> parameterMap = new HashMap<>();
-        Properties props = getParams(req);
-        for (Object k : props.keySet()) {
-            String key = k.toString();
-            String val = URLDecoder.decode(props.getProperty(key), "UTF-8");
-            parameterMap.put(key, val);
+        Map<String, Object> props = getParams(req);
+        for (String key : props.keySet()) {
+            Object val = props.get(key);
+            String valStr = null;
+            if (val instanceof String) {
+                valStr = URLDecoder.decode((String) val, "UTF-8");
+            } else if (val != null) {
+                valStr = val.toString();
+            }
+            parameterMap.put(key, valStr);
         }
         process(parameterMap, req, resp);
     }

@@ -35,6 +35,7 @@ import org.junit.Before;
 
 import rapture.common.CallingContext;
 import rapture.common.dp.AbstractInvocable;
+import rapture.common.jar.AbstractClassLoader;
 import rapture.kernel.ContextFactory;
 import rapture.kernel.Kernel;
 

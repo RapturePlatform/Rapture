@@ -30,13 +30,19 @@ import java.util.concurrent.ExecutionException;
 
 import org.junit.Test;
 
+import rapture.common.jar.ChildFirstClassLoader;
+import rapture.kernel.ContextFactory;
+import rapture.kernel.script.KernelScript;
+
 public class ChildFirstClassLoaderTest extends AbstractClassLoaderTest {
 
     @Test
     public void testClassLoader() throws ClassNotFoundException, InstantiationException, IllegalAccessException, IOException, IllegalArgumentException,
             InvocationTargetException, NoSuchMethodException, SecurityException, ExecutionException {
-        ChildFirstClassLoader cl1 = new ChildFirstClassLoader(this.getClass().getClassLoader(), ctx, Arrays.asList(JAR_URI1, JAR_URI2));
-        ChildFirstClassLoader cl2 = new ChildFirstClassLoader(this.getClass().getClassLoader(), ctx, Arrays.asList(JAR_URI1, JAR_URI2));
+        KernelScript ks = new KernelScript();
+        ks.setCallingContext(ContextFactory.getKernelUser());
+        ChildFirstClassLoader cl1 = new ChildFirstClassLoader(this.getClass().getClassLoader(), ks, Arrays.asList(JAR_URI1, JAR_URI2));
+        ChildFirstClassLoader cl2 = new ChildFirstClassLoader(this.getClass().getClassLoader(), ks, Arrays.asList(JAR_URI1, JAR_URI2));
         testClassLoader(cl1, cl2);
     }
 }

@@ -46,11 +46,11 @@ import org.apache.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
 
-import rapture.common.CallingContext;
 import rapture.common.RaptureFolderInfo;
-import rapture.common.api.JarApi;
 import rapture.common.exception.RaptureException;
-import rapture.kernel.jar.JarCache;
+import rapture.common.jar.JarCache;
+import rapture.kernel.script.KernelScript;
+import rapture.kernel.script.ScriptJar;
 
 public class JarApiImplTest {
 
@@ -59,24 +59,25 @@ public class JarApiImplTest {
     private static final String SAMPLE_JAR_URI = "jar://testjar.jar";
     private static final byte[] SAMPLE_JAR = "Wesa got a grand army. That’s why you no liking us meesa thinks.".getBytes();
 
-    private JarApi jarApi;
-    private CallingContext ctx = ContextFactory.getKernelUser();
+    private ScriptJar jarApi;
+    private KernelScript ks = new KernelScript();
     private static final String TEST_JAR_PATH = StringUtils.join(new String[] { "build", "classes", "test" }, File.separator);
 
     @Before
     public void setUp() {
         Kernel.getKernel().restart();
         Kernel.initBootstrap();
-        jarApi = Kernel.getJar();
+        ks.setCallingContext(ContextFactory.getKernelUser());
+        jarApi = ks.getJar();
         Kernel.setCategoryMembership("alpha");
     }
 
     @Test
     public void testJarExists() {
-        assertFalse(jarApi.jarExists(ctx, SAMPLE_JAR_URI));
-        jarApi.putJar(ctx, SAMPLE_JAR_URI, SAMPLE_JAR);
-        assertTrue(jarApi.jarExists(ctx, SAMPLE_JAR_URI));
-        assertFalse(jarApi.jarExists(ctx, "jar://something/i/just/made/up.jar"));
+        assertFalse(jarApi.jarExists(SAMPLE_JAR_URI));
+        jarApi.putJar(SAMPLE_JAR_URI, SAMPLE_JAR);
+        assertTrue(jarApi.jarExists(SAMPLE_JAR_URI));
+        assertFalse(jarApi.jarExists("jar://something/i/just/made/up.jar"));
     }
 
     @Test
@@ -86,50 +87,50 @@ public class JarApiImplTest {
             return;
         }
         String uri = "jar://mytest/testjar1.jar";
-        jarApi.putJar(ctx, uri, testJar);
-        assertArrayEquals(testJar, jarApi.getJar(ctx, uri).getContent());
+        jarApi.putJar(uri, testJar);
+        assertArrayEquals(testJar, jarApi.getJar(uri).getContent());
     }
 
     @Test
     public void testDeleteJar() {
-        jarApi.deleteJar(ctx, SAMPLE_JAR_URI);
-        jarApi.putJar(ctx, SAMPLE_JAR_URI, SAMPLE_JAR);
-        assertTrue(jarApi.jarExists(ctx, SAMPLE_JAR_URI));
-        jarApi.deleteJar(ctx, SAMPLE_JAR_URI);
-        assertFalse(jarApi.jarExists(ctx, SAMPLE_JAR_URI));
+        jarApi.deleteJar(SAMPLE_JAR_URI);
+        jarApi.putJar(SAMPLE_JAR_URI, SAMPLE_JAR);
+        assertTrue(jarApi.jarExists(SAMPLE_JAR_URI));
+        jarApi.deleteJar(SAMPLE_JAR_URI);
+        assertFalse(jarApi.jarExists(SAMPLE_JAR_URI));
     }
 
     @Test
     public void testGetJarSize() {
-        assertEquals(-1L, (long) jarApi.getJarSize(ctx, SAMPLE_JAR_URI));
-        jarApi.putJar(ctx, SAMPLE_JAR_URI, SAMPLE_JAR);
-        assertEquals(SAMPLE_JAR.length, (long) jarApi.getJarSize(ctx, SAMPLE_JAR_URI));
+        assertEquals(-1L, (long) jarApi.getJarSize(SAMPLE_JAR_URI));
+        jarApi.putJar(SAMPLE_JAR_URI, SAMPLE_JAR);
+        assertEquals(SAMPLE_JAR.length, (long) jarApi.getJarSize(SAMPLE_JAR_URI));
     }
 
     @Test
     public void testGetJarMetaData() throws ExecutionException {
-        assertTrue(jarApi.getJarMetaData(ctx, SAMPLE_JAR_URI).isEmpty());
-        jarApi.putJar(ctx, SAMPLE_JAR_URI, SAMPLE_JAR);
-        Map<String, String> metaData = jarApi.getJarMetaData(ctx, SAMPLE_JAR_URI);
+        assertTrue(jarApi.getJarMetaData(SAMPLE_JAR_URI).isEmpty());
+        jarApi.putJar(SAMPLE_JAR_URI, SAMPLE_JAR);
+        Map<String, String> metaData = jarApi.getJarMetaData(SAMPLE_JAR_URI);
         assertEquals(new Integer(SAMPLE_JAR.length).toString(), metaData.get("Content-Length"));
         assertEquals(JarApiImpl.CONTENT_TYPE, metaData.get("Content-Type"));
-        assertTrue(JarCache.getInstance().get(ctx, SAMPLE_JAR_URI).isEmpty());
+        assertTrue(JarCache.getInstance().get(ks, SAMPLE_JAR_URI).isEmpty());
     }
 
     @Test
     public void testListJarsByUriPrefix() {
         try {
-            jarApi.listJarsByUriPrefix(ctx, "jar://bogus", -1);
+            jarApi.listJarsByUriPrefix("jar://bogus", -1);
             fail("Should have thrown error since this doesn't exist");
         } catch (RaptureException e) {
         }
 
-        jarApi.putJar(ctx, "jar://folder1/jar-1.jar", SAMPLE_JAR);
-        jarApi.putJar(ctx, "jar://folder1/jar-2.jar", SAMPLE_JAR);
-        jarApi.putJar(ctx, "jar://folder1/folder2/jar-3.jar", SAMPLE_JAR);
-        jarApi.putJar(ctx, "jar://folder1/folder2/jar-4.jar", SAMPLE_JAR);
+        jarApi.putJar("jar://folder1/jar-1.jar", SAMPLE_JAR);
+        jarApi.putJar("jar://folder1/jar-2.jar", SAMPLE_JAR);
+        jarApi.putJar("jar://folder1/folder2/jar-3.jar", SAMPLE_JAR);
+        jarApi.putJar("jar://folder1/folder2/jar-4.jar", SAMPLE_JAR);
 
-        Map<String, RaptureFolderInfo> folderMap = jarApi.listJarsByUriPrefix(ctx, "jar://folder1", -1);
+        Map<String, RaptureFolderInfo> folderMap = jarApi.listJarsByUriPrefix("jar://folder1", -1);
         assertEquals(5, folderMap.size());
 
         // Make sure hyphens are properly decoded for FILE repos (there are other special chars,
@@ -139,10 +140,10 @@ public class JarApiImplTest {
         assertTrue(folderMap.containsKey("jar://folder1/folder2/jar-3.jar"));
         assertTrue(folderMap.containsKey("jar://folder1/folder2/jar-4.jar"));
 
-        folderMap = jarApi.listJarsByUriPrefix(ctx, "jar://folder1/folder2", -1);
+        folderMap = jarApi.listJarsByUriPrefix("jar://folder1/folder2", -1);
         assertEquals(2, folderMap.size());
 
-        folderMap = jarApi.listJarsByUriPrefix(ctx, "jar://folder1", 1);
+        folderMap = jarApi.listJarsByUriPrefix("jar://folder1", 1);
         assertEquals(3, folderMap.size());
     }
 

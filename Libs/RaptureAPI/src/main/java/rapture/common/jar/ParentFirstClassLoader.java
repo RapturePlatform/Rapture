@@ -21,12 +21,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package rapture.kernel.jar;
+package rapture.common.jar;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import rapture.common.CallingContext;
+import rapture.common.api.ScriptingApi;
 
 /**
  * Load all jars in the parent first, then the Rapture jar uris last
@@ -36,7 +36,7 @@ import rapture.common.CallingContext;
  */
 public class ParentFirstClassLoader extends AbstractClassLoader {
 
-    public ParentFirstClassLoader(ClassLoader parent, CallingContext ctx, List<String> jarUris) throws ExecutionException {
-        super(parent, ctx, jarUris);
+    public ParentFirstClassLoader(ClassLoader parent, ScriptingApi api, List<String> jarUris) throws ExecutionException {
+        super(parent, api, jarUris);
     }
 }
