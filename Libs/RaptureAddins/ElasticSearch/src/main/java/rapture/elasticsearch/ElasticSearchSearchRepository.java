@@ -271,7 +271,7 @@ public class ElasticSearchSearchRepository implements SearchRepository {
                 scheme = Scheme.SERIES;
                 break;
             case BLOB:
-                scheme = Scheme.SERIES;
+                scheme = Scheme.BLOB;
                 break;
             }
         }
