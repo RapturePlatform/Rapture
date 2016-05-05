@@ -49,7 +49,7 @@ println("Standard Rapture Core _startup");
 
 
 // Create exchange information if it does not exist for the kernel pipeline
-xDomainName = "main"; 
+xDomainName = "main";
 #pipeline.registerExchangeDomain("//" + xDomainName,_cfg.DefaultExchange());
 
 // Create a topic exchange for internal subscription
@@ -58,6 +58,13 @@ xDomainName = "main";
 categories = _cfg.Categories();
 for category in categories.split(",") do
     #pipeline.setupStandardCategory(category);
+end
+
+if _cfg.FullTextSearchOn() do
+	if !#search.searchRepoExists(_cfg.FullTextSearchDefaultRepo()) do
+	   println("Creating search repo " + _cfg.FullTextSearchDefaultRepo());
+	   #search.createSearchRepo(_cfg.FullTextSearchDefaultRepo(), _cfg.FullTextSearchDefaultConfig());
+	end
 end
 
 // Register a kernel notification handler if one is not setup
@@ -85,7 +92,7 @@ if _cfg.SystemBlobConfigOn() do
       println("System blob repo does not exist, creating...");
       #blob.createBlobRepo(systemBlobRepo, _cfg.DefaultSystemBlobConfig(), _cfg.DefaultSystemBlobFoldersConfig());
    end
-end  
+end
 
 if (!#audit.doesAuditLogExist("//workflow")) do
      println("Workflow log does not exist, creating...");
@@ -107,11 +114,3 @@ end
 #async.setupDefaultWorkflows(false);
 
 #event.addEventMessage("//event/alert", 'application/vnd.rapture.event.alert', 'alpha', {});
-
-if _cfg.FullTextSearchOn() do
-	if !#search.searchRepoExists(_cfg.FullTextSearchDefaultRepo()) do
-	   println("Creating search repo " + _cfg.FullTextSearchDefaultRepo());
-	   #search.createSearchRepo(_cfg.FullTextSearchDefaultRepo(), _cfg.FullTextSearchDefaultConfig());
-	end
-end
-
