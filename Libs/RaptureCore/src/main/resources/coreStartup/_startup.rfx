@@ -109,6 +109,7 @@ if _cfg.FullTextSearchOn() do
 	   println("Creating search repo " + _cfg.FullTextSearchDefaultRepo());
 	   #search.createSearchRepo(_cfg.FullTextSearchDefaultRepo(), _cfg.FullTextSearchDefaultConfig());
 	end
+	#search.startSearchRepos();
 end
 
 #async.setupDefaultWorkflows(false);

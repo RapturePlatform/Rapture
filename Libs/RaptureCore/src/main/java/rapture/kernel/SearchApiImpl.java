@@ -118,7 +118,6 @@ public class SearchApiImpl extends KernelBase implements SearchApi {
         rbc.setAuthority(interimUri.getAuthority());
         SearchRepoConfigStorage.add(rbc, context.getUser(), "create repo");
         logger.info("Created search repository config for uri: " + searchRepoUri);
-        startSearchRepos();
     }
 
     @Override
@@ -258,25 +257,26 @@ public class SearchApiImpl extends KernelBase implements SearchApi {
         }
     }
 
+    /**
+     * We need to start all the search repos at startup
+     */
+    @Override
+    public void startSearchRepos(CallingContext context) {
+        if (ConfigLoader.getConf().FullTextSearchOn) {
+            List<SearchRepoConfig> configs = getSearchRepoConfigs(context);
+            for (SearchRepoConfig config : configs) {
+                getRepoOrFail(config.getAuthority()).start();
+            }
+            Kernel.getPipeline().setupStandardCategory(context, PipelineConstants.CATEGORY_SEARCH);
+            Kernel.setCategoryMembership(PipelineConstants.CATEGORY_SEARCH);
+        }
+    }
+
     private SearchRepository getRepoOrFail(String searchRepoUri) {
         return getRepoOrFail(new RaptureURI(searchRepoUri, Scheme.SEARCH));
     }
 
     private SearchRepository getRepoFromCache(String authority) {
         return Kernel.getRepoCacheManager().getSearchRepo(authority);
-    }
-
-    /**
-     * We need to start all the search repos at startup
-     */
-    private void startSearchRepos() {
-        if (ConfigLoader.getConf().FullTextSearchOn) {
-            List<SearchRepoConfig> configs = getSearchRepoConfigs(ContextFactory.getKernelUser());
-            for (SearchRepoConfig config : configs) {
-                getRepoOrFail(config.getAuthority()).start();
-            }
-            Kernel.getPipeline().setupStandardCategory(ContextFactory.getKernelUser(), PipelineConstants.CATEGORY_SEARCH);
-            Kernel.setCategoryMembership(PipelineConstants.CATEGORY_SEARCH);
-        }
     }
 }
