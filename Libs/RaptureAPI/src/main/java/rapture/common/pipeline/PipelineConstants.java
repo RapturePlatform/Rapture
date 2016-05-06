@@ -40,4 +40,5 @@ public class PipelineConstants {
     public static final String CATEGORY_RUNNER = "runners";
     public static final String CATEGORY_APPMANAGER = "appManagers";
     public static final String CATEGORY_DATACAPTURE = "dataCapture";
+    public static final String CATEGORY_SEARCH = "search";
 }

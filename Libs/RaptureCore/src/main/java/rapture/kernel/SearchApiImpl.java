@@ -45,6 +45,7 @@ import rapture.common.exception.RaptureExceptionFactory;
 import rapture.common.model.DocumentWithMeta;
 import rapture.common.model.SearchRepoConfig;
 import rapture.common.model.SearchRepoConfigStorage;
+import rapture.common.pipeline.PipelineConstants;
 import rapture.common.series.SeriesUpdateObject;
 import rapture.config.ConfigLoader;
 import rapture.kernel.pipeline.SearchPublisher;
@@ -117,6 +118,7 @@ public class SearchApiImpl extends KernelBase implements SearchApi {
         rbc.setAuthority(interimUri.getAuthority());
         SearchRepoConfigStorage.add(rbc, context.getUser(), "create repo");
         logger.info("Created search repository config for uri: " + searchRepoUri);
+        startSearchRepos();
     }
 
     @Override
@@ -267,12 +269,14 @@ public class SearchApiImpl extends KernelBase implements SearchApi {
     /**
      * We need to start all the search repos at startup
      */
-    public void startSearchRepos() {
+    private void startSearchRepos() {
         if (ConfigLoader.getConf().FullTextSearchOn) {
             List<SearchRepoConfig> configs = getSearchRepoConfigs(ContextFactory.getKernelUser());
             for (SearchRepoConfig config : configs) {
                 getRepoOrFail(config.getAuthority()).start();
             }
+            Kernel.getPipeline().setupStandardCategory(ContextFactory.getKernelUser(), PipelineConstants.CATEGORY_SEARCH);
+            Kernel.setCategoryMembership(PipelineConstants.CATEGORY_SEARCH);
         }
     }
 }
