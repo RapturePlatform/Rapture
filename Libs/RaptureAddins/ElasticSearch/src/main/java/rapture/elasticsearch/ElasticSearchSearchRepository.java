@@ -25,17 +25,23 @@ package rapture.elasticsearch;
 
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.SwingWorker;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.apache.tika.Tika;
+import org.apache.tika.detect.EmptyDetector;
+import org.apache.tika.exception.TikaException;
+import org.apache.tika.parser.pdf.PDFParser;
 import org.elasticsearch.action.ActionFuture;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
 import org.elasticsearch.action.admin.indices.refresh.RefreshResponse;
@@ -56,6 +62,7 @@ import rapture.common.DocUpdateObject;
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
 import rapture.common.connection.ConnectionType;
+import rapture.common.exception.ExceptionToString;
 import rapture.common.exception.RaptNotSupportedException;
 import rapture.common.exception.RaptureExceptionFactory;
 import rapture.common.impl.jackson.JacksonUtil;
@@ -101,6 +108,8 @@ public class ElasticSearchSearchRepository implements SearchRepository {
         return client;
     }
 
+    static Tika tikaPDF = new Tika(new EmptyDetector(), new PDFParser());
+
     @Override
     public void put(AbstractUpdateObject updateObject) {
         RaptureURI uri = updateObject.getUri();
@@ -125,30 +134,38 @@ public class ElasticSearchSearchRepository implements SearchRepository {
         case BLOB:
             byte[] content = (byte[]) updateObject.getPayload();
             /**
-             * You have to give ElasticSearch a JSON document. We can determine what it is by checking updateObject.getMimeType()
-             **/
-
-            /**
-             * Do we need to index the blob's mime type and metadata too?
+             * You have to give ElasticSearch a JSON document. We can determine what it is by checking updateObject.getMimeType() Do we need to index the blob's
+             * mime type and any other metadata too?
              */
-            String contentStr = null;
-            if (updateObject.getMimeType().equals(MediaType.PDF.toString())) {
-                String data64 = org.elasticsearch.common.Base64.encodeBytes(content);
-                try {
-                    XContentBuilder source = jsonBuilder().startObject().field("file", data64).endObject();
-                    ensureClient().prepareIndex(index, SearchRepoType.BLOB.toString(), uri.toString()).setSource(source).get();
-                } catch (IOException e) {
-                    throw RaptureExceptionFactory.create("Cannot index PDF", e);
-                }
-            } else {
-                if (updateObject.getMimeType().equals(MediaType.CSV_UTF_8.toString())) {
-                    Map<String, String> copout = new HashMap<>();
-                    copout.put("content", new String(content));
-                    contentStr = JacksonUtil.jsonFromObject(copout);
-                } else contentStr = new String(content);
-                ensureClient().prepareIndex(index, SearchRepoType.BLOB.toString(), uri.toString()).setSource(contentStr).get();
-            }
 
+            // Tika can handle other types too, but at present all we really care about are blobs and CSVs
+            if (updateObject.getMimeType().equals(MediaType.PDF.toString())) {
+                // Tika can take a while so do it in the background
+                new SwingWorker() {
+                    @Override
+                    protected Object doInBackground() throws Exception {
+                        try {
+                            String contentStr = tikaPDF.parseToString(new ByteArrayInputStream(content));
+                            XContentBuilder source = jsonBuilder().startObject().field("blob", contentStr).endObject();
+                            ensureClient().prepareIndex(index, SearchRepoType.BLOB.toString(), uri.toString()).setSource(source).get();
+                        } catch (IOException | TikaException e) {
+                            log.error("Cannot index PDF " + e.getMessage());
+                            log.debug(ExceptionToString.format(e));
+                            throw RaptureExceptionFactory.create("Cannot index PDF " + e.getMessage(), e);
+                        }
+                        return null;
+                    }
+                }.execute();
+            } else {
+                try {
+                    XContentBuilder source = jsonBuilder().startObject().field("blob", new String(content)).endObject();
+                    ensureClient().prepareIndex(index, SearchRepoType.BLOB.toString(), uri.toString()).setSource(source).get();
+                } catch (IOException ioe) {
+                    log.error("Cannot index CSV " + ioe.getMessage());
+                    log.debug(ExceptionToString.format(ioe));
+                    throw RaptureExceptionFactory.create("Cannot index blob " + ioe.getMessage(), ioe);
+                }
+            }
             break;
         default:
             throw new RaptNotSupportedException("Indexing not yet supported for " + uri.getScheme());

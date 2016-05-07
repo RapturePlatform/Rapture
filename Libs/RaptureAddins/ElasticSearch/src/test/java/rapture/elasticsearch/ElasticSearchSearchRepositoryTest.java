@@ -26,7 +26,11 @@ package rapture.elasticsearch;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -47,6 +51,7 @@ import rapture.common.BlobUpdateObject;
 import rapture.common.DocUpdateObject;
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
+import rapture.common.exception.ExceptionToString;
 import rapture.common.impl.jackson.JacksonUtil;
 import rapture.common.model.DocumentMetadata;
 import rapture.common.model.DocumentWithMeta;
@@ -309,12 +314,31 @@ public class ElasticSearchSearchRepositoryTest {
         String leagueJson = JacksonUtil.jsonFromObject(copout);
         RaptureURI epl = new RaptureURI.Builder(Scheme.BLOB, "unittest").docPath("English/Premier").build();
         e.put(new BlobUpdateObject(epl, leagueJson.getBytes(), MediaType.JSON_UTF_8.toString()));
+        // e.put(new BlobUpdateObject(epl, premier.getBytes(), MediaType.JSON_UTF_8.toString()));
 
         RaptureURI champ = new RaptureURI.Builder(Scheme.BLOB, "unittest").docPath("English/Championship").build();
         e.put(new BlobUpdateObject(champ, championship.getBytes(), MediaType.CSV_UTF_8.toString()));
 
-        RaptureURI firstDiv = new RaptureURI.Builder(Scheme.BLOB, "unittest").docPath("English/First").build();
-        e.put(new BlobUpdateObject(firstDiv, minimalPdf.getBytes(), MediaType.PDF.toString()));
+
+        // Try reading a real PDF from a file
+
+        File pdf = new File("src/test/resources/www-bbc-com.pdf");
+        try {
+            byte[] content = Files.readAllBytes(pdf.toPath());
+            RaptureURI firstDiv = new RaptureURI.Builder(Scheme.BLOB, "unittest").docPath("English/First").build();
+            e.put(new BlobUpdateObject(firstDiv, content, MediaType.PDF.toString()));
+        } catch (IOException e2) {
+            fail(pdf.getAbsolutePath() + " : " + ExceptionToString.format(e2));
+        }
+
+        File pdf2 = new File("src/test/resources/HelloWorld.pdf");
+        try {
+            byte[] content = Files.readAllBytes(pdf2.toPath());
+            RaptureURI hello = new RaptureURI.Builder(Scheme.BLOB, "Hello").docPath("Hello/Wurld").build();
+            e.put(new BlobUpdateObject(hello, content, MediaType.PDF.toString()));
+        } catch (IOException e3) {
+            fail(pdf2.getAbsolutePath() + " : " + ExceptionToString.format(e3));
+        }
 
         try {
             Thread.sleep(3000);
@@ -336,9 +360,9 @@ public class ElasticSearchSearchRepositoryTest {
         assertEquals(epl.toString(), r.getSearchHits().get(0).getUri());
         assertEquals("{\"parts\":[\"English\",\"Premier\"],\"repo\":\"" + epl.getAuthority() + "\",\"scheme\":\"blob\"}", r.getSearchHits().get(0).getSource());
 
-        // So far we haven't demonstrated that we can search inside a blob, which is kind of the point
+        // Search inside the blob
 
-        String query = "*City";
+        String query = "blob:*City";
         rapture.common.SearchResponse res = e.searchWithCursor(Arrays.asList(SearchRepoType.BLOB.toString()), null, 10, query);
         assertNotNull(res.getCursorId());
         // The PDF has no data yet so shouldn't match
@@ -351,6 +375,16 @@ public class ElasticSearchSearchRepositoryTest {
             rapture.common.SearchHit hit = res.getSearchHits().get(i);
             assertTrue(hit.getUri().startsWith("blob://unittest/English/"));
         }
+
+        query = "blob:*Wigan*";
+        res = e.searchWithCursor(Arrays.asList(SearchRepoType.BLOB.toString()), null, 10, query);
+        assertNotNull(res.getCursorId());
+        assertEquals(1, res.getSearchHits().size());
+
+        query = "blob:*World*";
+        res = e.searchWithCursor(Arrays.asList(SearchRepoType.BLOB.toString()), null, 10, query);
+        assertNotNull(res.getCursorId());
+        assertEquals(1, res.getSearchHits().size());
     }
 
     private void insertTestDocs() {
