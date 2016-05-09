@@ -80,6 +80,9 @@ public class EnvironmentApiImplTest {
         Map<String, String> result = Kernel.getEnvironment().writeByPath(ctx, Arrays.asList(app.toString()), "java.lang:type=Memory/Verbose/true");
         assertEquals(1, result.size());
         assertStatus(result, app.toString());
+        result = Kernel.getEnvironment().writeByPath(ctx, Arrays.asList(app.toString()), "java.lang:type=Memory/Verbose/false");
+        assertEquals(1, result.size());
+        assertStatus(result, app.toString());
     }
 
     @Test
@@ -109,6 +112,14 @@ public class EnvironmentApiImplTest {
                 "   \"mbean\":\"java.lang:type=Memory\",\n" +
                 "   \"attribute\":\"Verbose\",\n" +
                 "   \"value\":\"true\"\n" +
+                "}");
+        assertEquals(1, result.size());
+        assertStatus(result, app.toString());
+        result = Kernel.getEnvironment().writeByJson(ctx, Arrays.asList(app.toString()), "{\n" +
+                "   \"type\":\"write\",\n" +
+                "   \"mbean\":\"java.lang:type=Memory\",\n" +
+                "   \"attribute\":\"Verbose\",\n" +
+                "   \"value\":\"false\"\n" +
                 "}");
         assertEquals(1, result.size());
         assertStatus(result, app.toString());
