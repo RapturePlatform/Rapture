@@ -66,10 +66,10 @@ public class SeriesUpdateObject extends AbstractUpdateObject {
         this.setPayload(asMap());
     }
 
-    public Map<String, Object> asMap() {
-        Map<String, Object> ret = new HashMap<>();
+    public Map<String, String> asStringMap() {
+        Map<String, String> ret = new HashMap<>();
         for (int i = 0; i < keys.size(); i++) {
-            ret.put(keys.get(i), values.get(i));
+            ret.put(keys.get(i), String.valueOf(values.get(i)));
         }
         return ret;
     }

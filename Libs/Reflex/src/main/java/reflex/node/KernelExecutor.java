@@ -93,7 +93,8 @@ public final class KernelExecutor {
                                     ret = im.invoke(api, callParams.toArray());
                                 } catch (InvocationTargetException e) {
                                     // TODO Auto-generated catch block
-                                    throw new ReflexException(lineNumber, String.format("Error in Reflex script at line %d. Call to %s.%s failed: %s", lineNumber, apiName, fnName, e.getMessage()), e);
+                                    throw new ReflexException(lineNumber, String.format("Error in Reflex script at line %d. Call to %s.%s failed: %s",
+                                            lineNumber, apiName, fnName, e.getTargetException().getMessage()), e);
                                 }
                                 ReflexValue retVal = new ReflexNullValue(lineNumber);
                                 if (ret != null) {
