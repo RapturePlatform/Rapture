@@ -179,7 +179,7 @@ public class EnvironmentApiImpl extends KernelBase implements EnvironmentApi {
                             ret.put(entry.getKey(), IOUtils.toString(res.getRawBody()));
                             res.getRawBody().close();
                         } catch (UnirestException | IOException e) {
-                            log.error(String.format("Error accessing %s/read/%s", app.getUrl(), path), e);
+                            log.error(String.format("Error accessing %s/%s", app.getUrl(), path), e);
                             JmxAppCache.getInstance().invalidate();
                         }
                     }
