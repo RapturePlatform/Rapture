@@ -341,11 +341,11 @@ public class ElasticSearchSearchRepositoryTest {
         }
 
         try {
+            // Tika parsing happens in a separate thread so give it a chance
             Thread.sleep(3000);
-            // Indexing happens in a separate thread so give it a chance
         } catch (InterruptedException e1) {
-
         }
+
         rapture.common.SearchResponse r = e.searchForRepoUris(Scheme.BLOB.toString(), epl.getAuthority(), null);
         assertEquals(3L, r.getTotal().longValue());
         assertEquals(3, r.getSearchHits().size());

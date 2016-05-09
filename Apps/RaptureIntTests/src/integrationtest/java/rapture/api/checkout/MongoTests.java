@@ -539,5 +539,13 @@ public class MongoTests {
 
         Assert.assertFalse(doesRepoExist, "Verifying that document repo does not exist");
 
+        // Verify that we can re-create the repo after deleting it
+
+        document.createDocRepo(authUri.toString(), "NREP {} USING MEMORY {}");
+        document.putDoc(docUri, "{\"key\":\"value\"}");
+        document.putDoc(docUri, "{\"key\":\"value\"}");
+        s = document.getDoc(docUri);
+        Assert.assertEquals(s, "{\"key\":\"value\"}");
+
     }
 }

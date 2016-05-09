@@ -34,8 +34,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.SwingWorker;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.tika.Tika;
@@ -123,7 +121,7 @@ public class ElasticSearchSearchRepository implements SearchRepository {
             ensureClient().prepareIndex(index, SearchRepoType.META.toString(), uri.toString()).setSource(meta).get();
             break;
         case SERIES:
-            Map<String, Object> map = ((SeriesUpdateObject) updateObject).asMap();
+            Map<String, String> map = ((SeriesUpdateObject) updateObject).asStringMap();
             if (!map.isEmpty()) {
                 synchronized (client) {
                     ensureClient().prepareUpdate(index, SearchRepoType.SERIES.toString(), uri.toString()).setDoc(map).setUpsert(map)
@@ -141,9 +139,9 @@ public class ElasticSearchSearchRepository implements SearchRepository {
             // Tika can handle other types too, but at present all we really care about are blobs and CSVs
             if (updateObject.getMimeType().equals(MediaType.PDF.toString())) {
                 // Tika can take a while so do it in the background
-                new SwingWorker() {
+                new Thread() {
                     @Override
-                    protected Object doInBackground() throws Exception {
+                    public void run() {
                         try {
                             String contentStr = tikaPDF.parseToString(new ByteArrayInputStream(content));
                             XContentBuilder source = jsonBuilder().startObject().field("blob", contentStr).endObject();
@@ -153,9 +151,8 @@ public class ElasticSearchSearchRepository implements SearchRepository {
                             log.debug(ExceptionToString.format(e));
                             throw RaptureExceptionFactory.create("Cannot index PDF " + e.getMessage(), e);
                         }
-                        return null;
                     }
-                }.execute();
+                }.start();
             } else {
                 try {
                     XContentBuilder source = jsonBuilder().startObject().field("blob", new String(content)).endObject();

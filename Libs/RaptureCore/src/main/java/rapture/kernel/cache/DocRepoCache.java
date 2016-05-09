@@ -26,7 +26,6 @@ package rapture.kernel.cache;
 import java.util.Collections;
 
 import org.antlr.runtime.RecognitionException;
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import rapture.common.Scheme;
@@ -53,7 +52,6 @@ import rapture.repo.Repository;
 public class DocRepoCache extends AbstractStorableRepoCache<DocumentRepoConfig> {
 
     private static final Logger log = Logger.getLogger(AbstractRepoCache.class);
-    public static final String DELETED = "DELETED";
 
     public DocRepoCache() {
         super(Scheme.DOCUMENT.toString());
@@ -63,8 +61,8 @@ public class DocRepoCache extends AbstractStorableRepoCache<DocumentRepoConfig> 
     public DocumentRepoConfig reloadConfig(String authority) {
         DocumentRepoConfig config = DocumentRepoConfigStorage.readByFields(authority);
         if (config != null) {
-            if (StringUtils.equals(DELETED, config.getConfig())) {
-                System.out.println("Config for " + authority + " has been deleted ");
+            if (config.getDeleted()) {
+                log.info("Config for " + authority + " has been deleted ");
                 return null;
             }
             return config;

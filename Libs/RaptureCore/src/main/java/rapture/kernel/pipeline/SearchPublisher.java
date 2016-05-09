@@ -9,9 +9,7 @@ import rapture.common.CallingContext;
 import rapture.common.RapturePipelineTask;
 import rapture.common.RaptureURI;
 import rapture.common.mime.MimeSearchUpdateObject;
-import rapture.common.model.DocumentWithMeta;
 import rapture.common.pipeline.PipelineConstants;
-import rapture.common.series.SeriesUpdateObject;
 import rapture.config.ConfigLoader;
 import rapture.kernel.Kernel;
 import rapture.kernel.search.SearchRepoUtils;
@@ -26,25 +24,6 @@ public class SearchPublisher {
 
     public static String CATEGORY = PipelineConstants.CATEGORY_SEARCH;
 
-    // public static void publishCreateMessage(CallingContext context,
-    // Searchable searchableRepo, DocumentWithMeta doc) {
-    // if (!shouldPublish(searchableRepo, doc.getDisplayName())) {
-    // return;
-    // }
-    // RapturePipelineTask task = new RapturePipelineTask();
-    // task.setCategoryList(ImmutableList.of(CATEGORY));
-    // task.setPriority(2);
-    // task.setContentType(MimeSearchUpdateObject.getMimeType());
-    //
-    // MimeSearchUpdateObject object = new MimeSearchUpdateObject();
-    // object.setSearchRepo(SearchRepoUtils.getSearchRepo(searchableRepo));
-    // object.setType(MimeSearchUpdateObject.ActionType.CREATE);
-    // object.setDoc(doc);
-    // task.addMimeObject(object);
-    //
-    // Kernel.getPipeline().publishMessageToCategory(context, task);
-    // }
-    //
     public static void publishCreateMessage(CallingContext context, Searchable searchableRepo, AbstractUpdateObject updateObject) {
         if (!shouldPublish(searchableRepo, updateObject.getUri())) {
             return;

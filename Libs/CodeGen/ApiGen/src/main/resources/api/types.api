@@ -257,6 +257,7 @@ type DocumentRepoConfig(@package=rapture.common.model) {
     Set<FullTextIndexScriptPair> fullTextIndexes = new HashSet<FullTextIndexScriptPair>();
     String updateQueue;
     RaptureDocConfig documentRepo;
+    Boolean deleted = false;
 }
 
 [Describes config info for a full text search repository.]

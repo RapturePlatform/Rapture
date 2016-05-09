@@ -74,7 +74,6 @@ import rapture.dsl.dparse.AbsoluteVersion;
 import rapture.dsl.dparse.AsOfTimeDirective;
 import rapture.dsl.dparse.BaseDirective;
 import rapture.index.IndexHandler;
-import rapture.kernel.cache.DocRepoCache;
 import rapture.kernel.context.ContextValidator;
 import rapture.kernel.pipeline.SearchPublisher;
 import rapture.kernel.schemes.RaptureScheme;
@@ -93,8 +92,6 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
     private static final String NAME = "Name"; //$NON-NLS-1$
     private static final String IDGEN_AUTHORITY = "documentRepo";
     private TableScriptCache indexScriptCache = new TableScriptCache();
-
-    public static final String DELETED = DocRepoCache.DELETED;
 
     public DocApiImpl(Kernel raptureKernel) {
         super(raptureKernel);
@@ -224,9 +221,9 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
         // DocumentRepoConfigStorage.deleteByAddress(internalUri,
         // context.getUser(), "Drop document repo");
         DocumentRepoConfig drc = DocumentRepoConfigStorage.readByAddress(internalUri);
-        drc.setConfig(DELETED);
+        drc.setDeleted(true);
         DocumentRepoConfigStorage.add(internalUri, drc, context.getUser(), "Mark config as deleted");
-        System.out.println("Config for " + internalUri.toString() + " marked as deleted ");
+        log.info("Config for " + internalUri.toString() + " marked as deleted ");
         removeRepoFromCache(internalUri.getAuthority());
     }
 
@@ -248,7 +245,7 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
             throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, apiMessageCatalog.getMessage("NoDocPath", docRepoUri)); //$NON-NLS-1$
         }
         DocumentRepoConfig documentRepo = DocumentRepoConfigStorage.readByAddress(uri);
-        if ((documentRepo != null) && StringUtils.equals(DELETED, documentRepo.getConfig())) return null;
+        if ((documentRepo != null) && documentRepo.getDeleted()) return null;
         return documentRepo;
 
     }
@@ -261,7 +258,7 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
         do {
             i--;
             DocumentRepoConfig drc = configs.get(i);
-            if (StringUtils.equals(DELETED, drc.getConfig())) configs.remove(i);
+            if (drc.getDeleted()) configs.remove(i);
         } while (i >= 0);
         return configs;
     }
