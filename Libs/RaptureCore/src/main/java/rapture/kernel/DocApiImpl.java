@@ -23,8 +23,6 @@
  */
 package rapture.kernel;
 
-import static rapture.common.Scheme.BLOB;
-
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.Date;
@@ -76,6 +74,7 @@ import rapture.dsl.dparse.AbsoluteVersion;
 import rapture.dsl.dparse.AsOfTimeDirective;
 import rapture.dsl.dparse.BaseDirective;
 import rapture.index.IndexHandler;
+import rapture.kernel.cache.DocRepoCache;
 import rapture.kernel.context.ContextValidator;
 import rapture.kernel.pipeline.SearchPublisher;
 import rapture.kernel.schemes.RaptureScheme;
@@ -94,6 +93,8 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
     private static final String NAME = "Name"; //$NON-NLS-1$
     private static final String IDGEN_AUTHORITY = "documentRepo";
     private TableScriptCache indexScriptCache = new TableScriptCache();
+
+    public static final String DELETED = DocRepoCache.DELETED;
 
     public DocApiImpl(Kernel raptureKernel) {
         super(raptureKernel);
@@ -129,7 +130,7 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
                 apiMessageCatalog.getMessage("CreatedType", new String[] { internalUri.getDocPath(), authority }).format()); //$NON-NLS-1$
 
         // The repo will be created as needed in the cache when accessed the first time
-        log.info("Creating Repository " + docRepoUri);
+        log.info("Creating Repository " + docRepoUri + " with config " + config);
     }
 
     @Override
@@ -217,7 +218,15 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
         }
         // Yeah this is like "delete everything that is prefixed by //docRepoUri
         SearchPublisher.publishDropMessage(context, internalUri.toString());
-        DocumentRepoConfigStorage.deleteByAddress(internalUri, context.getUser(), "Drop document repo");
+        // We can't just delete the repo. If we do then
+        // DocRepoCache.reloadConfig will just create it.
+        // So mark the config as having been deleted.
+        // DocumentRepoConfigStorage.deleteByAddress(internalUri,
+        // context.getUser(), "Drop document repo");
+        DocumentRepoConfig drc = DocumentRepoConfigStorage.readByAddress(internalUri);
+        drc.setConfig(DELETED);
+        DocumentRepoConfigStorage.add(internalUri, drc, context.getUser(), "Mark config as deleted");
+        System.out.println("Config for " + internalUri.toString() + " marked as deleted ");
         removeRepoFromCache(internalUri.getAuthority());
     }
 
@@ -238,12 +247,23 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
         if (uri.hasDocPath()) {
             throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, apiMessageCatalog.getMessage("NoDocPath", docRepoUri)); //$NON-NLS-1$
         }
-        return DocumentRepoConfigStorage.readByAddress(uri);
+        DocumentRepoConfig documentRepo = DocumentRepoConfigStorage.readByAddress(uri);
+        if ((documentRepo != null) && StringUtils.equals(DELETED, documentRepo.getConfig())) return null;
+        return documentRepo;
+
     }
 
     @Override
     public List<DocumentRepoConfig> getDocRepoConfigs(CallingContext context) {
-        return DocumentRepoConfigStorage.readAll();
+        List<DocumentRepoConfig> configs = DocumentRepoConfigStorage.readAll();
+        if ((configs == null) || configs.isEmpty()) return configs;
+        int i = configs.size();
+        do {
+            i--;
+            DocumentRepoConfig drc = configs.get(i);
+            if (StringUtils.equals(DELETED, drc.getConfig())) configs.remove(i);
+        } while (i >= 0);
+        return configs;
     }
 
     @Override
@@ -947,6 +967,7 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
      * Convert DocumentAttribute to XferDocumentAttribute so that it can be passed over the wire using our HTTP interface
      */
     private Function<DocumentAttribute, XferDocumentAttribute> xferFunc = new Function<DocumentAttribute, XferDocumentAttribute>() {
+        @Override
         public XferDocumentAttribute apply(DocumentAttribute in) {
             if (in == null) {
                 return null;
