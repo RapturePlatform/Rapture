@@ -54,7 +54,7 @@ public class AddNode extends BaseNode {
 
         // number + number
         if (a.isInteger() && b.isInteger()) {
-            retVal = new ReflexValue(a.asLong() + b.asLong());
+            retVal = new ReflexValue(a.asInt() + b.asInt());
         } else if (a.isNumber() && b.isNumber()) {
         	BigDecimal bigA = a.asBigDecimal();
         	BigDecimal bigB = b.asBigDecimal();

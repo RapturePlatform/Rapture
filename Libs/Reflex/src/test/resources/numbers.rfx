@@ -1,0 +1,22 @@
+a = 1;
+b = 3;
+c = a / b;
+println(c);
+
+d = a / 2;
+println(d);
+
+e = c + d;
+println(e);
+
+f = c - d;
+println(f);
+
+g = c - d;
+println(g);
+
+h = c * d;
+println(h);
+
+z = a / 0;
+println(z);
