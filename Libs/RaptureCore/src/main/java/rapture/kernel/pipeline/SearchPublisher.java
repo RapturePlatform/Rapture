@@ -9,6 +9,7 @@ import rapture.common.RapturePipelineTask;
 import rapture.common.RaptureURI;
 import rapture.common.mime.MimeSearchUpdateObject;
 import rapture.common.model.DocumentWithMeta;
+import rapture.common.pipeline.PipelineConstants;
 import rapture.common.series.SeriesUpdateObject;
 import rapture.config.ConfigLoader;
 import rapture.kernel.Kernel;
@@ -22,7 +23,7 @@ public class SearchPublisher {
 
     private static final Logger log = Logger.getLogger(SearchPublisher.class);
 
-    public static String CATEGORY = "alpha";
+    public static String CATEGORY = PipelineConstants.CATEGORY_SEARCH;
 
     public static void publishCreateMessage(CallingContext context, Searchable searchableRepo, DocumentWithMeta doc) {
         if (!shouldPublish(searchableRepo, doc.getDisplayName())) {

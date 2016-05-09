@@ -104,14 +104,14 @@ if !#blob.blobRepoExists(systemJarRepo) do
     #blob.createBlobRepo(systemJarRepo, _cfg.DefaultJarRepoConfig(), _cfg.DefaultJarRepoMetaConfig());
 end
 
-#async.setupDefaultWorkflows(false);
-
-#event.addEventMessage("//event/alert", 'application/vnd.rapture.event.alert', 'alpha', {});
-
 if _cfg.FullTextSearchOn() do
 	if !#search.searchRepoExists(_cfg.FullTextSearchDefaultRepo()) do
 	   println("Creating search repo " + _cfg.FullTextSearchDefaultRepo());
 	   #search.createSearchRepo(_cfg.FullTextSearchDefaultRepo(), _cfg.FullTextSearchDefaultConfig());
 	end
+	#search.startSearchRepos();
 end
 
+#async.setupDefaultWorkflows(false);
+
+#event.addEventMessage("//event/alert", 'application/vnd.rapture.event.alert', 'alpha', {});

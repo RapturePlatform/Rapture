@@ -112,7 +112,7 @@ public class ElasticSearchSearchRepository implements SearchRepository {
     public void put(SeriesUpdateObject seriesUpdateObject) {
         String uri = seriesUpdateObject.getUri();
         putUriStore(uri, Scheme.SERIES);
-        Map<String, Object> map = seriesUpdateObject.asMap();
+        Map<String, String> map = seriesUpdateObject.asStringMap();
         if (!map.isEmpty()) {
             synchronized (client) {
                 ensureClient().prepareUpdate(index, SearchRepoType.SERIES.toString(), uri).setDoc(map).setUpsert(map)

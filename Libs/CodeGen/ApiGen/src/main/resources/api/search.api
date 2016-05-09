@@ -48,4 +48,8 @@ api(Search) {
     [This method just drops the search index associated with a repo (authority).  The repoUri passed in must have the scheme as the prefix e.g. document://myrepo or series://myrepo2. It is done asynchronously.]
     @entitle=/repo/write
     @public void dropRepoIndex(String repoUri);
+    
+    [Initialize all search repos]
+    @entitle=/search/admin
+    @public void startSearchRepos();
 }
