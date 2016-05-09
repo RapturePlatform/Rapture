@@ -21,20 +21,30 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package rapture.jmx;
+package rapture.app;
 
-import javax.management.MXBean;
+import org.apache.log4j.Logger;
 
-@MXBean
-public interface RaptureLoggingMXBean {
+import rapture.jmx.JmxServer;
+import rapture.log.LogManager;
+
+/**
+ * @author bardhi
+ * @since 9/16/14.
+ */
+public class RaptureAppService {
+    private static final Logger log = Logger.getLogger(RaptureAppService.class);
 
     /**
-     * Set the level for a logger
+     * Performs the setup steps that are common among all Rapture apps. Specifically, configuring the log appenders and setting up JMX
      *
-     * @param logName
-     *            name of package or class that you are changing the log level for
-     * @param level
-     *            level at which you want to set the logger
+     * @param appName
+     *            The name of the app
      */
-    void setLevel(String logName, String level);
+    public static void setupApp(String appName) {
+        LogManager.configureLogging();
+        log.info(String.format("Starting %s", appName));
+        log.info("==================================");
+        JmxServer.getInstance().start(appName);
+    }
 }

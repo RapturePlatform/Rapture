@@ -21,33 +21,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package rapture.app;
+package rapture.jmx;
 
-import org.apache.log4j.Logger;
+import static org.junit.Assert.assertEquals;
 
-import rapture.jmx.RaptureMBeanServer;
-import rapture.log.LogManager;
+import org.junit.Test;
 
-/**
- * @author bardhi
- * @since 9/16/14.
- */
-public class RaptureAppService {
-    private static final Logger log = Logger.getLogger(RaptureAppService.class);
+public class JmxAppTest {
 
-    /**
-     * Performs the setup steps that are common among all Rapture apps. Specifically, configuring the log appenders and setting up JMX
-     *
-     * @param appName The name of the app
-     */
-    public static void setupApp(String appName) {
-        LogManager.configureLogging();
-        log.info(String.format("Starting %s", appName));
-        log.info("==================================");
-
-        RaptureMBeanServer.initialise(appName);
+    @Test
+    public void testStripLeadingAndTrailingSlash() {
+        JmxApp a = new JmxApp("http://192.168.0.1:7777/test");
+        assertEquals("/xyz", a.stripLeadingAndTrailingSlash("//xyz/"));
+        assertEquals("abc", a.stripLeadingAndTrailingSlash("abc"));
+        assertEquals("abc", a.stripLeadingAndTrailingSlash("   abc/"));
+        assertEquals("name", a.stripLeadingAndTrailingSlash("/name"));
+        assertEquals(null, a.stripLeadingAndTrailingSlash(null));
+        assertEquals("  ", a.stripLeadingAndTrailingSlash("  "));
+        assertEquals("", a.stripLeadingAndTrailingSlash(""));
     }
-
-
-
 }

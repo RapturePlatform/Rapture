@@ -23,18 +23,22 @@
  */
 package rapture.jmx;
 
-import javax.management.MXBean;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
-@MXBean
-public interface RaptureLoggingMXBean {
+import org.junit.Test;
 
-    /**
-     * Set the level for a logger
-     *
-     * @param logName
-     *            name of package or class that you are changing the log level for
-     * @param level
-     *            level at which you want to set the logger
-     */
-    void setLevel(String logName, String level);
+public class JmxServerTest {
+
+    @Test
+    public void testStart() {
+        String appName = "jmxServerTest";
+        JmxServer.getInstance().start(appName);
+        assertTrue(JmxServer.getInstance().isStarted());
+        JmxApp jmxApp = JmxServer.getInstance().getJmxApp();
+        assertEquals(appName, jmxApp.getName());
+        assertTrue(jmxApp.getPort() != 0);
+        assertNotNull(jmxApp.getHost());
+    }
 }

@@ -23,18 +23,35 @@
  */
 package rapture.jmx;
 
-import javax.management.MXBean;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
-@MXBean
-public interface RaptureLoggingMXBean {
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
-    /**
-     * Set the level for a logger
-     *
-     * @param logName
-     *            name of package or class that you are changing the log level for
-     * @param level
-     *            level at which you want to set the logger
-     */
-    void setLevel(String logName, String level);
+import org.junit.Before;
+import org.junit.Test;
+
+public class JmxAppCacheTest {
+
+    @Before
+    public void setup() {
+        if (!JmxServer.getInstance().isStarted()) {
+            JmxServer.getInstance().start("jmxServerTest");
+        }
+    }
+
+    @Test
+    public void testCache() throws InterruptedException, ExecutionException {
+        Map<String, JmxApp> apps = JmxAppCache.getInstance().get();
+        JmxApp localApp = JmxServer.getInstance().getJmxApp();
+        assertNotNull(localApp);
+        JmxApp fetchedApp = apps.get(localApp.toString());
+        assertNotNull(fetchedApp);
+        assertEquals(localApp.getName(), fetchedApp.getName());
+        assertEquals(localApp.getPort(), fetchedApp.getPort());
+        assertEquals(localApp.getHost(), fetchedApp.getHost());
+        assertEquals(localApp.getUrl(), fetchedApp.getUrl());
+    }
+
 }

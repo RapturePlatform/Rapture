@@ -26,6 +26,40 @@ api(Environment) {
   [Returns the last reported state for each server in the network. This includes a numerical status, a human readable message, and a Date object indicating the time that the status was last updated.]
   @entitle=/env/common
   @public List(RaptureServerStatus) getServerStatus();
+  
+  [Get the memory information, such as RAM available or heap memory used, for the app names given.  Passing in null or an empty list will retrieve information for all known Rapture nodes in the cluster.  Returns a map of app identifiers to the associated information in json format.]
+  @entitle=/env/read
+  @public Map<String, String> getMemoryInfo(List<String> appNames);
+  
+  [Get the operating system information, such as CPUs and Average Load, for the app names given.  Passing in null or an empty list will retrieve information for all known Rapture nodes in the cluster.  Returns a map of app identifiers to the associated information in json format.]
+  @entitle=/env/read
+  @public Map<String, String> getOperatingSystemInfo(List<String> appNames);
+  
+  [Get the threading information, such as thread names, thread counts, and thread IDs, for the app names given.  Passing in null or an empty list will retrieve information for all known Rapture nodes in the cluster.  Returns a map of app identifiers to the associated information in json format.]
+  @entitle=/env/read
+  @public Map<String, String> getThreadInfo(List<String> appNames);
+  
+  [Performs a read operation for the user-supplied path for the app names given.  Passing in null or an empty list will retrieve information for all known Rapture nodes in the cluster.  Returns a map of app identifiers to the associated information in json format.]
+  @entitle=/env/read
+  @public Map<String, String> readByPath(List<String> appNames, String path);
+  
+  [Performs a write operation for the user-supplied path for the app names given.  Passing in null or an empty list will perform the write for all known Rapture nodes in the cluster.  Returns a map of app identifiers to the associated information in json format.]
+  @entitle=/env/write
+  @public Map<String, String> writeByPath(List<String> appNames, String path);
+  
+  [Performs an exec operation for the user-supplied path for the app names given.  Passing in null or an empty list will perform the exec for all known Rapture nodes in the cluster.  Returns a map of app identifiers to the associated information in json format.]
+  @entitle=/env/exec
+  @public Map<String, String> execByPath(List<String> appNames, String path);
+  
+  [Performs a read operation for the user-supplied json for the app names given.  Passing in null or an empty list will retrieve information for all known Rapture nodes in the cluster.  Returns a map of app identifiers to the associated information in json format.]
+  @entitle=/env/read
+  @public Map<String, String> readByJson(List<String> appNames, String json);
+  
+  [Performs a write operation for the user-supplied json for the app names given.  Passing in null or an empty list will perform the write for all known Rapture nodes in the cluster.  Returns a map of app identifiers to the associated information in json format.]
+  @entitle=/env/write
+  @public Map<String, String> writeByJson(List<String> appNames, String json);
+  
+  [Performs an exec operation for the user-supplied json for the app names given.  Passing in null or an empty list will perform the exec for all known Rapture nodes in the cluster.  Returns a map of app identifiers to the associated information in json format.]
+  @entitle=/env/exec
+  @public Map<String, String> execByJson(List<String> appNames, String json);
 }
-
-
