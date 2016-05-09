@@ -18,5 +18,10 @@ println(g);
 h = c * d;
 println(h);
 
-z = a / 0;
-println(z);
+try do
+    z = a / 0;
+    assert(false);
+end
+catch e do 
+   println("Expected exception");
+end
