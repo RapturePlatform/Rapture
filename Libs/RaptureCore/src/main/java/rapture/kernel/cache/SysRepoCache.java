@@ -115,7 +115,7 @@ public class SysRepoCache extends AbstractStorableRepoCache<RepoConfig> {
         Repository newRepo = RepoFactory.getRepo(configStr);
         addRepo(config.getStoragePath(), config, newRepo);
     }
-    
+
     private static Map<String, String[]> defaultUsers = new HashMap<>();
     public static final String APIUSER = "raptureApi";
     public static final String APIPASSWORD = "raptivating";
@@ -137,13 +137,6 @@ public class SysRepoCache extends AbstractStorableRepoCache<RepoConfig> {
             log.debug("Creating user "+user.getKey()+ " with " +
                     ((RAPTUREUSER.equals(password) || APIPASSWORD.equals(password)) ? "default settings" : "randomized password"));
             addUser(rapUser);
-        }
-    }
-    
-    static public void setDefaultUserPassword(String user, String password) {
-        String[] params = defaultUsers.get(user);
-        if (params != null) {
-            params[0] = password;
         }
     }
 
