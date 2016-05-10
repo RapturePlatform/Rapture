@@ -53,7 +53,10 @@ public class MulNode extends BaseNode {
 
         // number * number
         if (a.isInteger() && b.isInteger()) {
-            retVal = new ReflexValue(a.asLong() * b.asLong());
+            // If it'll fit as an integer keep it as an integer otherwise make it a long
+            Long longer = a.asLong() * b.asLong();
+            int lint = longer.intValue();
+            retVal = new ReflexValue((longer == lint) ? lint : longer);
         } else if (a.isNumber() && b.isNumber()) {
         	BigDecimal bigA = a.asBigDecimal();
         	BigDecimal bigB = b.asBigDecimal();

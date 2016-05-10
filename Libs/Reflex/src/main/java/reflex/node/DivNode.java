@@ -48,12 +48,24 @@ public class DivNode extends BaseNode {
         ReflexValue a = lhs.evaluate(debugger, scope);
         ReflexValue b = rhs.evaluate(debugger, scope);
 
+        if (b.equals(0)) {
+            throwError("division by zero", lhs, rhs, a, b);
+        }
         // number / number
         if (a.isNumber() && b.isNumber()) {
-        	BigDecimal bigA = a.asBigDecimal();
-        	BigDecimal bigB = b.asBigDecimal();
-        	BigDecimal product = bigA.divide(bigB);
-        	ReflexValue retVal = new ReflexValue((product.equals(product.longValue())) ? product.longValue() : product);
+            ReflexValue retVal;
+            try {
+                BigDecimal bigA = a.asBigDecimal();
+                BigDecimal bigB = b.asBigDecimal();
+                BigDecimal product = bigA.divide(bigB);
+                try {
+                    retVal = new ReflexValue(product.intValueExact());
+                } catch (ArithmeticException e) {
+                    retVal = new ReflexValue(product);
+                }
+            } catch (ArithmeticException e) {
+                retVal = new ReflexValue(a.asDouble() / b.asDouble());
+            }
             debugger.stepEnd(this, retVal, null);
             return retVal;
         }

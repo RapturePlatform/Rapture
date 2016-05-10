@@ -486,13 +486,11 @@ public class ReflexValue implements Comparable<ReflexValue> {
         if (this.getValue() == Internal.VOID) {
             throw new ReflexException(-1, "can't use VOID: " + this + " ==/!= " + o);
         }
-        if (this == o) {
-            return true;
-        }
-        if (o == null || !(o instanceof ReflexValue)) {
-            return false;
-        }
-        ReflexValue that = (ReflexValue) o;
+        if (o == null) return false;
+        if (this == o) return true;
+
+        ReflexValue that = (o instanceof ReflexValue) ? (ReflexValue) o : new ReflexValue(o);
+
         if (this.isInteger() && that.isInteger()) {
             return this.asLong().equals(that.asLong());
         } else if (this.isNumber() && that.isNumber()) {

@@ -51,7 +51,7 @@ public class SubNode extends BaseNode {
 
         // number - number
         if (a.isInteger() && b.isInteger()) {
-        	ret = new ReflexValue(a.asLong() - b.asLong());
+            ret = new ReflexValue(a.asInt() - b.asInt());
         } else if (a.isNumber() && b.isNumber()) {
         	ret = new ReflexValue(a.asBigDecimal().subtract(b.asBigDecimal()));
         } else if (a.isDate() && b.isNumber()) {
