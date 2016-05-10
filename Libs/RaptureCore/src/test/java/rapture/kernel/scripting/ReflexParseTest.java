@@ -26,6 +26,7 @@ package rapture.kernel.scripting;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -73,12 +74,11 @@ public class ReflexParseTest {
         String currScript1 = "script://testscript1";
         scriptApi.createScript(context, currScript1, RaptureScriptLanguage.REFLEX, RaptureScriptPurpose.PROGRAM, "junk");
         String r1 = scriptApi.checkScript(context, currScript1);
-        System.out.println("return=" + r1);
+        assertFalse(r1, StringUtils.isEmpty(r1));
 
         String currScript2 = "script://testscript2";
         scriptApi.createScript(context, currScript2, RaptureScriptLanguage.REFLEX, RaptureScriptPurpose.PROGRAM, "// junk");
         String r2 = scriptApi.checkScript(context, currScript2);
-        System.out.println("return=\'" + r2 + "'");
-
+        assertTrue(r2, StringUtils.isEmpty(r2));
     }
 }
