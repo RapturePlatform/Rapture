@@ -60,7 +60,7 @@ public class EmailAlerter implements EventAlerter {
 
     @Override
     public void alert(RaptureAlertEvent event) {
-        String from = EMAIL_CONFIG.getUsername();
+        String from = EMAIL_CONFIG.getFrom();
         String to = emailTemplate.getEmailTo();
         String subject = event.parseTemplate(emailTemplate.getSubject());
         String msgBody = event.parseTemplate(emailTemplate.getMsgBody());
