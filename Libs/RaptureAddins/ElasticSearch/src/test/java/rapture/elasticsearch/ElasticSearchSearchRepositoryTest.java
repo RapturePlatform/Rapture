@@ -377,12 +377,12 @@ public class ElasticSearchSearchRepositoryTest {
         }
 
         query = "blob:*Wigan*";
-        res = e.searchWithCursor(Arrays.asList(SearchRepoType.BLOB.toString()), null, 10, query);
+        res = e.searchWithCursor(SearchRepoType.valuesAsList(), null, 10, query);
         assertNotNull(res.getCursorId());
         assertEquals(1, res.getSearchHits().size());
 
         query = "blob:*World*";
-        res = e.searchWithCursor(Arrays.asList(SearchRepoType.BLOB.toString()), null, 10, query);
+        res = e.searchWithCursor(SearchRepoType.valuesAsList(), null, 10, query);
         assertNotNull(res.getCursorId());
         assertEquals(1, res.getSearchHits().size());
     }

@@ -163,6 +163,7 @@ public class ElasticSearchSearchRepository implements SearchRepository {
                     throw RaptureExceptionFactory.create("Cannot index blob " + ioe.getMessage(), ioe);
                 }
             }
+            ensureClient().prepareIndex(index, SearchRepoType.META.toString(), uri.toString()).setSource(updateObject.getMimeType()).get();
             break;
         default:
             throw new RaptNotSupportedException("Indexing not yet supported for " + uri.getScheme());
