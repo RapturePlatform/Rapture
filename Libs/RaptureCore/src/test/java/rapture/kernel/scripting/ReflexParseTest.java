@@ -29,9 +29,13 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 
+import rapture.common.CallingContext;
 import rapture.common.RaptureScript;
 import rapture.common.RaptureScriptLanguage;
+import rapture.common.RaptureScriptPurpose;
+import rapture.common.api.ScriptApi;
 import rapture.kernel.ContextFactory;
+import rapture.kernel.Kernel;
 import rapture.script.IRaptureScript;
 import rapture.script.ScriptFactory;
 
@@ -60,5 +64,21 @@ public class ReflexParseTest {
     @Test
     public void testErrorProgram() {
         assertFalse(testScript("x=4 println(test);").isEmpty());
+    }
+
+    @Test
+    public void RAP3753() {
+        ScriptApi scriptApi = Kernel.getScript();
+        CallingContext context = ContextFactory.getKernelUser();
+        String currScript1 = "script://testscript1";
+        scriptApi.createScript(context, currScript1, RaptureScriptLanguage.REFLEX, RaptureScriptPurpose.PROGRAM, "junk");
+        String r1 = scriptApi.checkScript(context, currScript1);
+        System.out.println("return=" + r1);
+
+        String currScript2 = "script://testscript2";
+        scriptApi.createScript(context, currScript2, RaptureScriptLanguage.REFLEX, RaptureScriptPurpose.PROGRAM, "// junk");
+        String r2 = scriptApi.checkScript(context, currScript2);
+        System.out.println("return=\'" + r2 + "'");
+
     }
 }
