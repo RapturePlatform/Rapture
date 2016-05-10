@@ -17,14 +17,12 @@ public class ObjectStorageSearchPublisher {
     private static final Logger log = Logger.getLogger(ObjectStorageSearchable.class);
 
     public static void publishCreateMessage(final DocumentWithMeta doc) {
-        log.info("ObjectStorageSearchPublisher - publishing message...");
         new Thread() {
             @Override
             public void run() {
                 publishCreateMessage(new DocUpdateObject(doc));
             }
         }.start();
-        log.info("... message published");
     }
 
     public static void publishCreateMessage(DocUpdateObject duo) {

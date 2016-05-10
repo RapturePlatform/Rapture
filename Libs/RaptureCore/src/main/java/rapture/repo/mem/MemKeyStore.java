@@ -23,6 +23,15 @@
  */
 package rapture.repo.mem;
 
+import java.net.HttpURLConnection;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
+
+import org.apache.log4j.Logger;
+
 import rapture.common.RaptureFolderInfo;
 import rapture.common.RaptureQueryResult;
 import rapture.common.exception.RaptNotSupportedException;
@@ -34,15 +43,6 @@ import rapture.repo.KeyStore;
 import rapture.repo.StoreKeyVisitor;
 import rapture.table.memory.MemoryIndexHandler;
 import rapture.util.IDGenerator;
-
-import java.net.HttpURLConnection;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CopyOnWriteArrayList;
-
-import org.apache.log4j.Logger;
 
 public class MemKeyStore extends AbstractKeyStore implements KeyStore {
     // Trivial implementation at present - delegate to storage class later
@@ -77,6 +77,7 @@ public class MemKeyStore extends AbstractKeyStore implements KeyStore {
         return null != db.remove(key);
     }
 
+    @Override
     public synchronized boolean dropKeyStore() {
         db = new HashMap<String, String>();
         return true;
@@ -234,6 +235,6 @@ public class MemKeyStore extends AbstractKeyStore implements KeyStore {
     
     @Override
     public long getSize() {
-        return (long) db.size();
+        return db.size();
     }
 }
