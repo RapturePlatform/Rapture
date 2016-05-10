@@ -25,7 +25,6 @@ package rapture.kernel;
 
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -81,16 +80,12 @@ public class SearchApiImpl extends KernelBase implements SearchApi {
 
     @Override
     public SearchResponse search(CallingContext context, String query) {
-        List<String> types = Arrays.asList(SearchRepoType.DOC.toString(), SearchRepoType.META.toString(), SearchRepoType.URI.toString(),
-                SearchRepoType.SERIES.toString());
-        return qualifiedSearch(context, ConfigLoader.getConf().FullTextSearchDefaultRepo, types, query);
+        return qualifiedSearch(context, ConfigLoader.getConf().FullTextSearchDefaultRepo, SearchRepoType.valuesAsList(), query);
     }
 
     @Override
     public SearchResponse searchWithCursor(CallingContext context, String cursorId, int size, String query) {
-        List<String> types = Arrays.asList(SearchRepoType.DOC.toString(), SearchRepoType.META.toString(), SearchRepoType.URI.toString(),
-                SearchRepoType.SERIES.toString());
-        return qualifiedSearchWithCursor(context, ConfigLoader.getConf().FullTextSearchDefaultRepo, types, cursorId, size, query);
+        return qualifiedSearchWithCursor(context, ConfigLoader.getConf().FullTextSearchDefaultRepo, SearchRepoType.valuesAsList(), cursorId, size, query);
     }
 
     @Override
