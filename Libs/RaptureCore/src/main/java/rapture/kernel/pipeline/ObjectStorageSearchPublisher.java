@@ -1,5 +1,6 @@
 package rapture.kernel.pipeline;
 
+import rapture.common.DocUpdateObject;
 import rapture.common.model.DocumentWithMeta;
 import rapture.kernel.ContextFactory;
 import rapture.object.storage.ObjectStorageSearchable;
@@ -12,7 +13,11 @@ import rapture.object.storage.ObjectStorageSearchable;
 public class ObjectStorageSearchPublisher {
 	private static ObjectStorageSearchable searchable = new ObjectStorageSearchable();
 	
-	public static void publishCreateMessage(DocumentWithMeta doc) {
-		SearchPublisher.publishCreateMessage(ContextFactory.getAnonymousUser(), searchable, doc);
-	}
+    public static void publishCreateMessage(DocumentWithMeta doc) {
+        publishCreateMessage(new DocUpdateObject(doc));
+    }
+
+    public static void publishCreateMessage(DocUpdateObject duo) {
+        SearchPublisher.publishCreateMessage(ContextFactory.getAnonymousUser(), searchable, duo);
+    }
 }

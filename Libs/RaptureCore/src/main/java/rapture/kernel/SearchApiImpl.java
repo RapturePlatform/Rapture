@@ -32,7 +32,9 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
+import rapture.common.AbstractUpdateObject;
 import rapture.common.CallingContext;
+import rapture.common.DocUpdateObject;
 import rapture.common.RaptureFolderInfo;
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
@@ -61,14 +63,15 @@ public class SearchApiImpl extends KernelBase implements SearchApi {
 
     // Trusted calls
 
+    @Deprecated
     public void writeSearchEntry(String searchRepo, DocumentWithMeta doc) {
         logger.debug(String.format("Writing doc search entry to [%s]", searchRepo));
-        getRepoOrFail(searchRepo).put(doc);
+        getRepoOrFail(searchRepo).put(new DocUpdateObject(doc));
     }
 
-    public void writeSearchEntry(String searchRepo, SeriesUpdateObject seriesUpdateObject) {
+    public void writeSearchEntry(String searchRepo, AbstractUpdateObject updateObject) {
         logger.debug(String.format("Writing series search entry to [%s]", searchRepo));
-        getRepoOrFail(searchRepo).put(seriesUpdateObject);
+        getRepoOrFail(searchRepo).put(updateObject);
     }
 
     public void deleteSearchEntry(String searchRepo, RaptureURI uri) {
@@ -200,7 +203,7 @@ public class SearchApiImpl extends KernelBase implements SearchApi {
                 default:
                     DocumentWithMeta dm = Kernel.getDoc().getDocAndMeta(ContextFactory.getKernelUser(), newPrefix);
                     dm.setDisplayName(newPrefix);
-                    r.put(dm);
+                    r.put(new DocUpdateObject(dm));
                     break;
                 }
             }
@@ -209,8 +212,7 @@ public class SearchApiImpl extends KernelBase implements SearchApi {
 
     public void drop(String repo, String searchRepo) {
         // 1. Search for documents in the given search repo in the URI area that match this repo
-        // 2. For each one, drop that from the index
-        // (with appropriate batching)
+        // 2. For each one, drop that from the index (with appropriate batching)
         RaptureURI repoUri = new RaptureURI(repo);
         if (searchRepo != null) {
             SearchRepository r = getRepoOrFail(searchRepo);
@@ -243,7 +245,8 @@ public class SearchApiImpl extends KernelBase implements SearchApi {
     }
 
     /**
-     * Return the {@link SearchRepository} for the given uri or throw a {@link RaptureException} with an error message
+     * Return the {@link SearchRepository} for the given uri or throw a
+     * {@link RaptureException} with an error message
      *
      * @param uri
      * @return

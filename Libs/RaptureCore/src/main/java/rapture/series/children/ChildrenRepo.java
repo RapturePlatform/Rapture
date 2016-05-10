@@ -132,10 +132,6 @@ public abstract class ChildrenRepo {
         try {
             ret = dropPoints(ChildKeyUtil.createRowKey(parent), ImmutableList.of(child));
             if (ret) {
-                List<RaptureFolderInfo> orphans = getChildren(parent);
-                if ((orphans == null) || orphans.isEmpty()) {
-                    dropFolderEntry(parent);
-                }
                 FolderCleanupService.getInstance().addForReview(getUniqueId(), SeriesPathParser.getParent(filePath));
             }
         } catch (Exception e) {

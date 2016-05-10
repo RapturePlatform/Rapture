@@ -501,4 +501,51 @@ public class MongoTests {
             System.out.println("Exception thrown: " + e);
         }
     }
+
+    @Test
+    public void RAP4062() throws InterruptedException {
+        String uuid = UUID.randomUUID().toString();
+        RaptureURI authUri = RaptureURI.builder(Scheme.DOCUMENT, uuid).build();
+        String docUri = RaptureURI.builder(authUri).docPath("folder1/documenttest").asString();
+        System.out.println("docURI: " + docUri);
+
+        // Put Content into document in Doc Repo
+        document.putDoc(docUri, "{\"key\":\"value\"}");
+        String s = document.getDoc(docUri);
+        Assert.assertEquals(s, "{\"key\":\"value\"}");
+
+        // Delete Content
+        Assert.assertTrue(document.deleteDoc(docUri));
+
+        // Get Content and Verify
+        String s2 = document.getDoc(docUri);
+        Assert.assertEquals(s2, null);
+
+        // Delete An Empty Doc Repo
+        try {
+            document.deleteDocRepo(authUri.toString());
+        } catch (Exception e) {
+            Assert.fail(e.getMessage());
+        }
+
+        try {
+            String result = document.getDoc(authUri.toString());
+            Assert.fail("Repo was deleted");
+        } catch (Exception e) {
+        }
+
+        boolean doesRepoExist = document.docRepoExists(authUri.toString());
+        System.out.println("docRepoExists: " + doesRepoExist);
+
+        Assert.assertFalse(doesRepoExist, "Verifying that document repo does not exist");
+
+        // Verify that we can re-create the repo after deleting it
+
+        document.createDocRepo(authUri.toString(), "NREP {} USING MEMORY {}");
+        document.putDoc(docUri, "{\"key\":\"value\"}");
+        document.putDoc(docUri, "{\"key\":\"value\"}");
+        s = document.getDoc(docUri);
+        Assert.assertEquals(s, "{\"key\":\"value\"}");
+
+    }
 }
