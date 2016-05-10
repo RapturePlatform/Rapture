@@ -259,7 +259,7 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
             i--;
             DocumentRepoConfig drc = configs.get(i);
             if (drc.getDeleted()) configs.remove(i);
-        } while (i >= 0);
+        } while (i > 0);
         return configs;
     }
 
