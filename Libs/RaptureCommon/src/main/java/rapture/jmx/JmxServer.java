@@ -35,6 +35,7 @@ import javax.management.MalformedObjectNameException;
 import javax.management.NotCompliantMBeanException;
 import javax.management.ObjectName;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.jolokia.jvmagent.JolokiaServer;
 import org.jolokia.jvmagent.JolokiaServerConfig;
@@ -60,7 +61,7 @@ public enum JmxServer {
     }
 
     public void start(String appName) {
-        if (started) {
+        if (isStarted()) {
             log.warn(String.format("Rejecting an attempt to start more than one JmxServer.  AppName passed is [%s]", appName));
             return;
         }
@@ -77,7 +78,7 @@ public enum JmxServer {
             return;
         }
         server.start();
-        started = true;
+        setStarted(true);
         jmxApp = new JmxApp(appName, NetworkUtil.getSiteLocalServerIP(), server.getAddress().getPort());
         log.info(String.format("JmxServer can be accessed at [http://%s:%d/%s]", jmxApp.getHost(), jmxApp.getPort(), jmxApp.getName()));
     }
@@ -104,5 +105,16 @@ public enum JmxServer {
 
     public boolean isStarted() {
         return started;
+    }
+
+    public void setStarted(boolean started) {
+        this.started = started;
+    }
+
+    public void restart() {
+        setStarted(false);
+        if (jmxApp != null && StringUtils.isNotBlank(jmxApp.getName())) {
+            start(jmxApp.getName());
+        }
     }
 }

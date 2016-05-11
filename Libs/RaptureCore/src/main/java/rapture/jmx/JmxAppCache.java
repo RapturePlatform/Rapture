@@ -71,6 +71,11 @@ public enum JmxAppCache {
                     throw new ExecutionException("Could not discover jolokia jmx agents using REST", e);
                 }
                 JSONArray nodes = response.getBody().getObject().getJSONArray("value");
+                if (nodes.length() <= 0) {
+                    // nothing came back, not even this server, so let's restart this server
+                    log.error("Discovery produced 0 nodes, not even this server.  Attempting to restart");
+                    JmxServer.getInstance().restart();
+                }
                 for (int i = 0; i < nodes.length(); i++) {
                     JmxApp app = new JmxApp(nodes.getJSONObject(i).getString("url"));
                     ret.put(app.toString(), app);
