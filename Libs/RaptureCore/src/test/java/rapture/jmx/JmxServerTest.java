@@ -27,17 +27,23 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import org.junit.Before;
 import org.junit.Test;
 
 public class JmxServerTest {
 
+    @Before
+    public void setup() {
+        if (!JmxServer.getInstance().isStarted()) {
+            JmxServer.getInstance().start("jmxServerTest");
+        }
+    }
+
     @Test
     public void testStart() {
-        String appName = "jmxServerTest";
-        JmxServer.getInstance().start(appName);
         assertTrue(JmxServer.getInstance().isStarted());
         JmxApp jmxApp = JmxServer.getInstance().getJmxApp();
-        assertEquals(appName, jmxApp.getName());
+        assertEquals("jmxServerTest", jmxApp.getName());
         assertTrue(jmxApp.getPort() != 0);
         assertNotNull(jmxApp.getHost());
     }
