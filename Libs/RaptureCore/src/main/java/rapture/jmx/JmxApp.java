@@ -52,13 +52,6 @@ public class JmxApp {
         setPort(urlObj.getPort());
     }
 
-    public JmxApp(String name, String host, int port) {
-        setName(name);
-        setHost(host);
-        setPort(port);
-        setUrl(String.format("http://%s:%d/%s/", host, port, name));
-    }
-
     public String getUrl() {
         return url;
     }

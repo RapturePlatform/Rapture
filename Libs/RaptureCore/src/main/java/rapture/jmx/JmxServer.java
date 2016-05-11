@@ -42,7 +42,6 @@ import org.jolokia.jvmagent.JolokiaServerConfig;
 
 import rapture.jmx.beans.JmxAppCache;
 import rapture.jmx.beans.RaptureLogging;
-import rapture.util.NetworkUtil;
 
 /**
  * Represents a JmxServer for this rapture kernel. There should only be 1 per Rapture kernel to ensure discovery works properly.
@@ -81,7 +80,7 @@ public enum JmxServer {
         }
         server.start();
         setStarted(true);
-        jmxApp = new JmxApp(appName, NetworkUtil.getSiteLocalServerIP(), server.getAddress().getPort());
+        jmxApp = new JmxApp(server.getUrl());
         log.info(String.format("JmxServer can be accessed at [http://%s:%d/%s]", jmxApp.getHost(), jmxApp.getPort(), jmxApp.getName()));
     }
 
