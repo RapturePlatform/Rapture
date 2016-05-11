@@ -23,6 +23,7 @@ dependencies {
     compile 'com.timgroup:java-statsd-client:3.0.2'
     compile 'net.redhogs.cronparser:cron-parser:2.8'
     compile 'com.mashape.unirest:unirest-java:1.4.9'
+    compile 'org.jolokia:jolokia-jvm:1.3.3:agent'
     testRuntime 'net.rapture:WorkflowsCore:3+'
 }
 
