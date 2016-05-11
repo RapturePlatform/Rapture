@@ -177,12 +177,6 @@ public class SeriesApiImplTest {
         ensureSeries(REPO, "nested/die/series");
         ensureSeries(REPO, "die/nested/series");
         Kernel.getSeries().deleteSeriesByUriPrefix(ctx, REPO + "/die");
-        try {
-			Kernel.getSeries().deleteSeriesByUriPrefix(ctx, REPO + "/die");
-			fail("Exception expected");
-		} catch (Exception e) {
-			assertEquals("Folder series://removeFolderRepo/die does not exist", e.getMessage());
-		}
     }
 
     private void ensureSeries(String repo, String name) {
