@@ -27,6 +27,10 @@ api(Environment) {
   @entitle=/env/common
   @public List(RaptureServerStatus) getServerStatus();
   
+  [Get all known appNames in the Rapture cluster.  An appName is unique for an application and is of the format 'name(at)ip:port']
+  @entitle=/env/read
+  @public List<String> getAppNames();
+  
   [Get the memory information, such as RAM available or heap memory used, for the app names given.  Passing in null or an empty list will retrieve information for all known Rapture nodes in the cluster.  Returns a map of app identifiers to the associated information in json format.]
   @entitle=/env/read
   @public Map<String, String> getMemoryInfo(List<String> appNames);

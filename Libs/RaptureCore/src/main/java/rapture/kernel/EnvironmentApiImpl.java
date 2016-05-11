@@ -24,6 +24,7 @@
 package rapture.kernel;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -99,6 +100,12 @@ public class EnvironmentApiImpl extends KernelBase implements EnvironmentApi {
     @Override
     public List<RaptureServerStatus> getServerStatus(CallingContext context) {
         return RaptureServerStatusStorage.readAll();
+    }
+
+    @Override
+    public List<String> getAppNames(CallingContext context) {
+        // read an arbitrary property to prove that each individual app is alive and then return the keys
+        return new ArrayList<>(getMemoryInfo(context, null).keySet());
     }
 
     @Override

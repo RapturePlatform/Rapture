@@ -27,6 +27,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Level;
@@ -37,6 +38,7 @@ import org.junit.Test;
 import rapture.common.CallingContext;
 import rapture.common.impl.jackson.JacksonUtil;
 import rapture.jmx.JmxApp;
+import rapture.jmx.JmxAppCache;
 import rapture.jmx.JmxServer;
 
 public class EnvironmentApiImplTest {
@@ -55,6 +57,20 @@ public class EnvironmentApiImplTest {
             JmxServer.getInstance().start("jmxServerTest");
         }
         app = JmxServer.getInstance().getJmxApp();
+    }
+
+    @Test
+    public void testGetAppNames() {
+        List<String> result = Kernel.getEnvironment().getAppNames(ctx);
+        assertTrue(result.size() >= 1);
+        boolean found = false;
+        for (String name : result) {
+            if (name.startsWith("jmxServerTest")) {
+                found = true;
+                break;
+            }
+        }
+        assertTrue(found);
     }
 
     @Test
@@ -88,7 +104,7 @@ public class EnvironmentApiImplTest {
     @Test
     public void testExecByPath() {
         Map<String, String> result = Kernel.getEnvironment().execByPath(ctx, Arrays.asList(app.toString()),
-                "rapture.jmx:type=RaptureLogging/setLevel/rapture.kernel.EnvironmentApiImplTest/TRACE");
+                "rapture.jmx.beans:type=RaptureLogging/setLevel/rapture.kernel.EnvironmentApiImplTest/TRACE");
         assertEquals(1, result.size());
         assertStatus(result, app.toString());
         assertEquals(Level.TRACE, log.getLevel());
@@ -129,13 +145,49 @@ public class EnvironmentApiImplTest {
     public void testExecByJson() {
         Map<String, String> result = Kernel.getEnvironment().writeByJson(ctx, Arrays.asList(app.toString()), "{\n" +
                 "   \"type\":\"exec\",\n" +
-                "   \"mbean\":\"rapture.jmx:type=RaptureLogging\",\n" +
+                "   \"mbean\":\"rapture.jmx.beans:type=RaptureLogging\",\n" +
                 "   \"operation\":\"setLevel\",\n" +
                 "   \"arguments\":[\"rapture.kernel.EnvironmentApiImplTest\",\"DEBUG\"]\n" +
                 "}");
         assertEquals(1, result.size());
         assertStatus(result, app.toString());
         assertEquals(Level.DEBUG, log.getLevel());
+    }
+
+    @Test
+    public void testJmxAppCacheExpiryWrite() {
+        assertEquals(1, JmxAppCache.getInstance().getCacheExpiry());
+        Map<String, String> result = Kernel.getEnvironment().writeByJson(ctx, Arrays.asList(app.toString()), "{\n" +
+                "   \"type\":\"write\",\n" +
+                "   \"mbean\":\"rapture.jmx.beans:type=JmxAppCache\",\n" +
+                "   \"attribute\":\"CacheExpiry\",\n" +
+                "   \"value\":3\n" +
+                "}");
+        assertEquals(1, result.size());
+        assertStatus(result, app.toString());
+        assertEquals(3, JmxAppCache.getInstance().getCacheExpiry());
+        result = Kernel.getEnvironment().writeByJson(ctx, Arrays.asList(app.toString()), "{\n" +
+                "   \"type\":\"write\",\n" +
+                "   \"mbean\":\"rapture.jmx.beans:type=JmxAppCache\",\n" +
+                "   \"attribute\":\"CacheExpiry\",\n" +
+                "   \"value\":1\n" +
+                "}");
+        assertEquals(1, result.size());
+        assertStatus(result, app.toString());
+        assertEquals(1, JmxAppCache.getInstance().getCacheExpiry());
+    }
+
+    @Test
+    public void testJmxAppCacheExpiryRead() {
+        assertEquals(1, JmxAppCache.getInstance().getCacheExpiry());
+        Map<String, String> result = Kernel.getEnvironment().writeByJson(ctx, Arrays.asList(app.toString()), "{\n" +
+                "   \"type\":\"read\",\n" +
+                "   \"mbean\":\"rapture.jmx.beans:type=JmxAppCache\",\n" +
+                "   \"attribute\":\"CacheExpiry\",\n" +
+                "}");
+        assertEquals(1, result.size());
+        assertStatus(result, app.toString());
+        assertEquals(1, JmxAppCache.getInstance().getCacheExpiry());
     }
 
     @Test
