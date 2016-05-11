@@ -40,6 +40,8 @@ import org.apache.log4j.Logger;
 import org.jolokia.jvmagent.JolokiaServer;
 import org.jolokia.jvmagent.JolokiaServerConfig;
 
+import rapture.jmx.beans.JmxAppCache;
+import rapture.jmx.beans.RaptureLogging;
 import rapture.util.NetworkUtil;
 
 /**
@@ -65,7 +67,7 @@ public enum JmxServer {
             log.warn(String.format("Rejecting an attempt to start more than one JmxServer.  AppName passed is [%s]", appName));
             return;
         }
-        registerBeans(appName);
+        registerBeans();
         Map<String, String> config = new HashMap<>();
         config.put("host", "*");
         config.put("port", "0");
@@ -87,8 +89,12 @@ public enum JmxServer {
         return jmxApp;
     }
 
-    private void registerBeans(final String appName) {
-        registerBean(new RaptureLogging(), "rapture.jmx:type=RaptureLogging");
+    /**
+     * This is where we should register our Rapture JMX beans
+     */
+    private void registerBeans() {
+        registerBean(new RaptureLogging(), "rapture.jmx.beans:type=RaptureLogging");
+        registerBean(new JmxAppCache(), "rapture.jmx.beans:type=JmxAppCache");
     }
 
     private void registerBean(Object object, String objNameStr) {

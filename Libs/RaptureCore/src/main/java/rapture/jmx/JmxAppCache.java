@@ -51,9 +51,11 @@ public enum JmxAppCache {
     private static final Logger log = Logger.getLogger(JmxAppCache.class);
 
     /*
-     * expire 1 minute after writing and refresh on the next get() call
+     * default expiry time of 1 minute after writing and refresh on the next get() call.  Value can be changed using JMX MBean
      */
-    private Cache<String, Map<String, JmxApp>> cache = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.MINUTES).build();
+    private int cacheExpiry = 1;
+
+    private Cache<String, Map<String, JmxApp>> cache = constructCache(cacheExpiry);
 
     public static JmxAppCache getInstance() {
         return INSTANCE;
@@ -88,5 +90,19 @@ public enum JmxAppCache {
 
     public void invalidate() {
         cache.invalidateAll();
+    }
+
+    public void setCacheExpiry(int minutes) {
+        invalidate();
+        cacheExpiry = minutes;
+        cache = constructCache(cacheExpiry);
+    }
+
+    public int getCacheExpiry() {
+        return cacheExpiry;
+    }
+
+    private Cache<String, Map<String, JmxApp>> constructCache(int minutes) {
+        return CacheBuilder.newBuilder().expireAfterWrite(minutes, TimeUnit.MINUTES).build();
     }
 }

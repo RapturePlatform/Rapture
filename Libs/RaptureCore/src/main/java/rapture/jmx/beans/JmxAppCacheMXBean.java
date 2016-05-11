@@ -21,20 +21,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package rapture.jmx;
+package rapture.jmx.beans;
 
-import java.io.Serializable;
+import javax.management.MXBean;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+@MXBean
+public interface JmxAppCacheMXBean {
 
-public class RaptureLogging implements RaptureLoggingMXBean, Serializable {
-    private static final long serialVersionUID = 1L;
-    private static final Logger log = Logger.getLogger(RaptureLogging.class);
+    /**
+     * Set the time in minutes for how long entries should be cached in the JmxAppCache
+     * 
+     * @param minutes
+     *            - number of minutes in which entries will be cached before being re-discovered
+     */
+    void setCacheExpiry(int minutes);
 
-    public void setLevel(String logName, String level) {
-        log.info("Set level for " + logName + " to " + level);
-        Logger.getLogger(logName).setLevel(Level.toLevel(level));
-    }
-
+    /**
+     * Get the time in minutes for how long the JmxAppCache caches app entries
+     * 
+     * @return - time in minutes entries will be cached
+     */
+    int getCacheExpiry();
 }
