@@ -26,6 +26,8 @@ package rapture.kernel.scripting;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.UUID;
+
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,6 +37,9 @@ import rapture.common.RaptureScript;
 import rapture.common.RaptureScriptLanguage;
 import rapture.common.RaptureScriptPurpose;
 import rapture.common.api.ScriptApi;
+import rapture.common.client.HttpLoginApi;
+import rapture.common.client.HttpScriptApi;
+import rapture.common.client.SimpleCredentialsProvider;
 import rapture.kernel.ContextFactory;
 import rapture.kernel.Kernel;
 import rapture.script.IRaptureScript;
@@ -71,14 +76,31 @@ public class ReflexParseTest {
     public void RAP3753() {
         ScriptApi scriptApi = Kernel.getScript();
         CallingContext context = ContextFactory.getKernelUser();
-        String currScript1 = "script://testscript1";
-        scriptApi.createScript(context, currScript1, RaptureScriptLanguage.REFLEX, RaptureScriptPurpose.PROGRAM, "junk");
-        String r1 = scriptApi.checkScript(context, currScript1);
+        String currScript = "script://" + UUID.randomUUID();
+
+        scriptApi.createScript(context, currScript + "1", RaptureScriptLanguage.REFLEX, RaptureScriptPurpose.PROGRAM, "junk");
+        String r1 = scriptApi.checkScript(context, currScript + "1");
         assertFalse(r1, StringUtils.isEmpty(r1));
 
-        String currScript2 = "script://testscript2";
-        scriptApi.createScript(context, currScript2, RaptureScriptLanguage.REFLEX, RaptureScriptPurpose.PROGRAM, "// junk");
-        String r2 = scriptApi.checkScript(context, currScript2);
+        scriptApi.createScript(context, currScript + "2", RaptureScriptLanguage.REFLEX, RaptureScriptPurpose.PROGRAM, "// junk");
+        String r2 = scriptApi.checkScript(context, currScript + "2");
         assertTrue(r2, StringUtils.isEmpty(r2));
+
+        try {
+            HttpLoginApi loginApi = new HttpLoginApi("http://localhost:8665/rapture", new SimpleCredentialsProvider("rapture", "rapture"));
+            loginApi.login();
+            HttpScriptApi httpScriptApi = new HttpScriptApi(loginApi);
+
+            httpScriptApi.createScript(currScript + "3", RaptureScriptLanguage.REFLEX, RaptureScriptPurpose.PROGRAM, "junk");
+            String r3 = httpScriptApi.checkScript(currScript + "3");
+            assertFalse(r3, StringUtils.isEmpty(r3));
+
+            httpScriptApi.createScript(currScript + "4", RaptureScriptLanguage.REFLEX, RaptureScriptPurpose.PROGRAM, "// junk");
+            String r4 = httpScriptApi.checkScript(currScript + "4");
+            assertTrue(r4, StringUtils.isEmpty(r4));
+        } catch (Exception e) {
+            // This will fail if RaptureAPI is not available.
+            // It's simply to confirm that it works remotely too.
+        }
     }
 }
