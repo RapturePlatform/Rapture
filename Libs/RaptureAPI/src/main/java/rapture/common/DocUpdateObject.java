@@ -4,10 +4,12 @@ import com.google.common.net.MediaType;
 
 import rapture.common.model.DocumentWithMeta;
 
-public class DocUpdateObject extends AbstractUpdateObject {
+public class DocUpdateObject extends AbstractUpdateObject<DocumentWithMeta> {
 
     public DocUpdateObject() {
     }
+
+    DocumentWithMeta payload;
 
     public DocUpdateObject(RaptureURI uri) {
         super(uri);
@@ -29,11 +31,13 @@ public class DocUpdateObject extends AbstractUpdateObject {
         setMimeType(MediaType.JSON_UTF_8.toString());
     }
 
-    public void setDoc(DocumentWithMeta meta) {
-        setPayload(meta);
+    @Override
+    public void setPayload(DocumentWithMeta meta) {
+        payload = meta;
     }
 
-    public DocumentWithMeta getDoc() {
-        return (DocumentWithMeta) getPayload();
+    @Override
+    public DocumentWithMeta getPayload() {
+        return payload;
     }
 }
