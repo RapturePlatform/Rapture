@@ -1,6 +1,11 @@
 package rapture.common;
 
-public class BlobUpdateObject extends AbstractUpdateObject {
+import java.util.HashMap;
+import java.util.Map;
+
+public class BlobUpdateObject extends AbstractUpdateObject<BlobContainer> {
+
+    BlobContainer payload = null;
 
     public BlobUpdateObject() {
     }
@@ -10,17 +15,26 @@ public class BlobUpdateObject extends AbstractUpdateObject {
         assert (uri.getScheme() == Scheme.BLOB);
     }
 
-    public BlobUpdateObject(RaptureURI uri, byte[] content, String mimeType) {
+    public BlobUpdateObject(RaptureURI uri, byte[] content, Map<String, String> headers, String mimeType) {
         this(uri);
-        setContent(content);
+        BlobContainer bc = new BlobContainer();
+        bc.setContent(content);
+        bc.setHeaders(headers);
+        setPayload(bc);
         setMimeType(mimeType);
     }
 
-    public byte[] getContent() {
-        return (byte[]) super.getPayload();
+    public BlobUpdateObject(RaptureURI uri, byte[] content, String mimeType) {
+        this(uri, content, new HashMap<String, String>(), mimeType);
     }
 
-    public void setContent(byte[] content) {
-        super.setPayload(content);
+    @Override
+    public BlobContainer getPayload() {
+        return payload;
+    }
+
+    @Override
+    public void setPayload(BlobContainer payload) {
+        this.payload = payload;
     }
 }

@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -55,6 +56,8 @@ import org.elasticsearch.search.SearchHit;
 import com.google.common.net.MediaType;
 
 import rapture.common.AbstractUpdateObject;
+import rapture.common.BlobContainer;
+import rapture.common.BlobUpdateObject;
 import rapture.common.ConnectionInfo;
 import rapture.common.DocUpdateObject;
 import rapture.common.RaptureURI;
@@ -108,6 +111,7 @@ public class ElasticSearchSearchRepository implements SearchRepository {
 
     static Tika tikaPDF = new Tika(new EmptyDetector(), new PDFParser());
 
+    @SuppressWarnings("rawtypes")
     @Override
     public void put(AbstractUpdateObject updateObject) {
         RaptureURI uri = updateObject.getUri();
@@ -115,7 +119,7 @@ public class ElasticSearchSearchRepository implements SearchRepository {
         putUriStore(uri);
         switch (uri.getScheme()) {
         case DOCUMENT:
-            DocumentWithMeta docMeta = ((DocUpdateObject) updateObject).getDoc();
+            DocumentWithMeta docMeta = ((DocUpdateObject) updateObject).getPayload();
             ensureClient().prepareIndex(index, SearchRepoType.DOC.toString(), uri.toString()).setSource(docMeta.getContent()).get();
             String meta = JacksonUtil.jsonFromObject(docMeta.getMetaData());
             ensureClient().prepareIndex(index, SearchRepoType.META.toString(), uri.toString()).setSource(meta).get();
@@ -130,7 +134,7 @@ public class ElasticSearchSearchRepository implements SearchRepository {
             }
             break;
         case BLOB:
-            byte[] content = (byte[]) updateObject.getPayload();
+            BlobContainer content = ((BlobUpdateObject) updateObject).getPayload();
             /**
              * You have to give ElasticSearch a JSON document. We can determine what it is by checking updateObject.getMimeType() Do we need to index the blob's
              * mime type and any other metadata too?
@@ -140,10 +144,11 @@ public class ElasticSearchSearchRepository implements SearchRepository {
             if (updateObject.getMimeType().equals(MediaType.PDF.toString())) {
                 // Tika can take a while so do it in the background
                 new Thread() {
+                    @SuppressWarnings("synthetic-access")
                     @Override
                     public void run() {
                         try {
-                            String contentStr = tikaPDF.parseToString(new ByteArrayInputStream(content));
+                            String contentStr = tikaPDF.parseToString(new ByteArrayInputStream(content.getContent()));
                             XContentBuilder source = jsonBuilder().startObject().field("blob", contentStr).endObject();
                             ensureClient().prepareIndex(index, SearchRepoType.BLOB.toString(), uri.toString()).setSource(source).get();
                         } catch (IOException | TikaException e) {
@@ -155,7 +160,7 @@ public class ElasticSearchSearchRepository implements SearchRepository {
                 }.start();
             } else {
                 try {
-                    XContentBuilder source = jsonBuilder().startObject().field("blob", new String(content)).endObject();
+                    XContentBuilder source = jsonBuilder().startObject().field("blob", new String(content.getContent())).endObject();
                     ensureClient().prepareIndex(index, SearchRepoType.BLOB.toString(), uri.toString()).setSource(source).get();
                 } catch (IOException ioe) {
                     log.error("Cannot index CSV " + ioe.getMessage());
@@ -163,7 +168,21 @@ public class ElasticSearchSearchRepository implements SearchRepository {
                     throw RaptureExceptionFactory.create("Cannot index blob " + ioe.getMessage(), ioe);
                 }
             }
-            ensureClient().prepareIndex(index, SearchRepoType.META.toString(), uri.toString()).setSource(updateObject.getMimeType()).get();
+            try {
+                Map<String, String> headers = content.getHeaders();
+                XContentBuilder source = jsonBuilder().startObject();
+                if (headers != null) {
+                    for (Entry<String, String> entry : headers.entrySet()) {
+                        source.field(entry.getKey(), entry.getValue());
+                    }
+                }
+                source.field("mimetype", updateObject.getMimeType()).endObject();
+                ensureClient().prepareIndex(index, SearchRepoType.META.toString(), uri.toString()).setSource(source).get();
+            } catch (IOException ioe) {
+                log.error("Cannot index blob metadata " + ioe.getMessage());
+                log.debug(ExceptionToString.format(ioe));
+                throw RaptureExceptionFactory.create("Cannot index blob " + ioe.getMessage(), ioe);
+            }
             break;
         default:
             throw new RaptNotSupportedException("Indexing not yet supported for " + uri.getScheme());

@@ -23,7 +23,6 @@
  */
 package rapture.common.series;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,10 +37,9 @@ import rapture.common.Scheme;
  * @author dukenguyen
  *
  */
-public class SeriesUpdateObject extends AbstractUpdateObject {
+public class SeriesUpdateObject extends AbstractUpdateObject<Map<String, String>> {
 
-    private List<String> keys = new ArrayList<>();
-    private List<? extends Object> values = new ArrayList<>();
+    private Map<String, String> payload;
 
     public SeriesUpdateObject() {
     }
@@ -57,20 +55,25 @@ public class SeriesUpdateObject extends AbstractUpdateObject {
 
     public SeriesUpdateObject(String uri, List<String> keys, List<? extends Object> values) {
         super(new RaptureURI(uri, Scheme.SERIES));
-        this.keys = keys;
-        this.values = values;
-        Map<String, Object> ret = new HashMap<>();
+        Map<String, String> ret = new HashMap<>();
         for (int i = 0; i < keys.size(); i++) {
-            ret.put(keys.get(i), values.get(i));
+            Object value = values.get(i);
+            ret.put(keys.get(i), (value == null) ? null : values.get(i).toString());
         }
-        this.setPayload(asStringMap());
+        this.setPayload(ret);
     }
 
     public Map<String, String> asStringMap() {
-        Map<String, String> ret = new HashMap<>();
-        for (int i = 0; i < keys.size(); i++) {
-            ret.put(keys.get(i), String.valueOf(values.get(i)));
-        }
-        return ret;
+        return getPayload();
+    }
+
+    @Override
+    public Map<String, String> getPayload() {
+        return payload;
+    }
+
+    @Override
+    public void setPayload(Map<String, String> payload) {
+        this.payload = payload;
     }
 }
