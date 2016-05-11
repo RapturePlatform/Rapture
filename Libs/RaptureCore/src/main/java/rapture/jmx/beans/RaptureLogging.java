@@ -21,32 +21,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package rapture.util;
+package rapture.jmx.beans;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import java.io.Serializable;
 
-import org.junit.Test;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
-public class NetworkUtilTest {
+public class RaptureLogging implements RaptureLoggingMXBean, Serializable {
+    private static final long serialVersionUID = 1L;
+    private static final Logger log = Logger.getLogger(RaptureLogging.class);
 
-    @Test
-    public void testServerIPFormat() {
-        String[] ip = NetworkUtil.getServerIP().split("\\.");
-        assertEquals(ip.length, 4);
-
-    }
-
-    @Test
-    public void testServerNameFormat() {
-        assertTrue(NetworkUtil.getServerName().matches("\\S*"));
-    }
-
-    @Test
-    public void testServerIpSiteLocal() {
-        String siteLocalIp = NetworkUtil.getSiteLocalServerIP();
-        assertNotNull(siteLocalIp);
+    public void setLevel(String logName, String level) {
+        log.info("Set level for " + logName + " to " + level);
+        Logger.getLogger(logName).setLevel(Level.toLevel(level));
     }
 
 }

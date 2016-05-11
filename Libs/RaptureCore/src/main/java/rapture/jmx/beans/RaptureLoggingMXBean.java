@@ -21,32 +21,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package rapture.util;
+package rapture.jmx.beans;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import javax.management.MXBean;
 
-import org.junit.Test;
+@MXBean
+public interface RaptureLoggingMXBean {
 
-public class NetworkUtilTest {
-
-    @Test
-    public void testServerIPFormat() {
-        String[] ip = NetworkUtil.getServerIP().split("\\.");
-        assertEquals(ip.length, 4);
-
-    }
-
-    @Test
-    public void testServerNameFormat() {
-        assertTrue(NetworkUtil.getServerName().matches("\\S*"));
-    }
-
-    @Test
-    public void testServerIpSiteLocal() {
-        String siteLocalIp = NetworkUtil.getSiteLocalServerIP();
-        assertNotNull(siteLocalIp);
-    }
-
+    /**
+     * Set the level for a logger
+     *
+     * @param logName
+     *            name of package or class that you are changing the log level for
+     * @param level
+     *            level at which you want to set the logger
+     */
+    void setLevel(String logName, String level);
 }

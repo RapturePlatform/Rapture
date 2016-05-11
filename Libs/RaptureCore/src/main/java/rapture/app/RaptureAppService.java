@@ -21,32 +21,30 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package rapture.util;
+package rapture.app;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import org.apache.log4j.Logger;
 
-import org.junit.Test;
+import rapture.jmx.JmxServer;
+import rapture.log.LogManager;
 
-public class NetworkUtilTest {
+/**
+ * @author bardhi
+ * @since 9/16/14.
+ */
+public class RaptureAppService {
+    private static final Logger log = Logger.getLogger(RaptureAppService.class);
 
-    @Test
-    public void testServerIPFormat() {
-        String[] ip = NetworkUtil.getServerIP().split("\\.");
-        assertEquals(ip.length, 4);
-
+    /**
+     * Performs the setup steps that are common among all Rapture apps. Specifically, configuring the log appenders and setting up JMX
+     *
+     * @param appName
+     *            The name of the app
+     */
+    public static void setupApp(String appName) {
+        LogManager.configureLogging();
+        log.info(String.format("Starting %s", appName));
+        log.info("==================================");
+        JmxServer.getInstance().start(appName);
     }
-
-    @Test
-    public void testServerNameFormat() {
-        assertTrue(NetworkUtil.getServerName().matches("\\S*"));
-    }
-
-    @Test
-    public void testServerIpSiteLocal() {
-        String siteLocalIp = NetworkUtil.getSiteLocalServerIP();
-        assertNotNull(siteLocalIp);
-    }
-
 }

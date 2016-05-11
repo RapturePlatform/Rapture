@@ -21,32 +21,33 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package rapture.util;
+package rapture.jmx.beans;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import javax.management.MXBean;
 
-import org.junit.Test;
+import org.apache.log4j.Logger;
 
-public class NetworkUtilTest {
+/**
+ * MXBean implementation that allows for operations on the singleton JmxAppCache object
+ * 
+ * @author dukenguyen
+ *
+ */
+@MXBean
+public class JmxAppCache implements JmxAppCacheMXBean {
 
-    @Test
-    public void testServerIPFormat() {
-        String[] ip = NetworkUtil.getServerIP().split("\\.");
-        assertEquals(ip.length, 4);
+    private static final Logger log = Logger.getLogger(JmxAppCache.class);
 
+    @Override
+    public void setCacheExpiry(int minutes) {
+        if (minutes > 0) {
+            rapture.jmx.JmxAppCache.getInstance().setCacheExpiry(minutes);
+            log.info(String.format("JmxAppCache expiry successfully set to [%d] minutes.", minutes));
+        }
     }
 
-    @Test
-    public void testServerNameFormat() {
-        assertTrue(NetworkUtil.getServerName().matches("\\S*"));
+    @Override
+    public int getCacheExpiry() {
+        return rapture.jmx.JmxAppCache.getInstance().getCacheExpiry();
     }
-
-    @Test
-    public void testServerIpSiteLocal() {
-        String siteLocalIp = NetworkUtil.getSiteLocalServerIP();
-        assertNotNull(siteLocalIp);
-    }
-
 }

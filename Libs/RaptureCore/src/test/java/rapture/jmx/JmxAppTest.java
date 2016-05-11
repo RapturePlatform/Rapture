@@ -23,18 +23,21 @@
  */
 package rapture.jmx;
 
-import java.io.Serializable;
+import static org.junit.Assert.assertEquals;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.junit.Test;
 
-public class RaptureLogging implements RaptureLoggingMXBean, Serializable {
-    private static final long serialVersionUID = 1L;
-    private static final Logger log = Logger.getLogger(RaptureLogging.class);
+public class JmxAppTest {
 
-    public void setLevel(String logName, String level) {
-        log.info("Set level for " + logName + " to " + level);
-        Logger.getLogger(logName).setLevel(Level.toLevel(level));
+    @Test
+    public void testStripLeadingAndTrailingSlash() {
+        JmxApp a = new JmxApp("http://192.168.0.1:7777/test");
+        assertEquals("/xyz", a.stripLeadingAndTrailingSlash("//xyz/"));
+        assertEquals("abc", a.stripLeadingAndTrailingSlash("abc"));
+        assertEquals("abc", a.stripLeadingAndTrailingSlash("   abc/"));
+        assertEquals("name", a.stripLeadingAndTrailingSlash("/name"));
+        assertEquals(null, a.stripLeadingAndTrailingSlash(null));
+        assertEquals("  ", a.stripLeadingAndTrailingSlash("  "));
+        assertEquals("", a.stripLeadingAndTrailingSlash(""));
     }
-
 }

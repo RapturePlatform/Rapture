@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package rapture.util;
+package rapture.jmx;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -29,24 +29,16 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-public class NetworkUtilTest {
+public class JmxServerTest {
 
     @Test
-    public void testServerIPFormat() {
-        String[] ip = NetworkUtil.getServerIP().split("\\.");
-        assertEquals(ip.length, 4);
-
+    public void testStart() {
+        String appName = "jmxServerTest";
+        JmxServer.getInstance().start(appName);
+        assertTrue(JmxServer.getInstance().isStarted());
+        JmxApp jmxApp = JmxServer.getInstance().getJmxApp();
+        assertEquals(appName, jmxApp.getName());
+        assertTrue(jmxApp.getPort() != 0);
+        assertNotNull(jmxApp.getHost());
     }
-
-    @Test
-    public void testServerNameFormat() {
-        assertTrue(NetworkUtil.getServerName().matches("\\S*"));
-    }
-
-    @Test
-    public void testServerIpSiteLocal() {
-        String siteLocalIp = NetworkUtil.getSiteLocalServerIP();
-        assertNotNull(siteLocalIp);
-    }
-
 }

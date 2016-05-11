@@ -21,33 +21,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package rapture.app;
+package rapture.jmx.beans;
 
-import org.apache.log4j.Logger;
+import javax.management.MXBean;
 
-import rapture.jmx.RaptureMBeanServer;
-import rapture.log.LogManager;
-
-/**
- * @author bardhi
- * @since 9/16/14.
- */
-public class RaptureAppService {
-    private static final Logger log = Logger.getLogger(RaptureAppService.class);
+@MXBean
+public interface JmxAppCacheMXBean {
 
     /**
-     * Performs the setup steps that are common among all Rapture apps. Specifically, configuring the log appenders and setting up JMX
-     *
-     * @param appName The name of the app
+     * Set the time in minutes for how long entries should be cached in the JmxAppCache
+     * 
+     * @param minutes
+     *            - number of minutes in which entries will be cached before being re-discovered
      */
-    public static void setupApp(String appName) {
-        LogManager.configureLogging();
-        log.info(String.format("Starting %s", appName));
-        log.info("==================================");
+    void setCacheExpiry(int minutes);
 
-        RaptureMBeanServer.initialise(appName);
-    }
-
-
-
+    /**
+     * Get the time in minutes for how long the JmxAppCache caches app entries
+     * 
+     * @return - time in minutes entries will be cached
+     */
+    int getCacheExpiry();
 }
