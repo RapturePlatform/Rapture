@@ -145,4 +145,12 @@ public class ReflexParamsTest {
         assertEquals(10, pts.size());
     }
 
+    @Test
+    public void testSizeWithMap() {
+        String scriptUri = makeScript("testScript1", 
+                "foo.w = 'x'; \n foo['y'] = 'z'; \n bar=[ 'a', 'b', 'c'];\nprintln(foo.size()); \n println(bar.size()); \n println(size(foo)); \n println(size(bar)); \n return size(foo) + size(bar);\n");
+        String retval = Kernel.getScript().runScript(ctx, scriptUri, new HashMap<String, String>());
+        assertEquals("5", retval);
+    }
+
 }
