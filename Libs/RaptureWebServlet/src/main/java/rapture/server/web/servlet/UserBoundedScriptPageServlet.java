@@ -55,11 +55,11 @@ import reflex.ReflexException;
 import reflex.ReflexExecutor;
 
 /**
- * The User bounded servlet runs Reflex scripts with a specified user, which already 
+ * The User bounded servlet runs Reflex scripts with (or 'bound' to) a specified user.
  * 
  * This servlet take two web.xml params:
  * 1. user    An existing Rapture user setup with appropriate entitlements 
- * 2. prefix  A defined location that this servlet can only run scripts
+ * 2. prefix  A defined location where only this servlet can run scripts
  * 
  * @author jonathan-major
  *
