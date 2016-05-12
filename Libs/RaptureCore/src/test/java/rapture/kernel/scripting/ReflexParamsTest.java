@@ -24,7 +24,10 @@
 package rapture.kernel.scripting;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -151,6 +154,35 @@ public class ReflexParamsTest {
                 "foo.w = 'x'; \n foo['y'] = 'z'; \n bar=[ 'a', 'b', 'c'];\nprintln(foo.size()); \n println(bar.size()); \n println(size(foo)); \n println(size(bar)); \n return size(foo) + size(bar);\n");
         String retval = Kernel.getScript().runScript(ctx, scriptUri, new HashMap<String, String>());
         assertEquals("5", retval);
+    }
+
+    @Test
+    public void testCheckVsRun() {
+        String scriptUri = makeScript("testScript1",
+                "foo.w = 'x'; \n foo['y'] = 'z'; \n bar=[ 'a', 'b', 'c'];\nprintln(foo.size()); \n println(bar.size()); \n println(size(foo)); \n println(size(bar)); \n error;  \n return size(foo) + size(bar);\n");
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        ByteArrayOutputStream err = new ByteArrayOutputStream();
+
+        System.setOut(new PrintStream(out));
+        System.setErr(new PrintStream(err));
+
+        String runval = "";
+        try {
+            runval = Kernel.getScript().runScript(ctx, scriptUri, new HashMap<String, String>());
+        } catch (Exception e) {
+        }
+
+        String checkval = "";
+        try {
+            checkval = Kernel.getScript().checkScript(ctx, scriptUri);
+        } catch (Exception e) {
+        }
+        assertTrue(err.toString().startsWith(checkval));
+
+        System.setOut(null);
+        System.setErr(null);
+
     }
 
 }
