@@ -550,6 +550,7 @@ func2
   |  Spawn '(' p=expression (',' ex=expression ',' f=expression)? ')'
                                   -> ^(FUNC_CALL[$Spawn] Spawn $p $ex? $f?)
   |  Defined '(' Identifier ')'   -> ^(FUNC_CALL[$Defined] Defined Identifier)
+  |  Defined '(' lookup ')'   -> ^(FUNC_CALL[$Defined] Defined lookup)
   |  Round '(' v=expression (',' dp=expression)? ')'
                                   -> ^(FUNC_CALL[$Round] Round $v $dp?)
   |  Lib   '(' expression ')'     -> ^(FUNC_CALL[$Lib] Lib expression)

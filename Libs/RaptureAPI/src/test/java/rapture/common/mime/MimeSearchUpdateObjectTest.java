@@ -2,8 +2,6 @@ package rapture.common.mime;
 
 import static org.junit.Assert.assertTrue;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.google.common.net.MediaType;
@@ -17,14 +15,6 @@ import rapture.common.model.DocumentWithMeta;
 import rapture.common.version.ApiVersion;
 
 public class MimeSearchUpdateObjectTest {
-
-    @BeforeClass
-    public static void setUpBeforeClass() throws Exception {
-    }
-
-    @AfterClass
-    public static void tearDownAfterClass() throws Exception {
-    }
 
     @Test
     public void testBlobWithDAndWithouLegacyDoc() {

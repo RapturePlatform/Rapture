@@ -31,7 +31,7 @@ import reflex.Scope;
 import reflex.debug.IReflexDebugger;
 import reflex.value.ReflexSparseMatrixValue;
 import reflex.value.ReflexValue;
-import reflex.value.internal.ReflexNullValue;
+import reflex.value.internal.ReflexUndefinedValue;
 
 public class LookupNode extends BaseNode {
 
@@ -94,15 +94,19 @@ public class LookupNode extends BaseNode {
 				if (v instanceof ReflexValue) {
 					v = ((ReflexValue) v).asObject(); // Don't nest ReflexValues here
 				}
-				value = (v == null) ? new ReflexNullValue(lineNumber) : new ReflexValue(lineNumber, v);
+                value = (v == null) ? new ReflexUndefinedValue(lineNumber) : new ReflexValue(lineNumber, v);
 			} else {
-				int idx = realIndex.asLong().intValue();
+				try {
+                    int idx = realIndex.asLong().intValue();
 
-				if (value.isList()) {
-					value = value.asList().get(idx);
-				} else if (value.isString()) {
-					value = new ReflexValue(lineNumber, String.valueOf(value.asString().charAt(idx)));
-				}
+                    if (value.isList()) {
+                    	value = value.asList().get(idx);
+                    } else if (value.isString()) {
+                    	value = new ReflexValue(lineNumber, String.valueOf(value.asString().charAt(idx)));
+                    }
+                } catch (NumberFormatException e) {
+                    value = new ReflexUndefinedValue(lineNumber);
+                }
 			}
 		}
 		return value;
