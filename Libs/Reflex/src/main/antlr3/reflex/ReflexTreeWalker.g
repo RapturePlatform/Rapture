@@ -393,6 +393,7 @@ functionCall returns [ReflexNode node]
   |  ^(FUNC_CALL Template t=expression p=expression) { node = new TemplateNode(line, handler, currentScope, $t.node, $p.node); }
   |  ^(FUNC_CALL Spawn p=expression (e=expression f=expression)?) { node = new SpawnNode(line, handler, currentScope, $p.node, $e.node, $f.node); }
   |  ^(FUNC_CALL Defined Identifier) { node = new DefinedNode(line, handler, currentScope, $Identifier.text, namespaceStack.asPrefix()) ; }
+  |  ^(FUNC_CALL Defined lookup) { node = new DefinedNode(line, handler, currentScope, $lookup.node, namespaceStack.asPrefix()) ; }
   |  ^(KERNEL_CALL KernelIdentifier exprList?) { node = new KernelCallNode(line, handler, currentScope, $KernelIdentifier.text, $exprList.e); }
   |  ^(QUALIFIED_FUNC_CALL DottedIdentifier exprList?) { node = new QualifiedFuncCallNode(line, handler, currentScope, $DottedIdentifier.text,
                                                                       $exprList.e, languageRegistry, importHandler, namespaceStack.asPrefix()); }

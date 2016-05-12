@@ -25,11 +25,11 @@ package reflex.node;
 
 import reflex.IReflexHandler;
 import reflex.ReflexException;
-import reflex.ReflexExecutor;
 import reflex.Scope;
 import reflex.debug.IReflexDebugger;
 import reflex.value.ReflexValue;
 import reflex.value.internal.ReflexNullValue;
+import reflex.value.internal.ReflexVoidValue;
 
 public class IdentifierNode extends BaseNode {
 
@@ -55,7 +55,7 @@ public class IdentifierNode extends BaseNode {
         if (value == null) {
             value = resolveMapDotter(scope);
             if (value == null) {
-                value = new ReflexNullValue(lineNumber);
+                value = new ReflexVoidValue(lineNumber);
             }
         }
         debugger.stepEnd(this, value, scope);

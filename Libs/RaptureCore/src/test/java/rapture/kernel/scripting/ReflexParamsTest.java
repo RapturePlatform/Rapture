@@ -36,6 +36,8 @@ import org.junit.Test;
 import rapture.common.CallingContext;
 import rapture.common.RaptureScriptLanguage;
 import rapture.common.RaptureScriptPurpose;
+import rapture.common.RaptureURI;
+import rapture.common.Scheme;
 import rapture.common.SeriesPoint;
 import rapture.kernel.ContextFactory;
 import rapture.kernel.Kernel;
@@ -44,89 +46,139 @@ public class ReflexParamsTest {
 
     private static CallingContext ctx = ContextFactory.getKernelUser();
 
-    private String uri = "//reflexParamsTest";
-    private String scr = "thisDoc1";
+    private String auth = "reflexParamsTest";
+    RaptureURI uri;
 
     @After
     public void cleanUp() {
-        Kernel.getDoc().deleteDocRepo(ctx, uri);
+        Kernel.getDoc().deleteDocRepo(ctx, uri.toAuthString());
     }
 
     @Before
     public void setup() {
         Kernel.initBootstrap();
-        if (!Kernel.getDoc().docRepoExists(ctx, uri)) {
-            Kernel.getDoc().createDocRepo(ctx, uri, "NREP {} USING MEMORY {}");
+        uri = new RaptureURI(auth, Scheme.SCRIPT);
+
+        if (!Kernel.getDoc().docRepoExists(ctx, uri.toAuthString())) {
+            Kernel.getDoc().createDocRepo(ctx, uri.toAuthString(), "NREP {} USING MEMORY {}");
         }
-        if (Kernel.getScript().doesScriptExist(ctx, uri + "/" + scr)) {
-            Kernel.getScript().deleteScript(ctx, uri + "/" + scr);
+    }
+
+    public String makeScript(String name, String script) {
+        String scriptUri = RaptureURI.builder(uri).docPath(name).asString();
+        
+        if (Kernel.getScript().doesScriptExist(ctx, scriptUri)) {
+            Kernel.getScript().deleteScript(ctx, scriptUri);
         }
 
-        Kernel.getScript().createScript(
-                ctx,
-                uri + "/" + scr,
-                RaptureScriptLanguage.REFLEX,
-                RaptureScriptPurpose.PROGRAM,
-                "if defined(_params) do \n" + "  println(\"params is defined \" + _params); return \"def\";\n" + "else do \n"
-                        + "  println(\"params is undefined\"); return \"notdef\";\n" + "end");
+        Kernel.getScript().createScript(ctx, scriptUri, RaptureScriptLanguage.REFLEX, RaptureScriptPurpose.PROGRAM, script);
+        return scriptUri;
     }
 
     @Test
     public void testParamsNotDefined() {
-        String retval = Kernel.getScript().runScript(ctx, uri + "/" + scr, new HashMap<String, String>());
+        String scriptUri = makeScript("testScript1", "if defined(_params) do \n" + "  println(\"params is defined \" + _params); return \"def\";\n"
+                + "else do \n" + "  println(\"params is undefined\"); return \"notdef\";\n" + "end");
+        String retval = Kernel.getScript().runScript(ctx, scriptUri, new HashMap<String, String>());
         assertEquals("notdef", retval);
+    }
+
+    // @Test
+    // public void testRAP4090() {
+    // // String scriptUri = makeScript("rap4090", "if defined(web['foo']) do \n" + " println(\"web['foo'] is defined \" + web['foo']); return \"def\";\n"
+    // // + "else do \n" + " println(\"web['foo'] is undefined\"); return \"notdef\";\n" + "end");
+    // String scriptUri = makeScript("rap4090", "a = defined(web['foo']);");
+    // String retval = Kernel.getScript().runScript(ctx, scriptUri, new HashMap<String, String>());
+    // assertEquals("notdef", retval);
+    // }
+
+    @Test
+    public void testRAP4090a() {
+        String scriptUri = makeScript("rap4090a", "if (!defined(foo)) do \n return 'undefined'; end ");
+        String retval = Kernel.getScript().runScript(ctx, scriptUri, new HashMap<String, String>());
+        assertEquals("undefined", retval);
+    }
+
+    @Test
+    public void testRAP4090b() {
+        String scriptUri = makeScript("rap4090b", "if (!defined(foo.bar)) do \n return 'undefined'; end ");
+        String retval = Kernel.getScript().runScript(ctx, scriptUri, new HashMap<String, String>());
+        assertEquals("undefined", retval);
+    }
+
+    @Test
+    public void testRAP4090c() {
+        String scriptUri = makeScript("rap4090c", "foo = [];\n if (!defined(foo.bar)) do \n return 'undefined'; end \n return('fail');");
+        String retval = Kernel.getScript().runScript(ctx, scriptUri, new HashMap<String, String>());
+        assertEquals("undefined", retval);
+    }
+
+    @Test
+    public void testRAP4090d() {
+        String scriptUri = makeScript("rap4090d", "foo = {};\n if (!defined(foo.bar)) do \n return 'undefined'; \n end \n return('fail');");
+        String retval = Kernel.getScript().runScript(ctx, scriptUri, new HashMap<String, String>());
+        assertEquals("undefined", retval);
+    }
+
+    @Test
+    public void testRAP4090e() {
+        String scriptUri = makeScript("rap4090e", "foo = 'foo';\n if (!defined(foo.bar)) do \n return 'undefined'; end \n return('fail');");
+        String retval = Kernel.getScript().runScript(ctx, scriptUri, new HashMap<String, String>());
+        assertEquals("undefined", retval);
+    }
+
+    @Test
+    public void testRAP4090f() {
+        String scriptUri = makeScript("rap4090f", "foo = {};\n if (!defined(foo.bar.baz)) do \n return 'undefined'; \n end \n return('fail');");
+        String retval = Kernel.getScript().runScript(ctx, scriptUri, new HashMap<String, String>());
+        assertEquals("undefined", retval);
+    }
+
+    @Test
+    public void testRAP4090g() {
+        String scriptUri = makeScript("rap4090g", "if (!defined(foo['bar'])) do \n return 'undefined'; end \n return('fail');");
+        String retval = Kernel.getScript().runScript(ctx, scriptUri, new HashMap<String, String>());
+        assertEquals("undefined", retval);
+    }
+
+    @Test
+    public void testRAP4090h() {
+        String scriptUri = makeScript("rap4090h", "foo = [];\n if (!defined(foo['bar'])) do \n return 'undefined'; end \n return('fail');");
+        String retval = Kernel.getScript().runScript(ctx, scriptUri, new HashMap<String, String>());
+        assertEquals("undefined", retval);
+    }
+
+    @Test
+    public void testRAP4090i() {
+        String scriptUri = makeScript("rap4090i", "foo = {};\n if (!defined(foo['bar'])) do \n return 'undefined'; end \n return('fail');");
+        String retval = Kernel.getScript().runScript(ctx, scriptUri, new HashMap<String, String>());
+        assertEquals("undefined", retval);
+    }
+
+    @Test
+    public void testRAP4090j() {
+        String scriptUri = makeScript("rap4090j", "foo = 'foo';\n if (!defined(foo['bar'])) do \n return 'undefined'; end \n return('fail');");
+        String retval = Kernel.getScript().runScript(ctx, scriptUri, new HashMap<String, String>());
+        assertEquals("undefined", retval);
     }
 
     @Test
     public void testListsOfDoublesViaCasting() {
         final String script1 = "script://myscriptsReflexParamsTest/tx1";
-        Kernel.getScript().putRawScript(ctx, script1, "today = date();\n" +
-                "TODAY = cast(today, 'string');\n" +
-                "seriesPrefix='reflexKeySpace.CfReflexTest';\n" +
-                "keyspace='reflexCassKeySpace';\n" +
-                "colFamily='CassfReflexTest';\n" +
-                "\n" +
-                "CONFIG = 'SREP {} USING MEMORY {prefix=\"' + seriesPrefix + '\"}';\n" +
-                "SERIES_REPO_URI = 'series://myseriesTest';\n" +
-                "\n" +
-                "// Series Calls\n" +
-                "\n" +
-                "if (!(#series.seriesRepoExists(SERIES_REPO_URI))) do\n" +
-                "        #series.createSeriesRepo(SERIES_REPO_URI, CONFIG);\n" +
-                "end\n" +
-                "\n" +
-                "SERIES_URI = SERIES_REPO_URI + '/testReflexSeriesXYZ';\n" +
-                "\n" +
-                "// how many points you want\n" +
-                "MAX = 10;\n" +
-                "\n" +
-                "seriesKeys = [];\n" +
-                "seriesValues = [];\n" +
-                "\n" +
-                "println ('Test add and retrieve doubles from series');\n" +
-                "for currPoint = 1 to MAX do\n" +
-                "\n" +
-                "        now = time();\n" +
-                "        nowNum = cast(now, 'number');\n" +
-                "        nowString = cast(nowNum, 'string');\n" +
-                "        valueInt = rand(50);\n" +
-                "        valueNum = cast(valueInt, 'number');\n" +
-                "        valueString = cast(valueNum, 'string');\n" +
-                "\n" +
-                "        seriesKeys = seriesKeys + nowString;\n" +
-                "        seriesValues = seriesValues + valueNum;\n" +
-                "\n" +
-                "        sleep(100);\n" +
-                "end\n" +
-                "\n" +
-                "println ('keys: ' + seriesKeys);\n" +
-                "println ('values: ' + seriesValues);\n" +
-                "println ('seriesURI: ' + SERIES_URI);\n" +
-                "#series.addDoublesToSeries(SERIES_URI, seriesKeys, seriesValues);\n" +
-                "\n" +
-                "println('done');",
-                RaptureScriptLanguage.REFLEX.toString(), RaptureScriptPurpose.PROGRAM.toString(),
-                new ArrayList<String>(), new ArrayList<String>());
+        Kernel.getScript().putRawScript(ctx, script1,
+                "today = date();\n" + "TODAY = cast(today, 'string');\n" + "seriesPrefix='reflexKeySpace.CfReflexTest';\n" + "keyspace='reflexCassKeySpace';\n"
+                        + "colFamily='CassfReflexTest';\n" + "\n" + "CONFIG = 'SREP {} USING MEMORY {prefix=\"' + seriesPrefix + '\"}';\n"
+                        + "SERIES_REPO_URI = 'series://myseriesTest';\n" + "\n" + "// Series Calls\n" + "\n"
+                        + "if (!(#series.seriesRepoExists(SERIES_REPO_URI))) do\n" + "        #series.createSeriesRepo(SERIES_REPO_URI, CONFIG);\n" + "end\n"
+                        + "\n" + "SERIES_URI = SERIES_REPO_URI + '/testReflexSeriesXYZ';\n" + "\n" + "// how many points you want\n" + "MAX = 10;\n" + "\n"
+                        + "seriesKeys = [];\n" + "seriesValues = [];\n" + "\n" + "println ('Test add and retrieve doubles from series');\n"
+                        + "for currPoint = 1 to MAX do\n" + "\n" + "        now = time();\n" + "        nowNum = cast(now, 'number');\n"
+                        + "        nowString = cast(nowNum, 'string');\n" + "        valueInt = rand(50);\n" + "        valueNum = cast(valueInt, 'number');\n"
+                        + "        valueString = cast(valueNum, 'string');\n" + "\n" + "        seriesKeys = seriesKeys + nowString;\n"
+                        + "        seriesValues = seriesValues + valueNum;\n" + "\n" + "        sleep(100);\n" + "end\n" + "\n"
+                        + "println ('keys: ' + seriesKeys);\n" + "println ('values: ' + seriesValues);\n" + "println ('seriesURI: ' + SERIES_URI);\n"
+                        + "#series.addDoublesToSeries(SERIES_URI, seriesKeys, seriesValues);\n" + "\n" + "println('done');",
+                RaptureScriptLanguage.REFLEX.toString(), RaptureScriptPurpose.PROGRAM.toString(), new ArrayList<String>(), new ArrayList<String>());
         Kernel.getScript().runScript(ctx, script1, new HashMap<String, String>());
         List<SeriesPoint> pts = Kernel.getSeries().getPoints(ctx, "series://myseriesTest/testReflexSeriesXYZ");
         assertEquals(10, pts.size());
