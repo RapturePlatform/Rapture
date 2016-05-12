@@ -44,7 +44,7 @@ public class ReflexValue implements Comparable<ReflexValue> {
     String NOTNULL = "Argument to ReflexValue cannot be null. Use ReflexNullValue";
 
     public enum Internal {
-        NULL, VOID, BREAK, CONTINUE, SUSPEND;
+        NULL, VOID, BREAK, CONTINUE, SUSPEND, UNDEFINED;
         
         @Override
         public String toString() {
@@ -490,6 +490,12 @@ public class ReflexValue implements Comparable<ReflexValue> {
         if (this == o) return true;
 
         ReflexValue that = (o instanceof ReflexValue) ? (ReflexValue) o : new ReflexValue(o);
+
+        // NULL and UNDEFINED are considered equivalent most of the time
+        if (((this.getValue() == Internal.NULL) || (this.getValue() == Internal.UNDEFINED))
+                && ((that.getValue() == Internal.NULL) || (that.getValue() == Internal.UNDEFINED))) {
+            return true;
+        }
 
         if (this.isInteger() && that.isInteger()) {
             return this.asLong().equals(that.asLong());

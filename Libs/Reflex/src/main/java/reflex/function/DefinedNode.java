@@ -30,7 +30,7 @@ import reflex.debug.IReflexDebugger;
 import reflex.node.BaseNode;
 import reflex.node.ReflexNode;
 import reflex.value.ReflexValue;
-import reflex.value.internal.ReflexVoidValue;
+import reflex.value.internal.ReflexUndefinedValue;
 
 /**
  * Sleep for param milliseconds
@@ -69,7 +69,7 @@ public class DefinedNode extends BaseNode {
             if (node != null) {
                 try {
                     ReflexValue val = node.evaluate(debugger, scope);
-                    if (val instanceof ReflexVoidValue) ret = false;
+                    if (val instanceof ReflexUndefinedValue) ret = false;
                 } catch (ReflexException e) {
                     ret = false;
                 }

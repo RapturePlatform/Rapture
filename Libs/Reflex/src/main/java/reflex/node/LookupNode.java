@@ -31,7 +31,7 @@ import reflex.Scope;
 import reflex.debug.IReflexDebugger;
 import reflex.value.ReflexSparseMatrixValue;
 import reflex.value.ReflexValue;
-import reflex.value.internal.ReflexVoidValue;
+import reflex.value.internal.ReflexUndefinedValue;
 
 public class LookupNode extends BaseNode {
 
@@ -94,7 +94,7 @@ public class LookupNode extends BaseNode {
 				if (v instanceof ReflexValue) {
 					v = ((ReflexValue) v).asObject(); // Don't nest ReflexValues here
 				}
-                value = (v == null) ? new ReflexVoidValue(lineNumber) : new ReflexValue(lineNumber, v);
+                value = (v == null) ? new ReflexUndefinedValue(lineNumber) : new ReflexValue(lineNumber, v);
 			} else {
 				try {
                     int idx = realIndex.asLong().intValue();
@@ -105,7 +105,7 @@ public class LookupNode extends BaseNode {
                     	value = new ReflexValue(lineNumber, String.valueOf(value.asString().charAt(idx)));
                     }
                 } catch (NumberFormatException e) {
-                    value = new ReflexVoidValue(lineNumber);
+                    value = new ReflexUndefinedValue(lineNumber);
                 }
 			}
 		}
