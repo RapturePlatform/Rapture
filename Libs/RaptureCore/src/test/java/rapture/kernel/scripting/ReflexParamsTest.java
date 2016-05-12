@@ -81,84 +81,45 @@ public class ReflexParamsTest {
                 + "else do \n" + "  println(\"params is undefined\"); return \"notdef\";\n" + "end");
         String retval = Kernel.getScript().runScript(ctx, scriptUri, new HashMap<String, String>());
         assertEquals("notdef", retval);
-    }
 
-    // @Test
-    // public void testRAP4090() {
-    // // String scriptUri = makeScript("rap4090", "if defined(web['foo']) do \n" + " println(\"web['foo'] is defined \" + web['foo']); return \"def\";\n"
-    // // + "else do \n" + " println(\"web['foo'] is undefined\"); return \"notdef\";\n" + "end");
-    // String scriptUri = makeScript("rap4090", "a = defined(web['foo']);");
-    // String retval = Kernel.getScript().runScript(ctx, scriptUri, new HashMap<String, String>());
-    // assertEquals("notdef", retval);
-    // }
-
-    @Test
-    public void testRAP4090a() {
-        String scriptUri = makeScript("rap4090a", "if (!defined(foo)) do \n return 'undefined'; end ");
-        String retval = Kernel.getScript().runScript(ctx, scriptUri, new HashMap<String, String>());
+        scriptUri = makeScript("rap4090a", "if (!defined(foo)) do \n return 'undefined'; end ");
+        retval = Kernel.getScript().runScript(ctx, scriptUri, new HashMap<String, String>());
         assertEquals("undefined", retval);
-    }
 
-    @Test
-    public void testRAP4090b() {
-        String scriptUri = makeScript("rap4090b", "if (!defined(foo.bar)) do \n return 'undefined'; end ");
-        String retval = Kernel.getScript().runScript(ctx, scriptUri, new HashMap<String, String>());
+        scriptUri = makeScript("rap4090b", "if (!defined(foo.bar)) do \n return 'undefined'; end ");
+        retval = Kernel.getScript().runScript(ctx, scriptUri, new HashMap<String, String>());
         assertEquals("undefined", retval);
-    }
 
-    @Test
-    public void testRAP4090c() {
-        String scriptUri = makeScript("rap4090c", "foo = [];\n if (!defined(foo.bar)) do \n return 'undefined'; end \n return('fail');");
-        String retval = Kernel.getScript().runScript(ctx, scriptUri, new HashMap<String, String>());
+        scriptUri = makeScript("rap4090c", "foo = [];\n if (!defined(foo.bar)) do \n return 'undefined'; end \n return('fail');");
+        retval = Kernel.getScript().runScript(ctx, scriptUri, new HashMap<String, String>());
         assertEquals("undefined", retval);
-    }
 
-    @Test
-    public void testRAP4090d() {
-        String scriptUri = makeScript("rap4090d", "foo = {};\n if (!defined(foo.bar)) do \n return 'undefined'; \n end \n return('fail');");
-        String retval = Kernel.getScript().runScript(ctx, scriptUri, new HashMap<String, String>());
+        scriptUri = makeScript("rap4090d", "foo = {};\n if (!defined(foo.bar)) do \n return 'undefined'; \n end \n return('fail');");
+        retval = Kernel.getScript().runScript(ctx, scriptUri, new HashMap<String, String>());
         assertEquals("undefined", retval);
-    }
 
-    @Test
-    public void testRAP4090e() {
-        String scriptUri = makeScript("rap4090e", "foo = 'foo';\n if (!defined(foo.bar)) do \n return 'undefined'; end \n return('fail');");
-        String retval = Kernel.getScript().runScript(ctx, scriptUri, new HashMap<String, String>());
+        scriptUri = makeScript("rap4090e", "foo = 'foo';\n if (!defined(foo.bar)) do \n return 'undefined'; end \n return('fail');");
+        retval = Kernel.getScript().runScript(ctx, scriptUri, new HashMap<String, String>());
         assertEquals("undefined", retval);
-    }
 
-    @Test
-    public void testRAP4090f() {
-        String scriptUri = makeScript("rap4090f", "foo = {};\n if (!defined(foo.bar.baz)) do \n return 'undefined'; \n end \n return('fail');");
-        String retval = Kernel.getScript().runScript(ctx, scriptUri, new HashMap<String, String>());
+        scriptUri = makeScript("rap4090f", "foo = {};\n if (!defined(foo.bar.baz)) do \n return 'undefined'; \n end \n return('fail');");
+        retval = Kernel.getScript().runScript(ctx, scriptUri, new HashMap<String, String>());
         assertEquals("undefined", retval);
-    }
 
-    @Test
-    public void testRAP4090g() {
-        String scriptUri = makeScript("rap4090g", "if (!defined(foo['bar'])) do \n return 'undefined'; end \n return('fail');");
-        String retval = Kernel.getScript().runScript(ctx, scriptUri, new HashMap<String, String>());
+        scriptUri = makeScript("rap4090g", "if (!defined(foo['bar'])) do \n return 'undefined'; end \n return('fail');");
+        retval = Kernel.getScript().runScript(ctx, scriptUri, new HashMap<String, String>());
         assertEquals("undefined", retval);
-    }
 
-    @Test
-    public void testRAP4090h() {
-        String scriptUri = makeScript("rap4090h", "foo = [];\n if (!defined(foo['bar'])) do \n return 'undefined'; end \n return('fail');");
-        String retval = Kernel.getScript().runScript(ctx, scriptUri, new HashMap<String, String>());
+        scriptUri = makeScript("rap4090h", "foo = [];\n if (!defined(foo['bar'])) do \n return 'undefined'; end \n return('fail');");
+        retval = Kernel.getScript().runScript(ctx, scriptUri, new HashMap<String, String>());
         assertEquals("undefined", retval);
-    }
 
-    @Test
-    public void testRAP4090i() {
-        String scriptUri = makeScript("rap4090i", "foo = {};\n if (!defined(foo['bar'])) do \n return 'undefined'; end \n return('fail');");
-        String retval = Kernel.getScript().runScript(ctx, scriptUri, new HashMap<String, String>());
+        scriptUri = makeScript("rap4090i", "foo = {};\n if (!defined(foo['bar'])) do \n return 'undefined'; end \n return('fail');");
+        retval = Kernel.getScript().runScript(ctx, scriptUri, new HashMap<String, String>());
         assertEquals("undefined", retval);
-    }
 
-    @Test
-    public void testRAP4090j() {
-        String scriptUri = makeScript("rap4090j", "foo = 'foo';\n if (!defined(foo['bar'])) do \n return 'undefined'; end \n return('fail');");
-        String retval = Kernel.getScript().runScript(ctx, scriptUri, new HashMap<String, String>());
+        scriptUri = makeScript("rap4090j", "foo = 'foo';\n if (!defined(foo['bar'])) do \n return 'undefined'; end \n return('fail');");
+        retval = Kernel.getScript().runScript(ctx, scriptUri, new HashMap<String, String>());
         assertEquals("undefined", retval);
     }
 
