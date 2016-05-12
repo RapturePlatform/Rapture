@@ -42,6 +42,7 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.google.common.collect.ImmutableMap;
@@ -263,6 +264,7 @@ public class ElasticSearchSearchRepositoryTest {
         assertEquals(97, r.getTotal().longValue());
     }
 
+    @Ignore
     @Test
     public void testSearchBlob() {
         String premier = "1,Leicester City,36,30,77\n2,Tottenham Hotspur,36,39,70\n3,Arsenal,36,25,67\n4,Manchester City,36,30,64\n5,Manchester United,35,12,60\n"
