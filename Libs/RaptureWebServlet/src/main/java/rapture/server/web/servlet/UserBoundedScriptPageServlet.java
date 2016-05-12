@@ -79,7 +79,7 @@ public class UserBoundedScriptPageServlet extends BaseServlet {
 
     @Override
     public void init() throws ServletException {
-        log.info("Starting UserBoundedScriptPageServlet");
+        log.debug("Starting UserBoundedScriptPageServlet");
 
         scriptPrefix = getServletConfig().getInitParameter("prefix");
         if (scriptPrefix == null) {
@@ -105,14 +105,14 @@ public class UserBoundedScriptPageServlet extends BaseServlet {
     @Override
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String path = req.getPathInfo();
-        log.info("Path is " + path);
+        log.debug("Path is " + path);
         String[] parts = path.split("/");
         
         String scriptName = parts[parts.length - 1];
-        log.info(scriptName);
+        log.debug(scriptName);
         
         String scriptURL = scriptPrefix + scriptName;
-        log.info("Script URL is " + scriptURL);
+        log.debug("Script URL is " + scriptURL);
 
         // We look at the last part of the request.getPath(), that is the "root" name of the script
         // We then prepend that with the "real source" of the scripts
@@ -136,7 +136,7 @@ public class UserBoundedScriptPageServlet extends BaseServlet {
         
         runScriptWithUser(script, parameterMap, resp);
        
-        log.info("Finished running script: " + path);
+        log.debug("Finished running script: " + path);
       
         resp.flushBuffer();
     }
@@ -154,7 +154,6 @@ public class UserBoundedScriptPageServlet extends BaseServlet {
             handler.setScriptApi(kScript);
             
             ReflexExecutor.runReflexProgram(script, handler, masterParameterMap);
-            log.debug("Output from script: " + handler.getOutput());
             
             resp.setCharacterEncoding("UTF-8");
             resp.getWriter().append(handler.getOutput());
@@ -206,7 +205,6 @@ public class UserBoundedScriptPageServlet extends BaseServlet {
 
     protected String getReflexScript(String uri) {
         RaptureURI scriptURI = new RaptureURI(uri);
-        log.debug(String.format("Running script for uri %s", scriptURI.toString()));
         RaptureScript script = Kernel.getScript().getScript(DEFINEDUSER, scriptURI.toString());
         if (script != null) {
             return script.getScript();
