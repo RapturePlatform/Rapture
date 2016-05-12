@@ -24,43 +24,31 @@
 package rapture.server;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.catalina.startup.Tomcat;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 
 import rapture.api.hooks.impl.TopicPubHook;
 import rapture.apiutil.StatusHelper;
 import rapture.app.RaptureAppService;
 import rapture.common.ApplicationCapability;
-import rapture.common.MessageFormat;
-import rapture.common.client.HttpLoginApi;
-import rapture.common.client.HttpStructuredApi;
-import rapture.common.client.SimpleCredentialsProvider;
 import rapture.common.exception.ExceptionToString;
 import rapture.common.exception.RaptureException;
-import rapture.common.exception.RaptureExceptionFactory;
 import rapture.common.hooks.HookFactory;
 import rapture.common.hooks.HookType;
 import rapture.common.hooks.SingleHookConfig;
 import rapture.config.ConfigLoader;
-import rapture.config.MultiValueConfigLoader;
-import rapture.home.RaptureHomeRetriever;
 import rapture.kernel.ContextFactory;
 import rapture.kernel.Kernel;
-import rapture.kernel.cache.SysRepoCache;
 import rapture.module.AddinLoader;
 import rapture.server.web.servlet.ApiCapabilitiesService;
 import rapture.util.IDGenerator;
-
-import com.google.common.collect.Lists;
 
 /**
  * This is the entry point for the RaptureAPIServer
@@ -85,10 +73,10 @@ public final class RaptureAPIServer {
         }
 
         try {
-           
+            Kernel.initBootstrap(ImmutableMap.of("STD", ConfigLoader.getConf().StandardTemplate), RaptureAPIServer.class, false);
             RaptureAppService.setupApp("RaptureAPIServer");
             RaptureAPIServer s = new RaptureAPIServer();
-   
+
             s.startApiWebServer();
             s.addHooks();
 
@@ -110,7 +98,7 @@ public final class RaptureAPIServer {
         }
         logger.info("Rapture API Server exited");
     }
-   
+
     private void addHooks() {
         TopicPubHook hook = new TopicPubHook();
         String id = TopicPubHook.getStandardId();
@@ -130,10 +118,9 @@ public final class RaptureAPIServer {
         capabilities.put(ApplicationCapability.APIURL, localApiUrl);
         return capabilities;
     }
-    
-    
+
     private Tomcat apiTomcat;
-    
+
     public RaptureAPIServer() {
     }
 
