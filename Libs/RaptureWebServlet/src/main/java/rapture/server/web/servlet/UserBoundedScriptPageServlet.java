@@ -315,7 +315,6 @@ public class UserBoundedScriptPageServlet extends BaseServlet {
         serverMap.put("Method", req.getMethod());
         serverMap.put("PathInfo", req.getPathInfo());
         serverMap.put("RemoteAddr", req.getRemoteAddr());
-        serverMap.put("", req.getLocalAddr());
         serverMap.put("Headers", getHeaderVariables(req));
         serverMap.put("Attributes", getHeaderAttributes(req));
         return serverMap;
