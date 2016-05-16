@@ -191,7 +191,7 @@ public class ElasticSearchSearchRepositoryTest {
         SeriesUpdateObject s = new SeriesUpdateObject(docPath, Arrays.asList("k1"), Arrays.asList("v1"));
         e.put(s);
         e.refresh();
-        rapture.common.SearchResponse r = e.search(Arrays.asList("series"), "v1");
+        rapture.common.SearchResponse r = e.search(Arrays.asList(Scheme.SERIES.toString()), "v1");
         assertEquals(1L, r.getTotal().longValue());
         assertEquals(1, r.getSearchHits().size());
         assertEquals("series", r.getSearchHits().get(0).getIndexType());
@@ -201,7 +201,7 @@ public class ElasticSearchSearchRepositoryTest {
         s = new SeriesUpdateObject("testme/x/y", Arrays.asList("k2"), Arrays.asList("v2"));
         e.put(s);
         e.refresh();
-        r = e.search(Arrays.asList("series"), "v1");
+        r = e.search(Arrays.asList(Scheme.SERIES.toString()), "v1");
         assertEquals(1L, r.getTotal().longValue());
         assertEquals(1, r.getSearchHits().size());
         assertEquals("series", r.getSearchHits().get(0).getIndexType());
