@@ -113,6 +113,7 @@ subprojects {
             }
         }
 
+        jar.excludes = ['rapture/config']
         task targetConfig {
             outputs.dir file("$buildDir/config")
         }

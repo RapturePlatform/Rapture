@@ -131,8 +131,10 @@ public class YamlConfigReader extends ConfigFileReader<RaptureConfig> {
                 overrides = new HashMap<String, Object>();
             }
 
-            for (Entry<String, Object> entry : overrides.entrySet()) {
-                overlaid.put(entry.getKey(), entry.getValue());
+            if (overrides != null) {
+                for (Entry<String, Object> entry : overrides.entrySet()) {
+                    overlaid.put(entry.getKey(), entry.getValue());
+                }
             }
 
             return yaml.dump(overlaid);
