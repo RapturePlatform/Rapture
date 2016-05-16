@@ -165,24 +165,24 @@ public class ElasticSearchSearchRepositoryTest {
     @Test
     public void testScriptPut() {
         String docPath = "somescript/d2/d1";
-        DocumentWithMeta d = createDummyDocumentWithMeta(Scheme.DOCUMENT.toString() + "://" + docPath, "{\"k1\":\"v1\"}");
+        DocumentWithMeta d = createDummyDocumentWithMeta(Scheme.SCRIPT.toString() + "://" + docPath, "{\"k1\":\"v1\"}");
         e.put(new DocUpdateObject(d));
         e.refresh();
-        rapture.common.SearchResponse r = e.search(Arrays.asList(Scheme.DOCUMENT.toString()), "v1");
+        rapture.common.SearchResponse r = e.search(Arrays.asList(Scheme.SCRIPT.toString()), "v1");
         assertEquals(1L, r.getTotal().longValue());
         assertEquals(1, r.getSearchHits().size());
-        assertEquals("document", r.getSearchHits().get(0).getIndexType());
-        assertEquals("document://" + docPath, r.getSearchHits().get(0).getId());
-        assertEquals("document://" + docPath, r.getSearchHits().get(0).getUri());
+        assertEquals("script", r.getSearchHits().get(0).getIndexType());
+        assertEquals("script://" + docPath, r.getSearchHits().get(0).getId());
+        assertEquals("script://" + docPath, r.getSearchHits().get(0).getUri());
         assertEquals("{\"k1\":\"v1\"}", r.getSearchHits().get(0).getSource());
 
         r = e.search(Arrays.asList(SearchRepoType.uri.toString()), "d2");
         assertEquals(1L, r.getTotal().longValue());
         assertEquals(1, r.getSearchHits().size());
         assertEquals(SearchRepoType.uri.toString(), r.getSearchHits().get(0).getIndexType());
-        assertEquals("document://" + docPath, r.getSearchHits().get(0).getId());
-        assertEquals("document://" + docPath, r.getSearchHits().get(0).getUri());
-        assertEquals("{\"parts\":[\"d2\",\"d1\"],\"repo\":\"somescript\",\"scheme\":\"document\"}", r.getSearchHits().get(0).getSource());
+        assertEquals("script://" + docPath, r.getSearchHits().get(0).getId());
+        assertEquals("script://" + docPath, r.getSearchHits().get(0).getUri());
+        assertEquals("{\"parts\":[\"d2\",\"d1\"],\"repo\":\"somescript\",\"scheme\":\"script\"}", r.getSearchHits().get(0).getSource());
     }
 
     @Test
