@@ -9,7 +9,7 @@ public class DocUpdateObject extends AbstractUpdateObject<DocumentWithMeta> {
     public DocUpdateObject() {
     }
 
-    DocumentWithMeta payload;
+    private DocumentWithMeta payload;
 
     public DocUpdateObject(RaptureURI uri) {
         super(uri);

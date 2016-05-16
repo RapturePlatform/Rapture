@@ -19,6 +19,10 @@ public static <name> readByAddress(RaptureURI addressURI) {
  */
 public static Boolean deleteByAddress(RaptureURI addressURI, String user, String comment) {
     RaptureURI storageLocation = StorageLocationFactory.createStorageURI(<name>PathBuilder.getRepoName(), <name>PathBuilder.getPrefix(), addressURI);
+<if(fts)>
+	ObjectStorageSearchPublisher.publishDeleteMessage(addressURI);
+	
+<endif>
     return deleteByStorageLocation(storageLocation, user, comment);
 }
 

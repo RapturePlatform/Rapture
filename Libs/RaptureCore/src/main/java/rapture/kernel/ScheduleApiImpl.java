@@ -24,6 +24,25 @@
 package rapture.kernel;
 
 import static rapture.common.Scheme.JOB;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TimeZone;
+
+import org.apache.http.HttpStatus;
+import org.apache.log4j.Logger;
+import org.joda.time.DateMidnight;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.MutableDateTime;
+
 import rapture.common.CallingContext;
 import rapture.common.JobErrorAck;
 import rapture.common.JobErrorAckStorage;
@@ -53,34 +72,15 @@ import rapture.common.api.ScheduleApi;
 import rapture.common.exception.RaptureExceptionFactory;
 import rapture.common.impl.jackson.JacksonUtil;
 import rapture.common.impl.jackson.JsonContent;
+import rapture.config.MultiValueConfigLoader;
 import rapture.event.generator.RangedEventGenerator;
 import rapture.kernel.schedule.CronParser;
-import rapture.kernel.schedule.MultiCronParser;
 import rapture.kernel.schedule.ExecStatusHelper;
 import rapture.kernel.schedule.JobExecSort;
+import rapture.kernel.schedule.MultiCronParser;
 import rapture.kernel.schedule.ScheduleManager;
 import rapture.kernel.schedule.WorkflowExecsRepo;
 import rapture.repo.RepoVisitor;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TimeZone;
-
-import org.apache.http.HttpStatus;
-import org.apache.log4j.Logger;
-import org.joda.time.DateMidnight;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.joda.time.MutableDateTime;
-
-import rapture.config.MultiValueConfigLoader;
 
 /**
  * Manage the schedule of Rapture
@@ -117,7 +117,8 @@ public class ScheduleApiImpl extends KernelBase implements ScheduleApi {
             throw RaptureExceptionFactory.create("Invalid TimeZone " + timeZone);
         }
         job.setTimeZone(timeZone);
-        job.setJobURI(new RaptureURI(jobURI, Scheme.JOB).toString());
+        RaptureURI uri = new RaptureURI(jobURI, Scheme.JOB);
+        job.setJobURI(uri.toString());
         if (type == JobType.SCRIPT) {
             job.setScriptURI(executableURI);
         } else {
@@ -136,7 +137,7 @@ public class ScheduleApiImpl extends KernelBase implements ScheduleApi {
         if (appStatusNamePattern != null) {
             job.setAppStatusNamePattern(appStatusNamePattern);
         }
-        RaptureJobStorage.add(job, context.getUser(), Messages.getString("Schedule.createNew")); //$NON-NLS-1$
+        RaptureJobStorage.add(uri, job, context.getUser(), Messages.getString("Schedule.createNew")); //$NON-NLS-1$
         ScheduleManager.handleJobChanged(job, false, null, null);
         return job;
     }
@@ -296,7 +297,7 @@ public class ScheduleApiImpl extends KernelBase implements ScheduleApi {
         RaptureURI parsedURI = new RaptureURI(jobURI, JOB);
         RaptureJob job = RaptureJobStorage.readByAddress(parsedURI);
         job.setActivated(true);
-        RaptureJobStorage.add(job, context.getUser(), "job activated");
+        RaptureJobStorage.add(parsedURI, job, context.getUser(), "job activated");
         ScheduleManager.handleJobChanged(job, false, extraJobParams, null);
     }
 
@@ -305,7 +306,7 @@ public class ScheduleApiImpl extends KernelBase implements ScheduleApi {
         RaptureURI parsedURI = new RaptureURI(jobURI, JOB);
         RaptureJob job = RaptureJobStorage.readByAddress(parsedURI);
         job.setActivated(false);
-        RaptureJobStorage.add(job, context.getUser(), "job deactivated");
+        RaptureJobStorage.add(parsedURI, job, context.getUser(), "job deactivated");
         ScheduleManager.handleJobChanged(job, false, null, null);
     }
 

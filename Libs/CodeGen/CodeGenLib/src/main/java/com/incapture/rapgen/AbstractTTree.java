@@ -47,9 +47,9 @@ import com.incapture.rapgen.annotations.BeanAnnotation;
 import com.incapture.rapgen.annotations.CacheableAnnotation;
 import com.incapture.rapgen.annotations.DeprecatedAnnotation;
 import com.incapture.rapgen.annotations.ExtendsAnnotation;
+import com.incapture.rapgen.annotations.FTSAnnotation;
 import com.incapture.rapgen.annotations.IndexedAnnotation;
 import com.incapture.rapgen.annotations.SearchableAnnotation;
-import com.incapture.rapgen.annotations.FTSAnnotation;
 import com.incapture.rapgen.annotations.StorableAnnotation;
 import com.incapture.rapgen.annotations.storable.EncodingMap;
 import com.incapture.rapgen.annotations.storable.StorableField;
@@ -91,6 +91,8 @@ public abstract class AbstractTTree extends TreeParser {
     private Map<String, Boolean> schemesMap = new HashMap<String, Boolean>();
 
     private List<StorableAttributes> storableAttributes = new LinkedList<>();
+
+    private Set<String> searchTypes = new HashSet<>();
 
     public List<StorableAttributes> getStorableAttributes() {
         return storableAttributes;
@@ -351,6 +353,9 @@ public abstract class AbstractTTree extends TreeParser {
                     storageMethods.add(getTemplateLib().getInstanceOf("beanStorageAddressableMethods", storageMethodAttributes));
                     storageClassAttributes.put("importFactory", "import rapture.object.storage.StorageLocationFactory;");
                     storageClassAttributes.put("fts", isFTS);
+                    if (isFTS) {
+                        searchTypes.add(addressable.getScheme().toLowerCase());
+                    }
                 }
 
                 if (deprecated != null) {
@@ -666,6 +671,12 @@ public abstract class AbstractTTree extends TreeParser {
             // currently don't generate Scheme.java file for sdk stuff
             generateSchemeTemplate(null);
         }
+
+        String searchRepoTypePath = getGeneratedFilePath(sdkName, "search", "search", "SearchRepoType.java");
+        STAttrMap searchRepoTypeAttributes = new STAttrMap();
+        searchRepoTypeAttributes.put("schemes", searchTypes);
+        StringTemplate searchRepoType = getTemplateLib().getInstanceOf("searchRepoType", searchRepoTypeAttributes);
+        addApiTemplate(searchRepoTypePath, "1", searchRepoType);
     }
 
     private void generateSchemeTemplate(String sdkName) {
