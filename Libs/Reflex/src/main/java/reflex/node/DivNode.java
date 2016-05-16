@@ -57,14 +57,21 @@ public class DivNode extends BaseNode {
             try {
                 BigDecimal bigA = a.asBigDecimal();
                 BigDecimal bigB = b.asBigDecimal();
-                BigDecimal product = bigA.divide(bigB);
+                BigDecimal result = bigA.divide(bigB);
                 try {
-                    retVal = new ReflexValue(product.intValueExact());
+                    if (a.isInteger() && b.isInteger()) {
+                        retVal = new ReflexValue(result.intValueExact());
+                    } else {
+                        retVal = new ReflexValue(result);
+                    }
                 } catch (ArithmeticException e) {
-                    retVal = new ReflexValue(product);
+                    // Will get here if integer division result is fractional but rational
+                    retVal = new ReflexValue(result);
                 }
             } catch (ArithmeticException e) {
+                // Will get here if result is irrational.
                 retVal = new ReflexValue(a.asDouble() / b.asDouble());
+                log.warn("Irrational result cannot be stored exactly.");
             }
             debugger.stepEnd(this, retVal, null);
             return retVal;
