@@ -24,17 +24,15 @@
 package rapture.server.web.servlet;
 
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpStatus;
 import org.apache.log4j.Logger;
 
@@ -47,8 +45,6 @@ import rapture.common.exception.RaptureException;
 import rapture.common.exception.RaptureExceptionFactory;
 import rapture.common.impl.jackson.JacksonUtil;
 import rapture.common.model.ContextResponseData;
-import rapture.common.model.RaptureUser;
-import rapture.kernel.ContextFactory;
 import rapture.kernel.Kernel;
 import rapture.kernel.script.KernelScript;
 import reflex.ReflexException;
@@ -66,9 +62,6 @@ import reflex.ReflexExecutor;
  */
 public class UserBoundedScriptPageServlet extends BaseServlet {
 
-    /**
-     * 
-     */
     private static CallingContext DEFINEDUSER = null;
     private static final long serialVersionUID = 1L;
     private static final Logger log = Logger.getLogger(UserBoundedScriptPageServlet.class);
@@ -77,6 +70,12 @@ public class UserBoundedScriptPageServlet extends BaseServlet {
     private String user;
      
 
+    /**
+     * Initializes the user bound servlet.
+     * <p>
+     * Loads config from web.xml and creates a CallingContext for user that the servlet is bound to.  
+     *
+     */
     @Override
     public void init() throws ServletException {
         log.debug("Starting UserBoundedScriptPageServlet");
@@ -101,27 +100,74 @@ public class UserBoundedScriptPageServlet extends BaseServlet {
             throw new ServletException("Error looking up user. " + re.getMessage());
         }
     }
+    
+    /**
+     * POST method implementation.
+     * <p>
+     * Extract the Reflex URI and parameters out of request and run it using the Calling Context of user.  
+     *
+     * @param  req  The HttpServletRequest
+     * @param  resp The HttpServletResponse      
+     */
+    @Override
+    public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
+        
+        Map<String, Object> requestVariables = getRequestVariables(req);
+        
+        log.debug("req is " + req);
+        log.debug("resp is " + resp);
+        log.debug("request variables " + requestVariables);
+        
+        //check if there are req variables
+        if(Integer.valueOf(req.getHeader("content-length")) == 0){
+            log.debug("Request has no parameters.");
+            resp.sendError(HttpStatus.SC_BAD_REQUEST, "Request has no parameters");
+            return;
+        }
+        
+        String scriptURL = getScriptUrlFromHttpRequest(req);
+        
+        String script = getReflexScript(scriptURL);
+        
+        if (script == null || script.isEmpty()) {
+            resp.sendError(HttpStatus.SC_NOT_FOUND, "Service " + scriptURL + " has no endpoint");
+            return;
+        }
+        Map<String, Object> props = getParams(req);
+        Map<String, Object> parameterMap = new HashMap<>();
+        for (String key : props.keySet()) {
+            Object val = props.get(key);
+            if (val instanceof String) {
+                val = URLDecoder.decode((String) val, "UTF-8");
+            }
+            parameterMap.put(key, val);
+        }
+        
+        runScriptWithUser(script, parameterMap, resp);
+        
+        log.debug("Finished running script: " + scriptURL);
+        
+        resp.flushBuffer();
+    }
+    
 
+    /**
+     * GET method implementation.
+     * <p>
+     * Extract the Reflex URI and parameters out of request and run it using the Calling Context of user.  
+     *
+     * @param  req  The HttpServletRequest
+     * @param  resp The HttpServletResponse      
+     */
     @Override
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        String path = req.getPathInfo();
-        log.debug("Path is " + path);
-        String[] parts = path.split("/");
         
-        String scriptName = parts[parts.length - 1];
-        log.debug(scriptName);
+        String scriptURL = getScriptUrlFromHttpRequest(req);
         
-        String scriptURL = scriptPrefix + scriptName;
-        log.debug("Script URL is " + scriptURL);
-
-        // We look at the last part of the request.getPath(), that is the "root" name of the script
-        // We then prepend that with the "real source" of the scripts
-        // (so e.g. you may come in as /login/doLogin, but that gets translated to script://secure/doLogin )
-
         String script = getReflexScript(scriptURL);
 
         if (script == null || script.isEmpty()) {
-            resp.setStatus(HttpStatus.SC_NOT_FOUND);
+            resp.sendError(HttpStatus.SC_NOT_FOUND, "Service " + scriptURL + " has no endpoint");
             return;
         }
 
@@ -136,11 +182,18 @@ public class UserBoundedScriptPageServlet extends BaseServlet {
         
         runScriptWithUser(script, parameterMap, resp);
        
-        log.debug("Finished running script: " + path);
+        log.debug("Finished running script: " + scriptURL);
       
         resp.flushBuffer();
     }
 
+    /**
+     * Process the request that came either by POST or GET method
+     * <p>
+     * @param  script        The actual script/endpoint to execute  
+     * @param  parameterMap  Parameters extracted from request and injected into the script 
+     * @param  resp          The HttpServletResponse
+     */
     protected void runScriptWithUser(String script, Map<String, Object> parameterMap, HttpServletResponse resp) throws IOException {
 
         Map<String, Object> masterParameterMap = new HashMap<String, Object>();
@@ -193,6 +246,35 @@ public class UserBoundedScriptPageServlet extends BaseServlet {
         resp.flushBuffer();
     }
 
+    /**
+     * Helper method to extract the URI from HttpServletRequest
+     * <p>
+     * @param  request  The actual script/endpoint to execute  
+     * @return          URI of script as a String e.g. script://<repo>/endpoint 
+     */
+    private String getScriptUrlFromHttpRequest(HttpServletRequest request){
+        String scriptURL = "";
+        
+        String path = request.getPathInfo();
+        log.debug("Path is " + path);
+        String[] parts = path.split("/");
+        
+        String scriptName = parts[parts.length - 1];
+        log.debug(scriptName);
+        
+        scriptURL = scriptPrefix + scriptName;
+        log.debug("Script URL is " + scriptURL);
+        
+        return scriptURL;
+    }
+    
+    
+    /**
+     * Helper method to add 
+     * <p>
+     * @param  resp  The HttpServletResponse response object
+     * @param  ew    Error object 
+     */
     private void sendVerboseError(HttpServletResponse resp, ErrorWrapper ew) throws IOException {
         Map<String, Object> map = JacksonUtil.getHashFromObject(ew);
         map.put("error", ew.getMessage());
@@ -203,6 +285,12 @@ public class UserBoundedScriptPageServlet extends BaseServlet {
         resp.setContentType("text/plain");
     }
 
+    /**
+     * Helper method to get the script/endpoint from a script:// repo
+     * <p>
+     * @param  uri  The actual script/endpoint to execute  
+     * @return      Script file 
+     */
     protected String getReflexScript(String uri) {
         RaptureURI scriptURI = new RaptureURI(uri);
         RaptureScript script = Kernel.getScript().getScript(DEFINEDUSER, scriptURI.toString());
@@ -213,4 +301,45 @@ public class UserBoundedScriptPageServlet extends BaseServlet {
             return null;
         }
     }
+    
+    /**
+     * Helper methods to get header info out of a HttpServletRequest request object
+     * <p>
+     * @param  req  The HttpServletRequest request object
+     * @return      Map of HTTP header 
+     */
+    private Map<String, Object> getRequestVariables(HttpServletRequest req) {
+        Map<String, Object> serverMap = new HashMap<String, Object>();
+        serverMap.put("ContentType", req.getContentType());
+        serverMap.put("ContextPath", req.getContextPath());
+        serverMap.put("Method", req.getMethod());
+        serverMap.put("PathInfo", req.getPathInfo());
+        serverMap.put("RemoteAddr", req.getRemoteAddr());
+        serverMap.put("", req.getLocalAddr());
+        serverMap.put("Headers", getHeaderVariables(req));
+        serverMap.put("Attributes", getHeaderAttributes(req));
+        return serverMap;
+    }
+
+    private Map<String, Object> getHeaderVariables(HttpServletRequest req) {
+        Map<String, Object> headerMap = new HashMap<String, Object>();
+        Enumeration<String> headerNames = req.getHeaderNames();
+        while (headerNames.hasMoreElements()) {
+            String headerName = headerNames.nextElement();
+            headerMap.put(headerName, req.getHeader(headerName));
+        }
+        return headerMap;
+    }
+
+    private Map<String, Object> getHeaderAttributes(HttpServletRequest req) {
+        Map<String, Object> variables = new HashMap<String, Object>();
+        Enumeration<String> vars = req.getAttributeNames();
+        while (vars.hasMoreElements()) {
+            String attrName = vars.nextElement();
+            variables.put(attrName, req.getAttribute(attrName));
+        }
+        return variables;
+    }
+    
+    
 }
