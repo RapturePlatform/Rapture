@@ -126,13 +126,17 @@ public class UserBoundedScriptPageServlet extends BaseServlet {
         }
         
         String scriptURL = getScriptUrlFromHttpRequest(req);
+        if (scriptURL == null) {
+            resp.sendError(HttpStatus.SC_BAD_REQUEST, "Request is missing path information.");
+            return;
+        }
         
         String script = getReflexScript(scriptURL);
-        
         if (script == null || script.isEmpty()) {
             resp.sendError(HttpStatus.SC_NOT_FOUND, "Service " + scriptURL + " has no endpoint");
             return;
         }
+        
         Map<String, Object> props = getParams(req);
         Map<String, Object> parameterMap = new HashMap<>();
         for (String key : props.keySet()) {
@@ -163,9 +167,12 @@ public class UserBoundedScriptPageServlet extends BaseServlet {
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         
         String scriptURL = getScriptUrlFromHttpRequest(req);
+        if (scriptURL == null) {
+            resp.sendError(HttpStatus.SC_BAD_REQUEST, "Request is missing path information.");
+            return;
+        }
         
         String script = getReflexScript(scriptURL);
-
         if (script == null || script.isEmpty()) {
             resp.sendError(HttpStatus.SC_NOT_FOUND, "Service " + scriptURL + " has no endpoint");
             return;
@@ -253,16 +260,18 @@ public class UserBoundedScriptPageServlet extends BaseServlet {
      * @return          URI of script as a String e.g. script://<repo>/endpoint 
      */
     private String getScriptUrlFromHttpRequest(HttpServletRequest request){
-        String scriptURL = "";
         
         String path = request.getPathInfo();
+        if(path == null){ //getPathInfo() returns null if there was no extra path information. 
+            return null;
+        }
         log.debug("Path is " + path);
         String[] parts = path.split("/");
         
         String scriptName = parts[parts.length - 1];
         log.debug(scriptName);
         
-        scriptURL = scriptPrefix + scriptName;
+        String scriptURL = scriptPrefix + scriptName;
         log.debug("Script URL is " + scriptURL);
         
         return scriptURL;
