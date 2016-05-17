@@ -71,8 +71,8 @@ import rapture.common.model.DocumentWithMeta;
 import rapture.common.series.SeriesUpdateObject;
 import rapture.kernel.ContextFactory;
 import rapture.kernel.Kernel;
-import rapture.kernel.search.SearchRepoType;
 import rapture.kernel.search.SearchRepository;
+import rapture.search.SearchRepoType;
 
 /**
  * ElasticSearch implementation of our search repository. All ElasticSearch specific stuff should be found in here.
@@ -117,23 +117,21 @@ public class ElasticSearchSearchRepository implements SearchRepository {
         RaptureURI uri = updateObject.getUri();
         log.info("URI for indexing is " + uri.toString());
         putUriStore(uri);
-        switch (uri.getScheme()) {
-        case DOCUMENT:
+
+        if (updateObject instanceof DocUpdateObject) {
             DocumentWithMeta docMeta = ((DocUpdateObject) updateObject).getPayload();
-            ensureClient().prepareIndex(index, SearchRepoType.DOC.toString(), uri.toString()).setSource(docMeta.getContent()).get();
+            ensureClient().prepareIndex(index, uri.getScheme().toString(), uri.toString()).setSource(docMeta.getContent()).get();
             String meta = JacksonUtil.jsonFromObject(docMeta.getMetaData());
-            ensureClient().prepareIndex(index, SearchRepoType.META.toString(), uri.toString()).setSource(meta).get();
-            break;
-        case SERIES:
+            ensureClient().prepareIndex(index, SearchRepoType.meta.toString(), uri.toString()).setSource(meta).get();
+        } else if (updateObject instanceof SeriesUpdateObject) {
             Map<String, String> map = ((SeriesUpdateObject) updateObject).asStringMap();
             if (!map.isEmpty()) {
                 synchronized (client) {
-                    ensureClient().prepareUpdate(index, SearchRepoType.SERIES.toString(), uri.toString()).setDoc(map).setUpsert(map)
+                    ensureClient().prepareUpdate(index, uri.getScheme().toString(), uri.toString()).setDoc(map).setUpsert(map)
                             .setRetryOnConflict(DEFAULT_RETRY_ON_CONFLICT).get();
                 }
             }
-            break;
-        case BLOB:
+        } else if (updateObject instanceof BlobUpdateObject) {
             BlobContainer content = ((BlobUpdateObject) updateObject).getPayload();
             /**
              * You have to give ElasticSearch a JSON document. We can determine what it is by checking updateObject.getMimeType() Do we need to index the blob's
@@ -150,7 +148,7 @@ public class ElasticSearchSearchRepository implements SearchRepository {
                         try {
                             String contentStr = tikaPDF.parseToString(new ByteArrayInputStream(content.getContent()));
                             XContentBuilder source = jsonBuilder().startObject().field("blob", contentStr).endObject();
-                            ensureClient().prepareIndex(index, SearchRepoType.BLOB.toString(), uri.toString()).setSource(source).get();
+                            ensureClient().prepareIndex(index, Scheme.BLOB.toString(), uri.toString()).setSource(source).get();
                         } catch (IOException | TikaException e) {
                             log.error("Cannot index PDF " + e.getMessage());
                             log.debug(ExceptionToString.format(e));
@@ -161,7 +159,7 @@ public class ElasticSearchSearchRepository implements SearchRepository {
             } else {
                 try {
                     XContentBuilder source = jsonBuilder().startObject().field("blob", new String(content.getContent())).endObject();
-                    ensureClient().prepareIndex(index, SearchRepoType.BLOB.toString(), uri.toString()).setSource(source).get();
+                    ensureClient().prepareIndex(index, Scheme.BLOB.toString(), uri.toString()).setSource(source).get();
                 } catch (IOException ioe) {
                     log.error("Cannot index CSV " + ioe.getMessage());
                     log.debug(ExceptionToString.format(ioe));
@@ -177,15 +175,14 @@ public class ElasticSearchSearchRepository implements SearchRepository {
                     }
                 }
                 source.field("mimetype", updateObject.getMimeType()).endObject();
-                ensureClient().prepareIndex(index, SearchRepoType.META.toString(), uri.toString()).setSource(source).get();
+                ensureClient().prepareIndex(index, SearchRepoType.meta.toString(), uri.toString()).setSource(source).get();
             } catch (IOException ioe) {
                 log.error("Cannot index blob metadata " + ioe.getMessage());
                 log.debug(ExceptionToString.format(ioe));
                 throw RaptureExceptionFactory.create("Cannot index blob " + ioe.getMessage(), ioe);
             }
-            break;
-        default:
-            throw new RaptNotSupportedException("Indexing not yet supported for " + uri.getScheme());
+        } else {
+            throw new RaptNotSupportedException(String.format("Search update for uri [%s] not supported yet", uri.toString()));
         }
     }
 
@@ -194,7 +191,7 @@ public class ElasticSearchSearchRepository implements SearchRepository {
         uriStore.setParts(Arrays.asList(uri.getDocPath().split("/")));
         uriStore.setRepo(uri.getAuthority());
         uriStore.setScheme(uri.getScheme().toString());
-        ensureClient().prepareIndex(index, SearchRepoType.URI.toString(), uri.getShortPath()).setSource(JacksonUtil.jsonFromObject(uriStore)).get();
+        ensureClient().prepareIndex(index, SearchRepoType.uri.toString(), uri.toString()).setSource(JacksonUtil.jsonFromObject(uriStore)).get();
     }
 
     /**
@@ -202,24 +199,11 @@ public class ElasticSearchSearchRepository implements SearchRepository {
      */
     @Override
     public void remove(RaptureURI uri) {
-        log.debug("Remove entry for " + uri.toString());
-        switch (uri.getScheme()) {
-        case SERIES:
-            ensureClient().prepareDelete(index, SearchRepoType.SERIES.toString(), uri.getShortPath()).get();
-            break;
-        case DOCUMENT:
-            ensureClient().prepareDelete(index, SearchRepoType.DOC.toString(), uri.toString()).get();
-            ensureClient().prepareDelete(index, SearchRepoType.META.toString(), uri.toString()).get();
-            break;
-        case BLOB:
-            ensureClient().prepareDelete(index, SearchRepoType.BLOB.toString(), uri.getShortPath()).get();
-            ensureClient().prepareDelete(index, SearchRepoType.META.toString(), uri.toString()).get();
-            break;
-        default:
-            log.warn("Called remove() on an unsupported scheme: " + uri.getScheme().toString());
-            break;
-        }
-        ensureClient().prepareDelete(index, SearchRepoType.URI.toString(), uri.getShortPath()).get();
+        // delete from everywhere. it won't error if it's not there
+        String id = uri.toString();
+        ensureClient().prepareDelete(index, uri.getScheme().toString(), id).get();
+        ensureClient().prepareDelete(index, SearchRepoType.meta.toString(), id).get();
+        ensureClient().prepareDelete(index, SearchRepoType.uri.toString(), id).get();
     }
 
     @Override
@@ -243,7 +227,7 @@ public class ElasticSearchSearchRepository implements SearchRepository {
     @Override
     public rapture.common.SearchResponse searchForRepoUris(String scheme, String repo, String cursorId) {
         String searchQuery = String.format("scheme:%s AND repo:%s", scheme, repo);
-        return searchWithCursor(Arrays.asList(SearchRepoType.URI.toString()), cursorId, 10, searchQuery);
+        return searchWithCursor(Arrays.asList(SearchRepoType.uri.toString()), cursorId, 10, searchQuery);
     }
 
     @Override
@@ -281,40 +265,6 @@ public class ElasticSearchSearchRepository implements SearchRepository {
     }
 
     /**
-     * Convert from scheme.authority and id back to scheme://authority/id
-     * 
-     * @param type
-     * @param id
-     * @param map
-     * @return
-     */
-    String getUri(String type, String id, Map<String, Object> map) {
-        Scheme scheme = null;
-
-        if (map != null) {
-            Object schemeName = map.get("scheme");
-            if (schemeName != null) scheme = Scheme.getScheme(schemeName.toString());
-        }
-
-        if (scheme == null) {
-            switch (SearchRepoType.valueOf(type)) {
-            case META:
-            case URI:
-            case DOC:
-                scheme = Scheme.DOCUMENT;
-                break;
-            case SERIES:
-                scheme = Scheme.SERIES;
-                break;
-            case BLOB:
-                scheme = Scheme.BLOB;
-                break;
-            }
-        }
-        return new RaptureURI(id, scheme).toShortString();
-    }
-
-    /**
      * For unit testing
      * 
      * @param client
@@ -335,7 +285,7 @@ public class ElasticSearchSearchRepository implements SearchRepository {
             rHit.setSource(hit.getSourceAsString());
             rHit.setIndexType(hit.getType());
             rHit.setId(hit.getId());
-            rHit.setUri(getUri(hit.getType(), hit.getId(), hit.getSource()));
+            rHit.setUri(hit.getId());
             ret.getSearchHits().add(rHit);
         }
         return ret;

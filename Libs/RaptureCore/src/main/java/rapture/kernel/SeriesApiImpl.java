@@ -230,6 +230,9 @@ public class SeriesApiImpl extends KernelBase implements SeriesApi {
         RaptureURI internalURI = new RaptureURI(seriesURI, Scheme.SERIES);
         SeriesRepo repo = getRepoOrFail(internalURI);
         SeriesValue lastPoint = repo.getLastPoint(internalURI.getDocPath());
+        if (lastPoint == null) {
+            return null;
+        }
         return sv2xsf.apply(lastPoint);
     }
 
@@ -502,18 +505,18 @@ public class SeriesApiImpl extends KernelBase implements SeriesApi {
             }
 
             List<RaptureFolderInfo> children = repo.listSeriesByUriPrefix(currParentDocPath);
-            if ((children == null) || (children.isEmpty()) && (currDepth==0) && (internalUri.hasDocPath())) {
+            if ((children == null) || (children.isEmpty()) && (currDepth == 0) && (internalUri.hasDocPath())) {
                 throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, apiMessageCatalog.getMessage("NoSuchFolder", internalUri.toString())); //$NON-NLS-1$
             } else {
-            	for (RaptureFolderInfo child : children) {   
-	                String childDocPath = currParentDocPath + (top ? "" : "/") + child.getName();
-	                if (child.getName().isEmpty()) continue;
-	                String childUri = RaptureURI.builder(Scheme.SERIES, authority).docPath(childDocPath).asString() + (child.isFolder() ? "/" : "");
-	                ret.put(childUri, child);
-	                if (child.isFolder()) {
-	                	parentsStack.push(childDocPath);
-	                }
-            	}
+                for (RaptureFolderInfo child : children) {
+                    String childDocPath = currParentDocPath + (top ? "" : "/") + child.getName();
+                    if (child.getName().isEmpty()) continue;
+                    String childUri = RaptureURI.builder(Scheme.SERIES, authority).docPath(childDocPath).asString() + (child.isFolder() ? "/" : "");
+                    ret.put(childUri, child);
+                    if (child.isFolder()) {
+                        parentsStack.push(childDocPath);
+                    }
+                }
             }
             if (top) startDepth--; // special case
         }
@@ -548,7 +551,7 @@ public class SeriesApiImpl extends KernelBase implements SeriesApi {
         folders.add(serUri);
         for (Map.Entry<String, RaptureFolderInfo> entry : map.entrySet()) {
             String uri = entry.getKey();
-        	RaptureURI ruri = new RaptureURI(uri);
+            RaptureURI ruri = new RaptureURI(uri);
             boolean isFolder = entry.getValue().isFolder();
             try {
                 requestObj.setSeriesUri(uri);
@@ -567,12 +570,12 @@ public class SeriesApiImpl extends KernelBase implements SeriesApi {
             }
         }
         for (RaptureURI uri : folders) {
-            // deleteFolder returns true if the folder was deleted. 
+            // deleteFolder returns true if the folder was deleted.
             // It won't delete a folder that isn't empty.
             while (uri != null) {
-            	if (!repository.deleteFolder(uri)) break;
+                if (!repository.deleteFolder(uri)) break;
                 // getParentURI returns null if the URI has no doc path
-            	uri = uri.getParentURI();
+                uri = uri.getParentURI();
             }
         }
         return removed;

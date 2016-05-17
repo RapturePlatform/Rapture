@@ -50,8 +50,8 @@ import rapture.common.pipeline.PipelineConstants;
 import rapture.common.series.SeriesUpdateObject;
 import rapture.config.ConfigLoader;
 import rapture.kernel.pipeline.SearchPublisher;
-import rapture.kernel.search.SearchRepoType;
 import rapture.kernel.search.SearchRepository;
+import rapture.search.SearchRepoType;
 
 public class SearchApiImpl extends KernelBase implements SearchApi {
     private static Logger logger = Logger.getLogger(SearchApiImpl.class);
@@ -80,12 +80,12 @@ public class SearchApiImpl extends KernelBase implements SearchApi {
 
     @Override
     public SearchResponse search(CallingContext context, String query) {
-        return qualifiedSearch(context, ConfigLoader.getConf().FullTextSearchDefaultRepo, SearchRepoType.valuesAsList(), query);
+        return qualifiedSearch(context, ConfigLoader.getConf().FullTextSearchDefaultRepo, SearchRepoType.values, query);
     }
 
     @Override
     public SearchResponse searchWithCursor(CallingContext context, String cursorId, int size, String query) {
-        return qualifiedSearchWithCursor(context, ConfigLoader.getConf().FullTextSearchDefaultRepo, SearchRepoType.valuesAsList(), cursorId, size, query);
+        return qualifiedSearchWithCursor(context, ConfigLoader.getConf().FullTextSearchDefaultRepo, SearchRepoType.values, cursorId, size, query);
     }
 
     @Override
@@ -240,8 +240,7 @@ public class SearchApiImpl extends KernelBase implements SearchApi {
     }
 
     /**
-     * Return the {@link SearchRepository} for the given uri or throw a
-     * {@link RaptureException} with an error message
+     * Return the {@link SearchRepository} for the given uri or throw a {@link RaptureException} with an error message
      *
      * @param uri
      * @return

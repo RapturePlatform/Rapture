@@ -33,6 +33,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import rapture.common.RaptureURI;
 import rapture.common.TableQueryResult;
 import rapture.common.dp.WorkOrder;
 import rapture.common.dp.WorkOrderStorage;
@@ -78,10 +79,10 @@ public class MemoryIndexHandlerTest {
 
     @Before
     public void before() {
-        WorkOrderStorage.add(create(U1, P1, S1, E1), "test", "unit test");
-        WorkOrderStorage.add(create(U2, P2, S2, E2), "test", "unit test");
-        WorkOrderStorage.add(create(U3, P3, S3, E3), "test", "unit test");
-        WorkOrderStorage.add(create(U4, P4, S4, E4), "test", "unit test");
+        WorkOrderStorage.add(new RaptureURI(U1), create(U1, P1, S1, E1), "test", "unit test");
+        WorkOrderStorage.add(new RaptureURI(U2), create(U2, P2, S2, E2), "test", "unit test");
+        WorkOrderStorage.add(new RaptureURI(U3), create(U3, P3, S3, E3), "test", "unit test");
+        WorkOrderStorage.add(new RaptureURI(U4), create(U4, P4, S4, E4), "test", "unit test");
     }
 
     private WorkOrder create(String workOrderURI, Integer priority, Long startTime, Long endTime) {
@@ -240,11 +241,11 @@ public class MemoryIndexHandlerTest {
     public void testQueryOrderDesc() throws Exception {
         if (doNotRun) return;
         String query = String.format("SELECT workOrderURI, startTime, priority WHERE priority < \"%s\" ORDER BY startTime DESC", P4);
-        
+
         TableQueryResult results = new TableQueryResult();
         Object o = WorkOrderStorage.queryIndex(query);
         assertEquals(results.getClass().getCanonicalName(), o.getClass().getCanonicalName());
-        
+
         /* TableQueryResult */ results = WorkOrderStorage.queryIndex(query);
         List<List<Object>> rows = results.getRows();
         assertEquals(3, rows.size());

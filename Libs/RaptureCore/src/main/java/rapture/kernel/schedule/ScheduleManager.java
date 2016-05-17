@@ -184,7 +184,8 @@ public class ScheduleManager {
 
                 if (dependent != null) {
                     dependent.setActivated(true);
-                    RaptureJobStorage.add(job, ContextFactory.getKernelUser().getUser(), "Parent job exec completed");
+                    RaptureJobStorage.add(new RaptureURI(job.getJobURI(), Scheme.JOB), job, ContextFactory.getKernelUser().getUser(),
+                            "Parent job exec completed");
                     handleJobChanged(dependent, false, jobexec.getPassedParams(), jobexec);
                 }
             } else {
@@ -205,7 +206,7 @@ public class ScheduleManager {
         RaptureJob job = Kernel.getSchedule().retrieveJob(ContextFactory.getKernelUser(), jobexec.getJobURI());
         if (job.getAutoActivate()) {
             job.setActivated(true);
-            RaptureJobStorage.add(job, user, "Job exec completed");
+            RaptureJobStorage.add(new RaptureURI(job.getJobURI(), Scheme.JOB), job, user, "Job exec completed");
         }
         return job;
     }
@@ -250,7 +251,7 @@ public class ScheduleManager {
                         logger.debug("Job Status is: " + jobexec.getStatus());
 
                         job.setActivated(false);
-                        RaptureJobStorage.add(job, user, "Job about to run");
+                        RaptureJobStorage.add(new RaptureURI(job.getJobURI(), Scheme.JOB), job, user, "Job about to run");
 
                         // Reset dependent job status also
                         Kernel.getSchedule().getTrusted().resetJobLink(ContextFactory.getKernelUser(), jobexec.getJobURI());
@@ -332,7 +333,6 @@ public class ScheduleManager {
         sdf.applyPattern("dd MMM yyyy HH:mm:ss z");
         return sdf.format(d);
     }
-
 
     /**
      * A job has been removed - remove all traces in job execution. Watch out for running jobs.

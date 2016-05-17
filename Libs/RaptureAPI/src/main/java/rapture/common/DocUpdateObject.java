@@ -9,11 +9,10 @@ public class DocUpdateObject extends AbstractUpdateObject<DocumentWithMeta> {
     public DocUpdateObject() {
     }
 
-    DocumentWithMeta payload;
+    private DocumentWithMeta payload;
 
     public DocUpdateObject(RaptureURI uri) {
         super(uri);
-        // assert (uri.getScheme() == Scheme.DOCUMENT);
         setMimeType(MediaType.JSON_UTF_8.toString());
     }
 

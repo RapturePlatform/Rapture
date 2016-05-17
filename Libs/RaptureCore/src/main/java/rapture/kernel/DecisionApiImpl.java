@@ -124,7 +124,7 @@ public class DecisionApiImpl extends KernelBase implements DecisionApi {
     @Override
     public void putWorkflow(CallingContext context, Workflow workflow) {
         WorkflowValidator.validate(workflow);
-        WorkflowStorage.add(workflow, context.getUser(), "Define workflow");
+        WorkflowStorage.add(new RaptureURI(workflow.getWorkflowURI(), Scheme.WORKFLOW), workflow, context.getUser(), "Define workflow");
     }
 
     @Override
@@ -153,7 +153,7 @@ public class DecisionApiImpl extends KernelBase implements DecisionApi {
             }
         }
         steps.add(step);
-        WorkflowStorage.add(workflow, context.getUser(), "Add step");
+        WorkflowStorage.add(new RaptureURI(workflow.getWorkflowURI(), Scheme.WORKFLOW), workflow, context.getUser(), "Add step");
     }
 
     /**
@@ -193,7 +193,7 @@ public class DecisionApiImpl extends KernelBase implements DecisionApi {
         }
         if (found) {
             steps.remove(index);
-            WorkflowStorage.add(workflow, context.getUser(), "Remove step");
+            WorkflowStorage.add(new RaptureURI(workflow.getWorkflowURI(), Scheme.WORKFLOW), workflow, context.getUser(), "Remove step");
         }
     }
 
@@ -208,7 +208,7 @@ public class DecisionApiImpl extends KernelBase implements DecisionApi {
                     String.format("Attempting to add a transition from non-existent step: '%s'", stepName));
         }
 
-        WorkflowStorage.add(workflow, context.getUser(), "Add transition");
+        WorkflowStorage.add(new RaptureURI(workflow.getWorkflowURI(), Scheme.WORKFLOW), workflow, context.getUser(), "Add transition");
     }
 
     public static Step getStep(Workflow workflow, String stepName) {
@@ -245,7 +245,7 @@ public class DecisionApiImpl extends KernelBase implements DecisionApi {
 
             if (found) {
                 transitions.remove(index);
-                WorkflowStorage.add(workflow, context.getUser(), "Remove transition");
+                WorkflowStorage.add(new RaptureURI(workflow.getWorkflowURI(), Scheme.WORKFLOW), workflow, context.getUser(), "Remove transition");
             }
         }
     }
@@ -339,7 +339,7 @@ public class DecisionApiImpl extends KernelBase implements DecisionApi {
             workOrder.setSemaphoreType(workflow.getSemaphoreType());
             workOrder.setStatus(WorkOrderExecutionState.NEW);
 
-            WorkOrderStorage.add(workOrder, context.getUser(), "Create work order");
+            WorkOrderStorage.add(workOrderURI, workOrder, context.getUser(), "Create work order");
             if (logger.isTraceEnabled()) logger.trace("workOrder = " + workOrder.debug());
 
             // 2. The ExecutionContext
