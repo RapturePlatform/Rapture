@@ -80,12 +80,12 @@ public class SearchApiImpl extends KernelBase implements SearchApi {
 
     @Override
     public SearchResponse search(CallingContext context, String query) {
-        return qualifiedSearch(context, ConfigLoader.getConf().FullTextSearchDefaultRepo, SearchRepoType.valuesAsList(), query);
+        return qualifiedSearch(context, ConfigLoader.getConf().FullTextSearchDefaultRepo, SearchRepoType.values, query);
     }
 
     @Override
     public SearchResponse searchWithCursor(CallingContext context, String cursorId, int size, String query) {
-        return qualifiedSearchWithCursor(context, ConfigLoader.getConf().FullTextSearchDefaultRepo, SearchRepoType.valuesAsList(), cursorId, size, query);
+        return qualifiedSearchWithCursor(context, ConfigLoader.getConf().FullTextSearchDefaultRepo, SearchRepoType.values, cursorId, size, query);
     }
 
     @Override

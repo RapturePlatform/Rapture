@@ -353,7 +353,7 @@ public abstract class AbstractTTree extends TreeParser {
                     storageMethods.add(getTemplateLib().getInstanceOf("beanStorageAddressableMethods", storageMethodAttributes));
                     storageClassAttributes.put("importFactory", "import rapture.object.storage.StorageLocationFactory;");
                     storageClassAttributes.put("fts", isFTS);
-                    if (isFTS) {
+                    if (isFTS || isSearchable) {
                         searchTypes.add(addressable.getScheme().toLowerCase());
                     }
                 }
