@@ -311,25 +311,6 @@ public class ElasticSearchSearchRepositoryTest {
         // ImmutableList.of("20", "Aston Villa", "36", "-45", "16"));
         // String leagueJson = JacksonUtil.jsonFromObject(leagueList);
 
-        // Unfortunately it seems that ElasticSearch requires a JSON document.
-        // It won't accept a JSON list or a CSV. So we have to munge it.
-
-        // This is a minimal PDF. Next step is to have one with data in it and show that we can index the contents
-        String minimalPdf = "%PDF-1.0\n"
-                + "1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj 2 0 obj<</Type/Pages/Kids[3 0 R]/Count 1>>endobj 3 0 obj<</Type/Page/MediaBox[0 0 3 3]>>endobj\n"
-                + "xref\n" + "0 4\n" + "0000000000 65535 f\n" + "0000000010 00000 n\n" + "0000000053 00000 n\n" + "0000000102 00000 n\n"
-                + "trailer<</Size 4/Root 1 0 R>>\n" + "startxref\n" + "149\n" + "%EOF\n";
-
-        Map<String, String> copout = new HashMap<>();
-        copout.put("premier", premier);
-        String leagueJson = JacksonUtil.jsonFromObject(copout);
-        RaptureURI epl = new RaptureURI.Builder(Scheme.BLOB, "unittest").docPath("English/Premier").build();
-        e.put(new BlobUpdateObject(epl, leagueJson.getBytes(), MediaType.JSON_UTF_8.toString()));
-        // e.put(new BlobUpdateObject(epl, premier.getBytes(), MediaType.JSON_UTF_8.toString()));
-
-        RaptureURI champ = new RaptureURI.Builder(Scheme.BLOB, "unittest").docPath("English/Championship").build();
-        e.put(new BlobUpdateObject(champ, championship.getBytes(), MediaType.CSV_UTF_8.toString()));
-
         // Try reading a real PDF from a file
 
         File pdf = new File("src/test/resources/www-bbc-com.pdf");
@@ -341,26 +322,46 @@ public class ElasticSearchSearchRepositoryTest {
             fail(pdf.getAbsolutePath() + " : " + ExceptionToString.format(e2));
         }
 
-        try {
-            // Tika parsing happens in a separate thread so give it a chance
-            // Can't use e.refresh
-            Thread.sleep(3000);
-        } catch (InterruptedException e1) {
-        }
+        Map<String, String> copout = new HashMap<>();
+        copout.put("premier", premier);
+        String leagueJson = JacksonUtil.jsonFromObject(copout);
+        RaptureURI epl = new RaptureURI.Builder(Scheme.BLOB, "unittest").docPath("English/Premier").build();
+        e.put(new BlobUpdateObject(epl, leagueJson.getBytes(), MediaType.JSON_UTF_8.toString()));
+        e.refresh();
+
+        RaptureURI champ = new RaptureURI.Builder(Scheme.BLOB, "unittest").docPath("English/Championship").build();
+        e.put(new BlobUpdateObject(champ, championship.getBytes(), MediaType.CSV_UTF_8.toString()));
+        e.refresh();
 
         rapture.common.SearchResponse r = e.searchForRepoUris(Scheme.BLOB.toString(), epl.getAuthority(), null);
         assertEquals(3L, r.getTotal().longValue());
         assertEquals(3, r.getSearchHits().size());
-        assertEquals(SearchRepoType.uri.toString(), r.getSearchHits().get(0).getIndexType());
-        assertEquals(epl.toShortString(), r.getSearchHits().get(0).getId());
-        assertEquals(epl.toString(), r.getSearchHits().get(0).getUri());
-        assertEquals("{\"parts\":[\"English\",\"Premier\"],\"repo\":\"" + epl.getAuthority() + "\",\"scheme\":\"blob\"}", r.getSearchHits().get(0).getSource());
+        rapture.common.SearchHit hit = null;
+        for (rapture.common.SearchHit h : r.getSearchHits()) {
+            if (h.getUri().contains("Premier")) {
+                hit = h;
+                break;
+            }
+        }
+        assertNotNull(hit);
+        assertEquals(SearchRepoType.uri.toString(), hit.getIndexType());
+        assertEquals(epl.toShortString(), hit.getId());
+        assertEquals(epl.toString(), hit.getUri());
+        assertEquals("{\"parts\":[\"English\",\"Premier\"],\"repo\":\"" + epl.getAuthority() + "\",\"scheme\":\"blob\"}", hit.getSource());
+        
         r = e.searchForRepoUris(Scheme.BLOB.toString(), epl.getAuthority(), null);
         assertEquals(3, r.getSearchHits().size());
-        assertEquals(SearchRepoType.uri.toString(), r.getSearchHits().get(0).getIndexType());
-        assertEquals(epl.toShortString(), r.getSearchHits().get(0).getId());
-        assertEquals(epl.toString(), r.getSearchHits().get(0).getUri());
-        assertEquals("{\"parts\":[\"English\",\"Premier\"],\"repo\":\"" + epl.getAuthority() + "\",\"scheme\":\"blob\"}", r.getSearchHits().get(0).getSource());
+        for (rapture.common.SearchHit h : r.getSearchHits()) {
+            if (h.getUri().contains("Premier")) {
+                hit = h;
+                break;
+            }
+        }
+        assertNotNull(hit);
+        assertEquals(SearchRepoType.uri.toString(), hit.getIndexType());
+        assertEquals(epl.toShortString(), hit.getId());
+        assertEquals(epl.toString(), hit.getUri());
+        assertEquals("{\"parts\":[\"English\",\"Premier\"],\"repo\":\"" + epl.getAuthority() + "\",\"scheme\":\"blob\"}", hit.getSource());
 
         // Search inside the blob
 
@@ -373,13 +374,22 @@ public class ElasticSearchSearchRepositoryTest {
 
         // Can we assume anything about the ordering?
 
-        for (int i = 0; i < res.getSearchHits().size(); i++) {
-            rapture.common.SearchHit hit = res.getSearchHits().get(i);
-            assertTrue(hit.getUri().startsWith("blob://unittest/English/"));
+        for (rapture.common.SearchHit h : res.getSearchHits()) {
+            assertTrue(h.getUri().startsWith("blob://unittest/English/"));
         }
 
+        int i;
         query = "blob:*Wigan*";
-        res = e.searchWithCursor(SearchRepoType.values, null, 10, query);
+        for (i = 0; i < 10; i++) {
+            res = e.searchWithCursor(SearchRepoType.values, null, 10, query);
+            if ((res != null) && (res.getSearchHits().size() > 0)) break;
+            try {
+                // Tika parsing may not have completed yet.
+                Thread.sleep(1000);
+            } catch (InterruptedException e1) {
+            }
+            e.refresh();
+        }
         assertNotNull(res.getCursorId());
         assertEquals(1, res.getSearchHits().size());
 
