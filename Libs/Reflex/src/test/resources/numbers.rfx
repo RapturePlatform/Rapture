@@ -1,22 +1,73 @@
-a = 1;
-b = 3;
-c = a / b;
-println(c);
+a = 2;
+assert(a == 2);
+assert(typeof(a) == 'integer');
 
-d = a / 2;
-println(d);
+b = 2L;
+assert (b == 2);
+assert(typeof(b) == 'integer');
 
-e = c + d;
-println(e);
+c = 2.0;
+assert (c == 2);
+assert(typeof(c) == 'number');
 
-f = c - d;
+d = 2147483647;
+assert (d == 2147483647);
+assert(typeof(d) == 'integer');
+
+e = 2147483649L;
+assert (e == 2147483649L);
+assert(typeof(e) == 'integer');
+
+f = d + 10;
 println(f);
+// assert (f == 2147483657L);
+// assert(typeof(f) == 'number');
 
-g = c - d;
-println(g);
+g = a / 2;
+assert (g == 1);
+assert(typeof(g) == 'integer');
 
-h = c * d;
-println(h);
+h = c / a;
+assert (h == 1.0);
+assert(typeof(h) == 'number');
+
+x = 1 / 3;
+
+try do
+   y = x * 2;
+   assert(typeof(y) == 'number');
+   println(y);
+end
+catch e do 
+   assert(false);
+end
+
+p = 3 ^ 2;
+assert(p == 9);
+assert(typeof(p) == 'integer');
+
+// Exponents that are not positive integers currently result in Doubles.
+q = 9 ^ 0.5;
+assert(q == 3);
+assert(typeof(q) == 'number');
+
+try do
+   y = x + 2;
+   println(y);
+   assert(typeof(y) == 'number');
+end
+catch e do 
+   assert(false);
+end
+
+try do
+   y = x - 2;
+   println(y);
+   assert(typeof(y) == 'number');
+end
+catch e do 
+   assert(false);
+end
 
 try do
     z = a / 0;

@@ -39,13 +39,14 @@ import rapture.config.RaptureConfig;
 
 public class AbstractFileTest {
     
-    static String saveInitSysConfig;
-    static String saveRaptureRepo;
-    static final String auth = "test" + System.currentTimeMillis();
-    static List<File> files = new ArrayList<>();
-    static String[] suffixes = new String[] { "", "_meta", "_attribute", "-2d1", "-2d1_meta", "-2d1_attribute", "_blob", "_sheet", "_sheetmeta", "_series"} ;
-    static RaptureConfig config;
-    static CallingContext callingContext;
+    public static String saveInitSysConfig;
+    public static String saveRaptureRepo;
+    public static final String auth = "test" + System.currentTimeMillis();
+    public static List<File> files = new ArrayList<>();
+    public static String[] suffixes = new String[] { "", "_meta", "_attribute", "-2d1", "-2d1_meta", "-2d1_attribute", "_blob", "_sheet", "_sheetmeta",
+            "_series" };
+    public static RaptureConfig config;
+    public static CallingContext callingContext;
 
     @BeforeClass
     static public void setUp() {

@@ -23,10 +23,9 @@
  */
 package reflex.node;
 
-import rapture.common.RaptureConstants;
-
 import org.apache.log4j.Logger;
 
+import rapture.common.RaptureConstants;
 import reflex.IReflexHandler;
 import reflex.ReflexException;
 import reflex.Scope;
@@ -64,7 +63,7 @@ public abstract class BaseNode implements ReflexNode {
 		return true;
 	}
 
-	private static final Logger log = Logger.getLogger(BaseNode.class);
+    static final Logger log = Logger.getLogger(BaseNode.class);
     protected static boolean disableAudit = true;
     protected String nodeId;
     protected int lineNumber;
@@ -125,6 +124,7 @@ public abstract class BaseNode implements ReflexNode {
         throw new ReflexException(lineNumber, errorMessage);
     }
 
+    @Override
     public String toString() {
         return "";
     }

@@ -57,6 +57,10 @@ public class MulNode extends BaseNode {
             Long longer = a.asLong() * b.asLong();
             int lint = longer.intValue();
             retVal = new ReflexValue((longer == lint) ? lint : longer);
+            if (!retVal.isInteger()) {
+                log.warn("Result exceeds valid range for an Integer.");
+            }
+
         } else if (a.isNumber() && b.isNumber()) {
         	BigDecimal bigA = a.asBigDecimal();
         	BigDecimal bigB = b.asBigDecimal();

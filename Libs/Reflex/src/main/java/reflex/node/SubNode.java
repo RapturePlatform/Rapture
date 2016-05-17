@@ -51,7 +51,13 @@ public class SubNode extends BaseNode {
 
         // number - number
         if (a.isInteger() && b.isInteger()) {
-            ret = new ReflexValue(a.asInt() - b.asInt());
+            // Don't overflow.
+            Long longer = a.asLong() - b.asLong();
+            int lint = longer.intValue();
+            ret = new ReflexValue((longer == lint) ? lint : longer);
+            if (!ret.isInteger()) {
+                log.warn("Result exceeds valid range for an Integer.");
+            }
         } else if (a.isNumber() && b.isNumber()) {
         	ret = new ReflexValue(a.asBigDecimal().subtract(b.asBigDecimal()));
         } else if (a.isDate() && b.isNumber()) {

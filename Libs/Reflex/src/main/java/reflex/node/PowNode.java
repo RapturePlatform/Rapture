@@ -24,9 +24,7 @@
 package reflex.node;
 
 import java.math.BigDecimal;
-import java.math.MathContext;
 
-import rapture.common.RaptureConstants;
 import reflex.IReflexHandler;
 import reflex.Scope;
 import reflex.debug.IReflexDebugger;
@@ -55,10 +53,20 @@ public class PowNode extends BaseNode {
         	Integer bInt = b.asInt();
         	ReflexValue retVal;
         	if ((b.isInteger() || (b.asBigDecimal().equals(bInt))) && (bInt >= 0)) {
-            	BigDecimal aBig = a.asBigDecimal();
-        		retVal = new ReflexValue(aBig.pow(bInt));
+                BigDecimal aBig = a.asBigDecimal().pow(bInt);
+                retVal = new ReflexValue(aBig);
+                // int ^ pow where pow can be expressed as positive integer should return integer where possible
+                if (a.isInteger()) {
+                    try {
+                        retVal = new ReflexValue(aBig.intValueExact());
+                    } catch (ArithmeticException e) {
+                        log.warn("Result exceeds valid range for an Integer.");
+                    }
+                }
         	} else {
-	            retVal = new ReflexValue(new BigDecimal(Math.pow(a.asDouble(), b.asDouble()), MathContext.DECIMAL64));
+                // If exponent cannot be expressed as a positive integer then we must use Double.
+                // eg 9^0.5 is Double 3.0 (hopefully) not integer 3
+                retVal = new ReflexValue(Math.pow(a.asDouble(), b.asDouble()));
         	}
             debugger.stepEnd(this, retVal, scope);
             return retVal;
