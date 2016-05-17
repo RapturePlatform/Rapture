@@ -207,12 +207,6 @@ type RaptureTableConfig(@package=rapture.common) {
    String authority;
 }
 
-[Searches performed by any API calls are stored in this type.]
-type RaptureSearchResult(@package=rapture.common) {
-   String displayName;
-}
-
-
 [Holds the config info for a repository.]
 @Storable(storagePath : {"sys", name}, separator=".", prefix="repo/config", repoName=BOOTSTRAP_REPO)
 type RepoConfig (@package=rapture.common.model) {

@@ -23,6 +23,9 @@
  */
 package rapture.kernel.dp;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+
 import rapture.common.AppStatus;
 import rapture.common.AppStatusGroup;
 import rapture.common.AppStatusGroupStorage;
@@ -44,9 +47,6 @@ import rapture.kernel.ContextFactory;
 import rapture.kernel.Kernel;
 import rapture.kernel.pipeline.PipelineTaskStatusManager;
 import rapture.log.MDCService;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 
 /**
  * Advance a decision process to the next stage
@@ -86,7 +86,8 @@ public class RaptureDecisionProcessAdvanceHandler implements QueueHandler {
             workOrder.getPendingIds().remove(id);
             workOrder.setStatus(WorkOrderStatusUtil.computeStatus(workOrder, workOrder.getPendingIds().size() == 0));
             workOrder.setEndTime(System.currentTimeMillis());
-            WorkOrderStorage.add(workOrder, ContextFactory.getKernelUser().getUser(), "Updating status for cancel");
+            WorkOrderStorage.add(new RaptureURI(workOrderURI, Scheme.WORKORDER), workOrder, ContextFactory.getKernelUser().getUser(),
+                    "Updating status for cancel");
 
             try {
                 String appStatusURI = (worker.getAppStatusNameStack().isEmpty()) ? "" : worker.getAppStatusNameStack().get(0);

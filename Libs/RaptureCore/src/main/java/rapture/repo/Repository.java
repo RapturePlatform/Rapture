@@ -23,6 +23,11 @@
  */
 package rapture.repo;
 
+import java.util.List;
+import java.util.Map;
+
+import com.google.common.base.Optional;
+
 import rapture.common.RaptureDNCursor;
 import rapture.common.RaptureFolderInfo;
 import rapture.common.RaptureNativeQueryResult;
@@ -43,11 +48,6 @@ import rapture.dsl.dparse.BaseDirective;
 import rapture.index.IndexHandler;
 import rapture.index.IndexProducer;
 import rapture.repo.stage.Stage;
-
-import java.util.List;
-import java.util.Map;
-
-import com.google.common.base.Optional;
 
 /**
  * The general interface to a repository Note that this is an exception to the rule that Repository is abbreviated to Repo.
@@ -243,15 +243,11 @@ public interface Repository {
 
     Optional<IndexHandler> getIndexHandler();
 
-	DocumentWithMeta addTagToDocument(String user, String docPath,
-			String tagUri, String value);
+    DocumentWithMeta addTagToDocument(String user, String docPath, String tagUri, String value);
 
-	DocumentWithMeta addTagsToDocument(String user, String docPath,
-			Map<String, String> tagMap);
+    DocumentWithMeta addTagsToDocument(String user, String docPath, Map<String, String> tagMap);
 
-	DocumentWithMeta removeTagFromDocument(String user, String docPath,
-			String tagUri);
+    DocumentWithMeta removeTagFromDocument(String user, String docPath, String tagUri);
 
-	DocumentWithMeta removeTagsFromDocument(String user, String docPath,
-			List<String> tags);
+    DocumentWithMeta removeTagsFromDocument(String user, String docPath, List<String> tags);
 }

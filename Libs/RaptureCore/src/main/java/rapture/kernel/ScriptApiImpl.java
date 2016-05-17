@@ -39,6 +39,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
+import com.google.common.collect.Lists;
+
 import rapture.common.CallingContext;
 import rapture.common.EntitlementSet;
 import rapture.common.Messages;
@@ -84,8 +86,6 @@ import reflex.debug.NullDebugger;
 import reflex.node.ReflexNode;
 import reflex.util.ValueSerializer;
 import reflex.value.ReflexValue;
-
-import com.google.common.collect.Lists;
 
 public class ScriptApiImpl extends KernelBase implements ScriptApi {
     private static final Logger log = Logger.getLogger(ScriptApiImpl.class);
@@ -191,8 +191,10 @@ public class ScriptApiImpl extends KernelBase implements ScriptApi {
     @Override
     public RaptureScript putScript(CallingContext context, String scriptURI, RaptureScript script) {
         RaptureURI internalURI = new RaptureURI(scriptURI, Scheme.SCRIPT);
-        if (internalURI.hasDocPath() && !internalURI.getDocPath().equals(script.getName())) throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST,
-                String.format("Supplied URI " + scriptURI + " has a docPath which does not match the script name " + script.getName()));
+        if (internalURI.hasDocPath() && !internalURI.getDocPath().equals(script.getName())) {
+            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST,
+                    String.format("Supplied URI " + scriptURI + " has a docPath which does not match the script name " + script.getName()));
+        }
         script.setAuthority(internalURI.getAuthority());
 
         RaptureScript currentlyThere = RaptureScriptStorage.readByAddress(script.getAddressURI());
@@ -201,7 +203,7 @@ public class ScriptApiImpl extends KernelBase implements ScriptApi {
                     String.format("You cannot write directly to a link, use %s instead", currentlyThere.getScript()));
         }
 
-        RaptureScriptStorage.add(script, context.getUser(), Messages.getString("Script.updated")); //$NON-NLS-1$
+        RaptureScriptStorage.add(internalURI, script, context.getUser(), Messages.getString("Script.updated")); //$NON-NLS-1$
         return script;
     }
 
@@ -623,7 +625,7 @@ public class ScriptApiImpl extends KernelBase implements ScriptApi {
         script.setPurpose(purp);
         script.setScript(content);
         script.setParameters(parms);
-        RaptureScriptStorage.add(script, context.getUser(), "Update");
+        RaptureScriptStorage.add(uri, script, context.getUser(), "Update");
         return script;
     }
 

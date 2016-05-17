@@ -149,9 +149,11 @@ public static void add(RaptureURI semanticUri, <name> storable, String user, Str
 	<endif>
 }
 
+<if(!fts)>
 public static void add(<name> storable, String user, String comment) {
    add(null, storable, user, comment);
 }
+<endif>
 
 /**
  * Run a query on the repo where the index of <name> is stored
