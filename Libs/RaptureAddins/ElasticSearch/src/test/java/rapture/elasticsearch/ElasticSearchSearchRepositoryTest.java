@@ -42,7 +42,6 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.google.common.net.MediaType;
@@ -266,13 +265,15 @@ public class ElasticSearchSearchRepositoryTest {
         e.remove(new RaptureURI("series://removerepo/a/b/c"));
         e.refresh();
 
+        r = e.search(Arrays.asList(Scheme.SERIES.toString()), "4.0");
+        assertEquals(0, r.getTotal().longValue());
+
         r = e.search(Arrays.asList(Scheme.SERIES.toString()), "v3");
         assertEquals(0, r.getTotal().longValue());
         r = e.search(Arrays.asList(Scheme.DOCUMENT.toString()), "trying out Elasticsearch");
         assertEquals(97, r.getTotal().longValue());
     }
 
-    @Ignore
     @Test
     public void testSearchBlob() {
         String premier = "1,Leicester City,36,30,77\n2,Tottenham Hotspur,36,39,70\n3,Arsenal,36,25,67\n4,Manchester City,36,30,64\n5,Manchester United,35,12,60\n"
@@ -332,25 +333,17 @@ public class ElasticSearchSearchRepositoryTest {
         // Try reading a real PDF from a file
 
         File pdf = new File("src/test/resources/www-bbc-com.pdf");
+        RaptureURI firstDiv = new RaptureURI.Builder(Scheme.BLOB, "unittest").docPath("English/First").build();
         try {
             byte[] content = Files.readAllBytes(pdf.toPath());
-            RaptureURI firstDiv = new RaptureURI.Builder(Scheme.BLOB, "unittest").docPath("English/First").build();
             e.put(new BlobUpdateObject(firstDiv, content, MediaType.PDF.toString()));
         } catch (IOException e2) {
             fail(pdf.getAbsolutePath() + " : " + ExceptionToString.format(e2));
         }
 
-        File pdf2 = new File("src/test/resources/HelloWorld.pdf");
-        try {
-            byte[] content = Files.readAllBytes(pdf2.toPath());
-            RaptureURI hello = new RaptureURI.Builder(Scheme.BLOB, "Hello").docPath("Hello/Wurld").build();
-            e.put(new BlobUpdateObject(hello, content, MediaType.PDF.toString()));
-        } catch (IOException e3) {
-            fail(pdf2.getAbsolutePath() + " : " + ExceptionToString.format(e3));
-        }
-
         try {
             // Tika parsing happens in a separate thread so give it a chance
+            // Can't use e.refresh
             Thread.sleep(3000);
         } catch (InterruptedException e1) {
         }
@@ -359,13 +352,13 @@ public class ElasticSearchSearchRepositoryTest {
         assertEquals(3L, r.getTotal().longValue());
         assertEquals(3, r.getSearchHits().size());
         assertEquals(SearchRepoType.uri.toString(), r.getSearchHits().get(0).getIndexType());
-        assertEquals(epl.getShortPath(), r.getSearchHits().get(0).getId());
+        assertEquals(epl.toShortString(), r.getSearchHits().get(0).getId());
         assertEquals(epl.toString(), r.getSearchHits().get(0).getUri());
         assertEquals("{\"parts\":[\"English\",\"Premier\"],\"repo\":\"" + epl.getAuthority() + "\",\"scheme\":\"blob\"}", r.getSearchHits().get(0).getSource());
         r = e.searchForRepoUris(Scheme.BLOB.toString(), epl.getAuthority(), null);
         assertEquals(3, r.getSearchHits().size());
         assertEquals(SearchRepoType.uri.toString(), r.getSearchHits().get(0).getIndexType());
-        assertEquals(epl.getShortPath(), r.getSearchHits().get(0).getId());
+        assertEquals(epl.toShortString(), r.getSearchHits().get(0).getId());
         assertEquals(epl.toString(), r.getSearchHits().get(0).getUri());
         assertEquals("{\"parts\":[\"English\",\"Premier\"],\"repo\":\"" + epl.getAuthority() + "\",\"scheme\":\"blob\"}", r.getSearchHits().get(0).getSource());
 
@@ -390,10 +383,10 @@ public class ElasticSearchSearchRepositoryTest {
         assertNotNull(res.getCursorId());
         assertEquals(1, res.getSearchHits().size());
 
-        query = "blob:*World*";
+        e.remove(new RaptureURI(firstDiv.toString()));
+        e.refresh();
         res = e.searchWithCursor(SearchRepoType.values, null, 10, query);
-        assertNotNull(res.getCursorId());
-        assertEquals(1, res.getSearchHits().size());
+        assertEquals(0, res.getSearchHits().size());
     }
 
     private void insertTestDocs() {

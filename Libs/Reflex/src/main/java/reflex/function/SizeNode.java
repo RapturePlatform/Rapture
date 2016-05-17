@@ -54,6 +54,9 @@ public class SizeNode extends BaseNode {
         } else if (value.isList()) {
             handler.getDebugHandler().statementReached(lineNumber, DebugLevel.INFO, "Size of list is its size, = " + value.asList().size());
             retVal = new ReflexValue(value.asList().size());
+        } else if (value.isMap()) {
+            handler.getDebugHandler().statementReached(lineNumber, DebugLevel.INFO, "Size of list is its size, = " + value.asMap().size());
+            retVal = new ReflexValue(value.asMap().size());
         } else if (value.isByteArray()) {
             handler.getDebugHandler().statementReached(lineNumber, DebugLevel.INFO, "Size of list is its size, = " + value.asList().size());
             retVal = new ReflexValue(value.asByteArray().length);       	
