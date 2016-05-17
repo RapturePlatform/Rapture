@@ -372,21 +372,21 @@ public class ElasticSearchSearchRepositoryTest {
         assertNotNull(res.getCursorId());
         assertEquals(1, res.getSearchHits().size());
 
-        // e.remove(firstDiv);
-        //
-        // int i;
-        // for (i = 0; i < 10; i++) {
-        // try {
-        // Thread.sleep(1000);
-        // } catch (InterruptedException e1) {
-        // }
-        //
-        // res = e.searchWithCursor(SearchRepoType.valuesAsList(), null, 10, query);
-        // assertNotNull(res.getCursorId());
-        // if (res.getSearchHits().size() > 0) {
-        // System.out.println("Found one. Try again " + JacksonUtil.jsonFromObject(res.getSearchHits()));
-        // } else break;
-        // }
+        e.remove(firstDiv);
+
+        int i;
+        for (i = 0; i < 10; i++) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e1) {
+            }
+
+            res = e.searchWithCursor(SearchRepoType.valuesAsList(), null, 10, query);
+            assertNotNull(res.getCursorId());
+            if (res.getSearchHits().size() > 0) {
+                System.out.println("Found one. Try again " + JacksonUtil.jsonFromObject(res.getSearchHits()));
+            } else break;
+        }
         // assertEquals(0, res.getSearchHits().size());
     }
 
