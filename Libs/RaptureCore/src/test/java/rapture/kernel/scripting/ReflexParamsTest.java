@@ -24,7 +24,6 @@
 package rapture.kernel.scripting;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -164,6 +163,9 @@ public class ReflexParamsTest {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         ByteArrayOutputStream err = new ByteArrayOutputStream();
 
+        PrintStream stdout = System.out;
+        PrintStream stderr = System.err;
+
         System.setOut(new PrintStream(out));
         System.setErr(new PrintStream(err));
 
@@ -178,10 +180,10 @@ public class ReflexParamsTest {
             checkval = Kernel.getScript().checkScript(ctx, scriptUri);
         } catch (Exception e) {
         }
-        assertTrue(err.toString().startsWith(checkval));
+        assertEquals(checkval, err.toString().substring(0, checkval.length()));
 
-        System.setOut(null);
-        System.setErr(null);
+        System.setOut(stdout);
+        System.setErr(stderr);
 
     }
 

@@ -323,9 +323,9 @@ public class ElasticSearchSearchRepositoryTest {
         // Try reading a real PDF from a file
 
         File pdf = new File("src/test/resources/www-bbc-com.pdf");
+        RaptureURI firstDiv = new RaptureURI.Builder(Scheme.BLOB, "unittest").docPath("English/First").build();
         try {
             byte[] content = Files.readAllBytes(pdf.toPath());
-            RaptureURI firstDiv = new RaptureURI.Builder(Scheme.BLOB, "unittest").docPath("English/First").build();
             e.put(new BlobUpdateObject(firstDiv, content, MediaType.PDF.toString()));
         } catch (IOException e2) {
             fail(pdf.getAbsolutePath() + " : " + ExceptionToString.format(e2));
@@ -371,6 +371,23 @@ public class ElasticSearchSearchRepositoryTest {
         res = e.searchWithCursor(SearchRepoType.valuesAsList(), null, 10, query);
         assertNotNull(res.getCursorId());
         assertEquals(1, res.getSearchHits().size());
+
+        e.remove(firstDiv);
+
+        int i;
+        for (i = 0; i < 10; i++) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e1) {
+            }
+
+            res = e.searchWithCursor(SearchRepoType.valuesAsList(), null, 10, query);
+            assertNotNull(res.getCursorId());
+            if (res.getSearchHits().size() > 0) {
+                System.out.println("Found one. Try again " + JacksonUtil.jsonFromObject(res.getSearchHits()));
+            } else break;
+        }
+        assertEquals(0, res.getSearchHits().size());
     }
 
     private void insertTestDocs() {

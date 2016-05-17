@@ -202,6 +202,7 @@ public class ElasticSearchSearchRepository implements SearchRepository {
      */
     @Override
     public void remove(RaptureURI uri) {
+        log.debug("Remove entry for " + uri.toString());
         switch (uri.getScheme()) {
         case SERIES:
             ensureClient().prepareDelete(index, SearchRepoType.SERIES.toString(), uri.getShortPath()).get();
@@ -212,6 +213,7 @@ public class ElasticSearchSearchRepository implements SearchRepository {
             break;
         case BLOB:
             ensureClient().prepareDelete(index, SearchRepoType.BLOB.toString(), uri.getShortPath()).get();
+            ensureClient().prepareDelete(index, SearchRepoType.META.toString(), uri.toString()).get();
             break;
         default:
             log.warn("Called remove() on an unsupported scheme: " + uri.getScheme().toString());
