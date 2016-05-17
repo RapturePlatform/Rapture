@@ -266,7 +266,7 @@ public class ElasticSearchSearchRepositoryTest {
         e.remove(new RaptureURI("series://removerepo/a/b/c"));
         e.refresh();
 
-        r = e.search(Arrays.asList(Scheme.SERIES.toString()), "v3");
+        r = e.search(Arrays.asList(Scheme.SERIES.toString()), "4.0");
         assertEquals(0, r.getTotal().longValue());
         r = e.search(Arrays.asList(Scheme.DOCUMENT.toString()), "trying out Elasticsearch");
         assertEquals(97, r.getTotal().longValue());
