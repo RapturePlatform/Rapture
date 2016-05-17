@@ -267,6 +267,9 @@ public class ElasticSearchSearchRepositoryTest {
 
         r = e.search(Arrays.asList(Scheme.SERIES.toString()), "4.0");
         assertEquals(0, r.getTotal().longValue());
+
+        r = e.search(Arrays.asList(Scheme.SERIES.toString()), "v3");
+        assertEquals(0, r.getTotal().longValue());
         r = e.search(Arrays.asList(Scheme.DOCUMENT.toString()), "trying out Elasticsearch");
         assertEquals(97, r.getTotal().longValue());
     }
@@ -349,13 +352,13 @@ public class ElasticSearchSearchRepositoryTest {
         assertEquals(3L, r.getTotal().longValue());
         assertEquals(3, r.getSearchHits().size());
         assertEquals(SearchRepoType.uri.toString(), r.getSearchHits().get(0).getIndexType());
-        assertEquals(epl.getShortPath(), r.getSearchHits().get(0).getId());
+        assertEquals(epl.toShortString(), r.getSearchHits().get(0).getId());
         assertEquals(epl.toString(), r.getSearchHits().get(0).getUri());
         assertEquals("{\"parts\":[\"English\",\"Premier\"],\"repo\":\"" + epl.getAuthority() + "\",\"scheme\":\"blob\"}", r.getSearchHits().get(0).getSource());
         r = e.searchForRepoUris(Scheme.BLOB.toString(), epl.getAuthority(), null);
         assertEquals(3, r.getSearchHits().size());
         assertEquals(SearchRepoType.uri.toString(), r.getSearchHits().get(0).getIndexType());
-        assertEquals(epl.getShortPath(), r.getSearchHits().get(0).getId());
+        assertEquals(epl.toShortString(), r.getSearchHits().get(0).getId());
         assertEquals(epl.toString(), r.getSearchHits().get(0).getUri());
         assertEquals("{\"parts\":[\"English\",\"Premier\"],\"repo\":\"" + epl.getAuthority() + "\",\"scheme\":\"blob\"}", r.getSearchHits().get(0).getSource());
 
@@ -380,9 +383,9 @@ public class ElasticSearchSearchRepositoryTest {
         assertNotNull(res.getCursorId());
         assertEquals(1, res.getSearchHits().size());
 
-        e.remove(firstDiv);
-        // e.put(new BlobUpdateObject(firstDiv, new byte[0], MediaType.ANY_TYPE.toString()));
+        e.remove(new RaptureURI(firstDiv.toString()));
         e.refresh();
+        res = e.searchWithCursor(SearchRepoType.values, null, 10, query);
         assertEquals(0, res.getSearchHits().size());
     }
 
