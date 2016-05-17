@@ -257,6 +257,9 @@ public class ElasticSearchSearchRepositoryTest {
         e.remove(new RaptureURI("series://removerepo/a/b/c"));
         e.refresh();
 
+        r = e.search(Arrays.asList(SearchRepoType.SERIES.toString()), "4.0");
+        assertEquals(0, r.getTotal().longValue());
+
         r = e.search(Arrays.asList(SearchRepoType.SERIES.toString()), "v3");
         assertEquals(0, r.getTotal().longValue());
         r = e.search(Arrays.asList(SearchRepoType.DOC.toString()), "trying out Elasticsearch");
@@ -333,6 +336,7 @@ public class ElasticSearchSearchRepositoryTest {
 
         try {
             // Tika parsing happens in a separate thread so give it a chance
+            // Can't use e.refresh
             Thread.sleep(3000);
         } catch (InterruptedException e1) {
         }
@@ -373,21 +377,9 @@ public class ElasticSearchSearchRepositoryTest {
         assertEquals(1, res.getSearchHits().size());
 
         e.remove(firstDiv);
-
-        int i;
-        for (i = 0; i < 10; i++) {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e1) {
-            }
-
-            res = e.searchWithCursor(SearchRepoType.valuesAsList(), null, 10, query);
-            assertNotNull(res.getCursorId());
-            if (res.getSearchHits().size() > 0) {
-                System.out.println("Found one. Try again " + JacksonUtil.jsonFromObject(res.getSearchHits()));
-            } else break;
-        }
-        // assertEquals(0, res.getSearchHits().size());
+        // e.put(new BlobUpdateObject(firstDiv, new byte[0], MediaType.ANY_TYPE.toString()));
+        e.refresh();
+        assertEquals(0, res.getSearchHits().size());
     }
 
     private void insertTestDocs() {
