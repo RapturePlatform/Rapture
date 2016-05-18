@@ -41,12 +41,11 @@ import java.util.jar.Manifest;
 
 import org.apache.log4j.Logger;
 
-import com.google.common.base.Optional;
-import com.google.common.cache.Cache;
-
 import rapture.api.hooks.ApiHooksService;
 import rapture.audit.AuditLog;
 import rapture.audit.AuditLogCache;
+import rapture.common.APIKeyDefinition;
+import rapture.common.APIKeyDefinitionStorage;
 import rapture.common.CallingContext;
 import rapture.common.CallingContextStorage;
 import rapture.common.IEntitlementsContext;
@@ -101,6 +100,9 @@ import rapture.util.DefaultConfigRetriever;
 import rapture.util.IConfigRetriever;
 import rapture.util.IDGenerator;
 import rapture.util.ResourceLoader;
+
+import com.google.common.base.Optional;
+import com.google.common.cache.Cache;
 
 /**
  * The Rapture kernel is a singleton and hosts the apis for Rapture
@@ -813,6 +815,22 @@ public enum Kernel {
     public CallingContext loadContext(String contextId) {
         return CallingContextStorage.readByFields(contextId);
     }
+    
+    public CallingContext loadContext(String appKey, String apiKey) {
+    	log.info("Looking for " + appKey + " and " + apiKey);
+    	APIKeyDefinition def = APIKeyDefinitionStorage.readByFields(appKey, apiKey);
+    	if (def == null) {
+    		return null;
+    	}
+    	else {
+    		log.info("Resolved to " + def.getUserId());
+    		CallingContext ctx = new CallingContext();
+    		ctx.setUser(def.getUserId());
+    		ctx.setContext(apiKey);
+    		return ctx;
+    	}
+	}
+
 
     public void validateContext(CallingContext context, String entitlementPath, IEntitlementsContext entCtx) throws RaptureException, RaptNotLoggedInException {
         // Check to see if the user is an apiKey (it will have a prefix of zz )
@@ -991,4 +1009,5 @@ public enum Kernel {
         return (sb.toString());
     }
 
+	
 }
