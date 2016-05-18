@@ -49,6 +49,18 @@ api(User) {
     @entitle=/everyone
     @public RaptureUser changeMyEmail(String newAddress);
 
+    [Register an api key]
+    @entitle=/everyone
+    @public String addApiKey(String appKey);
+    
+    [Get api keys]
+    @entitle=/everyone
+    @public List<String> getApiKeyPairs();
+    
+    [Revoke an api key]
+    @entitle=/everyone
+    @public void revokeApiKey(String appKey, String apiKey);
+    
     [Retrieves the API version currently in use.] 
     @entitle=/everyone
     @public ApiVersion getServerApiVersion();  

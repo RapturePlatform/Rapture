@@ -131,6 +131,7 @@ type ReflexREPLSession(@package=rapture.common) {
 	Date lastSeen;
 }
 
+
 [One of the scripting languages compatible with Rapture.]
 type RaptureScriptLanguage (@package=rapture.common) {
    String REFLEX;
@@ -289,6 +290,16 @@ type RaptureUser(@package=rapture.common.model) {
     Long tokenExpirationTime;
     String registrationToken;
     Boolean verified = true;
+    List<String> apiKeys = new ArrayList<String>();
+}
+
+[An api key / app key as an alternative to logging in]
+@Storable(storagePath: { appKey, apiKey }, prefix="apikey", repoName=SETTINGS_REPO)
+@Cacheable
+type APIKeyDefinition(@package=rapture.common) {
+	String appKey;
+	String apiKey;
+	String userId;
 }
 
 
