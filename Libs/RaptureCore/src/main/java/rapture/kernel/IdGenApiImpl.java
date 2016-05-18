@@ -23,20 +23,6 @@
  */
 package rapture.kernel;
 
-import rapture.common.CallingContext;
-import rapture.common.RaptureIdGenConfig;
-import rapture.common.RaptureIdGenConfigStorage;
-import rapture.common.RaptureURI;
-import rapture.common.Scheme;
-import rapture.common.api.IdGenApi;
-import rapture.common.exception.RaptureException;
-import rapture.common.exception.RaptureExceptionFactory;
-import rapture.common.impl.jackson.JsonContent;
-import rapture.dsl.idgen.IdGenFactory;
-import rapture.dsl.idgen.RaptureIdGen;
-import rapture.idgen.SystemIdGens;
-import rapture.repo.RepoVisitor;
-
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -45,7 +31,21 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
+import rapture.common.CallingContext;
+import rapture.common.RaptureIdGenConfig;
+import rapture.common.RaptureIdGenConfigStorage;
+import rapture.common.RaptureURI;
+import rapture.common.Scheme;
+import rapture.common.api.IdGenApi;
+import rapture.common.exception.ExceptionToString;
+import rapture.common.exception.RaptureException;
+import rapture.common.exception.RaptureExceptionFactory;
+import rapture.common.impl.jackson.JsonContent;
 import rapture.config.ConfigLoader;
+import rapture.dsl.idgen.IdGenFactory;
+import rapture.dsl.idgen.RaptureIdGen;
+import rapture.idgen.SystemIdGens;
+import rapture.repo.RepoVisitor;
 
 public class IdGenApiImpl extends KernelBase implements IdGenApi {
     private static Logger log = Logger.getLogger(IdGenApiImpl.class);
@@ -93,7 +93,9 @@ public class IdGenApiImpl extends KernelBase implements IdGenApi {
             getIdGenConfig(idGenUri);
             return true;
         } catch (RaptureException e) {
-            return false;
+            if (e.getMessage().startsWith("No such IdGen")) return false;
+            log.error(ExceptionToString.format(e));
+            throw e;
         }
     }
 
