@@ -11,6 +11,7 @@ import org.antlr.runtime.RecognitionException;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import rapture.common.CallingContext;
@@ -82,6 +83,10 @@ public class ReflexCallTest extends ResourceBasedTest {
         }
     }
 
+    // This test requires WorkflowsCore to run, but not to compile.
+    // To test it add testRuntime 'net.rapture:WorkflowsCore:3+' to build.gradle
+    // Do not use testRuntime project(':WorkflowsCore') as this creates a cyclic dependency
+    @Ignore
     @Test
     public void testCall() throws RecognitionException {
         String output = runTestFor("/call.rfx");
