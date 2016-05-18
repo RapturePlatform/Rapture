@@ -105,7 +105,7 @@ public class IndexIntegrationTest {
     }
     
     @Test
-    public void RAP4033() {
+    public void testInvalidIndexConfig() {
         String uid = UUID.randomUUID().toString();
         String rap4033repo = "//"+uid;
         String rap4033repocfg = "NREP {} USING MONGODB { prefix=\""+uid+"\" }";
@@ -117,5 +117,6 @@ public class IndexIntegrationTest {
         } catch (IllegalArgumentException iae) {
             assertEquals("date is not a recognised field type. Options are STRING BOOLEAN LONG INTEGER DOUBLE", iae.getMessage());
         }
+        Kernel.getDoc().deleteDocRepo(ctx, rap4033repo);
     }
 }
