@@ -1,4 +1,10 @@
-birthday = date("19640504");
+str = "19780606";
+birthday = date(str);
 epoch = birthday.getEpoch();
-mayTheFourthBeWithYou = date(epoch);
-assert(birthday == mayTheFourthBeWithYou);
+junesixth = date(epoch);
+assert(birthday == junesixth);
+
+marishka = dateformat(birthday, "EEEE dd MMMM yyyy GGGG");
+assert("Tuesday 06 June 1978 AD" == marishka);
+marishka = dateformat(birthday);
+assert(str == marishka);

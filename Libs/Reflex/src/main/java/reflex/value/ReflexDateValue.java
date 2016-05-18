@@ -104,8 +104,14 @@ public class ReflexDateValue {
         }
     }
 
+    @Override
     public String toString() {
         return FORMATTER.print(date);
+    }
+
+    public String toString(DateTimeFormatter formatter) {
+        DateTimeFormatter dtf = (formatter != null) ? formatter : FORMATTER;
+        return dtf.print(date);
     }
 
     public Boolean greaterThanEquals(ReflexDateValue asDate) {
