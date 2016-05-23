@@ -1010,7 +1010,8 @@ Long
   ;
 
 Number
-  :  Int '.' Digit (Digit)*
+  :  Int '.' Digit (Digit)* ( 'E' ('+' | '-')? Digit (Digit)* )?
+  |  Int 'E' ('+' | '-')? Digit (Digit)*
   ;
 
 PackageIdentifier
