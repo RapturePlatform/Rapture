@@ -138,7 +138,7 @@ public class ReflexParamsTest {
                         + "for currPoint = 1 to MAX do\n" + "\n" + "        now = time();\n" + "        nowNum = cast(now, 'number');\n"
                         + "        nowString = cast(nowNum, 'string');\n" + "        valueInt = rand(50);\n" + "        valueNum = cast(valueInt, 'number');\n"
                         + "        valueString = cast(valueNum, 'string');\n" + "\n" + "        seriesKeys = seriesKeys + nowString;\n"
-                        + "        seriesValues = seriesValues + valueNum;\n" + "\n" + "        sleep(100);\n" + "end\n" + "\n"
+                        + "        seriesValues = seriesValues + valueNum;\n" + "\n" + "        sleep(1000);\n" + "end\n" + "\n"
                         + "println ('keys: ' + seriesKeys);\n" + "println ('values: ' + seriesValues);\n" + "println ('seriesURI: ' + SERIES_URI);\n"
                         + "#series.addDoublesToSeries(SERIES_URI, seriesKeys, seriesValues);\n" + "\n" + "println('done');",
                 RaptureScriptLanguage.REFLEX.toString(), RaptureScriptPurpose.PROGRAM.toString(), new ArrayList<String>(), new ArrayList<String>());

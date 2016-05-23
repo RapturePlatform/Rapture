@@ -24,6 +24,7 @@
 package reflex.node;
 
 import reflex.IReflexHandler;
+import reflex.ReflexException;
 import reflex.Scope;
 import reflex.debug.IReflexDebugger;
 import reflex.value.ImmutableReflexValue;
@@ -54,14 +55,28 @@ public class PlusAssignmentNode extends BaseNode {
         debugger.stepStart(this, scope);
         ReflexValue value = rhs.evaluate(debugger, scope);
         ReflexValue var = scope.resolve(identifier);
+        if (var == null) {
+            throw new ReflexException(lineNumber, identifier + " not found");
+        }
         if (var.isList()) {
             var.asList().add(value);
         } else if (var.isInteger() && value.isInteger()) {
-        	if (var instanceof ImmutableReflexValue) {
-        		ReflexValue newValue = new ReflexValue(var.asLong() + value.asLong());
+            Long result = var.asLong() + value.asLong();
+            int result_int = result.intValue();
+            if (var instanceof ImmutableReflexValue) {
+                ReflexValue newValue;
+                if (result == result_int) {
+                    newValue = new ReflexValue(result_int);
+                } else {
+                    newValue = new ReflexValue(result);
+                }
 	            scope.assign(identifier, newValue);
         	} else {
-        		var.setValue(var.asLong() + value.asLong());
+                if (result == result_int) {
+                    var.setValue(result_int);
+                } else {
+                    var.setValue(result);
+                }
         	}
         } else if (var.isNumber() && value.isNumber()) {
         	if (var instanceof ImmutableReflexValue) {
