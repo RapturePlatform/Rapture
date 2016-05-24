@@ -472,6 +472,7 @@ type RapturePipelineTask(@package=rapture.common) {
 	String content;
 	String contentType;
 	Long epoch;
+	Boolean statusEnabled = true;
 }
 
 [Associates a server category with a comment.]

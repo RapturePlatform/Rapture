@@ -241,7 +241,7 @@ public class BlobApiImpl extends KernelBase implements BlobApi, RaptureScheme {
         RaptureURI uri = new RaptureURI(blobUri);
         BlobRepoConfig repoConfig = Kernel.getRepoCacheManager().getBlobConfig(uri.getAuthority());
         BlobUpdateObject buo = new BlobUpdateObject(uri, content, contentType);
-        SearchPublisher.publishCreateMessage(context, repoConfig, buo);
+        SearchPublisher.publishCreateMessage(context, repoConfig, buo, false);
     }
 
     @Override
@@ -499,9 +499,9 @@ public class BlobApiImpl extends KernelBase implements BlobApi, RaptureScheme {
                 log.debug("No read permission on folder " + currParentDocPath);
                 continue;
             }
-        
+
             List<RaptureFolderInfo> children = repo.listMetaByUriPrefix(currParentDocPath);
-            if ((children == null) || (children.isEmpty()) && (currDepth==0) && (internalUri.hasDocPath())) {
+            if ((children == null) || (children.isEmpty()) && (currDepth == 0) && (internalUri.hasDocPath())) {
                 throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, apiMessageCatalog.getMessage("NoSuchFolder", internalUri.toString())); //$NON-NLS-1$
             } else {
                 for (RaptureFolderInfo child : children) {
@@ -536,7 +536,7 @@ public class BlobApiImpl extends KernelBase implements BlobApi, RaptureScheme {
         RaptureURI blobURI = new RaptureURI(uriPrefix, BLOB);
         BlobRepo blobRepo = getRepoFromCache(blobURI.getAuthority());
         if (blobRepo == null) {
-        	return removed;
+            return removed;
         }
 
         DeleteBlobPayload requestObj = new DeleteBlobPayload();
@@ -545,7 +545,7 @@ public class BlobApiImpl extends KernelBase implements BlobApi, RaptureScheme {
         folders.add(blobURI);
         for (Map.Entry<String, RaptureFolderInfo> entry : docs.entrySet()) {
             String uri = entry.getKey();
-        	RaptureURI ruri = new RaptureURI(uri);
+            RaptureURI ruri = new RaptureURI(uri);
             boolean isFolder = entry.getValue().isFolder();
             try {
                 requestObj.setBlobUri(uri);
@@ -565,11 +565,11 @@ public class BlobApiImpl extends KernelBase implements BlobApi, RaptureScheme {
             }
         }
         for (RaptureURI uri : folders) {
-            // deleteFolder returns true if the folder was deleted. 
+            // deleteFolder returns true if the folder was deleted.
             // It won't delete a folder that isn't empty.
             while ((uri != null) && blobRepo.deleteFolder(context, uri)) {
                 // getParentURI returns null if the URI has no doc path
-            	uri = uri.getParentURI();
+                uri = uri.getParentURI();
             }
         }
         return removed;
