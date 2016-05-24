@@ -25,6 +25,7 @@ package rapture.kernel;
 
 import org.apache.commons.lang3.text.WordUtils;
 import org.apache.log4j.Logger;
+
 import rapture.common.*;
 import rapture.common.api.UserApi;
 import rapture.common.exception.ExceptionToString;
@@ -35,6 +36,7 @@ import rapture.common.model.RaptureUserStorage;
 import rapture.common.version.ApiVersion;
 import rapture.repo.Repository;
 import rapture.server.ServerApiVersion;
+import rapture.util.IDGenerator;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -233,4 +235,39 @@ public class UserApiImpl extends KernelBase implements UserApi {
             return false;
         }
     }
+
+	@Override
+	public String addApiKey(CallingContext context, String appKey) {
+		String apiKey = IDGenerator.getUUID();
+		APIKeyDefinition def = new APIKeyDefinition();
+		def.setAppKey(appKey);
+		def.setUserId(context.getUser());
+		def.setApiKey(apiKey);
+		String newPath = def.getAppKey() + "/" + apiKey;
+		RaptureUser user = RaptureUserStorage.readByFields(context.getUser());
+		user.getApiKeys().add(newPath);
+		RaptureUserStorage.add(user, context.getUser(), "Added api key");
+		APIKeyDefinitionStorage.add(def, context.getUser(), "New API Key");
+		return apiKey;
+	}
+
+	@Override
+	public List<String> getApiKeyPairs(CallingContext context) {
+		RaptureUser user = RaptureUserStorage.readByFields(context.getUser());
+		return user.getApiKeys();
+	}
+
+	@Override
+	public void revokeApiKey(CallingContext context, String appKey,
+			String apiKey) {
+		String testKey = appKey + "/" + apiKey;
+		RaptureUser user = RaptureUserStorage.readByFields(context.getUser());
+		if (user.getApiKeys().contains(testKey)) {
+			user.getApiKeys().remove(testKey);
+			RaptureUserStorage.add(user, context.getUser(), "Revoked api key");
+			APIKeyDefinitionStorage.deleteByFields(appKey, apiKey, context.getUser(), "Revoke api key");
+		} else {
+            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, "No api key for this user");
+        }
+	}
 }

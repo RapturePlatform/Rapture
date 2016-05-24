@@ -200,10 +200,14 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
 
         // First drop the data, then drop the repo config
 
-        Repository repository = getRepoFromCache(internalUri.getAuthority());
-        log.info(Messages.getString("Admin.DropRepo") + internalUri.getAuthority()); //$NON-NLS-1$
-        if (repository != null) {
-            repository.drop();
+        try {
+            Repository repository = getRepoFromCache(internalUri.getAuthority());
+            log.info(Messages.getString("Admin.DropRepo") + internalUri.getAuthority()); //$NON-NLS-1$
+            if (repository != null) {
+                repository.drop();
+            }
+        } catch (IllegalArgumentException e) {
+            // Will happen if the config wasn't valid - but we are trying to delete it anyway
         }
 
         // Remove jobs associated with this authority.
