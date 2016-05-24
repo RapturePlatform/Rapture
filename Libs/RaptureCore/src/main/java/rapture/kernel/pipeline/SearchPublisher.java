@@ -25,6 +25,11 @@ public class SearchPublisher {
     public static String CATEGORY = PipelineConstants.CATEGORY_SEARCH;
 
     public static void publishCreateMessage(CallingContext context, Searchable searchableRepo, AbstractUpdateObject updateObject) {
+        publishCreateMessage(context, searchableRepo, updateObject, true);
+    }
+
+    public static void publishCreateMessage(CallingContext context, Searchable searchableRepo, AbstractUpdateObject updateObject,
+            boolean pipelineStatusEnabled) {
         if (!shouldPublish(searchableRepo, updateObject.getUri())) {
             return;
         }
@@ -32,6 +37,7 @@ public class SearchPublisher {
         task.setCategoryList(ImmutableList.of(CATEGORY));
         task.setPriority(2);
         task.setContentType(MimeSearchUpdateObject.getMimeType());
+        task.setStatusEnabled(pipelineStatusEnabled);
 
         MimeSearchUpdateObject object = new MimeSearchUpdateObject();
         object.setSearchRepo(SearchRepoUtils.getSearchRepo(searchableRepo));
