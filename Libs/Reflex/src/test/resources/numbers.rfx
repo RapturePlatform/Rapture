@@ -169,3 +169,15 @@ catch e do
    println("Expected exception");
 end
 
+a_eng1 = 100E1;
+a_eng2 = 10000000E-4;
+a_eng3 = 1.000E+3;
+a_eng4 = 1000.00000000;
+assert(1000 == a_eng1);
+assert(1000 == a_eng2);
+assert(1000 == a_eng3);
+assert(1000 == a_eng4);
+assert("expected number but was "+typeof(a_eng1), typeof(a_eng1) == 'number');
+assert("expected number but was "+typeof(a_eng2), typeof(a_eng2) == 'number');
+assert("expected number but was "+typeof(a_eng3), typeof(a_eng3) == 'number');
+assert("expected number but was "+typeof(a_eng4), typeof(a_eng4) == 'number');
