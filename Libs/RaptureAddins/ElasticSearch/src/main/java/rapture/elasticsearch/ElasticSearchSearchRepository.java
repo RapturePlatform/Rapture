@@ -217,9 +217,25 @@ public class ElasticSearchSearchRepository implements SearchRepository {
 
     }
 
+    String[] _allSchemes = null;
+
+    String[] allTypes() {
+        if (_allSchemes == null) {
+            _allSchemes = new String[Scheme.values().length];
+            int i = 0;
+            for (Scheme s : Scheme.values()) {
+                _allSchemes[i] = s.toString();
+            }
+        }
+        return _allSchemes;
+    }
+
     @Override
     public rapture.common.SearchResponse search(List<String> types, String query) {
-        SearchResponse response = ensureClient().prepareSearch().setIndices(index).setTypes(types.toArray(new String[types.size()]))
+        // null array, empty array, or array of one empty string
+        String[] tarray = ((types == null) || types.isEmpty() || ((types.size() == 1) && (types.get(0).isEmpty()))) ? allTypes()
+                : types.toArray(new String[types.size()]);
+        SearchResponse response = ensureClient().prepareSearch().setIndices(index).setTypes(tarray)
                 .setQuery(QueryBuilders.queryStringQuery(query)).get();
         return convert(response);
     }
@@ -233,9 +249,12 @@ public class ElasticSearchSearchRepository implements SearchRepository {
     @Override
     public rapture.common.SearchResponse searchWithCursor(List<String> types, String cursorId, int size, String query) {
         SearchResponse response;
+        // null array, empty array, or array of one empty string
+        String[] tarray = ((types == null) || types.isEmpty() || ((types.size() == 1) && (types.get(0).isEmpty()))) ? allTypes()
+                : types.toArray(new String[types.size()]);
         if (StringUtils.isBlank(cursorId)) {
             response = ensureClient().prepareSearch().setQuery(QueryBuilders.queryStringQuery(query)).setScroll(new TimeValue(CURSOR_KEEPALIVE))
-                    .setIndices(index).setTypes(types.toArray(new String[types.size()])).setSize(size).get();
+                    .setIndices(index).setTypes(tarray).setSize(size).get();
         } else {
             response = ensureClient().prepareSearchScroll(cursorId).setScroll(new TimeValue(CURSOR_KEEPALIVE)).get();
         }
