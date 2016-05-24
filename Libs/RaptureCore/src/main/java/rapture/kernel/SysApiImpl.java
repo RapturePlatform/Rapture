@@ -34,6 +34,10 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
+
 import rapture.common.CallingContext;
 import rapture.common.ChildrenTransferObject;
 import rapture.common.ConnectionInfo;
@@ -41,7 +45,6 @@ import rapture.common.JarStorage;
 import rapture.common.NodeEnum;
 import rapture.common.RaptureFolderInfo;
 import rapture.common.RaptureIdGenConfig;
-import rapture.common.RaptureScriptPathBuilder;
 import rapture.common.RaptureScriptStorage;
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
@@ -63,16 +66,8 @@ import rapture.common.model.RaptureEntitlementGroup;
 import rapture.common.model.RaptureUserStorage;
 import rapture.config.MultiValueConfigLoader;
 import rapture.kernel.sys.SysArea;
-import rapture.object.storage.ObjectStorage;
-import rapture.object.storage.SchemeToPathBuilder;
-import rapture.object.storage.StorageLocationFactory;
-import rapture.object.storage.StoragePathBuilder;
 import rapture.repo.Repository;
 import rapture.util.IDGenerator;
-
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
 
 /**
  * Low level config settings manipulation
@@ -509,6 +504,11 @@ public class SysApiImpl extends KernelBase implements SysApi {
     @Override
     public Map<String, ConnectionInfo> getConnectionInfo(CallingContext context, String connectionType) {
         return getConfigurer(connectionType).getConnectionInfo(context);
+    }
+
+    @Override
+    public void deleteConnectionInfo(CallingContext context, String connectionType, ConnectionInfo connectionInfo) {
+        getConfigurer(connectionType).deleteConnectionInfo(context, connectionInfo);
     }
 
     @Override

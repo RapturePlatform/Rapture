@@ -59,6 +59,10 @@ api(Sys) {
     @entitle=/repo/read
     @public Map(String, ConnectionInfo) getConnectionInfo(String connectionType);
 
+    [Delete connection info ]
+    @entitle=/repo/write
+    @public void deleteConnectionInfo(String connectionType, ConnectionInfo connectionInfo);
+
     [Puts connection info of an instance.]
     @entitle=/repo/write
     @public void putConnectionInfo(String connectionType, ConnectionInfo connectionInfo);
