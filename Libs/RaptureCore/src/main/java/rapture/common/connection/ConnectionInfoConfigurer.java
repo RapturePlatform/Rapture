@@ -23,8 +23,18 @@
  */
 package rapture.common.connection;
 
-import com.fasterxml.jackson.core.type.TypeReference;
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+
 import rapture.common.CallingContext;
 import rapture.common.ConnectionInfo;
 import rapture.common.exception.RaptureExceptionFactory;
@@ -32,13 +42,6 @@ import rapture.common.impl.jackson.JacksonUtil;
 import rapture.config.MultiValueConfigLoader;
 import rapture.kernel.Kernel;
 import rapture.kernel.sys.SysArea;
-
-import java.net.HttpURLConnection;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * Created by yanwang on 12/3/15.
@@ -50,6 +53,7 @@ public abstract class ConnectionInfoConfigurer {
     public abstract ConnectionType getType();
     public abstract int getDefaultPort();
 
+    private static final Logger log = Logger.getLogger(ConnectionInfoConfigurer.class);
     protected TypeReference<Map<String, ConnectionInfo>> typeReference = new TypeReference<Map<String, ConnectionInfo>>(){};
 
     public Map<String, ConnectionInfo> getConnectionInfo(CallingContext context) {
@@ -91,6 +95,15 @@ public abstract class ConnectionInfoConfigurer {
             throw RaptureExceptionFactory.create("Instance " + info.getInstanceName() + " does not exist");
         }
         map.put(info.getInstanceName(), info);
+        writeConnectionInfoToSysConfig(context, map);
+    }
+
+    public void deleteConnectionInfo(CallingContext context, ConnectionInfo connectionInfo) {
+        // check connection exists
+        Map<String, ConnectionInfo> map = getConnectionInfo(context);
+        if (map.remove(connectionInfo.getInstanceName()) == null) {
+            log.warn("Instance " + connectionInfo.getInstanceName() + " does not exist");
+        }
         writeConnectionInfoToSysConfig(context, map);
     }
 
