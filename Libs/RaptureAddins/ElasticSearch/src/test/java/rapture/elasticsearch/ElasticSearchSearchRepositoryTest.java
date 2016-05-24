@@ -44,6 +44,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.net.MediaType;
 
 import rapture.common.BlobUpdateObject;
@@ -366,7 +367,7 @@ public class ElasticSearchSearchRepositoryTest {
         // Search inside the blob
 
         String query = "blob:*City";
-        rapture.common.SearchResponse res = e.searchWithCursor(Arrays.asList(Scheme.BLOB.toString()), null, 10, query);
+        rapture.common.SearchResponse res = e.searchWithCursor(Arrays.asList(""), null, 10, query);
         assertNotNull(res.getCursorId());
         // The PDF has no data yet so shouldn't match
         assertEquals(2, res.getSearchHits().size());
@@ -381,7 +382,7 @@ public class ElasticSearchSearchRepositoryTest {
         int i;
         query = "blob:*Wigan*";
         for (i = 0; i < 10; i++) {
-            res = e.searchWithCursor(SearchRepoType.values, null, 10, query);
+            res = e.searchWithCursor(null, null, 10, query);
             if ((res != null) && (res.getSearchHits().size() > 0)) break;
             try {
                 // Tika parsing may not have completed yet.
@@ -395,7 +396,7 @@ public class ElasticSearchSearchRepositoryTest {
 
         e.remove(new RaptureURI(firstDiv.toString()));
         e.refresh();
-        res = e.searchWithCursor(SearchRepoType.values, null, 10, query);
+        res = e.searchWithCursor(ImmutableList.of(""), null, 10, query);
         assertEquals(0, res.getSearchHits().size());
     }
 

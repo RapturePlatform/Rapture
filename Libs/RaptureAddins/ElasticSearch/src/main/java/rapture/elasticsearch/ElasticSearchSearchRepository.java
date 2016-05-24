@@ -217,17 +217,14 @@ public class ElasticSearchSearchRepository implements SearchRepository {
 
     }
 
-    String[] _allSchemes = null;
+    private static String[] _all = null;
 
-    String[] allTypes() {
-        if (_allSchemes == null) {
-            _allSchemes = new String[Scheme.values().length];
-            int i = 0;
-            for (Scheme s : Scheme.values()) {
-                _allSchemes[i] = s.toString();
-            }
+    public static String[] allTypes() {
+        if (_all == null) {
+            List<String> list = SearchRepoType.values;
+            _all = list.toArray(new String[list.size()]);
         }
-        return _allSchemes;
+        return _all;
     }
 
     @Override
