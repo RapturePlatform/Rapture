@@ -125,7 +125,6 @@ public class BlobApiImpl extends KernelBase implements BlobApi, RaptureScheme {
                     }
                 }
             }
-            SearchPublisher.publishDeleteMessage(context, Kernel.getRepoCacheManager().getBlobConfig(uri.getAuthority()), uri);
         } catch (RaptureException e) {
             log.info("Unable to delete children; repo definitian may be invalid");
         }
@@ -133,6 +132,7 @@ public class BlobApiImpl extends KernelBase implements BlobApi, RaptureScheme {
         // delete parent directory
         BlobRepoConfigStorage.deleteByAddress(uri, context.getUser(), "Remove blob repo");
         removeRepoFromCache(uri.getAuthority());
+        SearchPublisher.publishDropMessage(context, blobRepoUri.toString());
     }
 
     public void appendToBlobLower(CallingContext context, String blobUri, byte[] content, String contentType) {
