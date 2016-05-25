@@ -217,22 +217,15 @@ public class ElasticSearchSearchRepository implements SearchRepository {
 
     }
 
-    private static String[] _all = null;
-
-    public static String[] allTypes() {
-        if (_all == null) {
-            List<String> list = SearchRepoType.values;
-            _all = list.toArray(new String[list.size()]);
-        }
-        return _all;
+    // If the List is null, empty or only contains a single null or empty String then return all SearchRepoTypes
+    private static String[] allTypes(List<String> types) {
+        if ((types == null) || types.isEmpty() || ((types.size() == 1) && StringUtils.isEmpty(types.get(0)))) return SearchRepoType.valueArray;
+        return types.toArray(new String[types.size()]);
     }
 
     @Override
     public rapture.common.SearchResponse search(List<String> types, String query) {
-        // null array, empty array, or array of one empty string
-        String[] tarray = ((types == null) || types.isEmpty() || ((types.size() == 1) && (types.get(0).isEmpty()))) ? allTypes()
-                : types.toArray(new String[types.size()]);
-        SearchResponse response = ensureClient().prepareSearch().setIndices(index).setTypes(tarray)
+        SearchResponse response = ensureClient().prepareSearch().setIndices(index).setTypes(allTypes(types))
                 .setQuery(QueryBuilders.queryStringQuery(query)).get();
         return convert(response);
     }
@@ -246,12 +239,9 @@ public class ElasticSearchSearchRepository implements SearchRepository {
     @Override
     public rapture.common.SearchResponse searchWithCursor(List<String> types, String cursorId, int size, String query) {
         SearchResponse response;
-        // null array, empty array, or array of one empty string
-        String[] tarray = ((types == null) || types.isEmpty() || ((types.size() == 1) && (types.get(0).isEmpty()))) ? allTypes()
-                : types.toArray(new String[types.size()]);
         if (StringUtils.isBlank(cursorId)) {
             response = ensureClient().prepareSearch().setQuery(QueryBuilders.queryStringQuery(query)).setScroll(new TimeValue(CURSOR_KEEPALIVE))
-                    .setIndices(index).setTypes(tarray).setSize(size).get();
+                    .setIndices(index).setTypes(allTypes(types)).setSize(size).get();
         } else {
             response = ensureClient().prepareSearchScroll(cursorId).setScroll(new TimeValue(CURSOR_KEEPALIVE)).get();
         }
