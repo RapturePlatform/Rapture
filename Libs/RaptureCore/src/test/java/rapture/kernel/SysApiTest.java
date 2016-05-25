@@ -103,19 +103,19 @@ public class SysApiTest extends AbstractFileTest {
         map = sys.getConnectionInfo(callingContext, ConnectionType.MONGODB.toString());
         assertEquals(info2, map.get(info2.getInstanceName()));
 
-        sys.deleteConnectionInfo(callingContext, ConnectionType.MONGODB.toString(), info);
+        sys.deleteConnectionInfo(callingContext, ConnectionType.MONGODB.toString(), info.getInstanceName());
         map = sys.getConnectionInfo(callingContext, ConnectionType.MONGODB.toString());
         assertNull(map.get(info.getInstanceName()));
         assertEquals(info2, map.get(info2.getInstanceName()));
 
-        sys.deleteConnectionInfo(callingContext, ConnectionType.MONGODB.toString(), info2);
+        sys.deleteConnectionInfo(callingContext, ConnectionType.MONGODB.toString(), info2.getInstanceName());
 
         map = sys.getConnectionInfo(callingContext, ConnectionType.MONGODB.toString());
         assertNull(map.get(info.getInstanceName()));
         assertNull(map.get(info2.getInstanceName()));
 
         // Already deleted - should do nothing
-        sys.deleteConnectionInfo(callingContext, ConnectionType.MONGODB.toString(), info2);
+        sys.deleteConnectionInfo(callingContext, ConnectionType.MONGODB.toString(), info2.getInstanceName());
 
     }
 }

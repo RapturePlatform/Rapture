@@ -507,8 +507,8 @@ public class SysApiImpl extends KernelBase implements SysApi {
     }
 
     @Override
-    public void deleteConnectionInfo(CallingContext context, String connectionType, ConnectionInfo connectionInfo) {
-        getConfigurer(connectionType).deleteConnectionInfo(context, connectionInfo);
+    public void deleteConnectionInfo(CallingContext context, String connectionType, String instanceName) {
+        getConfigurer(connectionType).deleteConnectionInfo(context, instanceName);
     }
 
     @Override

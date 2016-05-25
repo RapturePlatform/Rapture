@@ -61,7 +61,7 @@ api(Sys) {
 
     [Delete connection info ]
     @entitle=/repo/write
-    @public void deleteConnectionInfo(String connectionType, ConnectionInfo connectionInfo);
+    @public void deleteConnectionInfo(String connectionType, String instanceName);
 
     [Sets connection info of an instance.]
     @entitle=/repo/write

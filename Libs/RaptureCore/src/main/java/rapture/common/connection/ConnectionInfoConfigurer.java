@@ -82,11 +82,11 @@ public abstract class ConnectionInfoConfigurer {
         writeConnectionInfoToSysConfig(context, map);
     }
 
-    public void deleteConnectionInfo(CallingContext context, ConnectionInfo connectionInfo) {
+    public void deleteConnectionInfo(CallingContext context, String instanceName) {
         // check connection exists
         Map<String, ConnectionInfo> map = getConnectionInfo(context);
-        if (map.remove(connectionInfo.getInstanceName()) == null) {
-            log.warn("Instance " + connectionInfo.getInstanceName() + " does not exist");
+        if (map.remove(instanceName) == null) {
+            log.warn("Instance " + instanceName + " does not exist");
         }
         writeConnectionInfoToSysConfig(context, map);
     }
