@@ -91,6 +91,15 @@ public abstract class ConnectionInfoConfigurer {
         writeConnectionInfoToSysConfig(context, map);
     }
 
+    public void deleteConnectionInfo(CallingContext context, ConnectionInfo connectionInfo) {
+        // check connection exists
+        Map<String, ConnectionInfo> map = getConnectionInfo(context);
+        if (map.remove(connectionInfo.getInstanceName()) == null) {
+            log.warn("Instance " + connectionInfo.getInstanceName() + " does not exist");
+        }
+        writeConnectionInfoToSysConfig(context, map);
+    }
+
     protected Map<String, ConnectionInfo> getConnectionInfoFromSysConfig(CallingContext context) {
         String config = Kernel.getSys().retrieveSystemConfig(context, SysArea.CONFIG.toString(),
                 getSysConfigPath());

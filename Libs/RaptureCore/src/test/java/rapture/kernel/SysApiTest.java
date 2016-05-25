@@ -100,7 +100,6 @@ public class SysApiTest extends AbstractFileTest {
         assertNotEquals(info, info2);
 
         sys.setConnectionInfo(callingContext, ConnectionType.MONGODB.toString(), info2.getInstanceName(), info2);
-
         map = sys.getConnectionInfo(callingContext, ConnectionType.MONGODB.toString());
         assertEquals(info2, map.get(info2.getInstanceName()));
 
