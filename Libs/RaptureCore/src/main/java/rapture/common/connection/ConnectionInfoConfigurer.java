@@ -73,28 +73,12 @@ public abstract class ConnectionInfoConfigurer {
         return map;
     }
 
-    public void putConnectionInfo(CallingContext context, ConnectionInfo info) {
-        validateConnectionInfo(info);
-        // check connection is new
-        Map<String, ConnectionInfo> map = getConnectionInfo(context);
-        if(map.containsKey(info.getInstanceName())) {
-        	//
-            //throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR,
-            //            "Will not add. Connection already exists: " + info);
-        }
-        // add connection info to sys.config
-        map.put(info.getInstanceName(), info);
-        writeConnectionInfoToSysConfig(context, map);
-    }
-
-    public void setConnectionInfo(CallingContext context, ConnectionInfo info) {
+    public void setConnectionInfo(CallingContext context, String instanceName, ConnectionInfo info) {
         validateConnectionInfo(info);
         // check connection exists
         Map<String, ConnectionInfo> map = getConnectionInfo(context);
-        if(!map.containsKey(info.getInstanceName())) {
-            throw RaptureExceptionFactory.create("Instance " + info.getInstanceName() + " does not exist");
-        }
-        map.put(info.getInstanceName(), info);
+        info.setInstanceName(instanceName);
+        map.put(instanceName, info);
         writeConnectionInfoToSysConfig(context, map);
     }
 

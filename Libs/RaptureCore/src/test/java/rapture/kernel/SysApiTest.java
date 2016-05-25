@@ -89,7 +89,7 @@ public class SysApiTest extends AbstractFileTest {
         assertNotNull(map);
         assertNull(map.get(info.getInstanceName()));
 
-        sys.putConnectionInfo(callingContext, ConnectionType.MONGODB.toString(), info);
+        sys.setConnectionInfo(callingContext, ConnectionType.MONGODB.toString(), info.getInstanceName(), info);
         map = sys.getConnectionInfo(callingContext, ConnectionType.MONGODB.toString());
         assertEquals(info, map.get(info.getInstanceName()));
 
@@ -99,7 +99,7 @@ public class SysApiTest extends AbstractFileTest {
         // So localhost != 127.0.0.1
         assertNotEquals(info, info2);
 
-        sys.putConnectionInfo(callingContext, ConnectionType.MONGODB.toString(), info2);
+        sys.setConnectionInfo(callingContext, ConnectionType.MONGODB.toString(), info2.getInstanceName(), info2);
 
         map = sys.getConnectionInfo(callingContext, ConnectionType.MONGODB.toString());
         assertEquals(info2, map.get(info2.getInstanceName()));

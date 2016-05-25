@@ -63,13 +63,9 @@ api(Sys) {
     @entitle=/repo/write
     @public void deleteConnectionInfo(String connectionType, ConnectionInfo connectionInfo);
 
-    [Puts connection info of an instance.]
-    @entitle=/repo/write
-    @public void putConnectionInfo(String connectionType, ConnectionInfo connectionInfo);
-
     [Sets connection info of an instance.]
     @entitle=/repo/write
-    @public void setConnectionInfo(String connectionType, ConnectionInfo connectionInfo);
+    @public void setConnectionInfo(String connectionType, String instanceName, ConnectionInfo connectionInfo);
 
     [Retrieves the metadata for a storable object. e.g. script, workflow, workorder]
     @entitle=/repo/read

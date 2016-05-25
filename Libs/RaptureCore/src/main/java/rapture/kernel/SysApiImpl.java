@@ -512,13 +512,8 @@ public class SysApiImpl extends KernelBase implements SysApi {
     }
 
     @Override
-    public void putConnectionInfo(CallingContext context, String connectionType, ConnectionInfo connectionInfo) {
-        getConfigurer(connectionType).putConnectionInfo(context, connectionInfo);
-    }
-
-    @Override
-    public void setConnectionInfo(CallingContext context, String connectionType, ConnectionInfo connectionInfo) {
-        getConfigurer(connectionType).setConnectionInfo(context, connectionInfo);
+    public void setConnectionInfo(CallingContext context, String connectionType, String instanceName, ConnectionInfo connectionInfo) {
+        getConfigurer(connectionType).setConnectionInfo(context, instanceName, connectionInfo);
     }
 
     private ConnectionInfoConfigurer getConfigurer(String storeType) {
