@@ -1,26 +1,3 @@
-/**
- * The MIT License (MIT)
- *
- * Copyright (c) 2011-2016 Incapture Technologies LLC
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
 package rapture.elasticsearch;
 
 import static org.junit.Assert.assertEquals;
@@ -49,6 +26,7 @@ import rapture.common.Scheme;
 import rapture.common.api.BlobApi;
 import rapture.common.exception.ExceptionToString;
 import rapture.common.exception.RaptureException;
+import rapture.common.impl.jackson.JacksonUtil;
 import rapture.common.model.RaptureExchange;
 import rapture.common.model.RaptureExchangeQueue;
 import rapture.common.model.RaptureExchangeType;
@@ -125,7 +103,6 @@ public class SearchStandaloneTest {
 
             Kernel.setCategoryMembership("alpha");
 
-
         } catch (RaptureException e) {
             e.printStackTrace();
         }
@@ -179,9 +156,9 @@ public class SearchStandaloneTest {
         String query = "blob:*Wigan*";
         rapture.common.SearchResponse res = Kernel.getSearch().searchWithCursor(ctxt, null, 10, query);
         assertNotNull(res.getCursorId());
-        assertEquals(1, res.getSearchHits().size());
+        assertEquals(JacksonUtil.jsonFromObject(res.getSearchHits()), 1, res.getSearchHits().size());
 
-        Kernel.getBlob().deleteBlob(ContextFactory.getKernelUser(), firstDiv.toString());
+        blobImpl.deleteBlobRepo(ContextFactory.getKernelUser(), firstDiv.toAuthString());
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e1) {
@@ -190,6 +167,5 @@ public class SearchStandaloneTest {
         res = Kernel.getSearch().searchWithCursor(ctxt, null, 10, query);
         assertNotNull(res.getCursorId());
         assertEquals(0, res.getSearchHits().size());
-        blobImpl.deleteBlobRepo(ctxt, firstDiv.toAuthString());
     }
 }
