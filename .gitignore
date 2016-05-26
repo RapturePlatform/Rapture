@@ -38,4 +38,4 @@ Libs/API/VB
 **/antlr3/**/*.tokens
 **/antlr3/**/*.java
 Doc/slate/source/includes
-Libs/API/SlateMd
+Libs/API/Slate*
