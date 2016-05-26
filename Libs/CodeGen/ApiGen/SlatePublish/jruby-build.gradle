@@ -1,0 +1,86 @@
+jar.manifest.attributes "Implementation-Title" : "SlateGenerator"
+
+buildscript {
+  repositories {
+    maven {
+      url "https://plugins.gradle.org/m2/"
+    }
+  }
+  dependencies {
+      classpath "com.github.jruby-gradle:jruby-gradle-plugin:0.2.1"
+   }
+}
+
+apply plugin: 'com.github.jruby-gradle.base'
+
+import com.github.jrubygradle.JRubyExec
+import com.github.jrubygradle.JRubyPrepareGems
+
+dependencies {
+    compile group: 'com.google.guava', name: 'guava', version: '14.0'
+    compile 'commons-lang:commons-lang:2.6'
+    compile 'org.mvel:mvel2:2.2.4.Final'
+    jrubyExec 'rubygems:bundler:1.10.+'
+    jrubyExec('rubygems:middleman:3.3.12') { exclude module: 'tilt' }
+}
+
+//TODO the JrubyExec tasks removes the binaries after invoking. either
+// find way to turn that off or move them to a better location first
+task hackClean(type: Delete)  {
+   outputs.upToDateWhen { false }
+    delete 'build'
+}
+
+//task setup(type: Copy) {
+task setup(type: Copy, dependsOn: [clean, jrubyPrepare]) {
+   //outputs.upToDateWhen { false }
+   if (true) {
+   from 'build/tmp/jrubyExec'  
+   into 'build/jruby'
+   }
+}
+
+task prepare(type: Copy, dependsOn: setup) {
+//   outputs.upToDateWhen { false }
+   from '../API/Web/Slate'  
+   into 'source'
+}
+
+task bundle( type: JRubyExec, dependsOn: prepare)  {
+    jrubyArgs '-S'
+    script = new File('./build/tmp/jrubyExec/bin/bundle')
+    //script = new File('./build/tmp/jrubyExec/bin/bundle')
+    scriptArgs 'install'
+}
+
+task generateSlateDocuments( type: JRubyExec, dependsOn: bundle )  {
+    jrubyArgs '-S'
+    script = new File('./build/tmp/jrubyExec/bin/middleman')
+    //script = new File('./build/tmp/jrubyExec/bin/middleman')
+    scriptArgs 'build --no-clean'
+}
+
+//task docDist( )  << {
+task docDist( dependsOn: generateSlateDocuments )  << {
+   mkdir('build/slate')
+   copy {
+    from 'build/fonts'
+    into 'build/slate/fonts'
+   }
+   copy {
+    from 'build/images'
+    into 'build/slate/images'
+   }
+   copy {
+    from 'build/javascripts'
+    into 'build/slate/javascripts'
+   }
+   copy {
+    from 'build/stylesheets'
+    into 'build/slate/stylesheets'
+   }
+   copy {
+    from 'build/index.html'
+    into 'build/slate'
+   }
+}
