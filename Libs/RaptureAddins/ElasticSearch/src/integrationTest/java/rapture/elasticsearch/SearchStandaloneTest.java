@@ -74,9 +74,9 @@ public class SearchStandaloneTest {
     public static RaptureConfig config;
     public static CallingContext callingContext;
     private static BlobApiImpl blobImpl;
-    private static final String BLOB_USING_FILE = "BLOB {} USING FILE {prefix=\"/tmp/B" + auth + "\"}";
-    private static final String REPO_USING_FILE = "REP {} USING FILE {prefix=\"/tmp/" + auth + "\"}";
-    private static final String META_USING_FILE = "REP {} USING FILE {prefix=\"/tmp/M" + auth + "\"}";
+    private static final String BLOB_USING_MEMORY = "BLOB {} USING MEMORY {prefix=\"/tmp/B" + auth + "\"}";
+    private static final String REPO_USING_MEMORY = "REP {} USING MEMORY {prefix=\"/tmp/" + auth + "\"}";
+    private static final String META_USING_MEMORY = "REP {} USING MEMORY {prefix=\"/tmp/M" + auth + "\"}";
 
     static Logger log = Logger.getLogger(SearchStandaloneTest.class);
 
@@ -90,8 +90,8 @@ public class SearchStandaloneTest {
         callingContext = new CallingContext();
         callingContext.setUser("dummy");
 
-        config.RaptureRepo = REPO_USING_FILE;
-        config.InitSysConfig = "NREP {} USING FILE { prefix=\"/tmp/" + auth + ".sys.config\"}";
+        config.RaptureRepo = REPO_USING_MEMORY;
+        config.InitSysConfig = "NREP {} USING MEMORY { prefix=\"/tmp/" + auth + ".sys.config\"}";
         config.FullTextSearchOn = true;
         config.FullTextSearchIgnoreClusterName = true;
 
@@ -134,7 +134,7 @@ public class SearchStandaloneTest {
                 "LOG {} using MEMORY {}");
         Kernel.getLock().createLockManager(ContextFactory.getKernelUser(), "lock://kernel", "LOCKING USING DUMMY {}", "");
         blobImpl = new BlobApiImpl(Kernel.INSTANCE);
-        blobImpl.createBlobRepo(callingContext, blobAuthorityURI, BLOB_USING_FILE, META_USING_FILE);
+        blobImpl.createBlobRepo(callingContext, blobAuthorityURI, BLOB_USING_MEMORY, META_USING_MEMORY);
     }
 
     @AfterClass
@@ -150,9 +150,6 @@ public class SearchStandaloneTest {
         ConfigLoader.getConf().InitSysConfig = saveInitSysConfig;
         ConfigLoader.getConf().RaptureRepo = saveRaptureRepo;
     }
-
-    private static final String BLOB_USING_MEMORY = "BLOB {} USING MEMORY { }";
-    private static final String META_USING_MEMORY = "REP {} USING MEMORY { }";
 
     @Test
     public void testBlobApiCallsSearch() {
