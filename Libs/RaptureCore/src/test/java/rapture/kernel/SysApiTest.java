@@ -58,14 +58,14 @@ public class SysApiTest extends AbstractFileTest {
     static public void setUp() {
         AbstractFileTest.setUp();
         config.RaptureRepo = REPO_USING_FILE;
-        config.InitSysConfig = "NREP {} USING FILE { prefix=\"/tmp/" + auth + "/sys.config\"}";
+        config.InitSysConfig = "NREP {} USING MEMORY { prefix=\"/tmp/" + auth + "/sys.config\"}";
 
         Kernel.initBootstrap();
         callingContext = ContextFactory.getKernelUser();
 
         Kernel.INSTANCE.clearRepoCache(false);
         Kernel.getAudit().createAuditLog(ContextFactory.getKernelUser(), new RaptureURI(RaptureConstants.DEFAULT_AUDIT_URI, Scheme.LOG).getAuthority(),
-                "LOG {} using FILE {prefix=\"/tmp/" + auth + "\"}");
+                "LOG {} using MEMORY {prefix=\"/tmp/" + auth + "\"}");
         Kernel.getLock().createLockManager(callingContext, "lock://kernel", "LOCKING USING DUMMY {}", "");
         scriptImpl = new ScriptApiImpl(Kernel.INSTANCE);
         Kernel.getIdGen().setupDefaultIdGens(callingContext, false);
