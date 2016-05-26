@@ -54,6 +54,9 @@ public enum SearchRepoUtils {
         case SERIES:
             searchableRepo = Kernel.getSeries().getSeriesRepoConfig(ctx, repoUri);
             break;
+        case BLOB:
+            searchableRepo = Kernel.getBlob().getBlobRepoConfig(ctx, repoUri);
+            break;
         default:
             searchableRepo = Kernel.getDoc().getDocRepoConfig(ctx, repoUri);
             break;

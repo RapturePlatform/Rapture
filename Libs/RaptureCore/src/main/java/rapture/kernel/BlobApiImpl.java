@@ -132,7 +132,7 @@ public class BlobApiImpl extends KernelBase implements BlobApi, RaptureScheme {
         // delete parent directory
         BlobRepoConfigStorage.deleteByAddress(uri, context.getUser(), "Remove blob repo");
         removeRepoFromCache(uri.getAuthority());
-        SearchPublisher.publishDropMessage(context, blobRepoUri.toString());
+        SearchPublisher.publishDropMessage(context, uri.toString());
     }
 
     public void appendToBlobLower(CallingContext context, String blobUri, byte[] content, String contentType) {
