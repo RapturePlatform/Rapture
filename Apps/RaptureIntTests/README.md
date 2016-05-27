@@ -2,29 +2,30 @@
 
 The RaptureIntTests project contains integration API tests for both Java and Reflex. Reflex is a scripting language developed at Incapture Technologies for use with Rapture developed systems.
 
-The integration tests are run against a live Rapture environment consisting of a RaptureAPIServer and underlying datastores and messaging components.  
+The integration tests are run against a live Rapture environment consisting of a RaptureAPIServer and underlying datastores and messaging components.
 
 This set of tests uses the following reference Rapture implementation:
-1. RaptureAPIServer
-2. MongoDB
-3. Cassandra
-4. RabbitMQ
+ 1. RaptureAPIServer
+ 2. MongoDB
+ 3. Cassandra
+ 4. RabbitMQ
+ 5. ElasticSearch
 
 Please note Rapture supports other:
-1. Datastores and messaging infrastructure
-2. Languages for API access
+ 1. Datastores and messaging infrastructure
+ 2. Languages for API access
 
 The objectives of this README are to:
-1. Setup a local RaptureAPIServer environment
-2. Setup your environment to run tests
-3. Run tests either using Gradle command line or Eclipse IDE
-4. Add your own tests!
+ 1. Setup a local RaptureAPIServer environment
+ 2. Setup your environment to run tests
+ 3. Run tests either using Gradle command line or Eclipse IDE
+ 4. Add your own tests!
 
 ## Setup
 
 Make sure you have:
-1. Java installed
-2. Successfully built both projects in the RapturePlatform project: /Libs and /Apps
+ 1. Java 1.8 installed
+ 2. Successfully built both projects in the RapturePlatform project: /Libs and /Apps
 
 ### Java
 * Java 7 or 8 JRE is installed
@@ -36,8 +37,8 @@ Make sure you have:
 ## Start your Rapture Environment
 
 We will cover two methods to standup a local RaptureAPIServer environment:
-1. Docker (much quicker!)
-2. From mac command line  
+ 1. Docker (much quicker!)
+ 2. From mac command line  
 
 ### Docker
 Please see here for Docker setup and running instructions:
