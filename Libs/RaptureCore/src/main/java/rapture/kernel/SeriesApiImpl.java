@@ -158,6 +158,20 @@ public class SeriesApiImpl extends KernelBase implements SeriesApi {
         RaptureURI internalURI = new RaptureURI(seriesURI, Scheme.SERIES);
         SeriesRepo repo = getRepoOrFail(internalURI);
         repo.deletePointsFromSeriesByColumn(internalURI.getDocPath(), columns);
+        if (SearchPublisher.shouldPublish(getConfigFromCache(internalURI.getAuthority()), internalURI)) {
+            // Need to delete points from ES.
+            // Drop the old series and re-add all the points that remain.
+            // Is there a better way?
+            SearchPublisher.publishDeleteMessage(context, getConfigFromCache(internalURI.getAuthority()), internalURI);
+            List<SeriesPoint> points = getPoints(context, seriesURI);
+            List<String> pointKeys = new ArrayList<>(points.size());
+            List<String> pointValues = new ArrayList<>(points.size());
+            for (SeriesPoint p : points) {
+                pointKeys.add(p.getColumn());
+                pointValues.add(p.getValue());
+            }
+            processSearchUpdate(context, internalURI, pointKeys, pointValues);
+        }
     }
 
     @Override

@@ -36,5 +36,6 @@ public class BlobUpdateObject extends AbstractUpdateObject<BlobContainer> {
     @Override
     public void setPayload(BlobContainer payload) {
         this.payload = payload;
+        setMimeType(payload.getHeaders().get(ContentEnvelope.CONTENT_TYPE_HEADER));
     }
 }

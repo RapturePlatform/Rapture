@@ -93,7 +93,7 @@ public class SearchPublisher {
         Kernel.getPipeline().publishMessageToCategory(context, task);
     }
 
-    private static boolean shouldPublish(Searchable searchableRepo, RaptureURI uri) {
+    public static boolean shouldPublish(Searchable searchableRepo, RaptureURI uri) {
         if (ConfigLoader.getConf().FullTextSearchOn && searchableRepo.getFtsIndex()) {
             log.debug(String.format("Publishing search update for uri [%s] to search repo [%s] ...", uri.toString(),
                     SearchRepoUtils.getSearchRepo(searchableRepo)));
