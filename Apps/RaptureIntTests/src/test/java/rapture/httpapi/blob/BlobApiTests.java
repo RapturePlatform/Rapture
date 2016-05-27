@@ -59,26 +59,6 @@ public class BlobApiTests {
         }   
     }
     
-    @Test  (groups={"blob","mongo", "smoke"},description="Test failure of creation of null blob repo", enabled = true)
-    public void testCreateBlobRepoWithoutAuthority() {
-
-        String blobAuthority="";
-
-        String currRepo = RaptureURI.builder(BLOB, blobAuthority).asString();
-
-        String mongoRepoConfig="BLOB {} USING MONGODB {%s=\"%s\"}";
-        String mongoRepoMetaConfig="REP {} USING MONGODB {prefix=\"%s\"}";
-        //Create blob
-        try {
-            blobApi.createBlobRepo(currRepo, mongoRepoConfig,mongoRepoMetaConfig);
-        } catch (Exception e) {
-            System.out.println("Exception thrown: " + e.getMessage());
-            //Assert.fail();
-            Assert.assertEquals(e.getMessage().contains("Cannot create a repository without an authority"), true, "Verifying error message thrown");
-                        
-        }
-      
-    }
     
     /** 
      * Creates blog using parameter input pointing to a test file. Stores and retrieves blob data and verifies. Delete afterwards
