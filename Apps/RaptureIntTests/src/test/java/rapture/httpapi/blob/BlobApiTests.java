@@ -70,12 +70,11 @@ public class BlobApiTests {
 
         String authorityName = "test.blob" + Thread.currentThread().getId();
         String blobRepoUri=RaptureURI.builder(BLOB, authorityName).build().toString();
-        System.out.println(blobRepoUri);
+        Reporter.log("Created "+blobRepoUri, true);
         if(!blobApi.blobRepoExists(blobRepoUri)){
             String blobConfig = String.format(repoConfigTemplate, "MONGODB", authorityName);
             String metaConfig = String.format(metaConfigTemplate, "MONGODB", authorityName);
-            System.out.println("Blob Config String: " + blobConfig);
-            System.out.println("Meta Config String: " + metaConfig);
+            Reporter.log("Creating "+blobRepoUri + " with config "+metaConfig,true);
             try {
                 blobApi.createBlobRepo(blobRepoUri, blobConfig,metaConfig);
             }
@@ -116,7 +115,7 @@ public class BlobApiTests {
         String blobURI = RaptureURI.builder(BLOB, blobAuthority+System.nanoTime()).asString();
         String CONFIG = String.format(mongoRepoConfigTemplate, configType, blobAuthority);
         String CONFIGMETA = String.format(mongoRepoMetaConfigTemplate,metaAuthority);
-        System.out.println("Blob Config String: " + CONFIG);
+        Reporter.log("Creating "+blobURI + " with config "+CONFIG,true);
         try {
             blobApi.createBlobRepo(blobURI,CONFIG,CONFIGMETA);
         }
@@ -141,7 +140,7 @@ public class BlobApiTests {
 
         String CONFIG = String.format(mongoRepoConfigTemplate, configType, blobAuthority);
         String CONFIGMETA = String.format(mongoRepoMetaConfigTemplate,metaAuthority);
-   
+        Reporter.log("Creating repo "+blobURI + " with config "+CONFIG,true);
         try {
             blobApi.createBlobRepo(blobURI,CONFIG,CONFIGMETA);
         }
@@ -151,15 +150,13 @@ public class BlobApiTests {
               
         long content_size=Math.abs(rand.nextLong() % maxContentSize);
         String currBlobURI=blobURI + Thread.currentThread().getId() + "_" + content_size + "_" + System.nanoTime();
-        System.out.println ("Creating blob with content size="+content_size);
-        System.out.println ("URI="+currBlobURI);
+        Reporter.log("Creating URI "+currBlobURI + " with content size= "+content_size,true);
         String currContent="INITIAL CONTENT";
-
-        System.out.println("storing and appending to blob: " + currBlobURI);
+        Reporter.log("Storing and appending to blob: " + currBlobURI,true);
         try{
             blobApi.putBlob(currBlobURI,currContent.getBytes(), "application/text"); 
         } catch (Exception e) {
-            System.out.println("Exception thrown: " + e);
+            Reporter.log("Exception thrown: " + e,true);
         }
         
         blobApi.addBlobContent(currBlobURI, "MORE CONTENT".getBytes());
@@ -179,7 +176,7 @@ public class BlobApiTests {
         String blobURI=RaptureURI.builder(BLOB, currBlobAuthority).asString();
         String CONFIG = String.format(mongoRepoConfigTemplate, configType, blobAuthority);
         String CONFIGMETA = String.format(mongoRepoMetaConfigTemplate,metaAuthority);
-   
+        Reporter.log("Creating repo "+blobURI + " with config "+CONFIG,true);
         try {
             blobApi.createBlobRepo(blobURI, CONFIG,CONFIGMETA);
         }
@@ -200,7 +197,8 @@ public class BlobApiTests {
         try {
             blobApi.deleteBlob(currBlobURI); 
         } catch (Exception e) {
-            System.out.println("Exception thrown: "+ e);
+            Reporter.log("Exception thrown: "+ e,true);
+
         }
         
         // test that put then delete content nullifies blob and makes it not exist
@@ -225,12 +223,10 @@ public class BlobApiTests {
         String authorityName = "test.blob" + System.nanoTime();
 
         String repoURI=RaptureURI.builder(BLOB, authorityName).build().toString();
-        System.out.println("Repo URI="+repoURI);
         String blobConfig = String.format(repoConfigTemplate, "MONGODB", authorityName);
         String metaConfig = String.format(metaConfigTemplate, "MONGODB", authorityName);
-        System.out.println("Blob Config String: " + blobConfig);
-        System.out.println("Meta Config String: " + metaConfig);
-        
+        Reporter.log("Creating repo "+repoURI + " with config "+blobConfig,true);
+
         try {
             blobApi.createBlobRepo(repoURI, blobConfig,metaConfig);
         }
@@ -248,12 +244,14 @@ public class BlobApiTests {
         try {
             blobApi.putBlob(blobURI,orgContent.getBytes(), "application/text");
         } catch (Exception e) {
-            System.out.println("Exception thrown: " +e );
+            Reporter.log("Exception thrown: " +e,true);
+
         }
         
         //get the blob from store 
         String retrievedOrgContent = new String (blobApi.getBlob(blobURI).getContent());
-        System.out.println("Original blob contents: " + retrievedOrgContent);
+        Reporter.log("Original blob contents: " + retrievedOrgContent,true);
+
         Assert.assertEquals(retrievedOrgContent,orgContent, "Compare retrieved blob data to original blob data written to same repo.");
         
         //overwrite the original blob with a new one
@@ -261,15 +259,17 @@ public class BlobApiTests {
         for (long j=0;j<newContentSize;j++){
             newContent=newContent+"b";
         }
-        System.out.println("Overwriting original blob with: " + newContent);
-        
+        Reporter.log("Overwriting original blob with: " + newContent,true);
+
         try {
             blobApi.putBlob(blobURI,newContent.getBytes(), "application/text");
         } catch (Exception e) {
-            System.out.println("Exception thrown: " +e );
+            Reporter.log("Exception thrown: " +e ,true);
+
         }
         String retrievedNewContent = new String (blobApi.getBlob(blobURI).getContent());
-        System.out.println("Overwritten blob contents: " + retrievedNewContent);
+        Reporter.log("Overwritten blob contents: " + retrievedNewContent,true);
+
         Assert.assertEquals(retrievedNewContent,newContent, "Blob should be overwritten by newContent bx100");
     }
     
@@ -278,11 +278,10 @@ public class BlobApiTests {
 
         String authorityName = "test.blob" + System.nanoTime();
         String repoURI=RaptureURI.builder(BLOB, authorityName).build().toString();
-        System.out.println("Repo uri="+repoURI);
+
         String blobConfig = String.format(repoConfigTemplate, "MONGODB", authorityName);
         String metaConfig = String.format(metaConfigTemplate, "MONGODB", authorityName);
-        System.out.println("Blob Config String: " + blobConfig);
-        System.out.println("Meta Config String: " + metaConfig);
+        Reporter.log("Creating repo "+repoURI + " with config "+blobConfig,true);
                 
         try {
             blobApi.createBlobRepo(repoURI, blobConfig,metaConfig);
@@ -293,28 +292,26 @@ public class BlobApiTests {
         
         //load file1 and store in blob store
         String path = getFilePath(this, "/blob/small-pdf-file.pdf");
-        System.out.println("Loading pdf: " + path);
+        Reporter.log("Loading pdf: " + path,true);
         byte[] putOrgData = getFileAsBytes(path);
         String blobURI=repoURI+"/over_write_test";
         
         try {
             blobApi.putBlob(blobURI,putOrgData, "application/pdf");
         } catch (Exception e) {
-            System.out.println("Exception thrown: " +e );
+            Reporter.log("Exception thrown: " +e,true);
         }
         
         byte[] retrievedOrgData = blobApi.getBlob(blobURI).getContent();
         Assert.assertEquals(retrievedOrgData,putOrgData, "Compare retrieved blob data to original blob data written to same repo.");
         
         //load a test file2 and store in same blob store
-        //String path2 = ReflexHelper.getFilePath(this, "/blob/simple_blob_test.txt");
-        //System.out.println("Loading text file: " + path2);
         String putNewData = ResourceLoader.getResourceAsString(this, "/blob/simple_blob_test.txt");
         
         try {
             blobApi.putBlob(blobURI,putNewData.getBytes(), "application/text");
         } catch (Exception e) {
-            System.out.println("Exception thrown: " +e );
+            Reporter.log("Exception thrown: " +e,true);
         }
         
         byte[] retrievedNewData = blobApi.getBlob(blobURI).getContent();
@@ -332,6 +329,8 @@ public class BlobApiTests {
         String currRepo = RaptureURI.builder(BLOB, blobAuthority+System.nanoTime()).asString();
         String CONFIG = String.format(mongoRepoConfigTemplate, configType, blobAuthority);
         String CONFIGMETA = String.format(mongoRepoMetaConfigTemplate,metaAuthority);
+        Reporter.log("Creating "+currRepo + " with config "+CONFIG,true);
+
         try {
             blobApi.createBlobRepo(currRepo, CONFIG,CONFIGMETA);
         }
@@ -341,7 +340,7 @@ public class BlobApiTests {
         try {
             blobApi.deleteBlobRepo(currRepo);
         } catch (Exception e) {
-            System.out.println("Exception thrown: " + e);
+            Reporter.log("Exception thrown: " +e,true);
         }
         
         Assert.assertFalse(blobApi.blobRepoExists(currRepo));
