@@ -161,7 +161,7 @@ public class SeriesApiImpl extends KernelBase implements SeriesApi {
         if (SearchPublisher.shouldPublish(getConfigFromCache(internalURI.getAuthority()), internalURI)) {
             // Need to delete points from ES.
             // Drop the old series and re-add all the points that remain.
-            // Is there a better way?
+            // TODO Is there a better way? Can we delete individual series points from ES?
             SearchPublisher.publishDeleteMessage(context, getConfigFromCache(internalURI.getAuthority()), internalURI);
             List<SeriesPoint> points = getPoints(context, seriesURI);
             List<String> pointKeys = new ArrayList<>(points.size());
