@@ -29,8 +29,10 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -54,6 +56,7 @@ import rapture.common.client.HttpDocApi;
 import rapture.common.client.HttpLoginApi;
 import rapture.common.client.HttpSearchApi;
 import rapture.common.client.HttpSeriesApi;
+import rapture.common.impl.jackson.JacksonUtil;
 
 /**
  * Tests to exercise the Mongo repo to check for breakages in migrating to Mongo 3.0
@@ -238,7 +241,7 @@ public class SearchApiIntegrationTest {
      */
     @Test(groups = { "nightly", "search" })
     @Parameters({ "RepoType" })
-    public void testSearchSeries(@Optional("MONGODB") String storage) throws IOException {
+    public void testSeriesSearch(@Optional("MONGODB") String storage) throws IOException {
 
         RaptureURI repo = helper.getRandomAuthority(Scheme.SERIES);
         helper.configureTestRepo(repo, storage);
@@ -300,6 +303,69 @@ public class SearchApiIntegrationTest {
         seriesApi.deleteSeriesRepo(repo.toString());
         res = QueryWithRetry.query(0, 5, () -> {
             return searchApi.searchWithCursor(null, 10, "Watford:*");
+        });
+        assertNotNull(res.getCursorId());
+        Assert.assertEquals(res.getTotal().intValue(), 0, toString(res));
+
+        helper.cleanTestRepo(repo);
+    }
+
+    /**
+     * Requires: ElasticSearch. Tests: Series creation, deletion. Repo creation, deletion. Search
+     * 
+     * @throws IOException
+     */
+    @Test(groups = { "nightly", "search" })
+    @Parameters({ "RepoType" })
+    public void testDocSearch(@Optional("MONGODB") String storage) throws IOException {
+
+        RaptureURI repo = helper.getRandomAuthority(Scheme.DOCUMENT);
+        helper.configureTestRepo(repo, storage);
+
+        RaptureURI epl = new RaptureURI.Builder(repo).docPath("English/Premier").build();
+        RaptureURI champ = new RaptureURI.Builder(repo).docPath("English/Championship").build();
+
+        String[] premierArr = premier.split("\n");
+        String[] champArr = championship.split("\n");
+
+        Map<String, String> premMap = new HashMap<>();
+
+        for (String prem : premierArr) {
+            String[] line = prem.split(",");
+            premMap.put(line[1], line[4]);
+        }
+        docApi.putDoc(epl.toString(), JacksonUtil.jsonFromObject(premMap));
+
+        Map<String, String> champMap = new HashMap<>();
+        for (String cham : champArr) {
+            String[] line = cham.split(",");
+            champMap.put(line[1], line[4]);
+        }
+        docApi.putDoc(champ.toString(), JacksonUtil.jsonFromObject(champMap));
+
+        SearchResponse res = QueryWithRetry.query(1, 5, () -> {
+            return searchApi.search("Watford");
+        });
+
+        // Assert.assertTrue(values.contains(query));
+        Assert.assertEquals(res.getTotal().intValue(), 1, toString(res));
+
+        // Delete keys from 4-16
+        assertNotNull(premMap.remove("Watford"));
+        docApi.putDoc(champ.toString(), JacksonUtil.jsonFromObject(champMap));
+
+        res = QueryWithRetry.query(0, 5, () -> {
+            return searchApi.search("Watford");
+        });
+        for (SearchHit sh : res.getSearchHits()) {
+            System.out.println(sh.getSource());
+        }
+        Assert.assertEquals(res.getTotal().intValue(), 0, toString(res));
+
+        // Drop the repo
+        docApi.deleteDocRepo(repo.toString());
+        res = QueryWithRetry.query(0, 5, () -> {
+            return searchApi.searchWithCursor(null, 10, "Everton");
         });
         assertNotNull(res.getCursorId());
         Assert.assertEquals(res.getTotal().intValue(), 0, toString(res));
