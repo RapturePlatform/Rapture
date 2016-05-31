@@ -38,6 +38,7 @@ import java.util.UUID;
 
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Optional;
 import org.testng.annotations.Parameters;
@@ -59,7 +60,8 @@ import rapture.common.client.HttpSeriesApi;
 import rapture.common.impl.jackson.JacksonUtil;
 
 /**
- * Tests to exercise the Mongo repo to check for breakages in migrating to Mongo 3.0
+ * Tests to exercise Full Text Search. Note: We should be able to use any repo type; Memory, Mongo, Postgres etc. as the purpose of the test is to verify that
+ * the API methods successfully interact with ElasticSearch;
  */
 
 public class SearchApiIntegrationTest {
@@ -84,7 +86,7 @@ public class SearchApiIntegrationTest {
      *            Passed in from <env>_testng.xml suite file
      * @return none
      */
-    @BeforeClass(groups = { "mongo" })
+    @BeforeClass(groups = { "nightly", "search" })
     @Parameters({ "RaptureURL", "RaptureUser", "RapturePassword" })
     public void setUp(@Optional("http://localhost:8665/rapture") String url, @Optional("rapture") String username, @Optional("rapture") String password) {
 
@@ -121,8 +123,10 @@ public class SearchApiIntegrationTest {
         }
     }
 
-
-    // General repo creation methods
+    @AfterMethod(groups = { "nightly", "search" })
+    public void afterMethod() {
+        helper.cleanAllAssets();
+    }
 
     /**
      * TestNG method to cleanup.
@@ -130,7 +134,7 @@ public class SearchApiIntegrationTest {
      * @param none
      * @return none
      */
-    @AfterClass(groups = { "mongo" })
+    @AfterClass(groups = { "nightly", "search" })
     public void afterTest() {
         raptureLogin = null;
     }
@@ -170,11 +174,11 @@ public class SearchApiIntegrationTest {
      * @throws IOException
      */
     @Parameters({ "RepoType" })
-    public void testBlobSearch(@Optional("MONGODB") String storage) throws IOException {
+    public void testBlobSearch() throws IOException {
 
         File pdf = new File("src/test/resources/www-bbc-com.pdf");
         RaptureURI blobRepo = new RaptureURI.Builder(Scheme.BLOB, UUID.randomUUID().toString()).build();
-        helper.configureTestRepo(blobRepo, storage);
+        helper.configureTestRepo(blobRepo, "MEMORY");
 
         RaptureURI epl = new RaptureURI.Builder(blobRepo).docPath("English/Premier").build();
         RaptureURI champ = new RaptureURI.Builder(blobRepo).docPath("English/Championship").build();
@@ -241,10 +245,10 @@ public class SearchApiIntegrationTest {
      */
     @Test(groups = { "nightly", "search" })
     @Parameters({ "RepoType" })
-    public void testSeriesSearch(@Optional("MONGODB") String storage) throws IOException {
+    public void testSeriesSearch() throws IOException {
 
         RaptureURI repo = helper.getRandomAuthority(Scheme.SERIES);
-        helper.configureTestRepo(repo, storage);
+        helper.configureTestRepo(repo, "MEMORY");
 
         RaptureURI epl = new RaptureURI.Builder(repo).docPath("English/Premier").build();
         RaptureURI champ = new RaptureURI.Builder(repo).docPath("English/Championship").build();
@@ -317,10 +321,10 @@ public class SearchApiIntegrationTest {
      */
     @Test(groups = { "nightly", "search" })
     @Parameters({ "RepoType" })
-    public void testDocSearch(@Optional("MONGODB") String storage) throws IOException {
+    public void testDocSearch() throws IOException {
 
         RaptureURI repo = helper.getRandomAuthority(Scheme.DOCUMENT);
-        helper.configureTestRepo(repo, storage);
+        helper.configureTestRepo(repo, "MEMORY");
 
         RaptureURI epl = new RaptureURI.Builder(repo).docPath("English/Premier").build();
         RaptureURI champ = new RaptureURI.Builder(repo).docPath("English/Championship").build();
@@ -343,11 +347,10 @@ public class SearchApiIntegrationTest {
         }
         docApi.putDoc(champ.toString(), JacksonUtil.jsonFromObject(champMap));
 
+        Assert.assertNotNull(premMap.get("Watford"));
         SearchResponse res = QueryWithRetry.query(1, 5, () -> {
-            return searchApi.search("Watford");
+            return searchApi.search("Watford:*");
         });
-
-        // Assert.assertTrue(values.contains(query));
         Assert.assertEquals(res.getTotal().intValue(), 1, toString(res));
 
         // Delete keys from 4-16
@@ -355,7 +358,7 @@ public class SearchApiIntegrationTest {
         docApi.putDoc(champ.toString(), JacksonUtil.jsonFromObject(champMap));
 
         res = QueryWithRetry.query(0, 5, () -> {
-            return searchApi.search("Watford");
+            return searchApi.search("Watford:*");
         });
         for (SearchHit sh : res.getSearchHits()) {
             System.out.println(sh.getSource());
@@ -364,8 +367,16 @@ public class SearchApiIntegrationTest {
 
         // Drop the repo
         docApi.deleteDocRepo(repo.toString());
+        res = QueryWithRetry.query(1, 5, () -> {
+            return searchApi.searchWithCursor(null, 10, "Everton:*");
+        });
+        assertNotNull(res.getCursorId());
+        Assert.assertEquals(res.getTotal().intValue(), 1, toString(res));
+
+        // Drop the repo
+        docApi.deleteDocRepo(repo.toString());
         res = QueryWithRetry.query(0, 5, () -> {
-            return searchApi.searchWithCursor(null, 10, "Everton");
+            return searchApi.searchWithCursor(null, 10, "Everton:*");
         });
         assertNotNull(res.getCursorId());
         Assert.assertEquals(res.getTotal().intValue(), 0, toString(res));

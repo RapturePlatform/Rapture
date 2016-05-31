@@ -24,6 +24,8 @@
 
 package rapture.api.checkout;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 import org.testng.Assert;
@@ -42,6 +44,8 @@ public class IntegrationTestHelper {
     HttpSeriesApi seriesApi = null;
     HttpDocApi docApi = null;
     HttpBlobApi blobApi = null;
+
+    Set<RaptureURI> uriCache;
 
     public HttpLoginApi getRaptureLogin() {
         return raptureLogin;
@@ -65,10 +69,13 @@ public class IntegrationTestHelper {
         seriesApi = new HttpSeriesApi(raptureLogin);
         docApi = new HttpDocApi(raptureLogin);
         blobApi = new HttpBlobApi(raptureLogin);
+        uriCache = new HashSet<>();
     }
 
     public RaptureURI getRandomAuthority(Scheme scheme) {
-        return new RaptureURI.Builder(scheme, UUID.randomUUID().toString()).build();
+        RaptureURI gagarin = new RaptureURI.Builder(scheme, UUID.randomUUID().toString()).build();
+        uriCache.add(gagarin);
+        return gagarin;
     }
 
     public void configureTestRepo(RaptureURI repo, String storage) {
@@ -122,6 +129,15 @@ public class IntegrationTestHelper {
     
         default:
             Assert.fail(repo.toString() + " not supported");
+        }
+    }
+
+    /**
+     * Delete any created assets that we know about
+     */
+    public void cleanAllAssets() {
+        for (RaptureURI gagarin : uriCache) {
+            cleanTestRepo(gagarin);
         }
     }
 
