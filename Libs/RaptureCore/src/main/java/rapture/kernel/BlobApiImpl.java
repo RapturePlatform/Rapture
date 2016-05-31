@@ -127,7 +127,7 @@ public class BlobApiImpl extends KernelBase implements BlobApi, RaptureScheme {
             }
             SearchPublisher.publishDeleteMessage(context, Kernel.getRepoCacheManager().getBlobConfig(uri.getAuthority()), uri);
         } catch (RaptureException e) {
-            log.info("Unable to delete children; repo definitian may be invalid");
+            log.info("Unable to delete children; repo definition may be invalid", e);
         }
 
         // delete parent directory

@@ -59,13 +59,13 @@ api(Sys) {
     @entitle=/repo/read
     @public Map(String, ConnectionInfo) getConnectionInfo(String connectionType);
 
-    [Puts connection info of an instance.]
+    [Delete connection info ]
     @entitle=/repo/write
-    @public void putConnectionInfo(String connectionType, ConnectionInfo connectionInfo);
+    @public void deleteConnectionInfo(String connectionType, String instanceName);
 
     [Sets connection info of an instance.]
     @entitle=/repo/write
-    @public void setConnectionInfo(String connectionType, ConnectionInfo connectionInfo);
+    @public void setConnectionInfo(String connectionType, String instanceName, ConnectionInfo connectionInfo);
 
     [Retrieves the metadata for a storable object. e.g. script, workflow, workorder]
     @entitle=/repo/read
