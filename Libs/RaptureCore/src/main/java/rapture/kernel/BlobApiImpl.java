@@ -238,7 +238,7 @@ public class BlobApiImpl extends KernelBase implements BlobApi, RaptureScheme {
     @Override
     public void putBlob(CallingContext context, String blobUri, byte[] content, String contentType) {
         lowerStoreBlob(context, blobUri, content, contentType, false);
-        RaptureURI uri = new RaptureURI(blobUri);
+        RaptureURI uri = new RaptureURI(blobUri, Scheme.BLOB);
         BlobRepoConfig repoConfig = Kernel.getRepoCacheManager().getBlobConfig(uri.getAuthority());
         BlobUpdateObject buo = new BlobUpdateObject(uri, content, contentType);
         SearchPublisher.publishCreateMessage(context, repoConfig, buo, false);
