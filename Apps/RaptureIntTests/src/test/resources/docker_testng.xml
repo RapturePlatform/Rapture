@@ -4,6 +4,7 @@
 	<parameter name="RaptureURL" value="http://192.168.99.100:8665/rapture" />
 	<parameter name="RaptureUser" value="rapture" />
 	<parameter name="RapturePassword" value="rapture" />
+	<parameter name="RepoType" value="MONGODB" />
 	<test name="HttpSuite">
 		<packages>
 			<package name="rapture.api.checkout" />

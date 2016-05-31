@@ -32,6 +32,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import rapture.common.AbstractUpdateObject;
+import rapture.common.BlobContainer;
+import rapture.common.BlobUpdateObject;
 import rapture.common.CallingContext;
 import rapture.common.DocUpdateObject;
 import rapture.common.RaptureFolderInfo;
@@ -172,6 +174,9 @@ public class SearchApiImpl extends KernelBase implements SearchApi {
         case SERIES:
             info = Kernel.getSeries().listSeriesByUriPrefix(ContextFactory.getKernelUser(), prefix, 1);
             break;
+        case BLOB:
+            info = Kernel.getBlob().listBlobsByUriPrefix(ContextFactory.getKernelUser(), prefix, 1);
+            break;
         default:
             info = Kernel.getDoc().listDocsByUriPrefix(ContextFactory.getKernelUser(), prefix, 1);
             break;
@@ -195,6 +200,11 @@ public class SearchApiImpl extends KernelBase implements SearchApi {
                     SeriesUpdateObject ser = new SeriesUpdateObject(newPrefix, keys, values);
                     r.put(ser);
                     break;
+                case BLOB:
+                    BlobContainer bc = Kernel.getBlob().getBlob(ContextFactory.getKernelUser(), newPrefix);
+                    BlobUpdateObject buo = new BlobUpdateObject(new RaptureURI(newPrefix, Scheme.BLOB));
+                    buo.setPayload(bc);
+                    r.put(buo);
                 default:
                     DocumentWithMeta dm = Kernel.getDoc().getDocAndMeta(ContextFactory.getKernelUser(), newPrefix);
                     dm.setDisplayName(newPrefix);

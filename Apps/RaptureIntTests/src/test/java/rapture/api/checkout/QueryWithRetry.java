@@ -22,44 +22,37 @@
  * SOFTWARE.
  */
 
-package rapture.common;
+package rapture.api.checkout;
 
-import java.util.HashMap;
-import java.util.Map;
+import rapture.common.SearchResponse;
 
-public class BlobUpdateObject extends AbstractUpdateObject<BlobContainer> {
+interface QueryWithRetry {
 
-    BlobContainer payload = null;
+    // Either implement this method (Java 7) or use Lambda syntax (Java 8)
+    // SearchResponse res = QueryWithRetry.query(3, 5, () -> { return searchApi.searchWithCursor(CallingContext, CursorID, Count, Query); });
 
-    public BlobUpdateObject() {
-    }
+    abstract SearchResponse doTheQuery();
 
-    public BlobUpdateObject(RaptureURI uri) {
-        super(uri);
-        assert (uri.getScheme() == Scheme.BLOB);
-    }
-
-    public BlobUpdateObject(RaptureURI uri, byte[] content, Map<String, String> headers, String mimeType) {
-        this(uri);
-        BlobContainer bc = new BlobContainer();
-        bc.setContent(content);
-        bc.setHeaders(headers);
-        setPayload(bc);
-        setMimeType(mimeType);
-    }
-
-    public BlobUpdateObject(RaptureURI uri, byte[] content, String mimeType) {
-        this(uri, content, new HashMap<String, String>(), mimeType);
-    }
-
-    @Override
-    public BlobContainer getPayload() {
-        return payload;
-    }
-
-    @Override
-    public void setPayload(BlobContainer payload) {
-        this.payload = payload;
-        setMimeType(payload.getHeaders().get(ContentEnvelope.CONTENT_TYPE_HEADER));
+    /**
+     * Call doTheQuery a number of times. Wait 1s between each call. If a query returns the expected number of hits then return immediately.
+     * 
+     * @param expect
+     * @param wait
+     * @param q
+     * @return
+     */
+    static SearchResponse query(int expect, int wait, QueryWithRetry q) {
+        int waitCount = wait;
+        SearchResponse resp = q.doTheQuery();
+        while (--waitCount > 0) {
+            resp = q.doTheQuery();
+            if (resp.getSearchHits().size() == expect) break;
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+            }
+            resp = q.doTheQuery();
+        }
+        return resp;
     }
 }
