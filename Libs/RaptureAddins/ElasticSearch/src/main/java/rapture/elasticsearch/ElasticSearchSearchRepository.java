@@ -217,9 +217,15 @@ public class ElasticSearchSearchRepository implements SearchRepository {
 
     }
 
+    // If the List is null, empty or only contains a single null or empty String then return all SearchRepoTypes
+    private static String[] allTypes(List<String> types) {
+        if ((types == null) || types.isEmpty() || ((types.size() == 1) && StringUtils.isEmpty(types.get(0)))) return SearchRepoType.valueArray;
+        return types.toArray(new String[types.size()]);
+    }
+
     @Override
     public rapture.common.SearchResponse search(List<String> types, String query) {
-        SearchResponse response = ensureClient().prepareSearch().setIndices(index).setTypes(types.toArray(new String[types.size()]))
+        SearchResponse response = ensureClient().prepareSearch().setIndices(index).setTypes(allTypes(types))
                 .setQuery(QueryBuilders.queryStringQuery(query)).get();
         return convert(response);
     }
@@ -235,7 +241,7 @@ public class ElasticSearchSearchRepository implements SearchRepository {
         SearchResponse response;
         if (StringUtils.isBlank(cursorId)) {
             response = ensureClient().prepareSearch().setQuery(QueryBuilders.queryStringQuery(query)).setScroll(new TimeValue(CURSOR_KEEPALIVE))
-                    .setIndices(index).setTypes(types.toArray(new String[types.size()])).setSize(size).get();
+                    .setIndices(index).setTypes(allTypes(types)).setSize(size).get();
         } else {
             response = ensureClient().prepareSearchScroll(cursorId).setScroll(new TimeValue(CURSOR_KEEPALIVE)).get();
         }

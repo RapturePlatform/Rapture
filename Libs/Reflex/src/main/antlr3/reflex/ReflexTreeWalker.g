@@ -357,6 +357,7 @@ functionCall returns [ReflexNode node]
   |  ^(FUNC_CALL Timer expression?) { node = new TimerNode(line, handler, currentScope, $expression.node); }
   |  ^(FUNC_CALL Merge exprList) { node = new MergeNode(line, handler, currentScope, $exprList.e); }
   |  ^(FUNC_CALL Format exprList) { node = new FormatNode(line, handler, currentScope, $exprList.e); }
+  |  ^(FUNC_CALL DateFormat date=expression format=expression?) { node = new DateFormatNode(line, handler, currentScope, $date.node, $format.node); }
   |  ^(FUNC_CALL MergeIf exprList) { node = new MergeIfNode(line, handler, currentScope, $exprList.e); }
   |  ^(FUNC_CALL Replace v=expression s=expression t=expression) { node = new ReplaceNode(line, handler, currentScope, $v.node, $s.node, $t.node); }
   |  ^(FUNC_CALL Message a=expression m=expression) { node = new MessageNode(line, handler, currentScope, $a.node, $m.node); }
