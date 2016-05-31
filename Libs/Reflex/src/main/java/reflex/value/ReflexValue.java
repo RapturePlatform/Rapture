@@ -24,7 +24,6 @@
 package reflex.value;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.math.MathContext;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -81,7 +80,7 @@ public class ReflexValue implements Comparable<ReflexValue> {
             valueType = ReflexValueType.INTERNAL;
         } else if (value instanceof String) {
             valueType = ReflexValueType.STRING;
-        } else if ((value instanceof Integer) || (value instanceof Long) || (value instanceof BigInteger)) {
+        } else if (value instanceof Integer) {
             valueType = ReflexValueType.INTEGER;
         } else if (value instanceof Number) {
             valueType = ReflexValueType.NUMBER;

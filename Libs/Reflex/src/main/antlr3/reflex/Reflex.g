@@ -512,6 +512,7 @@ func2
   |  Vars '(' ')'                    -> ^(FUNC_CALL[$Vars] Vars)
   |  MergeIf '(' exprList ')'     -> ^(FUNC_CALL[$MergeIf] MergeIf exprList)
   |  Format '(' exprList ')' -> ^(FUNC_CALL[$Format] Format exprList)
+  |  DateFormat '(' date=expression (',' format=expression)? ')' -> ^(FUNC_CALL[$DateFormat] DateFormat $date $format?) 
   |  Merge '(' exprList ')'       -> ^(FUNC_CALL[$Merge] Merge exprList)
   |  Message '(' a=expression ',' m=expression ')' -> ^(FUNC_CALL[$Message] Message $a $m)
   |  PutCache '(' v=expression ',' n=expression (',' exp=expression)? ')' -> ^(FUNC_CALL[$PutCache] PutCache $v $n $exp?)
@@ -890,6 +891,7 @@ Import   : 'import';
 Suspend  : 'suspend';
 Message  : 'message';
 Format   : 'format';
+DateFormat   : 'dateformat';
 Use      : 'use';
 MapFn    : 'map';
 FilterFn : 'filter';
@@ -1008,7 +1010,8 @@ Long
   ;
 
 Number
-  :  Int '.' Digit (Digit)*
+  :  Int '.' Digit (Digit)* ( 'E' ('+' | '-')? Digit (Digit)* )?
+  |  Int 'E' ('+' | '-')? Digit (Digit)*
   ;
 
 PackageIdentifier
