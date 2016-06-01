@@ -41,7 +41,7 @@ public class ReflexTestRunner {
     private String testRepoName="";
     private List<String> scriptList= new ArrayList<String>();
     
-    @BeforeClass(groups={"blob","mongo", "smoke"})
+    @BeforeClass(groups={"blob","mongo", "nightly"})
     @Parameters({"RaptureURL","RaptureUser","RapturePassword"})
     public void beforeTest(@Optional("http://localhost:8665/rapture")String url, @Optional("rapture")String user, @Optional("rapture")String password)  {
         raptureUrl=url;
@@ -61,7 +61,7 @@ public class ReflexTestRunner {
     }
     
     // Checks all scripts for syntax and then attempts to run
-    @Test (groups ={"script", "smoke","search"},dataProvider = "allScripts")
+    @Test (groups ={"script", "nightly","search"},dataProvider = "allScripts")
     public void runAllScripts (String scriptName) {
         Assert.assertEquals(0,scriptApi.checkScript(scriptName).length(),"Found error in script "+scriptName);
         Reporter.log("Running script: " +scriptName,true);
@@ -75,7 +75,7 @@ public class ReflexTestRunner {
     }
 
     // Checks all non search scripts for syntax and then attempts to run
-    @Test (groups ={"script", "smoke"},dataProvider = "nonSearchScripts")
+    @Test (groups ={"script", "nightly"},dataProvider = "nonSearchScripts")
     public void runNonSearchScripts (String scriptName) {
         Assert.assertEquals(0,scriptApi.checkScript(scriptName).length(),"Found error in script "+scriptName);
         Reporter.log("Running script: " +scriptName,true);
@@ -88,9 +88,9 @@ public class ReflexTestRunner {
         }
     }
     
-    // Read in all reflex scripts in all subdirs of ($HOME)/bin/reflex/smoke and creates scripts in Rapture
+    // Read in all reflex scripts in all subdirs of ($HOME)/bin/reflex/nightly and creates scripts in Rapture
     private void loadScripts () {
-        String rootPath = System.getProperty("user.dir")+ File.separator+"bin"+File.separator+"reflex"+File.separator+"smoke";
+        String rootPath = System.getProperty("user.dir")+ File.separator+"bin"+File.separator+"reflex"+File.separator+"nightly";
         File dir = new File(rootPath);
         for (File subdir : dir.listFiles()) {
             String subdirName=subdir.getName();

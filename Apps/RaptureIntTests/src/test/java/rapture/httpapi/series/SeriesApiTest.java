@@ -26,7 +26,7 @@ public class SeriesApiTest {
     private HttpLoginApi raptureLogin = null;
     private HttpSeriesApi seriesApi=null;
     
-    @BeforeClass(groups={"series","cassandra", "smoke"})
+    @BeforeClass(groups={"series","cassandra", "nightly"})
     @Parameters({"RaptureURL","RaptureUser","RapturePassword"})
     public void beforeTest(@Optional("http://localhost:8665/rapture")String url, @Optional("rapture")String user, @Optional("rapture")String password)  {
         raptureUrl=url;
@@ -43,7 +43,7 @@ public class SeriesApiTest {
         }   
     }
     
-    @Test (groups={"series","cassandra", "smoke"})
+    @Test (groups={"series","cassandra", "nightly"})
     public void testAddStringsToSeries () {
         int MAX_VALUES=50;
         String repoName="testSeries"+System.nanoTime();
@@ -65,7 +65,7 @@ public class SeriesApiTest {
         }         
     }
     
-    @Test (groups={"series","cassandra", "smoke"})
+    @Test (groups={"series","cassandra", "nightly"})
     public void testAddLongsToSeries () {
         int MAX_VALUES=50;
         String repoName="testSeries"+System.nanoTime();
@@ -87,7 +87,7 @@ public class SeriesApiTest {
         }         
     }
     
-    @Test (groups={"series","cassandra", "smoke"})
+    @Test (groups={"series","cassandra", "nightly"})
     public void testAddDoublesToSeries () {
         int MAX_VALUES=50;
         String repoName="testSeries"+System.nanoTime();
@@ -109,7 +109,7 @@ public class SeriesApiTest {
         }         
     }
     
-    @Test (groups={"series","cassandra", "smoke"})
+    @Test (groups={"series","cassandra", "nightly"})
     public void testDoubleSeriesRange () {
         int MAX_VALUES=200;
         int OFFSET=1000;
@@ -134,7 +134,7 @@ public class SeriesApiTest {
         }         
     }
     
-    @Test (groups={"series","cassandra", "smoke"})
+    @Test (groups={"series","cassandra", "nightly"})
     public void testDeleteSeriesByKey () {
         int MAX_VALUES=200;
         String repoName="testSeries"+System.nanoTime();
@@ -158,7 +158,7 @@ public class SeriesApiTest {
         } 
     }
     
-    @Test (groups={"series","cassandra", "smoke"})
+    @Test (groups={"series","cassandra", "nightly"})
     public void testDeleteAllSeriesPoints () {
         int MAX_VALUES=200;
         String repoName="testSeries"+System.nanoTime();
@@ -181,7 +181,7 @@ public class SeriesApiTest {
        
     }
     
-    @AfterClass(groups={"series","cassandra", "smoke"})
+    @AfterClass(groups={"series","cassandra", "nightly"})
     public void AfterTest(){
         //delete all repos
         List<SeriesRepoConfig> seriesRepositories = seriesApi.getSeriesRepoConfigs();

@@ -42,7 +42,7 @@ public class BlobApiTests {
     /** 
      * Creates an instance of HttpAdmin API that will be used in test methods
      * */
-    @BeforeClass(groups={"blob","mongo", "smoke"})
+    @BeforeClass(groups={"blob","mongo", "nightly"})
     @Parameters({"RaptureURL","RaptureUser","RapturePassword"})
     public void beforeTest(@Optional("http://localhost:8665/rapture")String url, @Optional("rapture")String user, @Optional("rapture")String password)  {
         raptureUrl=url;
@@ -64,7 +64,7 @@ public class BlobApiTests {
      * Creates blog using parameter input pointing to a test file. Stores and retrieves blob data and verifies. Delete afterwards
      * @throws IOException 
      * */
-    @Test(groups ={"blob", "smoke","mongo"},description="Test basic operations on blob: creation, fetch content, get size, get meta data, and deletion",
+    @Test(groups ={"blob", "nightly","mongo"},description="Test basic operations on blob: creation, fetch content, get size, get meta data, and deletion",
           dataProvider = "blobFileScenarios", enabled=true)
     public void testBlobFromFile(String fileName, String contentType) throws IOException {  
 
@@ -106,7 +106,7 @@ public class BlobApiTests {
         Assert.assertTrue (metaDataMap.containsKey("modifiedTimestamp"));
     }
     
-    @Test (groups={"blob","mongo", "smoke"},enabled=true, expectedExceptions=RaptureException.class,dataProvider = "configTypes")
+    @Test (groups={"blob","mongo", "nightly"},enabled=true, expectedExceptions=RaptureException.class,dataProvider = "configTypes")
     public void testNullBlobContents(String dbType, String configType) {
        
         String blobAuthority="test.blobauthority";
@@ -127,7 +127,7 @@ public class BlobApiTests {
         
     }
     
-    @Test (groups={"blob","mongo", "smoke"},dataProvider = "configTypes")
+    @Test (groups={"blob","mongo", "nightly"},dataProvider = "configTypes")
     public void testBlobAppend (String dbType,String configType){
         String blobAuthority="test.blobauthority";
         String metaAuthority="meta.blobauthority";
@@ -167,7 +167,7 @@ public class BlobApiTests {
     }
     
     
-    @Test (groups={"blob","mongo", "smoke"},dataProvider = "configTypes")
+    @Test (groups={"blob","mongo", "nightly"},dataProvider = "configTypes")
     public void testBlobDelete (String dbType,String configType){
         String blobAuthority="test.blobexistauthority";
         String metaAuthority="meta.blobexistauthority";
@@ -216,7 +216,7 @@ public class BlobApiTests {
         
     }
     
-    @Test(groups={"blob","mongo", "smoke"},description="overwrite an application/text blob with an application/text blob of same size.",
+    @Test(groups={"blob","mongo", "nightly"},description="overwrite an application/text blob with an application/text blob of same size.",
             dataProvider = "blobOverwriteScenarios",enabled=true)
     public void overwriteExistingTextBlobTest(int originalContentSize, int newContentSize ){
 
@@ -273,7 +273,7 @@ public class BlobApiTests {
         Assert.assertEquals(retrievedNewContent,newContent, "Blob should be overwritten by newContent bx100");
     }
     
-    @Test(groups={"blob","mongo", "smoke"},description="overwrite an application/pdf blob with a different blob type.",enabled=true)
+    @Test(groups={"blob","mongo", "nightly"},description="overwrite an application/pdf blob with a different blob type.",enabled=true)
     public void overwriteExistingPDFBlobWithTextBlobTest() throws FileNotFoundException{
 
         String authorityName = "test.blob" + System.nanoTime();
@@ -321,7 +321,7 @@ public class BlobApiTests {
     }
     
     
-    @Test (groups={"blob","mongo", "smoke"},enabled=true,dataProvider = "configTypes")
+    @Test (groups={"blob","mongo", "nightly"},enabled=true,dataProvider = "configTypes")
     public void testBlobRepositoryCreation(String dbType,String configType) {
         String blobAuthority="test.blobauthority";
         String metaAuthority="metatest.authority";
@@ -368,7 +368,7 @@ public class BlobApiTests {
         return returnVal;
 }
     
-    @AfterClass(groups={"blob","mongo", "smoke"})
+    @AfterClass(groups={"blob","mongo", "nightly"})
     public void AfterTest(){
         //delete all repos
         List<BlobRepoConfig> blobRepositories = blobApi.getBlobRepoConfigs();
