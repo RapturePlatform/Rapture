@@ -20,6 +20,23 @@ dependencies {
 
 
 
+task nightlyTests (type: Test) {
+    description 'Runs TestNG tests in the Java nightly test group.'
+    useTestNG(){
+      ignoreFailures = true
+      useDefaultListeners = true
+      jvmArgs '-Xmx2048m', '-XX:MaxPermSize=256m'
+      includeGroups 'nightly'
+
+      if(project.hasProperty('env')){
+          ext.testngfile = "/src/test/resources/${env}_testng.xml"
+       } else {
+          ext.testngfile = "/src/test/resources/local_testng.xml"
+       }
+      suites ext.testngfile
+    }
+}
+
 task smokeTests (type: Test) {
     description 'Runs TestNG tests in the Java smoke test group.'
     useTestNG(){
