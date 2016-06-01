@@ -31,6 +31,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -47,6 +48,7 @@ import org.elasticsearch.action.admin.indices.refresh.RefreshResponse;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.common.xcontent.XContentBuilder;
@@ -69,6 +71,7 @@ import rapture.common.exception.RaptureExceptionFactory;
 import rapture.common.impl.jackson.JacksonUtil;
 import rapture.common.model.DocumentWithMeta;
 import rapture.common.series.SeriesUpdateObject;
+import rapture.config.ConfigLoader;
 import rapture.kernel.ContextFactory;
 import rapture.kernel.Kernel;
 import rapture.kernel.search.SearchRepository;
@@ -245,7 +248,9 @@ public class ElasticSearchSearchRepository implements SearchRepository {
     @Override
     public void start() {
         getConnectionInfo();
-        client = TransportClient.builder().build();
+        Map<String, String> s = new HashMap<>();
+        s.put("client.transport.ignore_cluster_name", ConfigLoader.getConf().FullTextSearchIgnoreClusterName.toString());
+        client = TransportClient.builder().settings(Settings.builder().put(s)).build();
         try {
             ((TransportClient) client)
                     .addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(connectionInfo.getHost()), connectionInfo.getPort()));
