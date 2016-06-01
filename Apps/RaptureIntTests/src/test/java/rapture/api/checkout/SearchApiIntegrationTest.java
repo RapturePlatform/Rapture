@@ -96,7 +96,7 @@ public class SearchApiIntegrationTest {
      *            Passed in from <env>_testng.xml suite file
      * @return none
      */
-    @BeforeClass(groups = { "smoke", "search" })
+    @BeforeClass(groups = { "nightly", "search" })
     @Parameters({ "RaptureURL", "RaptureUser", "RapturePassword" })
     public void setUp(@Optional("http://localhost:8665/rapture") String url, @Optional("rapture") String username, @Optional("rapture") String password) {
 
@@ -115,7 +115,7 @@ public class SearchApiIntegrationTest {
         callingContext = raptureLogin.getContext();
     }
 
-    @AfterMethod(groups = { "smoke", "search" })
+    @AfterMethod(groups = { "nightly", "search" })
     public void afterMethod() {
         helper.cleanAllAssets();
     }
@@ -126,7 +126,7 @@ public class SearchApiIntegrationTest {
      * @param none
      * @return none
      */
-    @AfterClass(groups = { "smoke", "search" })
+    @AfterClass(groups = { "nightly", "search" })
     public void afterTest() {
         helper.cleanAllAssets();
         raptureLogin = null;
@@ -165,7 +165,7 @@ public class SearchApiIntegrationTest {
      * 
      * @throws IOException
      */
-    @Test(groups = { "smoke", "search" })
+    @Test(groups = { "nightly", "search" })
     public void testBlobSearch() throws IOException {
 
         File pdf = new File("src/test/resources/www-bbc-com.pdf");
@@ -249,7 +249,7 @@ public class SearchApiIntegrationTest {
      * 
      * @throws IOException
      */
-    @Test(groups = { "smoke", "search" })
+    @Test(groups = { "nightly", "search" })
     public void testSeriesSearch() throws IOException {
         RaptureURI repo = helper.getRandomAuthority(Scheme.SERIES);
         helper.configureTestRepo(repo, "MEMORY");
@@ -331,7 +331,7 @@ public class SearchApiIntegrationTest {
      * 
      * @throws IOException
      */
-    @Test(groups = { "smoke", "search" })
+    @Test(groups = { "nightly", "search" })
     public void testDocSearch() throws IOException {
         RaptureURI repo = helper.getRandomAuthority(Scheme.DOCUMENT);
         helper.configureTestRepo(repo, "MEMORY");
@@ -408,7 +408,7 @@ public class SearchApiIntegrationTest {
      * 
      * @throws IOException
      */
-    @Test(groups = { "smoke", "search" })
+    @Test(groups = { "nightly", "search" })
     public void testScriptSearch() throws IOException {
         RaptureURI repo = helper.getRandomAuthority(Scheme.SCRIPT);
         helper.configureTestRepo(repo, "MEMORY");
