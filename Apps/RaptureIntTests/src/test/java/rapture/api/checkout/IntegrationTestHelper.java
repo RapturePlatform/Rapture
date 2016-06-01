@@ -30,11 +30,14 @@ import java.util.UUID;
 
 import org.testng.Assert;
 
+import com.google.common.collect.ImmutableList;
+
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
 import rapture.common.client.HttpBlobApi;
 import rapture.common.client.HttpDocApi;
 import rapture.common.client.HttpLoginApi;
+import rapture.common.client.HttpScriptApi;
 import rapture.common.client.HttpSeriesApi;
 import rapture.common.client.SimpleCredentialsProvider;
 
@@ -42,8 +45,10 @@ public class IntegrationTestHelper {
     
     HttpLoginApi raptureLogin = null;
     HttpSeriesApi seriesApi = null;
+    HttpScriptApi scriptApi = null;
     HttpDocApi docApi = null;
     HttpBlobApi blobApi = null;
+    static final String testPrefix = "__RESERVED__";
 
     Set<RaptureURI> uriCache;
 
@@ -53,6 +58,10 @@ public class IntegrationTestHelper {
 
     public HttpSeriesApi getSeriesApi() {
         return seriesApi;
+    }
+
+    public HttpScriptApi getScriptApi() {
+        return scriptApi;
     }
 
     public HttpDocApi getDocApi() {
@@ -67,13 +76,14 @@ public class IntegrationTestHelper {
         raptureLogin = new HttpLoginApi(url, new SimpleCredentialsProvider(username, password));
         raptureLogin.login();
         seriesApi = new HttpSeriesApi(raptureLogin);
+        scriptApi = new HttpScriptApi(raptureLogin);
         docApi = new HttpDocApi(raptureLogin);
         blobApi = new HttpBlobApi(raptureLogin);
         uriCache = new HashSet<>();
     }
 
     public RaptureURI getRandomAuthority(Scheme scheme) {
-        RaptureURI gagarin = new RaptureURI.Builder(scheme, UUID.randomUUID().toString()).build();
+        RaptureURI gagarin = new RaptureURI.Builder(scheme, testPrefix + UUID.randomUUID().toString()).build();
         uriCache.add(gagarin);
         return gagarin;
     }
@@ -81,7 +91,8 @@ public class IntegrationTestHelper {
     public void configureTestRepo(RaptureURI repo, String storage) {
         Assert.assertFalse(repo.hasDocPath(), "Doc path not allowed");
         String authString = repo.toAuthString();
-    
+        uriCache.add(repo);
+
         switch (repo.getScheme()) {
         case BLOB:
             if (blobApi.blobRepoExists(repo.toAuthString())) blobApi.deleteBlobRepo(authString);
@@ -96,6 +107,10 @@ public class IntegrationTestHelper {
             Assert.assertTrue(docApi.docRepoExists(authString), authString + " Create failed");
             break;
     
+        case SCRIPT:
+            // Scripts use an existing repo
+            break;
+
         case SERIES:
             if (seriesApi.seriesRepoExists(repo.toAuthString())) seriesApi.deleteSeriesRepo(authString);
             seriesApi.createSeriesRepo(authString, "SREP {} USING " + storage + " {prefix=\"S_" + repo.getAuthority() + "\"}");
@@ -126,17 +141,22 @@ public class IntegrationTestHelper {
             seriesApi.deleteSeriesRepo(authString);
             Assert.assertFalse(seriesApi.seriesRepoExists(authString), authString + " Delete failed");
             break;
-    
+
+        case SCRIPT:
+            // Scripts use an existing repo
+            break;
+
         default:
             Assert.fail(repo.toString() + " not supported");
         }
+        uriCache.remove(repo);
     }
 
     /**
      * Delete any created assets that we know about
      */
     public void cleanAllAssets() {
-        for (RaptureURI gagarin : uriCache) {
+        for (RaptureURI gagarin : ImmutableList.copyOf(uriCache)) {
             cleanTestRepo(gagarin);
         }
     }

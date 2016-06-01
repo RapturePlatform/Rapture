@@ -23,20 +23,22 @@
  */
 package rapture.api.checkout;
 
+import static org.junit.Assert.assertEquals;
 import static org.testng.AssertJUnit.assertNotNull;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 
 import org.testng.Assert;
+import org.testng.Reporter;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
@@ -44,9 +46,13 @@ import org.testng.annotations.Optional;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.net.MediaType;
 
 import rapture.common.CallingContext;
+import rapture.common.RaptureScript;
+import rapture.common.RaptureScriptLanguage;
+import rapture.common.RaptureScriptPurpose;
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
 import rapture.common.SearchHit;
@@ -55,9 +61,12 @@ import rapture.common.SeriesPoint;
 import rapture.common.client.HttpBlobApi;
 import rapture.common.client.HttpDocApi;
 import rapture.common.client.HttpLoginApi;
+import rapture.common.client.HttpScriptApi;
 import rapture.common.client.HttpSearchApi;
 import rapture.common.client.HttpSeriesApi;
 import rapture.common.impl.jackson.JacksonUtil;
+import rapture.config.ConfigLoader;
+import rapture.search.SearchRepoType;
 
 /**
  * Tests to exercise Full Text Search. Note: We should be able to use any repo type; Memory, Mongo, Postgres etc. as the purpose of the test is to verify that
@@ -68,6 +77,7 @@ public class SearchApiIntegrationTest {
 
     private HttpLoginApi raptureLogin = null;
     private HttpSeriesApi seriesApi = null;
+    private HttpScriptApi scriptApi = null;
     private HttpSearchApi searchApi = null;
     private HttpDocApi docApi = null;
     private HttpBlobApi blobApi = null;
@@ -86,7 +96,7 @@ public class SearchApiIntegrationTest {
      *            Passed in from <env>_testng.xml suite file
      * @return none
      */
-    @BeforeClass(groups = { "nightly", "search" })
+    @BeforeClass(groups = { "smoke", "search" })
     @Parameters({ "RaptureURL", "RaptureUser", "RapturePassword" })
     public void setUp(@Optional("http://localhost:8665/rapture") String url, @Optional("rapture") String username, @Optional("rapture") String password) {
 
@@ -98,32 +108,14 @@ public class SearchApiIntegrationTest {
         helper = new IntegrationTestHelper(url, username, password);
         raptureLogin = helper.getRaptureLogin();
         seriesApi = helper.getSeriesApi();
+        scriptApi = helper.getScriptApi();
         docApi = helper.getDocApi();
         blobApi = helper.getBlobApi();
         searchApi = new HttpSearchApi(raptureLogin);
         callingContext = raptureLogin.getContext();
-
-        // This doesn't appear to work.
-        if (cleanUpPrevious) {
-            // Wipe out any pre-existing search data. Note that the repo could have been deleted.
-            cleanUp(searchApi.search("uri:*English*")); // This ought to work. Doesn't appear to?
-            cleanUp(searchApi.search("blob:*Utd"));
-            cleanUp(searchApi.search("Everton:*"));
-        }
     }
 
-    public void cleanUp(SearchResponse res) {
-        for (String s : uris(res)) {
-            RaptureURI ruri = new RaptureURI(s);
-            if (!ruri.getDocPath().contains("English")) continue;
-            System.out.println("Delete legacy repo " + ruri.toAuthString());
-            RaptureURI ruri2 = new RaptureURI(ruri.toAuthString());
-            helper.configureTestRepo(ruri2, "MEMORY");
-            helper.cleanTestRepo(ruri2);
-        }
-    }
-
-    @AfterMethod(groups = { "nightly", "search" })
+    @AfterMethod(groups = { "smoke", "search" })
     public void afterMethod() {
         helper.cleanAllAssets();
     }
@@ -134,8 +126,9 @@ public class SearchApiIntegrationTest {
      * @param none
      * @return none
      */
-    @AfterClass(groups = { "nightly", "search" })
+    @AfterClass(groups = { "smoke", "search" })
     public void afterTest() {
+        helper.cleanAllAssets();
         raptureLogin = null;
     }
 
@@ -167,22 +160,21 @@ public class SearchApiIntegrationTest {
         return sb.toString();
     }
 
-    @Test(groups = { "nightly", "search" })
     /**
      * Requires: ElasticSearch. Tests: Blob creation, deletion. Repo creation, deletion. Search
      * 
      * @throws IOException
      */
-    @Parameters({ "RepoType" })
+    @Test(groups = { "smoke", "search" })
     public void testBlobSearch() throws IOException {
 
         File pdf = new File("src/test/resources/www-bbc-com.pdf");
-        RaptureURI blobRepo = new RaptureURI.Builder(Scheme.BLOB, UUID.randomUUID().toString()).build();
-        helper.configureTestRepo(blobRepo, "MEMORY");
+        RaptureURI repo = helper.getRandomAuthority(Scheme.BLOB);
+        helper.configureTestRepo(repo, "MEMORY");
 
-        RaptureURI epl = new RaptureURI.Builder(blobRepo).docPath("English/Premier").build();
-        RaptureURI champ = new RaptureURI.Builder(blobRepo).docPath("English/Championship").build();
-        RaptureURI firstDiv = new RaptureURI.Builder(blobRepo).docPath("English/First").build();
+        RaptureURI epl = new RaptureURI.Builder(repo).docPath("English/Premier").build();
+        RaptureURI champ = new RaptureURI.Builder(repo).docPath("English/Championship").build();
+        RaptureURI firstDiv = new RaptureURI.Builder(repo).docPath("English/First").build();
 
         blobApi.putBlob(epl.toString(), premier.getBytes(), MediaType.ANY_TEXT_TYPE.toString());
         blobApi.putBlob(champ.toString(), championship.getBytes(), MediaType.CSV_UTF_8.toString());
@@ -194,13 +186,29 @@ public class SearchApiIntegrationTest {
 
         List<String> uris = uris(res);
         Assert.assertEquals(res.getTotal().intValue(), 3, toString(res));
-        Assert.assertTrue(uris.contains(champ.toString()), "Did not find " + champ.toString() + " in " + toString(res));
+        Assert.assertTrue(uris.contains(champ.toString()), "Expected to find " + champ.toString() + " in " + toString(res));
+
+        res = QueryWithRetry.query(1, 5, () -> {
+            return searchApi.search(String.format("mimetype:*CSV*"));
+        });
+        Assert.assertEquals(res.getTotal().intValue(), 1, toString(res));
+
 
         // Can we assume anything about the ordering?
 
         for (rapture.common.SearchHit h : res.getSearchHits()) {
-            Assert.assertTrue(h.getUri().startsWith("blob://" + blobRepo.getAuthority() + "/English"), h.getUri());
+            Assert.assertTrue(h.getUri().startsWith("blob://" + repo.getAuthority() + "/English"), h.getUri());
         }
+
+        res = QueryWithRetry.query(3, 5, () -> {
+            return searchApi.search(String.format("repo:%s", repo.getAuthority()));
+        });
+        Assert.assertEquals(res.getTotal().intValue(), 3, toString(res));
+
+        res = QueryWithRetry.query(3, 5, () -> {
+            return searchApi.search(String.format("scheme:%s AND parts:Eng*", repo.getScheme()));
+        });
+        Assert.assertEquals(res.getTotal().intValue(), 3, toString(res));
 
         res = QueryWithRetry.query(1, 5, () -> {
             return searchApi.search("blob:Wigan");
@@ -229,13 +237,11 @@ public class SearchApiIntegrationTest {
         Assert.assertTrue(uris.contains(champ.toString()));
 
         // Drop the repo
-        blobApi.deleteBlobRepo(blobRepo.toString());
+        blobApi.deleteBlobRepo(repo.toString());
         res = QueryWithRetry.query(0, 5, () -> {
             return searchApi.search("blob:*Utd");
         });
         Assert.assertEquals(res.getTotal().intValue(), 0, toString(res));
-
-        helper.cleanTestRepo(blobRepo);
     }
 
     /**
@@ -243,10 +249,8 @@ public class SearchApiIntegrationTest {
      * 
      * @throws IOException
      */
-    @Test(groups = { "nightly", "search" })
-    @Parameters({ "RepoType" })
+    @Test(groups = { "smoke", "search" })
     public void testSeriesSearch() throws IOException {
-
         RaptureURI repo = helper.getRandomAuthority(Scheme.SERIES);
         helper.configureTestRepo(repo, "MEMORY");
 
@@ -272,7 +276,17 @@ public class SearchApiIntegrationTest {
             seriesApi.addStringToSeries(champUri, line[1], line[4]);
         }
 
-        SearchResponse res = QueryWithRetry.query(1, 5, () -> {
+        SearchResponse res = QueryWithRetry.query(2, 5, () -> {
+            return searchApi.search(String.format("repo:%s", repo.getAuthority()));
+        });
+        Assert.assertEquals(res.getTotal().intValue(), 2, toString(res));
+
+        res = QueryWithRetry.query(2, 5, () -> {
+            return searchApi.search(String.format("scheme:%s AND parts:Eng*", repo.getScheme()));
+        });
+        Assert.assertEquals(res.getTotal().intValue(), 2, toString(res));
+
+        res = QueryWithRetry.query(1, 5, () -> {
             return searchApi.search("Watford:*");
         });
 
@@ -283,7 +297,7 @@ public class SearchApiIntegrationTest {
         seriesApi.deletePointsFromSeriesByPointKey(epl.toString(), keys.subList(4, 16));
         List<SeriesPoint> splist = seriesApi.getPoints(epl.toString());
         for (SeriesPoint sp : splist) {
-            System.out.println(sp.getColumn());
+            Reporter.log(sp.getColumn());
             Assert.assertFalse(sp.getColumn().equals("Watford"));
         }
 
@@ -291,7 +305,7 @@ public class SearchApiIntegrationTest {
             return searchApi.search("Watford:*");
         });
         for (SearchHit sh : res.getSearchHits()) {
-            System.out.println(sh.getSource());
+            Reporter.log(sh.getSource());
         }
         Assert.assertEquals(res.getTotal().intValue(), 0, toString(res));
 
@@ -310,19 +324,15 @@ public class SearchApiIntegrationTest {
         });
         assertNotNull(res.getCursorId());
         Assert.assertEquals(res.getTotal().intValue(), 0, toString(res));
-
-        helper.cleanTestRepo(repo);
     }
 
     /**
-     * Requires: ElasticSearch. Tests: Series creation, deletion. Repo creation, deletion. Search
+     * Requires: ElasticSearch. Tests: various search types.
      * 
      * @throws IOException
      */
-    @Test(groups = { "nightly", "search" })
-    @Parameters({ "RepoType" })
+    @Test(groups = { "smoke", "search" })
     public void testDocSearch() throws IOException {
-
         RaptureURI repo = helper.getRandomAuthority(Scheme.DOCUMENT);
         helper.configureTestRepo(repo, "MEMORY");
 
@@ -347,31 +357,42 @@ public class SearchApiIntegrationTest {
         }
         docApi.putDoc(champ.toString(), JacksonUtil.jsonFromObject(champMap));
 
+        SearchResponse res = QueryWithRetry.query(2, 5, () -> {
+            return searchApi.search(String.format("repo:%s", repo.getAuthority()));
+        });
+        Assert.assertEquals(res.getTotal().intValue(), 2, toString(res));
+
+        res = QueryWithRetry.query(2, 5, () -> {
+            return searchApi.qualifiedSearch(ConfigLoader.getConf().FullTextSearchDefaultRepo, ImmutableList.of(SearchRepoType.uri.toString()),
+                    String.format("scheme:%s AND parts:Eng*", repo.getScheme()));
+        });
+        Assert.assertEquals(res.getTotal().intValue(), 2, toString(res));
+
+        res = searchApi.qualifiedSearch(ConfigLoader.getConf().FullTextSearchDefaultRepo, ImmutableList.of(SearchRepoType.meta.toString()), "user:rapture");
+        int count = 0;
+        for (String uri : uris(res)) {
+            if (uri.startsWith("script")) continue;
+            count++;
+        }
+        Assert.assertEquals(count, 2, toString(res));
+
         Assert.assertNotNull(premMap.get("Watford"));
-        SearchResponse res = QueryWithRetry.query(1, 5, () -> {
+        res = QueryWithRetry.query(1, 5, () -> {
             return searchApi.search("Watford:*");
         });
         Assert.assertEquals(res.getTotal().intValue(), 1, toString(res));
 
         // Delete keys from 4-16
         assertNotNull(premMap.remove("Watford"));
-        docApi.putDoc(champ.toString(), JacksonUtil.jsonFromObject(champMap));
+        docApi.putDoc(epl.toString(), JacksonUtil.jsonFromObject(premMap));
 
         res = QueryWithRetry.query(0, 5, () -> {
             return searchApi.search("Watford:*");
         });
         for (SearchHit sh : res.getSearchHits()) {
-            System.out.println(sh.getSource());
+            Reporter.log(sh.getSource());
         }
         Assert.assertEquals(res.getTotal().intValue(), 0, toString(res));
-
-        // Drop the repo
-        docApi.deleteDocRepo(repo.toString());
-        res = QueryWithRetry.query(1, 5, () -> {
-            return searchApi.searchWithCursor(null, 10, "Everton:*");
-        });
-        assertNotNull(res.getCursorId());
-        Assert.assertEquals(res.getTotal().intValue(), 1, toString(res));
 
         // Drop the repo
         docApi.deleteDocRepo(repo.toString());
@@ -380,7 +401,79 @@ public class SearchApiIntegrationTest {
         });
         assertNotNull(res.getCursorId());
         Assert.assertEquals(res.getTotal().intValue(), 0, toString(res));
+    }
 
-        helper.cleanTestRepo(repo);
+    /**
+     * Requires: ElasticSearch. Tests: Script creation, deletion. Repo creation, deletion. Search
+     * 
+     * @throws IOException
+     */
+    @Test(groups = { "smoke", "search" })
+    public void testScriptSearch() throws IOException {
+        RaptureURI repo = helper.getRandomAuthority(Scheme.SCRIPT);
+        helper.configureTestRepo(repo, "MEMORY");
+
+        String docApi;
+
+        RaptureScript script1 = new RaptureScript();
+        script1.setLanguage(RaptureScriptLanguage.REFLEX);
+        script1.setAuthority(repo.getAuthority());
+        script1.setName("Single/Three_Boats/Down_From/The_Candy");
+        script1.setPurpose(RaptureScriptPurpose.OPERATION);
+        script1.setParameters(Collections.EMPTY_LIST);
+        String scriptWrite1 = "// I'm a market square hero\n// Marillion";
+        script1.setScript(scriptWrite1);
+        scriptApi.putScript(script1.getAddressURI().toString(), script1);
+        RaptureScript scriptRead1 = scriptApi.getScript(script1.getAddressURI().toString());
+        assertEquals(scriptWrite1, scriptRead1.getScript());
+
+        RaptureScript script2 = new RaptureScript();
+        script2.setLanguage(RaptureScriptLanguage.REFLEX);
+        script2.setAuthority(repo.getAuthority());
+        script2.setName("Single/Punch/And/Judy");
+        script2.setPurpose(RaptureScriptPurpose.OPERATION);
+        script2.setParameters(Collections.EMPTY_LIST);
+        String scriptWrite2 = "// Grendel stalks the night\n// Marillion";
+        script2.setScript(scriptWrite2);
+        scriptApi.putScript(script2.getAddressURI().toString(), script2);
+        RaptureScript scriptRead2 = scriptApi.getScript(script2.getAddressURI().toString());
+        assertEquals(scriptWrite2, scriptRead2.getScript());
+
+        try {
+            SearchResponse res = QueryWithRetry.query(2, 5, () -> {
+                return searchApi.search(String.format("repo:%s", repo.getAuthority()));
+            });
+            Assert.assertEquals(res.getTotal().intValue(), 2, toString(res));
+            res = QueryWithRetry.query(2, 5, () -> {
+                return searchApi.qualifiedSearch(ConfigLoader.getConf().FullTextSearchDefaultRepo, ImmutableList.of(SearchRepoType.uri.toString()),
+                        String.format("scheme:%s AND parts:Single", repo.getScheme()));
+            });
+            Assert.assertEquals(res.getTotal().intValue(), 2, toString(res));
+            res = searchApi.qualifiedSearch(ConfigLoader.getConf().FullTextSearchDefaultRepo, ImmutableList.of(SearchRepoType.meta.toString()), "user:rapture");
+            int count = 0;
+            String auth = repo.getAuthority();
+            for (String uri : uris(res)) {
+                if (!uri.contains(auth)) continue;
+                count++;
+            }
+            Assert.assertEquals(count, 2, toString(res));
+            res = QueryWithRetry.query(2, 5, () -> {
+                return searchApi.search("*Marillion*");
+            });
+            Assert.assertEquals(res.getTotal().intValue(), 2, toString(res));
+            scriptApi.deleteScript(script1.getAddressURI().toString());
+            res = QueryWithRetry.query(1, 5, () -> {
+                return searchApi.search("*Marillion*");
+            });
+            Assert.assertEquals(res.getTotal().intValue(), 1, toString(res));
+            scriptApi.deleteScript(script2.getAddressURI().toString());
+            res = QueryWithRetry.query(0, 5, () -> {
+                return searchApi.search("*Marillion*");
+            });
+            Assert.assertEquals(res.getTotal().intValue(), 0, toString(res));
+        } finally {
+            scriptApi.deleteScript(script1.getAddressURI().toString());
+            scriptApi.deleteScript(script2.getAddressURI().toString());
+        }
     }
 }
