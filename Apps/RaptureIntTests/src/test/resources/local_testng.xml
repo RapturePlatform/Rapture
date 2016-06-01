@@ -10,6 +10,7 @@
 			<package name="rapture.api.checkout" />
 			<package name="rapture.api.document" />
 			<package name="rapture.httpapi.blob" />
+			<package name="rapture.httpapi.series" />
 		</packages>
 	</test>
 </suite> <!-- Suite -->
