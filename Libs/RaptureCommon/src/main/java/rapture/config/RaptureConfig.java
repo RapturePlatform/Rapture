@@ -110,6 +110,7 @@ public class RaptureConfig {
 
     // Config around Full Text Search defaults
     public Boolean FullTextSearchOn = false;
+    public Boolean FullTextSearchIgnoreClusterName = false;
     public String FullTextSearchDefaultRepo = "search://main";
     public String FullTextSearchDefaultConfig = "SEARCH {} USING ELASTIC { index = \"rapturemain\" }";
 

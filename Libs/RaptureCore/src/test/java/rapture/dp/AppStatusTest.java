@@ -46,6 +46,8 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
+
 import rapture.common.AppStatus;
 import rapture.common.CallingContext;
 import rapture.common.RaptureJob;
@@ -63,10 +65,7 @@ import rapture.common.model.AuditLogEntry;
 import rapture.config.ConfigLoader;
 import rapture.kernel.ContextFactory;
 import rapture.kernel.Kernel;
-import rapture.kernel.SysApiImpl;
 import rapture.kernel.schedule.ScheduleManager;
-
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class AppStatusTest {
@@ -168,6 +167,7 @@ public class AppStatusTest {
         final String workOrder = Kernel.getDecision().createWorkOrder(context, wuri, contextMap);
 
         WaitingTestHelper.retry(new Runnable() {
+            @Override
             public void run() {
                 List<AppStatus> statuses = Kernel.getDecision().getAppStatuses(CTX, EXPECTED_DEF_URI);
                 assertEquals(1, statuses.size());

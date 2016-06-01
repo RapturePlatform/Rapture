@@ -125,11 +125,11 @@ public class BlobApiImpl extends KernelBase implements BlobApi, RaptureScheme {
                     }
                 }
             }
-            SearchPublisher.publishDeleteMessage(context, Kernel.getRepoCacheManager().getBlobConfig(uri.getAuthority()), uri);
         } catch (RaptureException e) {
-            log.info("Unable to delete children; repo definitian may be invalid");
+            log.info("Unable to delete children; repo definition may be invalid", e);
         }
 
+        SearchPublisher.publishDropMessage(context, uri.toString());
         // delete parent directory
         BlobRepoConfigStorage.deleteByAddress(uri, context.getUser(), "Remove blob repo");
         removeRepoFromCache(uri.getAuthority());
@@ -238,10 +238,15 @@ public class BlobApiImpl extends KernelBase implements BlobApi, RaptureScheme {
     @Override
     public void putBlob(CallingContext context, String blobUri, byte[] content, String contentType) {
         lowerStoreBlob(context, blobUri, content, contentType, false);
-        RaptureURI uri = new RaptureURI(blobUri, Scheme.BLOB);
-        BlobRepoConfig repoConfig = Kernel.getRepoCacheManager().getBlobConfig(uri.getAuthority());
-        BlobUpdateObject buo = new BlobUpdateObject(uri, content, contentType);
-        SearchPublisher.publishCreateMessage(context, repoConfig, buo, false);
+        try {
+            RaptureURI uri = new RaptureURI(blobUri, Scheme.BLOB);
+            BlobRepoConfig repoConfig = Kernel.getRepoCacheManager().getBlobConfig(uri.getAuthority());
+            BlobUpdateObject buo = new BlobUpdateObject(uri, content, contentType);
+            SearchPublisher.publishCreateMessage(context, repoConfig, buo, false);
+        } catch (RaptureException e) {
+            log.error("Unable to index " + blobUri, e);
+            throw e;
+        }
     }
 
     @Override
@@ -299,7 +304,7 @@ public class BlobApiImpl extends KernelBase implements BlobApi, RaptureScheme {
             }
         }
         BlobRepoConfig repoConfig = Kernel.getRepoCacheManager().getBlobConfig(blobURI.getAuthority());
-        SearchPublisher.publishDeleteMessage(context, repoConfig, blobURI);
+        if (repoConfig != null) SearchPublisher.publishDeleteMessage(context, repoConfig, blobURI);
     }
 
     @Override
@@ -356,8 +361,7 @@ public class BlobApiImpl extends KernelBase implements BlobApi, RaptureScheme {
             // TODO: Ben -
             if (content instanceof BlobContainer && ((BlobContainer) content).getHeaders() != null) {
                 BlobContainer blobContainer = ((BlobContainer) content);
-                putBlob(context, raptureUri.toString(), blobContainer.getContent(), blobContainer.getHeaders()
-                        .get(ContentEnvelope.CONTENT_TYPE_HEADER));
+                putBlob(context, raptureUri.toString(), blobContainer.getContent(), blobContainer.getHeaders().get(ContentEnvelope.CONTENT_TYPE_HEADER));
             } else {
                 throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR,
                         apiMessageCatalog.getMessage("ErrorGettingBlobType", content.getClass().getCanonicalName()));

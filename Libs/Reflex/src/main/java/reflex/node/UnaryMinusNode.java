@@ -48,7 +48,12 @@ public class UnaryMinusNode extends BaseNode {
         if (!v.isNumber()) {
             throw new ReflexException(lineNumber, "illegal expression: " + this);
         }
-        ReflexValue retVal = new ReflexValue(v.isInteger() ? -v.asInt() : BigDecimal.ZERO.subtract(v.asBigDecimal()));
+        ReflexValue retVal;
+        if (v.isInteger()) {
+            retVal = new ReflexValue(-v.asInt());
+        } else {
+            retVal = new ReflexValue(BigDecimal.ZERO.subtract(v.asBigDecimal()));
+        }
         debugger.stepEnd(this, retVal, scope);
         return retVal;
     }
