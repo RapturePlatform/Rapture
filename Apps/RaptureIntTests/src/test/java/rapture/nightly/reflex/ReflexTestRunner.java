@@ -70,6 +70,7 @@ public class ReflexTestRunner {
             Assert.fail("Failed running script: " + scriptName + "\n" + ExceptionToString.format(e));
         } finally {
             helper.cleanAllAssets();
+
         }
     }
 

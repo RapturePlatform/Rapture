@@ -22,10 +22,10 @@ championship = "1,Burnley,45,34,90\n2,Middlesbrough,45,32,88\n3,Brighton & Hove 
 
 sleep(1000); // lame - wait for ES
 
-// query="blob:Watford";
-// srch = #search.search(query);
-// assert("Expected one match for "+query+" but got "+srch, (srch.total == 1));
-// srch = "";
+query="blob:Watford NOT blob:Script*";
+srch = #search.search(query);
+assert("Expected one match for "+query+" but got "+srch, (srch.total == 1));
+srch = "";
 
 parts = split(blobRepoUri, "/", true);
 query = "repo:"+parts[2];
@@ -41,7 +41,7 @@ srch = "";
 #blob.deleteBlobRepo(blobRepoUri);
 sleep(1000); // lame - wait for ES
 
-query="blob:Watford";
+query="blob:Watford NOT blob:Script*";
 srch = #search.search(query);
 assert("Expected no match for "+query+" but got "+srch, (srch.total == 0));
 srch = "";
