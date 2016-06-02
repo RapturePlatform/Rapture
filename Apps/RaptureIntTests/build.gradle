@@ -11,6 +11,7 @@ dependencies {
     compile "net.rapture:RaptureAddinCore:$project.platformVersion"
     compile "net.rapture:MongoDb:$project.platformVersion"
     compile "net.rapture:RabbitMQ:$project.platformVersion"
+    compile "net.rapture:PluginInstallerLib:$project.platformVersion"
     compile("net.rapture:Cassandra:$project.platformVersion") {
        exclude module: 'servlet-api'
     }
