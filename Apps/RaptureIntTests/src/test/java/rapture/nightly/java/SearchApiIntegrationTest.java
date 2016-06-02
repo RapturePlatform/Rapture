@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package rapture.api.checkout;
+package rapture.nightly.java;
 
 import static org.junit.Assert.assertEquals;
 import static org.testng.AssertJUnit.assertNotNull;
@@ -66,6 +66,8 @@ import rapture.common.client.HttpSearchApi;
 import rapture.common.client.HttpSeriesApi;
 import rapture.common.impl.jackson.JacksonUtil;
 import rapture.config.ConfigLoader;
+import rapture.nightly.IntegrationTestHelper;
+import rapture.nightly.QueryWithRetry;
 import rapture.search.SearchRepoType;
 
 /**

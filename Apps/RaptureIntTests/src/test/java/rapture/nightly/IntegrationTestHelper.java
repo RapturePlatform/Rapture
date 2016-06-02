@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package rapture.api.checkout;
+package rapture.nightly;
 
 import java.util.HashSet;
 import java.util.Set;
