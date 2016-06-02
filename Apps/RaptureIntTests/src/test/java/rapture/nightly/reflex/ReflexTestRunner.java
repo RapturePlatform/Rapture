@@ -35,7 +35,7 @@ public class ReflexTestRunner {
     
     IntegrationTestHelper helper;
 
-    @BeforeClass(groups = { "blob", "mongo", "nightly" })
+    @BeforeClass(groups = { "script", "mongo", "nightly" })
     @Parameters({"RaptureURL","RaptureUser","RapturePassword"})
     public void beforeTest(@Optional("http://localhost:8665/rapture")String url, @Optional("rapture")String user, @Optional("rapture")String password)  {
         helper = new IntegrationTestHelper(url, user, password);
