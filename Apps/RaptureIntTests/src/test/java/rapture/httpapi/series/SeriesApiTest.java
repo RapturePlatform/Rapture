@@ -59,7 +59,9 @@ public class SeriesApiTest {
         Reporter.log("Adding "+pointKeys.size() + " points to "+newSeries, true);
         seriesApi.addStringsToSeries(newSeries, pointKeys, pointValues);
         Reporter.log("Checking points in "+newSeries, true);
-        for (SeriesString s : seriesApi.getPointsAsStrings(newSeries)) {
+        List <SeriesString> seriesList=seriesApi.getPointsAsStrings(newSeries);
+        Assert.assertTrue(seriesList.size() > 0);
+        for (SeriesString s : seriesList) {
             Assert.assertTrue(pointKeys.contains(s.getKey()));
             Assert.assertTrue(pointValues.contains(s.getValue()));
         }         
@@ -81,7 +83,9 @@ public class SeriesApiTest {
         Reporter.log("Adding "+pointKeys.size() + " points to "+newSeries, true);
         seriesApi.addLongsToSeries(newSeries, pointKeys, pointValues);
         Reporter.log("Checking points in "+newSeries, true);
-        for (SeriesDouble s : seriesApi.getPointsAsDoubles(newSeries)) {
+        List <SeriesDouble> seriesList=seriesApi.getPointsAsDoubles(newSeries);
+        Assert.assertTrue(seriesList.size() > 0);
+        for (SeriesDouble s : seriesList) {
             Assert.assertTrue(pointKeys.contains(s.getKey()));
             Assert.assertTrue(pointValues.contains(s.getValue().longValue()));
         }         
@@ -103,7 +107,9 @@ public class SeriesApiTest {
         Reporter.log("Adding "+pointKeys.size() + " points to "+newSeries, true);
         seriesApi.addDoublesToSeries(newSeries, pointKeys, pointValues);
         Reporter.log("Checking points in "+newSeries, true);
-        for (SeriesDouble s : seriesApi.getPointsAsDoubles(newSeries)) {
+        List <SeriesDouble> seriesList=seriesApi.getPointsAsDoubles(newSeries);
+        Assert.assertTrue(seriesList.size() > 0);
+        for (SeriesDouble s : seriesList) {
             Assert.assertTrue(pointKeys.contains(s.getKey()));
             Assert.assertTrue(pointValues.contains(s.getValue().doubleValue()));
         }         
@@ -128,8 +134,9 @@ public class SeriesApiTest {
         Reporter.log("Adding "+pointKeys.size() + " points to "+newSeries, true);
         seriesApi.addDoublesToSeries(newSeries, pointKeys, pointValues);
         Reporter.log("Checking points in "+newSeries, true);
-        
-        for (SeriesDouble s : seriesApi.getPointsInRangeAsDoubles(newSeries, new Integer(LOW_VALUE+OFFSET).toString(), new Integer(HIGH_VALUE+OFFSET).toString(), MAX_VALUES)) {
+        List <SeriesDouble> seriesList= seriesApi.getPointsInRangeAsDoubles(newSeries, new Integer(LOW_VALUE+OFFSET).toString(), new Integer(HIGH_VALUE+OFFSET).toString(), MAX_VALUES);
+        Assert.assertTrue(seriesList.size() > 0);
+        for (SeriesDouble s :seriesList) {
             Assert.assertTrue (Integer.parseInt(s.getKey()) >=(LOW_VALUE+OFFSET) && Integer.parseInt(s.getKey()) <=(HIGH_VALUE+OFFSET),"Key "+ s.getKey() +" not in range");
         }         
     }
@@ -173,8 +180,6 @@ public class SeriesApiTest {
         String newSeries="//"+repoName+"/deleteSeries"+System.nanoTime();
         Reporter.log("Adding "+pointKeys.size() + " points to "+newSeries, true);
         seriesApi.addDoublesToSeries(newSeries, pointKeys, pointValues);
-        
-
         seriesApi.deletePointsFromSeries(newSeries);
         
         Assert.assertEquals(seriesApi.getPoints(newSeries).size(),0);
