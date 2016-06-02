@@ -1,5 +1,6 @@
-epl = docRepoUri + "/English/Premier";
-cl = docRepoUri + "/English/Championship";
+epl = blobRepoUri + "/English/Premier";
+cl = blobRepoUri + "/English/Championship";
+div1 = blobRepoUri + "/English/FirstDivision";
 
 premier = "1,Leicester City,36,30,77\n2,Tottenham Hotspur,36,39,70\n3,Arsenal,36,25,67\n4,Manchester City,36,30,64\n5,Manchester Utd,35,12,60\n"
 + "6,West Ham Utd,35,17,59\n7,Southampton,36,14,57\n8,Liverpool,35,11,55\n9,Chelsea,35,7,48\n10,Stoke City,36,-14,48\n"
@@ -12,50 +13,36 @@ championship = "1,Burnley,45,34,90\n2,Middlesbrough,45,32,88\n3,Brighton & Hove 
 + "15,Blackburn Rovers,45,-2,52\n16,Reading,45,-5,52\n17,Nottingham Forest,45,-5,52\n18,Bristol City,45,-16,52\n19,Huddersfield Town,45,-7,51\n"
 + "20,Rotherham Utd,45,-14,49\n21,Fulham,45,-14,48\n22,Charlton Athletic,45,-37,40\n23,Milton Keynes Dons,45,-29,39\n24,Bolton Wanderers,45,-39,30";
 
-premierArr = split(premier,"\n", false);
-champArr = split(championship,"\n", false);
- 
-premMap = {};
-champMap = {};
+#blob.putBlob(epl, premier, "text/plain");
+#blob.putBlob(cl, championship, "text/csv");
 
-for prem in premierArr do
-   line = split(prem, ",", false);
-   key = line[1];
-   premMap[key] = line[4];
-end
-
-premMap --> epl; 
-
-for champ in champArr do
-   line = split(champ, ",", false);
-   key = line[1];
-   champMap[key] = line[4];
-end
-
-champMap --> cl;
+// Need to make the PDF availoable on the server somehow
+// pdf = file("src/test/resources/www-bbc-com.pdf");
+// pdf --> div1;
 
 sleep(1000); // lame - wait for ES
 
-query="Watford:*";
-srch = #search.search(query);
-assert("Expected one match for "+query+" but got "+srch, (srch.total == 1));
-srch = "";
+// query="blob:Watford";
+// srch = #search.search(query);
+// assert("Expected one match for "+query+" but got "+srch, (srch.total == 1));
+// srch = "";
 
-parts = split(docRepoUri, "/", true);
+parts = split(blobRepoUri, "/", true);
 query = "repo:"+parts[2];
 srch = #search.search(query);
 assert("Expected 2 matches for "+query+" but got "+srch, (srch.total == 2));
 srch = "";
 
-query = "scheme:docAND parts:Eng*";
+query = "scheme:blob AND parts:Eng*";
 srch = #search.search(query);
 assert("Expected 2 matches for "+query+" but got "+srch, (srch.total == 2));
 srch = "";
 
-#doc.deleteDocRepo(docRepoUri);
+#blob.deleteBlobRepo(blobRepoUri);
 sleep(1000); // lame - wait for ES
 
-query="Watford:*";
+query="blob:Watford";
 srch = #search.search(query);
 assert("Expected no match for "+query+" but got "+srch, (srch.total == 0));
 srch = "";
+

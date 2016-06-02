@@ -51,11 +51,25 @@ public class ReflexTestRunner {
         Reporter.log("Running script: " +scriptName,true);
         Map <String, String> paramMap=new HashMap<String,String>();
 
-        paramMap.put("repoURI", scriptRepo.toString());
+        RaptureURI blobRepo = helper.getRandomAuthority(Scheme.BLOB);
+        helper.configureTestRepo(blobRepo, "MEMORY");
+        paramMap.put("blobRepoUri", blobRepo.toString());
+
+        RaptureURI docRepo = helper.getRandomAuthority(Scheme.DOCUMENT);
+        helper.configureTestRepo(docRepo, "MEMORY");
+        paramMap.put("docRepoUri", docRepo.toString());
+
+        RaptureURI seriesRepo = helper.getRandomAuthority(Scheme.SERIES);
+        helper.configureTestRepo(seriesRepo, "MEMORY");
+        paramMap.put("seriesRepoUri", seriesRepo.toString());
+
+        paramMap.put("scriptRepoUri", scriptRepo.toString());
         try {
             scriptApi.runScript(scriptName, paramMap);
         } catch (Exception e) {
             Assert.fail("Failed running script: " + scriptName + "\n" + ExceptionToString.format(e));
+        } finally {
+            helper.cleanAllAssets();
         }
     }
 
