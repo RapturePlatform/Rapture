@@ -22,16 +22,16 @@
  * SOFTWARE.
  */
 
-package rapture.api.checkout;
+package rapture.nightly;
 
 import rapture.common.SearchResponse;
 
-interface QueryWithRetry {
+public interface QueryWithRetry {
 
     // Either implement this method (Java 7) or use Lambda syntax (Java 8)
     // SearchResponse res = QueryWithRetry.query(3, 5, () -> { return searchApi.searchWithCursor(CallingContext, CursorID, Count, Query); });
 
-    abstract SearchResponse doTheQuery();
+    public abstract SearchResponse doTheQuery();
 
     /**
      * Call doTheQuery a number of times. Wait 1s between each call. If a query returns the expected number of hits then return immediately.
@@ -41,7 +41,7 @@ interface QueryWithRetry {
      * @param q
      * @return
      */
-    static SearchResponse query(int expect, int wait, QueryWithRetry q) {
+    public static SearchResponse query(int expect, int wait, QueryWithRetry q) {
         int waitCount = wait;
         SearchResponse resp = q.doTheQuery();
         while (--waitCount > 0) {

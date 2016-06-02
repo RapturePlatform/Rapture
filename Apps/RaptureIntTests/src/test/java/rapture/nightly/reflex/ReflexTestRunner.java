@@ -1,16 +1,11 @@
-package rapture.httpapi.script;
+package rapture.nightly.reflex;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
-
-
-
-
 import java.util.Map;
 
 import org.testng.Assert;
@@ -26,93 +21,82 @@ import com.google.common.collect.Lists;
 
 import rapture.common.RaptureScriptLanguage;
 import rapture.common.RaptureScriptPurpose;
-import rapture.common.client.HttpLoginApi;
+import rapture.common.RaptureURI;
+import rapture.common.Scheme;
 import rapture.common.client.HttpScriptApi;
-import rapture.common.client.SimpleCredentialsProvider;
-import rapture.common.exception.RaptureException;
+import rapture.common.exception.ExceptionToString;
+import rapture.nightly.IntegrationTestHelper;
 
 public class ReflexTestRunner {
     String raptureUrl = null;
-    private String raptureUser = null;
-    private String rapturePass = null;
-    private HttpLoginApi raptureLogin = null;
-    private HttpScriptApi scriptApi=null;
-    private String scriptPrefix="";
-    private String testRepoName="";
-    private List<String> scriptList= new ArrayList<String>();
+    private HttpScriptApi scriptApi = null;
+    private RaptureURI scriptRepo = null;
+    private List<String> scriptList = new ArrayList<String>();
     
-    @BeforeClass(groups={"blob","mongo", "smoke"})
+    IntegrationTestHelper helper;
+
+    @BeforeClass(groups = { "blob", "mongo", "nightly" })
     @Parameters({"RaptureURL","RaptureUser","RapturePassword"})
     public void beforeTest(@Optional("http://localhost:8665/rapture")String url, @Optional("rapture")String user, @Optional("rapture")String password)  {
-        raptureUrl=url;
-        raptureUser=user;
-        rapturePass=password;
-        raptureLogin = new HttpLoginApi(raptureUrl, new SimpleCredentialsProvider(raptureUser, rapturePass));
-        scriptPrefix="testNightly"+System.nanoTime();
-        testRepoName="//testNightlyRepo"+System.nanoTime();
-        try {
-            raptureLogin.login();
-            scriptApi = new HttpScriptApi(raptureLogin);
-
-        } catch (RaptureException e) {
-            e.printStackTrace();
-        }   
+        helper = new IntegrationTestHelper(url, user, password);
+        scriptApi = helper.getScriptApi();
+        scriptRepo = helper.getRandomAuthority(Scheme.SCRIPT);
         loadScripts();
     }
     
     // Checks all scripts for syntax and then attempts to run
-    @Test (groups ={"script", "smoke","search"},dataProvider = "allScripts")
+    @Test(groups = { "script", "nightly", "search" }, dataProvider = "allScripts")
     public void runAllScripts (String scriptName) {
         Assert.assertEquals(0,scriptApi.checkScript(scriptName).length(),"Found error in script "+scriptName);
         Reporter.log("Running script: " +scriptName,true);
         Map <String, String> paramMap=new HashMap<String,String>();
-        paramMap.put("repoURI", testRepoName);
+
+        paramMap.put("repoURI", scriptRepo.toString());
         try {
             scriptApi.runScript(scriptName, paramMap);
         } catch (Exception e) {
-            Assert.fail("Failed running script: "+scriptName);
+            Assert.fail("Failed running script: " + scriptName + "\n" + ExceptionToString.format(e));
         }
     }
 
     // Checks all non search scripts for syntax and then attempts to run
-    @Test (groups ={"script", "smoke"},dataProvider = "nonSearchScripts")
+    @Test(groups = { "script", "nightly" }, dataProvider = "nonSearchScripts")
     public void runNonSearchScripts (String scriptName) {
         Assert.assertEquals(0,scriptApi.checkScript(scriptName).length(),"Found error in script "+scriptName);
         Reporter.log("Running script: " +scriptName,true);
         Map <String, String> paramMap=new HashMap<String,String>();
-        paramMap.put("repoURI", testRepoName);
+        paramMap.put("repoURI", scriptRepo.toString());
         try {
             scriptApi.runScript(scriptName, paramMap);
         } catch (Exception e) {
-            Assert.fail("Failed running script: "+scriptName);
+            Assert.fail("Failed running script: " + scriptName + "\n" + ExceptionToString.format(e));
         }
     }
     
-    // Read in all reflex scripts in all subdirs of ($HOME)/bin/reflex/smoke and creates scripts in Rapture
+    // Read in all reflex scripts in all subdirs of ($HOME)/bin/reflex/nightly and creates scripts in Rapture
     private void loadScripts () {
-        String rootPath = System.getProperty("user.dir")+ File.separator+"bin"+File.separator+"reflex"+File.separator+"smoke";
-        File dir = new File(rootPath);
-        for (File subdir : dir.listFiles()) {
+        String rootPath = System.getProperty("user.dir") + File.separator + "src" + File.separator + "test" + File.separator + "resources" + File.separator
+                + "reflex" + File.separator + "nightly";
+        File[] files = new File(rootPath).listFiles();
+        if (files == null) {
+            Reporter.log("No tests found in directory " + rootPath, true);
+            return;
+        }
+        for (File subdir : files) {
             String subdirName=subdir.getName();
             for (File scriptFile : subdir.listFiles()) {
-                String scriptName = scriptFile.getName();
-                String scriptPath = "script://"+scriptPrefix+ "/"+subdirName + "/" +scriptName;
-                String scriptText="";
-                Reporter.log("Reading in file: " +scriptFile.getAbsolutePath(),true);
                 try {
-                    BufferedReader bufferReader = new BufferedReader( new FileReader(scriptFile.getAbsolutePath()));
-                    String line;
-                    while ((line = bufferReader.readLine()) != null)   {
-                        scriptText= scriptText + line;
+                    String scriptName = scriptFile.getName();
+                    String scriptPath = RaptureURI.builder(scriptRepo).docPath(subdirName + "/" + scriptName).asString();
+                    Reporter.log("Reading in file: " + scriptFile.getAbsolutePath(), true);
+                    if (!scriptApi.doesScriptExist(scriptPath)) {
+                        byte[] scriptBytes = Files.readAllBytes(scriptFile.toPath());
+                        scriptApi.createScript(scriptPath, RaptureScriptLanguage.REFLEX, RaptureScriptPurpose.PROGRAM, new String(scriptBytes));
                     }
-                    bufferReader.close();
-                 }catch(Exception e){
-                     Reporter.log("Error while reading file: " + e.getMessage(),true);                      
-                 }
-                Reporter.log("Loading script: " +scriptPath,true); 
-                scriptApi.createScript(scriptPath, RaptureScriptLanguage.REFLEX, RaptureScriptPurpose.PROGRAM, scriptText);
-                scriptList.add(scriptPath);              
-                
+                    scriptList.add(scriptPath);
+                } catch (IOException e) {
+                    Assert.fail("Failed loading script: " + scriptFile.getAbsolutePath() + "\n" + ExceptionToString.format(e));
+                }
             }
         }
     }
