@@ -113,7 +113,11 @@ public class IntegrationTestHelper {
 
         case SERIES:
             if (seriesApi.seriesRepoExists(repo.toAuthString())) seriesApi.deleteSeriesRepo(authString);
-            seriesApi.createSeriesRepo(authString, "SREP {} USING " + storage + " {prefix=\"S_" + repo.getAuthority() + "\"}");
+            
+            if (storage.equalsIgnoreCase("CASSANDRA"))
+            	seriesApi.createSeriesRepo(authString, "SREP {} USING " + storage + " {keyspace=\""+"s"+repo.getAuthority().substring(repo.getAuthority().length()-8, repo.getAuthority().length())+"KS\", cf=\""+"s"+repo.getAuthority().substring(repo.getAuthority().length()-8, repo.getAuthority().length())+"CF\"}");
+            else
+            	seriesApi.createSeriesRepo(authString, "SREP {} USING " + storage + " {prefix=\"S_" + repo.getAuthority() + "\"}");
             Assert.assertTrue(seriesApi.seriesRepoExists(authString), authString + " Create failed");
             break;
     
