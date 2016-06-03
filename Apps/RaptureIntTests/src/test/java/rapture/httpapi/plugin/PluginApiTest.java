@@ -6,11 +6,9 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
 import org.testng.Assert;
@@ -22,9 +20,10 @@ import org.testng.annotations.Optional;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 
+import com.google.common.collect.Maps;
+
 import rapture.common.PluginConfig;
 import rapture.common.PluginTransportItem;
-import rapture.common.SeriesRepoConfig;
 import rapture.common.WorkOrderExecutionState;
 import rapture.common.client.HttpDecisionApi;
 import rapture.common.client.HttpLoginApi;
@@ -35,7 +34,6 @@ import rapture.common.impl.jackson.JacksonUtil;
 import rapture.plugin.install.PluginContentReader;
 import rapture.plugin.install.PluginSandbox;
 import rapture.plugin.install.PluginSandboxItem;
-import com.google.common.collect.Maps;
 
 
 public class PluginApiTest {
@@ -227,9 +225,7 @@ public class PluginApiTest {
         if (!zip.exists() || !zip.canRead()) {
             return null;
         }
-        ZipFile zipFile = null;
-        try {
-            zipFile = new ZipFile(zip);
+        try (ZipFile zipFile = new ZipFile(zip)) {
             ZipEntry configEntry = zipFile.getEntry(PluginSandbox.PLUGIN_TXT);
             
             if (PluginSandbox.PLUGIN_TXT.equals(configEntry.getName())) {                
@@ -241,16 +237,8 @@ public class PluginApiTest {
             } else {
                 Reporter.log("No plugin.txt present in root level of zipfile: " + filename,true);
             }
-        } catch (ZipException e) {
-            Reporter.log("Got ZipException: "+e.getMessage(),true);
         } catch (IOException e) {
             Reporter.log("Got IOException: "+e.getMessage(),true);
-        } finally {
-            if (zipFile != null) try {
-                zipFile.close();
-            } catch (IOException e) {
-                // ignore
-            }
         }
         return null;
     }
