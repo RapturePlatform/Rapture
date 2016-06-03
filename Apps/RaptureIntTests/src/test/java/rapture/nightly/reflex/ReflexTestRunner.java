@@ -67,10 +67,10 @@ public class ReflexTestRunner {
         try {
             scriptApi.runScript(scriptName, paramMap);
         } catch (Exception e) {
-            Assert.fail("Failed running script: " + scriptName + "\n" + ExceptionToString.format(e));
+            Reporter.log(e.getMessage());
+            Assert.fail("Failed running script: " + scriptName + " : " + e.getMessage());
         } finally {
             helper.cleanAllAssets();
-
         }
     }
 

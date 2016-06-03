@@ -115,6 +115,7 @@ public class SearchApiIntegrationTest {
         blobApi = helper.getBlobApi();
         searchApi = new HttpSearchApi(raptureLogin);
         callingContext = raptureLogin.getContext();
+        forceCleanUp();
     }
 
     @AfterMethod(groups = { "nightly", "search" })
@@ -132,6 +133,29 @@ public class SearchApiIntegrationTest {
     public void afterTest() {
         helper.cleanAllAssets();
         raptureLogin = null;
+    }
+
+    // For cleaning up after failed test cases only
+    public void forceCleanUp() {
+        SearchResponse res = searchApi.qualifiedSearch(ConfigLoader.getConf().FullTextSearchDefaultRepo, ImmutableList.of(SearchRepoType.meta.toString()),
+                "user:rapture");
+
+        for (String uri : uris(res)) {
+            System.out.println("FORCE CLEAN UP: Deleted " + uri);
+            if (uri.startsWith("script")) {
+                scriptApi.deleteScript(uri);
+            } else {
+                RaptureURI ruri = new RaptureURI(uri);
+                helper.cleanTestRepo(new RaptureURI(ruri.getAuthority(), ruri.getScheme()));
+            }
+        }
+
+        res = searchApi.searchWithCursor(null, null, 10, "blob:*Utd");
+        for (String uri : uris(res)) {
+            System.out.println("FORCE CLEAN UP: Deleted " + uri);
+            RaptureURI ruri = new RaptureURI(uri);
+            helper.cleanTestRepo(new RaptureURI(ruri.getAuthority(), ruri.getScheme()));
+        }
     }
 
     static String premier = "1,Leicester City,36,30,77\n2,Tottenham Hotspur,36,39,70\n3,Arsenal,36,25,67\n4,Manchester City,36,30,64\n5,Manchester Utd,35,12,60\n"
