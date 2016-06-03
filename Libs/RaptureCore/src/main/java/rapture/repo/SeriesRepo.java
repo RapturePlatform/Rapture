@@ -172,8 +172,15 @@ public class SeriesRepo {
     }
 
     public boolean deleteFolder(RaptureURI uri) {
-    	if (store instanceof FileSeriesStore)
-    		return ((FileSeriesStore)store).deleteFolder(uri);
-    	return false;
+        if (store instanceof FileSeriesStore) return ((FileSeriesStore) store).deleteFolder(uri);
+        return false;
+    }
+
+    public int getOverflowLimit() {
+        return store.getOverflowLimit();
+    }
+
+    public void setOverflowLimit(int overflowLimit) {
+        store.setOverflowLimit(overflowLimit);
     }
 }

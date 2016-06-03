@@ -23,12 +23,11 @@
  */
 package rapture.series.mem;
 
-import rapture.repo.SeriesRepo;
-import rapture.series.SeriesStore;
-import rapture.series.SeriesContract;
-
 import java.util.Collections;
 import java.util.Map;
+
+import rapture.repo.SeriesRepo;
+import rapture.series.SeriesContract;
 
 /**
  * @author bardhi
