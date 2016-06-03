@@ -53,15 +53,14 @@ import rapture.common.RaptureFolderInfo;
 import rapture.common.SeriesValue;
 import rapture.common.exception.ExceptionToString;
 import rapture.common.exception.RaptureExceptionFactory;
-import rapture.config.ConfigLoader;
 import rapture.dsl.serfun.DecimalSeriesValue;
 import rapture.dsl.serfun.LongSeriesValue;
 import rapture.dsl.serfun.StringSeriesValue;
 import rapture.dsl.serfun.StructureSeriesValueImpl;
 import rapture.mongodb.MongoDBFactory;
 import rapture.mongodb.MongoRetryWrapper;
+import rapture.series.AbstractSeriesStore;
 import rapture.series.SeriesPaginator;
-import rapture.series.SeriesStore;
 import rapture.series.children.ChildKeyUtil;
 import rapture.series.children.ChildrenRepo;
 
@@ -70,7 +69,7 @@ import rapture.series.children.ChildrenRepo;
  *
  * @author mel
  */
-public class MongoSeriesStore implements SeriesStore {
+public class MongoSeriesStore extends AbstractSeriesStore {
     private String instanceName = "default";
     private String tableName;
     private static final String $SET = "$set";
@@ -507,17 +506,4 @@ public class MongoSeriesStore implements SeriesStore {
             return result;
         }
     }
-
-    private int overflowLimit = ConfigLoader.getConf().SeriesOverflowLimit;
-
-    @Override
-    public int getOverflowLimit() {
-        return overflowLimit;
-    }
-
-    @Override
-    public void setOverflowLimit(int overflowLimit) {
-        this.overflowLimit = overflowLimit;
-    }
-
 }
