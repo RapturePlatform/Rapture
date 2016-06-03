@@ -40,15 +40,15 @@ import rapture.dsl.serfun.DecimalSeriesValue;
 import rapture.dsl.serfun.LongSeriesValue;
 import rapture.dsl.serfun.StringSeriesValue;
 import rapture.dsl.serfun.StructureSeriesValueImpl;
+import rapture.series.AbstractSeriesStore;
 import rapture.series.SeriesPaginator;
-import rapture.series.SeriesStore;
 
 /**
  * A Cassandra implementation of a series store
  *
  * @author amkimian
  */
-public class CassandraSeriesStore implements SeriesStore {
+public class CassandraSeriesStore extends AbstractSeriesStore {
     private AstyanaxSeriesConnection cass;
 
     Messages messageCatalog = new Messages("Cassandra");

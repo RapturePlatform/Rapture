@@ -44,8 +44,8 @@ import rapture.dsl.serfun.DecimalSeriesValue;
 import rapture.dsl.serfun.LongSeriesValue;
 import rapture.dsl.serfun.StringSeriesValue;
 import rapture.dsl.serfun.StructureSeriesValueImpl;
+import rapture.series.AbstractSeriesStore;
 import rapture.series.SeriesPaginator;
-import rapture.series.SeriesStore;
 import rapture.series.children.ChildrenRepo;
 
 /**
@@ -53,7 +53,7 @@ import rapture.series.children.ChildrenRepo;
  *
  * @author amkimian
  */
-public class MemorySeriesStore implements SeriesStore {
+public class MemorySeriesStore extends AbstractSeriesStore {
 
     private Map<String, SortedMap<String, SeriesValue>> seriesStore = Maps.newHashMap();
     private final ChildrenRepo childrenRepo;
@@ -197,7 +197,13 @@ public class MemorySeriesStore implements SeriesStore {
     public List<SeriesValue> getPoints(String key) {
         SortedMap<String, SeriesValue> map = getSeries(key);
         if (map == null) return Lists.newArrayList();
-        return Lists.newArrayList(map.values());
+        Iterator<SeriesValue> iter = map.values().iterator();
+        List<SeriesValue> result = Lists.newLinkedList();
+        for (int i = 0; i < overflowLimit; i++) {
+            if (!iter.hasNext()) break;
+            result.add(iter.next());
+        }
+        return result;
     }
 
     @Override
@@ -206,7 +212,8 @@ public class MemorySeriesStore implements SeriesStore {
         if (map == null) return Lists.newArrayList();
         Iterator<SeriesValue> iter = map.tailMap(startColumn).values().iterator();
         List<SeriesValue> result = Lists.newLinkedList();
-        for (int i = 0; i < maxNumber; i++) {
+        int limit = (maxNumber > overflowLimit) ? overflowLimit : maxNumber;
+        for (int i = 0; i < limit; i++) {
             if (!iter.hasNext()) break;
             result.add(iter.next());
         }
@@ -231,10 +238,12 @@ public class MemorySeriesStore implements SeriesStore {
 
         Collections.reverse(vals);
 
-        if (maxNumber > vals.size()) {
+        int limit = (maxNumber > overflowLimit) ? overflowLimit : maxNumber;
+
+        if (limit > vals.size()) {
             return new ArrayList<>(vals);
         }
-        return new ArrayList<>(vals.subList(0, maxNumber));
+        return new ArrayList<>(vals.subList(0, limit));
     }
 
     @Override
@@ -313,20 +322,4 @@ public class MemorySeriesStore implements SeriesStore {
         unregisterKey(key);
         deletePointsFromSeries(key);
     }
-
-    /**
-     * overflowLimit not used for in-memory implementation
-     */
-    @Override
-    public int getOverflowLimit() {
-        return 0;
-    }
-
-    /**
-     * overflowLimit not used for in-memory implementation
-     */
-    @Override
-    public void setOverflowLimit(int overflowLimit) {
-    }
-
 }
