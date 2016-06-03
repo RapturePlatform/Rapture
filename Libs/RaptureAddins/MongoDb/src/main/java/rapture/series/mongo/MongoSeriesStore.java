@@ -53,6 +53,7 @@ import rapture.common.RaptureFolderInfo;
 import rapture.common.SeriesValue;
 import rapture.common.exception.ExceptionToString;
 import rapture.common.exception.RaptureExceptionFactory;
+import rapture.config.ConfigLoader;
 import rapture.dsl.serfun.DecimalSeriesValue;
 import rapture.dsl.serfun.LongSeriesValue;
 import rapture.dsl.serfun.StringSeriesValue;
@@ -323,28 +324,14 @@ public class MongoSeriesStore implements SeriesStore {
 
     @Override
     public List<SeriesValue> getPoints(final String key) {
-
-        MongoRetryWrapper<List<SeriesValue>> wrapper = new MongoRetryWrapper<List<SeriesValue>>() {
-
+        SeriesCursorHandler wrapper = new SeriesCursorHandler(Integer.MAX_VALUE) {
             @Override
             public FindIterable<Document> makeCursor() {
                 Document query = new Document(ROWKEY, key);
                 MongoCollection<Document> collection = getCollection(key);
                 FindIterable<Document> cursor = collection.find(query);
-                if (cursor == null)
-                    log.info("No points found for "+key);
+                if (cursor == null) log.info("No points found for " + key);
                 return cursor;
-            }
-
-            @Override
-            public List<SeriesValue> action(FindIterable<Document> cursor) {
-                if (cursor == null) return null;
-                List<SeriesValue> result = Lists.newArrayList();
-                for (Document entry : cursor) {
-                    SeriesValue bolt = makeSeriesValue(entry);
-                    result.add(bolt);
-                }
-                return result;
             }
         };
         return wrapper.doAction();
@@ -370,30 +357,14 @@ public class MongoSeriesStore implements SeriesStore {
 
     @Override
     public List<SeriesValue> getPointsAfter(final String key, final String startColumn, final int maxNumber) {
-        MongoRetryWrapper<List<SeriesValue>> wrapper = new MongoRetryWrapper<List<SeriesValue>>() {
-
+        SeriesCursorHandler wrapper = new SeriesCursorHandler(maxNumber) {
             @Override
             public FindIterable<Document> makeCursor() {
                 MongoCollection<Document> collection = getCollection(key);
                 Document query = new Document(ROWKEY, key).append(COLKEY, new Document("$gte", startColumn));
                 FindIterable<Document> cursor = collection.find(query);
-                if (cursor == null)
-                    log.info("No points found for "+key);
+                if (cursor == null) log.info("No points found for " + key);
                 return cursor;
-            }
-
-            @Override
-            public List<SeriesValue> action(FindIterable<Document> cursor) {
-                if (cursor == null) return null;
-                List<SeriesValue> result = Lists.newArrayList();
-                int count = 0;
-                for (Document entry : cursor) {
-                    if (count >= maxNumber) break;
-                    SeriesValue bolt = makeSeriesValue(entry);
-                    result.add(bolt);
-                    count++;
-                }
-                return result;
             }
         };
         return wrapper.doAction();
@@ -401,31 +372,15 @@ public class MongoSeriesStore implements SeriesStore {
 
     @Override
     public List<SeriesValue> getPointsAfterReverse(final String key, final String startColumn, final int maxNumber) {
-        MongoRetryWrapper<List<SeriesValue>> wrapper = new MongoRetryWrapper<List<SeriesValue>>() {
-
+        SeriesCursorHandler wrapper = new SeriesCursorHandler(maxNumber) {
             @Override
             public FindIterable<Document> makeCursor() {
                 MongoCollection<Document> collection = getCollection(key);
                 Document query = new Document(ROWKEY, key).append(COLKEY, new Document("$lte", startColumn));
                 Document sort = new Document(COLKEY, -1);
                 FindIterable<Document> cursor = collection.find(query).sort(sort);
-                if (cursor == null)
-                    log.info("No points found for "+key);
+                if (cursor == null) log.info("No points found for " + key);
                 return cursor;
-            }
-
-            @Override
-            public List<SeriesValue> action(FindIterable<Document> cursor) {
-                if (cursor == null) return null;
-                int count = 0;
-                List<SeriesValue> result = Lists.newArrayList();
-                for (Document entry : cursor) {
-                    if (count >= maxNumber) break;
-                    SeriesValue bolt = makeSeriesValue(entry);
-                    result.add(bolt);
-                    count++;
-                }
-                return result;
             }
         };
         return wrapper.doAction();
@@ -433,30 +388,14 @@ public class MongoSeriesStore implements SeriesStore {
 
     @Override
     public List<SeriesValue> getPointsAfter(final String key, final String startColumn, final String endColumn, final int maxNumber) {
-        MongoRetryWrapper<List<SeriesValue>> wrapper = new MongoRetryWrapper<List<SeriesValue>>() {
-
+        SeriesCursorHandler wrapper = new SeriesCursorHandler(maxNumber) {
             @Override
             public FindIterable<Document> makeCursor() {
                 MongoCollection<Document> collection = getCollection(key);
                 Document query = new Document(ROWKEY, key).append(COLKEY, new Document("$gte", startColumn).append("$lte", endColumn));
                 FindIterable<Document> cursor = collection.find(query);
-                if (cursor == null)
-                    log.info("No points found for "+key);
+                if (cursor == null) log.info("No points found for " + key);
                 return cursor;
-            }
-
-            @Override
-            public List<SeriesValue> action(FindIterable<Document> cursor) {
-                if (cursor == null) return null;
-                int count = 0;
-                List<SeriesValue> result = Lists.newArrayList();
-                for (Document entry : cursor) {
-                    if (count >= maxNumber) break;
-                    SeriesValue bolt = makeSeriesValue(entry);
-                    result.add(bolt);
-                    count++;
-                }
-                return result;
             }
         };
         return wrapper.doAction();
@@ -519,8 +458,7 @@ public class MongoSeriesStore implements SeriesStore {
                 Document query = new Document(ROWKEY, key);
                 Document sort = new Document(COLKEY, -1);
                 FindIterable<Document> cursor = collection.find(query).sort(sort).limit(1);
-                if (cursor == null)
-                    log.info("No points found for "+key);
+                if (cursor == null) log.info("No points found for " + key);
                 return cursor;
             }
 
@@ -544,4 +482,42 @@ public class MongoSeriesStore implements SeriesStore {
         unregisterKey(key);
         deletePointsFromSeries(key);
     }
+
+    private class SeriesCursorHandler extends MongoRetryWrapper<List<SeriesValue>> {
+
+        private int maxNumber;
+
+        public SeriesCursorHandler(int maxNumber) {
+            this.maxNumber = maxNumber > overflowLimit ? overflowLimit : maxNumber;
+        }
+
+        @Override
+        public List<SeriesValue> action(FindIterable<Document> cursor) {
+            if (cursor == null) {
+                return null;
+            }
+            int count = 0;
+            List<SeriesValue> result = Lists.newArrayList();
+            for (Document entry : cursor) {
+                if (count++ >= maxNumber) {
+                    break;
+                }
+                result.add(makeSeriesValue(entry));
+            }
+            return result;
+        }
+    }
+
+    private int overflowLimit = ConfigLoader.getConf().SeriesOverflowLimit;
+
+    @Override
+    public int getOverflowLimit() {
+        return overflowLimit;
+    }
+
+    @Override
+    public void setOverflowLimit(int overflowLimit) {
+        this.overflowLimit = overflowLimit;
+    }
+
 }

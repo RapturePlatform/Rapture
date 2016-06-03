@@ -182,7 +182,7 @@ public class MemorySeriesStore implements SeriesStore {
     private boolean dropSeries(String key) {
         SortedMap<String, SeriesValue> val = seriesStore.remove(key);
         if (val != null) {
-	        // TODO remove empty folder here
+            // TODO remove empty folder here
             return childrenRepo.dropFileEntry(key);
         }
         return false;
@@ -302,16 +302,31 @@ public class MemorySeriesStore implements SeriesStore {
     public boolean unregisterKey(String key, boolean isFolder) {
         return (isFolder) ? childrenRepo.dropFolderEntry(key) : childrenRepo.dropFileEntry(key);
     }
-    
+
     @Override
     public void createSeries(String key) {
-    	getOrMakeSeries(key);
+        getOrMakeSeries(key);
     }
 
     @Override
     public void deleteSeries(String key) {
         unregisterKey(key);
         deletePointsFromSeries(key);
+    }
+
+    /**
+     * overflowLimit not used for in-memory implementation
+     */
+    @Override
+    public int getOverflowLimit() {
+        return 0;
+    }
+
+    /**
+     * overflowLimit not used for in-memory implementation
+     */
+    @Override
+    public void setOverflowLimit(int overflowLimit) {
     }
 
 }
