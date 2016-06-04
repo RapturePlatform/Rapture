@@ -22,7 +22,7 @@ end
 
 sleep(1000); // lame - wait for ES
 
-query1="script:SUNDER"+"LAND";
+query1="script:*SU"+"NDERLAND*";
 srch1 = #search.search(query1);
 
 parts = split(scriptRepoUri, "/", true);
@@ -38,25 +38,24 @@ srch3 = #search.search(query3);
 
 sleep(1000); // lame - wait for ES
 
-query4="script:SUND"+"ERLAND";
-srch4 = #search.search(query4);
+srch4 = #search.search(query1);
 
 parts = split(scriptRepoUri, "/", true);
-query5 = "repo:"+parts[2];
-srch5 = #search.search(query5);
+query2 = "repo:"+parts[2];
+srch5 = #search.search(query2);
 
-query6 = "scheme:script AND parts:Eng*";
-srch6 = #search.search(query6);
+query3 = "scheme:script AND parts:Eng*";
+srch6 = #search.search(query3);
 
 #script.deleteScript(cl);
 
 // Check the assertions AFTER the scripts were deleted because we can't drop the Script Repo.
 
 // FAILING. CHECK IT
-// assert("Expected 1 match for "+query1+" but got "+srch1, (srch1.total == 1));
-// assert("Expected 2 matches for "+query2+" but got "+srch2, (srch2.total == 2));
-// assert("Expected 2 matches for "+query3+" but got "+srch3, (srch3.total == 2));
+assert("Expected 1 match for "+query1+" but got "+srch1, (srch1.total == 1));
+assert("Expected 2 matches for "+query2+" but got "+srch2, (srch2.total == 2));
+assert("Expected 2 matches for "+query3+" but got "+srch3, (srch3.total == 2));
 
-// assert("Expected no matches for "+query4+" but got "+srch4, (srch4.total == 0));
-// assert("Expected no matches for "+query5+" but got "+srch5, (srch5.total == 0));
-// assert("Expected no matches for "+query6+" but got "+srch6, (srch6.total == 0));
+assert("Expected no matches for "+query1+" but got "+srch4, (srch4.total == 0));
+assert("Expected 1 match for "+query2+" but got "+srch5, (srch5.total == 1));
+assert("Expected 1 match for "+query3+" but got "+srch6, (srch6.total == 1));

@@ -38,6 +38,7 @@ import rapture.common.client.HttpBlobApi;
 import rapture.common.client.HttpDocApi;
 import rapture.common.client.HttpLoginApi;
 import rapture.common.client.HttpScriptApi;
+import rapture.common.client.HttpSearchApi;
 import rapture.common.client.HttpSeriesApi;
 import rapture.common.client.SimpleCredentialsProvider;
 
@@ -46,6 +47,7 @@ public class IntegrationTestHelper {
     HttpLoginApi raptureLogin = null;
     HttpSeriesApi seriesApi = null;
     HttpScriptApi scriptApi = null;
+    HttpSearchApi searchApi = null;
     HttpDocApi docApi = null;
     HttpBlobApi blobApi = null;
     static final String testPrefix = "__RESERVED__";
@@ -58,6 +60,10 @@ public class IntegrationTestHelper {
 
     public HttpSeriesApi getSeriesApi() {
         return seriesApi;
+    }
+
+    public HttpSearchApi getSearchApi() {
+        return searchApi;
     }
 
     public HttpScriptApi getScriptApi() {
@@ -75,6 +81,7 @@ public class IntegrationTestHelper {
     public IntegrationTestHelper(String url, String username, String password) {
         raptureLogin = new HttpLoginApi(url, new SimpleCredentialsProvider(username, password));
         raptureLogin.login();
+        searchApi = new HttpSearchApi(raptureLogin);
         seriesApi = new HttpSeriesApi(raptureLogin);
         scriptApi = new HttpScriptApi(raptureLogin);
         docApi = new HttpDocApi(raptureLogin);
@@ -164,5 +171,4 @@ public class IntegrationTestHelper {
             cleanTestRepo(gagarin);
         }
     }
-
 }

@@ -40,8 +40,8 @@ public class ReflexTestRunner {
     public void beforeTest(@Optional("http://localhost:8665/rapture")String url, @Optional("rapture")String user, @Optional("rapture")String password)  {
         helper = new IntegrationTestHelper(url, user, password);
         scriptApi = helper.getScriptApi();
+        loadScripts(helper.getRandomAuthority(Scheme.SCRIPT));
         scriptRepo = helper.getRandomAuthority(Scheme.SCRIPT);
-        loadScripts();
     }
     
     // Checks all scripts for syntax and then attempts to run
@@ -89,7 +89,7 @@ public class ReflexTestRunner {
     }
     
     // Read in all reflex scripts in all subdirs of ($HOME)/bin/reflex/nightly and creates scripts in Rapture
-    private void loadScripts () {
+    private void loadScripts(RaptureURI tempScripts) {
         String rootPath = System.getProperty("user.dir") + File.separator + "src" + File.separator + "test" + File.separator + "resources" + File.separator
                 + "reflex" + File.separator + "nightly";
         File[] files = new File(rootPath).listFiles();
@@ -102,7 +102,7 @@ public class ReflexTestRunner {
             for (File scriptFile : subdir.listFiles()) {
                 try {
                     String scriptName = scriptFile.getName();
-                    String scriptPath = RaptureURI.builder(scriptRepo).docPath(subdirName + "/" + scriptName).asString();
+                    String scriptPath = RaptureURI.builder(tempScripts).docPath(subdirName + "/" + scriptName).asString();
                     Reporter.log("Reading in file: " + scriptFile.getAbsolutePath(), true);
                     if (!scriptApi.doesScriptExist(scriptPath)) {
                         byte[] scriptBytes = Files.readAllBytes(scriptFile.toPath());
