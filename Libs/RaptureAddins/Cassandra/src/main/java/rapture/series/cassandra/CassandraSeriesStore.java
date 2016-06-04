@@ -35,23 +35,24 @@ import rapture.common.Messages;
 import rapture.common.RaptureFolderInfo;
 import rapture.common.SeriesValue;
 import rapture.common.exception.RaptureExceptionFactory;
+import rapture.config.ConfigLoader;
 import rapture.dsl.serfun.DecimalSeriesValue;
 import rapture.dsl.serfun.LongSeriesValue;
 import rapture.dsl.serfun.StringSeriesValue;
 import rapture.dsl.serfun.StructureSeriesValueImpl;
+import rapture.series.AbstractSeriesStore;
 import rapture.series.SeriesPaginator;
-import rapture.series.SeriesStore;
 
 /**
  * A Cassandra implementation of a series store
  *
  * @author amkimian
  */
-public class CassandraSeriesStore implements SeriesStore {
+public class CassandraSeriesStore extends AbstractSeriesStore {
     private AstyanaxSeriesConnection cass;
 
     Messages messageCatalog = new Messages("Cassandra");
-    
+
     @Override
     public void drop() {
         try {
@@ -194,7 +195,7 @@ public class CassandraSeriesStore implements SeriesStore {
         if (!config.containsKey(CassandraConstants.CFCFG)) {
             config.put(CassandraConstants.CFCFG, instance);
         }
-        int overflowLimit = CassandraConstants.DEFAULT_OVERFLOW;
+        int overflowLimit = ConfigLoader.getConf().SeriesOverflowLimit;
         if (config.containsKey(CassandraConstants.OVERFLOWLIMITCFG)) {
             try {
                 overflowLimit = Integer.valueOf(config.get(CassandraConstants.OVERFLOWLIMITCFG));
@@ -234,15 +235,25 @@ public class CassandraSeriesStore implements SeriesStore {
         List<SeriesValue> points = getPointsAfterReverse(key, "", 1);
         return points.isEmpty() ? null : points.get(0);
     }
-    
+
     @Override
     public void createSeries(String key) {
         cass.registerKey(key);
     }
-    
+
     @Override
     public void deleteSeries(String key) {
         unregisterKey(key);
         deletePointsFromSeries(key);
+    }
+
+    @Override
+    public int getOverflowLimit() {
+        return cass.getOverflowLimit();
+    }
+
+    @Override
+    public void setOverflowLimit(int overflowLimit) {
+        cass.setOverflowLimit(overflowLimit);
     }
 }

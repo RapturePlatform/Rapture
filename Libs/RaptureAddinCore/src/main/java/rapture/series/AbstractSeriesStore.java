@@ -21,40 +21,22 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package rapture.series.mongo;
+package rapture.series;
 
-import java.util.Map;
+import rapture.config.ConfigLoader;
 
-import org.junit.Before;
+public abstract class AbstractSeriesStore implements SeriesStore {
 
-import com.google.common.collect.ImmutableMap;
-
-import rapture.config.MultiValueConfigLoader;
-import rapture.config.ValueReader;
-import rapture.repo.SeriesRepo;
-import rapture.series.SeriesContract;
-
-public class MongoSeriesTest extends SeriesContract {
+    protected int overflowLimit = ConfigLoader.getConf().SeriesOverflowLimit;
 
     @Override
-    public SeriesRepo createRepo() {
-        Map<String, String> config = ImmutableMap.of("prefix", "testalicious");
-        MongoSeriesStore store = new MongoSeriesStore();
-        store.setInstanceName("default");
-        store.setConfig(config);
-        return new SeriesRepo(store);
+    public int getOverflowLimit() {
+        return overflowLimit;
     }
 
-    @Before
-    public void setup() {
-        MultiValueConfigLoader.setEnvReader(new ValueReader() {
-            @Override
-            public String getValue(String property) {
-                if (property.equals("MONGODB-DEFAULT")) {
-                    return "mongodb://test:test@localhost/test";
-                }
-                return null;
-            }
-        });
+    @Override
+    public void setOverflowLimit(int overflowLimit) {
+        this.overflowLimit = overflowLimit;
     }
+
 }

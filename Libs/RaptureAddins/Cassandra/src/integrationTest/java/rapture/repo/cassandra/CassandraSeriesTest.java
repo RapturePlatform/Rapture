@@ -21,40 +21,22 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package rapture.series.mongo;
+package rapture.repo.cassandra;
 
-import java.util.Map;
+import java.util.HashMap;
 
-import org.junit.Before;
-
-import com.google.common.collect.ImmutableMap;
-
-import rapture.config.MultiValueConfigLoader;
-import rapture.config.ValueReader;
 import rapture.repo.SeriesRepo;
 import rapture.series.SeriesContract;
+import rapture.series.cassandra.CassandraSeriesStore;
 
-public class MongoSeriesTest extends SeriesContract {
+public class CassandraSeriesTest extends SeriesContract {
 
     @Override
     public SeriesRepo createRepo() {
-        Map<String, String> config = ImmutableMap.of("prefix", "testalicious");
-        MongoSeriesStore store = new MongoSeriesStore();
-        store.setInstanceName("default");
-        store.setConfig(config);
-        return new SeriesRepo(store);
+        CassandraSeriesStore cass = new CassandraSeriesStore();
+        cass.setInstanceName("default");
+        cass.setConfig(new HashMap<>());
+        return new SeriesRepo(cass);
     }
 
-    @Before
-    public void setup() {
-        MultiValueConfigLoader.setEnvReader(new ValueReader() {
-            @Override
-            public String getValue(String property) {
-                if (property.equals("MONGODB-DEFAULT")) {
-                    return "mongodb://test:test@localhost/test";
-                }
-                return null;
-            }
-        });
-    }
 }

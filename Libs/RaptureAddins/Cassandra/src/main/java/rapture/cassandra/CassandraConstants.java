@@ -32,8 +32,7 @@ public class CassandraConstants {
 
     public static final String AUTHORITY = "authority";
     /**
-     * configuration constant used to configure the keyspace to use for
-     * cassandra in RaptureCASSANDRA.cfg
+     * configuration constant used to configure the keyspace to use for cassandra in RaptureCASSANDRA.cfg
      */
     public static String KEYSPACECFG = "keyspace";
 
@@ -61,7 +60,5 @@ public class CassandraConstants {
     public static final String WRITE_CONSISTENCY = "writeConsistency";
 
     public static final String OVERFLOWLIMITCFG = "overflowLimit";
-
-    public static final int DEFAULT_OVERFLOW = 1000000;
 
 }
