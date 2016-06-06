@@ -47,7 +47,8 @@ public class ReflexTestRunner {
     // Checks all scripts for syntax and then attempts to run
     @Test(groups = { "script", "nightly", "search" }, dataProvider = "allScripts")
     public void runAllScripts (String scriptName) {
-        Assert.assertEquals(0,scriptApi.checkScript(scriptName).length(),"Found error in script "+scriptName);
+        String checkStr = scriptApi.checkScript(scriptName);
+        Assert.assertEquals(0, checkStr.length(), "Found error in script " + scriptName + ": " + checkStr);
         Reporter.log("Running script: " +scriptName,true);
         Map <String, String> paramMap=new HashMap<String,String>();
 

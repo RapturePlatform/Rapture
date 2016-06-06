@@ -18,6 +18,9 @@ champArr = split(championship,"\n", false);
 premKeys = [];
 premVals = [];
 
+// Create series using different API calls - AddStringToSeries and AddStringsToSeries
+// (Can add others)
+
 for prem in premierArr do
    line = split(prem, ",", false);
    premKeys = premKeys + line[1];
@@ -33,10 +36,14 @@ end
 
 sleep(1000); // lame - wait for ES
 
+// Test simple search
+
 query="Watford:*";
 srch = #search.search(query);
 assert("Expected one match for "+query+" but got "+srch, (srch.total == 1));
 srch = "";
+
+// Test repo: search
 
 parts = split(seriesRepoUri, "/", true);
 query = "repo:"+parts[2];
@@ -44,13 +51,27 @@ srch = #search.search(query);
 assert("Expected 2 matches for "+query+" but got "+srch, (srch.total == 2));
 srch = "";
 
-query = "scheme:seriesAND parts:Eng*";
+// Test URI search
+query = "scheme:series AND parts:Eng*";
 srch = #search.search(query);
 assert("Expected 2 matches for "+query+" but got "+srch, (srch.total == 2));
 srch = "";
 
+deleteKeys = [];
+for i = 6 to 12 do
+   deleteKeys = deleteKeys + premKeys[i];
+end
+
+// Test search works after DeletePointsFromSeriesByPointKey
+#series.deletePointsFromSeriesByPointKey(epl, deleteKeys);
+sleep(1000);
+query="Watford:*";
+srch = #search.search(query);
+assert("Expected no match for "+query+" but got "+srch, (srch.total == 0));
+
+// Test search works after DeleteSeriesRepo
 #series.deleteSeriesRepo(seriesRepoUri);
-sleep(1000); // lame - wait for ES
+sleep(1000);
 
 query="Watford:*";
 srch = #search.search(query);
