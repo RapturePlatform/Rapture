@@ -87,4 +87,9 @@ public class ReflexTest extends ResourceBasedTest {
     public void testNumbers() throws RecognitionException {
         runTestFor("/numbers.rfx");
     }
+
+    @Test
+    public void testContains() throws RecognitionException {
+        runTestFor("/contains.rfx");
+    }
 }
