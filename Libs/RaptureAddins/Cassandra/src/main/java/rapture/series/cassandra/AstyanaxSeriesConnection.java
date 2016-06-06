@@ -58,13 +58,13 @@ import rapture.series.children.ChildrenRepo;
 
 public class AstyanaxSeriesConnection extends AstyanaxCassandraBase {
     private static final String DIRECTORY_KEY = "..directory";
-    private final int OVERFLOW_LIMIT;
+    private int overflowLimit;
     private Cache<String, Boolean> keyCache = CacheBuilder.newBuilder().expireAfterAccess(3, TimeUnit.SECONDS).build();
     private final ChildrenRepo childrenRepo;
 
     public AstyanaxSeriesConnection(String instance, Map<String, String> config, int overflowLimit) {
         super(instance, config);
-        OVERFLOW_LIMIT = overflowLimit;
+        this.overflowLimit = overflowLimit;
         this.childrenRepo = new ChildrenRepo() {
 
             @Override
@@ -150,7 +150,7 @@ public class AstyanaxSeriesConnection extends AstyanaxCassandraBase {
 
     public List<SeriesValue> getPointsAfter(String key, String startColumn, String endColumn, int maxNumber, boolean reverse) throws IOException {
         List<SeriesValue> ret = new ArrayList<SeriesValue>();
-        int limit = (maxNumber > OVERFLOW_LIMIT) ? OVERFLOW_LIMIT + 1 : maxNumber;
+        int limit = (maxNumber > overflowLimit) ? overflowLimit : maxNumber;
         ColumnList<String> result;
         try {
             result = keyspace.prepareQuery(columnFamily).getKey(key)
@@ -159,8 +159,8 @@ public class AstyanaxSeriesConnection extends AstyanaxCassandraBase {
         } catch (ConnectionException ce) {
             throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, messageCatalog.getMessage("DbCommsError"), ce);
         }
-        if (result.size() > OVERFLOW_LIMIT) {
-            throw RaptureExceptionFactory.create(messageCatalog.getMessage("SmallerPages", ""+OVERFLOW_LIMIT));
+        if (result.size() > overflowLimit) {
+            throw RaptureExceptionFactory.create(messageCatalog.getMessage("SmallerPages", "" + overflowLimit));
         }
         for (Column<String> column : result) {
             ret.add(makeSeriesValue(column));
@@ -254,5 +254,13 @@ public class AstyanaxSeriesConnection extends AstyanaxCassandraBase {
 
     public List<RaptureFolderInfo> getChildren(String folderName) {
         return childrenRepo.getChildren(folderName);
+    }
+
+    public void setOverflowLimit(int overflowLimit) {
+        this.overflowLimit = overflowLimit;
+    }
+
+    public int getOverflowLimit() {
+        return overflowLimit;
     }
 }

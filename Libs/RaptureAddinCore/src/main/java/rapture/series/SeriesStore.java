@@ -104,8 +104,12 @@ public interface SeriesStore {
     boolean unregisterKey(String key, boolean isFolder);
 
     SeriesValue getLastPoint(String key);
-    
+
     void createSeries(String key);
 
     void deleteSeries(String key);
+
+    int getOverflowLimit();
+
+    void setOverflowLimit(int overflowLimit);
 }

@@ -96,6 +96,9 @@ public class RaptureConfig {
     public String FileRepoDirectory = "";
     public String JarStorage = "FILE";
 
+    // maximum number of series points to return from any series get* call
+    public int SeriesOverflowLimit = 100000;
+
     public String DefaultPythonLocation = "/usr/bin/python";
     public String DefaultAnacondaPythonLocation = "/opt/anaconda/bin/python";
     public String DefaultAnacondaRoot = "/opt/anaconda/envs/";
