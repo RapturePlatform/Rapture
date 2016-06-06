@@ -40,22 +40,38 @@ public class ReflexTestRunner {
     public void beforeTest(@Optional("http://localhost:8665/rapture")String url, @Optional("rapture")String user, @Optional("rapture")String password)  {
         helper = new IntegrationTestHelper(url, user, password);
         scriptApi = helper.getScriptApi();
+        loadScripts(helper.getRandomAuthority(Scheme.SCRIPT));
         scriptRepo = helper.getRandomAuthority(Scheme.SCRIPT);
-        loadScripts();
     }
     
     // Checks all scripts for syntax and then attempts to run
     @Test(groups = { "script", "nightly", "search" }, dataProvider = "allScripts")
     public void runAllScripts (String scriptName) {
-        Assert.assertEquals(0,scriptApi.checkScript(scriptName).length(),"Found error in script "+scriptName);
+        String checkStr = scriptApi.checkScript(scriptName);
+        Assert.assertEquals(0, checkStr.length(), "Found error in script " + scriptName + ": " + checkStr);
         Reporter.log("Running script: " +scriptName,true);
         Map <String, String> paramMap=new HashMap<String,String>();
 
-        paramMap.put("repoURI", scriptRepo.toString());
+        RaptureURI blobRepo = helper.getRandomAuthority(Scheme.BLOB);
+        helper.configureTestRepo(blobRepo, "MEMORY");
+        paramMap.put("blobRepoUri", blobRepo.toString());
+
+        RaptureURI docRepo = helper.getRandomAuthority(Scheme.DOCUMENT);
+        helper.configureTestRepo(docRepo, "MEMORY");
+        paramMap.put("docRepoUri", docRepo.toString());
+
+        RaptureURI seriesRepo = helper.getRandomAuthority(Scheme.SERIES);
+        helper.configureTestRepo(seriesRepo, "MEMORY");
+        paramMap.put("seriesRepoUri", seriesRepo.toString());
+
+        paramMap.put("scriptRepoUri", scriptRepo.toString());
         try {
             scriptApi.runScript(scriptName, paramMap);
         } catch (Exception e) {
-            Assert.fail("Failed running script: " + scriptName + "\n" + ExceptionToString.format(e));
+            Reporter.log(e.getMessage());
+            Assert.fail("Failed running script: " + scriptName + " : " + e.getMessage());
+        } finally {
+            helper.cleanAllAssets();
         }
     }
 
@@ -74,7 +90,7 @@ public class ReflexTestRunner {
     }
     
     // Read in all reflex scripts in all subdirs of ($HOME)/bin/reflex/nightly and creates scripts in Rapture
-    private void loadScripts () {
+    private void loadScripts(RaptureURI tempScripts) {
         String rootPath = System.getProperty("user.dir") + File.separator + "src" + File.separator + "test" + File.separator + "resources" + File.separator
                 + "reflex" + File.separator + "nightly";
         File[] files = new File(rootPath).listFiles();
@@ -87,7 +103,7 @@ public class ReflexTestRunner {
             for (File scriptFile : subdir.listFiles()) {
                 try {
                     String scriptName = scriptFile.getName();
-                    String scriptPath = RaptureURI.builder(scriptRepo).docPath(subdirName + "/" + scriptName).asString();
+                    String scriptPath = RaptureURI.builder(tempScripts).docPath(subdirName + "/" + scriptName).asString();
                     Reporter.log("Reading in file: " + scriptFile.getAbsolutePath(), true);
                     if (!scriptApi.doesScriptExist(scriptPath)) {
                         byte[] scriptBytes = Files.readAllBytes(scriptFile.toPath());
