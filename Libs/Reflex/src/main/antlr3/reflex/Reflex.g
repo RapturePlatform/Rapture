@@ -65,6 +65,7 @@ tokens {
   SWITCH;
   CASE;
   DEFAULT;
+  CONTAINS;
 }
 
 @parser::header{
@@ -567,6 +568,7 @@ func2
                                   -> ^(FUNC_CALL[$Template] Template $t $p)
   |  KernelIdentifier '(' exprList? ')'
                                   -> ^({token("KERNEL_CALL", KERNEL_CALL, $KernelIdentifier.getLine())} KernelIdentifier exprList?)
+  |  Identifier Contains expression -> ^(FUNC_CALL[$Contains] Identifier expression)
   ;
 
 // MATCH allows expressions as case values
@@ -908,6 +910,7 @@ Transpose : 'transpose';
 Evals    : 'evals';
 Vars     : 'vars';
 Matches  : 'matches';
+Contains : 'contains';
 
 
 Split    : 'split';
