@@ -5,6 +5,8 @@ jar.manifest.attributes "Implementation-Version" : version
 
 mainClassName = "rapture.test.java"
 
+def nosetestsCmd = System.properties['nosetests'] ?: "nosetests"
+
 dependencies {
     compile "net.rapture:WorkflowsCore:$project.platformVersion"
     compile "net.rapture:RaptureCore:$project.platformVersion"
@@ -20,6 +22,9 @@ dependencies {
 }
 
 
+task pythonTests(type: Exec) {
+    commandLine nosetestsCmd, 'src/test/python/searchTests.py'
+}
 
 task nightlyTests (type: Test) {
     description 'Runs TestNG tests in the Java nightly test group.'
@@ -70,4 +75,5 @@ task docTests (type: Test) {
         }
         suites ext.testngfile
     }
+
 }
