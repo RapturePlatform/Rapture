@@ -23,8 +23,11 @@
  */
 package reflex.node;
 
+import com.google.common.collect.ImmutableList;
+
 import reflex.IReflexHandler;
 import reflex.ReflexException;
+import reflex.ReflexParser;
 import reflex.Scope;
 import reflex.debug.IReflexDebugger;
 import reflex.value.ReflexValue;
@@ -51,11 +54,17 @@ public class IdentifierNode extends BaseNode {
         // a resolution. If we resolve to something and that variable type is a map, use the remaining
         // part to resolve to a value using map lookup semantics.
 
-        ReflexValue value = scope.resolve(identifier, namespacePrefix);
-        if (value == null) {
-            value = resolveMapDotter(scope);
+        ReflexValue value;
+
+        if (identifier.equals("reserved")) {
+            value = new ReflexValue(ImmutableList.copyOf(ReflexParser.tokenNames));
+        } else {
+            value = scope.resolve(identifier, namespacePrefix);
             if (value == null) {
-                value = new ReflexUndefinedValue(lineNumber);
+                value = resolveMapDotter(scope);
+                if (value == null) {
+                    value = new ReflexUndefinedValue(lineNumber);
+                }
             }
         }
         debugger.stepEnd(this, value, scope);

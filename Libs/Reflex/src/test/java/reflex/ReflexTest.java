@@ -74,6 +74,11 @@ public class ReflexTest extends ResourceBasedTest {
     }
 
     @Test
+    public void testReserved() throws RecognitionException {
+        runTestFor("/reserved.rfx");
+    }
+
+    @Test
     public void testConst() throws RecognitionException {
         runTestFor("/const.rfx");
     }

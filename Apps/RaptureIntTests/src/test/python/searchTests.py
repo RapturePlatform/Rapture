@@ -2,6 +2,7 @@ import raptureAPI
 import multipart
 import json
 import time
+import base64
 
 # TODO These need to be parameters
 
@@ -77,7 +78,6 @@ def test_series():
     
 # Test Repo search
     query = "repo:"+repo[2:]
-    print(query)
     srch = rapture.doSearch_Search(query)
     assert (srch['total'] == 2), query+" returns "+str(srch['total'])+" expected 2"
  
@@ -104,4 +104,114 @@ def test_series():
     srch = rapture.doSearch_Search(query)
     assert (srch['total'] == 0), query+" returns "+str(srch['total'])+" expected 0"
     
+def test_doc():
+
+# Create doc using different API calls - AddStringToDoc and AddStringsToDoc
+# (Can add others)
+
+    premUri = docRepoUri+"/English/Premier"
+    champUri = docRepoUri+"/English/Championship"
+
+    premDoc = "{"
+    for pr in premier:
+       d = pr.split(',')
+       premDoc += '"' + d[1] + '":"' + d[4] + '"'
+       if d[0] == "20":
+          premDoc += '}'
+       else:
+          premDoc += ','
+    rapture.doDoc_PutDoc(premUri, premDoc)
+
+    champDoc = "{"
+    for ch in championship:
+       d = ch.split(',')
+       champDoc += '"' + d[1] + '":"' + d[4] + '"'
+       if d[0] == "24":
+          champDoc += '}'
+       else:
+          champDoc += ','
+    rapture.doDoc_PutDoc(champUri, champDoc)
+
+    time.sleep(2);
+
+# Test simple search
+
+    query="Watford:*"
+    srch = rapture.doSearch_Search(query)
+    assert (srch['total'] == 1), query+" returns "+str(srch['total'])+" expected 1"
+
+# Test Repo search
+    query = "repo:"+repo[2:]
+    srch = rapture.doSearch_Search(query)
+    assert (srch['total'] == 2), query+" returns "+str(srch['total'])+" expected 2"
+
+# Test URI search
+    query = "scheme:document AND parts:Eng*"
+    srch = rapture.doSearch_Search(query)
+    assert (srch['total'] == 2), query+" returns "+str(srch['total'])+" expected 2"
+
+# Test search works after DeleteDoc
+    rapture.doDoc_DeleteDoc(premUri)
+    time.sleep(2);
+    query="Watford:*"
+    srch = rapture.doSearch_Search(query)
+    assert (srch['total'] == 0), query+" returns "+str(srch['total'])+" expected 0"
+
+# Test search works after DeleteDocRepo
+    query="Brentford:*"
+    srch = rapture.doSearch_Search(query)
+    assert (srch['total'] == 1), query+" returns "+str(srch['total'])+" expected 1"
+
+    rapture.doDoc_DeleteDocRepo(docRepoUri)
+    time.sleep(2);
+    query="Brentford:*"
+    srch = rapture.doSearch_Search(query)
+    assert (srch['total'] == 0), query+" returns "+str(srch['total'])+" expected 0"
+    
+def test_Blob():
+
+# Create blob using different API calls - AddStringToBlob and AddStringsToDoc
+# (Can add others)
+
+    premUri = blobRepoUri+"/English/Premier"
+    champUri = blobRepoUri+"/English/Championship"
+
+    rapture.doBlob_PutBlob(premUri, base64.b64encode(''.join(premier)), "text/plain");
+    rapture.doBlob_PutBlob(champUri, base64.b64encode(''.join(championship)), "text/csv");
+
+    time.sleep(2);
+
+# Test simple search
+
+    query="Watford*"
+    srch = rapture.doSearch_Search(query)
+    assert (srch['total'] == 1), query+" returns "+str(srch['total'])+" expected 1"
+
+# Test Repo search
+    query = "repo:"+repo[2:]
+    srch = rapture.doSearch_Search(query)
+    assert (srch['total'] == 2), query+" returns "+str(srch['total'])+" expected 2"
+
+# Test URI search
+    query = "scheme:blob AND parts:Eng*"
+    srch = rapture.doSearch_Search(query)
+    assert (srch['total'] == 2), query+" returns "+str(srch['total'])+" expected 2"
+
+# Test search works after DeleteBlob
+    rapture.doBlob_DeleteBlob(premUri)
+    time.sleep(2);
+    query="Watford*"
+    srch = rapture.doSearch_Search(query)
+    assert (srch['total'] == 0), query+" returns "+str(srch['total'])+" expected 0"
+
+# Test search works after DeleteBlobRepo
+    query="Brentford*"
+    srch = rapture.doSearch_Search(query)
+    assert (srch['total'] == 1), query+" returns "+str(srch['total'])+" expected 1"
+
+    rapture.doBlob_DeleteBlobRepo(blobRepoUri)
+    time.sleep(2);
+    query="Brentford*"
+    srch = rapture.doSearch_Search(query)
+    assert (srch['total'] == 0), query+" returns "+str(srch['total'])+" expected 0"
 
