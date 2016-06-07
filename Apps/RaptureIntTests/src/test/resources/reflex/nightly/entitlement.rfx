@@ -1,0 +1,29 @@
+parts = split(docRepoUri, "/", true);
+
+ent = "/data/write/"+parts[2];
+user = "User";
+group = "Group";
+documentUri = docRepoUri+"test/doc";
+
+// Not sure how much futzing we can do from within Reflex
+// #admin.addUser(user, "Another User", MD5Utils.hash16(user), "user@incapture.net");
+
+permitted = #user.isPermitted("doc.putDoc", documentUri);
+assertTrue(permitted, "Unrestricted"
+
+//        RaptureEntitlement entitlement = entApi.addEntitlement(ent, group);
+//        RaptureEntitlementGroup entitlementGroup = entApi.addEntitlementGroup(group);
+//        RaptureEntitlement entitlement2 = entApi.addGroupToEntitlement(ent, group);
+//
+//        assertTrue(entApi.getEntitlementGroup(group).getUsers().isEmpty());
+//        assertTrue(entApi.getEntitlement(ent).getGroups().contains(group));
+//
+//        assertFalse("Access not yet granted", userApi2.isPermitted("doc.putDoc", documentUriStr));
+//        entApi.addUserToEntitlementGroup(group, user);
+//        assertTrue("Access is now granted", userApi2.isPermitted("doc.putDoc", documentUriStr));
+//        entApi.removeUserFromEntitlementGroup(group, user);
+//        assertFalse("Access no longer granted", userApi2.isPermitted("doc.putDoc", documentUriStr));
+//        entApi.deleteEntitlementGroup(group);
+//        entApi.deleteEntitlement(ent);
+//        assertTrue("Unrestricted", userApi2.isPermitted("doc.putDoc", documentUriStr));
+
