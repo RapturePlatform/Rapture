@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+<suite name="HttpSuite">
+	<parameter name="RaptureURL" value="http://nightly1.incapture.net:8665/rapture" />
+	<parameter name="RaptureUser" value="rapture" />
+	<parameter name="RapturePassword" value="rapture" />
+	<parameter name="RepoType" value="MONGODB" />
+	<test name="HttpSuite">
+		<packages>
+			<package name="rapture.api.checkout" />
+			<package name="rapture.api.document" />
+			<package name="rapture.httpapi.blob" />
+			<package name="rapture.httpapi.series" />
+		</packages>
+	</test>
+</suite> <!-- Suite -->
