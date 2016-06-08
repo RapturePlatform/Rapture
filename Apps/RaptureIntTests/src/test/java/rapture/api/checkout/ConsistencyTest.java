@@ -23,9 +23,9 @@
  */
 package rapture.api.checkout;
 
+import static org.junit.Assert.assertNotNull;
 import static org.testng.AssertJUnit.assertEquals;
 import static org.testng.AssertJUnit.assertFalse;
-import static org.testng.AssertJUnit.assertNotNull;
 import static org.testng.AssertJUnit.assertTrue;
 
 import java.util.Collections;
@@ -41,6 +41,7 @@ import org.testng.annotations.Optional;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.net.MediaType;
 
 import rapture.common.CallingContext;
@@ -58,6 +59,8 @@ import rapture.common.api.ScriptApi;
 import rapture.common.api.SeriesApi;
 import rapture.common.exception.ExceptionToString;
 import rapture.common.impl.jackson.JacksonUtil;
+import rapture.common.model.DocumentMetadata;
+import rapture.common.model.DocumentWithMeta;
 import rapture.kernel.ContextFactory;
 import rapture.kernel.Kernel;
 import rapture.kernel.Login;
@@ -745,4 +748,32 @@ public class ConsistencyTest {
 
         }
     }
+
+    @Test
+    public void testMetadata() {
+        docApi = Kernel.getDoc();
+        callingContext = ContextFactory.getKernelUser();
+
+        String uuid = UUID.randomUUID().toString();
+        RaptureURI mongoRepo = RaptureURI.builder(Scheme.DOCUMENT, uuid).build();
+        String mongoDoc = RaptureURI.builder(mongoRepo).docPath("cha/cha/slide").asString();
+
+        docApi.createDocRepo(callingContext, mongoRepo.toString(), "NREP {} USING MONGODB {prefix=\"" + uuid + "\"}");
+
+        docApi.putDoc(callingContext, mongoDoc, "{\"Everybody\":\"clap your hands\"}");
+        DocumentMetadata met1 = docApi.getDocMeta(callingContext, mongoDoc);
+        DocumentWithMeta met2 = docApi.getDocAndMeta(callingContext, mongoDoc);
+        List<DocumentWithMeta> met3 = docApi.getDocAndMetas(callingContext, ImmutableList.of(mongoDoc));
+
+        Assert.assertNotNull(met1);
+        Assert.assertNotNull(met2);
+        Assert.assertNotNull(met3);
+        Assert.assertEquals(1, met3.size());
+        System.out.println(met1.toString());
+        System.out.println(met2.toString());
+        System.out.println(met3.get(0).toString());
+        Assert.assertEquals(met2, met3.get(0));
+        Assert.assertEquals(met1, met2.getMetaData());
+    }
+
 }

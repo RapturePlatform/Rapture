@@ -11,13 +11,15 @@ documentUri = docRepoUri+"test/doc";
 permitted = #user.isPermitted("doc.putDoc", documentUri);
 assertTrue(permitted, "Unrestricted"
 
-//        RaptureEntitlement entitlement = entApi.addEntitlement(ent, group);
-//        RaptureEntitlementGroup entitlementGroup = entApi.addEntitlementGroup(group);
-//        RaptureEntitlement entitlement2 = entApi.addGroupToEntitlement(ent, group);
-//
-//        assertTrue(entApi.getEntitlementGroup(group).getUsers().isEmpty());
-//        assertTrue(entApi.getEntitlement(ent).getGroups().contains(group));
-//
+#entitlement.addEntitlement(ent, group);
+#entitlement.addEntitlementGroup(group);
+#entitlement.addGroupToEntitlement(ent, group);
+
+eusers = #entitlement.getEntitlementGroup(group).getUsers();
+egroups = #entitlement.getEntitlement(ent).getGroups();
+
+println(eusers);
+println(egroups);
 //        assertFalse("Access not yet granted", userApi2.isPermitted("doc.putDoc", documentUriStr));
 //        entApi.addUserToEntitlementGroup(group, user);
 //        assertTrue("Access is now granted", userApi2.isPermitted("doc.putDoc", documentUriStr));

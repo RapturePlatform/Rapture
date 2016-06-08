@@ -24,36 +24,29 @@
 package rapture.kernel;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
-
-import javax.swing.text.rtf.RTFEditorKit;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.google.common.collect.ImmutableList;
+
 import rapture.common.CallingContext;
 import rapture.common.RaptureConstants;
-import rapture.common.RaptureFolderInfo;
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
-import rapture.common.impl.jackson.JacksonUtil;
+import rapture.common.model.DocumentMetadata;
 import rapture.common.model.DocumentRepoConfig;
+import rapture.common.model.DocumentWithMeta;
 import rapture.config.ConfigLoader;
 import rapture.config.RaptureConfig;
 
@@ -121,6 +114,26 @@ public class DocApiMemoryTest {
         assertNotEquals(0, ret.size());
     }
     
+    @Test
+    public void testMetadata() {
+        testCreateAndGetRepo();
+        String docUri = RaptureURI.builder(new RaptureURI(docAuthorityURI)).docPath("cha/cha/slide").asString();
+        docImpl.putDoc(callingContext, docUri, "{\"Everybody\":\"clap your hands\"}");
+        DocumentMetadata met1 = docImpl.getDocMeta(callingContext, docUri);
+        DocumentWithMeta met2 = docImpl.getDocAndMeta(callingContext, docUri);
+        List<DocumentWithMeta> met3 = docImpl.getDocAndMetas(callingContext, ImmutableList.of(docUri));
+
+        assertNotNull(met1);
+        assertNotNull(met2);
+        assertNotNull(met3);
+        assertEquals(1, met3.size());
+        System.out.println(met1.toString());
+        System.out.println(met2.toString());
+        System.out.println(met3.get(0).toString());
+        assertEquals(met2, met3.get(0));
+        assertEquals(met1, met2.getMetaData());
+    }
+
     @After
     public void after() throws IOException {
         FileUtils.deleteDirectory(temp);
