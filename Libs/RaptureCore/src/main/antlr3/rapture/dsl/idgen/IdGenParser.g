@@ -24,7 +24,7 @@ pdef	   : s=pstyle config { addProcessorConfig($s.text); };
 idef   : s=istyle config { addConfig($s.text); };
 
 pstyle   : IDGEN;
-istyle : s=(MEMORY | FILE| AWS | MONGO) { setStore($s); };
+istyle : s=(MEMORY | FILE| AWS | MONGODB) { setStore($s); };
 
 config 	   : LBRACE entrylist RBRACE;
 

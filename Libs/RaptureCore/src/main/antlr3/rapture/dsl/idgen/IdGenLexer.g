@@ -20,7 +20,7 @@ IDGEN : 'IDGEN';
 MEMORY : 'MEMORY';
 FILE : 'FILE';
 AWS : 'AWS';
-MONGO : 'MONGO' | 'MONGODB';
+MONGO : 'MONGODB';
 
 LBRACE : '{';
 RBRACE : '}';
