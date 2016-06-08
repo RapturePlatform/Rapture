@@ -43,13 +43,12 @@ public class ConfigTest {
 
     @Test
     public void testMongo() throws RecognitionException {
-        parseMessage("VREP { test=\"one\" } using MONGO { prefix = \"test\"}");
         parseMessage("VREP { test=\"one\" } using MONGODB { prefix = \"test\"}");
     }
 
     @Test
     public void testMongoWithCache() throws RecognitionException {
-        parseMessage("VREP { test=\"one\" } using MONGO { prefix=\"tyest\"} WITH EHCACHE { test=\"one\"}");
+        parseMessage("VREP { test=\"one\" } using MONGODB { prefix=\"tyest\"} WITH EHCACHE { test=\"one\"}");
     }
 
     @Test
