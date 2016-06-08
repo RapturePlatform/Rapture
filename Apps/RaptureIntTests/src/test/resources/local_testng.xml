@@ -11,6 +11,8 @@
 			<package name="rapture.api.document" />
 			<package name="rapture.httpapi.blob" />
 			<package name="rapture.httpapi.series" />
+			<package name="rapture.httpapi.document" />
+			<package name="rapture.httpapi.plugin" />
 		</packages>
 	</test>
 </suite> <!-- Suite -->
