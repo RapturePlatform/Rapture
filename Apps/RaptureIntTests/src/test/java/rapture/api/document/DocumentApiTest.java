@@ -1,16 +1,10 @@
 package rapture.api.document;
 
-import rapture.common.client.HttpLoginApi;
 import rapture.common.client.HttpScriptApi;
-import rapture.common.client.SimpleCredentialsProvider;
-import rapture.common.exception.RaptureException;
 import rapture.common.model.DocumentMetadata;
-
-
 import static rapture.common.Scheme.DOCUMENT;
 import static rapture.common.Scheme.EVENT;
 import static rapture.common.Scheme.SCRIPT;
-
 import org.testng.Assert;
 import org.testng.Reporter;
 import org.testng.annotations.AfterClass;
@@ -27,10 +21,6 @@ import rapture.common.client.HttpEventApi;
 import rapture.nightly.IntegrationTestHelper;
 
 public class DocumentApiTest {
-    String raptureUrl = null;
-    private String raptureUser = null;
-    private String rapturePass = null;
-    private HttpLoginApi raptureLogin = null;
     private HttpDocApi docApi=null;
     private HttpEventApi eventApi=null;
     private HttpScriptApi scriptApi=null;
@@ -38,21 +28,13 @@ public class DocumentApiTest {
     
     @BeforeClass(groups={"document","mongo", "nightly"})
     @Parameters({"RaptureURL","RaptureUser","RapturePassword"})
-    public void beforeTest(@Optional("http://localhost:8665/rapture")String url, @Optional("rapture")String user, @Optional("rapture")String password)  {
-        raptureUrl=url;
-        raptureUser=user;
-        rapturePass=password;
-        raptureLogin = new HttpLoginApi(raptureUrl, new SimpleCredentialsProvider(raptureUser, rapturePass));
-        helper = new IntegrationTestHelper(raptureUrl, raptureUser, rapturePass);
-        try {
-            raptureLogin.login();
-            docApi = new HttpDocApi(raptureLogin);
-            scriptApi = new HttpScriptApi(raptureLogin);
-            eventApi = new HttpEventApi(raptureLogin);
+    public void beforeTest(@Optional("http://localhost:8665/rapture")String url, @Optional("rapture")String user, @Optional("rapture")String password)  { 
+        helper = new IntegrationTestHelper(url, user, password);
 
-        } catch (RaptureException e) {
-            e.printStackTrace();
-        }   
+        docApi = helper.getDocApi();
+        scriptApi =  helper.getScriptApi();
+        eventApi =  helper.getEventApi();
+ 
     }
     
     @Test(groups={"document","mongo", "nightly"})
@@ -75,13 +57,13 @@ public class DocumentApiTest {
         String content="{\"key1\":\"value1\"}";
         Reporter.log("Creating and checking document "+docPath, true);
         docApi.putDoc(docPath, content);
-        Assert.assertTrue(docApi.docExists(docPath));
-        Assert.assertEquals(docApi.getDoc(docPath),content);
         
-        Reporter.log("Updating and checking document "+docPath, true);
-        String newContent="{\"key2\":\"value2\"}";
-        docApi.putDoc(docPath, newContent);
-        Assert.assertEquals(docApi.getDoc(docPath),newContent);
+        for (int i = 0;i<5;i++) {
+	        Reporter.log("Updating and checking document "+docPath, true);
+	        String newContent="{\"key"+i+"\":\"value"+i+"\"}";
+	        docApi.putDoc(docPath, newContent);
+	        Assert.assertEquals(docApi.getDoc(docPath),newContent);
+        }
     }
     
     @Test(groups={"document","mongo", "nightly"})

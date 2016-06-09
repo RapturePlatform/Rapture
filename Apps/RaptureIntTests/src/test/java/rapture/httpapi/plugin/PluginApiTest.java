@@ -34,21 +34,22 @@ import rapture.common.impl.jackson.JacksonUtil;
 import rapture.plugin.install.PluginContentReader;
 import rapture.plugin.install.PluginSandbox;
 import rapture.plugin.install.PluginSandboxItem;
+import rapture.nightly.IntegrationTestHelper;
 
 
 public class PluginApiTest {
 
-    HttpLoginApi raptureLogin=null;
     HttpPluginApi pluginApi=null;
     Set <String> installedSet = null;
+    IntegrationTestHelper helper=null;
     
     @BeforeClass(groups={"plugin","nightly"})
     @Parameters({"RaptureURL","RaptureUser","RapturePassword"})
     public void setUp(@Optional("http://localhost:8665/rapture")String url, 
                       @Optional("rapture")String username, @Optional("rapture")String password ) {
-        raptureLogin = new HttpLoginApi(url, new SimpleCredentialsProvider(username, password));
-        raptureLogin.login();
-        pluginApi = new HttpPluginApi(raptureLogin);
+
+    	helper = new IntegrationTestHelper(url, username, password);
+        pluginApi = helper.getPluginApi();
         installedSet = new HashSet<String> ();
     }
     
@@ -186,7 +187,7 @@ public class PluginApiTest {
         //install the plugin using the http api 
         pluginApi.installPlugin(sandbox.makeManifest(null), payload);
         installedSet.add(pluginName);
-        HttpDecisionApi decisionApi = new HttpDecisionApi(raptureLogin);
+        HttpDecisionApi decisionApi = new HttpDecisionApi(helper.getRaptureLogin());
         
         try {
             Thread.sleep(5000);

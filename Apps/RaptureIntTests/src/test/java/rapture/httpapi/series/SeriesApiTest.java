@@ -20,34 +20,17 @@ import rapture.common.Scheme;
 import rapture.common.SeriesDouble;
 import rapture.common.SeriesString;
 import rapture.common.client.HttpSeriesApi;
-import rapture.common.client.HttpLoginApi;
-import rapture.common.client.SimpleCredentialsProvider;
-import rapture.common.exception.RaptureException;
 import rapture.nightly.IntegrationTestHelper;
 
 public class SeriesApiTest {
-    String raptureUrl = null;
-    private String raptureUser = null;
-    private String rapturePass = null;
-    private HttpLoginApi raptureLogin = null;
     private HttpSeriesApi seriesApi=null;
     IntegrationTestHelper helper=null;
     
     @BeforeClass(groups={"series","cassandra", "nightly"})
     @Parameters({"RaptureURL","RaptureUser","RapturePassword"})
-    public void beforeTest(@Optional("http://localhost:8665/rapture")String url, @Optional("rapture")String user, @Optional("rapture")String password)  {
-        raptureUrl=url;
-        raptureUser=user;
-        rapturePass=password;
-        raptureLogin = new HttpLoginApi(raptureUrl, new SimpleCredentialsProvider(raptureUser, rapturePass));
-        helper = new IntegrationTestHelper(raptureUrl, raptureUser, rapturePass);
-        try {
-            raptureLogin.login();
-            seriesApi = new HttpSeriesApi(raptureLogin);
-
-        } catch (RaptureException e) {
-            e.printStackTrace();
-        }   
+    public void beforeTest(@Optional("http://localhost:8665/rapture")String url, @Optional("rapture")String user, @Optional("rapture")String password)  {       
+        helper = new IntegrationTestHelper(url, user, password);
+        seriesApi = helper.getSeriesApi(); 
     }
     
     @Test (groups={"series","cassandra", "nightly"})
