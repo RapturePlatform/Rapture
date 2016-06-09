@@ -50,7 +50,7 @@ public class MongoUnversionedRepoTest extends UnversionedRepoTest {
 
     @Override
     protected String getConfig(String authority) {
-        return String.format("REP {} USING MONGO { prefix=\"%s\"} on integrationTest", StringUtils.stripStart(authority, "/"));
+        return String.format("REP {} USING MONGODB { prefix=\"%s\"} on integrationTest", StringUtils.stripStart(authority, "/"));
     }
 
 }

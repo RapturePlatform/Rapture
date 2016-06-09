@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package rapture.nightly.java;
+package rapture.nightly.java.search;
 
 import static org.junit.Assert.assertEquals;
 import static org.testng.AssertJUnit.assertNotNull;

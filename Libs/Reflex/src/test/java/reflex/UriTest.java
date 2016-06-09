@@ -21,38 +21,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package rapture.dsl.sgen;
+package reflex;
 
-import org.antlr.runtime.ANTLRStringStream;
-import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
+import org.junit.Assert;
 import org.junit.Test;
 
-import rapture.generated.SGenLexer;
-import rapture.generated.SGenParser;
-
-public class StatusConfigTest {
-    private SGenLexer lexer = new SGenLexer();
-
-    public void parseMessage(String message) throws RecognitionException {
-        lexer.setCharStream(new ANTLRStringStream(message));
-        CommonTokenStream tokens = new CommonTokenStream(lexer);
-        SGenParser parser = new SGenParser(tokens);
-        parser.sinfo();
-    }
-
+public class UriTest extends ResourceBasedTest {
     @Test
-    public void testMongo() throws RecognitionException {
-        parseMessage("STATUS { test=\"one\" } using MONGODB { prefix = \"test\"}");
-    }
-
-    @Test
-    public void testMongoWithCache() throws RecognitionException {
-        parseMessage("STATUS { test=\"one\" } using MEMORY { prefix=\"tyest\"}");
-    }
-
-    @Test
-    public void testSimple() throws RecognitionException {
-        parseMessage("STATUS { test=\"one\" } using REDIS { prefix = \"test\"}");
+    public void runUriTest() throws RecognitionException {
+        String retval = runTestFor("/raptureuri.rfx");
+        Assert.assertEquals("document://foo/bar/baz", retval.split("--RETURNS--")[1]);
     }
 }

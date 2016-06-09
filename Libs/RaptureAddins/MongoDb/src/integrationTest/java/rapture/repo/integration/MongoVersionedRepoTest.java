@@ -47,7 +47,7 @@ public class MongoVersionedRepoTest extends VersionedRepoTest {
 
     @Override
     protected String getConfig(String authority) {
-        return String.format("NREP {} USING MONGO { prefix=\"%s\"} on integrationTest", StringUtils.stripStart(authority, "/"));
+        return String.format("NREP {} USING MONGODB { prefix=\"%s\"} on integrationTest", StringUtils.stripStart(authority, "/"));
     }
 
 }
