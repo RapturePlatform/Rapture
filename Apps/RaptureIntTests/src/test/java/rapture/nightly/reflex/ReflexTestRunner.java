@@ -105,7 +105,7 @@ public class ReflexTestRunner {
             }
             return ret;
         }
-        return (file.exists()) ? ImmutableList.of(file) : ImmutableList.of();
+        return (file.exists() && file.getName().endsWith("rfx")) ? ImmutableList.of(file) : ImmutableList.of();
     }
 
     // Read in all reflex scripts in all subdirs of ($HOME)/bin/reflex/nightly and creates scripts in Rapture
