@@ -17,21 +17,15 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Optional;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
-
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
 import rapture.common.client.HttpBlobApi;
-import rapture.common.client.HttpLoginApi;
-import rapture.common.client.SimpleCredentialsProvider;
 import rapture.common.exception.RaptureException;
 import rapture.nightly.IntegrationTestHelper;
 import rapture.util.ResourceLoader;
 
 public class BlobApiTests {
-    String raptureUrl = null;
-    private String raptureUser = null;
-    private String rapturePass = null;
-    private HttpLoginApi raptureLogin = null;
+
     private HttpBlobApi blobApi = null;
     IntegrationTestHelper helper=null;
 
@@ -41,18 +35,9 @@ public class BlobApiTests {
     @BeforeClass(groups={"blob","mongo", "nightly"})
     @Parameters({"RaptureURL","RaptureUser","RapturePassword"})
     public void beforeTest(@Optional("http://localhost:8665/rapture")String url, @Optional("rapture")String user, @Optional("rapture")String password)  {
-        raptureUrl=url;
-        raptureUser=user;
-        rapturePass=password;
-        raptureLogin = new HttpLoginApi(raptureUrl, new SimpleCredentialsProvider(raptureUser, rapturePass));
-        helper = new IntegrationTestHelper(raptureUrl, raptureUser, rapturePass);
-        try {
-            raptureLogin.login();
-            blobApi = new HttpBlobApi(raptureLogin);
-
-        } catch (RaptureException e) {
-            e.printStackTrace();
-        }   
+      
+        helper = new IntegrationTestHelper(url, user, password);
+        blobApi = helper.getBlobApi();  
     }
     
     
@@ -94,40 +79,62 @@ public class BlobApiTests {
     @Test (groups={"blob","mongo", "nightly"},enabled=true, expectedExceptions=RaptureException.class)
     public void testNullBlobContents() {
     	RaptureURI repo = helper.getRandomAuthority(Scheme.BLOB);
-        helper.configureTestRepo(repo, "MONGO");
+        helper.configureTestRepo(repo, "MONGODB");
         String repoName= new RaptureURI.Builder(repo).docPath("").build().toString();
         String blobUri = repoName + "testblob" + System.nanoTime();
-
-               
+        
         blobApi.putBlob(blobUri,null, "application/text");
         
     }
     
     @Test (groups={"blob","mongo", "nightly"})
-    public void testBlobAppend (){
-
+    public void testBlobPut () {
         long maxContentSize=10000L;
         
         Random rand = new Random();
     	RaptureURI repo = helper.getRandomAuthority(Scheme.BLOB);
-        helper.configureTestRepo(repo, "MONGO");
+        helper.configureTestRepo(repo, "MONGODB");
         String repoName= new RaptureURI.Builder(repo).docPath("").build().toString();
         String blobUri = repoName + "testblob" + System.nanoTime();
               
         long content_size=Math.abs(rand.nextLong() % maxContentSize);
         String currBlobURI=blobUri + Thread.currentThread().getId() + "_" + content_size + "_" + System.nanoTime();
         Reporter.log("Creating URI "+currBlobURI + " with content size= "+content_size,true);
-        String currContent="INITIAL CONTENT";
-        Reporter.log("Storing and appending to blob: " + currBlobURI,true);
+        String currContent="";
+        for (int i = 0;i<content_size;i++)
+        	currContent=currContent+"a";
+        Reporter.log("Storing to blob: " + currBlobURI,true);
         try{
             blobApi.putBlob(currBlobURI,currContent.getBytes(), "application/text"); 
         } catch (Exception e) {
             Reporter.log("Exception thrown: " + e,true);
         }
+        Assert.assertEquals(blobApi.getBlobSize(currBlobURI).longValue(),content_size);
+        Assert.assertEquals(blobApi.getBlobMetaData(currBlobURI).get("Content-Type"),"application/text");
+    }
+    
+    
+    @Test (groups={"blob","mongo", "nightly"})
+    public void testBlobAppend () {
+
+    	RaptureURI repo = helper.getRandomAuthority(Scheme.BLOB);
+        helper.configureTestRepo(repo, "MONGODB");
+        String repoName= new RaptureURI.Builder(repo).docPath("").build().toString();
+        String blobUri = repoName + "testblob" + System.nanoTime();     
+        String currBlobURI=blobUri + Thread.currentThread().getId() + "_" + System.nanoTime();
         
+        String currContent="INITIAL CONTENT";
+        Reporter.log("Creating URI "+currBlobURI + " with content size= "+currContent.length(),true);
+        try{
+            blobApi.putBlob(currBlobURI,currContent.getBytes(), "application/text"); 
+        } catch (Exception e) {
+            Reporter.log("Exception thrown: " + e,true);
+        }
+        Reporter.log("Appending to blob: " + currBlobURI,true);
         blobApi.addBlobContent(currBlobURI, "MORE CONTENT".getBytes());
         Assert.assertEquals (new String (blobApi.getBlob(currBlobURI).getContent()),currContent+"MORE CONTENT");
         
+        Reporter.log("Appending to blob: " + currBlobURI,true);
         blobApi.addBlobContent(currBlobURI, "EVEN MORE CONTENT".getBytes());
         Assert.assertEquals (new String (blobApi.getBlob(currBlobURI).getContent()),currContent+"MORE CONTENT"+"EVEN MORE CONTENT");
     }
@@ -136,7 +143,7 @@ public class BlobApiTests {
     @Test (groups={"blob","mongo", "nightly"})
     public void testBlobDelete (){
        	RaptureURI repo = helper.getRandomAuthority(Scheme.BLOB);
-        helper.configureTestRepo(repo, "MONGO");
+        helper.configureTestRepo(repo, "MONGODB");
         String repoName= new RaptureURI.Builder(repo).docPath("").build().toString();
 
                 
@@ -164,8 +171,29 @@ public class BlobApiTests {
         blobApi.addBlobContent(currBlobURI, "MORE CONTENT".getBytes());
         blobApi.deleteBlob(currBlobURI);
         Assert.assertFalse(blobApi.blobExists(currBlobURI));
+        Assert.assertNull(blobApi.getBlob(currBlobURI)); 
+    }
+    
+    @Test (groups={"blob","mongo", "nightly"})
+    public void testBlobDeletePut (){
+       	RaptureURI repo = helper.getRandomAuthority(Scheme.BLOB);
+        helper.configureTestRepo(repo, "MONGODB");
+        String repoName= new RaptureURI.Builder(repo).docPath("").build().toString();
+        
+        // test that blob does not exists and is null before putting content
+        String currBlobURI=repoName + Thread.currentThread().getId() + "_delete_put_" + System.nanoTime();
+        Assert.assertFalse(blobApi.blobExists(currBlobURI));
         Assert.assertNull(blobApi.getBlob(currBlobURI));
         
+        // test that put then delete content nullifies blob and makes it not exist
+        blobApi.putBlob(currBlobURI,"TEST".getBytes(), "application/text");
+        blobApi.deleteBlob(currBlobURI);
+        Assert.assertFalse(blobApi.blobExists(currBlobURI));
+        Assert.assertNull(blobApi.getBlob(currBlobURI));
+        
+        blobApi.putBlob(currBlobURI,"TESTTEST".getBytes(), "application/text");
+        Assert.assertTrue(blobApi.blobExists(currBlobURI));
+        Assert.assertEquals(blobApi.getBlob(currBlobURI).getContent(),"TESTTEST".getBytes());
     }
     
     @Test(groups={"blob","mongo", "nightly"},description="overwrite an application/text blob with an application/text blob of same size.",
@@ -173,7 +201,7 @@ public class BlobApiTests {
     public void overwriteExistingTextBlobTest(int originalContentSize, int newContentSize ){
 
     	RaptureURI repo = helper.getRandomAuthority(Scheme.BLOB);
-        helper.configureTestRepo(repo, "MONGO");
+        helper.configureTestRepo(repo, "MONGODB");
         String repoName= new RaptureURI.Builder(repo).docPath("").build().toString();
         
         //write original blob to blob store
@@ -219,7 +247,7 @@ public class BlobApiTests {
     public void overwriteExistingPDFBlobWithTextBlobTest() throws FileNotFoundException{
 
     	RaptureURI repo = helper.getRandomAuthority(Scheme.BLOB);
-        helper.configureTestRepo(repo, "MONGO");
+        helper.configureTestRepo(repo, "MONGODB");
         String repoName= new RaptureURI.Builder(repo).docPath("").build().toString();
         
         //load file1 and store in blob store
@@ -256,7 +284,7 @@ public class BlobApiTests {
     @Test (groups={"blob","mongo", "nightly"},enabled=true)
     public void testBlobRepositoryCreation() {
     	RaptureURI repo = helper.getRandomAuthority(Scheme.BLOB);
-        helper.configureTestRepo(repo, "MONGO");
+        helper.configureTestRepo(repo, "MONGODB");
         String repoName= new RaptureURI.Builder(repo).docPath("").build().toString();
         
         Assert.assertTrue(blobApi.blobRepoExists(repoName));

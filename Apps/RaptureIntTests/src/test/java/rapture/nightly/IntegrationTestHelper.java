@@ -36,8 +36,10 @@ import rapture.common.RaptureURI;
 import rapture.common.Scheme;
 import rapture.common.client.HttpBlobApi;
 import rapture.common.client.HttpDocApi;
+import rapture.common.client.HttpEventApi;
 import rapture.common.client.HttpEntitlementApi;
 import rapture.common.client.HttpLoginApi;
+import rapture.common.client.HttpPluginApi;
 import rapture.common.client.HttpScriptApi;
 import rapture.common.client.HttpSearchApi;
 import rapture.common.client.HttpSeriesApi;
@@ -54,6 +56,8 @@ public class IntegrationTestHelper {
     HttpBlobApi blobApi = null;
     HttpUserApi userApi = null;
     HttpEntitlementApi entApi = null;
+    HttpEventApi eventApi = null;
+    HttpPluginApi pluginApi = null;
 
     static final String testPrefix = "__RESERVED__";
 
@@ -63,6 +67,14 @@ public class IntegrationTestHelper {
         return raptureLogin;
     }
 
+    public HttpEventApi getEventApi() {
+        return eventApi;
+    }
+    
+    public HttpPluginApi getPluginApi() {
+        return pluginApi;
+    }
+    
     public HttpSeriesApi getSeriesApi() {
         return seriesApi;
     }
@@ -101,6 +113,8 @@ public class IntegrationTestHelper {
         blobApi = new HttpBlobApi(raptureLogin);
         userApi = new HttpUserApi(raptureLogin);
         entApi = new HttpEntitlementApi(raptureLogin);
+        eventApi = new HttpEventApi(raptureLogin);
+        pluginApi = new HttpPluginApi(raptureLogin);
         uriCache = new HashSet<>();
     }
 
@@ -111,6 +125,10 @@ public class IntegrationTestHelper {
     }
 
     public void configureTestRepo(RaptureURI repo, String storage) {
+    	configureTestRepo(repo, storage, false);
+    }
+    
+    public void configureTestRepo(RaptureURI repo, String storage, boolean versioned) {
         Assert.assertFalse(repo.hasDocPath(), "Doc path not allowed");
         String authString = repo.toAuthString();
         uriCache.add(repo);
@@ -118,14 +136,14 @@ public class IntegrationTestHelper {
         switch (repo.getScheme()) {
         case BLOB:
             if (blobApi.blobRepoExists(repo.toAuthString())) blobApi.deleteBlobRepo(authString);
-            blobApi.createBlobRepo(authString, "BLOB {} USING " + storage + " {prefix=\"B_" + repo.getAuthority() + "\"}",
-                    "NREP {} USING " + storage + " {prefix=\"M_" + repo.getAuthority() + "\"}");
+            	blobApi.createBlobRepo(authString, "BLOB {} USING " + storage + " {prefix=\"B_" + repo.getAuthority()+ "\"}",
+                "NREP {} USING " + storage + " {prefix=\"M_" + repo.getAuthority() + "\"}");
             Assert.assertTrue(blobApi.blobRepoExists(authString), authString + " Create failed");
             break;
     
         case DOCUMENT:
             if (docApi.docRepoExists(repo.toAuthString())) docApi.deleteDocRepo(authString);
-            docApi.createDocRepo(authString, "NREP {} USING " + storage + " {prefix=\"D_" + repo.getAuthority() + "\"}");
+            	docApi.createDocRepo(authString, "NREP {} USING " + storage + " {prefix=\"D_" + repo.getAuthority()+ (versioned? ", separateVersion=\"true\"}":"") + "\"}");
             Assert.assertTrue(docApi.docRepoExists(authString), authString + " Create failed");
             break;
     
@@ -167,11 +185,10 @@ public class IntegrationTestHelper {
             seriesApi.deleteSeriesRepo(authString);
             Assert.assertFalse(seriesApi.seriesRepoExists(authString), authString + " Delete failed");
             break;
-
         case SCRIPT:
-            // Scripts use an existing repo
+            scriptApi.deleteScriptsByUriPrefix(authString);
+            scriptApi.deleteScript(authString);
             break;
-
         default:
             Assert.fail(repo.toString() + " not supported");
         }
