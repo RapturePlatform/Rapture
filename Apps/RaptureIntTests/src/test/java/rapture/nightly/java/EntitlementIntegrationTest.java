@@ -65,7 +65,7 @@ public class EntitlementIntegrationTest {
     private HttpUserApi userApi2 = null;
     private HttpDocApi docApi2 = null;
     private HttpLoginApi raptureLogin2 = null;
-
+    private HttpAdminApi admin = null;
     private RaptureURI repoUri = null;
 
     private static final String user = "User";
@@ -98,9 +98,8 @@ public class EntitlementIntegrationTest {
         scriptApi = helper.getScriptApi();
         docApi = helper.getDocApi();
         blobApi = helper.getBlobApi();
-        searchApi = new HttpSearchApi(raptureLogin);
-
-        HttpAdminApi admin = new HttpAdminApi(raptureLogin);
+        searchApi = helper.getSearchApi();
+        admin = helper.getAdminApi();
         if (!admin.doesUserExist(user)) {
             admin.addUser(user, "Another User", MD5Utils.hash16(user), "user@incapture.net");
         }
@@ -116,6 +115,9 @@ public class EntitlementIntegrationTest {
     public void afterMethod() {
         helper.cleanAllAssets();
         helper2.cleanAllAssets();
+        if (admin.doesUserExist(user)) {
+            admin.destroyUser(user);
+        }
     }
 
     @Test

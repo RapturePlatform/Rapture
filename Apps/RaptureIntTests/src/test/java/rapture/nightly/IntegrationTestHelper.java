@@ -34,6 +34,7 @@ import com.google.common.collect.ImmutableList;
 
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
+import rapture.common.client.HttpAdminApi;
 import rapture.common.client.HttpBlobApi;
 import rapture.common.client.HttpDocApi;
 import rapture.common.client.HttpEventApi;
@@ -55,6 +56,7 @@ public class IntegrationTestHelper {
     HttpDocApi docApi = null;
     HttpBlobApi blobApi = null;
     HttpUserApi userApi = null;
+    HttpAdminApi adminApi = null;
     HttpEntitlementApi entApi = null;
     HttpEventApi eventApi = null;
     HttpPluginApi pluginApi = null;
@@ -99,11 +101,22 @@ public class IntegrationTestHelper {
         return userApi;
     }
 
+    public HttpAdminApi getAdminApi() {
+        return adminApi;
+    }
+
     public HttpEntitlementApi getEntApi() {
         return entApi;
     }
 
+    String user = null;
+
+    public String getUser() {
+        return user;
+    }
+
     public IntegrationTestHelper(String url, String username, String password) {
+        user = username;
         raptureLogin = new HttpLoginApi(url, new SimpleCredentialsProvider(username, password));
         raptureLogin.login();
         searchApi = new HttpSearchApi(raptureLogin);
@@ -112,6 +125,7 @@ public class IntegrationTestHelper {
         docApi = new HttpDocApi(raptureLogin);
         blobApi = new HttpBlobApi(raptureLogin);
         userApi = new HttpUserApi(raptureLogin);
+        adminApi = new HttpAdminApi(raptureLogin);
         entApi = new HttpEntitlementApi(raptureLogin);
         eventApi = new HttpEventApi(raptureLogin);
         pluginApi = new HttpPluginApi(raptureLogin);

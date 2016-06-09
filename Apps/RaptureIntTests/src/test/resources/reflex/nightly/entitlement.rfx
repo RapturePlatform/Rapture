@@ -1,31 +1,36 @@
 parts = split(docRepoUri, "/", true);
 
 ent = "/data/write/"+parts[2];
-user = "User";
 group = "Group";
 documentUri = docRepoUri+"test/doc";
 
-// Not sure how much futzing we can do from within Reflex
-// #admin.addUser(user, "Another User", MD5Utils.hash16(user), "user@incapture.net");
-
 permitted = #user.isPermitted("doc.putDoc", documentUri);
-assertTrue(permitted, "Unrestricted"
+println(permitted);
+assert("Unrestricted", permitted);
 
 #entitlement.addEntitlement(ent, group);
 #entitlement.addEntitlementGroup(group);
 #entitlement.addGroupToEntitlement(ent, group);
 
-eusers = #entitlement.getEntitlementGroup(group).getUsers();
-egroups = #entitlement.getEntitlement(ent).getGroups();
+eusers = #entitlement.getEntitlementGroup(group);
+egroups = #entitlement.getEntitlement(ent);
 
 println(eusers);
 println(egroups);
-//        assertFalse("Access not yet granted", userApi2.isPermitted("doc.putDoc", documentUriStr));
-//        entApi.addUserToEntitlementGroup(group, user);
-//        assertTrue("Access is now granted", userApi2.isPermitted("doc.putDoc", documentUriStr));
-//        entApi.removeUserFromEntitlementGroup(group, user);
-//        assertFalse("Access no longer granted", userApi2.isPermitted("doc.putDoc", documentUriStr));
-//        entApi.deleteEntitlementGroup(group);
-//        entApi.deleteEntitlement(ent);
-//        assertTrue("Unrestricted", userApi2.isPermitted("doc.putDoc", documentUriStr));
+permitted = #user.isPermitted("doc.putDoc", documentUri);
+assert("Access not yet granted", !permitted);
 
+#entitlement.addUserToEntitlementGroup(group, user);
+permitted = #user.isPermitted("doc.putDoc", documentUri);
+assert("Access is now granted", permitted);
+
+#entitlement.removeUserFromEntitlementGroup(group, user);
+permitted = #user.isPermitted("doc.putDoc", documentUri);
+assert("Access revoked", !permitted);
+
+
+#entitlement.deleteEntitlementGroup(group);
+#entitlement.deleteEntitlement(ent);
+
+permitted = #user.isPermitted("doc.putDoc", documentUri);
+assert("Unrestricted", permitted);
