@@ -6,6 +6,9 @@ import reflex.ReflexException;
 
 public class ImmutableReflexValue extends ReflexValue {
 
+    public static final ImmutableReflexValue TRUE = new ImmutableReflexValue(Boolean.TRUE);
+    public static final ImmutableReflexValue FALSE = new ImmutableReflexValue(Boolean.FALSE);
+
 	boolean valueSet = false;
 	public ImmutableReflexValue(int lineNumber, List<ReflexValue> v) {
 		super(lineNumber, v);

@@ -305,6 +305,7 @@ throwStatement returns [ReflexNode node]
      { node = new ThrowNode(line, handler, currentScope, $e.node); }
   ;
 
+
 functionCall returns [ReflexNode node]
 @init {
     CommonTree ahead = (CommonTree) input.LT(1);
@@ -395,6 +396,7 @@ functionCall returns [ReflexNode node]
   |  ^(FUNC_CALL Spawn p=expression (e=expression f=expression)?) { node = new SpawnNode(line, handler, currentScope, $p.node, $e.node, $f.node); }
   |  ^(FUNC_CALL Defined Identifier) { node = new DefinedNode(line, handler, currentScope, $Identifier.text, namespaceStack.asPrefix()) ; }
   |  ^(FUNC_CALL Defined lookup) { node = new DefinedNode(line, handler, currentScope, $lookup.node, namespaceStack.asPrefix()) ; }
+  |  ^(FUNC_CALL Contains i=Identifier e=expression) { node = new ContainsNode(line, handler, currentScope, $i.text, $e.node, namespaceStack.asPrefix()); }
   |  ^(KERNEL_CALL KernelIdentifier exprList?) { node = new KernelCallNode(line, handler, currentScope, $KernelIdentifier.text, $exprList.e); }
   |  ^(QUALIFIED_FUNC_CALL DottedIdentifier exprList?) { node = new QualifiedFuncCallNode(line, handler, currentScope, $DottedIdentifier.text,
                                                                       $exprList.e, languageRegistry, importHandler, namespaceStack.asPrefix()); }
