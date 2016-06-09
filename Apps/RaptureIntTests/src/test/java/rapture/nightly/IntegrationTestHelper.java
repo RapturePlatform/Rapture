@@ -36,10 +36,12 @@ import rapture.common.RaptureURI;
 import rapture.common.Scheme;
 import rapture.common.client.HttpBlobApi;
 import rapture.common.client.HttpDocApi;
+import rapture.common.client.HttpEntitlementApi;
 import rapture.common.client.HttpLoginApi;
 import rapture.common.client.HttpScriptApi;
 import rapture.common.client.HttpSearchApi;
 import rapture.common.client.HttpSeriesApi;
+import rapture.common.client.HttpUserApi;
 import rapture.common.client.SimpleCredentialsProvider;
 
 public class IntegrationTestHelper {
@@ -50,6 +52,9 @@ public class IntegrationTestHelper {
     HttpSearchApi searchApi = null;
     HttpDocApi docApi = null;
     HttpBlobApi blobApi = null;
+    HttpUserApi userApi = null;
+    HttpEntitlementApi entApi = null;
+
     static final String testPrefix = "__RESERVED__";
 
     Set<RaptureURI> uriCache;
@@ -78,6 +83,14 @@ public class IntegrationTestHelper {
         return blobApi;
     }
 
+    public HttpUserApi getUserApi() {
+        return userApi;
+    }
+
+    public HttpEntitlementApi getEntApi() {
+        return entApi;
+    }
+
     public IntegrationTestHelper(String url, String username, String password) {
         raptureLogin = new HttpLoginApi(url, new SimpleCredentialsProvider(username, password));
         raptureLogin.login();
@@ -86,11 +99,13 @@ public class IntegrationTestHelper {
         scriptApi = new HttpScriptApi(raptureLogin);
         docApi = new HttpDocApi(raptureLogin);
         blobApi = new HttpBlobApi(raptureLogin);
+        userApi = new HttpUserApi(raptureLogin);
+        entApi = new HttpEntitlementApi(raptureLogin);
         uriCache = new HashSet<>();
     }
 
     public RaptureURI getRandomAuthority(Scheme scheme) {
-        RaptureURI gagarin = new RaptureURI.Builder(scheme, testPrefix + UUID.randomUUID().toString()).build();
+        RaptureURI gagarin = new RaptureURI.Builder(scheme, testPrefix + UUID.randomUUID().toString().replaceAll("-", "")).build();
         uriCache.add(gagarin);
         return gagarin;
     }

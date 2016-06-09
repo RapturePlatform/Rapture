@@ -40,7 +40,7 @@ public class ConfigValidatorService {
 	    SRapGenLexer.MEMORY, "rapture.series.config.MemoryConfigValidator",
             SRapGenLexer.CASSANDRA, "rapture.series.cassandra.config.CassandraConfigValidator",
 	    SRapGenLexer.CSV, "rapture.series.config.CSVConfigValidator",
-            SRapGenLexer.MONGO, "rapture.series.mongo.config.MongoConfigValidator",
+            SRapGenLexer.MONGODB, "rapture.series.mongo.config.MongoConfigValidator",
 	    SRapGenLexer.FILE, "rapture.series.config.FileConfigValidator");
 
     public static void validateConfig(String config) throws InvalidConfigException, RecognitionException {

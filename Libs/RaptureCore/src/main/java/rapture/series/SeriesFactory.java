@@ -86,7 +86,7 @@ public class SeriesFactory {
     private static final Map<Integer, String> keyStoreImplementationMap = ImmutableMap.of(
         SRapGenLexer.MEMORY, "rapture.series.mem.MemorySeriesStore",
         SRapGenLexer.CASSANDRA, "rapture.series.cassandra.CassandraSeriesStore",
-        SRapGenLexer.MONGO, "rapture.series.mongo.MongoSeriesStore",
+        SRapGenLexer.MONGODB, "rapture.series.mongo.MongoSeriesStore",
         SRapGenLexer.CSV, "rapture.series.mem.CSVSeriesStore",
 	    SRapGenLexer.FILE, "rapture.series.file.FileSeriesStore");
 
