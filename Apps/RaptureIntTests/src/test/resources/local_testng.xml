@@ -13,6 +13,9 @@
 			<package name="rapture.httpapi.series" />
 			<package name="rapture.httpapi.document" />
 			<package name="rapture.httpapi.plugin" />
+			<package name="rapture.nightly.java" />
+			<package name="rapture.nightly.java.search" />
+			<package name="rapture.nightly.reflex" />
 		</packages>
 	</test>
 </suite> <!-- Suite -->

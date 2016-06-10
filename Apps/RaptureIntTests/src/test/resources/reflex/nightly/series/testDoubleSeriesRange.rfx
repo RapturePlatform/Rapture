@@ -1,0 +1,21 @@
+MAX_VALUES=200;
+OFFSET=1000;
+LOW_VALUE=MAX_VALUES / 4;
+HIGH_VALUE=3*(MAX_VALUES / 4);
+pointKeys = [];
+pointValues = [];
+
+for i = OFFSET to (MAX_VALUES+OFFSET) do
+	pointKeys= pointKeys + i;
+	pointValues=pointValues + i;
+end
+
+newSeries=seriesRepoUri+'/doubleSeriesRange';
+#series.addDoublesToSeries(newSeries, pointKeys, pointValues);
+seriesList=#series.getPointsInRangeAsDoubles(newSeries, (LOW_VALUE+OFFSET), (HIGH_VALUE+OFFSET), MAX_VALUES);
+
+assert(seriesList.size() > 0);
+for s in seriesList do 
+	assert(cast(s.getKey(),"number") >=(LOW_VALUE+OFFSET) && cast(s.getKey(),"number") <=(HIGH_VALUE+OFFSET));
+end  
+
