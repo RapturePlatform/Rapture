@@ -46,3 +46,4 @@ end
 catch e do
   println("Why did you resign, number six?");
 end
+return true;

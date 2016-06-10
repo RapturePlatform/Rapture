@@ -17,3 +17,4 @@ assert (! x contains 'b');
 assert (x contains 1);
 assert (! x contains 2); 
 assert (! x contains '1');
+return true;

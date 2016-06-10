@@ -74,3 +74,4 @@ assert (x != z);
 assert (z > x);
 assert (x < z);
 
+return true;
