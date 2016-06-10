@@ -47,6 +47,9 @@ import reflex.value.ReflexValue;
     this.namespaceStack = namespaceStack;
   }
 
+  public int countSyntaxErrors() {
+    return state.syntaxErrors;
+  }
 
   public void setReflexHandler(IReflexHandler handler) {
   	this.handler = handler;

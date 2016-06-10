@@ -23,6 +23,8 @@
  */
 package reflex;
 
+import static org.junit.Assert.assertTrue;
+
 import org.antlr.runtime.RecognitionException;
 import org.junit.Test;
 
@@ -30,66 +32,79 @@ public class ReflexTest extends ResourceBasedTest {
 
     @Test
     public void testAssert() throws RecognitionException {
-        runTestFor("/reflexAssert.rfx");
+        String ret = runTestFor("/reflexAssert.rfx");
+        assertTrue("Test case did not complete successfully", ret.endsWith("true"));
     }
 
     @Test
     public void testChain() throws RecognitionException {
-        runTestFor("/chain.rfx");
+        String ret = runTestFor("/chain.rfx");
+        assertTrue("Test case did not complete successfully", ret.endsWith("true"));
     }
 
     @Test
     public void testConstants() throws RecognitionException {
-        runTestFor("/constants.rfx");
+        String ret = runTestFor("/constants.rfx");
+        assertTrue("Test case did not complete successfully", ret.endsWith("true"));
     }
 
     @Test
     public void testDateTime() throws RecognitionException {
-        runTestFor("/datetime.rfx");
+        String ret = runTestFor("/datetime.rfx");
+        assertTrue("Test case did not complete successfully", ret.endsWith("true"));
     }
 
     @Test
     public void testInclude() throws RecognitionException {
-        runTestFor("/testInclude.rfx");
+        String ret = runTestFor("/testInclude.rfx");
+        assertTrue("Test case did not complete successfully", ret.endsWith("true"));
     }
 
     @Test
     public void testLexer() throws RecognitionException {
-        runTestFor("/reflex.rfx");
+        String ret = runTestFor("/reflex.rfx");
+        assertTrue("Test case did not complete successfully", ret.endsWith("true"));
     }
 
     @Test
     public void testMaps() throws RecognitionException {
-        runTestFor("/maps.rfx");
+        String ret = runTestFor("/maps.rfx");
+        assertTrue("Test case did not complete successfully", ret.endsWith("true"));
     }
 
     @Test
     public void testNative() throws RecognitionException {
-        runTestFor("/native.rfx");
+        String ret = runTestFor("/native.rfx");
+        assertTrue("Test case did not complete successfully", ret.endsWith("true"));
     }
 
     @Test
     public void testTypeOf() throws RecognitionException {
-        runTestFor("/typeof.rfx");
+        String ret = runTestFor("/typeof.rfx");
+        assertTrue("Test case did not complete successfully", ret.endsWith("true"));
     }
 
     @Test
     public void testConst() throws RecognitionException {
-        runTestFor("/const.rfx");
+        String ret = runTestFor("/const.rfx");
+        assertTrue("Test case did not complete successfully", ret.endsWith("true"));
     }
 
     @Test
     public void testDate() throws RecognitionException {
-        runTestFor("/date.rfx");
+        String ret = runTestFor("/date.rfx");
+        assertTrue("Test case did not complete successfully", ret.endsWith("true"));
     }
 
     @Test
     public void testNumbers() throws RecognitionException {
-        runTestFor("/numbers.rfx");
+        String ret = runTestFor("/numbers.rfx");
+        assertTrue("Test case did not complete successfully", ret.endsWith("true"));
     }
 
     @Test
     public void testContains() throws RecognitionException {
-        runTestFor("/contains.rfx");
+        String ret = runTestFor("/contains.rfx");
+        assertTrue("Test case did not complete successfully", ret.endsWith("true"));
     }
 }

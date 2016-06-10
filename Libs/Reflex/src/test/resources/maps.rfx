@@ -115,3 +115,4 @@ assert(size(keys(x)) == 2);
 remove(x, 'alan');
 assert(size(keys(x)) == 1);
 assert(x['alan'] == null);
+return true;

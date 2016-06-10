@@ -181,3 +181,4 @@ assert("expected number but was "+typeof(a_eng1), typeof(a_eng1) == 'number');
 assert("expected number but was "+typeof(a_eng2), typeof(a_eng2) == 'number');
 assert("expected number but was "+typeof(a_eng3), typeof(a_eng3) == 'number');
 assert("expected number but was "+typeof(a_eng4), typeof(a_eng4) == 'number');
+return true;
