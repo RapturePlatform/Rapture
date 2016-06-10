@@ -15,7 +15,7 @@
 			<package name="rapture.plugin" />
 			<package name="rapture.nightly.java" />
 			<package name="rapture.nightly.java.search" />
-			<package name="rapture.nightly.reflex" />
+			<package name="rapture.reflex" />
 		</packages>
 	</test>
 </suite> <!-- Suite -->
