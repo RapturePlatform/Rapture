@@ -1,0 +1,28 @@
+returnVal = false;
+
+
+//---------------test-----------------
+//--------relational operators--------
+//---Integers Positive an negative.---
+
+//--------------less than--------------
+println("\nTest less than operator.");
+answerLess = [];
+resultLess = [];
+
+for i = -50 to 40 do 
+	answerLess = answerLess + i;
+end
+
+for j = -50 to 50 do
+	if j < 41 do
+		resultLess = resultLess +j;
+	end
+end
+
+if resultLess == answerLess do 
+	returnVal = true;
+else do
+	returnVal = false;
+end
+assert(returnVal);

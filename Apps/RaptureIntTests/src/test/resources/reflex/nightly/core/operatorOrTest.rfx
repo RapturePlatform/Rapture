@@ -1,0 +1,33 @@
+//---------------test-----------------
+
+bools = [true, false];
+resultsAND = [];
+resultsOR=[];
+answersAND = [true,false,false,false];
+answersOR = [true,true,true,false];
+
+//------------EQUALS-------------
+
+
+
+
+//--------------OR--------------
+
+println('\nTest OR operator via truth table.');
+
+for i in bools do
+	for j in bools do
+	println("${i} || ${j} evaluates to " + (i || j));
+	resultsOR = resultsOR + (i || j);
+	end
+end
+
+if  resultsOR == answersOR do
+	println('results were as expected.');
+	returnVal = true;
+else do
+	println('results were not as expected.');
+	returnVal = false;
+end
+
+assert(returnVal);

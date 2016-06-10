@@ -1,0 +1,18 @@
+returnVal = false;
+
+
+//---------------test-----------------
+//--------relational operators--------
+//---Integers Positive an negative.---
+
+//------------greater than NEG-------------
+println("\nTest greater than negatively.");
+returnVal = true;
+
+for i = -50 to 50 do 
+	if i > 51 do
+		returnVal = false;
+	end
+end
+
+assert(returnVal);

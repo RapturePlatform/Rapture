@@ -1,0 +1,32 @@
+
+// --------------Equals-------------
+println("\nTest Equals operator on numbers using an array.");
+answerEquals= [];
+resultEquals= [];
+
+for i = -50 to 49 do
+answerEquals = answerEquals + i;
+end
+
+for a in answerEquals do
+	for b in answerEquals do 
+		if a == b do 
+			resultEquals=resultEquals+ a;
+		end
+	end
+end
+
+returnVal = true;
+
+for q = 0 to 99 do
+	if !((resultEquals[q] == answerEquals[q]) && (resultEquals[q]-answerEquals[q]==0)) do
+		returnVal = false;
+		println('fail');
+	end
+end
+
+if returnVal == true do 
+	println('pass');
+end
+
+assert(returnVal);
