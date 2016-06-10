@@ -1,4 +1,4 @@
-package rapture.httpapi.plugin;
+package rapture.plugin;
 
 import java.io.File;
 import java.io.IOException;

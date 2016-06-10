@@ -1,4 +1,4 @@
-package rapture.httpapi.blob;
+package rapture.blob;
 
 import java.io.File;
 import java.io.FileInputStream;

@@ -1,4 +1,4 @@
-package rapture.httpapi.document;
+package rapture.document;
 
 import rapture.common.client.HttpScriptApi;
 import rapture.common.model.DocumentMetadata;

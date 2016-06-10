@@ -1,4 +1,4 @@
-package rapture.httpapi.series;
+package rapture.series;
 
 import java.util.ArrayList;
 import java.util.HashMap;
