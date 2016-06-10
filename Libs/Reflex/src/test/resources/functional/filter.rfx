@@ -48,3 +48,4 @@ after = filter(filterMatrix, before);
 
 println("Before is " + before);
 println("After is " + after);
+return true;

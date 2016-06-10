@@ -40,4 +40,3 @@
         <appender-ref ref="stdout" />
     </root>
 </log4j:configuration>
-return true;

@@ -63,3 +63,4 @@ println("Matrix in which all even rows are added");
 println(matrix);
 println("Result is " + res);
 assert(res == 60);
+return true;
