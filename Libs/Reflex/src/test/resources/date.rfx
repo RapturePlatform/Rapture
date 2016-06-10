@@ -14,3 +14,4 @@ now = time("23:54:32");
 nowstr = dateformat(now, "hh-mm-ss aa");
 println(nowstr);
 assert("11-54-32 PM" == nowstr);
+return true;

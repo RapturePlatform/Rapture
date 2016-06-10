@@ -47,3 +47,4 @@ println(aString.toUpperCase());
 mapVal = { "Fred" : 44 };
 println(mapVal.get("Fred"));
 
+return true;

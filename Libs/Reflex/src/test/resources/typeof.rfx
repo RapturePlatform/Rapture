@@ -55,3 +55,4 @@ assert(typeof(println('hello')) == 'complex');
 
 assert(typeof(size([1,2,3])) == 'integer');
 
+return true;

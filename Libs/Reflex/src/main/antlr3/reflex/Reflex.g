@@ -568,7 +568,7 @@ func2
                                   -> ^(FUNC_CALL[$Template] Template $t $p)
   |  KernelIdentifier '(' exprList? ')'
                                   -> ^({token("KERNEL_CALL", KERNEL_CALL, $KernelIdentifier.getLine())} KernelIdentifier exprList?)
-  |  Identifier Contains expression -> ^(FUNC_CALL[$Contains] Identifier expression)
+  |  Identifier Contains expression -> ^(FUNC_CALL[$Contains] Contains Identifier expression)
   ;
 
 // MATCH allows expressions as case values
