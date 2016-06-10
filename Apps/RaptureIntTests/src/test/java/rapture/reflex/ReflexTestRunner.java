@@ -1,4 +1,4 @@
-package rapture.nightly.reflex;
+package rapture.reflex;
 
 import java.io.File;
 import java.io.IOException;
