@@ -1,0 +1,26 @@
+returnVal = false;
+
+//---------- test -----------
+//NUMBER LISTS
+
+// COMPLEX LIST 
+
+complexList = [-1, 'abc', true ];
+
+
+println ('Test removing from complex list');
+complexList = complexList - 'abc';
+if (complexList == [ -1, true ]) do
+	returnVal = true;
+else do
+	returnVal = false;
+end
+
+if (!('abc' in complexList)) do
+	returnVal = true;
+else do
+	returnVal = false;
+	
+end
+
+assert(returnVal);

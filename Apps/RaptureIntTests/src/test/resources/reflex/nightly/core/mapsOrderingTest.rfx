@@ -1,0 +1,36 @@
+returnVal = false;
+
+println ('Positive test for map ordering');
+myMap = {};
+myMap['order1'] = 1;
+myMap['order2'] = 2;
+myMap['order3'] = 3;
+myMap['order4'] = 4;
+myMap['order5'] = 5;
+myMap['order6'] = 6;
+myMap['order7'] = 7;
+myMap['order8'] = 8;
+myMap['order9'] = 9;
+myMap['order10'] = 10;
+
+//get keys
+mapKeys = keys(myMap);
+checkOrder = 1;
+
+testOrderPass=true;
+//check order
+for singleKey in mapKeys do
+	if (testOrderPass) do
+    	if (myMap[singleKey] != checkOrder) do
+    		testOrderPass=false;
+    	end
+    end
+    checkOrder += 1;
+end
+if (testOrderPass) do
+	returnVal = true;
+else do
+	returnVal = false;
+end
+
+assert(returnVal);

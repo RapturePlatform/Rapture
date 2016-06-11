@@ -1,0 +1,48 @@
+
+//-----------NOT AND Neg------------
+
+println('Compare NOT and AND neg');
+
+resultsNOTANDneg=[];
+bools = [true, false];
+
+
+for i in bools do
+	for j in bools do
+	
+		if (!i&&j)==(!(i&&j)) do
+			resultsNOTANDneg = resultsNOTANDneg + true;
+		else do
+			resultsNOTANDneg = resultsNOTANDneg + false;
+			println('failed for (!i&&j)==(!(i&&j))');
+		end
+	
+		
+		if (!i&&!j)==(!(i && j)) do					
+			resultsNOTANDneg = resultsNOTANDneg + true;
+		else do
+			resultsNOTANDneg = resultsNOTANDneg + false;
+			println('failed for (!i&&!j)==(!(i && j))');
+		end
+		
+		
+		if (i&&!j)==(!(i&&j)) do  				
+			resultsNOTANDneg = resultsNOTANDneg + true;
+		else do
+			resultsNOTANDneg = resultsNOTANDneg + false;
+			println('failed for (i&&!j)==(!(i&&j))');
+		end
+	end
+end
+
+
+returnVal = false;
+
+for i in resultsNOTANDneg do
+	if !i do
+		returnVal = true;
+	end
+end
+
+println('overall result: ' + returnVal);
+assert(returnVal);

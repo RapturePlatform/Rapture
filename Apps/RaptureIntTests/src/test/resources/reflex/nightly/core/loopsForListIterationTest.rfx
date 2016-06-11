@@ -1,0 +1,18 @@
+returnVal = false;
+
+//---------- test -----------
+
+
+println ('Test for loop iterating over a list');
+a = [1 ,2 ,3 ,4 ];
+b = [];
+// Verify that dir list is not null
+for c in a do
+	b = b + (c * 2);
+end
+if (b == [2 ,4 ,6 ,8]) do
+	returnVal = true;
+else do
+	returnVal = false;
+end
+assert(returnVal);

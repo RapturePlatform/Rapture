@@ -1,0 +1,28 @@
+
+
+//----------less than/equal to---------
+println("\nTest less than/equal to operator.");
+answerLess = [];
+resultLess = [];
+
+for i = -80 to 20 do 
+	answerLess = answerLess + i;
+end
+
+for j = -50 to 50 do
+	resultLess = resultLess +j;
+end
+
+println('resultLess: ' + resultLess);
+println('answerLess: ' + answerLess);
+
+for k = 0 to 100 do
+    if(answerLess[k] <= resultLess[k]) do
+        returnVal = true;
+    else do
+        returnVal = false;
+        return returnVal;
+    end
+end
+
+assert(returnVal);

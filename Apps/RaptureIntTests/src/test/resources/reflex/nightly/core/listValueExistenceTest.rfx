@@ -1,0 +1,30 @@
+returnVal = false;
+
+//---------- test -----------
+//NUMBER LISTS
+
+println ('Test adding to list of only numbers');
+emptyList = [];
+fullList = emptyList + 4;
+fullList = fullList + 1 + 2;
+
+println ('Test existence in list after add');
+if (4 in fullList) do
+	returnVal = true;
+else do
+	returnVal = false;
+end
+
+if (1 in fullList) do
+	returnVal = true;
+else do
+	returnVal = false;
+end
+
+if (!(5 in fullList)) do
+	returnVal = true;
+else do
+	returnVal = false;
+end
+
+assert(returnVal);

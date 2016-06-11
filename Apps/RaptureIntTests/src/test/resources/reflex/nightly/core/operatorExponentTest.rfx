@@ -1,0 +1,24 @@
+returnVal = true;
+
+//----------------test------------------
+//---------manipulation operators-------
+
+//--------------exponent----------------
+println('\n---Test exponent---');
+
+for base = 1 to 20 do
+	for i = 0 to 10 do
+		ans = 1;
+	
+		for j = 1 to i do 
+			ans= ans*base;
+		end
+	
+		if base^i != ans do 
+			returnVal = false;
+			println(base^i + '		'+ ans+ '		'+ base+'^'+i);
+		end
+	end
+end
+
+assert(returnVal);

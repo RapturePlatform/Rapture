@@ -1,0 +1,26 @@
+returnVal = false;
+
+//---------- test -----------
+//NUMBER LISTS
+ 
+// LIST OF NUMBER LISTS
+
+emptyList = [];
+fullList = emptyList + [1,0,0];
+
+println ('Test ordering to list');
+fullList = fullList + [0,1,0] + [0,0,1];
+
+if (fullList == [[1,0,0],[0,1,0],[0,0,1]]) do
+	returnVal = true;
+else do
+	returnVal = false;
+end
+
+if (fullList != [[0,1,0],[1,0,0],[0,0,1]]) do
+	returnVal = true;
+else do
+	returnVal = false;
+end
+
+assert(returnVal);

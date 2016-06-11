@@ -9,10 +9,13 @@
 		<packages>
 			<package name="rapture.api.checkout" />
 			<package name="rapture.api.document" />
-			<package name="rapture.httpapi.blob" />
-			<package name="rapture.httpapi.series" />
-			<package name="rapture.httpapi.document" />
-			<package name="rapture.httpapi.plugin" />
+			<package name="rapture.blob" />
+			<package name="rapture.series" />
+			<package name="rapture.document" />
+			<package name="rapture.plugin" />
+			<package name="rapture.nightly.java" />
+			<package name="rapture.nightly.java.search" />
+			<package name="rapture.reflex" />
 		</packages>
 	</test>
 </suite> <!-- Suite -->

@@ -1,4 +1,4 @@
-package rapture.nightly.reflex;
+package rapture.reflex;
 
 import java.io.File;
 import java.io.IOException;
@@ -77,9 +77,7 @@ public class ReflexTestRunner {
         } catch (Exception e) {
             Reporter.log(e.getMessage());
             Assert.fail("Failed running script: " + scriptName + " : " + e.getMessage());
-        } finally {
-            helper.cleanAllAssets();
-        }
+        } 
     }
 
     // Checks all non search scripts for syntax and then attempts to run
@@ -161,8 +159,6 @@ public class ReflexTestRunner {
 
     @AfterClass
     public void cleanUp() {
-        for (String scriptPath : scriptList) {
-            scriptApi.deleteScript(scriptPath);
-        }
+    	helper.cleanAllAssets();
     }
 }

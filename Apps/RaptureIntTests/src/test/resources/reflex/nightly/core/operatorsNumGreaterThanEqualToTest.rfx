@@ -1,0 +1,27 @@
+returnVal = false;
+//---------------test-----------------
+//--------relational operators--------
+//---Integers Positive an negative.---
+
+
+//---------greater than/equal to-------
+println("\nTest greater than/equal to operator.");
+answerGreatEqual = [];
+resultGreatEqual = [];
+
+for i = 42 to 50 do 
+	answerGreatEqual = answerGreatEqual + i;
+end
+
+for j = -50 to 50 do
+	if j >= 42 do
+		resultGreatEqual = resultGreatEqual +j;
+	end
+end
+
+if resultGreatEqual == answerGreatEqual do 
+	returnVal = true;
+else do
+	returnVal = false;
+end
+assert(returnVal);

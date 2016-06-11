@@ -1,0 +1,15 @@
+returnVal = false;
+
+
+nlist=[1,2,3,4,5];
+
+println ("test data outside array");
+try do
+	println(nlist[1000]);
+	returnVal = false;
+end
+catch e do
+	returnVal = true;
+end
+
+assert(returnVal);

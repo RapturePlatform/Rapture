@@ -1,0 +1,43 @@
+returnVal = false;
+
+//---------- test -----------
+
+
+//create 3 maps of size 1000 and merge them
+mergeMap1 = {};
+mergeMap2 = {};
+mergeMap3 = {};
+onlyOneDiff = {};
+halfDiff = {};
+
+for x = 1 to 1000 do 
+    mergeMap1['merge' + x] = x;
+    mergeMap2['merge' + x] = 100 + x;
+    mergeMap3['diff' + x] = 1000 + x;
+    
+    if x == 1000 do        
+        onlyOneDiff['onlyDiff' + x] = x;
+        halfDiff['halfdiff' + x] = x;
+    else if x > 500 do
+        halfDiff['halfdiff' + x] = x;
+        onlyOneDiff['merge' + x] = x;
+    else do
+        onlyOneDiff['merge' + x] = x;
+        halfDiff['merge' + x] = x; 
+    end 
+end
+
+// merge maps
+mergedMap = merge(mergeMap1, mergeMap2);
+mergedIfMap = merge(mergeMap1, mergeMap2);
+sameMerge = size(keys(mergedMap));
+sameIfMerge = size(keys(mergedIfMap));
+println ('Positive test for map merge size');
+
+if ((sameMerge == 1000) && (sameIfMerge == 1000)) do
+	returnVal = true;
+else do
+	returnVal = false;
+end
+
+assert(returnVal);
