@@ -59,7 +59,7 @@ public class PluginApiTest {
     	String description="Test workflow with docs";
         Reporter.log("Testing plugin: " + pluginName,true);
         //import the zip configuration
-        String zipAbsFilePath = System.getProperty("user.dir")+ File.separator+"bin"+File.separator+"plugin"+File.separator+"nightly"+File.separator+zipFileName;
+        String zipAbsFilePath = System.getProperty("user.dir")+ File.separator+"build"+File.separator+"resources"+File.separator+"test"+File.separator+"plugin"+File.separator+"nightly"+File.separator+zipFileName;
         
         Reporter.log("Reading in file from "+zipAbsFilePath,true);
         
@@ -144,7 +144,7 @@ public class PluginApiTest {
     public void testPluginWithWorkorder(String zipFileName, String pluginName, String expectedDescription, String workflowUri, String ctxString) throws IOException, NoSuchAlgorithmException, InterruptedException, SecurityException, NoSuchMethodException{
         Reporter.log("Testing plugin: " + pluginName,true);
         //import the zip configuration
-        String zipAbsFilePath = System.getProperty("user.dir")+ File.separator+"bin"+File.separator+"plugin"+File.separator+"nightly"+File.separator+zipFileName;
+        String zipAbsFilePath = System.getProperty("user.dir")+ File.separator+"build"+File.separator+"resources"+File.separator+"test"+File.separator+"plugin"+File.separator+"nightly"+File.separator+zipFileName;
         
         Reporter.log("Reading in file from "+zipAbsFilePath,true);
         
