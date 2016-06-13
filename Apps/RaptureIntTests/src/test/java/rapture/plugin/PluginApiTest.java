@@ -31,10 +31,10 @@ import rapture.common.client.HttpPluginApi;
 import rapture.common.client.SimpleCredentialsProvider;
 import rapture.common.exception.RaptureExceptionFactory;
 import rapture.common.impl.jackson.JacksonUtil;
+import rapture.helper.IntegrationTestHelper;
 import rapture.plugin.install.PluginContentReader;
 import rapture.plugin.install.PluginSandbox;
 import rapture.plugin.install.PluginSandboxItem;
-import rapture.nightly.IntegrationTestHelper;
 
 
 public class PluginApiTest {
