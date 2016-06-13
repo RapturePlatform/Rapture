@@ -1,0 +1,42 @@
+returnVal = false;
+
+// COMPLEX LIST 
+println ('Test existence in complex list');
+complexList = [-1, 'abc', true ];
+if ('abc' in complexList) do
+	returnVal = true;
+else do
+	returnVal = false;
+end
+
+if (complexList[1][2] == 'c') do
+	returnVal = true;
+else do
+	returnVal = false;
+end
+
+if (-1 in complexList) do
+	returnVal = true;
+else do
+	returnVal = false;
+end
+
+if (true in complexList) do
+	returnVal = true;
+else do
+	returnVal = false;
+end
+
+if (!('abce' in complexList)) do
+	returnVal = true;
+else do
+	returnVal = false;
+end
+
+if (!(complexList[1][2] == 'b')) do
+	returnVal = true;
+else do
+	returnVal = false;
+end
+
+assert(returnVal);

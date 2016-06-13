@@ -1,0 +1,28 @@
+
+MAX_VALUES=50;
+        
+pointKeys = [];
+pointValues = [];
+for i = 0 to MAX_VALUES do
+	pointKeys= pointKeys + i;
+	pointValues=pointValues + i;
+end
+
+newSeries=seriesRepoUri+'/addDoubles';
+#series.addDoublesToSeries(newSeries, pointKeys, pointValues);
+seriesList=#series.getPointsAsDoubles(newSeries);
+assert(seriesList.size() > 0);
+resultsKeys=[];
+resultsValues=[];
+for s in seriesList do 
+	resultsKeys = resultsKeys + s.getKey();
+	resultsValues = resultsValues + s.getValue();
+end  
+
+for k in pointKeys do
+	res=(resultsKeys contains k);
+end
+
+for k in pointValues do
+	res=(resultsValues contains k);
+end

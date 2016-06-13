@@ -1,0 +1,30 @@
+
+MAX_VALUES=50;
+firstHalfKeys = [];
+firstHalfValues = [];
+pointKeys = [];
+pointValues = [];
+for i = 0 to (MAX_VALUES/2) do
+	firstHalfKeys= firstHalfKeys + i;
+	firstHalfValues=firstHalfValues + i;
+	pointKeys= pointKeys + i;
+	pointValues=pointValues + i;
+end
+
+for i = ((MAX_VALUES/2)+1) to MAX_VALUES do
+	pointKeys= pointKeys + i;
+	pointValues=pointValues + i;
+end
+
+newSeries=seriesRepoUri+'/deleteByKey';
+#series.addDoublesToSeries(newSeries, pointKeys, pointValues);
+seriesList=#series.getPointsAsDoubles(newSeries);
+
+#series.deletePointsFromSeriesByPointKey(newSeries, firstHalfKeys);
+seriesList=#series.getPointsAsDoubles(newSeries);
+
+assert(seriesList.size() > 0);
+for s in seriesList do 
+	assert(cast(s.getKey(),"number")> (MAX_VALUES/2));
+end  
+

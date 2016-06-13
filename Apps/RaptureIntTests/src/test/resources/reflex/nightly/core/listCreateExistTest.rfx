@@ -1,0 +1,11 @@
+returnVal = false;
+
+println ('Test positive exist and create');
+nlist=[1,2,3,4,5];
+if (defined(nlist) == true) do
+	returnVal = true;
+else do 
+	returnVal = false;
+end
+
+assert(returnVal);

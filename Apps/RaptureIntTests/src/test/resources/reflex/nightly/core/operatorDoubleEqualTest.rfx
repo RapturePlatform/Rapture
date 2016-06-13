@@ -1,0 +1,14 @@
+returnVal=true;
+
+//------------EQUALS-------------
+
+println('\nTest Equals-operator on bools.');
+
+if  true==true && false == false do
+	println('true is true as expected.');
+	returnVal = true;
+else do
+	returnVal = false;
+	println('true not equal to true.');
+end
+assert(returnVal);

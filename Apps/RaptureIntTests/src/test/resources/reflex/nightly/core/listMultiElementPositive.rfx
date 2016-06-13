@@ -1,0 +1,15 @@
+returnVal = false;
+
+nlist=[1,2,3,4,5];
+
+
+println("test multi element list");
+try do
+	mlist=[1,2,3,"cat","dog",'bear'];
+	returnVal = true;
+end
+catch e do
+	returnVal = false;	
+end	
+
+assert(returnVal);

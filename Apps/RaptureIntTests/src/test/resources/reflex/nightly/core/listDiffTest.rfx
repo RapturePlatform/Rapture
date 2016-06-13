@@ -1,0 +1,13 @@
+returnVal = false;
+
+println("test list difference");
+a = [1,2,3];
+b = [3,4,5];
+c = difference(a, b);
+if(c==[1,2,4,5]) do 
+	returnVal = true;
+else do 
+	returnVal = false;
+end	
+
+assert(returnVal);
