@@ -29,6 +29,7 @@ task nightlyTests (type: Test) {
       useDefaultListeners = true
       jvmArgs '-Xmx2048m', '-XX:MaxPermSize=256m'
       includeGroups 'nightly'
+      excludeGroups 'nosearch'
 
       if(project.hasProperty('env')){
           ext.testngfile = "/src/test/resources/${env}_testng.xml"

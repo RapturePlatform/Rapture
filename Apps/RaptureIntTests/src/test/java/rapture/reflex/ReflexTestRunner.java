@@ -81,7 +81,7 @@ public class ReflexTestRunner {
     }
 
     // Checks all non search scripts for syntax and then attempts to run
-    @Test(groups = { "script", "nightly" }, dataProvider = "nonSearchScripts")
+    @Test(groups = { "script", "nightly","nosearch" }, dataProvider = "nonSearchScripts")
     public void runNonSearchScripts(String scriptName) {
         Assert.assertEquals(0, scriptApi.checkScript(scriptName).length(), "Found error in script " + scriptName);
         Reporter.log("Running script: " + scriptName, true);
