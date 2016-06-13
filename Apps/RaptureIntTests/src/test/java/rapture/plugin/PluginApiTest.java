@@ -26,9 +26,8 @@ import rapture.common.PluginConfig;
 import rapture.common.PluginTransportItem;
 import rapture.common.WorkOrderExecutionState;
 import rapture.common.client.HttpDecisionApi;
-import rapture.common.client.HttpLoginApi;
 import rapture.common.client.HttpPluginApi;
-import rapture.common.client.SimpleCredentialsProvider;
+import rapture.common.exception.ExceptionToString;
 import rapture.common.exception.RaptureExceptionFactory;
 import rapture.common.impl.jackson.JacksonUtil;
 import rapture.helper.IntegrationTestHelper;
@@ -67,12 +66,16 @@ public class PluginApiTest {
         ZipFile orgZipFile = null;
         try {
         	orgZipFile=	new ZipFile(zipAbsFilePath);
+            Assert.assertNotNull(orgZipFile, pluginName);
         } catch (Exception e) {
-        	Reporter.log("Got error reading zip file " +zipAbsFilePath, true);
+            Reporter.log("Got error reading zip file " + zipAbsFilePath, true);
+            Reporter.log(ExceptionToString.format(e), true);
+            Assert.fail("Got error reading zip file " + zipAbsFilePath);
         }
         
         PluginConfig pluginConfig = getPluginConfigFromZip(zipAbsFilePath);
-        
+        Assert.assertNotNull(pluginConfig, pluginName);
+
         //check plugin zip configuration
         Assert.assertEquals(pluginConfig.getPlugin(),pluginName);
         Assert.assertEquals(pluginConfig.getDescription(),description);
@@ -150,6 +153,7 @@ public class PluginApiTest {
         PluginConfig pluginConfig = getPluginConfigFromZip(zipAbsFilePath);
         
         //check plugin zip configuration
+        Assert.assertNotNull(pluginConfig, pluginName);
         Assert.assertEquals(pluginConfig.getPlugin(),pluginName);
         Assert.assertEquals(pluginConfig.getDescription(),expectedDescription);
 
@@ -255,7 +259,6 @@ public class PluginApiTest {
         //delete all plugins installed during test
     	for (String p :installedSet)
         	pluginApi.uninstallPlugin(p);
-        
     }
     
     
