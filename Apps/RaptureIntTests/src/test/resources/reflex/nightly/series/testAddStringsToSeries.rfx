@@ -20,9 +20,10 @@ for s in seriesList do
 end  
 
 for k in pointKeys do
-	res=(resultsKeys contains k);
+        res=(resultsKeys contains cast(k,"string"));
+        assert(res);
 end
 
 for k in pointValues do
-	res=(resultsValues contains k);
+        assert(res);
 end
