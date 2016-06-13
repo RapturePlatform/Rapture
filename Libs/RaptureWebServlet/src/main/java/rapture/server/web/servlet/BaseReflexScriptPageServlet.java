@@ -111,6 +111,7 @@ public abstract class BaseReflexScriptPageServlet extends BaseServlet {
                 idx = key.lastIndexOf("[");
             }
         }
+        
         process(script, parameterMap, req, resp);
     }
 
@@ -142,6 +143,7 @@ public abstract class BaseReflexScriptPageServlet extends BaseServlet {
             }
             parameterMap.put(key, val);
         }
+        
         process(script, parameterMap, req, resp);
     }
 
@@ -150,13 +152,16 @@ public abstract class BaseReflexScriptPageServlet extends BaseServlet {
     private static final Logger logger = Logger.getLogger(BaseReflexScriptPageServlet.class);
 
     void process(String script, Map<String, Object> parameterMap, HttpServletRequest req, HttpServletResponse resp) throws IOException {
-
         logger.debug("script is " + script);
-        logger.debug("parameterMap is " + parameterMap);
-
+        
+        Map<String, Object> respStatusMap = JacksonUtil.getHashFromObject(new ResponseStatus());        
         Map<String, Object> masterParameterMap = new HashMap<String, Object>();
+        
         masterParameterMap.put("web", parameterMap);
         masterParameterMap.put("SERVER", getRequestVariables(req));
+        masterParameterMap.put("status", respStatusMap);
+        logger.debug("parameterMap is " + parameterMap);
+        
         // Now run script
         ReflexScriptPageHandler handler = new ReflexScriptPageHandler();
         KernelScript kScript = new KernelScript();
@@ -171,8 +176,21 @@ public abstract class BaseReflexScriptPageServlet extends BaseServlet {
 
                 ReflexExecutor.runReflexProgram(script, handler, masterParameterMap);
                 resp.setCharacterEncoding("UTF-8");
-                resp.getWriter().append(handler.getOutput());
+                resp.getWriter().append(handler.getOutput()); 
                 resp.setContentType("text/plain");
+                
+                String statusContent = JacksonUtil.jsonFromObject(masterParameterMap.get("status"));
+                logger.debug("Status content is " + statusContent);
+                //ResponseStatus.statusCode is set by default to 200
+                ResponseStatus retStatus = JacksonUtil.objectFromJson(statusContent, ResponseStatus.class);
+                int statusCode = retStatus.getStatusCode();   
+                if (statusCode >= HttpStatus.SC_BAD_REQUEST) {
+                    resp.sendError(statusCode, retStatus.getMessage());
+                } else {
+                    resp.setStatus(retStatus.getStatusCode());
+                    resp.setHeader("x-rapture-responsemessage", retStatus.getMessage());
+                }
+                
             } else {
                 String err = "Cannot execute script " + script + " : cannot get session context for authorization";
                 logger.error(err);
