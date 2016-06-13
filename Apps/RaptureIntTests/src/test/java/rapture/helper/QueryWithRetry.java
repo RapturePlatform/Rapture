@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package rapture.nightly;
+package rapture.helper;
 
 import rapture.common.SearchResponse;
 

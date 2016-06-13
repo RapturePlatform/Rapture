@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package rapture.nightly.java;
+package rapture.entitlement;
 
 import static org.testng.AssertJUnit.assertFalse;
 import static org.testng.AssertJUnit.assertTrue;
@@ -47,7 +47,7 @@ import rapture.common.client.HttpUserApi;
 import rapture.common.impl.jackson.MD5Utils;
 import rapture.common.model.RaptureEntitlement;
 import rapture.common.model.RaptureEntitlementGroup;
-import rapture.nightly.IntegrationTestHelper;
+import rapture.helper.IntegrationTestHelper;
 
 public class EntitlementIntegrationTest {
 

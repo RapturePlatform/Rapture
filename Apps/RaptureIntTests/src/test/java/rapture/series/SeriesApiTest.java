@@ -20,7 +20,7 @@ import rapture.common.Scheme;
 import rapture.common.SeriesDouble;
 import rapture.common.SeriesString;
 import rapture.common.client.HttpSeriesApi;
-import rapture.nightly.IntegrationTestHelper;
+import rapture.helper.IntegrationTestHelper;
 
 public class SeriesApiTest {
     private HttpSeriesApi seriesApi=null;

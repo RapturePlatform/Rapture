@@ -27,7 +27,7 @@ import rapture.common.Scheme;
 import rapture.common.client.HttpAdminApi;
 import rapture.common.client.HttpScriptApi;
 import rapture.common.exception.ExceptionToString;
-import rapture.nightly.IntegrationTestHelper;
+import rapture.helper.IntegrationTestHelper;
 
 public class ReflexTestRunner {
     String raptureUrl = null;

@@ -7,14 +7,12 @@
 	<parameter name="RepoType" value="MONGODB" />
 	<test name="HttpSuite">
 		<packages>
-			<package name="rapture.api.checkout" />
-			<package name="rapture.api.document" />
 			<package name="rapture.blob" />
 			<package name="rapture.series" />
 			<package name="rapture.document" />
 			<package name="rapture.plugin" />
-			<package name="rapture.nightly.java" />
-			<package name="rapture.nightly.java.search" />
+			<package name="rapture.entitlement" />
+			<package name="rapture.search" />
 			<package name="rapture.reflex" />
 		</packages>
 	</test>
