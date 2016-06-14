@@ -23,10 +23,13 @@
  */
 package rapture.common.series;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import rapture.common.AbstractUpdateObject;
+import rapture.common.RaptureURI;
+import rapture.common.Scheme;
 
 /**
  * Used to update the search repository for new series updates
@@ -34,54 +37,43 @@ import java.util.Map;
  * @author dukenguyen
  *
  */
-public class SeriesUpdateObject {
+public class SeriesUpdateObject extends AbstractUpdateObject<Map<String, String>> {
 
-    private String uri;
-    private List<String> keys = new ArrayList<>();
-    private List<? extends Object> values = new ArrayList<>();
+    private Map<String, String> payload;
 
     public SeriesUpdateObject() {
     }
 
+    public SeriesUpdateObject(RaptureURI uri) {
+        super(uri);
+        assert (uri.getScheme() == Scheme.SERIES);
+    }
+
     public SeriesUpdateObject(String uri) {
-        this.uri = uri;
+        super(new RaptureURI(uri, Scheme.SERIES));
     }
 
     public SeriesUpdateObject(String uri, List<String> keys, List<? extends Object> values) {
-        this.uri = uri;
-        this.keys = keys;
-        this.values = values;
-    }
-
-    public String getUri() {
-        return uri;
-    }
-
-    public void setUri(String uri) {
-        this.uri = uri;
-    }
-
-    public List<String> getKeys() {
-        return keys;
-    }
-
-    public void setKeys(List<String> keys) {
-        this.keys = keys;
-    }
-
-    public List<? extends Object> getValues() {
-        return values;
-    }
-
-    public void setValues(List<? extends Object> values) {
-        this.values = values;
-    }
-
-    public Map<String, Object> asMap() {
-        Map<String, Object> ret = new HashMap<>();
+        super(new RaptureURI(uri, Scheme.SERIES));
+        Map<String, String> ret = new HashMap<>();
         for (int i = 0; i < keys.size(); i++) {
-            ret.put(keys.get(i), values.get(i));
+            Object value = values.get(i);
+            ret.put(keys.get(i), (value == null) ? null : values.get(i).toString());
         }
-        return ret;
+        this.setPayload(ret);
+    }
+
+    public Map<String, String> asStringMap() {
+        return getPayload();
+    }
+
+    @Override
+    public Map<String, String> getPayload() {
+        return payload;
+    }
+
+    @Override
+    public void setPayload(Map<String, String> payload) {
+        this.payload = payload;
     }
 }

@@ -40,6 +40,8 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import com.google.common.net.MediaType;
+
 import rapture.common.BlobContainer;
 import rapture.common.CallingContext;
 import rapture.common.Messages;
@@ -50,8 +52,6 @@ import rapture.common.Scheme;
 import rapture.common.exception.RaptureException;
 import rapture.common.impl.jackson.JacksonUtil;
 import rapture.common.model.BlobRepoConfig;
-
-import com.google.common.net.MediaType;
 
 public class BlobApiFileTest extends AbstractFileTest {
 
@@ -168,7 +168,6 @@ public class BlobApiFileTest extends AbstractFileTest {
             BlobContainer blob = blobImpl.getBlob(callingContext, dummyURI);
             fail("You can't create a repo without a prefix");
         } catch (Exception e) {
-            e.printStackTrace();
             assertTrue(e.getMessage(), e.getMessage().contains("prefix"));
         }
 
@@ -268,5 +267,46 @@ public class BlobApiFileTest extends AbstractFileTest {
         testPutAndGetBlob();
         Long blobSize = blobImpl.getBlobSize(callingContext, blobURI);
         assertEquals(14L, blobSize.longValue());
+    }
+    
+    // deleteBlobsByUriPrefix called on a non-existent blob deletes all existing blobs in folder
+    @Test
+    public void testRap3945() {
+        testCreateAndGetRepo();
+        String blobURI1 = blobAuthorityURI + "/PacMan/Inky";
+        String blobURI2 = blobAuthorityURI + "/PacMan/Pinky";
+        String blobURI3 = blobAuthorityURI + "/PacMan/Blnky";
+        String blobURI4 = blobAuthorityURI + "/PacMan/Clyde";
+        String blobURI5 = blobAuthorityURI + "/PacMan/Sue";
+
+        blobImpl.putBlob(callingContext, blobURI1, SAMPLE_BLOB, MediaType.CSS_UTF_8.toString());
+        blobImpl.putBlob(callingContext, blobURI2, SAMPLE_BLOB, MediaType.CSS_UTF_8.toString());
+        blobImpl.putBlob(callingContext, blobURI3, SAMPLE_BLOB, MediaType.CSS_UTF_8.toString());
+        blobImpl.putBlob(callingContext, blobURI4, SAMPLE_BLOB, MediaType.CSS_UTF_8.toString());
+        
+        BlobContainer blob;
+        
+        blob = blobImpl.getBlob(callingContext, blobURI1);
+        assertNotNull(blob);
+        assertNotNull(blob.getContent());
+        assertArrayEquals(SAMPLE_BLOB, blob.getContent());
+        
+        blob = blobImpl.getBlob(callingContext, blobURI4);
+        assertNotNull(blob);
+        assertNotNull(blob.getContent());
+        assertArrayEquals(SAMPLE_BLOB, blob.getContent());
+        
+        assertNull(blobImpl.getBlob(callingContext, blobURI5));
+                
+        try {
+            blobImpl.deleteBlobsByUriPrefix(callingContext, blobURI5);
+            // SHOULD FAIL OR DO NOTHING
+        } catch (Exception e) {
+            assertEquals("Folder " + blobURI5 + " does not exist", e.getMessage());
+        }
+        blob = blobImpl.getBlob(callingContext, blobURI1);
+        assertNotNull(blob);
+        assertNotNull(blob.getContent());
+        assertArrayEquals(SAMPLE_BLOB, blob.getContent());        
     }
 }

@@ -3,8 +3,9 @@
 {
   ./gradlew test
 } || {
-  cat RaptureCore/build/reports/tests/index.html
-  cat RaptureCore/build/reports/tests/classes/rapture.dp.NestedSplitStepTest.html
-  cat RaptureCore/build/reports/tests/classes/rapture.dp.SimpleForkStepTest.html
-  cat RaptureCore/build/reports/tests/classes/rapture.dp.MemoryIndexHandlerTest.html
+  (echo Directory is `pwd`;
+  find .. -name reports;
+  tar cf /tmp/reports.tar `find * -name reports`;
+  uuencode /tmp/reports.tar 
+  echo "======";)
 }

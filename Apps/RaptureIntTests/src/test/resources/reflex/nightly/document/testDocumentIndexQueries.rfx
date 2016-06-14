@@ -1,0 +1,32 @@
+INDEXCFG = 'tokenField(token) string, tsField(timestamp) string, keyField(key) string';
+testIndex = #index.createIndex(docRepoUri, INDEXCFG);
+
+doc1 = '{"token":"token1","timestamp":"ts1","key":"data1"}';
+#doc.putDoc(docRepoUri+ '/doc1',doc1);
+
+doc2 = '{"token":"token2","timestamp":"ts2","key":"data2"}';
+#doc.putDoc(docRepoUri+ '/doc2',doc2);
+
+doc3 = '{"token":"token2","timestamp":"ts2","key":"data3"}';
+#doc.putDoc(docRepoUri+ '/doc3',doc3);
+
+query1 = 'SELECT keyField WHERE tokenField="token1"';
+query2 = 'SELECT tsField WHERE tokenField="token2"';
+query3 = 'SELECT tokenField,tsField,keyField WHERE tokenField="token2"';
+query4 = 'SELECT keyField WHERE tokenField="token2" AND tsField="ts2"';
+
+res1 = #index.findIndex(docRepoUri,query1);
+assert(res1['columnNames']==['keyField']);
+assert(res1['rows']==[['data1']]);
+
+res2 = #index.findIndex(docRepoUri,query2);
+assert(res2['columnNames']==['tsField']);
+assert(res2['rows']==[['ts2'], ['ts2']]);
+
+res3 = #index.findIndex(docRepoUri,query3);
+assert(res3['columnNames']==['tokenField', 'tsField', 'keyField']);
+assert(res3['rows']==[['token2','ts2','data3'], ['token2','ts2','data2']]);
+
+res4 = #index.findIndex(docRepoUri,query4);
+assert(res4['columnNames']==['keyField']);
+assert(res4['rows']==[['data3'], ['data2']]);

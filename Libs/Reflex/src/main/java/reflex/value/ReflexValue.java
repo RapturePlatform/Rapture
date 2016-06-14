@@ -24,7 +24,6 @@
 package reflex.value;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.math.MathContext;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,11 +43,12 @@ public class ReflexValue implements Comparable<ReflexValue> {
     String NOTNULL = "Argument to ReflexValue cannot be null. Use ReflexNullValue";
 
     public enum Internal {
-        NULL,
-        VOID,
-        BREAK,
-        CONTINUE,
-        SUSPEND
+        NULL, VOID, BREAK, CONTINUE, SUSPEND, UNDEFINED;
+        
+        @Override
+        public String toString() {
+            return "__reserved__" + this.name();
+        }
     }
 
     public Object getValue() {
@@ -80,7 +80,7 @@ public class ReflexValue implements Comparable<ReflexValue> {
             valueType = ReflexValueType.INTERNAL;
         } else if (value instanceof String) {
             valueType = ReflexValueType.STRING;
-        } else if ((value instanceof Integer) || (value instanceof Long) || (value instanceof BigInteger)) {
+        } else if (value instanceof Integer) {
             valueType = ReflexValueType.INTEGER;
         } else if (value instanceof Number) {
             valueType = ReflexValueType.NUMBER;
@@ -485,13 +485,17 @@ public class ReflexValue implements Comparable<ReflexValue> {
         if (this.getValue() == Internal.VOID) {
             throw new ReflexException(-1, "can't use VOID: " + this + " ==/!= " + o);
         }
-        if (this == o) {
+        if (o == null) return false;
+        if (this == o) return true;
+
+        ReflexValue that = (o instanceof ReflexValue) ? (ReflexValue) o : new ReflexValue(o);
+
+        // NULL and UNDEFINED are considered equivalent most of the time
+        if (((this.getValue() == Internal.NULL) || (this.getValue() == Internal.UNDEFINED))
+                && ((that.getValue() == Internal.NULL) || (that.getValue() == Internal.UNDEFINED))) {
             return true;
         }
-        if (o == null || !(o instanceof ReflexValue)) {
-            return false;
-        }
-        ReflexValue that = (ReflexValue) o;
+
         if (this.isInteger() && that.isInteger()) {
             return this.asLong().equals(that.asLong());
         } else if (this.isNumber() && that.isNumber()) {

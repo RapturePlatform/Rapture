@@ -153,6 +153,7 @@ typeExpr
         AddressableAnnotation addressable;
         StorableAnnotation storable;
         SearchableAnnotation searchable;
+        FTSAnnotation fts;
         ExtendsAnnotation extend;
         DeprecatedAnnotation deprecated;
         List<IndexedAnnotation> indices;
@@ -176,6 +177,9 @@ typeExpr
         |   extendsAnnotation {
                 $typeExpr::extend = $extendsAnnotation.result;
             }
+        |   ftsAnnotation {
+        		$typeExpr::fts = $ftsAnnotation.result;
+        	}
         |   deprecatedAnnotation {
                 $typeExpr::deprecated = $deprecatedAnnotation.result;
             }
@@ -191,7 +195,7 @@ typeExpr
         )*
         name=ID typeAspect typeFields) {
             // Record the type for later use, also build class for it
-            addType($name.text, $typeAspect.name, $typeExpr::bean, $typeExpr::cacheable, $typeExpr::addressable, $typeExpr::storable, $typeExpr::searchable, $typeExpr::extend, $typeExpr::deprecated, $typeExpr::indices, sdkName, $typeFields.fieldNameToType,
+            addType($name.text, $typeAspect.name, $typeExpr::bean, $typeExpr::cacheable, $typeExpr::addressable, $typeExpr::storable, $typeExpr::searchable, $typeExpr::fts, $typeExpr::extend, $typeExpr::deprecated, $typeExpr::indices, sdkName, $typeFields.fieldNameToType,
                 $typeFields.beans, $typeFields.constructors);
     };
 

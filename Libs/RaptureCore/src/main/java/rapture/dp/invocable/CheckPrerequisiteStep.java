@@ -37,8 +37,8 @@ import org.joda.time.format.DateTimeFormat;
 import rapture.common.CallingContext;
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
-import rapture.common.USCalendar;
 import rapture.common.SeriesPoint;
+import rapture.common.USCalendar;
 import rapture.common.dp.AbstractInvocable;
 import rapture.common.exception.RaptureExceptionFactory;
 import rapture.common.impl.jackson.JacksonUtil;
@@ -50,8 +50,8 @@ public class CheckPrerequisiteStep extends AbstractInvocable {
     private static final Logger log = Logger.getLogger(CheckPrerequisiteStep.class);
     private Set<String> isDataReady;
 
-    public CheckPrerequisiteStep(String workerURI) {
-        super(workerURI);
+    public CheckPrerequisiteStep(String workerURI, String stepName) {
+        super(workerURI, stepName);
         isDataReady = new HashSet<String>();
     }
 
@@ -116,7 +116,7 @@ public class CheckPrerequisiteStep extends AbstractInvocable {
             if ((specificDate != null) && specificDate.startsWith("$")) {
                 specificDate = Kernel.getDecision().getContextValue(ctx, getWorkerURI(), specificDate.substring(1));
             }
-                    
+
             // For series we look for a data point with the valid date
             if (ruri.getScheme().equals(Scheme.SERIES)) {
                 if (specificDate != null) log.warn("specificDate not supported for series data");
@@ -124,7 +124,7 @@ public class CheckPrerequisiteStep extends AbstractInvocable {
 
                 if (!isDataReady.contains(uri)) {
                     if (!Kernel.getSeries().seriesExists(ctx, uri)) {
-                        log.debug("Series not found "+uri);
+                        log.debug("Series not found " + uri);
                         return false;
                     }
                     SeriesPoint lastDataPoint = Kernel.getSeries().getLastPoint(ctx, uri);
@@ -142,8 +142,9 @@ public class CheckPrerequisiteStep extends AbstractInvocable {
                 }
             } else {
                 // For types other than series we simply check for the existence of the blob/doc/sheet etc.
-                
-                DateTime start = (specificDate != null) ? DateTime.parse(specificDate, DateTimeFormat.forPattern(keyFormat)) : DateTime.now().withTimeAtStartOfDay();
+
+                DateTime start = (specificDate != null) ? DateTime.parse(specificDate, DateTimeFormat.forPattern(keyFormat))
+                        : DateTime.now().withTimeAtStartOfDay();
                 DateTime acceptableTime = getDateTime(start, requiredData.getDateWithin(), requiredData.getTimeNoEarlierThan());
 
                 DateTime lastDataPointTime = (specificDate == null) ? new DateTime() : acceptableTime;
@@ -160,15 +161,15 @@ public class CheckPrerequisiteStep extends AbstractInvocable {
                     boolean uriExists = false;
                     // There is no generic exists method.
                     switch (ruri.getScheme()) {
-                        case BLOB:
-                            uriExists = Kernel.getBlob().blobExists(ctx, datedUri);
-                            break;
-                        case DOCUMENT:
-                            uriExists = Kernel.getDoc().docExists(ctx, datedUri);
-                            break;
-                        default:
-                            log.warn("Unexpected URI type : " + uri);
-                            return false;
+                    case BLOB:
+                        uriExists = Kernel.getBlob().blobExists(ctx, datedUri);
+                        break;
+                    case DOCUMENT:
+                        uriExists = Kernel.getDoc().docExists(ctx, datedUri);
+                        break;
+                    default:
+                        log.warn("Unexpected URI type : " + uri);
+                        return false;
                     }
                     if (uriExists) {
                         if (log.isDebugEnabled()) log.debug(datedUri.toString() + " found");
@@ -222,23 +223,23 @@ public class CheckPrerequisiteStep extends AbstractInvocable {
             int number = Integer.valueOf(dateWithin.substring(0, dateWithin.length() - 1));
             char dateUnit = dateWithin.charAt(dateWithin.length() - 1);
             switch (dateUnit) {
-                case 'M':
-                    dateTime = dateTime.minusMonths(number);
-                    break;
-                case 'W':
-                    dateTime = dateTime.minusWeeks(number);
-                    break;
-                case 'D':
-                    dateTime = dateTime.minusDays(number);
-                    break;
-                case 'H':
-                    dateTime = dateTime.minusHours(number);
-                    break;
-                case 'B':
-                    dateTime = USCalendar.minusBusinessDays(dateTime, number);
-                    break;
-                default:
-                    throw RaptureExceptionFactory.create("Invalid date unit " + dateUnit);
+            case 'M':
+                dateTime = dateTime.minusMonths(number);
+                break;
+            case 'W':
+                dateTime = dateTime.minusWeeks(number);
+                break;
+            case 'D':
+                dateTime = dateTime.minusDays(number);
+                break;
+            case 'H':
+                dateTime = dateTime.minusHours(number);
+                break;
+            case 'B':
+                dateTime = USCalendar.minusBusinessDays(dateTime, number);
+                break;
+            default:
+                throw RaptureExceptionFactory.create("Invalid date unit " + dateUnit);
             }
         }
         return dateTime;

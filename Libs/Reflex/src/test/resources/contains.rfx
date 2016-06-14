@@ -1,0 +1,20 @@
+x = [];
+x = x + 1;
+x = x + 'a';
+A='a';
+print (x contains 'a');
+print (x contains "a");
+print (x contains "${A}");
+print (! x contains 'b');
+print (x contains 1);
+print (! x contains 2);
+print (! x contains '1');
+
+assert (x contains 'a');
+assert (x contains "a");
+assert (x contains "${A}");
+assert (! x contains 'b');
+assert (x contains 1);
+assert (! x contains 2); 
+assert (! x contains '1');
+return true;

@@ -1,0 +1,79 @@
+epl = seriesRepoUri + "/English/Premier";
+cl = seriesRepoUri + "/English/Championship";
+
+premier = "1,Leicester City,36,30,77\n2,Tottenham Hotspur,36,39,70\n3,Arsenal,36,25,67\n4,Manchester City,36,30,64\n5,Manchester Utd,35,12,60\n"
++ "6,West Ham Utd,35,17,59\n7,Southampton,36,14,57\n8,Liverpool,35,11,55\n9,Chelsea,35,7,48\n10,Stoke City,36,-14,48\n"
++ "11,Everton,35,6,44\n12,Watford,35,-6,44\n13,Swansea City,36,-13,43\n14,West Bromwich Albion,36,-14,41\n15,Bournemouth,36,-20,41\n1"
++ "6,Crystal Palace,36,-10,39\n17,Newcastle Utd,36,-25,33\n18,Sunder"+"land,35,-18,32\n19,Norwich City,35,-26,31\n20,Aston Villa,36,-45,16";
+
+championship = "1,Burnley,45,34,90\n2,Middlesbrough,45,32,88\n3,Brighton & Hove Albion,45,30,88\n4,Hull City,45,30,80\n"
++ "5,Derby County,45,24,78\n6,Sheffield Wednesday,45,22,74\n7,Cardiff City,45,5,67\n8,Ipswich Town,45,1,66\n9,Birmingham City,45,4,62\n"
++ "10,Brentford,45,1,62\n11,Preston North End,45,0,61\n12,Leeds Utd,45,-8,58\n13,Queens Park Rangers,45,-1,57\n14,Wolverhampton Wanderers,45,-6,55\n"
++ "15,Blackburn Rovers,45,-2,52\n16,Reading,45,-5,52\n17,Nottingham Forest,45,-5,52\n18,Bristol City,45,-16,52\n19,Huddersfield Town,45,-7,51\n"
++ "20,Rotherham Utd,45,-14,49\n21,Fulham,45,-14,48\n22,Charlton Athletic,45,-37,40\n23,Milton Keynes Dons,45,-29,39\n24,Bolton Wanderers,45,-39,30";
+
+premierArr = split(premier,"\n", false);
+champArr = split(championship,"\n", false);
+ 
+premKeys = [];
+premVals = [];
+
+// Create series using different API calls - AddStringToSeries and AddStringsToSeries
+// (Can add others)
+
+for prem in premierArr do
+   line = split(prem, ",", false);
+   premKeys = premKeys + line[1];
+   premVals = premVals + line[4];
+end
+
+#series.addStringsToSeries(epl, premKeys, premVals);
+
+for champ in champArr do
+   line = split(champ, ",", false);
+   #series.addStringToSeries(cl, line[1], line[4]);
+end
+
+sleep(1000); // lame - wait for ES
+
+// Test simple search
+
+query="Watford:*";
+srch = #search.search(query);
+assert("Expected one match for "+query+" but got "+srch, (srch.total == 1));
+srch = "";
+
+// Test repo: search
+
+parts = split(seriesRepoUri, "/", true);
+query = "repo:"+parts[2];
+srch = #search.search(query);
+assert("Expected 2 matches for "+query+" but got "+srch, (srch.total == 2));
+srch = "";
+
+// Test URI search
+query = "scheme:series AND parts:Eng*";
+srch = #search.search(query);
+assert("Expected 2 matches for "+query+" but got "+srch, (srch.total == 2));
+srch = "";
+
+deleteKeys = [];
+for i = 6 to 12 do
+   deleteKeys = deleteKeys + premKeys[i];
+end
+
+// Test search works after DeletePointsFromSeriesByPointKey
+#series.deletePointsFromSeriesByPointKey(epl, deleteKeys);
+sleep(1000);
+query="Watford:*";
+srch = #search.search(query);
+assert("Expected no match for "+query+" but got "+srch, (srch.total == 0));
+
+// Test search works after DeleteSeriesRepo
+#series.deleteSeriesRepo(seriesRepoUri);
+sleep(1000);
+
+query="Watford:*";
+srch = #search.search(query);
+assert("Expected no match for "+query+" but got "+srch, (srch.total == 0));
+srch = "";

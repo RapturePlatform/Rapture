@@ -22,12 +22,12 @@ langs.each { lang ->
         language = lang
         mainApiFile = "api/rapt.api"
         apiDestDir = file("../../API/")
+        codeSamplesJava = file("../../RaptureCore/src/test/java")
     }
 }
 
 task genJava (type: GenApi, group: taskGroup) {
     language = "Java"
-    codeSamplesJava = file("../../RaptureCore/src/test/java")
     apiDestDir = file('../../RaptureAPI')
     kernelDestDir = file('../../RaptureCore')
     mainApiFile = "api/rapt.api"
@@ -75,9 +75,9 @@ project.tasks.create(name: 'genCurtisDoc',  type: JavaExec, group: taskGroup) {
             '-l',
             'CurtisDoc',
             '-o',
-            "../../../RaptureSamples/Curtis/CurtisApiDoc/src/main/resources/FEATURE/content/curtis.api",
+            "../../../../RaptureSamples/Curtis/CurtisApiDoc/src/main/resources/FEATURE/content/curtis.api",
             '-a',
-            "../../../RaptureSamples/Curtis/CurtisApiDoc/src/main/resources/FEATURE/content/curtis.api",
+            "../../../../RaptureSamples/Curtis/CurtisApiDoc/src/main/resources/FEATURE/content/curtis.api",
             '-g',
             "API",
     ]
@@ -163,5 +163,40 @@ public class GenApi extends DefaultTask {
 
     String getGenType() {
         return 'API';
+    }
+}
+
+def slateRelPath = "$projectDir/SlatePublish"
+def slateBuildRelPath = "$buildDir/SlatePublish"
+def apiDir = '../../API'
+
+task copySlateToBuildDir(type: Copy, dependsOn: genAll) {
+   from slateRelPath 
+   into slateBuildRelPath 
+}
+
+task getMarkdown(type: Copy, dependsOn: copySlateToBuildDir) {
+   from "$apiDir/SlateMd"
+   into "$slateBuildRelPath/source"
+}
+
+task setupSlate(type: Exec, dependsOn: getMarkdown)  {
+   workingDir "$slateBuildRelPath"
+   commandLine "bundle", "install"
+}
+
+task genSlate(type: Exec, dependsOn: setupSlate, group: 'Documentation', description: 'Generate Slate documentation')  {
+    workingDir "$slateBuildRelPath"
+    commandLine "bundle", "exec", "middleman", "build", "--no-clean"
+}
+
+// Requires bundler and middleman ruby gems installed
+// sudo gem install bundler
+// sudo gem install middeleman
+task publishSlate(dependsOn: genSlate, description: 'Generate Slate documentation', group: taskGroup)  << {
+    mkdir("$apiDir/Slate")
+    copy {
+        from "$slateBuildRelPath/build"
+        into "$apiDir/Slate"
     }
 }

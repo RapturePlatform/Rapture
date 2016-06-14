@@ -47,6 +47,9 @@ import reflex.value.ReflexValue;
     this.namespaceStack = namespaceStack;
   }
 
+  public int countSyntaxErrors() {
+    return state.syntaxErrors;
+  }
 
   public void setReflexHandler(IReflexHandler handler) {
   	this.handler = handler;
@@ -245,7 +248,7 @@ importStatement returns [ReflexNode node]
     CommonTree ahead = (CommonTree) input.LT(1);
     int line = ahead.getToken().getLine();
 }
-  : ^(IMPORT l=Identifier ^(IMPORTAS alias=Identifier?) ^(IMPORTPARAMS params=exprList?)) { node = new ImportNode(line, handler, currentScope, importHandler, $l.text, $alias.text, $exprList.e); }
+  : ^(IMPORT l=Identifier ^(IMPORTAS alias=Identifier?) ^(IMPORTPARAMS params=exprList?) ^(IMPORTFROM jarUris=jarUriList?)) { node = new ImportNode(line, handler, currentScope, importHandler, $l.text, $alias.text, $exprList.e, $jarUris.jarUris); }
   ;
 
 port returns [ReflexNode node]
@@ -305,6 +308,7 @@ throwStatement returns [ReflexNode node]
      { node = new ThrowNode(line, handler, currentScope, $e.node); }
   ;
 
+
 functionCall returns [ReflexNode node]
 @init {
     CommonTree ahead = (CommonTree) input.LT(1);
@@ -357,6 +361,7 @@ functionCall returns [ReflexNode node]
   |  ^(FUNC_CALL Timer expression?) { node = new TimerNode(line, handler, currentScope, $expression.node); }
   |  ^(FUNC_CALL Merge exprList) { node = new MergeNode(line, handler, currentScope, $exprList.e); }
   |  ^(FUNC_CALL Format exprList) { node = new FormatNode(line, handler, currentScope, $exprList.e); }
+  |  ^(FUNC_CALL DateFormat date=expression format=expression?) { node = new DateFormatNode(line, handler, currentScope, $date.node, $format.node); }
   |  ^(FUNC_CALL MergeIf exprList) { node = new MergeIfNode(line, handler, currentScope, $exprList.e); }
   |  ^(FUNC_CALL Replace v=expression s=expression t=expression) { node = new ReplaceNode(line, handler, currentScope, $v.node, $s.node, $t.node); }
   |  ^(FUNC_CALL Message a=expression m=expression) { node = new MessageNode(line, handler, currentScope, $a.node, $m.node); }
@@ -393,6 +398,8 @@ functionCall returns [ReflexNode node]
   |  ^(FUNC_CALL Template t=expression p=expression) { node = new TemplateNode(line, handler, currentScope, $t.node, $p.node); }
   |  ^(FUNC_CALL Spawn p=expression (e=expression f=expression)?) { node = new SpawnNode(line, handler, currentScope, $p.node, $e.node, $f.node); }
   |  ^(FUNC_CALL Defined Identifier) { node = new DefinedNode(line, handler, currentScope, $Identifier.text, namespaceStack.asPrefix()) ; }
+  |  ^(FUNC_CALL Defined lookup) { node = new DefinedNode(line, handler, currentScope, $lookup.node, namespaceStack.asPrefix()) ; }
+  |  ^(FUNC_CALL Contains i=Identifier e=expression) { node = new ContainsNode(line, handler, currentScope, $i.text, $e.node, namespaceStack.asPrefix()); }
   |  ^(KERNEL_CALL KernelIdentifier exprList?) { node = new KernelCallNode(line, handler, currentScope, $KernelIdentifier.text, $exprList.e); }
   |  ^(QUALIFIED_FUNC_CALL DottedIdentifier exprList?) { node = new QualifiedFuncCallNode(line, handler, currentScope, $DottedIdentifier.text,
                                                                       $exprList.e, languageRegistry, importHandler, namespaceStack.asPrefix()); }
@@ -518,6 +525,17 @@ mapdef returns [ReflexNode node]
     int line = ahead.getToken().getLine();
 }
   : ^(MAPDEF keyValList?) { node = new MapNode(line, handler,currentScope,  $keyValList.e); }
+  ;
+
+jarUriList returns [java.util.List<String> jarUris]
+@init {
+   jarUris = new java.util.ArrayList<String>();
+}
+  :  ^(JARURI_LIST (jarUri { jarUris.add($jarUri.uri); })+)
+  ;
+
+jarUri returns [String uri]
+  :  ^(JARURI (j=String | j=QuotedString)) { $uri = $j.text; }
   ;
 
 keyValList returns [java.util.List<ReflexNode> e]

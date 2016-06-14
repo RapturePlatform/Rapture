@@ -27,6 +27,7 @@ type ConnectionInfo(@package=rapture.common) {
 [Defines a BlobRepository.]
 @Addressable(scheme = BLOB(true))
 @Storable(storagePath : {authority}, prefix="blobConf")
+@Searchable
 type BlobRepoConfig(@package=rapture.common.model) {
   String description;
   String config;
@@ -91,6 +92,7 @@ type DocWriteHandle(@package=rapture.common.model) {
 @Addressable(scheme = SCRIPT(false))
 @Storable(storagePath : {authority, name}, prefix="script")
 @Cacheable
+@FTS
 type RaptureScript (@package=rapture.common) {
    String name;
    String script;
@@ -128,6 +130,7 @@ type ReflexREPLSession(@package=rapture.common) {
 	List(String) functionDecls = null;
 	Date lastSeen;
 }
+
 
 [One of the scripting languages compatible with Rapture.]
 type RaptureScriptLanguage (@package=rapture.common) {
@@ -205,12 +208,6 @@ type RaptureTableConfig(@package=rapture.common) {
    String authority;
 }
 
-[Searches performed by any API calls are stored in this type.]
-type RaptureSearchResult(@package=rapture.common) {
-   String displayName;
-}
-
-
 [Holds the config info for a repository.]
 @Storable(storagePath : {"sys", name}, separator=".", prefix="repo/config", repoName=BOOTSTRAP_REPO)
 type RepoConfig (@package=rapture.common.model) {
@@ -255,6 +252,7 @@ type DocumentRepoConfig(@package=rapture.common.model) {
     Set<FullTextIndexScriptPair> fullTextIndexes = new HashSet<FullTextIndexScriptPair>();
     String updateQueue;
     RaptureDocConfig documentRepo;
+    Boolean deleted = false;
 }
 
 [Describes config info for a full text search repository.]
@@ -292,6 +290,16 @@ type RaptureUser(@package=rapture.common.model) {
     Long tokenExpirationTime;
     String registrationToken;
     Boolean verified = true;
+    List<String> apiKeys = new ArrayList<String>();
+}
+
+[An api key / app key as an alternative to logging in]
+@Storable(storagePath: { appKey, apiKey }, prefix="apikey", repoName=SETTINGS_REPO)
+@Cacheable
+type APIKeyDefinition(@package=rapture.common) {
+	String appKey;
+	String apiKey;
+	String userId;
 }
 
 
@@ -464,6 +472,7 @@ type RapturePipelineTask(@package=rapture.common) {
 	String content;
 	String contentType;
 	Long epoch;
+	Boolean statusEnabled = true;
 }
 
 [Associates a server category with a comment.]
@@ -515,6 +524,7 @@ type DocumentMetadata(@package=rapture.common.model) {
 	String comment;
 	Boolean deleted;
 	Map<String, Object> tags = new HashMap<String, Object>();
+	String semanticUri = "";
 }
 
 [Contains a Rapture document and its metadata.]
@@ -547,6 +557,7 @@ type PipelineTaskStatus(@package=rapture.common) {
 [Contains info for a script-driven job in Rapture.]
 @Addressable(scheme = JOB(false))
 @Storable(storagePath : {jobURI}, prefix="versioned/schedule/job/v2")
+@FTS
 type RaptureJob(@package=rapture.common) {
     JobURI jobURI;
     String description;
@@ -974,11 +985,13 @@ type TypeArchiveConfig(@package=rapture.common) {
 @Storable(storagePath : {workflowURI}, prefix="dp/workflow")
 @Addressable(scheme = WORKFLOW(false))
 @Cacheable
+@FTS
 type Workflow(@package=rapture.common.dp) {
     WorkflowURI workflowURI;
     //the semaphore type and config below is used when creating Work Orders
     SemaphoreType semaphoreType = SemaphoreType.UNLIMITED;
     String semaphoreConfig;
+    String description;
     List<Step> steps = new ArrayList<Step>();
     String startStep; // name of the step to start on by default
     String category = "alpha"; // name of the category associated with this workflow. defaults 
@@ -986,6 +999,8 @@ type Workflow(@package=rapture.common.dp) {
                                // RaptureComputeServer 
     Map<String, String> view = new HashMap<String, String>();
     List<ExpectedArgument> expectedArguments = new ArrayList<ExpectedArgument>();
+    List<String> jarUriDependencies = new ArrayList<>();
+    Boolean useParentFirstClassLoader = false;
     String defaultAppStatusNamePattern; //appstatus name pattern, to be used if nothing passed in to workorder 
 }
 
@@ -1036,12 +1051,14 @@ type Step(@package=rapture.common.dp) {
     List<Transition> transitions = new ArrayList<Transition>();
     String categoryOverride; //category associated with this step, if it overrides the workflow category
     Integer softTimeout = -1;
+    List<String> jarUriDependencies = new ArrayList<>();
 }
 
 [Each time a Workflow is executed, the execution is identified by a matching WorkOrder. A WorkOrderURI may be qualified with an id (index) of a particular Worker, e.g. workorder://myProj/myFlow#0]
 @Storable(storagePath: {workOrderURI}, prefix="dp/workorder")
 @Addressable(scheme = WORKORDER(false))
 @Indexable(name: "default", fields: {workOrderURI, priority, startTime, endTime})
+@FTS
 type WorkOrder(@package=rapture.common.dp) {
     WorkOrderURI workOrderURI;
     WorkflowURI workflowURI; //uri of Workflow used when creating this WorkOrder

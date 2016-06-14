@@ -31,7 +31,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URLDecoder;
 import java.util.Collection;
-import java.util.Properties;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -46,21 +47,21 @@ import javax.servlet.http.Part;
 
 import org.apache.log4j.Logger;
 
+import external.multipart.BufferedServletInputStream;
+import external.multipart.MultipartParser;
+import external.multipart.ParamGetter;
 import rapture.common.CallingContext;
 import rapture.common.DispatchReturn;
 import rapture.common.RaptureEntitlementsContext;
 import rapture.common.exception.ExceptionToString;
 import rapture.common.exception.RaptureException;
 import rapture.common.exception.RaptureExceptionFactory;
+import rapture.common.impl.jackson.JacksonUtil;
 import rapture.kernel.Kernel;
 import rapture.server.BaseDispatcher;
-import external.multipart.BufferedServletInputStream;
-import external.multipart.MultipartParser;
-import external.multipart.ParamGetter;
 
 /**
- * The base servlet contains the common utility classes for manipulating
- * requests and responses
+ * The base servlet contains the common utility classes for manipulating requests and responses
  * 
  * @author alan
  * 
@@ -68,8 +69,8 @@ import external.multipart.ParamGetter;
 @MultipartConfig
 public class BaseServlet extends HttpServlet {
     /**
-	 * 
-	 */
+     * 
+     */
     private static final long serialVersionUID = 488948490778665765L;
 
     private static final int MAXPARAMSIZE = 600000;
@@ -111,7 +112,7 @@ public class BaseServlet extends HttpServlet {
         return ret.toString();
     }
 
-    protected Properties getParams(HttpServletRequest req) throws UnsupportedEncodingException, IOException, ServletException {
+    protected Map<String, Object> getParams(HttpServletRequest req) throws UnsupportedEncodingException, IOException, ServletException {
         String contentType = req.getContentType();
         Collection<Part> parts = null;
         try {
@@ -121,21 +122,22 @@ public class BaseServlet extends HttpServlet {
         }
 
         if (parts != null && !parts.isEmpty()) {
-            Properties props = new Properties();
+            Map<String, Object> props = new HashMap<>();
             for (Part p : parts) {
                 String realContent = getContentFromPart(p);
                 props.put(p.getName(), realContent);
             }
             return props;
         } else {
-            Properties props = null;
+            Map<String, Object> props = null;
             if (contentType.indexOf("application/x-www-form-urlencoded") >= 0) {
                 String result = URLDecoder.decode(getFullContent(req), encoding);
                 props = ParamGetter.getProps(result);
-
             } else if (contentType.indexOf("multipart/form-data") >= 0) {
                 MultipartParser parser = new MultipartParser(req, MAXPARAMSIZE);
                 props = ParamGetter.getProps(parser);
+            } else if (contentType.indexOf("application/json") >= 0) {
+                props = JacksonUtil.getMapFromJson(req.getInputStream());
             } else {
                 log.error("Cannot parse contentType of " + contentType);
                 throw new IOException("Bad content type of " + contentType);
@@ -159,7 +161,7 @@ public class BaseServlet extends HttpServlet {
         ByteArrayOutputStream bai = new ByteArrayOutputStream();
         byte[] buffer = new byte[1024];
         boolean done = false;
-        while(!done) {
+        while (!done) {
             int count = inputStream.read(buffer);
             if (count <= 0) {
                 done = true;
@@ -172,7 +174,7 @@ public class BaseServlet extends HttpServlet {
         byte[] ret = bai.toByteArray();
         return ret;
     }
-    
+
     private String getContentFromPart(Part p) {
         String contentType = p.getContentType();
         InputStream inputStream = null;
@@ -202,9 +204,9 @@ public class BaseServlet extends HttpServlet {
 
     protected StandardCallInfo processFunctionalRequest(HttpServletRequest req) throws UnsupportedEncodingException, IOException, ServletException {
         StandardCallInfo ret = new StandardCallInfo();
-        Properties props = getParams(req);
-        ret.setFunctionName(props.getProperty("FUNCTION"));
-        ret.setContent(props.getProperty("PARAMS"));
+        Map<String, Object> props = getParams(req);
+        ret.setFunctionName((String) props.get("FUNCTION"));
+        ret.setContent((String) props.get("PARAMS"));
         log.debug("Function is " + ret.getFunctionName());
         return ret;
     }
@@ -238,7 +240,7 @@ public class BaseServlet extends HttpServlet {
     /**
      * Check this session is valid
      * 
-     * @param context 
+     * @param context
      * @param entPath
      * @param entCtx
      * 
@@ -274,9 +276,7 @@ public class BaseServlet extends HttpServlet {
     }
 
     /**
-     * This should be called when we catch an exception after calling a
-     * dispatcher. (We should never get an exception in those circumstances
-     * however....)
+     * This should be called when we catch an exception after calling a dispatcher. (We should never get an exception in those circumstances however....)
      * 
      * @param e
      * @return

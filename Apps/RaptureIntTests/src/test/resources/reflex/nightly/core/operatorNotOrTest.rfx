@@ -1,0 +1,51 @@
+//---------------test-----------------
+
+bools = [true, false];
+resultsAND = [];
+resultsOR=[];
+answersAND = [true,false,false,false];
+answersOR = [true,true,true,false];
+
+//-------Order of operations--------
+
+//-----------NOT OR------------
+
+println('Compare NOT and OR');
+
+resultsNOTOR=[];
+
+
+for i in bools do
+	for j in bools do
+	
+		if (!i||j)==((!i)||j) do
+			resultsNOTOR = resultsNOTOR + true;
+		else do
+			resultsNOTOR = resultsNOTOR + false;
+			println('failed for (!i||j)==((!i)||j)');
+		end
+	
+		
+		if (!i||!j)==((!i)||(!j)) do
+			resultsNOTOR = resultsNOTOR + true;
+		else do
+			resultsNOTOR = resultsNOTOR + false;
+			println('failed for (!i||!j)==((!i)||(!j))');
+		end
+		
+		
+		if (i||!j)==((i)||(!j)) do
+			resultsNOTOR = resultsNOTOR + true;
+		else do
+			resultsNOTOR = resultsNOTOR + false;
+			println('failed for (i||!j)==((i)||(!j))');
+		end
+	end
+end
+
+
+returnVal = true;
+
+println('overall result: ' + returnVal);
+
+assert(returnVal);

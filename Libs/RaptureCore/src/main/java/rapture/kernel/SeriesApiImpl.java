@@ -56,6 +56,7 @@ import rapture.common.SeriesRepoConfigStorage;
 import rapture.common.SeriesString;
 import rapture.common.SeriesValue;
 import rapture.common.api.SeriesApi;
+import rapture.common.exception.ExceptionToString;
 import rapture.common.exception.RaptureException;
 import rapture.common.exception.RaptureExceptionFactory;
 import rapture.common.impl.jackson.JacksonUtil;
@@ -147,10 +148,9 @@ public class SeriesApiImpl extends KernelBase implements SeriesApi {
         if (repo != null) {
             repo.drop();
         }
-
+        SearchPublisher.publishDropMessage(context, internalURI.toString());
         SeriesRepoConfigStorage.deleteByAddress(internalURI, context.getUser(), Messages.getString("Admin.RemoveType")); //$NON-NLS-1$ //$NON-NLS-2$
         removeRepoFromCache(internalURI.getAuthority());
-        SearchPublisher.publishDropMessage(context, internalURI.toString());
     }
 
     @Override
@@ -158,6 +158,20 @@ public class SeriesApiImpl extends KernelBase implements SeriesApi {
         RaptureURI internalURI = new RaptureURI(seriesURI, Scheme.SERIES);
         SeriesRepo repo = getRepoOrFail(internalURI);
         repo.deletePointsFromSeriesByColumn(internalURI.getDocPath(), columns);
+        if (SearchPublisher.shouldPublish(getConfigFromCache(internalURI.getAuthority()), internalURI)) {
+            // Need to delete points from ES.
+            // Drop the old series and re-add all the points that remain.
+            // TODO Is there a better way? Can we delete individual series points from ES?
+            SearchPublisher.publishDeleteMessage(context, getConfigFromCache(internalURI.getAuthority()), internalURI);
+            List<SeriesPoint> points = getPoints(context, seriesURI);
+            List<String> pointKeys = new ArrayList<>(points.size());
+            List<String> pointValues = new ArrayList<>(points.size());
+            for (SeriesPoint p : points) {
+                pointKeys.add(p.getColumn());
+                pointValues.add(p.getValue());
+            }
+            processSearchUpdate(context, internalURI, pointKeys, pointValues);
+        }
     }
 
     @Override
@@ -165,6 +179,7 @@ public class SeriesApiImpl extends KernelBase implements SeriesApi {
         RaptureURI internalURI = new RaptureURI(seriesURI, Scheme.SERIES);
         SeriesRepo repo = getRepoOrFail(internalURI);
         repo.deletePointsFromSeries(internalURI.getDocPath());
+        SearchPublisher.publishDeleteMessage(context, getConfigFromCache(internalURI.getAuthority()), internalURI);
     }
 
     @Override
@@ -180,6 +195,7 @@ public class SeriesApiImpl extends KernelBase implements SeriesApi {
     }
 
     private Function<SeriesValue, SeriesPoint> sv2xsf = new Function<SeriesValue, SeriesPoint>() {
+        @Override
         public SeriesPoint apply(SeriesValue in) {
             SeriesPoint result = new SeriesPoint();
             result.setColumn(in.getColumn());
@@ -189,6 +205,7 @@ public class SeriesApiImpl extends KernelBase implements SeriesApi {
     };
 
     private Function<SeriesValue, SeriesDouble> sv2sd = new Function<SeriesValue, SeriesDouble>() {
+        @Override
         public SeriesDouble apply(SeriesValue in) {
             SeriesDouble result = new SeriesDouble();
             result.setKey(in.getColumn());
@@ -198,6 +215,7 @@ public class SeriesApiImpl extends KernelBase implements SeriesApi {
     };
 
     private Function<SeriesValue, SeriesString> sv2ss = new Function<SeriesValue, SeriesString>() {
+        @Override
         public SeriesString apply(SeriesValue in) {
             SeriesString result = new SeriesString();
             result.setKey(in.getColumn());
@@ -207,6 +225,7 @@ public class SeriesApiImpl extends KernelBase implements SeriesApi {
     };
 
     private Function<String, HoseArg> xsf2sv = new Function<String, HoseArg>() {
+        @Override
         public HoseArg apply(String in) {
             if (Character.isDigit(in.charAt(0))) {
                 return in.contains(".") ? HoseArg.makeDecimal(in) : HoseArg.makeLong(in);
@@ -225,6 +244,9 @@ public class SeriesApiImpl extends KernelBase implements SeriesApi {
         RaptureURI internalURI = new RaptureURI(seriesURI, Scheme.SERIES);
         SeriesRepo repo = getRepoOrFail(internalURI);
         SeriesValue lastPoint = repo.getLastPoint(internalURI.getDocPath());
+        if (lastPoint == null) {
+            return null;
+        }
         return sv2xsf.apply(lastPoint);
     }
 
@@ -449,7 +471,7 @@ public class SeriesApiImpl extends KernelBase implements SeriesApi {
                         log.warn("Invalid authority (null or empty string) found for " + JacksonUtil.jsonFromObject(config));
                         continue;
                     }
-                    String uri = SERIES + "://" + authority;
+                    String uri = new RaptureURI(authority, SERIES).toString();
                     ret.put(uri, new RaptureFolderInfo(authority, true));
                     if (depth != 0) {
                         ret.putAll(listSeriesByUriPrefix(context, uri, depth));
@@ -490,21 +512,25 @@ public class SeriesApiImpl extends KernelBase implements SeriesApi {
                 requestObj.setContext(context);
                 requestObj.setSeriesUri(currParentDocPath);
                 ContextValidator.validateContext(context, EntitlementSet.Series_listSeriesByUriPrefix, requestObj);
+            } catch (RaptureException e) {
+                // permission denied
+                log.debug("No read permission on folder " + currParentDocPath);
+                continue;
+            }
 
-                List<RaptureFolderInfo> children = repo.listSeriesByUriPrefix(currParentDocPath);
-
+            List<RaptureFolderInfo> children = repo.listSeriesByUriPrefix(currParentDocPath);
+            if ((children == null) || (children.isEmpty()) && (currDepth == 0) && (internalUri.hasDocPath())) {
+                throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, apiMessageCatalog.getMessage("NoSuchFolder", internalUri.toString())); //$NON-NLS-1$
+            } else {
                 for (RaptureFolderInfo child : children) {
                     String childDocPath = currParentDocPath + (top ? "" : "/") + child.getName();
                     if (child.getName().isEmpty()) continue;
-                    String childUri = Scheme.SERIES + "://" + authority + "/" + childDocPath + (child.isFolder() ? "/" : "");
+                    String childUri = RaptureURI.builder(Scheme.SERIES, authority).docPath(childDocPath).asString() + (child.isFolder() ? "/" : "");
                     ret.put(childUri, child);
                     if (child.isFolder()) {
                         parentsStack.push(childDocPath);
                     }
                 }
-            } catch (RaptureException e) {
-                // permission denied
-                log.debug("No read permission on folder " + currParentDocPath);
             }
             if (top) startDepth--; // special case
         }
@@ -527,22 +553,25 @@ public class SeriesApiImpl extends KernelBase implements SeriesApi {
     public List<String> deleteSeriesByUriPrefix(CallingContext context, String uriPrefix) {
 
         Map<String, RaptureFolderInfo> map = listSeriesByUriPrefix(context, uriPrefix, Integer.MAX_VALUE);
-        List<String> folders = new ArrayList<>();
+        List<RaptureURI> folders = new ArrayList<>();
         Set<String> notEmpty = new HashSet<>();
         List<String> removed = new ArrayList<>();
+        RaptureURI serUri = new RaptureURI(uriPrefix, SERIES);
+        SeriesRepo repository = getRepoOrFail(serUri);
 
         DeleteSeriesPayload requestObj = new DeleteSeriesPayload();
         requestObj.setContext(context);
 
-        folders.add(uriPrefix.endsWith("/") ? uriPrefix : uriPrefix + "/");
+        folders.add(serUri);
         for (Map.Entry<String, RaptureFolderInfo> entry : map.entrySet()) {
             String uri = entry.getKey();
+            RaptureURI ruri = new RaptureURI(uri);
             boolean isFolder = entry.getValue().isFolder();
             try {
                 requestObj.setSeriesUri(uri);
                 if (isFolder) {
                     ContextValidator.validateContext(context, EntitlementSet.Series_deleteSeriesByUriPrefix, requestObj);
-                    folders.add(0, uri.substring(0, uri.length() - 1));
+                    folders.add(0, ruri);
                 } else {
                     ContextValidator.validateContext(context, EntitlementSet.Series_deleteSeries, requestObj);
                     deletePointsFromSeries(context, uri);
@@ -552,18 +581,16 @@ public class SeriesApiImpl extends KernelBase implements SeriesApi {
             } catch (RaptureException e) {
                 // permission denied
                 log.debug("Unable to delete " + uri + " : " + e.getMessage());
-                int colon = uri.indexOf(":") + 3;
-                while (true) {
-                    int slash = uri.lastIndexOf('/');
-                    if (slash < colon) break;
-                    uri = uri.substring(0, slash);
-                    notEmpty.add(uri);
-                }
             }
         }
-        for (String uri : folders) {
-            if (notEmpty.contains(uri)) continue;
-            deleteSeries(context, uri);
+        for (RaptureURI uri : folders) {
+            // deleteFolder returns true if the folder was deleted.
+            // It won't delete a folder that isn't empty.
+            while (uri != null) {
+                if (!repository.deleteFolder(uri)) break;
+                // getParentURI returns null if the URI has no doc path
+                uri = uri.getParentURI();
+            }
         }
         return removed;
 
@@ -587,26 +614,14 @@ public class SeriesApiImpl extends KernelBase implements SeriesApi {
             if (uri.getAuthority().isEmpty() || uri.getDocPathDepth() < 2) {
                 return false;
             }
-            if (!listSeriesByUriPrefix(context, seriesURI, 1).isEmpty()) {
+            if (getLastPoint(context, seriesURI) != null) {
                 return true;
             }
-            int lastSlash = seriesURI.lastIndexOf("/");
-            if (lastSlash < 0 || lastSlash == seriesURI.length() - 1) {
-                return false;
-            }
-            String parentUri = seriesURI.substring(0, lastSlash);
-            String name = seriesURI.substring(lastSlash + 1, seriesURI.length());
-
-            log.debug("parentUri: " + parentUri);
-            log.debug("seriesUri: " + seriesURI);
-            for (RaptureFolderInfo folder : listSeriesByUriPrefix(context, parentUri, 1).values()) {
-                if (folder.getName().equals(name)) {
-                    return true;
-                }
-            }
-            return false;
+            RaptureURI parent = uri.getParentURI();
+            Map<String, RaptureFolderInfo> siblings = listSeriesByUriPrefix(context, parent.toString(), 1);
+            return (siblings.get(uri.toString()) != null);
         } catch (Exception e) {
-            log.info(e);
+            log.info(ExceptionToString.format(e));
             return false;
         }
     }
@@ -616,6 +631,7 @@ public class SeriesApiImpl extends KernelBase implements SeriesApi {
         RaptureURI uri = new RaptureURI(seriesURI, Scheme.SERIES);
         SeriesRepo repository = getRepoOrFail(uri);
         repository.deleteSeries(uri.getDocPath());
+        SearchPublisher.publishDeleteMessage(context, getConfigFromCache(uri.getAuthority()), uri);
     }
 
     @Override

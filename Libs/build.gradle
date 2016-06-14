@@ -15,7 +15,7 @@ license {
     header file('./LICENSE')
 }
 
-project.version = '3.0.2'
+project.version = '3.0.4'
 project.group = 'net.rapture'
 
 subprojects {
@@ -76,6 +76,9 @@ subprojects {
         // print out the currently running test 
         beforeTest { descriptor ->
             logger.lifecycle("Running test: " + descriptor)
+        }
+        testLogging {
+            exceptionFormat = 'full'
         }
     }
 

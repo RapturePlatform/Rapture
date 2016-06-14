@@ -24,7 +24,12 @@
 package rapture.util;
 
 import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.Enumeration;
+
+import org.apache.log4j.Logger;
 
 /**
  * Utility around networks
@@ -34,23 +39,57 @@ import java.net.UnknownHostException;
  */
 public class NetworkUtil {
 
+    private static final Logger log = Logger.getLogger(NetworkUtil.class);
+
     private NetworkUtil() {
-        
+
     }
-    
+
     public static String getServerIP() {
         try {
             return InetAddress.getLocalHost().getHostAddress();
         } catch (UnknownHostException e) {
+            log.error("Unable to get the IP address of this machine", e);
             return null;
         }
     }
-    
+
+    /**
+     * Get the IP address of the local machine, but only if it's a site local address, not the public internet facing address. This is usually a class-C type
+     * address and allows access from within a network or subnet, for example.
+     * 
+     * @return
+     */
+    public static String getSiteLocalServerIP() {
+        Enumeration<NetworkInterface> nics;
+        try {
+            nics = NetworkInterface.getNetworkInterfaces();
+        } catch (SocketException e) {
+            log.error("Unable to access network interfaces on this machine", e);
+            return null;
+        }
+        while (nics.hasMoreElements()) {
+            NetworkInterface nic = nics.nextElement();
+            if (log.isDebugEnabled()) {
+                log.debug("Processing nic: " + nic.getName() + ":" + nic.getDisplayName());
+            }
+            Enumeration<InetAddress> addrs = nic.getInetAddresses();
+            while (addrs.hasMoreElements()) {
+                InetAddress addr = addrs.nextElement();
+                log.debug("IP addr is: " + addr.getHostAddress());
+                if (addr.isSiteLocalAddress()) {
+                    return addr.getHostAddress();
+                }
+            }
+        }
+        return null;
+    }
+
     public static String getServerName() {
         try {
             return InetAddress.getLocalHost().getHostName();
-        }
-        catch (UnknownHostException e) {
+        } catch (UnknownHostException e) {
+            log.error("Unable to get hostname of this machine", e);
             return null;
         }
     }

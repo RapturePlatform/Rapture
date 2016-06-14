@@ -27,12 +27,10 @@ import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.Stack;
 
 import org.apache.commons.lang3.StringUtils;
@@ -46,6 +44,7 @@ import com.google.common.collect.Lists;
 
 import rapture.common.CallingContext;
 import rapture.common.ContentEnvelope;
+import rapture.common.DocUpdateObject;
 import rapture.common.DocumentAttributeFactory;
 import rapture.common.EntitlementSet;
 import rapture.common.Messages;
@@ -128,7 +127,7 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
                 apiMessageCatalog.getMessage("CreatedType", new String[] { internalUri.getDocPath(), authority }).format()); //$NON-NLS-1$
 
         // The repo will be created as needed in the cache when accessed the first time
-        log.info("Creating Repository " + docRepoUri);
+        log.info("Creating Repository " + docRepoUri + " with config " + config);
     }
 
     @Override
@@ -183,11 +182,11 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
     private boolean archiveNVersionedRepo(CallingContext context, Repository repo, RaptureURI internalUri, int versionLimit, long timeLimit,
             Boolean ensureVersionLimit) {
         if (internalUri.hasDocPath()) {
-            return ((NVersionedRepo) repo).archiveDocumentVersions(internalUri.getDocPath(), versionLimit, timeLimit,
-                    ensureVersionLimit, ContextFactory.getKernelUser().getUser());
+            return ((NVersionedRepo) repo).archiveDocumentVersions(internalUri.getDocPath(), versionLimit, timeLimit, ensureVersionLimit,
+                    ContextFactory.getKernelUser().getUser());
         } else {
-            return ((NVersionedRepo) repo).archiveRepoVersions(internalUri.getAuthority(), versionLimit, timeLimit,
-                    ensureVersionLimit, ContextFactory.getKernelUser().getUser());
+            return ((NVersionedRepo) repo).archiveRepoVersions(internalUri.getAuthority(), versionLimit, timeLimit, ensureVersionLimit,
+                    ContextFactory.getKernelUser().getUser());
         }
     }
 
@@ -201,10 +200,14 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
 
         // First drop the data, then drop the repo config
 
-        Repository repository = getRepoFromCache(internalUri.getAuthority());
-        log.info(Messages.getString("Admin.DropRepo") + internalUri.getAuthority()); //$NON-NLS-1$
-        if (repository != null) {
-            repository.drop();
+        try {
+            Repository repository = getRepoFromCache(internalUri.getAuthority());
+            log.info(Messages.getString("Admin.DropRepo") + internalUri.getAuthority()); //$NON-NLS-1$
+            if (repository != null) {
+                repository.drop();
+            }
+        } catch (IllegalArgumentException e) {
+            // Will happen if the config wasn't valid - but we are trying to delete it anyway
         }
 
         // Remove jobs associated with this authority.
@@ -214,12 +217,18 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
                 Kernel.getSchedule().getTrusted().deleteJob(context, jobUri);
             }
         }
-
-        DocumentRepoConfigStorage.deleteByAddress(internalUri, context.getUser(), "Drop document repo");
-        removeRepoFromCache(internalUri.getAuthority());
-
         // Yeah this is like "delete everything that is prefixed by //docRepoUri
         SearchPublisher.publishDropMessage(context, internalUri.toString());
+        // We can't just delete the repo. If we do then
+        // DocRepoCache.reloadConfig will just create it.
+        // So mark the config as having been deleted.
+        // DocumentRepoConfigStorage.deleteByAddress(internalUri,
+        // context.getUser(), "Drop document repo");
+        DocumentRepoConfig drc = DocumentRepoConfigStorage.readByAddress(internalUri);
+        drc.setDeleted(true);
+        DocumentRepoConfigStorage.add(internalUri, drc, context.getUser(), "Mark config as deleted");
+        log.info("Config for " + internalUri.toString() + " marked as deleted ");
+        removeRepoFromCache(internalUri.getAuthority());
     }
 
     public void updateDocumentRepo(CallingContext context, DocumentRepoConfig data) {
@@ -239,12 +248,23 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
         if (uri.hasDocPath()) {
             throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, apiMessageCatalog.getMessage("NoDocPath", docRepoUri)); //$NON-NLS-1$
         }
-        return DocumentRepoConfigStorage.readByAddress(uri);
+        DocumentRepoConfig documentRepo = DocumentRepoConfigStorage.readByAddress(uri);
+        if ((documentRepo != null) && documentRepo.getDeleted()) return null;
+        return documentRepo;
+
     }
 
     @Override
     public List<DocumentRepoConfig> getDocRepoConfigs(CallingContext context) {
-        return DocumentRepoConfigStorage.readAll();
+        List<DocumentRepoConfig> configs = DocumentRepoConfigStorage.readAll();
+        if ((configs == null) || configs.isEmpty()) return configs;
+        int i = configs.size();
+        do {
+            i--;
+            DocumentRepoConfig drc = configs.get(i);
+            if (drc.getDeleted()) configs.remove(i);
+        } while (i > 0);
+        return configs;
     }
 
     @Override
@@ -498,8 +518,8 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
     @Override
     public List<Object> putDocs(CallingContext context, List<String> docUris, List<String> contents) {
         // For now, implement this as a series of putContentPs - this will be a
-        // bit faster as we are not worrying
-        // about the transport costs of this call.
+        // bit faster as we are not worrying about the transport costs of this
+        // call.
         if (docUris.size() != contents.size()) {
             throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, apiMessageCatalog.getMessage("ArgSizeNotEqual"));
         }
@@ -519,7 +539,8 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
     @Override
     public String renameDoc(CallingContext context, String fromDocUri, String toDocUri) {
 
-        // Note: we can reuse the payload because the calls are effectively the same; only the entitlement set changed.
+        // Note: we can reuse the payload because the calls are effectively the
+        // same; only the entitlement set changed.
         GetDocPayload requestObj = new GetDocPayload();
         requestObj.setContext(context);
         requestObj.setDocUri(fromDocUri);
@@ -527,8 +548,10 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
         ContextValidator.validateContext(context, EntitlementSet.Doc_deleteDoc, requestObj);
 
         requestObj.setDocUri(toDocUri);
-        // Requiring that you be able to read the target isn't necessarily a requirement
-        // but it might not be a bad idea to warn the user if they don't have EntitlementSet.Doc_getDoc on the target
+        // Requiring that you be able to read the target isn't necessarily a
+        // requirement but it might not be a bad idea to warn the user if they
+        // don't have
+        // EntitlementSet.Doc_getDoc on the target
         ContextValidator.validateContext(context, EntitlementSet.Doc_putDoc, requestObj);
 
         String content = getDoc(context, fromDocUri);
@@ -548,7 +571,8 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
         List<String> ret = new ArrayList<String>();
         for (int i = 0; i < docUris.size(); i++) {
             try {
-                // renameDoc now handles its own entitlements since there are several in play
+                // renameDoc now handles its own entitlements since there are
+                // several in play
                 ret.add(renameDoc(context, docUris.get(i), toDocUris.get(i)));
             } catch (RaptureException e) {
                 log.error("renameDocs failed when renaming " + docUris.get(i) + " to " + toDocUris.get(i) + " with error: " + e.getMessage());
@@ -578,10 +602,10 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
 
         if (expectedCurrentVersion == -1) {
             newDoc = repository.addDocument(internalUri.getDocPathWithElement(), content, context.getUser(), "", mustBeNew);
-            // note: the repository throws an exception when it fails, so success can be implied by reaching here
+            // note: the repository throws an exception when it fails, so
+            // success can be implied by reaching here
         } else {
-            newDoc = repository
-                    .addDocumentWithVersion(internalUri.getDocPathWithElement(), content, context.getUser(), "", mustBeNew, expectedCurrentVersion);
+            newDoc = repository.addDocumentWithVersion(internalUri.getDocPathWithElement(), content, context.getUser(), "", mustBeNew, expectedCurrentVersion);
         }
 
         DocWriteHandle handle = new DocWriteHandle();
@@ -592,15 +616,15 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
             if (extraEventContextMap != null) {
                 eventContextMap.putAll(extraEventContextMap);
             }
-            RunEventHandle eventHandle = Kernel.getEvent().getTrusted()
-                    .runEventWithContext(context, "//" + internalUri.getAuthority() + "/data/update", internalUri.getDocPath(), eventContextMap);
+            RunEventHandle eventHandle = Kernel.getEvent().getTrusted().runEventWithContext(context, "//" + internalUri.getAuthority() + "/data/update",
+                    internalUri.getDocPath(), eventContextMap);
             handle.setEventHandle(eventHandle);
 
             for (IndexScriptPair indexScriptPair : type.getIndexes()) {
                 runIndex(context, indexScriptPair, internalUri.getAuthority(), internalUri.getDocPath(), content);
             }
             newDoc.setDisplayName(internalUri.getFullPath());
-            SearchPublisher.publishCreateMessage(context, type, newDoc);
+            SearchPublisher.publishCreateMessage(context, type, new DocUpdateObject(internalUri, newDoc));
         }
         handle.setDocumentURI(internalUri.toString());
         handle.setIsSuccess(newDoc != null);
@@ -715,44 +739,35 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
     }
 
     @Override
-    public List<String> deleteDocsByUriPrefix(CallingContext context, String docUri) {
-        Map<String, RaptureFolderInfo> docs = listDocsByUriPrefix(context, docUri, Integer.MAX_VALUE);
-        List<String> folders = new ArrayList<>();
-        Set<String> notEmpty = new HashSet<>();
+    public List<String> deleteDocsByUriPrefix(CallingContext context, String uriPrefix) {
+        Map<String, RaptureFolderInfo> docs = listDocsByUriPrefix(context, uriPrefix, Integer.MAX_VALUE);
+        List<RaptureURI> folders = new ArrayList<>();
         List<String> removed = new ArrayList<>();
+        RaptureURI docURI = new RaptureURI(uriPrefix, Scheme.DOCUMENT);
 
         DeleteDocPayload requestObj = new DeleteDocPayload();
         requestObj.setContext(context);
 
-        folders.add(docUri.endsWith("/") ? docUri : docUri + "/");
+        folders.add(docURI);
         for (Entry<String, RaptureFolderInfo> entry : docs.entrySet()) {
             String uri = entry.getKey();
+            RaptureURI ruri = new RaptureURI(uri);
             boolean isFolder = entry.getValue().isFolder();
             try {
                 requestObj.setDocUri(uri);
                 if (isFolder) {
                     ContextValidator.validateContext(context, EntitlementSet.Doc_deleteDocsByUriPrefix, requestObj);
-                    folders.add(0, uri.substring(0, uri.length() - 1));
+                    folders.add(0, ruri);
                 } else {
                     ContextValidator.validateContext(context, EntitlementSet.Doc_deleteDoc, requestObj);
-                    deleteDoc(context, uri);
-                    removed.add(uri);
+                    if (deleteDoc(context, uri)) {
+                        removed.add(uri);
+                    }
                 }
             } catch (RaptureException e) {
                 // permission denied
                 log.debug("Unable to delete " + uri + " : " + e.getMessage());
-                int colon = uri.indexOf(":") + 3;
-                while (true) {
-                    int slash = uri.lastIndexOf('/');
-                    if (slash < colon) break;
-                    uri = uri.substring(0, slash);
-                    notEmpty.add(uri);
-                }
             }
-        }
-        for (String uri : folders) {
-            if (notEmpty.contains(uri)) continue;
-            deleteDoc(context, uri);
         }
         return removed;
     }
@@ -826,17 +841,17 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
 
             List<RaptureFolderInfo> children = repository.getChildren(currParentDocPath);
             if (((children == null) || children.isEmpty()) && (currDepth == 0) && internalUri.hasDocPath()) throw RaptureExceptionFactory
-                    .create(HttpURLConnection.HTTP_BAD_REQUEST, apiMessageCatalog.getMessage("NoSuchDoc", internalUri.toString())); //$NON-NLS-1$
+                    .create(HttpURLConnection.HTTP_BAD_REQUEST, apiMessageCatalog.getMessage("NoSuchFolder", internalUri.toString())); //$NON-NLS-1$
             else if (children != null) {
                 for (RaptureFolderInfo child : children) {
                     String name = child.getName();
                     String childDocPath = currParentDocPath + (top ? "" : "/") + name;
                     if (name.isEmpty()) continue;
-
-                    String uri = Scheme.DOCUMENT + "://" + authority + "/" + childDocPath + (child.isFolder() ? "/" : "");
-
+                    String uri = RaptureURI.builder(Scheme.DOCUMENT, authority).docPath(childDocPath).asString() + (child.isFolder() ? "/" : "");
                     ret.put(uri, child);
-                    if (child.isFolder()) parentsStack.push(childDocPath);
+                    if (child.isFolder()) {
+                        parentsStack.push(childDocPath);
+                    }
                 }
             }
             if (top) startDepth--; // special case
@@ -920,8 +935,8 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
         RaptureURI internalUri = new RaptureURI(attributeUri, Scheme.DOCUMENT);
 
         if (!internalUri.hasAttribute() || internalUri.getAttributeKey() == null) {
-            throw RaptureExceptionFactory
-                    .create(HttpURLConnection.HTTP_BAD_REQUEST, "Invalid arguments supplied -- need attribute and attribute key to be set");
+            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST,
+                    "Invalid arguments supplied -- need attribute and attribute key to be set");
         }
 
         Repository repository = getRepoFromCache(internalUri.getAuthority());
@@ -953,6 +968,7 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
      * Convert DocumentAttribute to XferDocumentAttribute so that it can be passed over the wire using our HTTP interface
      */
     private Function<DocumentAttribute, XferDocumentAttribute> xferFunc = new Function<DocumentAttribute, XferDocumentAttribute>() {
+        @Override
         public XferDocumentAttribute apply(DocumentAttribute in) {
             if (in == null) {
                 return null;
@@ -978,8 +994,8 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
     @Deprecated
     @Override
     public void putContent(CallingContext context, RaptureURI raptureUri, Object content, String comment) {
-        log.warn("Deprecated method putContent with arguments CallingContext, RaptureURI, Object, String called by " + new Throwable().getStackTrace()[1]
-                .getFileName());
+        log.warn("Deprecated method putContent with arguments CallingContext, RaptureURI, Object, String called by "
+                + new Throwable().getStackTrace()[1].getFileName());
         putDoc(context, raptureUri.toString(), content.toString());
     }
 
@@ -1044,6 +1060,7 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
         }
     }
 
+    // TODO remove duplicate code - convert value to a map and call applyTags
     public DocumentMetadata applyTag(CallingContext context, String docUri, String tagUri, String value) {
         RaptureURI internalUri = new RaptureURI(docUri, Scheme.DOCUMENT);
         Repository repository = getRepoFromCache(internalUri.getAuthority());
@@ -1051,7 +1068,7 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
         // Now apply search update
         DocumentRepoConfig type = getConfigFromCache(internalUri.getAuthority());
         dwm.setDisplayName(internalUri.getFullPath());
-        SearchPublisher.publishCreateMessage(context, type, dwm);
+        SearchPublisher.publishCreateMessage(context, type, new DocUpdateObject(internalUri, dwm));
         return dwm.getMetaData();
     }
 
@@ -1062,10 +1079,11 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
         // Now apply search update
         DocumentRepoConfig type = getConfigFromCache(internalUri.getAuthority());
         dwm.setDisplayName(internalUri.getFullPath());
-        SearchPublisher.publishCreateMessage(context, type, dwm);
+        SearchPublisher.publishCreateMessage(context, type, new DocUpdateObject(internalUri, dwm));
         return dwm.getMetaData();
     }
 
+    // TODO remove duplicate code - convert value to a List and call removeTags
     public DocumentMetadata removeTag(CallingContext context, String docUri, String tagUri) {
         RaptureURI internalUri = new RaptureURI(docUri, Scheme.DOCUMENT);
         Repository repository = getRepoFromCache(internalUri.getAuthority());
@@ -1073,7 +1091,7 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
         // Now apply search update
         DocumentRepoConfig type = getConfigFromCache(internalUri.getAuthority());
         dwm.setDisplayName(internalUri.getFullPath());
-        SearchPublisher.publishCreateMessage(context, type, dwm);
+        SearchPublisher.publishCreateMessage(context, type, new DocUpdateObject(internalUri, dwm));
         return dwm.getMetaData();
     }
 
@@ -1084,7 +1102,7 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
         // Now apply search update
         DocumentRepoConfig type = getConfigFromCache(internalUri.getAuthority());
         dwm.setDisplayName(internalUri.getFullPath());
-        SearchPublisher.publishCreateMessage(context, type, dwm);
+        SearchPublisher.publishCreateMessage(context, type, new DocUpdateObject(internalUri, dwm));
         return dwm.getMetaData();
     }
 

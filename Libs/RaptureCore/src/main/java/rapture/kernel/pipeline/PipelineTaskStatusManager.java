@@ -23,6 +23,16 @@
  */
 package rapture.kernel.pipeline;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.http.HttpStatus;
+import org.apache.log4j.Logger;
+
 import rapture.common.PipelineTaskStatus;
 import rapture.common.RapturePipelineTask;
 import rapture.common.TableQuery;
@@ -36,16 +46,6 @@ import rapture.dsl.iqry.IndexQuery;
 import rapture.dsl.iqry.IndexQueryFactory;
 import rapture.index.IndexHandler;
 import rapture.util.NetworkUtil;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.http.HttpStatus;
-import org.apache.log4j.Logger;
 
 public final class PipelineTaskStatusManager {
 
@@ -73,26 +73,32 @@ public final class PipelineTaskStatusManager {
     }
 
     public void initialCreation(RapturePipelineTask task) {
-        task.getStatus().beginCreation(getServerIdentifier());
-        indexHandler.updateRow(task.getTaskId(), getRowDetails(task));
+        if (task.isStatusEnabled()) {
+            task.getStatus().beginCreation(getServerIdentifier());
+            indexHandler.updateRow(task.getTaskId(), getRowDetails(task));
+        }
     }
 
     public void startRunning(RapturePipelineTask task) {
-        task.getStatus().beginRunning(getServerIdentifier());
-        indexHandler.updateRow(task.getTaskId(), getRowDetails(task));
+        if (task.isStatusEnabled()) {
+            task.getStatus().beginRunning(getServerIdentifier());
+            indexHandler.updateRow(task.getTaskId(), getRowDetails(task));
+        }
     }
 
     private void finishRunning(RapturePipelineTask task, boolean successful) {
-        task.getStatus().endRunning(getServerIdentifier(), successful);
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Setting currentState of %s to %s", task.getTaskId(), task.getStatus().getCurrentState()));
+        if (task.isStatusEnabled()) {
+            task.getStatus().endRunning(getServerIdentifier(), successful);
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Setting currentState of %s to %s", task.getTaskId(), task.getStatus().getCurrentState()));
+            }
+            indexHandler.updateRow(task.getTaskId(), getRowDetails(task));
         }
-        indexHandler.updateRow(task.getTaskId(), getRowDetails(task));
     }
 
     public PipelineTaskStatus getStatus(String taskId) {
         // TODO: Allow double or single quotes in table handler parsing
-        //    	String query = "SELECT content WHERE rowId=\"" + taskId + "\"";
+        // String query = "SELECT content WHERE rowId=\"" + taskId + "\"";
         String query = "SELECT content WHERE rowId='" + taskId + "'";
         TableQueryResult res = indexHandler.query(query);
         if (res != null && res.getRows().size() != 0) {
@@ -150,8 +156,10 @@ public final class PipelineTaskStatusManager {
     }
 
     public void suspendedRunning(RapturePipelineTask task) {
-        task.getStatus().suspended(getServerIdentifier());
-        indexHandler.updateRow(task.getTaskId(), (Map<String, Object>) JacksonUtil.getHashFromObject(task));
+        if (task.isStatusEnabled()) {
+            task.getStatus().suspended(getServerIdentifier());
+            indexHandler.updateRow(task.getTaskId(), (Map<String, Object>) JacksonUtil.getHashFromObject(task));
+        }
     }
 
     public void finishRunningWithSuccess(RapturePipelineTask task) {

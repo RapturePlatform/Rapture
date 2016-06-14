@@ -99,8 +99,8 @@ public class ChildrenRepoTest {
             }
 
             @Override
-            public void dropRow(String key) {
-                
+            public boolean dropRow(String key) {
+                return false;
             }
         };
     }

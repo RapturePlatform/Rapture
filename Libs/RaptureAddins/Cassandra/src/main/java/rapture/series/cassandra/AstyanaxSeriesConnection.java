@@ -33,15 +33,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
-import rapture.cassandra.AstyanaxCassandraBase;
-import rapture.common.RaptureFolderInfo;
-import rapture.common.SeriesValue;
-import rapture.common.exception.RaptureExceptionFactory;
-import rapture.dsl.serfun.SeriesValueCodec;
-import rapture.dsl.serfun.StringSeriesValue;
-import rapture.series.children.ChildKeyUtil;
-import rapture.series.children.ChildrenRepo;
-
 import com.google.common.base.Function;
 import com.google.common.base.Strings;
 import com.google.common.cache.Cache;
@@ -56,15 +47,24 @@ import com.netflix.astyanax.model.Column;
 import com.netflix.astyanax.model.ColumnList;
 import com.netflix.astyanax.util.RangeBuilder;
 
+import rapture.cassandra.AstyanaxCassandraBase;
+import rapture.common.RaptureFolderInfo;
+import rapture.common.SeriesValue;
+import rapture.common.exception.RaptureExceptionFactory;
+import rapture.dsl.serfun.SeriesValueCodec;
+import rapture.dsl.serfun.StringSeriesValue;
+import rapture.series.children.ChildKeyUtil;
+import rapture.series.children.ChildrenRepo;
+
 public class AstyanaxSeriesConnection extends AstyanaxCassandraBase {
     private static final String DIRECTORY_KEY = "..directory";
-    private final int OVERFLOW_LIMIT;
+    private int overflowLimit;
     private Cache<String, Boolean> keyCache = CacheBuilder.newBuilder().expireAfterAccess(3, TimeUnit.SECONDS).build();
     private final ChildrenRepo childrenRepo;
 
     public AstyanaxSeriesConnection(String instance, Map<String, String> config, int overflowLimit) {
         super(instance, config);
-        OVERFLOW_LIMIT = overflowLimit;
+        this.overflowLimit = overflowLimit;
         this.childrenRepo = new ChildrenRepo() {
 
             @Override
@@ -88,8 +88,8 @@ public class AstyanaxSeriesConnection extends AstyanaxCassandraBase {
             }
 
             @Override
-            public void dropRow(String key) {
-                AstyanaxSeriesConnection.this.dropAllPoints(key);
+            public boolean dropRow(String key) {
+                return AstyanaxSeriesConnection.this.dropAllPoints(key);
             }
         };
     }
@@ -126,7 +126,7 @@ public class AstyanaxSeriesConnection extends AstyanaxCassandraBase {
         return true;
     }
 
-    public void dropAllPoints(String key) {
+    public boolean dropAllPoints(String key) {
         unregisterKey(key);
         MutationBatch m = keyspace.prepareMutationBatch();
         m.withRow(columnFamily, key).delete();
@@ -136,6 +136,7 @@ public class AstyanaxSeriesConnection extends AstyanaxCassandraBase {
         } catch (ConnectionException ce) {
             throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, messageCatalog.getMessage("DbCommsError"), ce);
         }
+        return true;
     }
 
     public List<SeriesValue> getPoints(String key) throws IOException {
@@ -149,7 +150,7 @@ public class AstyanaxSeriesConnection extends AstyanaxCassandraBase {
 
     public List<SeriesValue> getPointsAfter(String key, String startColumn, String endColumn, int maxNumber, boolean reverse) throws IOException {
         List<SeriesValue> ret = new ArrayList<SeriesValue>();
-        int limit = (maxNumber > OVERFLOW_LIMIT) ? OVERFLOW_LIMIT + 1 : maxNumber;
+        int limit = (maxNumber > overflowLimit) ? overflowLimit : maxNumber;
         ColumnList<String> result;
         try {
             result = keyspace.prepareQuery(columnFamily).getKey(key)
@@ -158,8 +159,8 @@ public class AstyanaxSeriesConnection extends AstyanaxCassandraBase {
         } catch (ConnectionException ce) {
             throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, messageCatalog.getMessage("DbCommsError"), ce);
         }
-        if (result.size() > OVERFLOW_LIMIT) {
-            throw RaptureExceptionFactory.create(messageCatalog.getMessage("SmallerPages", ""+OVERFLOW_LIMIT));
+        if (result.size() > overflowLimit) {
+            throw RaptureExceptionFactory.create(messageCatalog.getMessage("SmallerPages", "" + overflowLimit));
         }
         for (Column<String> column : result) {
             ret.add(makeSeriesValue(column));
@@ -210,6 +211,7 @@ public class AstyanaxSeriesConnection extends AstyanaxCassandraBase {
     }
 
     private Callable<Boolean> FALSE_CALL = new Callable<Boolean>() {
+        @Override
         public Boolean call() {
             return false;
         }
@@ -234,14 +236,16 @@ public class AstyanaxSeriesConnection extends AstyanaxCassandraBase {
         unregisterKey(key, false);
     }
 
-    void unregisterKey(String key, boolean isFolder) {
+    boolean unregisterKey(String key, boolean isFolder) {
+        boolean ret = false;
         if (DIRECTORY_KEY.equals(key)) {
-            return;
+            return ret;
         }
         dropPoints(DIRECTORY_KEY, ImmutableList.of(key));
-        if (isFolder) childrenRepo.dropFolderEntry(key);
-        else childrenRepo.dropFileEntry(key);
+        if (isFolder) ret = childrenRepo.dropFolderEntry(key);
+        else ret = childrenRepo.dropFileEntry(key);
         keyCache.invalidate(key);
+        return ret;
     }
 
     private final SeriesValue makeSeriesValue(Column<String> column) throws IOException {
@@ -250,5 +254,13 @@ public class AstyanaxSeriesConnection extends AstyanaxCassandraBase {
 
     public List<RaptureFolderInfo> getChildren(String folderName) {
         return childrenRepo.getChildren(folderName);
+    }
+
+    public void setOverflowLimit(int overflowLimit) {
+        this.overflowLimit = overflowLimit;
+    }
+
+    public int getOverflowLimit() {
+        return overflowLimit;
     }
 }

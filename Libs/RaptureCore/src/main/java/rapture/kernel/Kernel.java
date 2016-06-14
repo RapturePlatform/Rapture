@@ -41,12 +41,11 @@ import java.util.jar.Manifest;
 
 import org.apache.log4j.Logger;
 
-import com.google.common.base.Optional;
-import com.google.common.cache.Cache;
-
 import rapture.api.hooks.ApiHooksService;
 import rapture.audit.AuditLog;
 import rapture.audit.AuditLogCache;
+import rapture.common.APIKeyDefinition;
+import rapture.common.APIKeyDefinitionStorage;
 import rapture.common.CallingContext;
 import rapture.common.CallingContextStorage;
 import rapture.common.IEntitlementsContext;
@@ -83,7 +82,6 @@ import rapture.kernel.cache.RepoCacheManager;
 import rapture.kernel.internalnotification.ExchangeChangeManager;
 import rapture.kernel.internalnotification.TypeChangeManager;
 import rapture.kernel.pipeline.KernelTaskHandler;
-import rapture.kernel.plugin.RapturePluginClassLoader;
 import rapture.kernel.stat.StatHelper;
 import rapture.log.management.LogManagerConnection;
 import rapture.log.manager.LogManagerConnectionFactory;
@@ -103,6 +101,9 @@ import rapture.util.IConfigRetriever;
 import rapture.util.IDGenerator;
 import rapture.util.ResourceLoader;
 
+import com.google.common.base.Optional;
+import com.google.common.cache.Cache;
+
 /**
  * The Rapture kernel is a singleton and hosts the apis for Rapture
  *
@@ -111,7 +112,6 @@ import rapture.util.ResourceLoader;
 public enum Kernel {
     INSTANCE;
 
-    private static final int CACHELIFETIME = 60000;
     private static final Logger log = Logger.getLogger(Kernel.class);
 
     public static ActivityApiImplWrapper getActivity() {
@@ -229,9 +229,9 @@ public enum Kernel {
     public static SearchApiImplWrapper getSearch() {
         return INSTANCE.search;
     }
-    
+
     public static TagApiImplWrapper getTag() {
-    	return INSTANCE.tag;
+        return INSTANCE.tag;
     }
 
     public static MetricsService getMetricsService() {
@@ -429,8 +429,6 @@ public enum Kernel {
 
     private ApiHooksService apiHooksService;
 
-    private static RapturePluginClassLoader rapturePluginClassLoader;
-
     /**
      * The Api Wrappers
      */
@@ -463,7 +461,7 @@ public enum Kernel {
     private StructuredApiImplWrapper structured;
     private SearchApiImplWrapper search;
     private TagApiImplWrapper tag;
-    
+
     private MetricsService metricsService = MetricsFactory.createDummyService(); // initialize to a dummy service initially, as this is not nullable
     private LogManagerConnection logManagerConnection;
 
@@ -751,7 +749,6 @@ public enum Kernel {
             HooksConfig hooksConfig = HooksConfigRepo.INSTANCE.loadHooksConfig();
             apiHooksService.configure(hooksConfig);
 
-            rapturePluginClassLoader = new RapturePluginClassLoader();
             taskHandler = new KernelTaskHandler(pipeline.getTrusted());
 
             if (metricsService != null) {
@@ -818,6 +815,22 @@ public enum Kernel {
     public CallingContext loadContext(String contextId) {
         return CallingContextStorage.readByFields(contextId);
     }
+    
+    public CallingContext loadContext(String appKey, String apiKey) {
+    	log.info("Looking for " + appKey + " and " + apiKey);
+    	APIKeyDefinition def = APIKeyDefinitionStorage.readByFields(appKey, apiKey);
+    	if (def == null) {
+    		return null;
+    	}
+    	else {
+    		log.info("Resolved to " + def.getUserId());
+    		CallingContext ctx = new CallingContext();
+    		ctx.setUser(def.getUserId());
+    		ctx.setContext(apiKey);
+    		return ctx;
+    	}
+	}
+
 
     public void validateContext(CallingContext context, String entitlementPath, IEntitlementsContext entCtx) throws RaptureException, RaptNotLoggedInException {
         // Check to see if the user is an apiKey (it will have a prefix of zz )
@@ -944,13 +957,6 @@ public enum Kernel {
         return INSTANCE.apiHooksService;
     }
 
-    /**
-     * Return the RapturePluginClassLoader that should be used for finding invocables.
-     */
-    public static RapturePluginClassLoader getRapturePluginClassLoader() {
-        return rapturePluginClassLoader;
-    }
-
     private Map<String, InstallableKernel> iKernels = new HashMap<String, InstallableKernel>();
 
     public static void addInstallableKernel(InstallableKernel iKernel) {
@@ -1003,4 +1009,5 @@ public enum Kernel {
         return (sb.toString());
     }
 
+	
 }

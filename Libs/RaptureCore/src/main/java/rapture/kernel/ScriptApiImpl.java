@@ -39,6 +39,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
+import com.google.common.collect.Lists;
+
 import rapture.common.CallingContext;
 import rapture.common.EntitlementSet;
 import rapture.common.Messages;
@@ -85,8 +87,6 @@ import reflex.node.ReflexNode;
 import reflex.util.ValueSerializer;
 import reflex.value.ReflexValue;
 
-import com.google.common.collect.Lists;
-
 public class ScriptApiImpl extends KernelBase implements ScriptApi {
     private static final Logger log = Logger.getLogger(ScriptApiImpl.class);
 
@@ -110,7 +110,7 @@ public class ScriptApiImpl extends KernelBase implements ScriptApi {
             s.setScript(script);
             s.setAuthority(internalURI.getAuthority());
 
-            RaptureScriptStorage.add(s, context.getUser(), Messages.getString("Script.createdScript")); //$NON-NLS-1$
+            RaptureScriptStorage.add(internalURI, s, context.getUser(), Messages.getString("Script.createdScript")); //$NON-NLS-1$
             return s;
         }
     }
@@ -130,7 +130,7 @@ public class ScriptApiImpl extends KernelBase implements ScriptApi {
             s.setScript(toScriptURI);
             s.setAuthority(internalURI.getAuthority());
 
-            RaptureScriptStorage.add(s, context.getUser(), Messages.getString("Script.createdScript")); //$NON-NLS-1$
+            RaptureScriptStorage.add(internalURI, s, context.getUser(), Messages.getString("Script.createdScript")); //$NON-NLS-1$
         }
     }
 
@@ -153,7 +153,6 @@ public class ScriptApiImpl extends KernelBase implements ScriptApi {
             RaptureScriptStorage.deleteByAddress(internalURI, context.getUser(), Messages.getString("Script.removedScript"));
         }
     }
-
 
     @Override
     public Boolean doesScriptExist(CallingContext context, String scriptURI) {
@@ -192,10 +191,10 @@ public class ScriptApiImpl extends KernelBase implements ScriptApi {
     @Override
     public RaptureScript putScript(CallingContext context, String scriptURI, RaptureScript script) {
         RaptureURI internalURI = new RaptureURI(scriptURI, Scheme.SCRIPT);
-        if (internalURI.hasDocPath() && !internalURI.getDocPath().equals(script.getName()))
-            throw RaptureExceptionFactory.create(
-                    HttpURLConnection.HTTP_BAD_REQUEST,
+        if (internalURI.hasDocPath() && !internalURI.getDocPath().equals(script.getName())) {
+            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST,
                     String.format("Supplied URI " + scriptURI + " has a docPath which does not match the script name " + script.getName()));
+        }
         script.setAuthority(internalURI.getAuthority());
 
         RaptureScript currentlyThere = RaptureScriptStorage.readByAddress(script.getAddressURI());
@@ -204,7 +203,7 @@ public class ScriptApiImpl extends KernelBase implements ScriptApi {
                     String.format("You cannot write directly to a link, use %s instead", currentlyThere.getScript()));
         }
 
-        RaptureScriptStorage.add(script, context.getUser(), Messages.getString("Script.updated")); //$NON-NLS-1$
+        RaptureScriptStorage.add(internalURI, script, context.getUser(), Messages.getString("Script.updated")); //$NON-NLS-1$
         return script;
     }
 
@@ -231,13 +230,12 @@ public class ScriptApiImpl extends KernelBase implements ScriptApi {
         IRaptureScript scriptContext = ScriptFactory.getScript(script);
         Map<String, Object> extraVals = new HashMap<String, Object>();
         if (params != null) {
-	        for (Map.Entry<String, String> entry : params.entrySet()) {
-	            extraVals.put(entry.getKey(), entry.getValue());
-	        }
+            for (Map.Entry<String, String> entry : params.entrySet()) {
+                extraVals.put(entry.getKey(), entry.getValue());
+            }
         }
         Kernel.writeComment(String.format(Messages.getString("Script.running"), scriptURI)); //$NON-NLS-1$
-        final String activityId = Kernel.getActivity()
-                .createActivity(ContextFactory.getKernelUser(), internalURI.toString(), "Running script", 1L, 100L);
+        final String activityId = Kernel.getActivity().createActivity(ContextFactory.getKernelUser(), internalURI.toString(), "Running script", 1L, 100L);
 
         IActivityInfo activityInfo = new IActivityInfo() {
             @Override
@@ -323,27 +321,30 @@ public class ScriptApiImpl extends KernelBase implements ScriptApi {
                 requestObj.setContext(context);
                 // Note: Inconsistent
                 requestObj.setScriptURI(currParentDocPath);
-                ContextValidator.validateContext(context, EntitlementSet.Script_listScriptsByUriPrefix, requestObj); 
-
-                boolean top = currParentDocPath.isEmpty();
-                List<RaptureFolderInfo> children = RaptureScriptStorage.getChildren(currParentDocPath);
-
-                if (children != null) {
-                    for (RaptureFolderInfo child : children) {
-                        String childDocPath = currParentDocPath + (top ? "" : "/") + child.getName();
-                        if (child.getName().isEmpty()) continue;
-                        // Special case: for Scripts childDocPath includes the authority
-
-                        String childUri = Scheme.SCRIPT + "://" + childDocPath + (child.isFolder() ? "/" : "");
-                        ret.put(childUri, child);
-                        if (child.isFolder()) {
-                            parentsStack.push(childDocPath);
-                        }
-                    }
-                }
+                ContextValidator.validateContext(context, EntitlementSet.Script_listScriptsByUriPrefix, requestObj);
             } catch (RaptureException e) {
                 // permission denied
                 log.debug("No read permission on folder " + currParentDocPath);
+                continue;
+            }
+
+            boolean top = currParentDocPath.isEmpty();
+            List<RaptureFolderInfo> children = RaptureScriptStorage.getChildren(currParentDocPath);
+
+            if (((children == null) || children.isEmpty()) && (currDepth == 0) && internalUri.hasDocPath()) {
+                throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, apiMessageCatalog.getMessage("NoSuchFolder", internalUri.toString())); //$NON-NLS-1$
+            } else if (children != null) {
+                for (RaptureFolderInfo child : children) {
+                    String childDocPath = currParentDocPath + (top ? "" : "/") + child.getName();
+                    if (child.getName().isEmpty()) continue;
+                    // Special case: for Scripts childDocPath includes the authority
+
+                    String childUri = Scheme.SCRIPT + "://" + childDocPath + (child.isFolder() ? "/" : "");
+                    ret.put(childUri, child);
+                    if (child.isFolder()) {
+                        parentsStack.push(childDocPath);
+                    }
+                }
             }
 
         }
@@ -356,29 +357,29 @@ public class ScriptApiImpl extends KernelBase implements ScriptApi {
         List<String> folders = new ArrayList<>();
         Set<String> notEmpty = new HashSet<>();
         List<String> removed = new ArrayList<>();
-        
+
         DeleteScriptPayload requestObj = new DeleteScriptPayload();
         requestObj.setContext(context);
-        
+
         folders.add(uriPrefix.endsWith("/") ? uriPrefix : uriPrefix + "/");
         for (Entry<String, RaptureFolderInfo> entry : docs.entrySet()) {
             String uri = entry.getKey();
             boolean isFolder = entry.getValue().isFolder();
-            
+
             try {
                 requestObj.setScriptUri(uri);
                 if (isFolder) {
-                    ContextValidator.validateContext(context, EntitlementSet.Script_deleteScriptsByUriPrefix, requestObj); 
-                    folders.add(0, uri.substring(0, uri.length()-1));
+                    ContextValidator.validateContext(context, EntitlementSet.Script_deleteScriptsByUriPrefix, requestObj);
+                    folders.add(0, uri.substring(0, uri.length() - 1));
                 } else {
-                    ContextValidator.validateContext(context, EntitlementSet.Script_deleteScript, requestObj); 
+                    ContextValidator.validateContext(context, EntitlementSet.Script_deleteScript, requestObj);
                     deleteScript(context, uri);
                     removed.add(uri);
                 }
             } catch (RaptureException e) {
                 // permission denied
-                log.debug("Unable to delete "+uri+" : " + e.getMessage());
-                int colon = uri.indexOf(":") +3;
+                log.debug("Unable to delete " + uri + " : " + e.getMessage());
+                int colon = uri.indexOf(":") + 3;
                 while (true) {
                     int slash = uri.lastIndexOf('/');
                     if (slash < colon) break;
@@ -593,7 +594,7 @@ public class ScriptApiImpl extends KernelBase implements ScriptApi {
 
     @Override
     public RaptureScript putRawScript(CallingContext context, String scriptURI, String content, String language, String purpose, List<String> param_types,
-                                      List<String> param_names) {
+            List<String> param_names) {
         RaptureURI uri = new RaptureURI(scriptURI, Scheme.SCRIPT);
         RaptureScript script = new RaptureScript();
         RaptureScriptLanguage lang;
@@ -624,7 +625,7 @@ public class ScriptApiImpl extends KernelBase implements ScriptApi {
         script.setPurpose(purp);
         script.setScript(content);
         script.setParameters(parms);
-        RaptureScriptStorage.add(script, context.getUser(), "Update");
+        RaptureScriptStorage.add(uri, script, context.getUser(), "Update");
         return script;
     }
 
@@ -672,11 +673,11 @@ public class ScriptApiImpl extends KernelBase implements ScriptApi {
                 inputs.put(param.getParameterName(), scriptParam);
             }
             MetaReturn returnInfo = parser.scriptInfo.getReturnInfo();
-            
-                String type = returnInfo.getType().toUpperCase();
-                output.setParameterType(RaptureParameterType.valueOf(type));
-                output.setDescription(returnInfo.getDescription());
-               
+
+            String type = returnInfo.getType().toUpperCase();
+            output.setParameterType(RaptureParameterType.valueOf(type));
+            output.setDescription(returnInfo.getDescription());
+
             result.setProperties(parser.scriptInfo.getProperties());
         } catch (Exception e) {
             log.error("ScriptApiImpl.getInterface, scriptURI: " + scriptURI);
@@ -686,5 +687,5 @@ public class ScriptApiImpl extends KernelBase implements ScriptApi {
         result.setInputs(inputs);
         result.setRet(output);
         return result;
-     }
+    }
 }

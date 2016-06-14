@@ -25,14 +25,17 @@ package rapture.kernel;
 
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
+import rapture.common.AbstractUpdateObject;
+import rapture.common.BlobContainer;
+import rapture.common.BlobUpdateObject;
 import rapture.common.CallingContext;
+import rapture.common.DocUpdateObject;
 import rapture.common.RaptureFolderInfo;
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
@@ -40,16 +43,17 @@ import rapture.common.SearchHit;
 import rapture.common.SearchResponse;
 import rapture.common.SeriesPoint;
 import rapture.common.api.SearchApi;
+import rapture.common.exception.RaptureException;
 import rapture.common.exception.RaptureExceptionFactory;
 import rapture.common.model.DocumentWithMeta;
 import rapture.common.model.SearchRepoConfig;
 import rapture.common.model.SearchRepoConfigStorage;
+import rapture.common.pipeline.PipelineConstants;
 import rapture.common.series.SeriesUpdateObject;
 import rapture.config.ConfigLoader;
 import rapture.kernel.pipeline.SearchPublisher;
-import rapture.kernel.search.SearchRepoType;
 import rapture.kernel.search.SearchRepository;
-import rapture.object.Searchable;
+import rapture.search.SearchRepoType;
 
 public class SearchApiImpl extends KernelBase implements SearchApi {
     private static Logger logger = Logger.getLogger(SearchApiImpl.class);
@@ -60,45 +64,39 @@ public class SearchApiImpl extends KernelBase implements SearchApi {
 
     // Trusted calls
 
-    public void writeSearchEntry(String repo, DocumentWithMeta doc) {
-        logger.info("Writing doc search entry to " + repo);
-        Kernel.getRepoCacheManager().getSearchRepo(repo).put(doc);
+    @Deprecated
+    public void writeSearchEntry(String searchRepo, DocumentWithMeta doc) {
+        logger.debug(String.format("Writing doc search entry to [%s]", searchRepo));
+        getRepoOrFail(searchRepo).put(new DocUpdateObject(doc));
     }
 
-    public void writeSearchEntry(String repo, SeriesUpdateObject seriesUpdateObject) {
-        logger.info("Writing series search entry to " + repo);
-        Kernel.getRepoCacheManager().getSearchRepo(repo).put(seriesUpdateObject);
+    public void writeSearchEntry(String searchRepo, AbstractUpdateObject updateObject) {
+        logger.debug(String.format("Writing series search entry to [%s]", searchRepo));
+        getRepoOrFail(searchRepo).put(updateObject);
     }
 
-    public void deleteSearchEntry(String repo, RaptureURI uri) {
-        logger.info("Removing search entry to " + repo + " uri=" + uri.toString());
-        SearchRepository r = Kernel.getRepoCacheManager().getSearchRepo(repo);
-        r.remove(uri);
+    public void deleteSearchEntry(String searchRepo, RaptureURI uri) {
+        logger.debug(String.format("Removing uri [%s] search entry from search repo [%s]", uri.toString(), searchRepo));
+        getRepoOrFail(searchRepo).remove(uri);
     }
 
     @Override
     public SearchResponse search(CallingContext context, String query) {
-        List<String> types = Arrays.asList(SearchRepoType.DOC.toString(), SearchRepoType.META.toString(), SearchRepoType.URI.toString(),
-                SearchRepoType.SERIES.toString());
-        return qualifiedSearch(context, ConfigLoader.getConf().FullTextSearchDefaultRepo, types, query);
+        return qualifiedSearch(context, ConfigLoader.getConf().FullTextSearchDefaultRepo, SearchRepoType.valueList, query);
     }
 
     @Override
     public SearchResponse searchWithCursor(CallingContext context, String cursorId, int size, String query) {
-        List<String> types = Arrays.asList(SearchRepoType.DOC.toString(), SearchRepoType.META.toString(), SearchRepoType.URI.toString(),
-                SearchRepoType.SERIES.toString());
-        return qualifiedSearchWithCursor(context, ConfigLoader.getConf().FullTextSearchDefaultRepo, types, cursorId, size, query);
+        return qualifiedSearchWithCursor(context, ConfigLoader.getConf().FullTextSearchDefaultRepo, SearchRepoType.valueList, cursorId, size, query);
     }
 
     @Override
-    public Boolean validateSearchRepo(CallingContext context,
-            String searchRepoUri) {
+    public Boolean validateSearchRepo(CallingContext context, String searchRepoUri) {
         return true; // for now
     }
 
     @Override
-    public void createSearchRepo(CallingContext context, String searchRepoUri,
-            String config) {
+    public void createSearchRepo(CallingContext context, String searchRepoUri, String config) {
         checkParameter("Repository URI", searchRepoUri);
         checkParameter("Config", config);
 
@@ -119,9 +117,7 @@ public class SearchApiImpl extends KernelBase implements SearchApi {
         rbc.setConfig(config);
         rbc.setAuthority(interimUri.getAuthority());
         SearchRepoConfigStorage.add(rbc, context.getUser(), "create repo");
-
-        // blob repo will be cached when it's accessed the first time
-        logger.info("Creating Repository " + searchRepoUri);
+        logger.info("Created search repository config for uri: " + searchRepoUri);
     }
 
     @Override
@@ -130,8 +126,7 @@ public class SearchApiImpl extends KernelBase implements SearchApi {
     }
 
     @Override
-    public SearchRepoConfig getSearchRepoConfig(CallingContext context,
-            String searchRepoUri) {
+    public SearchRepoConfig getSearchRepoConfig(CallingContext context, String searchRepoUri) {
         RaptureURI uri = new RaptureURI(searchRepoUri, Scheme.SEARCH);
         if (uri.hasDocPath()) {
             throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, apiMessageCatalog.getMessage("NoDocPath", searchRepoUri)); //$NON-NLS-1$
@@ -164,19 +159,23 @@ public class SearchApiImpl extends KernelBase implements SearchApi {
     }
 
     // In get trusted - these are called asynchronously from the above calls
-    public void rebuild(String repoUriStr) {
-        drop(repoUriStr);
+    public void rebuild(String repoUriStr, String searchRepoUriStr) {
+        drop(repoUriStr, searchRepoUriStr);
         RaptureURI repoUri = new RaptureURI(repoUriStr);
-        String searchRepo = getSearchRepo(repoUri);
-        workOn(searchRepo, repoUri.toShortString(), repoUri.getScheme());
+        if (StringUtils.isNotBlank(searchRepoUriStr)) {
+            workOn(searchRepoUriStr, repoUri.toShortString(), repoUri.getScheme());
+        }
     }
 
     private void workOn(String searchRepo, String prefix, Scheme scheme) {
-        SearchRepository r = Kernel.getRepoCacheManager().getSearchRepo(searchRepo);
+        SearchRepository r = getRepoOrFail(searchRepo);
         Map<String, RaptureFolderInfo> info;
         switch (scheme) {
         case SERIES:
             info = Kernel.getSeries().listSeriesByUriPrefix(ContextFactory.getKernelUser(), prefix, 1);
+            break;
+        case BLOB:
+            info = Kernel.getBlob().listBlobsByUriPrefix(ContextFactory.getKernelUser(), prefix, 1);
             break;
         default:
             info = Kernel.getDoc().listDocsByUriPrefix(ContextFactory.getKernelUser(), prefix, 1);
@@ -201,25 +200,27 @@ public class SearchApiImpl extends KernelBase implements SearchApi {
                     SeriesUpdateObject ser = new SeriesUpdateObject(newPrefix, keys, values);
                     r.put(ser);
                     break;
+                case BLOB:
+                    BlobContainer bc = Kernel.getBlob().getBlob(ContextFactory.getKernelUser(), newPrefix);
+                    BlobUpdateObject buo = new BlobUpdateObject(new RaptureURI(newPrefix, Scheme.BLOB));
+                    buo.setPayload(bc);
+                    r.put(buo);
                 default:
                     DocumentWithMeta dm = Kernel.getDoc().getDocAndMeta(ContextFactory.getKernelUser(), newPrefix);
                     dm.setDisplayName(newPrefix);
-                    r.put(dm);
+                    r.put(new DocUpdateObject(dm));
                     break;
                 }
             }
         }
     }
 
-    public void drop(String repoUriStr) {
-        // 1. Work out search repo for doc repo
-        // 2. Search for documents in that repo in the URI area that match this docRepo
-        // 3. For each one, drop that from the index
-        // (with appropriate batching)
-        RaptureURI repoUri = new RaptureURI(repoUriStr);
-        String searchRepo = getSearchRepo(repoUri);
+    public void drop(String repo, String searchRepo) {
+        // 1. Search for documents in the given search repo in the URI area that match this repo
+        // 2. For each one, drop that from the index (with appropriate batching)
+        RaptureURI repoUri = new RaptureURI(repo);
         if (searchRepo != null) {
-            SearchRepository r = Kernel.getRepoCacheManager().getSearchRepo(searchRepo);
+            SearchRepository r = getRepoOrFail(searchRepo);
             if (r != null) {
                 SearchResponse resp = r.searchForRepoUris(repoUri.getScheme().toString(), repoUri.getAuthority(), null);
                 while (!resp.getSearchHits().isEmpty()) {
@@ -227,7 +228,6 @@ public class SearchApiImpl extends KernelBase implements SearchApi {
                         log.debug("URI is " + h.getUri());
                         r.remove(new RaptureURI(h.getUri()));
                     }
-                    // log.info("Searching again using cursor id " + resp.getCursorId());
                     resp = r.searchForRepoUris(repoUri.getScheme().toString(), repoUri.getAuthority(), resp.getCursorId());
                 }
                 log.info("End of drop");
@@ -239,33 +239,51 @@ public class SearchApiImpl extends KernelBase implements SearchApi {
         }
     }
 
-    private String getSearchRepo(RaptureURI uri) {
-        Searchable searchableRepo;
-        switch (uri.getScheme()) {
-        case SERIES:
-            searchableRepo = Kernel.getRepoCacheManager().getSeriesRepoConfig(uri.getAuthority());
-            break;
-        default:
-            searchableRepo = Kernel.getRepoCacheManager().getDocConfig(uri.getAuthority());
-            break;
-        }
-        if (ConfigLoader.getConf().FullTextSearchOn && searchableRepo.getFtsIndex()) {
-            String publishRepo = searchableRepo.getFtsIndexRepo();
-            if (StringUtils.isBlank(publishRepo)) {
-                publishRepo = ConfigLoader.getConf().FullTextSearchDefaultRepo;
-            }
-            return publishRepo;
-        }
-        return null;
-    }
-
     @Override
     public SearchResponse qualifiedSearch(CallingContext context, String searchRepo, List<String> types, String query) {
-        return Kernel.getRepoCacheManager().getSearchRepo(searchRepo).search(types, query);
+        return getRepoOrFail(searchRepo).search(types, query);
     }
 
     @Override
     public SearchResponse qualifiedSearchWithCursor(CallingContext context, String searchRepo, List<String> types, String cursorId, int size, String query) {
-        return Kernel.getRepoCacheManager().getSearchRepo(searchRepo).searchWithCursor(types, cursorId, size, query);
+        return getRepoOrFail(searchRepo).searchWithCursor(types, cursorId, size, query);
+    }
+
+    /**
+     * Return the {@link SearchRepository} for the given uri or throw a {@link RaptureException} with an error message
+     *
+     * @param uri
+     * @return
+     */
+    private SearchRepository getRepoOrFail(RaptureURI uri) {
+        SearchRepository repo = getRepoFromCache(uri.getAuthority());
+        if (repo == null) {
+            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, apiMessageCatalog.getMessage("NoSuchRepo", uri.toAuthString()));
+        } else {
+            return repo;
+        }
+    }
+
+    /**
+     * We need to start all the search repos at startup
+     */
+    @Override
+    public void startSearchRepos(CallingContext context) {
+        if (ConfigLoader.getConf().FullTextSearchOn) {
+            List<SearchRepoConfig> configs = getSearchRepoConfigs(context);
+            for (SearchRepoConfig config : configs) {
+                getRepoOrFail(config.getAuthority()).start();
+            }
+            Kernel.getPipeline().setupStandardCategory(context, PipelineConstants.CATEGORY_SEARCH);
+            Kernel.setCategoryMembership(PipelineConstants.CATEGORY_SEARCH);
+        }
+    }
+
+    private SearchRepository getRepoOrFail(String searchRepoUri) {
+        return getRepoOrFail(new RaptureURI(searchRepoUri, Scheme.SEARCH));
+    }
+
+    private SearchRepository getRepoFromCache(String authority) {
+        return Kernel.getRepoCacheManager().getSearchRepo(authority);
     }
 }

@@ -23,6 +23,8 @@ tokens {
   EXP;
   EXP_LIST;
   KEYVAL_LIST;
+  JARURI_LIST;
+  JARURI;
   ID_LIST;
   IF;
   TERNARY;
@@ -54,6 +56,7 @@ tokens {
   IMPORT;
   IMPORTAS;
   IMPORTPARAMS;
+  IMPORTFROM;
   EXPORT;
   PATCH;
   MATCH;
@@ -62,6 +65,7 @@ tokens {
   SWITCH;
   CASE;
   DEFAULT;
+  CONTAINS;
 }
 
 @parser::header{
@@ -425,7 +429,7 @@ continueStatement
   ;
 
 importStatement
-  : Import l=Identifier ('as' r=Identifier)? ('with' '(' p=exprList ')')?-> ^(IMPORT[$Import] $l ^(IMPORTAS $r?) ^(IMPORTPARAMS $p?))
+  : Import l=Identifier ('as' r=Identifier)? ('with' '(' p=exprList ')')? ('from' j=jarUriList)? -> ^(IMPORT[$Import] $l ^(IMPORTAS $r?) ^(IMPORTPARAMS $p?) ^(IMPORTFROM $j?))
   ;
 
 port
@@ -509,6 +513,7 @@ func2
   |  Vars '(' ')'                    -> ^(FUNC_CALL[$Vars] Vars)
   |  MergeIf '(' exprList ')'     -> ^(FUNC_CALL[$MergeIf] MergeIf exprList)
   |  Format '(' exprList ')' -> ^(FUNC_CALL[$Format] Format exprList)
+  |  DateFormat '(' date=expression (',' format=expression)? ')' -> ^(FUNC_CALL[$DateFormat] DateFormat $date $format?) 
   |  Merge '(' exprList ')'       -> ^(FUNC_CALL[$Merge] Merge exprList)
   |  Message '(' a=expression ',' m=expression ')' -> ^(FUNC_CALL[$Message] Message $a $m)
   |  PutCache '(' v=expression ',' n=expression (',' exp=expression)? ')' -> ^(FUNC_CALL[$PutCache] PutCache $v $n $exp?)
@@ -547,6 +552,7 @@ func2
   |  Spawn '(' p=expression (',' ex=expression ',' f=expression)? ')'
                                   -> ^(FUNC_CALL[$Spawn] Spawn $p $ex? $f?)
   |  Defined '(' Identifier ')'   -> ^(FUNC_CALL[$Defined] Defined Identifier)
+  |  Defined '(' lookup ')'   -> ^(FUNC_CALL[$Defined] Defined lookup)
   |  Round '(' v=expression (',' dp=expression)? ')'
                                   -> ^(FUNC_CALL[$Round] Round $v $dp?)
   |  Lib   '(' expression ')'     -> ^(FUNC_CALL[$Lib] Lib expression)
@@ -562,6 +568,7 @@ func2
                                   -> ^(FUNC_CALL[$Template] Template $t $p)
   |  KernelIdentifier '(' exprList? ')'
                                   -> ^({token("KERNEL_CALL", KERNEL_CALL, $KernelIdentifier.getLine())} KernelIdentifier exprList?)
+  |  Identifier Contains expression -> ^(FUNC_CALL[$Contains] Contains Identifier expression)
   ;
 
 // MATCH allows expressions as case values
@@ -785,6 +792,14 @@ keyVal
   :  k=expression ':' v=expression -> ^(KEYVAL[$k.start] $k $v)
   ;
 
+jarUriList
+  : OParen jarUri (',' jarUri)* CParen -> ^(JARURI_LIST jarUri+)
+  ;
+  
+jarUri
+  :  (j=String | j=QuotedString) -> ^(JARURI $j)
+  ;
+
 lookup
   :  functionCall indexes?       -> ^(LOOKUP[$functionCall.start] functionCall indexes?)
   |  PropertyPlaceholder         -> ^(LOOKUP[$PropertyPlaceholder] PropertyPlaceholder)
@@ -878,6 +893,7 @@ Import   : 'import';
 Suspend  : 'suspend';
 Message  : 'message';
 Format   : 'format';
+DateFormat   : 'dateformat';
 Use      : 'use';
 MapFn    : 'map';
 FilterFn : 'filter';
@@ -894,6 +910,7 @@ Transpose : 'transpose';
 Evals    : 'evals';
 Vars     : 'vars';
 Matches  : 'matches';
+Contains : 'contains';
 
 
 Split    : 'split';
@@ -996,7 +1013,8 @@ Long
   ;
 
 Number
-  :  Int '.' Digit (Digit)*
+  :  Int '.' Digit (Digit)* ( 'E' ('+' | '-')? Digit (Digit)* )?
+  |  Int 'E' ('+' | '-')? Digit (Digit)*
   ;
 
 PackageIdentifier

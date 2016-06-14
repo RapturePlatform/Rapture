@@ -33,9 +33,6 @@
 		class="org.apache.log4j.RollingFileAppender">
 		<param name="file" value="${LOG_DIR_PATH}/important.log" />
 		<param name="append" value="true"/>
-		<rollingPolicy class="org.apache.log4j.rolling.TimeBasedRollingPolicy">
-                        <param name="FileNamePattern" value="${LOG_DIR_PATH}/important.%d.log.gz" />
-        </rollingPolicy>
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern" value="%d{ABSOLUTE} %5p [%t] (%F:%L) - %m%n" />
 		</layout>
@@ -45,9 +42,6 @@
 		class="org.apache.log4j.RollingFileAppender">
 		<param name="file" value="${LOG_DIR_PATH}/warn.log" />
 		<param name="append" value="true"/>
-		<rollingPolicy class="org.apache.log4j.rolling.TimeBasedRollingPolicy">
-                        <param name="FileNamePattern" value="${LOG_DIR_PATH}/warn.%d.log.gz" />
-        </rollingPolicy>
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern" value="%d{ABSOLUTE} %5p [%t] (%F:%L) - %m%n" />
 		</layout>
@@ -61,9 +55,6 @@
 		class="org.apache.log4j.RollingFileAppender">
 		<param name="file" value="${LOG_DIR_PATH}/other.log" />
 		<param name="append" value="true"/>
-		<rollingPolicy class="org.apache.log4j.rolling.TimeBasedRollingPolicy">
-                        <param name="FileNamePattern" value="${LOG_DIR_PATH}/other.%d.log.gz" />
-        </rollingPolicy>
 		<param name="Threshold" value="DEBUG" />
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern" value="%d{ABSOLUTE} %5p [%t] (%F:%L) - %m%n" />

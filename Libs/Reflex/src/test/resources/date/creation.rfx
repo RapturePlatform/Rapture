@@ -48,3 +48,4 @@ println("Date is " + y);
 yAsString = '' + y;
 
 assert(yAsString == '20120105');
+return true;

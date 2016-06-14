@@ -24,10 +24,13 @@
 package reflex.function;
 
 import reflex.IReflexHandler;
+import reflex.ReflexException;
 import reflex.Scope;
 import reflex.debug.IReflexDebugger;
 import reflex.node.BaseNode;
+import reflex.node.ReflexNode;
 import reflex.value.ReflexValue;
+import reflex.value.internal.ReflexUndefinedValue;
 
 /**
  * Sleep for param milliseconds
@@ -37,8 +40,9 @@ import reflex.value.ReflexValue;
  */
 public class DefinedNode extends BaseNode {
 
-    private String varName;
+    private String varName = null;
     private String namespacePrefix;
+    private ReflexNode node = null;
 
     public DefinedNode(int lineNumber, IReflexHandler handler, Scope scope, String varName, String namespacePrefix) {
         super(lineNumber, handler, scope);
@@ -46,12 +50,30 @@ public class DefinedNode extends BaseNode {
         this.namespacePrefix = namespacePrefix;
     }
 
+    public DefinedNode(int lineNumber, IReflexHandler handler, Scope scope, ReflexNode foo, String namespacePrefix) {
+        super(lineNumber, handler, scope);
+        this.node = foo;
+        this.namespacePrefix = namespacePrefix;
+    }
+
     @Override
     public ReflexValue evaluate(IReflexDebugger debugger, Scope scope) {
         debugger.stepStart(this, scope);
         boolean ret = true;
-        if (scope.resolve(varName, namespacePrefix) == null) {
-            ret = false;
+
+        if (varName != null) {
+            if (scope.resolve(varName, namespacePrefix) == null) {
+                ret = false;
+            }
+        } else {
+            if (node != null) {
+                try {
+                    ReflexValue val = node.evaluate(debugger, scope);
+                    if (val instanceof ReflexUndefinedValue) ret = false;
+                } catch (ReflexException e) {
+                    ret = false;
+                }
+            }
         }
         ReflexValue retVal = new ReflexValue(ret);
         debugger.stepEnd(this, retVal, scope);

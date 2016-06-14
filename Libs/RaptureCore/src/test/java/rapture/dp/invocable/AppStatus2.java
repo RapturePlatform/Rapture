@@ -31,8 +31,8 @@ import rapture.dp.InvocableUtils;
 
 public class AppStatus2 extends AbstractInvocable {
 
-    public AppStatus2(String workerURI) {
-        super(workerURI);
+    public AppStatus2(String workerURI, String stepName) {
+        super(workerURI, stepName);
     }
 
     private static final Logger logger = Logger.getLogger(AppStatus2.class);

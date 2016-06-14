@@ -5,12 +5,15 @@ jar.manifest.attributes "Implementation-Version" : version
 
 mainClassName = "rapture.test.java"
 
+def nosetestsCmd = System.properties['nosetests'] ?: "nosetests"
+
 dependencies {
     compile "net.rapture:WorkflowsCore:$project.platformVersion"
     compile "net.rapture:RaptureCore:$project.platformVersion"
     compile "net.rapture:RaptureAddinCore:$project.platformVersion"
     compile "net.rapture:MongoDb:$project.platformVersion"
     compile "net.rapture:RabbitMQ:$project.platformVersion"
+    compile "net.rapture:PluginInstallerLib:$project.platformVersion"
     compile("net.rapture:Cassandra:$project.platformVersion") {
        exclude module: 'servlet-api'
     }
@@ -19,6 +22,23 @@ dependencies {
 }
 
 
+task nightlyTests (type: Test) {
+    description 'Runs TestNG tests in the Java nightly test group.'
+    useTestNG(){
+      ignoreFailures = true
+      useDefaultListeners = true
+      jvmArgs '-Xmx2048m', '-XX:MaxPermSize=256m'
+      includeGroups 'nightly'
+      excludeGroups 'nosearch'
+
+      if(project.hasProperty('env')){
+          ext.testngfile = "/src/test/resources/${env}_testng.xml"
+       } else {
+          ext.testngfile = "/src/test/resources/local_testng.xml"
+       }
+      suites ext.testngfile
+    }
+}
 
 task smokeTests (type: Test) {
     description 'Runs TestNG tests in the Java smoke test group.'
@@ -52,4 +72,20 @@ task docTests (type: Test) {
         }
         suites ext.testngfile
     }
+
 }
+
+task pythonSearchTests(type: Exec) {
+    description 'Run Python search tests using nosetests'
+    println 'Running Python search tests'
+    commandLine nosetestsCmd, 'src/test/python/searchTests.py'
+}
+
+task pythonTests(type: Test, dependsOn: pythonSearchTests) {
+    description 'Run Python tests'
+    println 'Running Python tests'
+}
+
+// This doesn't seem to work
+pythonTests.mustRunAfter nightlyTests
+pythonSearchTests.mustRunAfter nightlyTests

@@ -39,13 +39,17 @@ public class AtomNode extends BaseNode {
     private static AtomNode ONE = new AtomNode(-1, null, null, Integer.valueOf(1));
     private static AtomNode ZERO = new AtomNode(-1, null, null, Integer.valueOf(0));
 
-    public static AtomNode getIntegerAtom(int lineNumber, IReflexHandler handler, Scope s, String integerText) {
-        if (integerText.equals("0")) {
+    public static AtomNode getIntegerAtom(int lineNumber, IReflexHandler handler, Scope s, String numberText) {
+        if (numberText.equals("0")) {
             return ZERO;
-        } else if (integerText.equals("1")) {
+        } else if (numberText.equals("1")) {
             return ONE;
         } else {
-            return new AtomNode(lineNumber, handler, s, java.lang.Integer.parseInt(integerText));
+            Long ago = java.lang.Long.parseLong(numberText);
+            if (ago == ago.intValue()) {
+                return new AtomNode(lineNumber, handler, s, ago.intValue());
+            }
+            return new AtomNode(lineNumber, handler, s, ago);
         }
     }
 

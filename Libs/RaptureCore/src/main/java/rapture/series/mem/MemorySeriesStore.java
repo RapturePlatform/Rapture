@@ -23,17 +23,6 @@
  */
 package rapture.series.mem;
 
-import rapture.common.RaptureFolderInfo;
-import rapture.common.SeriesValue;
-import rapture.common.exception.RaptureExceptionFactory;
-import rapture.dsl.serfun.DecimalSeriesValue;
-import rapture.dsl.serfun.LongSeriesValue;
-import rapture.dsl.serfun.StringSeriesValue;
-import rapture.dsl.serfun.StructureSeriesValueImpl;
-import rapture.series.SeriesPaginator;
-import rapture.series.SeriesStore;
-import rapture.series.children.ChildrenRepo;
-
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
@@ -48,12 +37,23 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
+import rapture.common.RaptureFolderInfo;
+import rapture.common.SeriesValue;
+import rapture.common.exception.RaptureExceptionFactory;
+import rapture.dsl.serfun.DecimalSeriesValue;
+import rapture.dsl.serfun.LongSeriesValue;
+import rapture.dsl.serfun.StringSeriesValue;
+import rapture.dsl.serfun.StructureSeriesValueImpl;
+import rapture.series.AbstractSeriesStore;
+import rapture.series.SeriesPaginator;
+import rapture.series.children.ChildrenRepo;
+
 /**
  * An in memory version of a series repo, for testing
  *
  * @author amkimian
  */
-public class MemorySeriesStore implements SeriesStore {
+public class MemorySeriesStore extends AbstractSeriesStore {
 
     private Map<String, SortedMap<String, SeriesValue>> seriesStore = Maps.newHashMap();
     private final ChildrenRepo childrenRepo;
@@ -78,8 +78,8 @@ public class MemorySeriesStore implements SeriesStore {
             }
 
             @Override
-            public void dropRow(String key) {
-                MemorySeriesStore.this.deletePointsFromSeries(key);
+            public boolean dropRow(String key) {
+                return MemorySeriesStore.this.deletePointsFromSeries(key);
             }
         };
     }
@@ -169,7 +169,7 @@ public class MemorySeriesStore implements SeriesStore {
     }
 
     @Override
-    public Boolean deletePointsFromSeriesByPointKey(String key, List<String> pointKeys) {
+    public boolean deletePointsFromSeriesByPointKey(String key, List<String> pointKeys) {
         SortedMap<String, SeriesValue> series = getSeries(key);
         if (series == null) return false;
         for (String column : pointKeys) {
@@ -179,21 +179,31 @@ public class MemorySeriesStore implements SeriesStore {
         return true;
     }
 
-    private void dropSeries(String key) {
-        seriesStore.remove(key);
-        childrenRepo.dropFileEntry(key);
+    private boolean dropSeries(String key) {
+        SortedMap<String, SeriesValue> val = seriesStore.remove(key);
+        if (val != null) {
+            // TODO remove empty folder here
+            return childrenRepo.dropFileEntry(key);
+        }
+        return false;
     }
 
     @Override
-    public void deletePointsFromSeries(String key) {
-        dropSeries(key);
+    public boolean deletePointsFromSeries(String key) {
+        return dropSeries(key);
     }
 
     @Override
     public List<SeriesValue> getPoints(String key) {
         SortedMap<String, SeriesValue> map = getSeries(key);
         if (map == null) return Lists.newArrayList();
-        return Lists.newArrayList(map.values());
+        Iterator<SeriesValue> iter = map.values().iterator();
+        List<SeriesValue> result = Lists.newLinkedList();
+        for (int i = 0; i < overflowLimit; i++) {
+            if (!iter.hasNext()) break;
+            result.add(iter.next());
+        }
+        return result;
     }
 
     @Override
@@ -202,7 +212,8 @@ public class MemorySeriesStore implements SeriesStore {
         if (map == null) return Lists.newArrayList();
         Iterator<SeriesValue> iter = map.tailMap(startColumn).values().iterator();
         List<SeriesValue> result = Lists.newLinkedList();
-        for (int i = 0; i < maxNumber; i++) {
+        int limit = (maxNumber > overflowLimit) ? overflowLimit : maxNumber;
+        for (int i = 0; i < limit; i++) {
             if (!iter.hasNext()) break;
             result.add(iter.next());
         }
@@ -227,10 +238,12 @@ public class MemorySeriesStore implements SeriesStore {
 
         Collections.reverse(vals);
 
-        if (maxNumber > vals.size()) {
+        int limit = (maxNumber > overflowLimit) ? overflowLimit : maxNumber;
+
+        if (limit > vals.size()) {
             return new ArrayList<>(vals);
         }
-        return new ArrayList<>(vals.subList(0, maxNumber));
+        return new ArrayList<>(vals.subList(0, limit));
     }
 
     @Override
@@ -282,26 +295,26 @@ public class MemorySeriesStore implements SeriesStore {
     }
 
     @Override
-    public void unregisterKey(String key) {
-        childrenRepo.dropFileEntry(key);
+    public boolean unregisterKey(String key) {
+        return childrenRepo.dropFileEntry(key);
     }
 
     @Override
     public SeriesValue getLastPoint(String key) {
         SortedMap<String, SeriesValue> map = getSeries(key);
+        if (map == null) return null;
         String lastKey = map.lastKey();
         return map.get(lastKey);
     }
 
     @Override
-    public void unregisterKey(String key, boolean isFolder) {
-        if (isFolder) childrenRepo.dropFolderEntry(key);
-        childrenRepo.dropFileEntry(key);
+    public boolean unregisterKey(String key, boolean isFolder) {
+        return (isFolder) ? childrenRepo.dropFolderEntry(key) : childrenRepo.dropFileEntry(key);
     }
-    
+
     @Override
     public void createSeries(String key) {
-    	getOrMakeSeries(key);
+        getOrMakeSeries(key);
     }
 
     @Override
@@ -309,5 +322,4 @@ public class MemorySeriesStore implements SeriesStore {
         unregisterKey(key);
         deletePointsFromSeries(key);
     }
-
 }

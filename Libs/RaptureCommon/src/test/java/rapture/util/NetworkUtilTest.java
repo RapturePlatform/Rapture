@@ -23,24 +23,30 @@
  */
 package rapture.util;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
+import org.junit.Test;
 
 public class NetworkUtilTest {
 
     @Test
-    public void testServerIPFormat(){
-        String [] ip=NetworkUtil.getServerIP().split("\\.");
-        Assert.assertEquals (ip.length,4);
+    public void testServerIPFormat() {
+        String[] ip = NetworkUtil.getServerIP().split("\\.");
+        assertEquals(ip.length, 4);
 
     }
-    
+
     @Test
-    public void testServerNameFormat(){
-        
-        Assert.assertTrue (NetworkUtil.getServerName().matches("\\S*"));
-
+    public void testServerNameFormat() {
+        assertTrue(NetworkUtil.getServerName().matches("\\S*"));
     }
-    
+
+    @Test
+    public void testServerIpSiteLocal() {
+        String siteLocalIp = NetworkUtil.getSiteLocalServerIP();
+        assertNotNull(siteLocalIp);
+    }
+
 }

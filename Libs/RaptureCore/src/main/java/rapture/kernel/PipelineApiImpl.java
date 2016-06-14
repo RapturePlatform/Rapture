@@ -23,6 +23,16 @@
  */
 package rapture.kernel;
 
+import java.net.HttpURLConnection;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.apache.log4j.Logger;
+
 import rapture.common.CallingContext;
 import rapture.common.CategoryQueueBindings;
 import rapture.common.CategoryQueueBindingsStorage;
@@ -55,16 +65,6 @@ import rapture.kernel.pipeline.PipelineTaskStatusManager;
 import rapture.notification.NotificationMessage;
 import rapture.notification.RaptureMessageListener;
 import rapture.repo.RepoVisitor;
-
-import java.net.HttpURLConnection;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.apache.log4j.Logger;
 
 /**
  * App is all about defining applications for jnlp use
@@ -424,10 +424,10 @@ public class PipelineApiImpl extends KernelBase implements PipelineApi, RaptureM
             log.debug("Publishing pipeline task: " + task.getTaskId());
             RaptureExchange exchangeConfig = ExchangeConfigFactory.createStandardDirect(task.getCategoryList().get(0));
             ExchangeHandler handler = getExchangeHandler(exchangeConfig);
-            
+
             // Should this be an exception? Seems to happen in unit tests executed from gradle but not from Eclipse.
             if (handler == null) {
-                log.warn("Cannot publish message: No handler defined for "+exchangeConfig.toString()+" for task "+task.toString());
+                log.warn("Cannot publish message: No handler defined for " + exchangeConfig.toString() + " for task " + task.toString());
             } else {
                 String routingKey = ExchangeConfigFactory.createLoadBalancingRoutingKey(task.getCategoryList().get(0));
                 handler.putTaskOnExchange(exchangeConfig.getName(), task, routingKey);

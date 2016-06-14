@@ -23,22 +23,24 @@
  */
 package rapture.series;
 
-import com.google.common.collect.ImmutableList;
-import org.junit.Test;
-import rapture.common.RaptureFolderInfo;
-import rapture.common.SeriesValue;
-import rapture.repo.SeriesRepo;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Iterator;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import org.junit.Test;
+
+import com.google.common.collect.ImmutableList;
+
+import rapture.common.RaptureFolderInfo;
+import rapture.common.SeriesValue;
+import rapture.repo.SeriesRepo;
 
 /**
- * This class defines the contract for a SeriesStore and defines UnitTests
- * for an implementation thereof. Each Implementation (e.g.
- * CassandraSeriesStore) should extend this class and implement the abstract
- * methods to initialize the type of store under test.
+ * This class defines the contract for a SeriesStore and defines UnitTests for an implementation thereof. Each Implementation (e.g. CassandraSeriesStore) should
+ * extend this class and implement the abstract methods to initialize the type of store under test.
  * 
  * @author mel
  */
@@ -46,8 +48,7 @@ public abstract class SeriesContract {
     SeriesRepo repo = createRepo();
 
     /**
-     * Create and initialize the series repo to be used by the test. Run
-     * once per suite.
+     * Create and initialize the series repo to be used by the test. Run once per suite.
      */
     public abstract SeriesRepo createRepo();
 
@@ -82,7 +83,6 @@ public abstract class SeriesContract {
         assertEquals(145.0, points.get(0).asDouble(), 0);
         assertEquals(133.0, points.get(12).asDouble(), 0);
 
-
         points = repo.getPointsAfterReverse(key, "199", 5);
         assertEquals(5, points.size());
         assertEquals(199.0, points.get(0).asDouble(), 0);
@@ -98,7 +98,7 @@ public abstract class SeriesContract {
         assertEquals("199", lastPoint.getColumn());
         assertEquals(199.0, lastPoint.asDouble(), 0);
     }
-    
+
     @Test
     public void testGetPointsOverflow() {
         repo.addDoubleToSeries("GetPointOver", "197307012340", 1.41);
@@ -128,6 +128,25 @@ public abstract class SeriesContract {
         assertEquals(1.41, pointList.get(1).asDouble(), 0.0);
         assertEquals(1.43, pointList.get(2).asDouble(), 0.0);
         assertEquals(1.44, pointList.get(3).asDouble(), 0.0);
+    }
+
+    @Test
+    public void testOverflowLimit() {
+        int orig = repo.getOverflowLimit();
+        repo.setOverflowLimit(2);
+        repo.addDoubleToSeries("OverflowLimit", "199306011454", 1.41);
+        repo.addDoubleToSeries("OverflowLimit", "199306011444", 1.42);
+        repo.addDoubleToSeries("OverflowLimit", "199306011520", 1.43);
+        repo.addDoubleToSeries("OverflowLimit", "199306011523", 1.44);
+        List<SeriesValue> pointList = repo.getPoints("OverflowLimit");
+        assertEquals(2, pointList.size());
+        assertEquals(1.42, pointList.get(0).asDouble(), 0.0);
+        assertEquals(1.41, pointList.get(1).asDouble(), 0.0);
+        pointList = repo.getPointsAfter("OverflowLimit", "199306011454", 2);
+        assertEquals(2, pointList.size());
+        assertEquals("199306011454", pointList.get(0).getColumn());
+        assertEquals("199306011520", pointList.get(1).getColumn());
+        repo.setOverflowLimit(orig);
     }
 
     @Test
@@ -199,7 +218,7 @@ public abstract class SeriesContract {
         assertEquals(5, sv.get(0).asStructure().getField("a").asLong());
         assertEquals(8, sv.get(0).asStructure().getField("nest").asStructure().getField("b").asLong());
     }
-    
+
     @Test
     public void testFancyJson() {
         String path = "struct/series2";
@@ -209,7 +228,7 @@ public abstract class SeriesContract {
         assertEquals(1, sv.size());
         assertEquals("[1,2,3]", sv.get(0).asStructure().getField("arr").asString());
     }
-    
+
     @Test
     public void testFindSeriesByUriPrefix() {
         String ab1 = "a/b/s1";
@@ -227,8 +246,8 @@ public abstract class SeriesContract {
         repo.addDoubleToSeries(acd3, "197307012363", 1.41);
 
         assertTrue(repo.listSeriesByUriPrefix("").size() >= 1); // at least this, but
-                                                      // could have more from
-                                                      // other tests
+        // could have more from
+        // other tests
         assertEquals(2, repo.listSeriesByUriPrefix("a").size());
 
         assertEquals(2, repo.listSeriesByUriPrefix("a/b").size());
@@ -246,8 +265,7 @@ public abstract class SeriesContract {
         assertEquals("s1", children.get(0).getName());
         assertTrue(children.get(1).isFolder());
         assertFalse(children.get(0).isFolder());
-        
-        
+
         repo.deletePointsFromSeries("a/b/s1");
         assertEquals(1, repo.listSeriesByUriPrefix("a/b").size());
         repo.deletePointsFromSeries("a/b/s2");

@@ -25,7 +25,7 @@ storedef   : s=storestyle config { addConfig($s.text); };
 
 repstyle   : SREP;
 // CSV != FILE?
-storestyle : s=(MEMORY | FILE | CASSANDRA | CSV | MONGO) { setStore($s); };
+storestyle : s=(MEMORY | FILE | CASSANDRA | CSV | MONGODB) { setStore($s); };
 
 config 	   : LBRACE entrylist RBRACE;
 

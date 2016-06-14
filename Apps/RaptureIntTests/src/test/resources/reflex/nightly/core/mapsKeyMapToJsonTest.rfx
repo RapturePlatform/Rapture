@@ -1,0 +1,14 @@
+returnVal = false;
+
+jData = '{"dub":0.3,"lng":42,"str":"Hello Cruel World"}';
+
+println ('Positive test for map keys to json');
+mapJData = {};
+mapJData = fromjson(jData);
+if (keys(mapJData)==['dub', 'lng', 'str']) do
+	returnVal = true;
+else do
+	returnVal = false;
+end 
+
+assert(returnVal);

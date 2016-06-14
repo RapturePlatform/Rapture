@@ -9,23 +9,18 @@ jdk:
   - oraclejdk8
 
 build:
-  pre_ci_boot:
-    image_name: incapture/basetest
-    image_tag: latest
-    pull: true
-    options: "-e HOME=/root"
   ci:
     - cd Libs/
-    - ./gradlew clean genAll install
-    - chmod +x test.sh
-    - ./test.sh
+    - ./gradlew clean genAll Install
     - cd ../Apps
-    - ./gradlew clean installDist -x test
+    - ./gradlew clean installApp -x test
     - ./gradlew test
   on_success:
     - echo "success"
   on_failure:
-    - echo "failure"
+    - mkdir -p ../shippable
+    - tar cf - `find . -name reports` | (cd ../shippable ; tar xf - )
+    - echo "That did not go well"
   cache: true
 
 integrations:

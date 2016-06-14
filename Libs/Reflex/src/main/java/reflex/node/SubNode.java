@@ -51,7 +51,15 @@ public class SubNode extends BaseNode {
 
         // number - number
         if (a.isInteger() && b.isInteger()) {
-        	ret = new ReflexValue(a.asLong() - b.asLong());
+            // Don't overflow.
+            Long longer = a.asLong() - b.asLong();
+            int lint = longer.intValue();
+            // DO NOT USE THE TERNARY OPERATOR HERE - it forces val to be of type LONG 
+            Object val = lint;
+            if (longer != lint) {
+            	val = longer;
+            }
+            ret = new ReflexValue(val);
         } else if (a.isNumber() && b.isNumber()) {
         	ret = new ReflexValue(a.asBigDecimal().subtract(b.asBigDecimal()));
         } else if (a.isDate() && b.isNumber()) {

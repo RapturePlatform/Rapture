@@ -34,22 +34,23 @@ import rapture.common.dp.AbstractInvocable;
 
 /**
  * This is a test class for single-node workflow tests
+ * 
  * @author mel
  */
 public class SignalInvocable extends AbstractInvocable {
     private static Logger log = Logger.getLogger(SignalInvocable.class);
     private final String key;
     private final long delay;
-    
-    public SignalInvocable(String workerURI, String key, long delay) {
-        super(workerURI);
+
+    public SignalInvocable(String workerURI, String stepName, String key, long delay) {
+        super(workerURI, stepName);
         this.key = key;
         this.delay = delay;
     }
 
     @Override
     public String invoke(CallingContext ctx) {
-        log.info("Signal "+key);
+        log.info("Signal " + key);
         if (delay > 0) try {
             Thread.sleep(delay);
         } catch (InterruptedException e) {
@@ -59,17 +60,18 @@ public class SignalInvocable extends AbstractInvocable {
         else Singleton.setSignal(key);
         return "ok";
     }
+
     public static class Singleton {
         static Set<String> on = Sets.newHashSet();
-        
+
         synchronized static public void setSignal(String key) {
             on.add(key);
         }
-        
+
         synchronized static public void clearSignal(String key) {
             on.remove(key);
         }
-        
+
         synchronized static public boolean testSignal(String key) {
             return on.contains(key);
         }

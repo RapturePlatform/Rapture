@@ -23,6 +23,11 @@
  */
 package rapture.kernel.cache;
 
+import java.util.Collections;
+
+import org.antlr.runtime.RecognitionException;
+import org.apache.log4j.Logger;
+
 import rapture.common.Scheme;
 import rapture.common.exception.ExceptionToString;
 import rapture.common.exception.RaptureExceptionFactory;
@@ -31,6 +36,7 @@ import rapture.common.model.DocumentRepoConfigStorage;
 import rapture.common.model.IndexConfig;
 import rapture.common.model.IndexConfigStorage;
 import rapture.common.model.RaptureDocConfig;
+import rapture.config.ConfigLoader;
 import rapture.dsl.idef.IndexDefinition;
 import rapture.dsl.idef.IndexDefinitionFactory;
 import rapture.index.IndexProducer;
@@ -38,13 +44,6 @@ import rapture.kernel.ContextFactory;
 import rapture.kernel.cache.config.DocRepoConfigFactory;
 import rapture.repo.RepoFactory;
 import rapture.repo.Repository;
-
-import java.util.Collections;
-
-import org.antlr.runtime.RecognitionException;
-import org.apache.log4j.Logger;
-
-import rapture.config.ConfigLoader;
 
 /**
  * @author yanwang
@@ -62,6 +61,10 @@ public class DocRepoCache extends AbstractStorableRepoCache<DocumentRepoConfig> 
     public DocumentRepoConfig reloadConfig(String authority) {
         DocumentRepoConfig config = DocumentRepoConfigStorage.readByFields(authority);
         if (config != null) {
+            if (config.getDeleted()) {
+                log.info("Config for " + authority + " has been deleted ");
+                return null;
+            }
             return config;
         }
         try {

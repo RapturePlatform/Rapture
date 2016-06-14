@@ -26,6 +26,7 @@ package rapture.dp;
 import java.lang.reflect.InvocationTargetException;
 import java.net.HttpURLConnection;
 import java.net.URLClassLoader;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -33,6 +34,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -51,7 +53,6 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import rapture.common.AppStatus;
 import rapture.common.AppStatusGroup;
 import rapture.common.AppStatusGroupStorage;
-import rapture.common.BlobContainer;
 import rapture.common.CallingContext;
 import rapture.common.ErrorWrapper;
 import rapture.common.ErrorWrapperFactory;
@@ -61,7 +62,6 @@ import rapture.common.RaptureScript;
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
 import rapture.common.WorkOrderExecutionState;
-import rapture.common.api.BlobApi;
 import rapture.common.dp.AbstractInvocable;
 import rapture.common.dp.ContextVariables;
 import rapture.common.dp.Step;
@@ -82,8 +82,9 @@ import rapture.common.event.EventConstants;
 import rapture.common.exception.RaptureException;
 import rapture.common.exception.RaptureExceptionFactory;
 import rapture.common.impl.jackson.JacksonUtil;
+import rapture.common.jar.ChildFirstClassLoader;
+import rapture.common.jar.ParentFirstClassLoader;
 import rapture.common.mime.MimeDecisionProcessAdvance;
-import rapture.common.model.BlobRepoConfig;
 import rapture.config.LocalConfigService;
 import rapture.dp.event.WorkOrderStatusUpdateEvent;
 import rapture.dp.metrics.WorkflowMetricsService;
@@ -95,10 +96,12 @@ import rapture.kernel.LockApiImpl;
 import rapture.kernel.dp.ExecutionContextUtil;
 import rapture.kernel.dp.StepRecordUtil;
 import rapture.kernel.dp.WorkOrderStatusUtil;
+import rapture.kernel.script.KernelScript;
 import rapture.log.MDCService;
 import rapture.script.reflex.ReflexRaptureScript;
 import rapture.server.dp.JoinCountdown;
 import rapture.server.dp.JoinCountdownStorage;
+import reflex.value.ReflexValue;
 
 /**
  * Default implementation that submits steps sequentially to the pipeline. Steps are picked up and acted upon and this is repeated until the process has
@@ -120,8 +123,6 @@ public class DefaultDecisionProcessExecutor implements DecisionProcessExecutor {
 
     private static final ExecutorService metricsExecutor = Executors
             .newSingleThreadExecutor(new ThreadFactoryBuilder().setNameFormat("DP-Metrics-Executor").build());
-
-    private static final String SUSPEND = "__reserved__SUSPEND";
 
     static {
         RETURN.setName("$RETURN");
@@ -204,7 +205,7 @@ public class DefaultDecisionProcessExecutor implements DecisionProcessExecutor {
                 }
                 nextId++;
             }
-            WorkOrderStorage.add(workOrder, ContextFactory.getKernelUser().getUser(), "Update for fork");
+            WorkOrderStorage.add(new RaptureURI(workOrderUri, Scheme.WORKORDER), workOrder, ContextFactory.getKernelUser().getUser(), "Update for fork");
             saveWorker(worker);
         } finally {
             releaseMultiWorkerLock(workOrder, worker, FORCE);
@@ -256,12 +257,12 @@ public class DefaultDecisionProcessExecutor implements DecisionProcessExecutor {
             for (Worker child : stillborn) {
                 workOrder.getWorkerIds().add(child.getId());
             }
-            WorkOrderStorage.add(workOrder, ContextFactory.getKernelUser().getUser(), "Update for split");
+            WorkOrderStorage.add(new RaptureURI(workOrderUri, Scheme.WORKORDER), workOrder, ContextFactory.getKernelUser().getUser(), "Update for split");
             JoinCountdown countdown = new JoinCountdown();
             countdown.setParentId(parent.getId());
             countdown.setWorkOrderURI(parent.getWorkOrderURI());
             countdown.setWaitCount(children.size());
-            JoinCountdownStorage.add(countdown, ContextFactory.getKernelUser().getUser(), "Starting Countdown");
+            JoinCountdownStorage.add(null, countdown, ContextFactory.getKernelUser().getUser(), "Starting Countdown");
         } finally {
             releaseMultiWorkerLock(workOrder, parent, FORCE);
         }
@@ -331,13 +332,15 @@ public class DefaultDecisionProcessExecutor implements DecisionProcessExecutor {
         worker.setStatus(WorkerExecutionState.RUNNING);
         saveWorker(worker);
 
+        String workerURI = createWorkerURI(worker.getWorkOrderURI(), worker.getId()).toString();
+        
         workOrder.setStatus(WorkOrderStatusUtil.computeStatus(workOrder, false));
-        WorkOrderStorage.add(workOrder, ContextFactory.getKernelUser().getUser(), "Updating status");
+        WorkOrderStorage.add(new RaptureURI(workOrder.getWorkOrderURI(), Scheme.WORKORDER), workOrder, ContextFactory.getKernelUser().getUser(), "Updating status");
 
         String stepURI = stack.get(0); // don't pop stack just yet -- we are
         // currently executing this
         log.info("Processing step: " + stepURI);
-        String workerURI = createWorkerURI(worker.getWorkOrderURI(), worker.getId()).toString();
+  
         CallingContext kernelUser = ContextFactory.getKernelUser();
         Pair<Workflow, Step> pair = Kernel.getDecision().getTrusted().getWorkflowWithStep(kernelUser, stepURI);
         Workflow flow = pair.getLeft();
@@ -378,12 +381,12 @@ public class DefaultDecisionProcessExecutor implements DecisionProcessExecutor {
                         markAsFinished(workOrder, worker, WorkerExecutionState.CANCELLED, EXCEPTION_ABSENT);
                     } else if (REPUBLISHED.equals(transitionName)) {
                         // we don't do anything in this case -- don't want to republish
-                    } else if (SUSPEND.equals(transitionName)) {
+                    } else if (ReflexValue.Internal.SUSPEND.toString().equals(transitionName)) {
                         worker.setStatus(WorkerExecutionState.BLOCKED);
                         saveWorker(worker);
 
                         workOrder.setStatus(WorkOrderStatusUtil.computeStatus(workOrder, false));
-                        WorkOrderStorage.add(workOrder, ContextFactory.getKernelUser().getUser(), "Updating status");
+                        WorkOrderStorage.add(new RaptureURI(workOrder.getWorkOrderURI(), Scheme.WORKORDER), workOrder, ContextFactory.getKernelUser().getUser(), "Updating status");
                     } else {
                         log.trace("no suppress " + transitionName);
                         transitionWorker(worker, workOrder, step, stepURI, transitionName);
@@ -421,20 +424,33 @@ public class DefaultDecisionProcessExecutor implements DecisionProcessExecutor {
                 ExecutionContextUtil.treatValueAsDefaultLiteral(value));
     }
 
-    private AbstractInvocable findInvocable(RaptureURI executableUri, String workerURI, StepRecord stepRecord) {
+    @SuppressWarnings({ "rawtypes", "resource" })
+    private AbstractInvocable findInvocable(CallingContext ctx, Step step, Workflow workflow, RaptureURI executableUri, String workerUri,
+            StepRecord stepRecord) {
         String className = String.format("rapture.dp.invocable.%s", executableUri.getAuthority());
         Class<?> invocableImpl;
+        ClassLoader classLoader;
         try {
-            invocableImpl = Kernel.getRapturePluginClassLoader().loadClass(className);
-        } catch (ClassNotFoundException e) {
-            log.error("Cannot load class " + className);
+            List<String> stepAndWorkflowDeps = new ArrayList<>(step.getJarUriDependencies());
+            stepAndWorkflowDeps.addAll(workflow.getJarUriDependencies());
+            KernelScript ks = new KernelScript();
+            ks.setCallingContext(ctx);
+            if (workflow.getUseParentFirstClassLoader()) {
+                classLoader = new ParentFirstClassLoader(this.getClass().getClassLoader(), ks, stepAndWorkflowDeps);
+            } else {
+                classLoader = new ChildFirstClassLoader(this.getClass().getClassLoader(), ks, stepAndWorkflowDeps);
+            }
+            invocableImpl = classLoader.loadClass(className);
+        } catch (ClassNotFoundException | ExecutionException e) {
+            log.error("Cannot load class " + className, e);
             log.debug(dumpClasspath(AbstractInvocable.class.getClassLoader()));
             throw RaptureExceptionFactory.create("Error executing workflow: " + e.getMessage(), e);
         }
         if (AbstractInvocable.class.isAssignableFrom(invocableImpl)) {
             try {
-                AbstractInvocable invocable = (AbstractInvocable) invocableImpl.getConstructor(String.class).newInstance(workerURI);
-                invocable.setStepName(stepRecord.getName());
+                AbstractInvocable invocable = (AbstractInvocable) invocableImpl.getConstructor(String.class, String.class).newInstance(workerUri,
+                        stepRecord.getName());
+                invocable.setClassLoader(classLoader);
                 invocable.setStepStartTime(stepRecord.getStartTime());
                 return invocable;
             } catch (InstantiationException e) {
@@ -482,8 +498,6 @@ public class DefaultDecisionProcessExecutor implements DecisionProcessExecutor {
         markAsFinished(workOrder, worker, WorkerExecutionState.ERROR, Optional.of(e));
     }
 
-
-
     private void markAsFinished(final WorkOrder workOrder, final Worker worker, WorkerExecutionState status, Optional<RaptureException> re) {
         // If non-null, worker parent to wake after we release the lock.
         Worker parentToWake = null;
@@ -507,12 +521,12 @@ public class DefaultDecisionProcessExecutor implements DecisionProcessExecutor {
                     JoinCountdownStorage.deleteByFields(worker.getWorkOrderURI(), group, ContextFactory.getKernelUser().getUser(), "remove old counter");
                 } else {
                     countdown.setWaitCount(count - 1);
-                    JoinCountdownStorage.add(countdown, ContextFactory.getKernelUser().getUser(), "decrement join countdown");
+                    JoinCountdownStorage.add(null, countdown, ContextFactory.getKernelUser().getUser(), "decrement join countdown");
                 }
             } else if (ids.size() == 1 && ids.get(0).equals(id)) {
                 workOrder.setEndTime(System.currentTimeMillis());
                 try {
-                    WorkOrderStorage.add(workOrder, kernelUser.getUser(), "Finished execution");
+                    WorkOrderStorage.add(new RaptureURI(workOrder.getWorkOrderURI(), Scheme.WORKORDER), workOrder, kernelUser.getUser(), "Finished execution");
                 } finally {
                     Kernel.getDecision().getTrusted().releaseWorkOrderLock(kernelUser, workOrder);
                     WorkOrderExecutionState overallStatus = WorkOrderStatusUtil.computeStatus(workOrder, true);
@@ -526,24 +540,24 @@ public class DefaultDecisionProcessExecutor implements DecisionProcessExecutor {
             // remove the completed id from the master list
             ids.remove(id);
             workOrder.setPendingIds(ids);
-            
-			// Get workflow output from ephemeral storage
-	        DocApiImpl docApi = Kernel.getDoc().getTrusted();
-			String outputUri = RaptureURI.newScheme(worker.getWorkOrderURI(), Scheme.DOCUMENT).toShortString();
 
-			String doc = docApi.getDocEphemeral(kernelUser, outputUri);
-			if (doc != null) {
-				Map<String, Object> map = JacksonUtil.getMapFromJson(doc);
-				Map<String, String> outputs = workOrder.getOutputs();
-				if (outputs == null) {
-					outputs = new LinkedHashMap<>();
-					workOrder.setOutputs(outputs);
-				}
-				for (String key : map.keySet()) {
-					outputs.put(key, map.get(key).toString());
-				}
-			}
-            WorkOrderStorage.add(workOrder, ContextFactory.getKernelUser().getUser(), "Updating status");
+            // Get workflow output from ephemeral storage
+            DocApiImpl docApi = Kernel.getDoc().getTrusted();
+            String outputUri = RaptureURI.newScheme(worker.getWorkOrderURI(), Scheme.DOCUMENT).toShortString();
+
+            String doc = docApi.getDocEphemeral(kernelUser, outputUri);
+            if (doc != null) {
+                Map<String, Object> map = JacksonUtil.getMapFromJson(doc);
+                Map<String, String> outputs = workOrder.getOutputs();
+                if (outputs == null) {
+                    outputs = new LinkedHashMap<>();
+                    workOrder.setOutputs(outputs);
+                }
+                for (String key : map.keySet()) {
+                    outputs.put(key, map.get(key).toString());
+                }
+            }
+            WorkOrderStorage.add(new RaptureURI(workOrder.getWorkOrderURI(), Scheme.WORKORDER), workOrder, ContextFactory.getKernelUser().getUser(), "Updating status");
         } finally {
             releaseMultiWorkerLock(workOrder, worker, NO_FORCE);
         }
@@ -564,12 +578,12 @@ public class DefaultDecisionProcessExecutor implements DecisionProcessExecutor {
 
     private EventLevel getEventLevel(WorkerExecutionState status) {
         switch (status) {
-            case ERROR:
-                return EventLevel.ERROR;
-            case BLOCKED:
-                return EventLevel.WARNING;
-            default:
-                return EventLevel.INFO;
+        case ERROR:
+            return EventLevel.ERROR;
+        case BLOCKED:
+            return EventLevel.WARNING;
+        default:
+            return EventLevel.INFO;
         }
     }
 
@@ -770,7 +784,7 @@ public class DefaultDecisionProcessExecutor implements DecisionProcessExecutor {
         }
         recordAppStatusStepFinish(workOrder, worker, step);
         worker.setViewOverlay(emptyMap);
-        WorkerStorage.add(worker, ContextFactory.getKernelUser().getUser(), "Post execute step");
+        WorkerStorage.add(null, worker, ContextFactory.getKernelUser().getUser(), "Post execute step");
         if (log.isDebugEnabled()) {
             log.debug(String.format("POST: Saving worker: \n%s", JacksonUtil.jsonFromObject(worker)));
         }
@@ -789,7 +803,7 @@ public class DefaultDecisionProcessExecutor implements DecisionProcessExecutor {
     public StepRecord preExecuteStep(WorkOrder workOrder, Worker worker, Step step, String stepURI) {
         worker.setViewOverlay(step.getView());
         recordAppStatusStepStart(workOrder, worker, step);
-        WorkerStorage.add(worker, ContextFactory.getKernelUser().getUser(), "Pre execute step");
+        WorkerStorage.add(null, worker, ContextFactory.getKernelUser().getUser(), "Pre execute step");
 
         StepRecord stepRecord = new StepRecord();
         stepRecord.setStepURI(stepURI);
@@ -895,55 +909,55 @@ public class DefaultDecisionProcessExecutor implements DecisionProcessExecutor {
             int limit = getTimeLimit(step, flow);
 
             switch (executableUri.getScheme()) {
-                case SCRIPT:
-                    String workerAuditUri = InvocableUtils.getWorkflowAuditUri(worker);
-                    RaptureScript script = Kernel.getScript().getScript(ctx, executable);
-                    if (script == null) {
-                        throw RaptureExceptionFactory.create(String.format("Executable [%s] not found for step [%s]", executable, step.getName()));
-                    }
-                    ReflexRaptureScript rScript = new ReflexRaptureScript();
-                    if (workerAuditUri != null) {
-                        rScript.setAuditLogUri(workerAuditUri);
-                    }
-                    String result = rScript.runProgram(ctx, null, script, createScriptValsMap(worker, workerURI, stepRecord), limit);
-                    return (result == null) ? "" : result;
-                case WORKFLOW:
-                    Workflow workflow = WorkflowStorage.readByAddress(executableUri);
-                    String stepName = executableUri.getElement();
-                    if (stepName == null) {
-                        stepName = workflow.getStartStep();
-                    }
-                    if (stepName == null) {
-                        throw RaptureExceptionFactory.create("Unable to determine start step for " + executableUri);
-                    }
-                    String stepURI = RaptureURI.builder(executableUri).element(stepName).build().toString();
-                    // TODO optimize to just immediately execute if current
-                    // server supports listed category
-                    String category = Kernel.getDecision().getTrusted().getStepCategory(ctx, stepURI);
-                    worker.getStack().add(0, stepURI);
-                    // Push the view context for this workflow onto the local
-                    // view stack so that it is
-                    // used in alias resolution
-                    worker.getLocalView().add(0, workflow.getView());
-                    // Push the new app status uri
-                    String appStatusName = InvocableUtils.createAppStatusName(ctx, workflow, worker, "");
-                    if (appStatusName == null) {
-                        appStatusName = "";
-                    }
-                    worker.getAppStatusNameStack().add(0, appStatusName);
-                    saveWorker(worker);
-                    publishStep(worker, category);
-                    return REPUBLISHED;
-                case DP_JAVA_INVOCABLE:
-                    AbstractInvocable<?> abstractInvocable = findInvocable(executableUri, workerURI, stepRecord);
-                    if (limit > 0) {
-                        return abstractInvocable.abortableInvoke(ctx, limit);
-                    } else {
-                        return abstractInvocable.invoke(ctx);
-                    }
-                default:
-                    log.error("Unsupported executable URI: " + executable);
-                    return SUSPEND;
+            case SCRIPT:
+                String workerAuditUri = InvocableUtils.getWorkflowAuditUri(worker);
+                RaptureScript script = Kernel.getScript().getScript(ctx, executable);
+                if (script == null) {
+                    throw RaptureExceptionFactory.create(String.format("Executable [%s] not found for step [%s]", executable, step.getName()));
+                }
+                ReflexRaptureScript rScript = new ReflexRaptureScript();
+                if (workerAuditUri != null) {
+                    rScript.setAuditLogUri(workerAuditUri);
+                }
+                String result = rScript.runProgram(ctx, null, script, createScriptValsMap(worker, workerURI, stepRecord), limit);
+                return (result == null) ? "" : result;
+            case WORKFLOW:
+                Workflow workflow = WorkflowStorage.readByAddress(executableUri);
+                String stepName = executableUri.getElement();
+                if (stepName == null) {
+                    stepName = workflow.getStartStep();
+                }
+                if (stepName == null) {
+                    throw RaptureExceptionFactory.create("Unable to determine start step for " + executableUri);
+                }
+                String stepURI = RaptureURI.builder(executableUri).element(stepName).build().toString();
+                // TODO optimize to just immediately execute if current
+                // server supports listed category
+                String category = Kernel.getDecision().getTrusted().getStepCategory(ctx, stepURI);
+                worker.getStack().add(0, stepURI);
+                // Push the view context for this workflow onto the local
+                // view stack so that it is
+                // used in alias resolution
+                worker.getLocalView().add(0, workflow.getView());
+                // Push the new app status uri
+                String appStatusName = InvocableUtils.createAppStatusName(ctx, workflow, worker, "");
+                if (appStatusName == null) {
+                    appStatusName = "";
+                }
+                worker.getAppStatusNameStack().add(0, appStatusName);
+                saveWorker(worker);
+                publishStep(worker, category);
+                return REPUBLISHED;
+            case DP_JAVA_INVOCABLE:
+                AbstractInvocable<?> abstractInvocable = findInvocable(ctx, step, flow, executableUri, workerURI, stepRecord);
+                if (limit > 0) {
+                    return abstractInvocable.abortableInvoke(ctx, limit);
+                } else {
+                    return abstractInvocable.invoke(ctx);
+                }
+            default:
+                log.error("Unsupported executable URI: " + executable);
+                return ReflexValue.Internal.SUSPEND.toString();
             }
         }
     }

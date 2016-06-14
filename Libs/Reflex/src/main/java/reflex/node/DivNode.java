@@ -48,12 +48,31 @@ public class DivNode extends BaseNode {
         ReflexValue a = lhs.evaluate(debugger, scope);
         ReflexValue b = rhs.evaluate(debugger, scope);
 
+        if (b.equals(0)) {
+            throwError("division by zero", lhs, rhs, a, b);
+        }
         // number / number
         if (a.isNumber() && b.isNumber()) {
-        	BigDecimal bigA = a.asBigDecimal();
-        	BigDecimal bigB = b.asBigDecimal();
-        	BigDecimal product = bigA.divide(bigB);
-        	ReflexValue retVal = new ReflexValue((product.equals(product.longValue())) ? product.longValue() : product);
+            ReflexValue retVal;
+            try {
+                BigDecimal bigA = a.asBigDecimal();
+                BigDecimal bigB = b.asBigDecimal();
+                BigDecimal result = bigA.divide(bigB);
+                try {
+                    if (a.isInteger() && b.isInteger()) {
+                        retVal = new ReflexValue(result.intValueExact());
+                    } else {
+                        retVal = new ReflexValue(result);
+                    }
+                } catch (ArithmeticException e) {
+                    // Will get here if integer division result is fractional but rational
+                    retVal = new ReflexValue(result);
+                }
+            } catch (ArithmeticException e) {
+                // Will get here if result is irrational.
+                retVal = new ReflexValue(a.asDouble() / b.asDouble());
+                log.warn("Irrational result cannot be stored exactly.");
+            }
             debugger.stepEnd(this, retVal, null);
             return retVal;
         }

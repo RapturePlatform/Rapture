@@ -1,0 +1,6 @@
+program = "println('Hello world');";
+handle = @call(program, {}); 
+runResult=@status(handle);
+sleep(1000);
+runResult=@status(handle);
+return runResult; 

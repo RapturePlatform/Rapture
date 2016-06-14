@@ -24,7 +24,6 @@
 package reflex;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import org.antlr.runtime.RecognitionException;
 import org.junit.Test;
@@ -43,7 +42,7 @@ public class RequireTest extends ResourceBasedTest {
     @Test
     public void testStandalone() throws RecognitionException {
         String ret = runTestForWithScriptHandler("/require/module.rfx", new TestScriptHandler(this, "require"));
-        assertEquals("VOID", ret.split("--RETURNS--")[1]);
+        assertEquals(ReflexValue.Internal.VOID.toString(), ret.split("--RETURNS--")[1]);
     }
 
     @Test

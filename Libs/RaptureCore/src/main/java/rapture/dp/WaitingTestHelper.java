@@ -28,8 +28,12 @@ import java.util.concurrent.TimeUnit;
 public class WaitingTestHelper {
 
     public static void retry(Runnable runnable, int timeout) throws InterruptedException {
-        int runningTime = 0;
         long sleepInterval = 500;
+        retry(runnable, timeout, sleepInterval);
+    }
+
+    public static void retry(Runnable runnable, int timeout, long sleepInterval) throws InterruptedException {
+        int runningTime = 0;
         while (true) {
             try {
                 TimeUnit.MILLISECONDS.sleep(sleepInterval);

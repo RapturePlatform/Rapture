@@ -50,8 +50,8 @@ public class ArchiveRepoStep extends AbstractInvocable {
     private static final String TIME_LIMIT = "TIME_LIMIT";
     private static final String ENSURE_VERSION_LIMIT = "ENSURE_VERSION_LIMIT";
 
-    public ArchiveRepoStep(String workerURI) {
-        super(workerURI);
+    public ArchiveRepoStep(String workerURI, String stepName) {
+        super(workerURI, stepName);
     }
 
     @Override
@@ -74,17 +74,17 @@ public class ArchiveRepoStep extends AbstractInvocable {
             int number = Integer.valueOf(timeLimitStr.substring(0, timeLimitStr.length() - 1));
             char dateUnit = timeLimitStr.charAt(timeLimitStr.length() - 1);
             switch (dateUnit) {
-                case 'M':
-                    dateTime = dateTime.minusMonths(number);
-                    break;
-                case 'W':
-                    dateTime = dateTime.minusWeeks(number);
-                    break;
-                case 'D':
-                    dateTime = dateTime.minusDays(number);
-                    break;
-                default:
-                    throw RaptureExceptionFactory.create("Invalid date unit " + dateUnit);
+            case 'M':
+                dateTime = dateTime.minusMonths(number);
+                break;
+            case 'W':
+                dateTime = dateTime.minusWeeks(number);
+                break;
+            case 'D':
+                dateTime = dateTime.minusDays(number);
+                break;
+            default:
+                throw RaptureExceptionFactory.create("Invalid date unit " + dateUnit);
             }
             timeLimit = dateTime.getMillis();
         }

@@ -1,0 +1,30 @@
+returnVal=true;
+//---------------test-----------------
+
+bools = [true, false];
+resultsAND = [];
+resultsOR=[];
+answersAND = [true,false,false,false];
+answersOR = [true,true,true,false];
+
+
+//-------------AND---------------
+
+println('\nTest AND operator via truth table.');
+
+for i in bools do
+	for j in bools do
+		println("${i} && ${j} evaluates to " + (i && j));
+		resultsAND = resultsAND + (i && j);
+	end
+end
+
+if  resultsAND == answersAND do
+	println('results were as expected.');
+	returnVal = true;
+else do
+	returnVal = false;
+	println('results were not as expected.');
+end
+
+assert(returnVal);

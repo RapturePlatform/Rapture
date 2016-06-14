@@ -23,9 +23,6 @@
  */
 package rapture.elasticsearch;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-
 import org.junit.Before;
 import org.junit.Test;
 
@@ -46,7 +43,7 @@ public class ElasticSearchSearchRepositoryIntTest {
         Kernel.getKernel().restart();
         CallingContext context = ContextFactory.getKernelUser();
         ConnectionInfo info = new ConnectionInfo("localhost", 9300, "rapture", "rapture", "default", "default");
-        Kernel.getSys().putConnectionInfo(context, ConnectionType.ES.toString(), info);
+        Kernel.getSys().setConnectionInfo(context, ConnectionType.ES.toString(), info.getInstanceName(), info);
         e = new ElasticSearchSearchRepository();
         e.start();
     }

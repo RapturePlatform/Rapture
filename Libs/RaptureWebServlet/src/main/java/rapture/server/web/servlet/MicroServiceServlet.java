@@ -24,7 +24,11 @@
 package rapture.server.web.servlet;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -76,7 +80,6 @@ public class MicroServiceServlet extends BaseServlet {
 
     }
 
-
     private CallingContext getCallingContext(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         CallingContext callingContext = null;
         try {
@@ -96,29 +99,19 @@ public class MicroServiceServlet extends BaseServlet {
 
     @Override
     public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
-        Properties props = getParams(req);
-        Map<String, Object> parameterMap = new HashMap<String, Object>();
-
-        Enumeration<Object> e = props.keys();
-        while (e.hasMoreElements()) {
-            String key = e.nextElement().toString();
-            String val = props.getProperty(key);
-            parameterMap.put(key, val);
-        }
-
+        Map<String, Object> props = getParams(req);
         DispatchReturn response;
-
         try {
             CallingContext context = getCallingContext(req, resp);
             if (context != null) {
-                process(context, req, resp, parameterMap);
+                process(context, req, resp, props);
             }
         } catch (Exception ex) {
             response = handleUnexpectedException(ex);
             sendResponseAppropriately(response.getContext(), req, resp, response.getResponse());
         }
     }
-    
+
     @Override
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
 
@@ -144,7 +137,7 @@ public class MicroServiceServlet extends BaseServlet {
             // information (the document)
             // Otherwise we are executing the service, so we need to get and validate (coerce) the parameters, call the script, and then process and return the
             // return value
-        } catch (Exception ex){
+        } catch (Exception ex) {
             response = handleUnexpectedException(ex);
             sendResponseAppropriately(response.getContext(), req, resp, response.getResponse());
         }
@@ -196,14 +189,14 @@ public class MicroServiceServlet extends BaseServlet {
         Object ret = ReflexExecutor.runReflexProgram(s.getScript(), handler, coercedParameters);
         resp.setCharacterEncoding("UTF-8");
         switch (service.getReturns().getFrom()) {
-            case "output":
-                resp.getWriter().append(handler.getOutput());
-                break;
-            case "return":
-                resp.getWriter().append(ret.toString());
-                break;
-            default:
-                throw new MicroServiceException(HttpServletResponse.SC_BAD_REQUEST, "Unknown return type " + service.getReturns().getFrom());
+        case "output":
+            resp.getWriter().append(handler.getOutput());
+            break;
+        case "return":
+            resp.getWriter().append(ret.toString());
+            break;
+        default:
+            throw new MicroServiceException(HttpServletResponse.SC_BAD_REQUEST, "Unknown return type " + service.getReturns().getFrom());
         }
         resp.setContentType(service.getReturns().getType());
 
@@ -223,22 +216,22 @@ public class MicroServiceServlet extends BaseServlet {
 
     private Object coerceValue(Object object, String type) throws MicroServiceException {
         switch (type) {
-            case "text":
-                return object.toString();
-            case "number":
+        case "text":
+            return object.toString();
+        case "number":
+            try {
+                Integer v = Integer.parseInt(object.toString());
+                return v;
+            } catch (NumberFormatException e) {
                 try {
-                    Integer v = Integer.parseInt(object.toString());
+                    Double v = Double.parseDouble(object.toString());
                     return v;
-                } catch (NumberFormatException e) {
-                    try {
-                        Double v = Double.parseDouble(object.toString());
-                        return v;
-                    } catch (NumberFormatException e2) {
-                        throw new MicroServiceException(HttpServletResponse.SC_BAD_REQUEST, "Value " + object.toString() + " cannot be coerced to a number");
-                    }
+                } catch (NumberFormatException e2) {
+                    throw new MicroServiceException(HttpServletResponse.SC_BAD_REQUEST, "Value " + object.toString() + " cannot be coerced to a number");
                 }
-            default:
-                throw new MicroServiceException(HttpServletResponse.SC_BAD_REQUEST, "Unknown parameter type " + type);
+            }
+        default:
+            throw new MicroServiceException(HttpServletResponse.SC_BAD_REQUEST, "Unknown parameter type " + type);
         }
     }
 
@@ -252,7 +245,7 @@ public class MicroServiceServlet extends BaseServlet {
         } else {
             Map<String, RaptureFolderInfo> infoMap = Kernel.getDoc().listDocsByUriPrefix(context, uri, 1);
             List<RaptureFolderInfo> info = new ArrayList<RaptureFolderInfo>();
-            for(RaptureFolderInfo rfi : infoMap.values()){
+            for (RaptureFolderInfo rfi : infoMap.values()) {
                 info.add(rfi);
             }
             resp.getOutputStream().write(JacksonUtil.jsonFromObject(info).getBytes());

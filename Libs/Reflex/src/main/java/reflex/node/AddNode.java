@@ -54,7 +54,16 @@ public class AddNode extends BaseNode {
 
         // number + number
         if (a.isInteger() && b.isInteger()) {
-            retVal = new ReflexValue(a.asLong() + b.asLong());
+            // Don't overflow.
+            Long longer = a.asLong() + b.asLong();
+            int lint = longer.intValue();
+            // DO NOT USE THE TERNARY OPERATOR HERE - it forces val to be of type LONG 
+            Object val = lint;
+            if (longer != lint) {
+            	val = longer;
+            }
+            retVal = new ReflexValue(val);
+           
         } else if (a.isNumber() && b.isNumber()) {
         	BigDecimal bigA = a.asBigDecimal();
         	BigDecimal bigB = b.asBigDecimal();

@@ -80,6 +80,8 @@ public class RaptureConfig {
     public String DefaultWorkflowLockConfig = "LOCKING USING MEMORY {}";
     public String DefaultSystemBlobConfig = "BLOB {} USING MEMORY {}";
     public String DefaultSystemBlobFoldersConfig = "REP {} USING MEMORY {}";
+    public String DefaultJarRepoConfig = "BLOB {} USING MEMORY {}";
+    public String DefaultJarRepoMetaConfig = "REP {} USING MEMORY {}";
     public String DefaultWorkflowAuditLog = "LOG {} USING NOTHING { blobRepo = \"sys.blob\"}";
     public String DefaultPerfAuditLog = "LOG {} USING NOTHING { blobRepo = \"sys.blob\"}";
     public Boolean SystemBlobConfigOn = true;
@@ -94,6 +96,9 @@ public class RaptureConfig {
     public String FileRepoDirectory = "";
     public String JarStorage = "FILE";
 
+    // maximum number of series points to return from any series get* call
+    public int SeriesOverflowLimit = 100000;
+
     public String DefaultPythonLocation = "/usr/bin/python";
     public String DefaultAnacondaPythonLocation = "/opt/anaconda/bin/python";
     public String DefaultAnacondaRoot = "/opt/anaconda/envs/";
@@ -105,11 +110,12 @@ public class RaptureConfig {
     public Boolean Configured = false;
 
     public Boolean randomizeDefaultPasswords = false;
-    
+
     // Config around Full Text Search defaults
     public Boolean FullTextSearchOn = false;
-    public String  FullTextSearchDefaultRepo = "search://main";
-    public String  FullTextSearchDefaultConfig = "SEARCH {} USING ELASTIC { index = \"rapturemain\" }";
+    public Boolean FullTextSearchIgnoreClusterName = false;
+    public String FullTextSearchDefaultRepo = "search://main";
+    public String FullTextSearchDefaultConfig = "SEARCH {} USING ELASTIC { index = \"rapturemain\" }";
 
     public void applyOverrides() {
         // Apply overrides to the public fields by looking for properties or env
@@ -149,15 +155,13 @@ public class RaptureConfig {
             throw RaptureExceptionFactory.create("FileRepoDirectory cannot contain backslashes (\\). Please replace with slashes (/).");
         }
 
-        if ( baseDir == null || baseDir.isEmpty()) {
+        if (baseDir == null || baseDir.isEmpty()) {
             baseDir = userHome + "/RaptureFileRepositories/";
-        }
-        else {
+        } else {
             if (baseDir.startsWith("~")) {
                 if (baseDir.startsWith("~/")) {
                     baseDir = baseDir.replaceFirst("^~", userHome);
-                }
-                else {
+                } else {
                     throw RaptureExceptionFactory.create("Cannot expand ~ for other users in FileRepoDirectory configuration.");
                 }
             }

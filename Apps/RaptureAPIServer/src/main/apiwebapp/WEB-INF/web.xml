@@ -10,11 +10,6 @@
 	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 	version="2.5">
 	<servlet>
-		<servlet-name>InitRapture</servlet-name>
-		<servlet-class>rapture.server.web.servlet.RaptureInitServlet</servlet-class>
-		<load-on-startup>1</load-on-startup>
-	</servlet>
-	<servlet>
 		<servlet-name>LOGIN</servlet-name>
 		<servlet-class>rapture.server.web.servlet.LoginServlet</servlet-class>
 	</servlet>

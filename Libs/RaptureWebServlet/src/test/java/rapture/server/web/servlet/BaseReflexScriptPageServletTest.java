@@ -64,10 +64,13 @@ public class BaseReflexScriptPageServletTest {
     }
 
     Map<String, Object> globalParameterMap = null;
-    
+
+    @SuppressWarnings("unchecked")
     @Test
     public void testDoGetParameters() {
         BaseReflexScriptPageServlet brsps = new BaseReflexScriptPageServlet() {
+
+            private static final long serialVersionUID = 5289673110762074930L;
 
             @Override
             protected String getPrintableScript(HttpServletRequest req) {
@@ -77,17 +80,16 @@ public class BaseReflexScriptPageServletTest {
             @Override
             protected String getReflexScript(HttpServletRequest req) {
                 return "//foo";
-            } 
-            
+            }
+
             @Override
             void process(String script, Map<String, Object> parameterMap, HttpServletRequest req, HttpServletResponse resp) throws IOException {
                 globalParameterMap = parameterMap;
             }
         };
-        
+
         HttpServletRequest fakeReq = new HttpServletRequest() {
 
-            
             @Override
             public Object getAttribute(String name) {
                 // TODO Auto-generated method stub
@@ -108,7 +110,7 @@ public class BaseReflexScriptPageServletTest {
             @Override
             public void setCharacterEncoding(String env) throws UnsupportedEncodingException {
                 // TODO Auto-generated method stub
-                
+
             }
 
             @Override
@@ -136,17 +138,17 @@ public class BaseReflexScriptPageServletTest {
             }
 
             Map<String, String[]> parameters = null;
-            
+
             void parseParameters() {
                 if (parameters == null) {
                     parameters = new HashMap<>();
-                    parameters.put("Foo[0][xxx]", new String[] { "X0"} );
+                    parameters.put("Foo[0][xxx]", new String[] { "X0" });
                     parameters.put("Foo[0][yyy]", new String[] { "Y0" });
                     parameters.put("Foo[1][xxx]", new String[] { "X1" });
                     parameters.put("Foo[1][yyy]", new String[] { "Y1" });
                 }
             }
-            
+
             @Override
             public Enumeration<String> getParameterNames() {
                 parseParameters();
@@ -208,13 +210,13 @@ public class BaseReflexScriptPageServletTest {
             @Override
             public void setAttribute(String name, Object o) {
                 // TODO Auto-generated method stub
-                
+
             }
 
             @Override
             public void removeAttribute(String name) {
                 // TODO Auto-generated method stub
-                
+
             }
 
             @Override
@@ -469,13 +471,13 @@ public class BaseReflexScriptPageServletTest {
             @Override
             public void login(String username, String password) throws ServletException {
                 // TODO Auto-generated method stub
-                
+
             }
 
             @Override
             public void logout() throws ServletException {
                 // TODO Auto-generated method stub
-                
+
             }
 
             @Override
@@ -489,7 +491,7 @@ public class BaseReflexScriptPageServletTest {
                 // TODO Auto-generated method stub
                 return null;
             }
-            
+
         };
         HttpServletResponse fakeResp = new HttpServletResponse() {
 
@@ -520,25 +522,25 @@ public class BaseReflexScriptPageServletTest {
             @Override
             public void setCharacterEncoding(String charset) {
                 // TODO Auto-generated method stub
-                
+
             }
 
             @Override
             public void setContentLength(int len) {
                 // TODO Auto-generated method stub
-                
+
             }
 
             @Override
             public void setContentType(String type) {
                 // TODO Auto-generated method stub
-                
+
             }
 
             @Override
             public void setBufferSize(int size) {
                 // TODO Auto-generated method stub
-                
+
             }
 
             @Override
@@ -550,13 +552,13 @@ public class BaseReflexScriptPageServletTest {
             @Override
             public void flushBuffer() throws IOException {
                 // TODO Auto-generated method stub
-                
+
             }
 
             @Override
             public void resetBuffer() {
                 // TODO Auto-generated method stub
-                
+
             }
 
             @Override
@@ -568,13 +570,13 @@ public class BaseReflexScriptPageServletTest {
             @Override
             public void reset() {
                 // TODO Auto-generated method stub
-                
+
             }
 
             @Override
             public void setLocale(Locale loc) {
                 // TODO Auto-generated method stub
-                
+
             }
 
             @Override
@@ -586,7 +588,7 @@ public class BaseReflexScriptPageServletTest {
             @Override
             public void addCookie(Cookie cookie) {
                 // TODO Auto-generated method stub
-                
+
             }
 
             @Override
@@ -622,67 +624,67 @@ public class BaseReflexScriptPageServletTest {
             @Override
             public void sendError(int sc, String msg) throws IOException {
                 // TODO Auto-generated method stub
-                
+
             }
 
             @Override
             public void sendError(int sc) throws IOException {
                 // TODO Auto-generated method stub
-                
+
             }
 
             @Override
             public void sendRedirect(String location) throws IOException {
                 // TODO Auto-generated method stub
-                
+
             }
 
             @Override
             public void setDateHeader(String name, long date) {
                 // TODO Auto-generated method stub
-                
+
             }
 
             @Override
             public void addDateHeader(String name, long date) {
                 // TODO Auto-generated method stub
-                
+
             }
 
             @Override
             public void setHeader(String name, String value) {
                 // TODO Auto-generated method stub
-                
+
             }
 
             @Override
             public void addHeader(String name, String value) {
                 // TODO Auto-generated method stub
-                
+
             }
 
             @Override
             public void setIntHeader(String name, int value) {
                 // TODO Auto-generated method stub
-                
+
             }
 
             @Override
             public void addIntHeader(String name, int value) {
                 // TODO Auto-generated method stub
-                
+
             }
 
             @Override
             public void setStatus(int sc) {
                 // TODO Auto-generated method stub
-                
+
             }
 
             @Override
             public void setStatus(int sc, String sm) {
                 // TODO Auto-generated method stub
-                
+
             }
 
             @Override
@@ -708,33 +710,33 @@ public class BaseReflexScriptPageServletTest {
                 // TODO Auto-generated method stub
                 return null;
             }
-            
+
         };
 
         try {
-            brsps.doGet(fakeReq,  fakeResp);
+            brsps.doGet(fakeReq, fakeResp);
             Enumeration<String> e = fakeReq.getParameterNames();
             while (e.hasMoreElements()) {
                 String key = e.nextElement();
                 assertTrue(globalParameterMap.containsKey(key));
             }
-            
+
             assertTrue(globalParameterMap.containsKey("Foo"));
             assertTrue(globalParameterMap.containsKey("Foo[0]"));
             assertTrue(globalParameterMap.containsKey("Foo[1]"));
-            
+
             Object o = globalParameterMap.get("Foo[0]");
             assertTrue(o instanceof Map);
             Map<String, Object> map = (Map<String, Object>) o;
             assertEquals("X0", map.get("xxx").toString());
             assertEquals("Y0", map.get("yyy").toString());
-            
+
             o = globalParameterMap.get("Foo[1]");
             assertTrue(o instanceof Map);
             map = (Map<String, Object>) o;
             assertEquals("X1", map.get("xxx").toString());
             assertEquals("Y1", map.get("yyy").toString());
-            
+
             o = globalParameterMap.get("Foo");
             assertTrue(o instanceof Map);
             map = (Map<String, Object>) o;
@@ -749,7 +751,7 @@ public class BaseReflexScriptPageServletTest {
             map1 = (Map<String, Object>) o;
             assertEquals("X1", map1.get("xxx").toString());
             assertEquals("Y1", map1.get("yyy").toString());
-            
+
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

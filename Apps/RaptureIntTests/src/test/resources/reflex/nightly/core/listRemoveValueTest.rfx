@@ -1,0 +1,25 @@
+returnVal = false;
+
+//---------- test -----------
+//NUMBER LISTS
+
+
+emptyList = [];
+fullList = emptyList + 4;
+
+
+println ('Test removing from list of only numbers');
+fullList = fullList - 4;
+if (fullList == [ 1,2 ]) do
+	returnVal = true;
+else do
+	returnVal = false;
+end
+
+if (fullList != [ 4,1,2 ]) do
+	returnVal = true;
+else do
+	returnVal = false;
+end
+
+assert(returnVal);

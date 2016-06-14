@@ -28,8 +28,6 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import com.google.common.net.MediaType;
-
 import rapture.common.CallingContext;
 import rapture.common.RaptureScript;
 import rapture.common.RaptureURI;
@@ -50,11 +48,12 @@ import rapture.workflow.script.WorkflowScriptConstants;
 public class ScriptBodyStep<T> extends AbstractInvocable<T> {
     private static final Logger log = Logger.getLogger(ScriptBodyStep.class);
 
-    public ScriptBodyStep(String workerURI) {
-        super(workerURI);
+    public ScriptBodyStep(String workerURI, String stepName) {
+        super(workerURI, stepName);
     }
 
-    @Override public String invoke(CallingContext context) {
+    @Override
+    public String invoke(CallingContext context) {
         log.info("Attempting to run embedded Reflex Script");
         RaptureScript script = new RaptureScript();
         String body = Kernel.getDecision().getContextValue(context, getWorkerURI(), WorkflowScriptConstants.BODY);
@@ -70,29 +69,30 @@ public class ScriptBodyStep<T> extends AbstractInvocable<T> {
         if (workerAuditUri != null) {
             rScript.setAuditLogUri(workerAuditUri);
         }
-        
+
         RaptureURI outputUri = RaptureURI.newScheme(getWorkerURI(), Scheme.DOCUMENT);
         DocApiImpl docApi = Kernel.getDoc().getTrusted();
         StringBuilder sb = new StringBuilder();
 
-		try {
-			ScriptResult resp = rScript.runProgramExtended(context, null, script, params);
-			if (resp != null) {
-			    log.info("Reflex script returned " + resp);
-			}
-	        for (String s : resp.getOutput()) sb.append(s);
-	        String str = docApi.getDocEphemeral(context, outputUri.toShortString());
-	        Map<String, Object> m = (str == null) ? new HashMap<String, Object>() : JacksonUtil.getMapFromJson(str);
-	        m.put(outputUri.toString(),  sb.toString());
-	        String json = JacksonUtil.jsonFromObject(m);
-	        docApi.putDocEphemeral(context, outputUri.toShortString(), JacksonUtil.jsonFromObject(m));
-	        return "next";
-		} catch (Exception e) {
-			sb.append(e.getMessage());
-	        Map<String, Object> m = new HashMap<>();
-	        m.put(outputUri.toString(),  sb.toString());
-	        docApi.putDocEphemeral(context, outputUri.toShortString(), JacksonUtil.jsonFromObject(m));
-	        throw e;
-		}
+        try {
+            ScriptResult resp = rScript.runProgramExtended(context, null, script, params);
+            if (resp != null) {
+                log.info("Reflex script returned " + resp);
+            }
+            for (String s : resp.getOutput())
+                sb.append(s);
+            String str = docApi.getDocEphemeral(context, outputUri.toShortString());
+            Map<String, Object> m = (str == null) ? new HashMap<String, Object>() : JacksonUtil.getMapFromJson(str);
+            m.put(outputUri.toString(), sb.toString());
+            String json = JacksonUtil.jsonFromObject(m);
+            docApi.putDocEphemeral(context, outputUri.toShortString(), JacksonUtil.jsonFromObject(m));
+            return resp.getReturnValue();
+        } catch (Exception e) {
+            sb.append(e.getMessage());
+            Map<String, Object> m = new HashMap<>();
+            m.put(outputUri.toString(), sb.toString());
+            docApi.putDocEphemeral(context, outputUri.toShortString(), JacksonUtil.jsonFromObject(m));
+            throw e;
+        }
     }
 }

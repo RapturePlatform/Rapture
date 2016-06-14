@@ -104,7 +104,17 @@ public abstract class BaseDispatcher {
         log.debug("Validating request");
         String context = getContextIdFromRequest(req);
         if (context == null) {
-            throw new RaptNotLoggedInException("Not logged in");
+        	// FINAL CHECK - do with have an X-RAPTURE-APIKEY and X-RAPTURE-APPID
+        	// If we do, attempt to load up an APIKeyDefinition from these, if correct,
+        	// set up a calling context from that.
+        	String appid = req.getHeader("x-rapture-appId");
+        	String apikey = req.getHeader("x-rapture-apikey");
+        	CallingContext ctx = Kernel.getKernel().loadContext(appid, apikey);
+        	if (ctx == null) {
+        		throw new RaptNotLoggedInException("Not logged in");
+        	} else {
+        		return ctx;
+        	}
         }
         // Load context
         CallingContext heldContext = Kernel.getKernel().loadContext(context);

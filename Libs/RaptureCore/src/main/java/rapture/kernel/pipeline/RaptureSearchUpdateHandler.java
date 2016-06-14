@@ -21,29 +21,27 @@ public class RaptureSearchUpdateHandler implements QueueHandler {
     @Override
     public boolean handleMessage(String tag, String routing, String contentType, RapturePipelineTask task) {
         String content = task.getContent();
-        log.info("Processing search update request"); //$NON-NLS-1$
+        log.debug("Processing search update request"); //$NON-NLS-1$
         try {
             statusManager.startRunning(task);
             MimeSearchUpdateObject payload = JacksonUtil.objectFromJson(content, MimeSearchUpdateObject.class);
 
             switch (payload.getType()) {
             case CREATE:
-                if (payload.getDoc() != null) {
-                    Kernel.getSearch().getTrusted().writeSearchEntry(payload.getRepo(), payload.getDoc());
-                } else if (payload.getSeriesUpdateObject() != null) {
-                    Kernel.getSearch().getTrusted().writeSearchEntry(payload.getRepo(), payload.getSeriesUpdateObject());
+                if (payload.getUpdateObject() != null) {
+                    Kernel.getSearch().getTrusted().writeSearchEntry(payload.getSearchRepo(), payload.getUpdateObject());
                 } else {
                     log.error("Empty payload.  Doing nothing.");
                 }
                 break;
             case DELETE:
-                Kernel.getSearch().getTrusted().deleteSearchEntry(payload.getRepo(), payload.getUri());
+                Kernel.getSearch().getTrusted().deleteSearchEntry(payload.getSearchRepo(), payload.getUri());
                 break;
             case REBUILD:
-                Kernel.getSearch().getTrusted().rebuild(payload.getRepo());
+                Kernel.getSearch().getTrusted().rebuild(payload.getRepo(), payload.getSearchRepo());
                 break;
             case DROP:
-                Kernel.getSearch().getTrusted().drop(payload.getRepo());
+                Kernel.getSearch().getTrusted().drop(payload.getRepo(), payload.getSearchRepo());
                 break;
             default:
                 log.error("Don't know how to process this search update");
@@ -52,8 +50,7 @@ public class RaptureSearchUpdateHandler implements QueueHandler {
             statusManager.finishRunningWithSuccess(task);
 
         } catch (Exception e) {
-            log.error(String.format("Failed to process update %s", //$NON-NLS-1$
-                    e.getMessage()));
+            log.error("Failed to process update", e);
             statusManager.finishRunningWithFailure(task);
         }
         return true;

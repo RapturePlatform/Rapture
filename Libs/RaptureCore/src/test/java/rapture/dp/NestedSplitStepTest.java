@@ -31,10 +31,15 @@ import static rapture.dp.DPTestUtil.initPipeline;
 import static rapture.dp.DPTestUtil.makeSignalStep;
 import static rapture.dp.DPTestUtil.makeTransition;
 
+import java.util.Arrays;
 import java.util.List;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 
 import rapture.common.CallingContext;
 import rapture.common.WorkOrderExecutionState;
@@ -44,9 +49,6 @@ import rapture.common.dp.Workflow;
 import rapture.dp.invocable.SignalInvocable;
 import rapture.kernel.ContextFactory;
 import rapture.kernel.Kernel;
-
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
 
 public class NestedSplitStepTest {
     private static final String AUTHORITY = "//splitsteptest";
@@ -75,6 +77,15 @@ public class NestedSplitStepTest {
         }
         initPipeline(ctx);
         createWorkflow();
+    }
+
+    @After
+    public void tearDown() {
+        String[] signals = { HELLO, SPLIT_STEP, SPLIT_STEP_A, SPLIT_STEP_B, AFTER_SPLIT, AFTER_SPLIT_B, LEFT_A, LEFT_CONTINUE_A, LEFT_FINISH_A, RIGHT_A, LEFT_B,
+                LEFT_CONTINUE_B, LEFT_FINISH_B, RIGHT_B };
+        for (String signal : Arrays.asList(signals)) {
+            SignalInvocable.Singleton.clearSignal(signal);
+        }
     }
 
     private void createWorkflow() {
@@ -171,6 +182,7 @@ public class NestedSplitStepTest {
     private void assertStatus(final String workOrderUri, final CallingContext context, int timeout, final WorkOrderExecutionState expectedStatus)
             throws InterruptedException {
         WaitingTestHelper.retry(new Runnable() {
+            @Override
             public void run() {
                 WorkOrderStatus status = Kernel.getDecision().getWorkOrderStatus(context, workOrderUri);
                 assertEquals(expectedStatus, status.getStatus());

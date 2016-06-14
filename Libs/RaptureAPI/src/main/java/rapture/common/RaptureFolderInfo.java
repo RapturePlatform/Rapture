@@ -23,45 +23,60 @@
  */
 package rapture.common;
 
+import org.apache.commons.lang3.StringUtils;
+
+import rapture.common.RaptureURI.Parser;
 
 /**
- * Note that this class is referenced in types.api - any changes to this file should be reflected there.
-**/
+ * Note that this class is referenced in types.api - any changes to this file
+ * should be reflected there.
+ **/
 
 public class RaptureFolderInfo implements RaptureTransferObject {
-    
-    
-    public RaptureFolderInfo() {
-        super();
-    }
 
-    public RaptureFolderInfo(String name, boolean folder) {
-        this();
-        this.name = name;
-        this.folder = folder;
-    }
+	public RaptureFolderInfo() {
+		super();
+	}
 
-    @Override
-    public String toString() {
-        return "RaptureFolderInfo [name=" + name + ", folder=" + folder + "]";
-    }
+	public RaptureFolderInfo(String name, boolean folder) {
+		this();
+		this.name = name;
+		this.folder = folder;
+	}
 
-    public String getName() {
-        return name;
-    }
+	@Override
+	public String toString() {
+		return "RaptureFolderInfo [name=" + name + ", folder=" + folder + "]";
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public boolean isFolder() {
-        return folder;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public void setFolder(boolean isFolder) {
-        this.folder = isFolder;
-    }
+	public boolean isFolder() {
+		return folder;
+	}
 
-    private String name;
-    private boolean folder;
+	public void setFolder(boolean isFolder) {
+		this.folder = isFolder;
+	}
+
+	// Remove any prepended path from the name
+	public RaptureFolderInfo trimName() {
+		if (!StringUtils.isEmpty(name)) {
+			if (name.charAt(name.length() - 1) == Parser.SEPARATOR_CHAR)
+				name = name.substring(0, name.length() - 1);
+			int last = name.lastIndexOf('/');
+			if (last >= 0)
+				name = name.substring(last + 1);
+		}
+		return this;
+	}
+
+	private String name;
+	private boolean folder;
 }
