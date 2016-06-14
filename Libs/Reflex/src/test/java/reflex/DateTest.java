@@ -24,6 +24,7 @@
 package reflex;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.antlr.runtime.RecognitionException;
 import org.junit.Test;
@@ -33,8 +34,10 @@ import reflex.value.ReflexDateValue;
 public class DateTest extends ResourceBasedTest {
     @Test
     public void testDateAdding() throws RecognitionException {
-        runTestFor("/date/adding.rfx");
+        String ret = runTestFor("/date/adding.rfx");
+        assertTrue("Test case did not complete successfully", ret.endsWith("true"));
     }
+
 
     // See RAP-3540
     @Test
@@ -43,19 +46,26 @@ public class DateTest extends ResourceBasedTest {
         String s = v.toString();
         assertEquals("20120804", s);
     }
+
     
     @Test
     public void testDateCreation() throws RecognitionException {
-        runTestFor("/date/creation.rfx");
+        String ret = runTestFor("/date/creation.rfx");
+        assertTrue("Test case did not complete successfully", ret.endsWith("true"));
     }
+
 
     @Test
     public void testTime() throws RecognitionException {
-        runTestFor("/time/creation.rfx");
+        String ret = runTestFor("/time/creation.rfx");
+        assertTrue("Test case did not complete successfully", ret.endsWith("true"));
     }
+
 
     @Test
     public void testComparison() throws RecognitionException {
-        runTestFor("/date/comparison.rfx");
+        String ret = runTestFor("/date/comparison.rfx");
+        assertTrue("Test case did not complete successfully", ret.endsWith("true"));
     }
+
 }

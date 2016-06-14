@@ -44,3 +44,4 @@ println("t1 = " + t1);
 t2 = time('12:00:45');
 
 println("t2 = " + t2);
+return true;
