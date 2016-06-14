@@ -1,0 +1,12 @@
+idgenPrefix='TST';
+NUM_DOCS=5;
+docPath= docRepoUri+'/folder/#id';
+idgenCfg = 'IDGEN { base="10",length="5", prefix="'+idgenPrefix+'"} USING MONGODB {prefix="testfountain.'+rand(1000000)+'"}';
+#doc.setDocRepoIdGenConfig(docRepoUri, idgenCfg);
+putData = '{"key1":"#id"}';
+for i=1 to NUM_DOCS do
+	putContentUri = #doc.putDoc(docPath, putData);
+	getContent = #doc.getDoc(putContentUri);
+	assert(putContentUri.contains(idgenPrefix+"0000"+i));
+	assert(getContent.contains(idgenPrefix+"0000"+i));
+end
