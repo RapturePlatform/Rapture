@@ -21,7 +21,7 @@ import rapture.common.RaptureURI;
 import rapture.common.Scheme;
 import rapture.common.client.HttpBlobApi;
 import rapture.common.exception.RaptureException;
-import rapture.nightly.IntegrationTestHelper;
+import rapture.helper.IntegrationTestHelper;
 import rapture.util.ResourceLoader;
 
 public class BlobApiTests {

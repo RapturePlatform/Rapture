@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package rapture.nightly;
+package rapture.helper;
 
 import java.util.HashSet;
 import java.util.Set;

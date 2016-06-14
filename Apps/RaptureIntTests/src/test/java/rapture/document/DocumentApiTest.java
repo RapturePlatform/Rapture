@@ -2,6 +2,8 @@ package rapture.document;
 
 import rapture.common.client.HttpScriptApi;
 import rapture.common.model.DocumentMetadata;
+import rapture.helper.IntegrationTestHelper;
+
 import static rapture.common.Scheme.DOCUMENT;
 import static rapture.common.Scheme.EVENT;
 import static rapture.common.Scheme.SCRIPT;
@@ -18,7 +20,6 @@ import rapture.common.RaptureURI;
 import rapture.common.Scheme;
 import rapture.common.client.HttpDocApi;
 import rapture.common.client.HttpEventApi;
-import rapture.nightly.IntegrationTestHelper;
 
 public class DocumentApiTest {
     private HttpDocApi docApi=null;

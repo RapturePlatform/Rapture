@@ -1,0 +1,20 @@
+docPath=docRepoUri+'/testdoc';
+#doc.putDoc(docPath, '{"key":"value"}');
+
+testDocUri = docRepoUri + '/testDoc';
+docVal='{"keytest":"valuetest"}';
+scriptText = "#doc.putDoc('"+testDocUri+"','"+docVal+"');";
+
+scriptName = 'script'+rand(1000000);
+eventName = 'data/update';
+scriptURI=scriptRepoUri+'/'+scriptName;
+#script.createScript(scriptURI, "REFLEX", "PROGRAM",scriptText);
+eventURI = docRepoUri + '/' + eventName;
+#event.addEventScript(eventURI, scriptURI, true);
+docURI2 = docRepoUri+'/folder1/documenttest2';
+#doc.putDoc(docURI2, '{"key1":"value1"}');
+s2 = #doc.getDoc(docURI2);
+assert(s2=='{"key1":"value1"}');
+sleep(1000);
+getTestDoc = #doc.getDoc(testDocUri);
+assert(getTestDoc==docVal);
