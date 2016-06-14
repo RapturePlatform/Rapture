@@ -40,3 +40,4 @@ println("DropWhile " + l2 + " less than 5 = " + res2);
 
 assert(res1 == [7]);
 assert(res2 == [7,8,9,5,10]);
+return true;

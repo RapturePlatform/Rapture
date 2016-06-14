@@ -40,3 +40,4 @@ println("TakeWhile " + l2 + " less than 5 = " + res2);
 
 assert(res1 == [1,2,3]);
 assert(res2 == [1]);
+return true;
