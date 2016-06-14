@@ -1,0 +1,6 @@
+docPath=docRepoUri+'/doc'+rand(1000000);
+content = '{"key1":"value1"}';
+#doc.putDoc(docPath,content);
+assert(#doc.docExists(docPath));
+#doc.deleteDoc(docPath);
+assert(!#doc.docExists(docPath));
