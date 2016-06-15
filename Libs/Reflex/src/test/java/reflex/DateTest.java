@@ -38,22 +38,19 @@ public class DateTest extends ResourceBasedTest {
         assertTrue("Test case did not complete successfully", ret.endsWith("true"));
     }
 
-
     // See RAP-3540
     @Test
     public void testDate() {
-        ReflexDateValue v = new ReflexDateValue("20120804", "BDF"); 
+        ReflexDateValue v = new ReflexDateValue("20120804", "BDF");
         String s = v.toString();
         assertEquals("20120804", s);
     }
 
-    
     @Test
     public void testDateCreation() throws RecognitionException {
         String ret = runTestFor("/date/creation.rfx");
         assertTrue("Test case did not complete successfully", ret.endsWith("true"));
     }
-
 
     @Test
     public void testTime() throws RecognitionException {
@@ -61,10 +58,17 @@ public class DateTest extends ResourceBasedTest {
         assertTrue("Test case did not complete successfully", ret.endsWith("true"));
     }
 
-
     @Test
     public void testComparison() throws RecognitionException {
         String ret = runTestFor("/date/comparison.rfx");
+        assertTrue("Test case did not complete successfully", ret.endsWith("true"));
+    }
+
+    @Test
+    public void testEpoch() throws RecognitionException {
+        String ret = runTestFor("/date/epoch.rfx");
+        assertTrue("Test case did not complete successfully", ret.endsWith("true"));
+        ret = runTestFor("/time/epoch.rfx");
         assertTrue("Test case did not complete successfully", ret.endsWith("true"));
     }
 
