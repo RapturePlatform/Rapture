@@ -23,63 +23,62 @@
  */
 package reflex.value;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import reflex.ReflexException;
 
 /**
- * A wrapper around a Time value that is a first class type in Reflex TODO change to java.time.LocalTime - see RAP-4113
+ * A wrapper around a Time value that is a first class type in Reflex
  * 
  * @author amkimian
  * 
  */
 public class ReflexTimeValue {
-    private Date date;
-    static SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 
+    private LocalDateTime dateTime;
+    private DateTimeFormatter timeFormat = DateTimeFormat.forPattern("HH:mm:ss");
 
     public ReflexTimeValue() {
-        date = new Date();
+        this.dateTime = new LocalDateTime(DateTimeZone.UTC);
     }
 
     public ReflexTimeValue(Date initial) {
-        this.date = initial;
+        this.dateTime = new LocalDateTime(initial.getTime(), DateTimeZone.UTC);
     }
-    
+
     public ReflexTimeValue(long initial) {
-    	this.date = new Date(initial);
+        this.dateTime = new LocalDateTime(initial, DateTimeZone.UTC);
     }
 
     public ReflexTimeValue(ReflexTimeValue other) {
-        this.date = other.date;
+        this.dateTime = other.dateTime;
     }
 
     public ReflexTimeValue(String HHmmSS) {
-        // Given a hhhmmss, convert to a date (and time)
-
-        try {
-            date = dateFormat.parse(HHmmSS);
-        } catch (ParseException e) {
-            throw new ReflexException(-1, "Bad time format - " + e.getMessage());
-        }
+        // Given a HH:mm:ss string, convert it to a local date time object
+        dateTime = timeFormat.parseLocalDateTime(HHmmSS);
     }
 
     @Override
     public String toString() {
-        return dateFormat.format(date);
+        return dateTime.toString(timeFormat);
     }
 
     public String toString(SimpleDateFormat format) {
         if (format == null) return toString();
-        return format.format(date);
+        return format.format(dateTime.toDate());
     }
 
     public long getEpoch() {
-        return date.getTime();
+        return dateTime.toDate().getTime();
     }
-    
+
     public Boolean greaterThanEquals(ReflexTimeValue other) {
         return this.getEpoch() >= other.getEpoch();
     }
@@ -100,7 +99,7 @@ public class ReflexTimeValue {
     public int hashCode() {
         final int prime = 31;
         int result = 7;
-        result = prime * result + ((date == null) ? 0 : date.hashCode());
+        result = prime * result + ((dateTime == null) ? 0 : dateTime.hashCode());
         return result;
     }
 
