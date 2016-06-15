@@ -49,3 +49,4 @@ println("Before");
 println(before);
 println("After");
 println(after);
+return true;

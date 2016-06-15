@@ -40,3 +40,4 @@ println("All " + l2 + " greater than 5 = " + res2);
 
 assert(res1 == false);
 assert(res2 == true);
+return true;
