@@ -827,6 +827,7 @@ public enum Kernel {
     		CallingContext ctx = new CallingContext();
     		ctx.setUser(def.getUserId());
     		ctx.setContext(apiKey);
+    		ctx.setValid(true);
     		return ctx;
     	}
 	}
