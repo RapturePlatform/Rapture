@@ -151,7 +151,6 @@ public class DocumentApiTest {
         
         String docURI = RaptureURI.builder(DOCUMENT, repo.getAuthority()).docPath("testdoc").build().toString();
         docApi.putDoc(docURI, "{\"key\":\"value\"}");
-
         //create script and attach it to an event
         String docRepoURI = RaptureURI.builder(DOCUMENT, repo.getAuthority()).build().toString();
 
@@ -184,7 +183,7 @@ public class DocumentApiTest {
     
     
     @Test(groups={"document","mongo", "nightly"})
-    public void testDocumentListByUriPrefx(){
+    public void testDocumentListByUriPrefix(){
     	RaptureURI repo = helper.getRandomAuthority(Scheme.DOCUMENT);
         helper.configureTestRepo(repo, "MONGODB");
         
