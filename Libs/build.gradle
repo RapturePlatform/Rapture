@@ -73,7 +73,7 @@ subprojects {
         // set JVM arguments for the test JVM(s)
         jvmArgs '-noverify'
 
-        // print out the currently running test 
+        // print out the currently running test
         beforeTest { descriptor ->
             logger.lifecycle("Running test: " + descriptor)
         }
@@ -166,7 +166,7 @@ apply plugin: 'io.codearte.nexus-staging'
                }
            }
         }
- 
+
         task sourcesJar(type: Jar) {
             classifier = 'sources'
             from sourceSets.main.allSource
@@ -180,55 +180,63 @@ apply plugin: 'io.codearte.nexus-staging'
     allprojects {
        apply plugin: 'maven'
 
-if (hasProperty('ossrhUser')) {
-        apply plugin: 'signing'
-          // Signature of artifacts
-        signing {
-            sign configurations.archives
-        }
 
-       // OSSRH publication
 uploadArchives {
     repositories {
         mavenDeployer {
-            // POM signature
-            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-            // Target repository
-            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-                authentication(userName: ossrhUser, password: ossrhPassword)
+            if (project.hasProperty('uploadRepoUrl')) {
+                println uploadRepoUrl
+                repository(url: uploadRepoUrl ) {
+                }
             }
+            else {
+                if (hasProperty('ossrhUser')) {
+                      apply plugin: 'signing'
+                        // Signature of artifacts
+                      signing {
+                          sign configurations.archives
+                      }
 
-            snapshotRepository( url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-                authentication(userName: ossrhUser, password: ossrhPassword)
-            }
-            pom.project {
-                name project.name
-                description project.description
-                packaging 'jar'
-                url 'https://github.com/RapturePlatform/Rapture.git'
+                      // OSSRH publication
+                      // POM signature
+                      beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+                      // Target repository
+                      repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                          authentication(userName: ossrhUser, password: ossrhPassword)
+                      }
 
-                scm {
-                    connection 'scm:git:https://github.com/RapturePlatform/Rapture.git'
-                    developerConnection 'scm:git:git@github.com:RapturePlatform/Rapture.git'
-                    url 'https://github.com/RapturePlatform/Rapture.git'
-                }
+                      snapshotRepository( url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                          authentication(userName: ossrhUser, password: ossrhPassword)
+                      }
+                      pom.project {
+                          name project.name
+                          description project.description
+                          packaging 'jar'
+                          url 'https://github.com/RapturePlatform/Rapture.git'
 
-                licenses {
-                    license {
-                        name 'The MIT License (MIT)'
-                        url 'http://opensource.org/licenses/MIT'
-                        distribution 'repo'
-                    }
-                }
-                developers {
-                            developer {
-                                id = 'ukmoore'
-                                name = 'Alan Moore'
-                                email = 'alan.moore@incapturetechnologies.com'
-                            }
-                        }
-                    }
-                }
+                          scm {
+                              connection 'scm:git:https://github.com/RapturePlatform/Rapture.git'
+                              developerConnection 'scm:git:git@github.com:RapturePlatform/Rapture.git'
+                              url 'https://github.com/RapturePlatform/Rapture.git'
+                          }
+
+                          licenses {
+                              license {
+                                  name 'The MIT License (MIT)'
+                                  url 'http://opensource.org/licenses/MIT'
+                                  distribution 'repo'
+                              }
+                          }
+                          developers {
+                                      developer {
+                                          id = 'ukmoore'
+                                          name = 'Alan Moore'
+                                          email = 'alan.moore@incapturetechnologies.com'
+                                      }
+                                  }
+                              }
+                          }
+              }
             }
         }
 
