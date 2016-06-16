@@ -154,7 +154,7 @@ public abstract class BaseReflexScriptPageServlet extends BaseServlet {
     void process(String script, Map<String, Object> parameterMap, HttpServletRequest req, HttpServletResponse resp) throws IOException {
         logger.debug("script is " + script);
         
-        Map<String, Object> respStatusMap = JacksonUtil.getHashFromObject(new ResponseStatus());        
+        Map<String, Object> respStatusMap = JacksonUtil.getHashFromObject(new ResponseHeaders());        
         Map<String, Object> masterParameterMap = new HashMap<String, Object>();
         
         masterParameterMap.put("web", parameterMap);
@@ -170,27 +170,32 @@ public abstract class BaseReflexScriptPageServlet extends BaseServlet {
         try {
             context = BaseDispatcher.validateSession(req);
             if (context != null) {
-                logger.trace("Got session context " + context.debug());
-                kScript.setCallingContext(context);
-                handler.setScriptApi(kScript);
-
-                ReflexExecutor.runReflexProgram(script, handler, masterParameterMap);
-                resp.setCharacterEncoding("UTF-8");
-                resp.getWriter().append(handler.getOutput()); 
-                resp.setContentType("text/plain");
-                
-                String statusContent = JacksonUtil.jsonFromObject(masterParameterMap.get("status"));
-                logger.debug("Status content is " + statusContent);
-                //ResponseStatus.statusCode is set by default to 200
-                ResponseStatus retStatus = JacksonUtil.objectFromJson(statusContent, ResponseStatus.class);
-                int statusCode = retStatus.getStatusCode();   
-                if (statusCode >= HttpStatus.SC_BAD_REQUEST) {
-                    resp.sendError(statusCode, retStatus.getMessage());
-                } else {
-                    resp.setStatus(retStatus.getStatusCode());
-                    resp.setHeader("x-rapture-responsemessage", retStatus.getMessage());
+                if (context.getValid()) {
+                    logger.trace("Got session context " + context.debug());
+                    kScript.setCallingContext(context);
+                    handler.setScriptApi(kScript);
+    
+                    ReflexExecutor.runReflexProgram(script, handler, masterParameterMap);
+                    resp.setCharacterEncoding("UTF-8");
+                    resp.getWriter().append(handler.getOutput()); 
+                    resp.setContentType("text/plain");
+                    
+                    //process any headers passed back from script
+                    ResponseHeaders respHeaders = JacksonUtil.objectFromJson(JacksonUtil.jsonFromObject(masterParameterMap.get("status")), ResponseHeaders.class);
+                    if (respHeaders.isError()) {
+                        logger.debug("Script sent error code: " + respHeaders.getStatusCode() + " with message: " + respHeaders.getErrorMessage());
+                        resp.sendError(respHeaders.getStatusCode(), respHeaders.getErrorMessage());
+                    } else {
+                        resp.setStatus(respHeaders.getStatusCode());
+                        for (String header:respHeaders.getHeaders().keySet()) {
+                            resp.setHeader(header, respHeaders.getHeaders().get(header));
+                            logger.debug("Header name: " + header + " value: " + respHeaders.getHeaders().get(header));
+                        }
+                    }
+                } else {    
+                    logger.error("Calling Context valid property is set to false.");
+                    resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Calling Context valid property is set to false.");
                 }
-                
             } else {
                 String err = "Cannot execute script " + script + " : cannot get session context for authorization";
                 logger.error(err);
