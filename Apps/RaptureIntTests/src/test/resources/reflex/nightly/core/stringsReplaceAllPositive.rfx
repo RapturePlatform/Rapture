@@ -1,0 +1,16 @@
+returnVal = false;
+
+try do
+	println ('Testing replaceAll positive case');
+	allString = 'we are testing that replace all works as well';
+	allString = allString.replaceAll(' ', '_');
+	if (allString == 'we_are_testing_that_replace_all_works_as_well') do
+		returnVal = true;
+	else do
+		returnVal = false;
+	end
+end
+catch e do
+end
+    
+assert(returnVal);

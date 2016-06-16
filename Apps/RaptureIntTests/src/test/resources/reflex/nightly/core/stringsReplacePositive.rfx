@@ -1,0 +1,18 @@
+
+returnVal = false;
+
+try do
+	println ('Testing replaceBasic positive case');
+	replaceBasic = 'testing a basic replace to see if it works';
+	replace_basic_modified = replace(replaceBasic,' ', '_');
+	if (replace_basic_modified == 'testing_a_basic_replace_to_see_if_it_works') do
+		returnVal = true;
+	else do
+		returnVal = false;
+	end
+end
+catch e do
+	returnVal = false;
+end
+
+assert(returnVal);

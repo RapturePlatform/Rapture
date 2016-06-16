@@ -1,0 +1,16 @@
+returnVal = false;
+
+try do
+	println ('Testing split positive case');
+	testString = '"some thing with", "another thing with"';
+	testList = split(testString, ',', true);
+	if (testList[0] == 'some thing with') do
+		returnVal = true;
+	else do
+		returnVal = false;
+	end
+end
+catch e do
+end
+
+assert(returnVal);
