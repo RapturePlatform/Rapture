@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.Map;
 import java.util.Random;
 
@@ -50,23 +50,15 @@ public class BlobApiTests {
     public void testBlobFromFile(String fileName, String contentType) throws IOException {  
 
     	RaptureURI repo = helper.getRandomAuthority(Scheme.BLOB);
-        helper.configureTestRepo(repo, "MONGO");
+        helper.configureTestRepo(repo, "MONGODB");
         String repoName= new RaptureURI.Builder(repo).docPath("").build().toString();
         String blobUri = repoName + "testblob" + System.nanoTime();
         byte[] bytes = null;
-        
-        if(contentType == "application/pdf"){
-            InputStream resourceAsStream = BlobApiTests.class.getResourceAsStream(fileName);
-            bytes = IOUtils.toByteArray(resourceAsStream);       
-            blobApi.putBlob(blobUri, bytes, contentType);
-        
-        } else {
-            String resourceAsString = ResourceLoader.getResourceAsString(this,fileName);
-            bytes = resourceAsString.getBytes();
-            blobApi.putBlob(blobUri,bytes, contentType);
-            Assert.assertEquals(new String (blobApi.getBlob(blobUri).getContent()),new String (bytes));
-        }
-        
+        String fullPath = System.getProperty("user.dir")+ File.separator+"build"+File.separator+"resources"+File.separator+"test"+File.separator+fileName;
+        Assert.assertTrue(new File(fullPath).exists(),"Cannot find file: " + fullPath);
+        bytes=Files.readAllBytes(new File(fullPath).toPath());
+        blobApi.putBlob(blobUri,bytes, contentType);
+        Assert.assertEquals(new String (blobApi.getBlob(blobUri).getContent()),new String (bytes));   
         Assert.assertEquals(blobApi.getBlobSize(blobUri),new Long(bytes.length));        
         Map <String,String> metaDataMap = blobApi.getBlobMetaData( blobUri);
         Assert.assertTrue (metaDataMap.containsKey("Content-Type"));
@@ -320,10 +312,10 @@ public class BlobApiTests {
     @DataProvider
     public Object[][] blobFileScenarios() {
         return new Object[][] {
-                new Object[] {File.separator+"blob"+File.separator+"simple_blob_test.txt", "text/plain"},
-                new Object[] {File.separator+"blob"+File.separator+"small-pdf-file.pdf", "application/pdf"},
-                new Object[] {File.separator+"blob"+File.separator+"small_csv_file.csv", "text/csv"},
-                new Object[] {File.separator+"blob"+File.separator+"small-jpg-file.jpg", "image/jpeg"},
+                new Object[] {"blob"+File.separator+"simple_blob_test.txt", "text/plain"},
+                new Object[] {"blob"+File.separator+"small-pdf-file.pdf", "application/pdf"},
+                new Object[] {"blob"+File.separator+"small_csv_file.csv", "text/csv"},
+                new Object[] {"blob"+File.separator+"small-jpg-file.jpg", "image/jpeg"},
         };
     }
     
