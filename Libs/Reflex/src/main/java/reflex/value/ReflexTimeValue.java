@@ -57,7 +57,7 @@ public class ReflexTimeValue {
     }
 
     public ReflexTimeValue(ReflexTimeValue other) {
-        this.dateTime = other.dateTime;
+        this.dateTime = new LocalDateTime(other.dateTime);
     }
 
     public ReflexTimeValue(String HHmmSS) {

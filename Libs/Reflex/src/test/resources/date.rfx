@@ -5,6 +5,7 @@ junesixth = date(epoch);
 epoch2 = junesixth.getEpoch();
 assert(epoch == epoch2);
 assert(birthday == junesixth);
+assert(junesixth.getEpoch() == epoch);
 
 marishka = dateformat(birthday, "EEEE dd MMMM yyyy GGGG");
 assert("Tuesday 06 June 1978 AD" == marishka);

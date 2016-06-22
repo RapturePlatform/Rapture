@@ -53,7 +53,7 @@ public abstract class BaseAssignmentNode extends BaseNode {
     public ReflexValue evaluate(IReflexDebugger debugger, Scope scope, Scope scopeToAssignIn, String namespacePrefix) {
         debugger.stepStart(this, scope);
         ReflexValue ret = new ReflexVoidValue(lineNumber);
-        ReflexValue value = rhs.evaluate(debugger, scope);
+        ReflexValue value = rhs.evaluate(debugger, scope).copyOf();
         handler.getDebugHandler().statementReached(lineNumber, DebugLevel.SPAM, "Assignment, rhs = " + value.toString());
 
         if (value .getValue() == ReflexValue.Internal.VOID) {

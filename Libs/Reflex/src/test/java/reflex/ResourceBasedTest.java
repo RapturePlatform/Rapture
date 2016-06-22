@@ -205,7 +205,12 @@ public class ResourceBasedTest {
                 retVal = null;
                 System.out.println("null");
             } else {
-                retVal = returned.evaluateWithoutScope(instrument);
+                try {
+                    retVal = returned.evaluateWithoutScope(instrument);
+                } catch (Throwable e) {
+                    System.err.println(sb.toString());
+                    throw e;
+                }
                 sb.append("--RETURNS--").append(retVal.asString());
             }
             instrument.getInstrumenter().log();
