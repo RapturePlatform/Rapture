@@ -39,3 +39,4 @@ Libs/API/VB
 **/antlr3/**/*.java
 Doc/slate/source/includes
 Libs/API/SlateMd
+**/CMakeFiles/**
