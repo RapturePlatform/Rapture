@@ -2,6 +2,8 @@ str = "19780606";
 birthday = date(str);
 epoch = birthday.getEpoch();
 junesixth = date(epoch);
+epoch2 = junesixth.getEpoch();
+assert(epoch == epoch2);
 assert(birthday == junesixth);
 
 marishka = dateformat(birthday, "EEEE dd MMMM yyyy GGGG");
