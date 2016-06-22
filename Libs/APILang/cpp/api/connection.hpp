@@ -1,6 +1,9 @@
 #ifndef CONNECTION_HPP
 #define CONNECTION_HPP
 
+#include "json.hpp"
+using json = nlohmann::json;
+
 // Information about the connection to Rapture
 
 class RaptureConnection {
@@ -28,6 +31,9 @@ public:
         _connectionToken = "";
         _isConnected = false;
     }
+
+    json performCall(std::string area, std::string func, json &params);
+
 };
 
 #endif
