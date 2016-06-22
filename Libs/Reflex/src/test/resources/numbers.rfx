@@ -1,78 +1,183 @@
-a = 2;
-assert(a == 2);
-assert(typeof(a) == 'integer');
+// Basic integer maths - should return integer value
+a_int = 1 + 1;
+assert(a_int == 2);
+assert("expected integer but was "+typeof(a_int), typeof(a_int) == 'integer');
 
-b = 2L;
-assert (b == 2);
-assert(typeof(b) == 'integer');
+a_int = 5 - 3;
+assert(a_int == 2);
+assert("expected integer but was "+typeof(a_int), typeof(a_int) == 'integer');
 
-c = 2.0;
-assert (c == 2);
-assert(typeof(c) == 'number');
+a_int = 1 * 2;
+assert(a_int == 2);
+assert("expected integer but was "+typeof(a_int), typeof(a_int) == 'integer');
 
-d = 2147483647;
-assert (d == 2147483647);
-assert(typeof(d) == 'integer');
+a_int = 2 / 1;
+assert(a_int == 2);
+assert("expected integer but was "+typeof(a_int), typeof(a_int) == 'integer');
 
-e = 2147483649L;
-assert (e == 2147483649L);
-assert(typeof(e) == 'integer');
+a_long = -99999999999;
+assert(a_long == -99999999999);
+assert("expected number but was "+typeof(a_long), typeof(a_long) == 'number');
 
-f = d + 10;
-println(f);
-// assert (f == 2147483657L);
-// assert(typeof(f) == 'number');
+a_int = -2;
+assert(a_int == -2);
+assert("expected integer but was "+typeof(a_int), typeof(a_int) == 'integer');
 
-g = a / 2;
-assert (g == 1);
-assert(typeof(g) == 'integer');
+a_int = 2;
+assert(a_int == 2);
+assert("expected integer but was "+typeof(a_int), typeof(a_int) == 'integer');
 
-h = c / a;
-assert (h == 1.0);
-assert(typeof(h) == 'number');
+// Simple unary maths
 
-x = 1 / 3;
+b_int = 1;
+b_int += a_int;
+assert(b_int == 3);
+assert("expected integer but was "+typeof(b_int), typeof(b_int) == 'integer');
+
+b_int -= 1;
+assert(b_int == 2);
+assert("expected integer but was "+typeof(b_int), typeof(b_int) == 'integer');
+
+a_long = 2L;
+assert (a_long == 2);
+assert("expected number but was "+typeof(a_long), typeof(a_long) == 'number');
+
+b_long = 1;
+b_long += a_long;
+assert(b_long == 3);
+assert("expected number but was "+typeof(b_long), typeof(b_long) == 'number');
+
+b_long -= 1;
+assert(b_long == 2);
+assert("expected number but was "+typeof(b_long), typeof(b_long) == 'number');
+
+a_long1 = a_int + a_long;
+assert(a_long1 == 4);
+assert("expected number but was "+typeof(a_long1), typeof(a_long1) == 'number');
+
+a_long2 = a_int + a_long;
+assert(a_long1 == 4);
+assert("expected number but was "+typeof(a_long1), typeof(a_long1) == 'number');
+
+a_decimal = -0.000;
+assert (a_decimal == 0);
+assert("expected number but was "+typeof(a_decimal), typeof(a_decimal) == 'number');
+
+a_decimal = 2.00;
+assert (a_decimal == 2);
+assert("expected number but was "+typeof(a_decimal), typeof(a_decimal) == 'number');
+
+b_decimal = 1.0;
+b_decimal += a_decimal;
+assert(b_decimal == 3);
+assert("expected number but was "+typeof(b_decimal), typeof(b_decimal) == 'number');
+b_dec_str = "${b_decimal}";
+assert ("3.00" == b_dec_str);
+
+b_decimal -= 1;
+assert(b_decimal == 2);
+assert("expected number but was "+typeof(b_decimal), typeof(b_decimal) == 'number');
+
+a_maxint = 2147483647;
+assert (a_maxint == 2147483647);
+assert("expected integer but was "+typeof(a_maxint), typeof(a_maxint) == 'integer');
+
+b_long = 2147483649L;
+assert (b_long == 2147483649L);
+assert("Expected number but was "+typeof(b_long), typeof(b_long) == 'number');
+
+a_overflow = a_maxint + 1001;
+println(a_overflow);
+assert (a_overflow == 2147484648L);
+assert("expected number but was "+typeof(a_overflow), typeof(a_overflow) == 'number');
+
+b_maxint = 2147483647;
+assert("expected integer but was "+typeof(a_maxint), typeof(a_maxint) == 'integer');
+b_maxint += 1001;
+assert (b_maxint == 2147484648L);
+assert("expected number but was "+typeof(b_maxint), typeof(b_maxint) == 'number');
+
+b_maxint = -2147483647;
+assert("expected integer but was "+typeof(a_maxint), typeof(a_maxint) == 'integer');
+b_maxint -= 1001;
+assert (b_maxint == -2147484648L);
+assert("expected number but was "+typeof(b_maxint), typeof(b_maxint) == 'number');
+
+can_be_int = a_overflow - a_maxint;
+println(can_be_int);
+assert (can_be_int == 1001);
+assert("expected number but was "+typeof(can_be_int), typeof(can_be_int) == 'number');
+
+a_int_div = a_int / 2;
+assert (a_int_div == 1);
+assert("expected integer but was "+typeof(a_int_div), typeof(a_int_div) == 'integer');
+
+can_be_int_div = a_overflow / 2;
+assert (can_be_int_div == 1073742324);
+assert("expected number but was "+typeof(can_be_int_div), typeof(can_be_int_div) == 'number');
+
+b_decimal = a_decimal / a_int;
+assert (b_decimal == 1.00);
+assert("expected number but was "+typeof(b_decimal), typeof(b_decimal) == 'number');
+b_dec_str = "${b_decimal}";
+assert ("1.00" == b_dec_str);
+
+a_double = 1 / 3;
+assert("expected number but was "+typeof(a_double), typeof(a_double) == 'number');
 
 try do
-   y = x * 2;
-   assert(typeof(y) == 'number');
+   y = a_double * 2;
+   assert("expected number but was "+typeof(y), typeof(y) == 'number');
    println(y);
 end
 catch e do 
-   assert(false);
+   assert("Should not get "+e, false);
 end
 
 p = 3 ^ 2;
 assert(p == 9);
-assert(typeof(p) == 'integer');
+assert("expected integer but was "+typeof(p), typeof(p) == 'integer');
 
 // Exponents that are not positive integers currently result in Doubles.
 q = 9 ^ 0.5;
 assert(q == 3);
-assert(typeof(q) == 'number');
+assert("expected number but was "+typeof(q), typeof(q) == 'number');
 
 try do
-   y = x + 2;
-   println(y);
-   assert(typeof(y) == 'number');
+   b_double = a_double + 2;
+   println(b_double);
+   assert("expected number but was "+typeof(b_double), typeof(b_double) == 'number');
 end
 catch e do 
-   assert(false);
+   assert("Should not get "+e, false);
 end
 
 try do
-   y = x - 2;
-   println(y);
-   assert(typeof(y) == 'number');
+   b_double = a_double - 2;
+   println(b_double);
+   assert("expected number but was "+typeof(b_double), typeof(b_double) == 'number');
 end
 catch e do 
-   assert(false);
+   assert("Should not get "+e, false);
 end
 
 try do
-    z = a / 0;
-    assert(false);
+    failure = a_int / 0;
+    assert("Should not get "+e, false);
 end
 catch e do 
    println("Expected exception");
 end
+
+a_eng1 = 100E1;
+a_eng2 = 10000000E-4;
+a_eng3 = 1.000E+3;
+a_eng4 = 1000.00000000;
+assert(1000 == a_eng1);
+assert(1000 == a_eng2);
+assert(1000 == a_eng3);
+assert(1000 == a_eng4);
+assert("expected number but was "+typeof(a_eng1), typeof(a_eng1) == 'number');
+assert("expected number but was "+typeof(a_eng2), typeof(a_eng2) == 'number');
+assert("expected number but was "+typeof(a_eng3), typeof(a_eng3) == 'number');
+assert("expected number but was "+typeof(a_eng4), typeof(a_eng4) == 'number');

@@ -23,13 +23,8 @@
  */
 package rapture.kernel.pipeline;
 
-import static org.junit.Assert.*;
-
-import rapture.common.RapturePipelineTask;
-import rapture.common.dp.Worker;
-import rapture.common.mime.MimeDecisionProcessAdvance;
-import rapture.kernel.ContextFactory;
-import rapture.kernel.Kernel;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
@@ -39,6 +34,12 @@ import org.junit.Test;
 
 import com.google.common.collect.ImmutableList;
 
+import rapture.common.RapturePipelineTask;
+import rapture.common.dp.Worker;
+import rapture.common.mime.MimeDecisionProcessAdvance;
+import rapture.kernel.ContextFactory;
+import rapture.kernel.Kernel;
+
 /**
  * @author bardhi
  * @since 4/28/15.
@@ -47,6 +48,7 @@ public class PipelineTaskStatusManagerTest {
 
     private String id1;
     private String id2;
+    private String id3;
     private PipelineTaskStatusManager statusManager;
 
     @Before
@@ -62,6 +64,10 @@ public class PipelineTaskStatusManagerTest {
         RapturePipelineTask task2 = createTask();
         id2 = task2.getTaskId();
         statusManager.initialCreation(task2);
+
+        RapturePipelineTask task3 = createTask(false);
+        id3 = task3.getTaskId();
+        statusManager.initialCreation(task3);
     }
 
     @After
@@ -69,7 +75,7 @@ public class PipelineTaskStatusManagerTest {
         Kernel.INSTANCE.restart();
     }
 
-    private RapturePipelineTask createTask() {
+    private RapturePipelineTask createTask(boolean statusEnabled) {
         RapturePipelineTask task = new RapturePipelineTask();
         Worker worker = new Worker();
         worker.setPriority(2);
@@ -77,9 +83,14 @@ public class PipelineTaskStatusManagerTest {
         task.setCategoryList(ImmutableList.of("cat"));
         task.addMimeObject(worker);
         task.setContentType(MimeDecisionProcessAdvance.getMimeType());
+        task.setStatusEnabled(statusEnabled);
         task.initTask();
         Kernel.getPipeline().publishMessageToCategory(ContextFactory.getKernelUser(), task);
         return task;
+    }
+
+    private RapturePipelineTask createTask() {
+        return createTask(true);
     }
 
     @Test
@@ -101,5 +112,7 @@ public class PipelineTaskStatusManagerTest {
         assertEquals(MimeDecisionProcessAdvance.getMimeType(), p1.getContentType());
 
         assertEquals(p1.getContent(), p2.getContent());
+        assertTrue(p1.isStatusEnabled());
+        assertTrue(p2.isStatusEnabled());
     }
 }

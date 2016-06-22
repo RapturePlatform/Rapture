@@ -23,12 +23,12 @@
  */
 package rapture.common;
 
-import rapture.common.impl.jackson.JacksonUtil;
-import rapture.util.IDGenerator;
-
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import rapture.common.impl.jackson.JacksonUtil;
+import rapture.util.IDGenerator;
 
 /**
  * Note that this class is referenced in types.api - any changes to this file should be reflected there.
@@ -94,6 +94,7 @@ public class RapturePipelineTask implements RaptureTransferObject {
     private String content;
     private String contentType = "text/plain";
     private Long epoch;
+    private Boolean statusEnabled = true;
 
     public RapturePipelineTask() {
         initTask();
@@ -134,5 +135,13 @@ public class RapturePipelineTask implements RaptureTransferObject {
         status = new PipelineTaskStatus();
         this.taskId = IDGenerator.getUUID();
         status.setTaskId(taskId);
+    }
+
+    public Boolean isStatusEnabled() {
+        return statusEnabled;
+    }
+
+    public void setStatusEnabled(Boolean statusEnabled) {
+        this.statusEnabled = statusEnabled;
     }
 }

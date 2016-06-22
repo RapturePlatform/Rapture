@@ -47,7 +47,7 @@ public class ReflexDateValue {
     private CalendarHandler calHandler;
 
     public ReflexDateValue() {
-        date = new LocalDate(DateTimeZone.UTC);
+        this.date = new LocalDate(DateTimeZone.UTC);
         setupCalendarHandler();
     }
 
@@ -63,15 +63,21 @@ public class ReflexDateValue {
         setupCalendarHandler();
     }
 
+    public ReflexDateValue(LocalDate other, String calendar) {
+        this.date = other;
+        this.calendarString = calendar;
+        setupCalendarHandler();
+    }
+
     private static final DateTimeFormatter FORMATTER = DateTimeFormat.forPattern("yyyyMMdd").withZoneUTC();
 
     public ReflexDateValue(String yyyyMMdd, String calendar) {
         if (yyyyMMdd.isEmpty()) {
-            date = new LocalDate(DateTimeZone.UTC);
+            date = LocalDate.now();
         } else {
             // Given a yyyyMMdd string, convert to a date
             try {
-                date = new LocalDate(FORMATTER.parseDateTime(yyyyMMdd), DateTimeZone.UTC);
+                date = new LocalDate(FORMATTER.parseDateTime(yyyyMMdd));
             } catch (IllegalArgumentException e) {
                 throw new ReflexException(-1, String.format("Bad date format %s - %s", yyyyMMdd, e.getMessage()));
             } catch (UnsupportedOperationException e) {
@@ -95,17 +101,23 @@ public class ReflexDateValue {
         calHandler = CalendarFactory.getHandler(calendarString);
     }
 
-    public ReflexDateValue sub(Object increase) {
-        if (increase instanceof Integer) {
-            int amountToDecrease = ((Integer) increase).intValue();
+    public ReflexDateValue sub(Object decrease) {
+        if (decrease instanceof Integer) {
+            int amountToDecrease = ((Integer) decrease).intValue();
             return new ReflexDateValue(calHandler.addDays(date.toDate(), -1 * amountToDecrease), calendarString);
         } else {
-            throw new ReflexException(-1, "Cannot decrease a date by something of type " + increase.getClass().toString());
+            throw new ReflexException(-1, "Cannot decrease a date by something of type " + decrease.getClass().toString());
         }
     }
 
+    @Override
     public String toString() {
         return FORMATTER.print(date);
+    }
+
+    public String toString(DateTimeFormatter formatter) {
+        if (formatter == null) return toString();
+        return formatter.print(date);
     }
 
     public Boolean greaterThanEquals(ReflexDateValue asDate) {
@@ -141,12 +153,20 @@ public class ReflexDateValue {
 
     @Override
     public boolean equals(Object obj) {
+        if (obj == null) return false;
         if (this == obj) return true;
         ReflexDateValue that = null;
-        if ((obj != null) && (obj instanceof ReflexValue)) {
-            that = ((ReflexValue) obj).asDate();
-            return this.date.equals(that.date);
+        if (obj instanceof ReflexDateValue) {
+            that = (ReflexDateValue) obj;
+        } else if (obj instanceof ReflexValue) {
+            try {
+                that = ((ReflexValue) obj).asDate();
+            } catch (ReflexException e) {
+                return false;
+            }
+        } else {
+            return false;
         }
-        return false;
+        return this.date.equals(that.date);
     }
 }

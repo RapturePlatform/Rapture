@@ -73,21 +73,27 @@ public final class PipelineTaskStatusManager {
     }
 
     public void initialCreation(RapturePipelineTask task) {
-        task.getStatus().beginCreation(getServerIdentifier());
-        indexHandler.updateRow(task.getTaskId(), getRowDetails(task));
+        if (task.isStatusEnabled()) {
+            task.getStatus().beginCreation(getServerIdentifier());
+            indexHandler.updateRow(task.getTaskId(), getRowDetails(task));
+        }
     }
 
     public void startRunning(RapturePipelineTask task) {
-        task.getStatus().beginRunning(getServerIdentifier());
-        indexHandler.updateRow(task.getTaskId(), getRowDetails(task));
+        if (task.isStatusEnabled()) {
+            task.getStatus().beginRunning(getServerIdentifier());
+            indexHandler.updateRow(task.getTaskId(), getRowDetails(task));
+        }
     }
 
     private void finishRunning(RapturePipelineTask task, boolean successful) {
-        task.getStatus().endRunning(getServerIdentifier(), successful);
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Setting currentState of %s to %s", task.getTaskId(), task.getStatus().getCurrentState()));
+        if (task.isStatusEnabled()) {
+            task.getStatus().endRunning(getServerIdentifier(), successful);
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Setting currentState of %s to %s", task.getTaskId(), task.getStatus().getCurrentState()));
+            }
+            indexHandler.updateRow(task.getTaskId(), getRowDetails(task));
         }
-        indexHandler.updateRow(task.getTaskId(), getRowDetails(task));
     }
 
     public PipelineTaskStatus getStatus(String taskId) {
@@ -150,8 +156,10 @@ public final class PipelineTaskStatusManager {
     }
 
     public void suspendedRunning(RapturePipelineTask task) {
-        task.getStatus().suspended(getServerIdentifier());
-        indexHandler.updateRow(task.getTaskId(), (Map<String, Object>) JacksonUtil.getHashFromObject(task));
+        if (task.isStatusEnabled()) {
+            task.getStatus().suspended(getServerIdentifier());
+            indexHandler.updateRow(task.getTaskId(), (Map<String, Object>) JacksonUtil.getHashFromObject(task));
+        }
     }
 
     public void finishRunningWithSuccess(RapturePipelineTask task) {

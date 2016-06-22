@@ -125,11 +125,11 @@ public class BlobApiImpl extends KernelBase implements BlobApi, RaptureScheme {
                     }
                 }
             }
-            SearchPublisher.publishDeleteMessage(context, Kernel.getRepoCacheManager().getBlobConfig(uri.getAuthority()), uri);
         } catch (RaptureException e) {
-            log.info("Unable to delete children; repo definitian may be invalid");
+            log.info("Unable to delete children; repo definition may be invalid", e);
         }
 
+        SearchPublisher.publishDropMessage(context, uri.toString());
         // delete parent directory
         BlobRepoConfigStorage.deleteByAddress(uri, context.getUser(), "Remove blob repo");
         removeRepoFromCache(uri.getAuthority());
@@ -238,10 +238,15 @@ public class BlobApiImpl extends KernelBase implements BlobApi, RaptureScheme {
     @Override
     public void putBlob(CallingContext context, String blobUri, byte[] content, String contentType) {
         lowerStoreBlob(context, blobUri, content, contentType, false);
-        RaptureURI uri = new RaptureURI(blobUri);
-        BlobRepoConfig repoConfig = Kernel.getRepoCacheManager().getBlobConfig(uri.getAuthority());
-        BlobUpdateObject buo = new BlobUpdateObject(uri, content, contentType);
-        SearchPublisher.publishCreateMessage(context, repoConfig, buo);
+        try {
+            RaptureURI uri = new RaptureURI(blobUri, Scheme.BLOB);
+            BlobRepoConfig repoConfig = Kernel.getRepoCacheManager().getBlobConfig(uri.getAuthority());
+            BlobUpdateObject buo = new BlobUpdateObject(uri, content, contentType);
+            SearchPublisher.publishCreateMessage(context, repoConfig, buo, false);
+        } catch (RaptureException e) {
+            log.error("Unable to index " + blobUri, e);
+            throw e;
+        }
     }
 
     @Override
@@ -299,7 +304,7 @@ public class BlobApiImpl extends KernelBase implements BlobApi, RaptureScheme {
             }
         }
         BlobRepoConfig repoConfig = Kernel.getRepoCacheManager().getBlobConfig(blobURI.getAuthority());
-        SearchPublisher.publishDeleteMessage(context, repoConfig, blobURI);
+        if (repoConfig != null) SearchPublisher.publishDeleteMessage(context, repoConfig, blobURI);
     }
 
     @Override
@@ -356,8 +361,7 @@ public class BlobApiImpl extends KernelBase implements BlobApi, RaptureScheme {
             // TODO: Ben -
             if (content instanceof BlobContainer && ((BlobContainer) content).getHeaders() != null) {
                 BlobContainer blobContainer = ((BlobContainer) content);
-                putBlob(context, raptureUri.toString(), blobContainer.getContent(), blobContainer.getHeaders()
-                        .get(ContentEnvelope.CONTENT_TYPE_HEADER));
+                putBlob(context, raptureUri.toString(), blobContainer.getContent(), blobContainer.getHeaders().get(ContentEnvelope.CONTENT_TYPE_HEADER));
             } else {
                 throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR,
                         apiMessageCatalog.getMessage("ErrorGettingBlobType", content.getClass().getCanonicalName()));
@@ -499,9 +503,9 @@ public class BlobApiImpl extends KernelBase implements BlobApi, RaptureScheme {
                 log.debug("No read permission on folder " + currParentDocPath);
                 continue;
             }
-        
+
             List<RaptureFolderInfo> children = repo.listMetaByUriPrefix(currParentDocPath);
-            if ((children == null) || (children.isEmpty()) && (currDepth==0) && (internalUri.hasDocPath())) {
+            if ((children == null) || (children.isEmpty()) && (currDepth == 0) && (internalUri.hasDocPath())) {
                 throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, apiMessageCatalog.getMessage("NoSuchFolder", internalUri.toString())); //$NON-NLS-1$
             } else {
                 for (RaptureFolderInfo child : children) {
@@ -536,7 +540,7 @@ public class BlobApiImpl extends KernelBase implements BlobApi, RaptureScheme {
         RaptureURI blobURI = new RaptureURI(uriPrefix, BLOB);
         BlobRepo blobRepo = getRepoFromCache(blobURI.getAuthority());
         if (blobRepo == null) {
-        	return removed;
+            return removed;
         }
 
         DeleteBlobPayload requestObj = new DeleteBlobPayload();
@@ -545,7 +549,7 @@ public class BlobApiImpl extends KernelBase implements BlobApi, RaptureScheme {
         folders.add(blobURI);
         for (Map.Entry<String, RaptureFolderInfo> entry : docs.entrySet()) {
             String uri = entry.getKey();
-        	RaptureURI ruri = new RaptureURI(uri);
+            RaptureURI ruri = new RaptureURI(uri);
             boolean isFolder = entry.getValue().isFolder();
             try {
                 requestObj.setBlobUri(uri);
@@ -565,11 +569,11 @@ public class BlobApiImpl extends KernelBase implements BlobApi, RaptureScheme {
             }
         }
         for (RaptureURI uri : folders) {
-            // deleteFolder returns true if the folder was deleted. 
+            // deleteFolder returns true if the folder was deleted.
             // It won't delete a folder that isn't empty.
             while ((uri != null) && blobRepo.deleteFolder(context, uri)) {
                 // getParentURI returns null if the URI has no doc path
-            	uri = uri.getParentURI();
+                uri = uri.getParentURI();
             }
         }
         return removed;

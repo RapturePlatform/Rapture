@@ -30,13 +30,15 @@ import java.util.Date;
 import reflex.ReflexException;
 
 /**
- * A wrapper around a Time value that is a first class type in Reflex
+ * A wrapper around a Time value that is a first class type in Reflex TODO change to java.time.LocalTime - see RAP-4113
  * 
  * @author amkimian
  * 
  */
 public class ReflexTimeValue {
     private Date date;
+    static SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+
 
     public ReflexTimeValue() {
         date = new Date();
@@ -57,7 +59,6 @@ public class ReflexTimeValue {
     public ReflexTimeValue(String HHmmSS) {
         // Given a hhhmmss, convert to a date (and time)
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
         try {
             date = dateFormat.parse(HHmmSS);
         } catch (ParseException e) {
@@ -65,9 +66,14 @@ public class ReflexTimeValue {
         }
     }
 
+    @Override
     public String toString() {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
         return dateFormat.format(date);
+    }
+
+    public String toString(SimpleDateFormat format) {
+        if (format == null) return toString();
+        return format.format(date);
     }
 
     public long getEpoch() {
@@ -100,13 +106,22 @@ public class ReflexTimeValue {
 
     @Override
     public boolean equals(Object obj) {
+        if (null == obj) return false;
         if (this == obj) return true;
         ReflexTimeValue that = null;
-        if ((obj != null) && (obj instanceof ReflexValue)) {
-            that = ((ReflexValue) obj).asTime();
-            return this.getEpoch() == that.getEpoch();
-        }
-        return false;
-    }
 
+        if (obj instanceof ReflexTimeValue) {
+            that = (ReflexTimeValue) obj;
+        } else if (obj instanceof ReflexValue) {
+            try {
+                that = ((ReflexValue) obj).asTime();
+            } catch (ReflexException e) {
+                return false;
+            }
+        } else {
+            return false;
+        }
+        // These are meant to be times, so the date component is irrelevant for comparison purposes.
+        return this.toString().equals(that.toString());
+    }
 }

@@ -4,10 +4,13 @@
 	<parameter name="RaptureURL" value="http://localhost:8665/rapture" />
 	<parameter name="RaptureUser" value="rapture" />
 	<parameter name="RapturePassword" value="rapture" />
+	<parameter name="RepoType" value="MONGODB" />
 	<test name="HttpSuite">
 		<packages>
 			<package name="rapture.api.checkout" />
 			<package name="rapture.api.document" />
+			<package name="rapture.httpapi.blob" />
+			<package name="rapture.httpapi.series" />
 		</packages>
 	</test>
 </suite> <!-- Suite -->

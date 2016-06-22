@@ -55,8 +55,8 @@ import rapture.dsl.serfun.SeriesValueCodec;
 import rapture.dsl.serfun.StringSeriesValue;
 import rapture.dsl.serfun.StructureSeriesValueImpl;
 import rapture.kernel.file.FileRepoUtils;
+import rapture.series.AbstractSeriesStore;
 import rapture.series.SeriesPaginator;
-import rapture.series.SeriesStore;
 import rapture.series.children.ChildrenRepo;
 
 /**
@@ -64,7 +64,7 @@ import rapture.series.children.ChildrenRepo;
  *
  * @author dtong
  */
-public class FileSeriesStore implements SeriesStore {
+public class FileSeriesStore extends AbstractSeriesStore {
 
     /*
      * (non-Javadoc)
@@ -143,7 +143,8 @@ public class FileSeriesStore implements SeriesStore {
     /**
      * Returns a sorted series
      *
-     * @param direction true for verbatim, false for reverse order.
+     * @param direction
+     *            true for verbatim, false for reverse order.
      * @return
      */
     protected Collection<SeriesValue> readSeriesSorted(String key, boolean direction) {
@@ -174,11 +175,11 @@ public class FileSeriesStore implements SeriesStore {
      * @return
      */
     protected boolean writeSeries(String key, Collection<SeriesValue> values) {
-        File seriesFile = FileRepoUtils.makeGenericFile(parentDir, key+Parser.COLON_CHAR);
+        File seriesFile = FileRepoUtils.makeGenericFile(parentDir, key + Parser.COLON_CHAR);
         if (!seriesFile.exists()) try {
-            if ((!seriesFile.getParentFile().isDirectory() && !seriesFile.getParentFile().mkdirs()) || !seriesFile.createNewFile())
-                throw RaptureExceptionFactory
-                        .create("Cannot create series " + seriesFile.getAbsolutePath());
+            if ((!seriesFile.getParentFile().isDirectory() && !seriesFile.getParentFile().mkdirs())
+                    || !seriesFile.createNewFile()) throw RaptureExceptionFactory
+                            .create("Cannot create series " + seriesFile.getAbsolutePath());
         } catch (IOException ioe) {
             log.debug(ExceptionToString.format(ioe));
             throw RaptureExceptionFactory.create("Cannot create series " + key, ioe);
@@ -280,7 +281,7 @@ public class FileSeriesStore implements SeriesStore {
 
     @Override
     public boolean deletePointsFromSeriesByPointKey(String key, List<String> pointKeys) {
-        File seriesFile = FileRepoUtils.makeGenericFile(parentDir, key+Parser.COLON_CHAR);
+        File seriesFile = FileRepoUtils.makeGenericFile(parentDir, key + Parser.COLON_CHAR);
         if ((pointKeys == null) || pointKeys.isEmpty() || !seriesFile.isFile()) return true;
         List<SeriesValue> series = getPoints(key);
         if (series == null) return true;
@@ -297,7 +298,7 @@ public class FileSeriesStore implements SeriesStore {
 
     @Override
     public boolean deletePointsFromSeries(String key) {
-        File seriesFile = FileRepoUtils.makeGenericFile(parentDir, key+Parser.COLON_CHAR);
+        File seriesFile = FileRepoUtils.makeGenericFile(parentDir, key + Parser.COLON_CHAR);
         if (!seriesFile.isFile()) return false;
         return seriesFile.delete();
     }
@@ -320,7 +321,7 @@ public class FileSeriesStore implements SeriesStore {
     public List<SeriesValue> getPointsAfterReverse(String key, String startColumn, String endColumn, int maxNumber) {
         List<SeriesValue> series = new ArrayList<>(); // or ((maxNumber > values.size()) ? values.size() : maxNumber);
         boolean found = false;
-
+        int limit = (maxNumber > overflowLimit) ? overflowLimit : maxNumber;
         for (SeriesValue value : readSeriesSorted(key, false)) {
             if (!found) {
                 if (value.getColumn().equals(startColumn)) {
@@ -328,7 +329,7 @@ public class FileSeriesStore implements SeriesStore {
                 } else continue;
             }
             series.add(value);
-            if (series.size() == maxNumber) break;
+            if (series.size() == limit) break;
             if ((endColumn != null) && value.getColumn().equals(endColumn)) break;
         }
         return series;
@@ -336,10 +337,11 @@ public class FileSeriesStore implements SeriesStore {
 
     @Override
     public List<SeriesValue> getPointsAfter(String key, String startColumn, String endColumn, int maxNumber) {
-        File seriesFile = FileRepoUtils.makeGenericFile(parentDir, key+Parser.COLON_CHAR);
+        File seriesFile = FileRepoUtils.makeGenericFile(parentDir, key + Parser.COLON_CHAR);
         if (!seriesFile.exists()) return new ArrayList<>();
         if (!seriesFile.isFile()) throw RaptureExceptionFactory.create("For FILE implementation you can't have a Series with the same name as a Folder");
         List<SeriesValue> series = new ArrayList<>();
+        int limit = (maxNumber > overflowLimit) ? overflowLimit : maxNumber;
         boolean found = (startColumn == null);
         try {
             List<String> lines = Files.readAllLines(seriesFile.toPath(), StandardCharsets.UTF_8);
@@ -354,7 +356,7 @@ public class FileSeriesStore implements SeriesStore {
                     found = true;
                 }
                 series.add(value);
-                if (series.size() == maxNumber) break;
+                if (series.size() == limit) break;
                 if ((endColumn != null) && value.getColumn().equals(endColumn)) break;
             }
         } catch (IOException e) {
@@ -399,18 +401,18 @@ public class FileSeriesStore implements SeriesStore {
     public List<RaptureFolderInfo> listSeriesByUriPrefix(String string) {
         File file = FileRepoUtils.makeGenericFile(parentDir, string);
         if (!file.isDirectory()) return null;
-        
+
         File[] children = file.listFiles();
         List<RaptureFolderInfo> info = new ArrayList<>((children == null) ? 0 : children.length);
         if ((children != null) && (children.length > 0)) {
             for (File kid : children) {
                 RaptureFolderInfo inf = new RaptureFolderInfo();
                 if (kid.isDirectory()) {
-	                inf.setName(kid.getName());
-	                inf.setFolder(true);
+                    inf.setName(kid.getName());
+                    inf.setFolder(true);
                 } else {
-	                inf.setName(kid.getName().substring(0, kid.getName().length()-1));	// remove trailing colon
-	                inf.setFolder(false);
+                    inf.setName(kid.getName().substring(0, kid.getName().length() - 1)); // remove trailing colon
+                    inf.setFolder(false);
                 }
                 info.add(inf);
             }
@@ -431,7 +433,7 @@ public class FileSeriesStore implements SeriesStore {
 
     @Override
     public SeriesValue getLastPoint(String key) {
-        File seriesFile = FileRepoUtils.makeGenericFile(parentDir, key+Parser.COLON_CHAR);
+        File seriesFile = FileRepoUtils.makeGenericFile(parentDir, key + Parser.COLON_CHAR);
         if (!seriesFile.isFile()) return null;
         try {
             List<String> lines = Files.readAllLines(seriesFile.toPath(), StandardCharsets.UTF_8);
@@ -448,7 +450,7 @@ public class FileSeriesStore implements SeriesStore {
         }
         return null;
     }
-    
+
     @Override
     public void createSeries(String key) {
         writeSeries(key, new ArrayList<SeriesValue>());
@@ -459,22 +461,22 @@ public class FileSeriesStore implements SeriesStore {
         unregisterKey(key);
         deletePointsFromSeries(key);
     }
-    
+
     public boolean deleteFolder(RaptureURI uri) {
         File f = FileRepoUtils.makeGenericFile(parentDir, uri.getDocPath());
         if (f.exists() && f.isDirectory()) {
-        	if (f.list().length == 0) {
-	            try {
-	                java.nio.file.Files.delete(f.toPath());
-	                return true;
-	            } catch (IOException e) {
-	                log.error("Unable to delete "+uri.toString()+" because "+e.getMessage());
-	            }
-	        } else {
-	            log.debug("Folder is not empty "+uri.toString());
-	        }
+            if (f.list().length == 0) {
+                try {
+                    java.nio.file.Files.delete(f.toPath());
+                    return true;
+                } catch (IOException e) {
+                    log.error("Unable to delete " + uri.toString() + " because " + e.getMessage());
+                }
+            } else {
+                log.debug("Folder is not empty " + uri.toString());
+            }
         } else {
-            log.debug("Not a folder "+uri.toString());
+            log.debug("Not a folder " + uri.toString());
         }
         return false;
     }

@@ -35,5 +35,6 @@ import java.util.List;
 public enum SearchRepoType {
     meta, uri<schemes:{ s |, <s>}>;
 
-    public static final List\<String\> values = Arrays.asList("meta", "uri"<schemes:{ s |, "<s>"}>);
+    public static final String[] valueArray = { "meta", "uri"<schemes:{ s |, "<s>"}> };
+    public static final List\<String\> valueList = Arrays.asList(valueArray);
 }
