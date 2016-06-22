@@ -107,4 +107,10 @@ public class ReflexTest extends ResourceBasedTest {
         String ret = runTestFor("/contains.rfx");
         assertTrue("Test case did not complete successfully", ret.endsWith("true"));
     }
+
+    @Test
+    public void testCopy() throws RecognitionException {
+        String ret = runTestFor("/copy.rfx");
+        assertTrue("Test case did not complete successfully", ret.endsWith("true"));
+    }
 }
