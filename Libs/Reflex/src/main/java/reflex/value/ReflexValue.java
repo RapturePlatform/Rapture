@@ -26,7 +26,9 @@ package reflex.value;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -53,6 +55,52 @@ public class ReflexValue implements Comparable<ReflexValue> {
 
     public Object getValue() {
         return value;
+    }
+
+    public ReflexValue copyOf() {
+        switch (valueType) {
+        case STRING:
+        case NUMBER:
+        case INTEGER:
+        case BOOLEAN:
+        case DATE:
+        case TIME:
+            return new ReflexValue(value);
+        case BYTEARRAY:
+            byte[] that = this.asByteArray();
+            return new ReflexValue(Arrays.copyOf(that, that.length));
+        case MAP:
+            Map<String, Object> map = new LinkedHashMap<>();
+            map.putAll(this.asMap());
+            return new ReflexValue(map);
+        case LIST:
+            List<ReflexValue> list = new ArrayList<>();
+            list.addAll(this.asList());
+            return new ReflexValue(list);
+        case SPARSEMATRIX:
+            return new ReflexValue(this.asMatrix().copyOf());
+        case MIME:
+            ReflexMimeValue val = this.asMime();
+            byte[] data = val.getData();
+            ReflexMimeValue rmv = new ReflexMimeValue();
+            rmv.setData(Arrays.copyOf(data, data.length));
+            rmv.setMimeType(val.getMimeType());
+            return new ReflexValue(rmv);
+        case COMPLEX:
+        case INTERNAL:
+        case ARCHIVE:
+        case FILE:
+        case LIB:
+        case PORT:
+        case PROCESS:
+        case STREAM:
+        case STRINGSTREAM:
+        case TIMER:
+        case STRUCT:
+        default:
+            // TODO Should we do a deep copy or throw an exception?
+            return new ReflexValue(value);
+        }
     }
 
     public void setValue(Object value) {
