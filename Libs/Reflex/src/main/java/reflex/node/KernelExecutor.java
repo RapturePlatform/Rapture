@@ -28,6 +28,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -357,6 +358,23 @@ public final class KernelExecutor {
                     ret.add(vi.asDouble());
                 }
                 return ret;
+            } else if (innerType.equals(Long.class)) {
+                List<ReflexValue> inner = v.asList();
+                List<Long> ret = new ArrayList<>(inner.size());
+                for (ReflexValue vi : inner) {
+                    ret.add(vi.asLong());
+                }
+                return ret;
+            } else if (innerType.equals(BigDecimal.class)) {
+                List<ReflexValue> inner = v.asList();
+                List<BigDecimal> ret = new ArrayList<>(inner.size());
+                for (ReflexValue vi : inner) {
+                    ret.add(vi.asBigDecimal());
+                }
+                return ret;
+
+                // Collections etc
+
             } else if (innerType.getClass().isInstance(ParameterizedType.class)) {
                 List<ReflexValue> inner = v.asList();
                 List<List<?>> ret = new ArrayList<List<?>>(inner.size());
