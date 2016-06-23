@@ -91,12 +91,6 @@ public class ReflexTest extends ResourceBasedTest {
     }
 
     @Test
-    public void testLongSeries() throws RecognitionException {
-        String ret = runTestFor("/longseries.rfx");
-        assertTrue("Test case did not complete successfully", ret.endsWith("true"));
-    }
-
-    @Test
     public void testDate() throws RecognitionException {
         String ret = runTestFor("/date.rfx");
         assertTrue("Test case did not complete successfully", ret.endsWith("true"));
