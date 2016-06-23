@@ -18,7 +18,7 @@ password = 'rapture'
 rapture = raptureAPI.raptureAPI(site, username, password)
 user2 = "User2"
 
-def test_entitlements():
+def test_blobapi():
     if(rapture.doBlob_BlobRepoExists(blobRepoUri)):
         rapture.doBlob_DeleteBlobRepo(blobRepoUri)
     rapture.doBlob_CreateBlobRepo(blobRepoUri, "BLOB {} USING MONGODB {prefix=\"nightly\"}", "NREP {} USING MONGODB {prefix=\"nightlymeta\"}")
@@ -44,7 +44,7 @@ def test_entitlements():
     assert metaData['Content-Length'] == '5'
     assert metaData['createdTimestamp'] == metaData['modifiedTimestamp']
     
-    with open("../resources/www-bbc-com.pdf", 'rb') as pdfFile:
+    with open("src/test/resources/www-bbc-com.pdf", 'rb') as pdfFile:
         pdfData = pdfFile.read()
     rapture.doBlob_AddBlobContent(pdf, base64.b64encode(pdfData))
     pdfSize = rapture.doBlob_GetBlobSize(pdf)
