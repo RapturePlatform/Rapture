@@ -93,13 +93,30 @@ task docTests (type: Test) {
 
 }
 
+task pythonBlobTests(type: Exec) {
+    println 'Running blob api tests'
+    commandLine nosetestsCmd, 'src/test/python/blobApi.py'
+}
+task pythonPluginTests(type: Exec) {
+    println 'Running plugin api tests'
+    commandLine nosetestsCmd, 'src/test/python/plugin.py'
+}
+task pythonEntitlementTests(type: Exec) {
+    println 'Running entitlement api tests'
+    commandLine nosetestsCmd, 'src/test/python/entitlementTests.py'
+}
+
 task pythonSearchTests(type: Exec) {
     description 'Run Python search tests using nosetests'
     println 'Running Python search tests'
     commandLine nosetestsCmd, 'src/test/python/searchTests.py'
 }
 
-task pythonTests(type: Test, dependsOn: pythonSearchTests) {
+task pythonTests(type: Test) {
+    dependsOn pythonBlobTests
+    dependsOn pythonPluginTests
+    dependsOn pythonEntitlementTests
+    dependsOn pythonSearchTests
     description 'Run Python tests'
     println 'Running Python tests'
 }

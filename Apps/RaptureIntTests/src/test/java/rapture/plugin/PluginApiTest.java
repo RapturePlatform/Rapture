@@ -249,9 +249,8 @@ public class PluginApiTest {
     }
     
     public static boolean isWorkOrderRunning (HttpDecisionApi decisionApi,String workOrderURI ) {
-        return !(decisionApi.getWorkOrderStatus(workOrderURI).getStatus() == WorkOrderExecutionState.FINISHED || 
-                decisionApi.getWorkOrderStatus(workOrderURI).getStatus() == WorkOrderExecutionState.CANCELLED || 
-                decisionApi.getWorkOrderStatus(workOrderURI).getStatus() == WorkOrderExecutionState.ERROR);
+        WorkOrderExecutionState state = decisionApi.getWorkOrderStatus(workOrderURI).getStatus();
+        return !(state == WorkOrderExecutionState.FINISHED || state == WorkOrderExecutionState.CANCELLED || state == WorkOrderExecutionState.ERROR);
     }
     
     @AfterClass(groups={"plugin", "nightly"})
