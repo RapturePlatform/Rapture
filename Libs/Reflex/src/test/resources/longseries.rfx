@@ -1,0 +1,7 @@
+seriesRepoUri='series://testseries1'; 
+pointKeys = ['a','b','c'];
+pointValues = [1,2,3];
+newSeries=seriesRepoUri+'/addLongs';
+#doc.putDocument("document://foo/bar", "{}");
+#series.addStringToSeries(newSeries, "pointKeys", "pointValues");
+return true;
