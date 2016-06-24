@@ -72,21 +72,29 @@ public class ReflexTestRunner {
         String checkStr = scriptApi.checkScript(scriptName);
         Assert.assertEquals(0, checkStr.length(), "Found error in script " + scriptName + ": " + checkStr);
         Reporter.log("Running script: " + scriptName, true);
+        if (scriptName.contains("plugin")) {
+            System.err.println("QQQQ");
+        }
         try {
-            scriptApi.runScript(scriptName, getParams());
+            String retVal = scriptApi.runScript(scriptName, getParams());
+            System.err.println(retVal);
         } catch (Exception e) {
             Reporter.log(e.getMessage());
             Assert.fail("Failed running script: " + scriptName + " : " + e.getMessage());
-        } 
+        }
     }
 
     // Checks all non search scripts for syntax and then attempts to run
-    @Test(groups = { "script", "nightly","nosearch" }, dataProvider = "nonSearchScripts")
+    @Test(groups = { "script", "nightly", "nosearch" }, dataProvider = "nonSearchScripts")
     public void runNonSearchScripts(String scriptName) {
         Assert.assertEquals(0, scriptApi.checkScript(scriptName).length(), "Found error in script " + scriptName);
         Reporter.log("Running script: " + scriptName, true);
+        if (scriptName.contains("plugin")) {
+            System.err.println("QQQQ");
+        }
         try {
-            scriptApi.runScript(scriptName, getParams());
+            String retVal = scriptApi.runScript(scriptName, getParams());
+            System.err.println(retVal);
         } catch (Exception e) {
             Assert.fail("Failed running script: " + scriptName + "\n" + ExceptionToString.format(e));
         }
@@ -121,11 +129,15 @@ public class ReflexTestRunner {
                 String subdirName = file.getParent().substring(file.getParent().lastIndexOf('/') + 1);
                 String scriptPath = RaptureURI.builder(tempScripts).docPath(subdirName + "/" + scriptName).asString();
                 Reporter.log("Reading in file: " + file.getAbsolutePath(), true);
-                if (!scriptApi.doesScriptExist(scriptPath)) {
-                    byte[] scriptBytes = Files.readAllBytes(file.toPath());
-                    scriptApi.createScript(scriptPath, RaptureScriptLanguage.REFLEX, RaptureScriptPurpose.PROGRAM, new String(scriptBytes));
+                if (scriptName.contains("plugin")) {
+                    System.err.println("QQQQ");
+
+                    if (!scriptApi.doesScriptExist(scriptPath)) {
+                        byte[] scriptBytes = Files.readAllBytes(file.toPath());
+                        scriptApi.createScript(scriptPath, RaptureScriptLanguage.REFLEX, RaptureScriptPurpose.PROGRAM, new String(scriptBytes));
+                    }
+                    scriptList.add(scriptPath);
                 }
-                scriptList.add(scriptPath);
             } catch (IOException e) {
                 Assert.fail("Failed loading script: " + file.getAbsolutePath() + "\n" + ExceptionToString.format(e));
             }
@@ -159,6 +171,6 @@ public class ReflexTestRunner {
 
     @AfterClass
     public void cleanUp() {
-    	helper.cleanAllAssets();
+        helper.cleanAllAssets();
     }
 }
