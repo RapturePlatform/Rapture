@@ -80,10 +80,7 @@ public class ReflexTestRunner {
             Assert.fail("Failed running script: " + scriptName + " : " + e.getMessage());
         } 
         Assert.assertTrue(Boolean.parseBoolean(scriptResult),"Script result was not true for "+scriptName);
-        } catch (Exception e) {
-            Reporter.log(e.getMessage());
-            Assert.fail("Failed running script: " + scriptName + " : " + e.getMessage());
-        }
+
     }
 
     // Checks all non search scripts for syntax and then attempts to run
