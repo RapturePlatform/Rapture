@@ -121,3 +121,4 @@ println('overall result: ' + returnVal);
 //----------end test-----------------
 
 assert(returnVal);
+return true;

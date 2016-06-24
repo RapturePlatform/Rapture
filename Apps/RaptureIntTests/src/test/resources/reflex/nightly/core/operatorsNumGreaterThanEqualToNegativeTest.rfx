@@ -18,3 +18,4 @@ for i = -50 to 50 do
 end
 
 assert(returnVal);
+return true;

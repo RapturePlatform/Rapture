@@ -47,3 +47,4 @@ else do
 end
 
 assert(returnVal);
+return true;

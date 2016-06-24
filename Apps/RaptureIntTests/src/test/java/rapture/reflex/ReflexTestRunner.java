@@ -72,12 +72,14 @@ public class ReflexTestRunner {
         String checkStr = scriptApi.checkScript(scriptName);
         Assert.assertEquals(0, checkStr.length(), "Found error in script " + scriptName + ": " + checkStr);
         Reporter.log("Running script: " + scriptName, true);
+        String scriptResult="";
         try {
-            scriptApi.runScript(scriptName, getParams());
+        	scriptResult=scriptApi.runScript(scriptName, getParams());
         } catch (Exception e) {
             Reporter.log(e.getMessage());
             Assert.fail("Failed running script: " + scriptName + " : " + e.getMessage());
         } 
+        Assert.assertTrue(Boolean.parseBoolean(scriptResult),"Script result was not true for "+scriptName);
     }
 
     // Checks all non search scripts for syntax and then attempts to run
@@ -85,11 +87,13 @@ public class ReflexTestRunner {
     public void runNonSearchScripts(String scriptName) {
         Assert.assertEquals(0, scriptApi.checkScript(scriptName).length(), "Found error in script " + scriptName);
         Reporter.log("Running script: " + scriptName, true);
+        String scriptResult="";
         try {
-            scriptApi.runScript(scriptName, getParams());
+        	scriptResult=scriptApi.runScript(scriptName, getParams());
         } catch (Exception e) {
             Assert.fail("Failed running script: " + scriptName + "\n" + ExceptionToString.format(e));
         }
+        Assert.assertTrue(Boolean.parseBoolean(scriptResult),"Script result was not true for "+scriptName);
     }
 
     List<File> recursiveList(File file) {

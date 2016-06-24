@@ -75,3 +75,4 @@ if (testSameKeyPass == false) do
 end
 
 assert(returnVal);
+return true;

@@ -27,3 +27,4 @@ end
 for k in pointValues do
         assert(res);
 end
+return true;

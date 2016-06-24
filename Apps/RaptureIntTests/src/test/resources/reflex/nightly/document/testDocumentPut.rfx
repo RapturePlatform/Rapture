@@ -3,3 +3,4 @@ content = '{"key1":"value1"}';
 #doc.putDoc(docPath,content);
 assert(#doc.docExists(docPath));
 assert(#doc.getDoc(docPath) == content);
+return true;

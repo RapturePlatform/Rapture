@@ -34,8 +34,10 @@ import com.google.common.collect.ImmutableList;
 
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
+import rapture.common.WorkOrderExecutionState;
 import rapture.common.client.HttpAdminApi;
 import rapture.common.client.HttpBlobApi;
+import rapture.common.client.HttpDecisionApi;
 import rapture.common.client.HttpDocApi;
 import rapture.common.client.HttpEventApi;
 import rapture.common.client.HttpEntitlementApi;
@@ -209,6 +211,11 @@ public class IntegrationTestHelper {
         uriCache.remove(repo);
     }
 
+    public static boolean isWorkOrderRunning (HttpDecisionApi decisionApi,String workOrderURI ) {
+        WorkOrderExecutionState state = decisionApi.getWorkOrderStatus(workOrderURI).getStatus();
+        return !(state == WorkOrderExecutionState.FINISHED || state == WorkOrderExecutionState.CANCELLED || state == WorkOrderExecutionState.ERROR);
+    }
+    
     /**
      * Delete any created assets that we know about
      */

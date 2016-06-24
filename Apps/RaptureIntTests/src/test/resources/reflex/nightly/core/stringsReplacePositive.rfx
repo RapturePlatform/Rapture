@@ -16,3 +16,4 @@ catch e do
 end
 
 assert(returnVal);
+return true;

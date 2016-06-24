@@ -34,3 +34,4 @@ assert("Access revoked", !permitted);
 
 permitted = #user.isPermitted("doc.putDoc", documentUri);
 assert("Unrestricted", permitted);
+return true;
