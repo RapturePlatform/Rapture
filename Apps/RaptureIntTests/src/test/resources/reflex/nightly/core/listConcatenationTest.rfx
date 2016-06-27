@@ -1,0 +1,14 @@
+returnVal = false;
+
+a = [1,2,3];
+b = [3,4,5];
+
+println( "test list concatenation");
+if(a+b==[1,2,3,3,4,5]) do
+	returnVal = true;
+else do 
+	returnVal = false;
+end	
+
+assert(returnVal);
+return true;

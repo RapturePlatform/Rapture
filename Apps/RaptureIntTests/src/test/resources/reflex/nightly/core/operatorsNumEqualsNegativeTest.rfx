@@ -1,0 +1,21 @@
+
+// -----------Equals NEG-------------
+returnVal = true;
+println("\nTest Equals operator negatively.");
+i = -10;
+j = -10;
+k = 2;
+l = -2;
+
+if !(i == j) do
+    returnVal = false;
+end
+if (i == k) do
+    returnVal = false;
+end
+if (i != j) do
+    returnVal = false;
+end
+
+assert(returnVal);
+return true;

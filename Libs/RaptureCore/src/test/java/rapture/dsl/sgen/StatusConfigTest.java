@@ -43,7 +43,6 @@ public class StatusConfigTest {
 
     @Test
     public void testMongo() throws RecognitionException {
-        parseMessage("STATUS { test=\"one\" } using MONGO { prefix = \"test\"}");
         parseMessage("STATUS { test=\"one\" } using MONGODB { prefix = \"test\"}");
     }
 

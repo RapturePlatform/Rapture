@@ -229,6 +229,11 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
         DocumentRepoConfigStorage.add(internalUri, drc, context.getUser(), "Mark config as deleted");
         log.info("Config for " + internalUri.toString() + " marked as deleted ");
         removeRepoFromCache(internalUri.getAuthority());
+        
+        String idGenUri = getDocRepoIdGenUri(context, docRepoUri);
+        if (Kernel.getIdGen().idGenExists(context, idGenUri)) {
+            Kernel.getIdGen().deleteIdGen(context, idGenUri);
+        }
     }
 
     public void updateDocumentRepo(CallingContext context, DocumentRepoConfig data) {

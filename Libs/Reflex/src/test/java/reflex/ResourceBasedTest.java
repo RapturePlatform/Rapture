@@ -195,6 +195,9 @@ public class ResourceBasedTest {
             });
 
             ReflexNode returned = walker.walk();
+            if (walker.countSyntaxErrors() > 0) {
+                throw new RuntimeException("Syntax errors in test script - see log for details");
+            }
             InstrumentDebugger instrument = new InstrumentDebugger();
             instrument.setProgram(program);
             ReflexValue retVal;
@@ -202,7 +205,12 @@ public class ResourceBasedTest {
                 retVal = null;
                 System.out.println("null");
             } else {
-                retVal = returned.evaluateWithoutScope(instrument);
+                try {
+                    retVal = returned.evaluateWithoutScope(instrument);
+                } catch (Throwable e) {
+                    System.err.println(sb.toString());
+                    throw e;
+                }
                 sb.append("--RETURNS--").append(retVal.asString());
             }
             instrument.getInstrumenter().log();

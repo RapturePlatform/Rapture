@@ -140,7 +140,7 @@ public class ReflexDateValue {
     }
 
     public long getEpoch() {
-        return date.toDate().getTime();
+        return date.toDateMidnight(DateTimeZone.UTC).getMillis();
     }
 
     @Override

@@ -52,4 +52,4 @@ for i in loop do
 end
 
 inAFn();
-	
+	return true;

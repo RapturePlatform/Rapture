@@ -1,0 +1,12 @@
+println('\nTest NOT operator.');
+
+if  !true == false do
+	println('(!true == false)==true');
+	returnVal = true;
+else do
+	returnVal = false;
+	println('(!true == false)==false');
+end
+
+assert(returnVal);
+return true;

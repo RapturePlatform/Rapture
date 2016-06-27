@@ -1,0 +1,24 @@
+returnVal = false;
+
+//---------- test -----------
+//NUMBER LISTS
+
+emptyList = [];
+fullList = emptyList + 4;
+
+println ('Test ordering to list');
+fullList = fullList + 1 + 2;
+if (fullList == [ 4,1,2 ]) do
+	returnVal = true;
+else do
+	returnVal = false;
+end
+
+if (fullList != [ 4,2,1 ]) do
+	returnVal = true;
+else do
+	returnVal = false;
+end
+
+assert(returnVal);
+return true;

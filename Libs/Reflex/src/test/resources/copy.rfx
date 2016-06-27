@@ -1,0 +1,34 @@
+a = [1,2,3];
+b = a;
+b = b+4;
+b = b+5;
+
+assert (b contains 5);
+assert (!(a contains 5));
+
+x = [1,2,3];
+y = [4,5,6];
+z = x + y;
+
+assert (z contains 1);
+assert (z contains 6);
+assert (x contains 1);
+assert (!(x contains 6));
+
+m = {};
+m.a = 1;
+m.b = 2;
+
+n = m;
+n.b = 3;
+n.c = 4;
+assert (m.b == 2);
+
+p = [ - ];
+p[2,3] = 4;
+q = p;
+q[1,1] = 1;
+q[2,3] = 5;
+
+assert (p[2,3] == 4);
+return true;

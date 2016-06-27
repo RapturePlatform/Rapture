@@ -71,7 +71,7 @@ public class AddNode extends BaseNode {
         } else if (a.isDate() && b.isNumber()) {
             retVal = new ReflexValue(a.asDate().add(b.asInt()));
         } else if (a.isList()) {
-            List<ReflexValue> list = a.asList();
+            List<ReflexValue> list = a.copyOf().asList();
             if (b.isList()) {
                 list.addAll(b.asList());
             } else {

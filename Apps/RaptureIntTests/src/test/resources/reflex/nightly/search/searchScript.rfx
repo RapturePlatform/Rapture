@@ -1,0 +1,61 @@
+epl = scriptRepoUri + "/English/Premier";
+cl = scriptRepoUri + "/English/Championship";
+
+premier = "// 1,Leicester City,36,30,77 \n // 2,Tottenham Hotspur,36,39,70 \n // 3,Arsenal,36,25,67 \n // 4,Manchester City,36,30,64 \n // 5,Manchester Utd,35,12,60 \n "
++ "// 6,West Ham Utd,35,17,59 \n // 7,Southampton,36,14,57 \n // 8,Liverpool,35,11,55 \n // 9,Chelsea,35,7,48 \n // 10,Stoke City,36,-14,48 \n "
++ "// 11,Everton,35,6,44 \n // 12,Watford,35,-6,44 \n // 13,Swansea City,36,-13,43 \n // 14,West Bromwich Albion,36,-14,41 \n // 15,Bournemouth,36,-20,41 \n "
++ "// 16,Crystal Palace,36,-10,39 \n // 17,Newcastle Utd,36,-25,33 \n // 18,SUNDER"+"LAND,35,-18,32 \n // 19,Norwich City,35,-26,31 \n // 20,Aston Villa,36,-45,16";
+
+championship = "1,Burnley,45,34,90 \n // 2,Middlesbrough,45,32,88 \n // 3,Brighton & Hove Albion,45,30,88 \n // 4,Hull City,45,30,80 \n "
++ "// 5,Derby County,45,24,78 \n // 6,Sheffield Wednesday,45,22,74 \n // 7,Cardiff City,45,5,67 \n // 8,Ipswich Town,45,1,66 \n // 9,Birmingham City,45,4,62 \n "
++ "// 10,Brentford,45,1,62 \n // 11,Preston North End,45,0,61 \n // 12,Leeds Utd,45,-8,58 \n // 13,Queens Park Rangers,45,-1,57 \n // 14,Wolverhampton Wanderers,45,-6,55 \n "
++ "// 15,Blackburn Rovers,45,-2,52 \n // 16,REA"+"DING,45,-5,52 \n // 17,Nottingham Forest,45,-5,52 \n // 18,Bristol City,45,-16,52 \n // 19,Huddersfield Town,45,-7,51 \n "
++ "// 20,Rotherham Utd,45,-14,49 \n // 21,Fulham,45,-14,48 \n // 22,Charlton Athletic,45,-37,40 \n // 23,Milton Keynes Dons,45,-29,39 \n // 24,Bolton Wanderers,45,-39,30";
+
+if (!#script.doesScriptExist(epl)) do
+  #script.createScript(epl, "REFLEX", "PROGRAM", premier);
+end
+
+if (!#script.doesScriptExist(cl)) do
+   #script.createScript(cl, "REFLEX", "PROGRAM", championship);
+end
+
+sleep(1000); // lame - wait for ES
+
+query1="script:*SU"+"NDERLAND*";
+srch1 = #search.search(query1);
+
+parts = split(scriptRepoUri, "/", true);
+query2 = "repo:"+parts[2];
+srch2 = #search.search(query2);
+
+query3 = "scheme:script AND parts:Eng*";
+srch3 = #search.search(query3);
+
+// Delete the scripts. wait and try again
+
+#script.deleteScript(epl);
+
+sleep(1000); // lame - wait for ES
+
+srch4 = #search.search(query1);
+
+parts = split(scriptRepoUri, "/", true);
+query2 = "repo:"+parts[2];
+srch5 = #search.search(query2);
+
+query3 = "scheme:script AND parts:Eng*";
+srch6 = #search.search(query3);
+
+#script.deleteScript(cl);
+
+// Check the assertions AFTER the scripts were deleted because we can't drop the Script Repo.
+
+assert("Expected 1 match for "+query1+" but got "+srch1, (srch1.total == 1));
+assert("Expected 2 matches for "+query2+" but got "+srch2, (srch2.total == 2));
+assert("Expected 2 matches for "+query3+" but got "+srch3, (srch3.total == 2));
+
+assert("Expected no matches for "+query1+" but got "+srch4, (srch4.total == 0));
+assert("Expected 1 match for "+query2+" but got "+srch5, (srch5.total == 1));
+assert("Expected 1 match for "+query3+" but got "+srch6, (srch6.total == 1));
+return true;

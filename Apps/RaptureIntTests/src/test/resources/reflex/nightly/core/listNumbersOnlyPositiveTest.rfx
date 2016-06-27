@@ -1,0 +1,16 @@
+returnVal = false;
+
+//---------- test -----------
+//NUMBER LISTS
+
+println ('Test adding to list of only numbers');
+emptyList = [];
+fullList = emptyList + 4;
+if (fullList == [ 4 ]) do
+	returnVal = true;
+else do
+	returnVal = false;
+end
+
+assert(returnVal);
+return true;

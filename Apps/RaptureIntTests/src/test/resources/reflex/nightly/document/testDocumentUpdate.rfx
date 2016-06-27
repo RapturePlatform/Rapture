@@ -1,0 +1,9 @@
+docPath=docRepoUri+'/doc'+rand(1000000);
+content = '{"key1":"value1"}';
+#doc.putDoc(docPath,content);
+for i = 0 to 5 do 
+	newContent='{"key'+i+'":"value'+i+'"}';
+	#doc.putDoc(docPath,newContent);
+	assert(#doc.getDoc(docPath) == newContent);
+end
+return true;

@@ -1,0 +1,16 @@
+returnVal = true;
+//---------manipulation operators-------
+
+//----------------add-------------------
+
+
+println('\n---Testing general addition---.');
+
+if ((1+1 != 2)||(10004+40 != 10044)||(43110+69 != 43179)||(983.984+1.005 != 984.989)||(2.4+2.6 != 5.0)) do
+	returnVal = false;
+else do 
+	println ('pass.');
+end
+
+assert(returnVal);
+return true;

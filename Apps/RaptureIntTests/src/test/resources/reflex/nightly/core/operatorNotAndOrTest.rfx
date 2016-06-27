@@ -1,0 +1,124 @@
+//---------------test-----------------
+
+bools = [true, false];
+resultsAND = [];
+resultsOR=[];
+answersAND = [true,false,false,false];
+answersOR = [true,true,true,false];
+
+
+//-----------NOT AND OR------------
+
+println('Compare NOT AND and OR');
+
+resultsNOTANDOR=[];
+
+
+for i in bools do
+	for j in bools do
+		for k in bools do 
+						//1ST 	Where is the not?
+			if (!i||j&&k)==((!i)||(j&&k)) do
+				resultsNOTANDOR = resultsNOTANDOR + true;
+			else do
+				resultsNOTANDOR = resultsNOTANDOR + false;
+			end
+	
+			if (!i&&j||k)==(((!i)&&j)||k) do
+				resultsNOTANDOR = resultsNOTANDOR + true;
+			else do
+				resultsNOTANDOR = resultsNOTANDOR + false;
+			end
+							//2ND
+			if (i||!j&&k)==(i||((!j)&&k)) do
+				resultsNOTANDOR = resultsNOTANDOR + true;
+			else do
+				resultsNOTANDOR = resultsNOTANDOR + false;
+			end
+	
+			if (i&&!j||k)==((i&&(!j))||k) do
+				resultsNOTANDOR = resultsNOTANDOR + true;
+			else do
+				resultsNOTANDOR = resultsNOTANDOR + false;
+			end
+			
+							//3RD
+			if (i||j&&!k)==(i||(j&&(!k))) do
+				resultsNOTANDOR = resultsNOTANDOR + true;
+			else do
+				resultsNOTANDOR = resultsNOTANDOR + false;
+			end
+	
+			if (i&&j||!k)==((i&&j)||(!k)) do
+				resultsNOTANDOR = resultsNOTANDOR + true;
+			else do
+				resultsNOTANDOR = resultsNOTANDOR + false;
+			end
+			
+							//1ST 	Where isn't the not?
+			if (i||!j&&!k)==(i||((!j)&&(!k))) do
+				resultsNOTANDOR = resultsNOTANDOR + true;
+			else do
+				resultsNOTANDOR = resultsNOTANDOR + false;
+			end
+	
+			if (i&&!j||!k)==((i&&(!j))||(!k)) do
+				resultsNOTANDOR = resultsNOTANDOR + true;
+			else do
+				resultsNOTANDOR = resultsNOTANDOR + false;
+			end
+	
+							//2ND
+			if (!i||j&&!k)==((!i)||(j&&(!k))) do
+				resultsNOTANDOR = resultsNOTANDOR + true;
+			else do
+				resultsNOTANDOR = resultsNOTANDOR + false;
+			end
+	
+			if (!i&&j||!k)==(((!i)&&j)||(!k)) do
+				resultsNOTANDOR = resultsNOTANDOR + true;
+			else do
+				resultsNOTANDOR = resultsNOTANDOR + false;
+			end
+			
+							//3RD
+			if (!i||!j&&k)==((!i)||((!j)&&k)) do
+				resultsNOTANDOR = resultsNOTANDOR + true;
+			else do
+				resultsNOTANDOR = resultsNOTANDOR + false;
+			end
+	
+			if (!i&&!j||k)==(((!i)&&(!j))||k) do
+				resultsNOTANDOR = resultsNOTANDOR + true;
+			else do
+				resultsNOTANDOR = resultsNOTANDOR + false;
+			end
+			
+							//All
+			if (!i||!j&&!k)==((!i)||((!j)&&(!k))) do
+				resultsNOTANDOR = resultsNOTANDOR + true;
+			else do
+				resultsNOTANDOR = resultsNOTANDOR + false;
+			end
+	
+			if (!i&&!j||!k)==(((!i)&&(!j))||(!k)) do
+				resultsNOTANDOR = resultsNOTANDOR + true;
+			else do
+				resultsNOTANDOR = resultsNOTANDOR + false;
+			end
+		end
+	end
+end
+
+returnVal = true;
+
+for i in resultsNOTANDOR do
+	if !i do
+		rerutnVal = false;
+	end
+end
+println('overall result: ' + returnVal);
+//----------end test-----------------
+
+assert(returnVal);
+return true;

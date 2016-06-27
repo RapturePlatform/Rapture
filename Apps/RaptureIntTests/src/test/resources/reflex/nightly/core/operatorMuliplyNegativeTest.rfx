@@ -1,0 +1,35 @@
+
+returnVal = true;
+
+
+//----------------test------------------
+//---------manipulation operators-------
+
+//--------------multiply negative----------------
+println('\n---Testing integer multiplication by a negative.---');
+
+//------------(2)------------
+j=0;
+jtwo=[];
+for i = 0 to 49 do
+	jtwo=jtwo+j;
+	j=j-2;
+end
+
+
+ktwo=[];
+for i = 0 to 49 do
+	ktwo=ktwo+(-2*i);
+end
+
+for i = 0 to 49 do 
+	if jtwo[i] != ktwo[i] do
+		returnVal = false;
+		mtwo=false;
+	else do 
+		mtwo=true;
+	end
+end
+
+assert(returnVal);
+return true;

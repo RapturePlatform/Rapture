@@ -1,0 +1,29 @@
+returnVal = false;
+
+//---------- test -----------
+//NUMBER LISTS
+
+// LIST OF NUMBER LISTS
+
+emptyList = [];
+fullList = emptyList + [1,0,0];
+fullList = fullList + [0,1,0] + [0,0,1];
+
+
+println ('Test removing from list of only lists of numbers');
+fullList = fullList - [1,0,0];
+
+if (fullList == [[0,1,0],[0,0,1]]) do
+	returnVal = true;
+else do
+	returnVal = false;
+end
+
+if (fullList != [[1,0,0],[0,1,0],[0,0,1]]) do
+	returnVal = true;
+else do
+	returnVal = false;
+end
+
+assert(returnVal);
+return true;

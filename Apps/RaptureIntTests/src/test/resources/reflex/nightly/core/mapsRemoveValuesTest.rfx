@@ -1,0 +1,36 @@
+returnVal = false;
+
+//---------- test -----------
+
+println ('Positive test for map values');
+value1 = 'this one value';
+value2 = 78873;
+value3 = 8783.334232;
+value4 = {"dub":0.3,"lng":42,"str":"Hello Cruel World"};
+value5 = 6000000000L;
+
+myMap = {};
+myMap['key1'] = value1;
+myMap['key2'] = value2;
+myMap['key3'] = value3;
+myMap['key4'] = value4;
+myMap['key5'] = value5;
+
+
+myMap2 = {};
+myMap2 = myMap;
+
+// get keys to iterate through each map item
+mapKeys = keys(myMap);
+
+println ('Positive test for removing map values');
+for singleKey in mapKeys do
+    myMap.remove(singleKey); // test using java remove function
+end
+if (size(keys(myMap)) == 0) do
+	returnVal = true;
+else do
+	returnVal = false;
+end
+assert(returnVal);
+return true;

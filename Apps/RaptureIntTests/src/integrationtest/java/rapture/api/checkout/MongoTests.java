@@ -206,7 +206,7 @@ public class MongoTests {
     @Test(groups = { "mongo" }, enabled = true, description = "IDGEN test")
     public void testIdGen() {
         UUID uuid = UUID.randomUUID();
-        RaptureIdGen f = IdGenFactory.getIdGen("IDGEN { initial=\"143\", base=\"36\", length=\"8\", prefix=\"FOO\" } USING MONGO { prefix=\"" + uuid + "\"}");
+        RaptureIdGen f = IdGenFactory.getIdGen("IDGEN { initial=\"143\", base=\"36\", length=\"8\", prefix=\"FOO\" } USING MONGODB { prefix=\"" + uuid + "\"}");
         String result = f.incrementIdGen(14500L);
         Assert.assertEquals("FOO00000BAR", result);
         result = f.incrementIdGen(2L);
@@ -297,7 +297,7 @@ public class MongoTests {
     @Test
     public void compatibility() {
         UUID uuid = UUID.randomUUID();
-        RaptureIdGen f = IdGenFactory.getIdGen("IDGEN { initial=\"143\", base=\"36\", length=\"8\", prefix=\"FOO\" } USING MONGO { prefix=\"" + uuid + "\"}");
+        RaptureIdGen f = IdGenFactory.getIdGen("IDGEN { initial=\"143\", base=\"36\", length=\"8\", prefix=\"FOO\" } USING MONGODB { prefix=\"" + uuid + "\"}");
         DB db = MongoDBFactory.getDB("default");
         DBCollection dc = db.getCollection(uuid.toString());
         MongoCollection<Document> mc = MongoDBFactory.getCollection("default", uuid.toString());

@@ -1,0 +1,47 @@
+pdf = blobRepoUri + "/blob/thisisaPDF";
+csv = blobRepoUri + "/blob/thisisaCSV";
+
+#blob.putBlob(pdf, "PDF", "application/pdf");
+#blob.putBlob(csv, "C,S,V", "text/csv");
+
+pdfSize = #blob.getBlobSize(pdf);
+assert ("Expect size = 3", pdfSize == 3);
+
+csvSize = #blob.getBlobSize(csv);
+assert ("Expect size = 5", csvSize == 5);
+
+metaData = #blob.getBlobMetaData(pdf);
+assert(metaData['Content-Type'] == 'application/pdf');
+assert(metaData['Content-Length'] == '3');
+println(metaData.createdTimestamp);
+println(metaData.modifiedTimestamp);
+
+metaData = #blob.getBlobMetaData(csv);
+assert(metaData['Content-Type'] == 'text/csv');
+assert(metaData['Content-Length'] == '5');
+assert (metaData.createdTimestamp == metaData.modifiedTimestamp);
+
+#blob.addBlobContent(pdf, "XYZ");
+pdfSize = #blob.getBlobSize(pdf);
+assert ("Expect size = 6", pdfSize == 6);
+
+metaData = #blob.getBlobMetaData(pdf);
+assert(metaData['Content-Type'] == 'application/pdf');
+assert(metaData['Content-Length'] == '6');
+assert (metaData.createdTimestamp != metaData.modifiedTimestamp);
+
+#blob.putBlob(pdf, "XYZZY", "text/plain");
+metaData = #blob.getBlobMetaData(pdf);
+assert(metaData['Content-Type'] == 'text/plain');
+assert(metaData['Content-Length'] == '5');
+assert (metaData.createdTimestamp != metaData.modifiedTimestamp);
+
+#blob.deleteBlob(pdf);
+#blob.deleteBlob(csv);
+
+assert("It's gone now", !#blob.blobExists(pdf));
+assert("It's gone now", !#blob.blobExists(csv));
+
+metaData = #blob.getBlobMetaData(pdf);
+assert (metaData == {});
+return true;

@@ -5,6 +5,8 @@ jar.manifest.attributes "Implementation-Version" : version
 
 mainClassName = "rapture.test.java"
 
+def nosetestsCmd = System.properties['nosetests'] ?: "nosetests"
+
 dependencies {
     compile "net.rapture:WorkflowsCore:$project.platformVersion"
     compile "net.rapture:RaptureCore:$project.platformVersion"
@@ -20,7 +22,6 @@ dependencies {
 }
 
 
-
 task nightlyTests (type: Test) {
     description 'Runs TestNG tests in the Java nightly test group.'
     useTestNG(){
@@ -28,6 +29,25 @@ task nightlyTests (type: Test) {
       useDefaultListeners = true
       jvmArgs '-Xmx2048m', '-XX:MaxPermSize=256m'
       includeGroups 'nightly'
+      excludeGroups 'nosearch'
+
+      if(project.hasProperty('env')){
+          ext.testngfile = "/src/test/resources/${env}_testng.xml"
+       } else {
+          ext.testngfile = "/src/test/resources/local_testng.xml"
+       }
+      suites ext.testngfile
+    }
+}
+
+task nightlysearchoffTests (type: Test) {
+    description 'Runs TestNG tests in the Java nightly test group.'
+    useTestNG(){
+      ignoreFailures = true
+      useDefaultListeners = true
+      jvmArgs '-Xmx2048m', '-XX:MaxPermSize=256m'
+      includeGroups 'nightly', 'nosearch'
+      excludeGroups 'search'
 
       if(project.hasProperty('env')){
           ext.testngfile = "/src/test/resources/${env}_testng.xml"
@@ -70,4 +90,42 @@ task docTests (type: Test) {
         }
         suites ext.testngfile
     }
+
 }
+
+task pythonBlobTests(type: Exec) {
+    println 'Running blob api tests'
+    commandLine nosetestsCmd, 'src/test/python/blobApi.py'
+}
+task pythonDocTests(type: Exec) {
+    println 'Running doc api tests'
+    commandLine nosetestsCmd, 'src/test/python/docApi.py'
+}
+task pythonPluginTests(type: Exec) {
+    println 'Running plugin api tests'
+    commandLine nosetestsCmd, 'src/test/python/plugin.py'
+}
+task pythonEntitlementTests(type: Exec) {
+    println 'Running entitlement api tests'
+    commandLine nosetestsCmd, 'src/test/python/entitlementTests.py'
+}
+
+task pythonSearchTests(type: Exec) {
+    description 'Run Python search tests using nosetests'
+    println 'Running Python search tests'
+    commandLine nosetestsCmd, 'src/test/python/searchTests.py'
+}
+
+task pythonTests(type: Test) {
+    dependsOn pythonBlobTests
+    dependsOn pythonDocTests
+    dependsOn pythonPluginTests
+    dependsOn pythonEntitlementTests
+    dependsOn pythonSearchTests
+    description 'Run Python tests'
+    println 'Running Python tests'
+}
+
+// This doesn't seem to work
+pythonTests.mustRunAfter nightlyTests
+pythonSearchTests.mustRunAfter nightlyTests

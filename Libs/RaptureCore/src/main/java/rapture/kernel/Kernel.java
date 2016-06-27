@@ -820,13 +820,15 @@ public enum Kernel {
     	log.info("Looking for " + appKey + " and " + apiKey);
     	APIKeyDefinition def = APIKeyDefinitionStorage.readByFields(appKey, apiKey);
     	if (def == null) {
+    	    log.debug(appKey + apiKey + " pair does not exist.");
     		return null;
     	}
     	else {
-    		log.info("Resolved to " + def.getUserId());
+    		log.info("Resolved to user: " + def.getUserId());
     		CallingContext ctx = new CallingContext();
     		ctx.setUser(def.getUserId());
     		ctx.setContext(apiKey);
+    		ctx.setValid(true);
     		return ctx;
     	}
 	}

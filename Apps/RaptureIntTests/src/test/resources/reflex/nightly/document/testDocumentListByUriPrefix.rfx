@@ -1,0 +1,33 @@
+docURIf1d1=docRepoUri+'/folder1/doc1';
+docURIf1d2=docRepoUri+'/folder1/doc2';
+docURIf1d3=docRepoUri+'/folder1/doc3';
+docURIf2f2d1=docRepoUri+'/folder2/folder21/doc1';
+docURIf2f2d2=docRepoUri+'/folder2/folder21/doc2';
+docURIf3d1=docRepoUri+'/folder3/doc1';
+
+content='{"key":"value"}';
+#doc.putDoc(docURIf1d1,content);
+#doc.putDoc(docURIf1d2,content);
+#doc.putDoc(docURIf1d3,content);
+#doc.putDoc(docURIf2f2d1,content);
+#doc.putDoc(docURIf2f2d2,content);
+#doc.putDoc(docURIf3d1,content);
+
+assert(size(#doc.listDocsByUriPrefix(docRepoUri+'/folder1',2))==3);
+assert(size(#doc.listDocsByUriPrefix(docRepoUri+'/folder1',1))==3);
+assert(size(#doc.listDocsByUriPrefix(docRepoUri+'/folder2',2))==3);
+assert(size(#doc.listDocsByUriPrefix(docRepoUri+'/folder2',1))==1);
+assert(size(#doc.listDocsByUriPrefix(docRepoUri+'/folder2',0))==3);
+assert(size(#doc.listDocsByUriPrefix(docRepoUri+'/folder3',0))==1);
+
+#doc.deleteDoc(docURIf1d1);
+#doc.deleteDoc(docURIf3d1);
+assert(size(#doc.listDocsByUriPrefix(docRepoUri+'/folder1',2))==2);
+assert(size(#doc.listDocsByUriPrefix(docRepoUri+'/folder1',1))==2);
+try do
+	#doc.listDocsByUriPrefix(docRepoUri+'/folder3',0);
+	assert(false);
+end
+catch e do
+end
+return true;

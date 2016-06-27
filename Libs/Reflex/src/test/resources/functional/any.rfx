@@ -40,3 +40,4 @@ println("Any " + l2 + " less than 5 = " + res2);
 
 assert(res1 == true);
 assert(res2 == false);
+return true;

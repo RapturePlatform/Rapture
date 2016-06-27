@@ -66,3 +66,4 @@ for x in a do
    println("Got value " + x );
 end
 
+return true;

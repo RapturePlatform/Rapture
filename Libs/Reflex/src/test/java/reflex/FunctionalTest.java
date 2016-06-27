@@ -23,47 +23,57 @@
  */
 package reflex;
 
+import static org.junit.Assert.assertTrue;
+
 import org.antlr.runtime.RecognitionException;
 import org.junit.Test;
 
 public class FunctionalTest extends ResourceBasedTest {
     @Test
     public void testMap() throws RecognitionException {
-        runTestFor("/functional/map.rfx");
+        String ret = runTestFor("/functional/map.rfx");
+        assertTrue("Test case did not complete successfully", ret.endsWith("true"));
     }
 
     @Test
     public void testFilter() throws RecognitionException {
-        runTestFor("/functional/filter.rfx");
+        String ret = runTestFor("/functional/filter.rfx");
+        assertTrue("Test case did not complete successfully", ret.endsWith("true"));
     }
 
     @Test
     public void testFold() throws RecognitionException {
-        runTestFor("/functional/fold.rfx");
+        String ret = runTestFor("/functional/fold.rfx");
+        assertTrue("Test case did not complete successfully", ret.endsWith("true"));
     }
 
     @Test
     public void testAny() throws RecognitionException {
-        runTestFor("/functional/any.rfx");
+        String ret = runTestFor("/functional/any.rfx");
+        assertTrue("Test case did not complete successfully", ret.endsWith("true"));
     }
 
     @Test
     public void testAll() throws RecognitionException {
-        runTestFor("/functional/all.rfx");
+        String ret = runTestFor("/functional/all.rfx");
+        assertTrue("Test case did not complete successfully", ret.endsWith("true"));
     }
 
     @Test
     public void takeWhile() throws RecognitionException {
-        runTestFor("/functional/takeWhile.rfx");
+        String ret = runTestFor("/functional/takeWhile.rfx");
+        assertTrue("Test case did not complete successfully", ret.endsWith("true"));
     }
 
     @Test
     public void dropWhile() throws RecognitionException {
-        runTestFor("/functional/dropWhile.rfx");
+        String ret = runTestFor("/functional/dropWhile.rfx");
+        assertTrue("Test case did not complete successfully", ret.endsWith("true"));
     }
 
     @Test
     public void splitWith() throws RecognitionException {
-        runTestFor("/functional/splitWith.rfx");
+        String ret = runTestFor("/functional/splitWith.rfx");
+        assertTrue("Test case did not complete successfully", ret.endsWith("true"));
     }
 }

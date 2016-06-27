@@ -1,0 +1,28 @@
+returnVal = false;
+
+//---------- test -----------
+//NUMBER LISTS
+
+// LIST OF NUMBER LISTS
+
+emptyList = [];
+fullList = emptyList + [1,0,0];
+fullList = fullList + [0,1,0] + [0,0,1];
+fullList = fullList - [1,0,0];
+
+
+println ('Test existence in list after remove');
+if ([0,1,0] in fullList) do
+	returnVal = true;
+else do
+	returnVal = false;
+end
+
+if (!([1,0,0] in fullList)) do
+	returnVal = true;
+else do
+	returnVal = false;
+end
+
+assert(returnVal);
+return true;

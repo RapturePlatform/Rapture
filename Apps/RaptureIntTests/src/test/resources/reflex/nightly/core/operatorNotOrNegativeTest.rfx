@@ -1,0 +1,56 @@
+//---------------test-----------------
+
+bools = [true, false];
+resultsAND = [];
+resultsOR=[];
+answersAND = [true,false,false,false];
+answersOR = [true,true,true,false];
+
+//-------Order of operations--------
+
+
+
+//-----------NOT OR Neg------------
+
+println('Compare NOT and OR neg');
+
+resultsNOTORneg=[];
+
+
+for i in bools do
+	for j in bools do
+	
+		if (!i||j)==(!(i||j)) do
+			resultsNOTORneg = resultsNOTORneg + true;
+		else do
+			resultsNOTORneg = resultsNOTORneg + false;
+		end
+	
+		
+		if (!i||!j)==(!(i || j)) do					//Bit awkward here, can't really exclude the second !
+			resultsNOTORneg = resultsNOTORneg + true;
+		else do
+			resultsNOTORneg = resultsNOTORneg + false;
+		end
+		
+		
+		if (i||!j)==((i||!j)) do  				//awkward again.
+			resultsNOTORneg = resultsNOTORneg + true;
+		else do
+			resultsNOTORneg = resultsNOTORneg + false;
+		end
+	end
+end
+
+returnVal = false;
+
+for i in resultsNOTORneg do
+	if !i do
+		returnVal = true;
+	end
+end
+println('overall result: ' + returnVal);
+
+
+assert(returnVal);
+return true;

@@ -1,0 +1,25 @@
+returnVal = false;
+
+//---------- test -----------
+//NUMBER LISTS
+
+// COMPLEX LIST 
+
+complexList = [-1, 'abc', true ];
+
+
+println ('Test ordering from complex list');
+if (complexList == [-1, 'abc', true ]) do
+	returnVal = true;
+else do
+	returnVal = false;
+end
+
+if (complexList != ['abc', -1,true ]) do
+	returnVal = true;
+else do
+	returnVal = false;
+end
+
+assert(returnVal);
+return true;

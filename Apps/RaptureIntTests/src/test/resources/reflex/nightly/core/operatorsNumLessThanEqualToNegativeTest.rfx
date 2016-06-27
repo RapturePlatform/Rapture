@@ -1,0 +1,22 @@
+returnVal = false;
+
+
+//---------------test-----------------
+//--------relational operators--------
+//---Integers Positive an negative.---
+
+//-------less than/equal neg------------
+println("\nTest less than/equal negatively.");
+answerLessEqualNeg = [];
+resultLessEqualNeg = [];
+
+returnVal = true;
+
+for i = -50 to 50 do 
+	if i <= -50.000000000001 do
+		returnVal = false;
+	end
+end
+
+assert(returnVal);
+return true;

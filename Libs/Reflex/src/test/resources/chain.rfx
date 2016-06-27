@@ -41,3 +41,4 @@ params = { 'param1' : 10 };
 res = chain('return param1;', params);
 
 println("The return value was " + res);
+return true;

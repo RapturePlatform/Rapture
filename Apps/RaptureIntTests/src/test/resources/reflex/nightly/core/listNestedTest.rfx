@@ -1,0 +1,11 @@
+returnVal = false;
+
+println("test nested list");
+ntlist=[[1,2],[3,4],[5,6]];
+if(ntlist[0][0]==1) do
+	returnVal = true;
+else do 
+	returnVal = false;
+end
+assert(returnVal);
+return true;

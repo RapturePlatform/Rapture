@@ -1,0 +1,14 @@
+returnVal = true;
+
+//----------------sub-------------------
+
+println('\n---Testing integer subtraction.---');
+
+if ((1-1 != 0)||(10004-1004 != 9000)||(43110-69 != 43041)||(983.984-1.005 != 982.979)||(2.4-2.6 != -0.2)) do
+	returnVal = false;
+else do 
+	println ('pass.');
+end
+
+assert(returnVal);
+return true;

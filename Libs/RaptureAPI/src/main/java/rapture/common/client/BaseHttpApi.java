@@ -23,8 +23,6 @@
  */
 package rapture.common.client;
 
-import rapture.common.CallingContext;
-import rapture.common.ErrorWrapper;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -63,6 +61,9 @@ import org.apache.http.protocol.HttpContext;
 import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+
+import rapture.common.CallingContext;
+import rapture.common.ErrorWrapper;
 import rapture.common.exception.RaptureException;
 import rapture.common.exception.RaptureExceptionFactory;
 import rapture.common.exception.RaptureExceptionFormatter;
@@ -250,6 +251,16 @@ public class BaseHttpApi {
     }
 
     protected GeneralResponse responseFromJson(String responseObjectJson) {
+        // if the servlet throws an exception - which happens if a Reflex assertion fails - then extract the info
+        if (responseObjectJson.startsWith("<!DOCTYPE html>")) {
+            log.warn(responseObjectJson);
+            int rootCause = responseObjectJson.indexOf("root cause");
+            if (rootCause > 0) {
+                int skipPre = responseObjectJson.indexOf("<pre>", rootCause);
+                String cause = responseObjectJson.substring(skipPre + 5, responseObjectJson.indexOf("</pre>", skipPre)).replaceAll("&quot;", "\"");
+                throw new RaptureException("", 500, cause);
+            }
+        }
         GeneralResponse resp = JacksonUtil.objectFromJson(responseObjectJson, GeneralResponse.class);
         if (resp.isInError()) {
             throwError(resp);
@@ -297,6 +308,7 @@ public class BaseHttpApi {
 
         httpClient.addResponseInterceptor(new HttpResponseInterceptor() {
 
+            @Override
             public void process(final HttpResponse response, final HttpContext context) throws HttpException, IOException {
                 if (log.isTraceEnabled()) {
                     log.trace("Response Headers:");
