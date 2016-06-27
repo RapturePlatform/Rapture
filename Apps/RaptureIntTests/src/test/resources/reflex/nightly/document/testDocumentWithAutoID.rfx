@@ -10,3 +10,4 @@ for i=1 to NUM_DOCS do
 	assert(putContentUri.contains(idgenPrefix+"0000"+i));
 	assert(getContent.contains(idgenPrefix+"0000"+i));
 end
+return true;

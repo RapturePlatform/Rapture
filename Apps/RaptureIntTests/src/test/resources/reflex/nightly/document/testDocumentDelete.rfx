@@ -4,3 +4,4 @@ content = '{"key1":"value1"}';
 assert(#doc.docExists(docPath));
 #doc.deleteDoc(docPath);
 assert(!#doc.docExists(docPath));
+return true;

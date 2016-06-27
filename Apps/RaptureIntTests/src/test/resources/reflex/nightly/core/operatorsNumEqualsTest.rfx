@@ -30,3 +30,4 @@ if returnVal == true do
 end
 
 assert(returnVal);
+return true;

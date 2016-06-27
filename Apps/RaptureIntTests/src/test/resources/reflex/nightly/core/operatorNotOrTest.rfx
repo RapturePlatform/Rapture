@@ -49,3 +49,4 @@ returnVal = true;
 println('overall result: ' + returnVal);
 
 assert(returnVal);
+return true;

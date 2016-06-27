@@ -28,3 +28,4 @@ for k in pointValues do
 	res=(resultsValues contains k);
         assert(res);
 end
+return true;

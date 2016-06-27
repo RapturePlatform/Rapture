@@ -28,3 +28,4 @@ for s in seriesList do
 	assert(cast(s.getKey(),"number")> (MAX_VALUES/2));
 end  
 
+return true;

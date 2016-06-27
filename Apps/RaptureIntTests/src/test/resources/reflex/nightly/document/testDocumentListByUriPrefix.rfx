@@ -30,3 +30,4 @@ try do
 end
 catch e do
 end
+return true;

@@ -45,4 +45,5 @@ query="blob:Watford NOT blob:Script*";
 srch = #search.search(query);
 assert("Expected no match for "+query+" but got "+srch, (srch.total == 0));
 srch = "";
+return true;
 

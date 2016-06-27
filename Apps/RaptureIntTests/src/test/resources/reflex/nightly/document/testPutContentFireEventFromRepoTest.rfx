@@ -18,3 +18,4 @@ assert(s2=='{"key1":"value1"}');
 sleep(1000);
 getTestDoc = #doc.getDoc(testDocUri);
 assert(getTestDoc==docVal);
+return true;

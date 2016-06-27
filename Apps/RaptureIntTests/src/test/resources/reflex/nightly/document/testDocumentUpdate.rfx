@@ -6,3 +6,4 @@ for i = 0 to 5 do
 	#doc.putDoc(docPath,newContent);
 	assert(#doc.getDoc(docPath) == newContent);
 end
+return true;

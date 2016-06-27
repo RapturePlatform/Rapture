@@ -12,3 +12,4 @@ else do
 	println('true not equal to true.');
 end
 assert(returnVal);
+return true;
