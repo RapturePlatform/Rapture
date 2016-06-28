@@ -2,7 +2,7 @@
 #include <cstdlib>
 
 #include "connection.hpp"
-#include "generated/user.hpp"
+#include "generated/user.h"
 
 /**
   * A test file for playing with the Rapture API
@@ -16,7 +16,7 @@ int main(int argc, char* argv[])
 
    UserApi userApi(conn);
 
-   std::cout << userApi.getWhoAmI() << std::endl;
+   std::cout << userApi.GetWhoAmI() << std::endl;
 
    return 0;
 }
