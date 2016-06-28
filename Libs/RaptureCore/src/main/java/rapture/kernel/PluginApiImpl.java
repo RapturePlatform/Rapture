@@ -41,6 +41,12 @@ import java.util.zip.ZipOutputStream;
 import org.apache.http.HttpStatus;
 import org.apache.log4j.Logger;
 
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+
 import rapture.common.CallingContext;
 import rapture.common.PluginConfig;
 import rapture.common.PluginConfigStorage;
@@ -98,12 +104,6 @@ import rapture.kernel.plugin.WorkflowEncoder;
 import rapture.kernel.plugin.WorkflowInstaller;
 import rapture.plugin.install.PluginSandboxItem;
 import rapture.util.IDGenerator;
-
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 
 public class PluginApiImpl extends KernelBase implements PluginApi {
 
@@ -422,9 +422,9 @@ public class PluginApiImpl extends KernelBase implements PluginApi {
             throw RaptureExceptionFactory.create("Malformatted version string. Version is a maximum of four dot separated integers.");
         }
         result.setMajor(parseIntOrDie(parts[0]));
-        result.setMinor(parseIntOrDie(parts[1]));
-        result.setRelease(parseIntOrDie(parts[2]));
-        result.setTimestamp(parseLongOrDie(parts[3]));
+        if (parts.length > 1) result.setMinor(parseIntOrDie(parts[1]));
+        if (parts.length > 2) result.setRelease(parseIntOrDie(parts[2]));
+        if (parts.length > 3) result.setTimestamp(parseLongOrDie(parts[3]));
         return result;
     }
 
