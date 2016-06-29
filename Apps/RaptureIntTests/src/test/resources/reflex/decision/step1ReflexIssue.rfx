@@ -1,0 +1,6 @@
+
+workerURI = _params['$DP_WORKER_URI']
+println('******* DP_WORKER_URI: ' + workerURI);
+println(******* LOCKING TEST step 2
+
+return "ok";
