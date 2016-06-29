@@ -116,8 +116,12 @@ public class ReflexDateValue {
     }
 
     public String toString(DateTimeFormatter formatter) {
+        return toString(formatter, DateTimeZone.UTC);
+    }
+
+    public String toString(DateTimeFormatter formatter, DateTimeZone zone) {
         if (formatter == null) return toString();
-        return formatter.print(date);
+        return formatter.print(date.toDateTimeAtStartOfDay((zone == null) ? DateTimeZone.UTC : zone));
     }
 
     public Boolean greaterThanEquals(ReflexDateValue asDate) {

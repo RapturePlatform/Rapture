@@ -41,6 +41,7 @@ import rapture.common.exception.RaptureExceptionFactory;
  */
 public class ReflexFileValue extends ReflexStreamValue {
     private String fileName;
+    private String fullName;
     private File file = null;
     private String encoding = "UTF-8";
     FileInputStream fis = null;
@@ -48,6 +49,7 @@ public class ReflexFileValue extends ReflexStreamValue {
     public ReflexFileValue(String fileName) {
         this.fileName = fileName;
         file = new File(fileName);
+        fullName = file.getAbsolutePath();
     }
 
     public String getFileName() {
@@ -62,6 +64,7 @@ public class ReflexFileValue extends ReflexStreamValue {
         return file.getAbsolutePath();
     }
 
+    @Override
     public String toString() {
         return fileName;
     }
@@ -94,6 +97,7 @@ public class ReflexFileValue extends ReflexStreamValue {
         this.encoding = encoding;
     }
 
+    @Override
     public String getEncoding() {
         return encoding;
     }

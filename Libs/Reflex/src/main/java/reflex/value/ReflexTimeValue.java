@@ -23,11 +23,10 @@
  */
 package reflex.value;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
-import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
@@ -41,28 +40,28 @@ import reflex.ReflexException;
  */
 public class ReflexTimeValue {
 
-    private LocalDateTime dateTime;
-    private DateTimeFormatter timeFormat = DateTimeFormat.forPattern("HH:mm:ss");
+    private DateTime dateTime;
+    private DateTimeFormatter timeFormat = DateTimeFormat.forPattern("HH:mm:ss").withZoneUTC();
 
     public ReflexTimeValue() {
-        this.dateTime = new LocalDateTime(DateTimeZone.UTC);
+        this.dateTime = new DateTime(DateTimeZone.UTC);
     }
 
     public ReflexTimeValue(Date initial) {
-        this.dateTime = new LocalDateTime(initial.getTime(), DateTimeZone.UTC);
+        this.dateTime = new DateTime(initial.getTime(), DateTimeZone.UTC);
     }
 
     public ReflexTimeValue(long initial) {
-        this.dateTime = new LocalDateTime(initial, DateTimeZone.UTC);
+        this.dateTime = new DateTime(initial, DateTimeZone.UTC);
     }
 
-    public ReflexTimeValue(ReflexTimeValue other) {
-        this.dateTime = new LocalDateTime(other.dateTime);
+    public ReflexTimeValue(ReflexTimeValue other, DateTimeZone zone) {
+        this.dateTime = other.dateTime.toDateTime(zone);
     }
 
     public ReflexTimeValue(String HHmmSS) {
         // Given a HH:mm:ss string, convert it to a local date time object
-        dateTime = timeFormat.parseLocalDateTime(HHmmSS);
+        dateTime = timeFormat.parseDateTime(HHmmSS);
     }
 
     @Override
@@ -70,9 +69,10 @@ public class ReflexTimeValue {
         return dateTime.toString(timeFormat);
     }
 
-    public String toString(SimpleDateFormat format) {
-        if (format == null) return toString();
-        return format.format(dateTime.toDate());
+    public String toString(DateTimeFormatter formatter, DateTimeZone zone) {
+        if (formatter == null) return toString();
+        if (zone == null) return formatter.print(dateTime.toLocalTime());
+        return formatter.print(dateTime.toDateTime(zone));
     }
 
     public long getEpoch() {
