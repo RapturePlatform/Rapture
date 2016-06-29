@@ -20,7 +20,7 @@ json RaptureConnection::performCall(std::string area, std::string func, json &pa
     req["PARAMS"] = paramString;
 
     std::string content = req.dump();
-    std::cout << "Request json is " << content << std::endl;
+    //std::cout << "Request json is " << content << std::endl;
     request << boost::network::header("Content-Type", "application/json");
     char body_str_len[8];
     sprintf(body_str_len, "%lu", content.length());
@@ -31,20 +31,20 @@ json RaptureConnection::performCall(std::string area, std::string func, json &pa
     request << boost::network::body(content);
     http::client::response response = client.post(request);
     std::string respJson = static_cast<std::string>(body(response));
-    std::cout << "Response is " << respJson << std::endl;
+    //std::cout << "Response is " << respJson << std::endl;
     return json::parse(respJson);
 }
 
 void RaptureConnection::login(std::string password) {
     // Login to Rapture (eeeeek)
-    std::cout << "Logging in to Rapture" << std::endl;
+    //std::cout << "Logging in to Rapture" << std::endl;
 
     json params;
     params["user"] = _username;
     json resp = performCall("login","CONTEXT", params);
     // inner part
 
-    std::cout << resp["response"] << std::endl;
+    //std::cout << resp["response"] << std::endl;
 
     // Now resp["response"]["contextId"] and salt are used to construct a login request
     json loginParams;
@@ -56,7 +56,7 @@ void RaptureConnection::login(std::string password) {
     loginParams["digest"] = hashpassword;
 
     json loginResp = performCall("login", "LOGIN", loginParams);
-    std::cout << loginResp << std::endl;
+    //std::cout << loginResp << std::endl;
     _connectionToken = loginResp["response"]["context"];
     _isConnected = true;
 }
