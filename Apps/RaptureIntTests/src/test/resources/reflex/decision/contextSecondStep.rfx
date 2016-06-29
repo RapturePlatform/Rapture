@@ -1,0 +1,9 @@
+workerURI = _params['$DP_WORKER_URI'];
+
+println("script for second step  >>>> worker=" + workerURI);
+sleep(1000);
+
+println(#decision.getContextValue(workerURI, 'param1'));
+
+#decision.setContextLiteral(workerURI, 'param1', 'I got your param1 [secondStep] random num[' + num + ']');
+return "ok";

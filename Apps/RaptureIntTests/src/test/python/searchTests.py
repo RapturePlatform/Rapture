@@ -3,10 +3,11 @@ import multipart
 import json
 import time
 import base64
+import random
 
 # TODO These need to be parameters
 
-repo = '//nightly_python'
+repo = '//NightlyPython'
 
 blobRepoUri = 'blob:'+repo
 docRepoUri = 'document:'+repo
@@ -36,18 +37,18 @@ def test_login():
         print "Login unsuccessful"
         assert false 
 
-    config = " {} USING MONGODB {prefix=\"nightly\"}"
+    config = " {} USING MONGODB {prefix=\"Nightly\"}"
     if(rapture.doDoc_DocRepoExists(docRepoUri)):
         rapture.doDoc_DeleteDocRepo(docRepoUri)
-    rapture.doDoc_CreateDocRepo(docRepoUri, "NREP "+config)
+    rapture.doDoc_CreateDocRepo(docRepoUri, "NREP {} USING MONGODB {prefix=\"NightlyDoc\"}"+config)
 
     if(rapture.doBlob_BlobRepoExists(blobRepoUri)):
         rapture.doBlob_DeleteBlobRepo(blobRepoUri)
-    rapture.doBlob_CreateBlobRepo(blobRepoUri, "BLOB "+config, "NREP "+config)
+    rapture.doBlob_CreateBlobRepo(blobRepoUri, "BLOB {} USING MONGODB {prefix=\"NightlyBlob\"}"+config, "NREP {} USING MONGODB {prefix=\"nightlyMeta\"}"+config)
 
     if(rapture.doSeries_SeriesRepoExists(seriesRepoUri)):
         rapture.doSeries_DeleteSeriesRepo(seriesRepoUri)
-    rapture.doSeries_CreateSeriesRepo(seriesRepoUri, "SREP "+config)
+    rapture.doSeries_CreateSeriesRepo(seriesRepoUri, "SREP {} USING MONGODB {prefix=\"NightlySer\"}"+config)
 
 def test_series():
 
@@ -57,6 +58,15 @@ def test_series():
     premUri = seriesRepoUri+"/English/Premier"
     champUri = seriesRepoUri+"/English/Championship"
 
+    query1="Watford:*"
+    srch1 = rapture.doSearch_Search(query1)
+    query2 = "repo:"+repo[2:]
+    srch2 = rapture.doSearch_Search(query2)
+    query3 = "scheme:series AND parts:Eng*"
+    srch3 = rapture.doSearch_Search(query3)
+    query4="Brentford:*"
+    srch4 = rapture.doSearch_Search(query4)
+    
     premKeys = []
     premVars = []
     for pr in premier:
@@ -71,39 +81,39 @@ def test_series():
     time.sleep(2);
 
 # Test simple search
+    srch = rapture.doSearch_Search(query1)
+    expect = srch1['total'] + 1;
+    print srch
+    assert (srch['total'] == expect), query1+" returns "+str(srch['total'])+" expected "+str(expect)
 
-    query="Watford:*"
-    srch = rapture.doSearch_Search(query)
-    assert (srch['total'] == 1), query+" returns "+str(srch['total'])+" expected 1"
-    
 # Test Repo search
-    query = "repo:"+repo[2:]
-    srch = rapture.doSearch_Search(query)
-    assert (srch['total'] == 2), query+" returns "+str(srch['total'])+" expected 2"
- 
+    srch = rapture.doSearch_Search(query2)
+    expect = srch2['total'] + 2;
+    assert (srch['total'] == expect), query2+" returns "+str(srch['total'])+" expected "+str(expect)
+
 # Test URI search
-    query = "scheme:series AND parts:Eng*"
-    srch = rapture.doSearch_Search(query)
-    assert (srch['total'] == 2), query+" returns "+str(srch['total'])+" expected 2"
+    srch = rapture.doSearch_Search(query3)
+    expect = srch3['total'] + 2;
+    assert (srch['total'] == expect), query3+" returns "+str(srch['total'])+" expected "+str(expect)
 
 # Test search works after DeletePointsFromSeriesByPointKey
     rapture.doSeries_DeletePointsFromSeriesByPointKey(premUri, premKeys[6:12])
     time.sleep(2);
-    query="Watford:*"
-    srch = rapture.doSearch_Search(query)
-    assert (srch['total'] == 0), query+" returns "+str(srch['total'])+" expected 0"
+    srch = rapture.doSearch_Search(query1)
+    expect = srch1['total']
+    assert (srch['total'] == expect), query1+" returns "+str(srch['total'])+" expected "+str(expect)
 
 # Test search works after DeleteSeriesRepo
-    query="Brentford:*"
-    srch = rapture.doSearch_Search(query)
-    assert (srch['total'] == 1), query+" returns "+str(srch['total'])+" expected 1"
-    
+    srch = rapture.doSearch_Search(query4)
+    expect = srch4['total'] +1
+    assert (srch['total'] == expect), query4+" returns "+str(srch['total'])+" expected "+str(expect)
+
     rapture.doSeries_DeleteSeriesRepo(seriesRepoUri)
     time.sleep(2);
-    query="Brentford:*"
-    srch = rapture.doSearch_Search(query)
-    assert (srch['total'] == 0), query+" returns "+str(srch['total'])+" expected 0"
-    
+    srch = rapture.doSearch_Search(query4)
+    expect = srch4['total']
+    assert (srch['total'] == expect), query4+" returns "+str(srch['total'])+" expected "+str(expect)
+
 def test_doc():
 
 # Create doc using different API calls - AddStringToDoc and AddStringsToDoc
@@ -112,6 +122,20 @@ def test_doc():
     premUri = docRepoUri+"/English/Premier"
     champUri = docRepoUri+"/English/Championship"
 
+    if(rapture.doDoc_DocExists(premUri)):
+        rapture.doDoc_DeleteDoc(premUri)
+    if(rapture.doDoc_DocExists(champUri)):
+        rapture.doDoc_DeleteDoc(champUri)
+
+    query1="Watford:*"
+    srch1 = rapture.doSearch_Search(query1)
+    query2 = "repo:"+repo[2:]
+    srch2 = rapture.doSearch_Search(query2)
+    query3 = "scheme:document AND parts:Eng*"
+    srch3 = rapture.doSearch_Search(query3)
+    query4="Brentford:*"
+    srch4 = rapture.doSearch_Search(query4)
+    
     premDoc = "{"
     for pr in premier:
        d = pr.split(',')
@@ -136,37 +160,37 @@ def test_doc():
 
 # Test simple search
 
-    query="Watford:*"
-    srch = rapture.doSearch_Search(query)
-    assert (srch['total'] == 1), query+" returns "+str(srch['total'])+" expected 1"
+    srch = rapture.doSearch_Search(query1)
+    expect = srch1['total'] + 1;
+    assert (srch['total'] == expect), query1+" returns "+str(srch['total'])+" expected "+str(expect)
 
 # Test Repo search
-    query = "repo:"+repo[2:]
-    srch = rapture.doSearch_Search(query)
-    assert (srch['total'] == 2), query+" returns "+str(srch['total'])+" expected 2"
+    srch = rapture.doSearch_Search(query2)
+    expect = srch2['total'] + 2;
+    assert (srch['total'] == expect), query2+" returns "+str(srch['total'])+" expected "+str(expect)
 
 # Test URI search
-    query = "scheme:document AND parts:Eng*"
-    srch = rapture.doSearch_Search(query)
-    assert (srch['total'] == 2), query+" returns "+str(srch['total'])+" expected 2"
+    srch = rapture.doSearch_Search(query3)
+    expect = srch3['total'] + 2;
+    assert (srch['total'] == expect), query3+" returns "+str(srch['total'])+" expected "+str(expect)
 
 # Test search works after DeleteDoc
     rapture.doDoc_DeleteDoc(premUri)
     time.sleep(2);
-    query="Watford:*"
-    srch = rapture.doSearch_Search(query)
-    assert (srch['total'] == 0), query+" returns "+str(srch['total'])+" expected 0"
+    srch = rapture.doSearch_Search(query1)
+    expect = srch1['total']
+    assert (srch['total'] == expect), query1+" returns "+str(srch['total'])+" expected "+str(expect)
 
 # Test search works after DeleteDocRepo
-    query="Brentford:*"
-    srch = rapture.doSearch_Search(query)
-    assert (srch['total'] == 1), query+" returns "+str(srch['total'])+" expected 1"
+    srch = rapture.doSearch_Search(query4)
+    expect = srch4['total'] +1
+    assert (srch['total'] == expect), query4+" returns "+str(srch['total'])+" expected "+str(expect)
 
     rapture.doDoc_DeleteDocRepo(docRepoUri)
     time.sleep(2);
-    query="Brentford:*"
-    srch = rapture.doSearch_Search(query)
-    assert (srch['total'] == 0), query+" returns "+str(srch['total'])+" expected 0"
+    srch = rapture.doSearch_Search(query4)
+    expect = srch4['total']
+    assert (srch['total'] == expect), query4+" returns "+str(srch['total'])+" expected "+str(expect)
     
 def test_Blob():
 
@@ -176,6 +200,20 @@ def test_Blob():
     premUri = blobRepoUri+"/English/Premier"
     champUri = blobRepoUri+"/English/Championship"
 
+    if(rapture.doBlob_BlobExists(premUri)):
+        rapture.doBlob_DeleteBlob(premUri)
+    if(rapture.doBlob_BlobExists(champUri)):
+        rapture.doBlob_DeleteBlob(champUri)
+
+    query1="Watford*"
+    srch1 = rapture.doSearch_Search(query1)
+    query2 = "repo:"+repo[2:]
+    srch2 = rapture.doSearch_Search(query2)
+    query3 = "scheme:blob AND parts:Eng*"
+    srch3 = rapture.doSearch_Search(query3)
+    query4="Brentford*"
+    srch4 = rapture.doSearch_Search(query4)
+    
     rapture.doBlob_PutBlob(premUri, base64.b64encode(''.join(premier)), "text/plain");
     rapture.doBlob_PutBlob(champUri, base64.b64encode(''.join(championship)), "text/csv");
 
@@ -183,35 +221,35 @@ def test_Blob():
 
 # Test simple search
 
-    query="Watford*"
-    srch = rapture.doSearch_Search(query)
-    assert (srch['total'] == 1), query+" returns "+str(srch['total'])+" expected 1"
+    srch = rapture.doSearch_Search(query1)
+    expect = srch1['total'] + 1;
+    assert (srch['total'] == expect), query1+" returns "+str(srch['total'])+" expected "+str(expect)
 
 # Test Repo search
-    query = "repo:"+repo[2:]
-    srch = rapture.doSearch_Search(query)
-    assert (srch['total'] == 2), query+" returns "+str(srch['total'])+" expected 2"
+    srch = rapture.doSearch_Search(query2)
+    expect = srch2['total'] + 2;
+    assert (srch['total'] == expect), query2+" returns "+str(srch['total'])+" expected "+str(expect)
 
 # Test URI search
-    query = "scheme:blob AND parts:Eng*"
-    srch = rapture.doSearch_Search(query)
-    assert (srch['total'] == 2), query+" returns "+str(srch['total'])+" expected 2"
+    srch = rapture.doSearch_Search(query3)
+    expect = srch3['total'] + 2;
+    assert (srch['total'] == expect), query3+" returns "+str(srch['total'])+" expected "+str(expect)
 
 # Test search works after DeleteBlob
     rapture.doBlob_DeleteBlob(premUri)
     time.sleep(2);
-    query="Watford*"
-    srch = rapture.doSearch_Search(query)
-    assert (srch['total'] == 0), query+" returns "+str(srch['total'])+" expected 0"
+    srch = rapture.doSearch_Search(query1)
+    expect = srch1['total']
+    assert (srch['total'] == expect), query1+" returns "+str(srch['total'])+" expected "+str(expect)
 
 # Test search works after DeleteBlobRepo
-    query="Brentford*"
-    srch = rapture.doSearch_Search(query)
-    assert (srch['total'] == 1), query+" returns "+str(srch['total'])+" expected 1"
+    srch = rapture.doSearch_Search(query4)
+    expect = srch4['total'] +1
+    assert (srch['total'] == expect), query4+" returns "+str(srch['total'])+" expected "+str(expect)
 
     rapture.doBlob_DeleteBlobRepo(blobRepoUri)
     time.sleep(2);
-    query="Brentford*"
-    srch = rapture.doSearch_Search(query)
-    assert (srch['total'] == 0), query+" returns "+str(srch['total'])+" expected 0"
+    srch = rapture.doSearch_Search(query4)
+    expect = srch4['total']
+    assert (srch['total'] == expect), query4+" returns "+str(srch['total'])+" expected "+str(expect)
 

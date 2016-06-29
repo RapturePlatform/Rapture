@@ -13,7 +13,6 @@ gradle.properties
 *.lot
 *.toc
 *.jar
-*.pdf
 *.iml
 *.idea
 bin/

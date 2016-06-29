@@ -68,7 +68,6 @@ import rapture.common.impl.jackson.JacksonUtil;
 import rapture.config.ConfigLoader;
 import rapture.helper.IntegrationTestHelper;
 import rapture.helper.QueryWithRetry;
-import rapture.search.SearchRepoType;
 
 /**
  * Tests to exercise Full Text Search. Note: We should be able to use any repo type; Memory, Mongo, Postgres etc. as the purpose of the test is to verify that
@@ -115,7 +114,8 @@ public class SearchApiIntegrationTest {
         blobApi = helper.getBlobApi();
         searchApi = new HttpSearchApi(raptureLogin);
         callingContext = raptureLogin.getContext();
-        forceCleanUp();
+        forceCleanUp(username);
+        if (!username.equals("rapture")) forceCleanUp("rapture");
     }
 
     @AfterMethod(groups = { "nightly", "search" })
@@ -136,9 +136,10 @@ public class SearchApiIntegrationTest {
     }
 
     // For cleaning up after failed test cases only
-    public void forceCleanUp() {
+    @Parameters({ "RaptureUser" })
+    public void forceCleanUp(@Optional("rapture") String username) {
         SearchResponse res = searchApi.qualifiedSearch(ConfigLoader.getConf().FullTextSearchDefaultRepo, ImmutableList.of(SearchRepoType.meta.toString()),
-                "user:rapture");
+                "user:" + username);
 
         for (String uri : uris(res)) {
             System.out.println("FORCE CLEAN UP: Deleted " + uri);
@@ -358,7 +359,8 @@ public class SearchApiIntegrationTest {
      * @throws IOException
      */
     @Test(groups = { "nightly", "search" })
-    public void testDocSearch() throws IOException {
+    @Parameters({ "RaptureUser" })
+    public void testDocSearch(@Optional("rapture") String username) throws IOException {
         RaptureURI repo = helper.getRandomAuthority(Scheme.DOCUMENT);
         helper.configureTestRepo(repo, "MEMORY");
 
@@ -394,7 +396,7 @@ public class SearchApiIntegrationTest {
         });
         Assert.assertEquals(res.getTotal().intValue(), 2, toString(res));
 
-        res = searchApi.qualifiedSearch(ConfigLoader.getConf().FullTextSearchDefaultRepo, ImmutableList.of(SearchRepoType.meta.toString()), "user:rapture");
+        res = searchApi.qualifiedSearch(ConfigLoader.getConf().FullTextSearchDefaultRepo, ImmutableList.of(SearchRepoType.meta.toString()), "user:" + username);
         int count = 0;
         for (String uri : uris(res)) {
             if (uri.startsWith("script")) continue;
@@ -435,7 +437,8 @@ public class SearchApiIntegrationTest {
      * @throws IOException
      */
     @Test(groups = { "nightly", "search" })
-    public void testScriptSearch() throws IOException {
+    @Parameters({ "RaptureUser" })
+    public void testScriptSearch(@Optional("rapture") String username) throws IOException {
         RaptureURI repo = helper.getRandomAuthority(Scheme.SCRIPT);
         helper.configureTestRepo(repo, "MEMORY");
 
@@ -475,7 +478,8 @@ public class SearchApiIntegrationTest {
                         String.format("scheme:%s AND parts:Single", repo.getScheme()));
             });
             Assert.assertEquals(res.getTotal().intValue(), 2, toString(res));
-            res = searchApi.qualifiedSearch(ConfigLoader.getConf().FullTextSearchDefaultRepo, ImmutableList.of(SearchRepoType.meta.toString()), "user:rapture");
+            res = searchApi.qualifiedSearch(ConfigLoader.getConf().FullTextSearchDefaultRepo, ImmutableList.of(SearchRepoType.meta.toString()),
+                    "user:" + username);
             int count = 0;
             String auth = repo.getAuthority();
             for (String uri : uris(res)) {

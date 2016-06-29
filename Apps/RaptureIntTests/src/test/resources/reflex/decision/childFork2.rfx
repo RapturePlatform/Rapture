@@ -1,0 +1,20 @@
+println('******* IN FORK CHILD STEP 2 *******');
+
+workerURI =  _params['$DP_WORKER_URI'];
+workOrderURI = _params['$DP_WORK_ORDER_URI'];
+println('******* DP_WORKER_URI    : ' + workerURI);
+println('******* DP_WORK_ORDER_URI: ' + workOrderURI);
+
+workOrderStatus = #decision.getWorkOrderStatus(workOrderURI);
+println("******* Status is        : " + workOrderStatus);
+
+//get doc repo uri and write a doc to it.
+docRepo = #decision.getContextValue(workerURI,'docRepoUri');
+println('******* Doc Repo Uri is  : ' + docRepo);
+jsonStr = '{"KeyFromChild2":"ValueFromChild2"}';
+x = #decision.getContextValue(workerURI,'randomNumber');
+docUri = docRepo + x + '/' + 'docFromFork2'; //create unique document uri
+println('******* Writing ' + jsonStr + ' to ' + docUri); 
+#doc.putDoc(docUri, jsonStr);
+
+return "ok";

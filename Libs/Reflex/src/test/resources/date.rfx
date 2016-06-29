@@ -8,13 +8,34 @@ assert(birthday == junesixth);
 assert(junesixth.getEpoch() == epoch);
 
 marishka = dateformat(birthday, "EEEE dd MMMM yyyy GGGG");
-assert("Tuesday 06 June 1978 AD" == marishka);
-marishka = dateformat(birthday);
+assert(marishka, "Tuesday 06 June 1978 AD" == marishka);
+marishka = dateformat(birthday, "yyyyMMdd");
 println(marishka);
 assert(str == marishka);
 
-now = time("23:54:32");
-nowstr = dateformat(now, "hh-mm-ss aa");
+// It would be nice to specify the timezone here,
+// but I can't figure out how to make Antlr let a function have more than one optional argumemt
+// without enforcing type restrictions on the arguments
+
+now = time("23:54:32"); // UTC
+nowstr = dateformat(now, "hh-mm-ss aa ZZZ", "UTC");
 println(nowstr);
-assert("11-54-32 PM" == nowstr);
+assert("11-54-32 PM UTC" == nowstr);
+nowstr = dateformat(now, "HH:mm:ss Z", "Etc/GMT+10");
+println(nowstr);
+assert("13:54:32 -1000" == nowstr);
+nowstr = dateformat(now, "hh.mm.ss aa", "Etc/GMT-9");
+println(nowstr);
+assert("08.54.32 AM" == nowstr);
+
+// If we do not specify a timezone then the zone field is empty.
+nowstr = dateformat(now, "HH:mm:ss Z ZZ ZZZ");
+println(nowstr);
+assert("23:54:32   " == nowstr);
+
+// default time is UTC
+now = time();
+nowstr = dateformat(now, "HH:mm:ss", "GMT");
+println(nowstr);
+assert(dateformat(now, "HH:mm:ss", "UTC") == nowstr);
 return true;

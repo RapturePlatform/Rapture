@@ -32,6 +32,7 @@ import reflex.ReflexException;
 import reflex.debug.IReflexDebugger;
 import reflex.importer.Module;
 import reflex.value.ReflexValue;
+import reflex.value.internal.ReflexNullValue;
 import reflex.value.internal.ReflexVoidValue;
 
 public class RaptureUriModule implements Module {
@@ -103,5 +104,26 @@ public class RaptureUriModule implements Module {
         if (params.size() != 1) throw new ReflexException(-1, "expected one parameter");
         RaptureURI uri = toRaptureURI(params.get(0));
         return new ReflexValue(uri.getDocPath());
+    }
+
+    public ReflexValue getVersion(List<ReflexValue> params) {
+        if (params.size() != 1) throw new ReflexException(-1, "expected one parameter");
+        RaptureURI uri = toRaptureURI(params.get(0));
+        String version = uri.getVersion();
+        return (version == null) ? new ReflexNullValue(-1) : new ReflexValue(version);
+    }
+
+    public ReflexValue getElement(List<ReflexValue> params) {
+        if (params.size() != 1) throw new ReflexException(-1, "expected one parameter");
+        RaptureURI uri = toRaptureURI(params.get(0));
+        String element = uri.getElement();
+        return (element == null) ? new ReflexNullValue(-1) : new ReflexValue(element);
+    }
+
+    public ReflexValue getAttribute(List<ReflexValue> params) {
+        if (params.size() != 1) throw new ReflexException(-1, "expected one parameter");
+        RaptureURI uri = toRaptureURI(params.get(0));
+        String attribute = uri.getAttribute();
+        return (attribute == null) ? new ReflexNullValue(-1) : new ReflexValue(attribute);
     }
 }
