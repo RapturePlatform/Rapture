@@ -213,7 +213,7 @@ public class IntegrationTestHelper {
 
     public static boolean isWorkOrderRunning (HttpDecisionApi decisionApi,String workOrderURI ) {
         WorkOrderExecutionState state = decisionApi.getWorkOrderStatus(workOrderURI).getStatus();
-        return !(state == WorkOrderExecutionState.FINISHED || state == WorkOrderExecutionState.CANCELLED || state == WorkOrderExecutionState.ERROR);
+        return !(state == WorkOrderExecutionState.FINISHED || state == WorkOrderExecutionState.CANCELLED || state == WorkOrderExecutionState.ERROR ||  state == WorkOrderExecutionState.FAILING);
     }
     
     /**

@@ -1,0 +1,11 @@
+
+workerURI = _params['$DP_WORKER_URI'];
+
+println("script for start step  >>>> worker=" + workerURI);
+sleep(15000);
+
+
+threadName = #decision.getContextValue(workerURI, 'thread');
+println("script for start step  >>>> worker=" + workerURI + " >>>> thread is " + threadName);
+
+return  "ok";

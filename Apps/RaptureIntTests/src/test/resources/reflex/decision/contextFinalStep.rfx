@@ -1,0 +1,11 @@
+println('started finalStep');
+
+workerURI = _params['$DP_WORKER_URI'];
+
+println("script for final step  >>>> worker=" + workerURI);
+sleep(1000);
+
+println(#decision.getContextValue(workerURI, 'param1'));
+#decision.setContextLiteral(workerURI, 'passed', 'true');
+
+return  "ok";
