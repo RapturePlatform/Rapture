@@ -5,7 +5,7 @@ CppApiParam(type, name) ::= <<
 >>
 
 CppApiSetter(type, name) ::= <<
-   params["<name; format="upcase">"] = <name>;
+   params["<name; format="uncapitalize">"] = <name>;
 >>
 
 CppApiPayloadParam(type, name) ::= <<
@@ -34,7 +34,7 @@ CppApiFn(apitype, name, apiParams, setterParams, ret) ::= <<
   json <apitype; format="upcase">Api::<name; format="upcase">(<apiParams; separator=",">) {
   	json params;
   	<setterParams; separator="\n">
-  	json ret = _connection.performCall("<apitype>","<name; format="upper">", params);
+  	json ret = _connection.performCall("<apitype; format="lower">","<name; format="upper">", params);
   	return ret["response"];
   }
 

@@ -28,9 +28,10 @@ json RaptureConnection::performCall(std::string area, std::string func, json &pa
     if (_isConnected) {
       request << boost::network::header("x-rapture", _connectionToken);
     }
-    request << boost::network::body(req.dump());
+    request << boost::network::body(content);
     http::client::response response = client.post(request);
     std::string respJson = static_cast<std::string>(body(response));
+    std::cout << "Response is " << respJson << std::endl;
     return json::parse(respJson);
 }
 
