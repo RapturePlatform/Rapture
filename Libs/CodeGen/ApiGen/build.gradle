@@ -62,6 +62,31 @@ project.tasks.create(name: 'genDotNet',  type: JavaExec, group: taskGroup) {
 
 langs << "DotNet"
 
+project.tasks.create(name: 'genCpp',  type: JavaExec, group: taskGroup) {
+    description "Generate API for Cpp"
+    main = mainClassName
+    classpath = project.sourceSets.main.runtimeClasspath
+    inputs.dir file("api/")
+    inputs.file "template/Cpp.stg"
+    outputs.dir(fileTree("../../APILang/cpp/api/generated"));
+
+    args = [
+            '-mainApiFile',
+            'api/rapt.api',
+            '-l',
+            'Cpp',
+            '-o',
+            "../../APILang/cpp/api/generated",
+            '-a',
+            "../../APILang/cpp/api/generated",
+            '-g',
+            "API",
+    ]
+}
+
+langs << "Cpp"
+
+
 project.tasks.create(name: 'genCurtisDoc',  type: JavaExec, group: taskGroup) {
     description "Generate API for CurtisDoc"
     main = mainClassName
