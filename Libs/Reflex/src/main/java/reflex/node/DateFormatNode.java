@@ -23,8 +23,7 @@
  */
 package reflex.node;
 
-import java.text.SimpleDateFormat;
-
+import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
@@ -43,11 +42,13 @@ public class DateFormatNode extends BaseNode {
 
     private ReflexNode dateNode;
     private ReflexNode format;
+    private ReflexNode timezone;
 
-    public DateFormatNode(int lineNumber, IReflexHandler handler, Scope scope, ReflexNode dateNode, ReflexNode format) {
+    public DateFormatNode(int lineNumber, IReflexHandler handler, Scope scope, ReflexNode dateNode, ReflexNode format, ReflexNode timezone) {
         super(lineNumber, handler, scope);
         this.dateNode = dateNode;
         this.format = format;
+        this.timezone = timezone;
     }
 
     @Override
@@ -58,24 +59,19 @@ public class DateFormatNode extends BaseNode {
         // could be null
         ReflexValue dateFormatValue = null;
         ReflexValue retVal = null;
+        DateTimeZone zone = (timezone == null) ? null : DateTimeZone.forID(timezone.evaluate(debugger, scope).asString());
+
+        DateTimeFormatter dtf = null;
+        if (format != null) {
+            dateFormatValue = format.evaluate(debugger, scope);
+            String dateFormat = dateFormatValue.asString();
+            dtf = DateTimeFormat.forPattern(dateFormat);
+        }
 
         if (dateValue.isDate()) {
-            DateTimeFormatter dtf = null;
-            if (format != null) {
-                dateFormatValue = format.evaluate(debugger, scope);
-                String dateFormat = dateFormatValue.asString();
-                dtf = DateTimeFormat.forPattern(dateFormat);
-            }
-            retVal = new ReflexValue(dateValue.asDate().toString(dtf));
+            retVal = new ReflexValue(dateValue.asDate().toString(dtf, zone));
         } else if (dateValue.isTime()) {
-            // ReflexTime still uses legacy Java date. See RAP-4113
-            SimpleDateFormat dtf = null;
-            if (format != null) {
-                dateFormatValue = format.evaluate(debugger, scope);
-                String dateFormat = dateFormatValue.asString();
-                dtf = new SimpleDateFormat(dateFormat);
-            }
-            retVal = new ReflexValue(dateValue.asTime().toString(dtf));
+            retVal = new ReflexValue(dateValue.asTime().toString(dtf, zone));
         } else {
             throwError("Illegal argument ", dateNode, format, dateValue, dateFormatValue);
         }
