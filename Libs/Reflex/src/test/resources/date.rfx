@@ -13,6 +13,17 @@ marishka = dateformat(birthday, "yyyyMMdd");
 println(marishka);
 assert(str == marishka);
 
+reference = dateformat(birthday, "yyyyMMdd hhmm Z", "UTC");
+laterDay = dateformat(birthday, "yyyyMMdd hhmm Z", "Etc/GMT+12");
+earlierDay = dateformat(birthday, "yyyyMMdd hhmm Z", "Etc/GMT-12");
+
+println(earlierDay);
+println(reference);
+println(laterDay);
+
+println(laterDay +" > " + earlierDay);
+assert(laterDay != earlierDay);
+
 // It would be nice to specify the timezone here,
 // but I can't figure out how to make Antlr let a function have more than one optional argumemt
 // without enforcing type restrictions on the arguments
