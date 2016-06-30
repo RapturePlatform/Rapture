@@ -52,7 +52,15 @@ srch6 = #search.search(query3);
 // Check the assertions AFTER the scripts were deleted because we can't drop the Script Repo.
 
 assert("Expected 1 match for "+query1+" but got "+srch1, (srch1.total == 1));
-assert("Expected 2 matches for "+query2+" but got "+srch2, (srch2.total == 2));
+
+count = 0;
+for hit in srch2.searchHits do
+   hitParts = split(hit, "/", true);
+   if ((size(hitParts) > 3) && (hitParts[3] == "English")) do
+     count+= 1;
+   end
+end
+assert("Expected 2 matches for "+query2+" but got "+srch2, (count == 2));
 assert("Expected 2 matches for "+query3+" but got "+srch3, (srch3.total == 2));
 
 assert("Expected no matches for "+query1+" but got "+srch4, (srch4.total == 0));
