@@ -281,6 +281,7 @@ public class PluginApiImpl extends KernelBase implements PluginApi {
 
     @Override
     public Map<String, String> verifyPlugin(CallingContext context, String plugin) {
+        
         Map<String, String> result = Maps.newHashMap();
         PluginManifest manifest = getPluginManifest(context, plugin);
         if (manifest == null) {
