@@ -281,7 +281,15 @@ public class PluginApiImpl extends KernelBase implements PluginApi {
 
     @Override
     public Map<String, String> verifyPlugin(CallingContext context, String plugin) {
+        
         Map<String, String> result = Maps.newHashMap();
+        boolean installed = false;
+        List<PluginConfig> configs = getInstalledPlugins(context);
+        for (PluginConfig cfg : configs) {
+            System.out.println(cfg.toString());
+        }
+        if (!installed) result.put("<config not found>", "Plugin is not installed");
+
         PluginManifest manifest = getPluginManifest(context, plugin);
         if (manifest == null) {
             result.put("<manifest not found>", "Plugin is not installed");
