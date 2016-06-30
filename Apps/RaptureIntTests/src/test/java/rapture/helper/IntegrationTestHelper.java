@@ -209,9 +209,8 @@ public class IntegrationTestHelper {
             break;
 
         case SCRIPT:
-            // Deleting all scripts is unwise. Just have to hope that we cleaned up properly
-            // scriptApi.deleteScriptsByUriPrefix(authString);
-            // scriptApi.deleteScript(authString);
+            scriptApi.deleteScriptsByUriPrefix(authString);
+            scriptApi.deleteScript(authString);
             break;
 
         case WORKFLOW:

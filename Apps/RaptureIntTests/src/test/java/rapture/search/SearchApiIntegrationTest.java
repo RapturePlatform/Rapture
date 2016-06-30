@@ -59,7 +59,6 @@ import rapture.common.SearchHit;
 import rapture.common.SearchResponse;
 import rapture.common.SeriesPoint;
 import rapture.common.client.HttpBlobApi;
-import rapture.common.client.HttpDecisionApi;
 import rapture.common.client.HttpDocApi;
 import rapture.common.client.HttpLoginApi;
 import rapture.common.client.HttpScriptApi;
@@ -142,15 +141,9 @@ public class SearchApiIntegrationTest {
         SearchResponse res = searchApi.qualifiedSearch(ConfigLoader.getConf().FullTextSearchDefaultRepo, ImmutableList.of(SearchRepoType.meta.toString()),
                 "user:" + username);
 
-        HttpDecisionApi decisionApi = helper.getDecisionApi();
-
         for (String uri : uris(res)) {
             System.out.println("FORCE CLEAN UP: Deleted " + uri);
-            if (uri.startsWith("script")) {
-                scriptApi.deleteScript(uri);
-            } else if (uri.startsWith("workflow")) {
-                decisionApi.deleteWorkflow(uri);
-            } else {
+            if (!uri.startsWith("script") && !uri.startsWith("workflow")) {
                 RaptureURI ruri = new RaptureURI(uri);
                 helper.cleanTestRepo(new RaptureURI(ruri.getAuthority(), ruri.getScheme()));
             }
