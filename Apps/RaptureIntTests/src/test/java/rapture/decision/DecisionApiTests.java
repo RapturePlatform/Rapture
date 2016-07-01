@@ -45,7 +45,7 @@ public class DecisionApiTests {
     
     @BeforeClass(groups={"decision","nightly"})
     @Parameters({"RaptureURL","RaptureUser","RapturePassword"})
-    public void beforeTest(@Optional("http://localhost:8665/rapture")String url, @Optional("rapture")String user, @Optional("rapture")String password)  {       
+    public void beforeTest(@Optional("http://localhost:8665/rapture")String url, @Optional("rapture")String user, @Optional("rapture")String password)  {  
         helper = new IntegrationTestHelper(url, user, password);
         decisionApi = new HttpDecisionApi(helper.getRaptureLogin());
         scriptMap= new HashMap<String, String> ();
@@ -147,7 +147,7 @@ public class DecisionApiTests {
         Assert.assertEquals(decisionApi.getWorkOrderStatus(createWorkOrder).getStatus().name(),"FINISHED","Overall work order status");
     }
     
-    @Test(groups = { "decision","nightly"},enabled=false) 
+    @Test(groups = { "decision","nightly"}) 
     public void testForkAfterFirstStepReflexInvocableTest() {
         RaptureURI docRepoURI=helper.getRandomAuthority(Scheme.DOCUMENT);
         helper.configureTestRepo(docRepoURI, "MONGODB");
@@ -227,7 +227,7 @@ public class DecisionApiTests {
         
         String duri = decisionApi.getContextValue(createWorkOrder, "docRepoUri");
         Map<String, RaptureFolderInfo> allChildrenMap = helper.getDocApi().listDocsByUriPrefix(duri, 10);  
-        Assert.assertEquals(allChildrenMap.size(), 2,"Check number of documents created is 2.");
+        Assert.assertEquals(allChildrenMap.size(), 3,"Check number of documents created is 3.");
         
         /////////////////////////////////////////////////////////////////////////////////////
         //check workorder classes
@@ -293,10 +293,13 @@ public class DecisionApiTests {
         Assert.assertEquals(retVal2,"ok","check ret val for worker 2");
         Assert.assertEquals(stepURI2,forkSplit.getWorkflowURI() + "#" + "forkChild2","check step uri for worker 2");
         
+        Assert.assertEquals(helper.getDocApi().getDoc(docURI+"/"+randInt+"/docFromFork1"),"{\"KeyFromForkChild1\":\"ValueFromForkChild1\"}");
+        Assert.assertEquals(helper.getDocApi().getDoc(docURI+"/"+randInt+"/docFromFork2"),"{\"KeyFromChild2\":\"ValueFromChild2\"}");
+        
     }
     
     
-    @Test(groups = { "decision","nightly"},enabled=false) 
+    @Test(groups = { "decision","nightly"}) 
     public void testBasicForkFirstStepReflexInvocableTest() {
      
         
@@ -361,7 +364,6 @@ public class DecisionApiTests {
             numRetries++;
         }
        
-        System.out.println("debug   : " + decisionApi.getWorkOrderDebug(createWorkOrder).debug());
         //get worker threads using getWorkerIds()
         WorkOrderDebug woDebug = decisionApi.getWorkOrderDebug(createWorkOrder);
         List<WorkerDebug> woDebugsList = woDebug.getWorkerDebugs();
@@ -421,7 +423,7 @@ public class DecisionApiTests {
     }
     
 
-    @Test(groups = { "decision","nightly"},enabled=false) 
+    @Test(groups = { "decision","nightly"}) 
     public void testNestedForksBalancedTest() {
         
       //Setup the overall workflow step object
@@ -518,13 +520,13 @@ public class DecisionApiTests {
 
        
         for(WorkerDebug wo :woDebugsList){
-
-            List<StepRecordDebug> stepRecordDebugs = wo.getStepRecordDebugs();
             String workerState = wo.getWorker().getStatus().name();         
-            Assert.assertEquals(stepRecordDebugs.size(), 1,"check number of steprecords in worker.");
             Assert.assertEquals(workerState, "FINISHED","status check on worker.");
         }
-        
+        Assert.assertEquals(helper.getDocApi().getDoc(docRepoUri+randInt+"/docFromFork1"),"{\"KeyFromChild1\":\"ValueFromChild1\"}");
+        Assert.assertEquals(helper.getDocApi().getDoc(docRepoUri+randInt+"/docFromFork2"),"{\"KeyFromChild2\":\"ValueFromChild2\"}");
+        Assert.assertEquals(helper.getDocApi().getDoc(docRepoUri+randInt+"/docFromFork3"),"{\"KeyFromChild3\":\"ValueFromChild3\"}");
+        Assert.assertEquals(helper.getDocApi().getDoc(docRepoUri+randInt+"/docFromFork4"),"{\"KeyFromChild4\":\"ValueFromChild4\"}");
         
     }
     
