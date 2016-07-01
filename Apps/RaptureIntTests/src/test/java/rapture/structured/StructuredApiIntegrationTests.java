@@ -122,10 +122,6 @@ public class StructuredApiIntegrationTests {
         Assert.assertEquals(contents.size(), 1);
         Assert.assertEquals(contents.get(0), row);
 
-        structApi.deleteRows(table, null);
-
-        contents = structApi.selectRows(table, null, null, null, null, -1);
-        Assert.assertEquals(contents.size(), 0);
 
         // Batch insert
         List<Map<String, Object>> batch = new ArrayList<Map<String, Object>>();
@@ -134,6 +130,11 @@ public class StructuredApiIntegrationTests {
             batch.add(ImmutableMap.<String, Object> of("id", cha, "name", s));
         }
         structApi.insertRows(table, batch);
+        contents = structApi.selectRows(table, null, null, null, null, -1);
+        Assert.assertEquals(contents.size(), batch.size() + 1);
+
+        structApi.deleteRows(table, "id=42");
+
         contents = structApi.selectRows(table, null, null, null, null, -1);
         Assert.assertEquals(contents.size(), batch.size());
         for (Map<String, Object> m : batch)
@@ -147,7 +148,15 @@ public class StructuredApiIntegrationTests {
         Assert.assertTrue(contents.contains(ImmutableMap.<String, Object> of("id", new Integer('Z'), "name", "Zarniwoop")));
         Assert.assertFalse(contents.contains(ImmutableMap.<String, Object> of("id", new Integer('Z'), "name", "Zaphod Beeblebrox")));
 
-        // Good enough. Delete it.
+        structApi.dropTable(table);
+        try {
+            contents = structApi.selectRows(table, null, null, null, null, -1);
+            Assert.fail("Expected an exception to be thrown");
+        } catch (Exception e) {
+            // Expected
+        }
+
+        // Good enough. Delete the repo.
         structApi.deleteStructuredRepo(repoStr);
         repoExists = structApi.structuredRepoExists(repoStr);
         Assert.assertFalse(repoExists, "Repo does not exist any more");

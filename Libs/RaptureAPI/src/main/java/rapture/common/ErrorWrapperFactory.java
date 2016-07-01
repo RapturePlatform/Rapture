@@ -23,8 +23,8 @@
  */
 package rapture.common;
 
+import rapture.common.exception.ExceptionToString;
 import rapture.common.exception.RaptureException;
-import org.apache.commons.lang.exception.ExceptionUtils;
 
 public class ErrorWrapperFactory {
     
@@ -33,7 +33,7 @@ public class ErrorWrapperFactory {
         ew.setId(raptureException.getId());
         ew.setMessage(raptureException.getMessage());
         ew.setStatus(raptureException.getStatus());
-        ew.setStackTrace(ExceptionUtils.getFullStackTrace(raptureException));
+        ew.setStackTrace(ExceptionToString.format(raptureException));
         return ew;
     }
 }
