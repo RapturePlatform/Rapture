@@ -76,8 +76,7 @@ public class ReflexTestRunner {
         try {
         	scriptResult=scriptApi.runScript(scriptName, getParams());
         } catch (Exception e) {
-            Reporter.log(e.getMessage());
-            Assert.fail("Failed running script: " + scriptName + " : " + e.getMessage());
+            Assert.fail("Failed running script: " + scriptName + "\n" + ExceptionToString.format(e));
         } 
         Assert.assertTrue(Boolean.parseBoolean(scriptResult),"Script result was not true for "+scriptName);
 
