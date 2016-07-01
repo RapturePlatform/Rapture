@@ -25,6 +25,7 @@ package reflex.value;
 
 import java.util.Date;
 
+import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
@@ -121,7 +122,10 @@ public class ReflexDateValue {
 
     public String toString(DateTimeFormatter formatter, DateTimeZone zone) {
         if (formatter == null) return toString();
-        return formatter.print(date.toDateTimeAtStartOfDay((zone == null) ? DateTimeZone.UTC : zone));
+        // Without a corresponding Time value this is somewhat useless. See RAP-4182/RAP-4183
+        DateTime newDateTime = date.toDateTimeAtStartOfDay(DateTimeZone.UTC);
+        String d = formatter.print(newDateTime.toDateTime((zone == null) ? DateTimeZone.UTC : zone));
+        return d;
     }
 
     public Boolean greaterThanEquals(ReflexDateValue asDate) {

@@ -32,7 +32,7 @@ docRepo = #decision.getContextValue(workerURI,'docRepoUri');
 println('******* Doc Repo Uri is  : ' + docRepo);
 jsonStr = "{\"KeyFromChild4\":\"ValueFromChild4\"}";
 x = #decision.getContextValue(workerURI,'randomNumber');
-docUri = docRepo + '/' + x + '/' + 'docFromFork4'; //create unique document uri
+docUri = docRepo +  x + '/' + 'docFromFork4'; //create unique document uri
 println('******* Writing ' + jsonStr + ' to ' + docUri); 
 #doc.putDoc(docUri, jsonStr);
 
