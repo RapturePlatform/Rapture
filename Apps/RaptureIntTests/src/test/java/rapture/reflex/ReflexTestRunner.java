@@ -111,6 +111,9 @@ public class ReflexTestRunner {
         return (file.exists() && file.getName().endsWith("rfx")) ? ImmutableList.of(file) : ImmutableList.of();
     }
 
+    // DO NOT CHECK THIS IN WITH A VALUE OTHER THAN NULL. IT IS FOR DEBUGGING PURPOSES ONLY
+    String testOnly = null;
+
     // Read in all reflex scripts in all subdirs of ($HOME)/bin/reflex/nightly and creates scripts in Rapture
     private void loadScripts(RaptureURI tempScripts) {
         String rootPath = System.getProperty("user.dir") + File.separator + "src" + File.separator + "test" + File.separator + "resources" + File.separator
@@ -121,6 +124,7 @@ public class ReflexTestRunner {
             return;
         }
         for (File file : files) {
+            if ((testOnly == null) || file.getName().contains(testOnly))
             try {
                 String scriptName = file.getName();
                 String subdirName = file.getParent().substring(file.getParent().lastIndexOf('/') + 1);
