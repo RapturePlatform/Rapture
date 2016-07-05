@@ -518,10 +518,7 @@ public class DecisionApiTests {
         }
         WorkOrderDebug woDebug = decisionApi.getWorkOrderDebug(createWorkOrder);
         List<WorkerDebug> woDebugsList = woDebug.getWorkerDebugs();
-
-        Assert.assertEquals(woDebugsList.size(), 3,"Check number of worker ids is 3");
-
-       
+ 
         for(WorkerDebug wo :woDebugsList){
             String workerState = wo.getWorker().getStatus().name();         
             Assert.assertEquals(workerState, "FINISHED","status check on worker.");
