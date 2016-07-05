@@ -1,6 +1,6 @@
 package reflex.function;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.antlr.runtime.RecognitionException;
 import org.apache.log4j.Logger;
@@ -22,7 +22,7 @@ private static Logger log = Logger.getLogger(AssertTest.class);
 		
 		String output[] = out.split("\n");
 		assertEquals("This will fail", output[0].trim());
-		assertEquals("Line 3 :", output[1].trim());
+        assertEquals("at Line 3 :", output[1].trim());
 		assertEquals("assert('This will fail', i == 1);", output[2].trim());
 	}
 
