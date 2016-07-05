@@ -58,13 +58,13 @@ public class AssertNode extends BaseNode {
         }
 
         if (!value.asBoolean()) {
-        	StringBuilder sb = new StringBuilder();
-        	sb.append((message != null) ? message.evaluate(debugger, scope).asString() : expression.toString());
-        	sb.append("\nLine "+lineNumber+" : \n");
-        	if (debugger instanceof InstrumentDebugger) {
-        		List<InstrumentationLine> lines = ((InstrumentDebugger) debugger).getInstrumenter().getLines();
-        		sb.append(lines.get(lineNumber-1).getCode());
-        	}
+            StringBuilder sb = new StringBuilder();
+            sb.append((message != null) ? message.evaluate(debugger, scope).asString() : expression.toString());
+            sb.append("\n\t at Line " + lineNumber + " : \n\t");
+            if (debugger instanceof InstrumentDebugger) {
+                List<InstrumentationLine> lines = ((InstrumentDebugger) debugger).getInstrumenter().getLines();
+                sb.append(lines.get(lineNumber - 1).getCode());
+            }
             throw new AssertionError(sb.toString());
         }
 
