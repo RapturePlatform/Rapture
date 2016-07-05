@@ -15,7 +15,9 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Optional;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
+
 import com.google.common.collect.ImmutableList;
+
 import rapture.common.RaptureFolderInfo;
 import rapture.common.RaptureScriptLanguage;
 import rapture.common.RaptureScriptPurpose;
@@ -516,6 +518,7 @@ public class DecisionApiTests {
         }
         WorkOrderDebug woDebug = decisionApi.getWorkOrderDebug(createWorkOrder);
         List<WorkerDebug> woDebugsList = woDebug.getWorkerDebugs();
+
         Assert.assertEquals(woDebugsList.size(), 3,"Check number of worker ids is 3");
 
        
@@ -1186,7 +1189,7 @@ public class DecisionApiTests {
         String rootPath = System.getProperty("user.dir") + File.separator + "build" + File.separator + "resources" + File.separator + "test" + File.separator
                 + "reflex" + File.separator + "decision";
         File[] files = new File(rootPath).listFiles();
-        if (files.length==0) {
+        if ((files == null) || (files.length == 0)) {
             Reporter.log("No scripts found in directory " + rootPath, true);
             return;
         }

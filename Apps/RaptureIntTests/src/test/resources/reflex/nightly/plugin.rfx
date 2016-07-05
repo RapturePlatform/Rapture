@@ -22,7 +22,7 @@ content = '{"foo":"bar"}';
 #doc.putDoc(docPath,content);
 
 #plugin.createManifest(pluginName);
-#plugin.setManifestVersion(pluginName, "123");
+#plugin.setManifestVersion(pluginName, "1.2.3.4");
 #plugin.addManifestDataFolder(pluginName, docRepoUri+"/foo");
 jim = #plugin.verifyPlugin(pluginName);
 // empty map indicates success
@@ -42,7 +42,7 @@ payload = #plugin.getPluginItem(docPath);
 #plugin.installPlugin(manifest, {});
 
 plugs = #plugin.getInstalledPlugins();
-assert(count +" != "+size(plugs));
+assert(count != size(plugs));
 
 #plugin.uninstallPlugin(pluginName);
 #doc.deleteDoc(docPath);
