@@ -1,0 +1,30 @@
+version = '3.0.0'
+
+dependencies {
+      compile "net.rapture:SelfPluginInstallerLib:$project.platformVersion"
+}
+
+mainClassName = "rapture.plugin.app.SelfInstaller"
+
+task fatJar(type: Jar) {
+     manifest {
+        attributes 'Implementation-Title' : 'Operation self installer',
+                   'Implementation-Version' : version,
+                   'Main-Class' : mainClassName
+    }
+    baseName = project.name
+    from {
+        configurations.compile.collect {
+             it.isDirectory() ? it : zipTree(it) }
+    } with jar
+}
+
+fatJar.dependsOn(compileJava)
+
+startScripts {
+    doLast {
+        unixScript.text = unixScript.text.replace('DEFAULT_JVM_OPTS=""', 'DEFAULT_JVM_OPTS="-Xmx512M"')
+        windowsScript.text = windowsScript.text.replace('DEFAULT_JVM_OPTS=', 'DEFAULT_JVM_OPTS="-Xmx512M"')
+    }
+}
+
