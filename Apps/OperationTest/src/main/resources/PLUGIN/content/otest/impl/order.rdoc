@@ -1,0 +1,3 @@
+{
+  "claim" : "script://operation/order/claim"
+}

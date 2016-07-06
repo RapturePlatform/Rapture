@@ -250,12 +250,12 @@
 		<url-pattern>/decision</url-pattern>
 	</servlet-mapping>
 	<servlet>
-		<servlet-name>OPERATIONS</servlet-name>
-		<servlet-class>rapture.server.web.servlet.OperationsServlet</servlet-class>
+		<servlet-name>OPERATION</servlet-name>
+		<servlet-class>rapture.server.web.servlet.OperationServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>OPERATIONS</servlet-name>
-		<url-pattern>/operations</url-pattern>
+		<servlet-name>OPERATION</servlet-name>
+		<url-pattern>/operation</url-pattern>
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>ENVIRONMENT</servlet-name>
