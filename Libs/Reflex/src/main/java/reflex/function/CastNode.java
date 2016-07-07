@@ -112,6 +112,7 @@ public class CastNode extends BaseNode {
                     retVal = new ReflexValue(Boolean.valueOf(src.toString()));
                 }
             } else  {
+                log.warn("Unrecognised type " + targ);
                 StructureKey key = namespacePrefix == null ? StructureFactory.createStructureKey(targ) : StructureFactory.createStructureKey(namespacePrefix, targ);
                 
                 Structure s = registry.getStructure(key);
