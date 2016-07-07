@@ -46,9 +46,9 @@ public class KernelExecutorTest {
         map1.put("id", new ReflexValue(1));
         map1.put("name", new ReflexValue("Foo"));
 
-        Map<String, ReflexValue> map2 = new LinkedHashMap<>();
+        Map<String, Object> map2 = new LinkedHashMap<>();
         map2.put("id", new ReflexValue(2));
-        map2.put("name", new ReflexValue("Bar"));
+        map2.put("name", new String("Bar"));
 
         Map<String, ReflexValue> map3 = new LinkedHashMap<>();
         map3.put("id", new ReflexValue(3));
@@ -88,13 +88,13 @@ public class KernelExecutorTest {
         assertNotNull(o);
         assertEquals("[[{id=1, name=Foo}, {id=2, name=Bar}, {id=3, name=Baz}]]", o.toString());
 
-        Map<String, ReflexValue> map4 = new LinkedHashMap<>();
-        List<ReflexValue> l1 = new ArrayList<>();
+        Map<String, Object> map4 = new LinkedHashMap<>();
+        List<Object> l1 = new ArrayList<>();
         l1.add(new ReflexValue("A"));
-        l1.add(new ReflexValue("B"));
-        List<ReflexValue> l2 = new ArrayList<>();
+        l1.add(new String("B"));
+        List<Object> l2 = new ArrayList<>();
         l2.add(new ReflexValue("C"));
-        l2.add(new ReflexValue("D"));
+        l2.add(new String("D"));
         map4.put("id", new ReflexValue(l1));
         map4.put("name", new ReflexValue(l2));
 
