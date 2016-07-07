@@ -256,7 +256,7 @@ public final class KernelExecutor {
             return v.asLong();
         } else if (type.equals(Boolean.class)) {
             return v.asBoolean();
-        } else if (type instanceof ParameterizedType) { // Surely this ought to cover List and Map - the rest should be unnecessary
+        } else if (type instanceof ParameterizedType) {
             return handleParameterizedType(v, type);
         } else if (type.equals(Map.class) || type.equals(List.class)) {
             return handleParameterizedType(v, type);
@@ -274,7 +274,6 @@ public final class KernelExecutor {
             return null;
         }
     }
-
 
     public static ReflexValue reconstructFromObject(Object x) throws ClassNotFoundException {
         if (x instanceof ReflexValue) {
