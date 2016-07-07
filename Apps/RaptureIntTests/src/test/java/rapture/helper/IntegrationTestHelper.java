@@ -219,7 +219,11 @@ public class IntegrationTestHelper {
             scriptApi.deleteScriptsByUriPrefix(authString);
             scriptApi.deleteScript(authString);
             break;
-
+        case STRUCTURED:
+        	if (structApi.structuredRepoExists(authString))
+        		structApi.deleteStructuredRepo(authString);
+            Assert.assertFalse(structApi.structuredRepoExists(authString), authString + " Delete failed");
+            break;
         case WORKFLOW:
             // TODO
 
