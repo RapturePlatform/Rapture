@@ -1,0 +1,8 @@
+seriesRepoUri='series://testseries1'; 
+#series.createSeriesRepo(seriesRepoUri, "SREP {} USING MEMORY{} ");
+pointKeys = ['a','b','c'];
+pointValues = [1,2,3];
+newSeries=seriesRepoUri+'/addLongs';
+#series.addLongsToSeries(newSeries, pointKeys, pointValues);
+#series.deleteSeriesRepo(seriesRepoUri);
+return true;
