@@ -111,7 +111,7 @@ public class ReflexTestRunner {
     }
 
     // DO NOT CHECK THIS IN WITH A VALUE OTHER THAN NULL. IT IS FOR DEBUGGING PURPOSES ONLY
-    String testOnly = "struc";
+    String testOnly = null;
 
     // Read in all reflex scripts in all subdirs of ($HOME)/bin/reflex/nightly and creates scripts in Rapture
     private void loadScripts(RaptureURI tempScripts) {
