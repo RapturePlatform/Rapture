@@ -328,8 +328,9 @@ public final class KernelExecutor {
                     log.warn("Keys for maps should always be Strings");
                 }
                 key = entry.getKey().toString();
-                Object value = handleParameterizedType((ReflexValue) entry.getValue(), innerType[1]);
-                convertedMap.put(key, value);
+                Object value = entry.getValue();
+                if (value instanceof ReflexValue) convertedMap.put(key, handleParameterizedType((ReflexValue) value, innerType[1]));
+                else convertedMap.put(key, value);
             }
             return convertedMap;
         } else if (pType.getRawType().equals(List.class)) {
