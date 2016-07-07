@@ -23,6 +23,30 @@
  */
 // Test some casting
 
+
+a='123';
+assert (typeof(a) == "string");
+b = cast(a, 'number');
+assert (typeof(b) == 'number');
+b = b + 2;
+assert (b == 125);
+assert (typeof(b) == 'number');
+
+assert (typeof(cast(a, 'INTeger')) == 'integer');
+assert (typeof(cast(b, 'INTeger')) == 'integer');
+assert (typeof(cast(b, 'String')) == 'string');
+
+try do
+  cast("XYZ", 'integer');
+  assert(false);
+end
+catch e do
+  assert(true);
+end
+
+assert (typeof(cast(a.charAt(0),"INTEGER")) == 'integer');
+
 t = date();
-v = cast(t, 'integer');
-println(v);
+assert(typeof(cast(t, 'integer')) == 'integer');
+assert(typeof(cast(t, 'number')) == 'number');
+assert(typeof(cast(t, 'string')) == 'string');

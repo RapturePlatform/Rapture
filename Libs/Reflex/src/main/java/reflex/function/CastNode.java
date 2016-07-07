@@ -23,6 +23,8 @@
  */
 package reflex.function;
 
+import java.math.BigDecimal;
+
 import reflex.IReflexHandler;
 import reflex.ReflexException;
 import reflex.Scope;
@@ -71,7 +73,7 @@ public class CastNode extends BaseNode {
             
             // Currently we support casting to a number or a string
             String targ = targType.asString();
-            if (targ.equals(NUMBER)) {
+            if (targ.equalsIgnoreCase(NUMBER)) {
                 if (src.isNumber()) {
                     retVal = new ReflexValue(src);
                 } else if (src.isDate()) {
@@ -83,20 +85,27 @@ public class CastNode extends BaseNode {
                     if (strVal.equals("NULL")) {
                         retVal = new ReflexValue(0.0);
                     } else {
-                        retVal = new ReflexValue(Double.valueOf((strVal.startsWith("'") ? strVal.substring(1) : strVal)));
+                        retVal = new ReflexValue(new BigDecimal((strVal.startsWith("'") ? strVal.substring(1) : strVal)));
                     }
                 }
-            } else if (targ.equals(INTEGER)) {
+            } else if (targ.equalsIgnoreCase(INTEGER)) {
             	if (src.isNumber()) {
             		retVal = new ReflexValue(src.asInt());
-            	}
-            } else if (targ.equals(STRING)) {
+                } else {
+                    String strVal = src.toString();
+                    if (strVal.equals("NULL")) {
+                        retVal = new ReflexValue(0);
+                    } else {
+                        retVal = new ReflexValue(Integer.valueOf((strVal.startsWith("'") ? strVal.substring(1) : strVal)));
+                    }
+                }
+            } else if (targ.equalsIgnoreCase(STRING)) {
                 if (src.isString()) {
                     retVal = new ReflexValue(src);
                 } else {
                     retVal = new ReflexValue(src.toString());
                 }
-            } else if (targ.equals(BOOL)) {
+            } else if (targ.equalsIgnoreCase(BOOL)) {
                 if (src.isBoolean()) {
                     retVal = new ReflexValue(src);
                 } else {
