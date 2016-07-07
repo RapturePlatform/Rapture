@@ -1,0 +1,102 @@
+version = '3.0.0'
+
+jar.manifest.attributes "Implementation-Title" : "Rapture WebServer application"
+jar.manifest.attributes "Implementation-Version" : version
+
+if (project.getParent().hasProperty('distZipDest') || project.hasProperty('distZipDest')) {
+    distZip { destinationDir = file(distZipDest) }
+}
+tasks.withType(Zip) { task ->
+    task.doLast {
+        ant.checksum file: it.archivePath
+    }
+}
+
+applicationDistribution.from(targetConfig) { into "etc" }
+
+startScripts {
+    // add etc folder to the classpath to pick up cfg files
+    if (System.getProperty("os.name").toLowerCase().contains("windows")) {
+        classpath = files(['%APP_HOME%\\etc'])
+    } else {
+        classpath = files(['$APP_HOME/lib/*', '$APP_HOME/etc'])
+    }
+    doLast {
+        // gradle always puts extra classpaths relative to the lib folder, so we have to replace
+        windowsScript.text = windowsScript.text.replace('%APP_HOME%\\lib\\etc', '%APP_HOME%\\lib\\*;%APP_HOME%\\etc')
+        unixScript.text = unixScript.text.replace('$APP_HOME/lib/etc', '$APP_HOME/etc')
+    }
+}
+
+dependencies {
+    compile "net.rapture:WorkflowsCore:$project.platformVersion"
+    compile "net.rapture:RaptureCore:$project.platformVersion"
+    compile "net.rapture:RaptureAddinCore:$project.platformVersion"
+    compile "net.rapture:MongoDb:$project.platformVersion"
+    compile "net.rapture:RabbitMQ:$project.platformVersion"
+    compile "net.rapture:ElasticSearch:$project.platformVersion"
+    compile "net.rapture:Postgres:$project.platformVersion"
+    compile("net.rapture:Cassandra:$project.platformVersion") {
+       exclude module: 'servlet-api'
+    }
+    compile "net.rapture:RaptureWebServlet:$project.platformVersion"
+	compile 'org.apache.tomcat.embed:tomcat-embed-logging-juli:8.0.20'
+	compile 'org.apache.tomcat.embed:tomcat-embed-core:8.0.20'
+	compile 'org.apache.tomcat.embed:tomcat-embed-jasper:8.0.20'
+	compile 'org.apache.tomcat:tomcat-api:8.0.20'
+	compile 'org.apache.tomcat:tomcat-jasper:8.0.20'
+	compile 'org.apache.tomcat:tomcat-jasper-el:8.0.20'
+	compile 'org.apache.tomcat:tomcat-jsp-api:8.0.20'
+	compile 'org.apache.tomcat:tomcat-websocket:8.0.20'
+}
+
+mainClassName = "rapture.server.RaptureWebServer"
+
+// Config files
+//
+
+import groovy.text.*
+import java.io.*
+
+task copyApiWebApp(type: Copy) {
+   dependsOn copyConfigFiles
+   from 'src/main/apiwebapp'
+   into 'build/apiwebapp'
+}
+
+task copyWebApp(type: Copy) {
+   dependsOn copyConfigFiles
+   from 'src/main/webapp'
+   into 'build/webapp'
+}
+
+task targetApiWebApp {
+    def docs = file("$buildDir/apiwebapp")
+    outputs.dir docs
+}
+
+task targetWebApp {
+    def docs = file("$buildDir/webapp")
+    outputs.dir docs
+}
+
+compileJava {
+    dependsOn copyConfigFiles
+    dependsOn copyApiWebApp
+    dependsOn copyWebApp
+}
+
+applicationDistribution.from(targetApiWebApp) {
+    into "bin/apiwebapp"
+}
+
+applicationDistribution.from(targetWebApp) {
+    into "bin/webapp"
+}
+
+startScripts {
+       doLast {
+             unixScript.text = unixScript.text.replace('DEFAULT_JVM_OPTS=""',
+             'DEFAULT_JVM_OPTS="-Xmx1G -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=9011 -Dcom.sun.management.jmxremote.rmi.port=9012 -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.local.only=false"')
+            }
+        }
