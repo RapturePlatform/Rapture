@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -49,6 +50,7 @@ import reflex.value.ReflexValue;
 import reflex.value.internal.ReflexNullValue;
 
 public final class KernelExecutor {
+
     protected KernelExecutor() {
 
     }
@@ -105,8 +107,7 @@ public final class KernelExecutor {
                             }
                         }
                     }
-                    throw new ReflexException(lineNumber, String.format("API call not found: %s.%s (taking %s parameters)", apiName, fnName,
-                            numPassedParams));
+                    throw new ReflexException(lineNumber, String.format("API call not found: %s.%s (taking %s parameters)", apiName, fnName, numPassedParams));
                 }
             }
             throw new ReflexException(lineNumber, "API '" + apiName + "' not found!");
@@ -201,8 +202,7 @@ public final class KernelExecutor {
                 List<Object> vals = (List<Object>) e.getValue();
                 converted.put(e.getKey(), convertSimpleList(vals));
             } else if (e.getValue() instanceof Map) {
-                Map<String, Object> vals = (Map<String, Object>) e.getValue();
-                converted.put(e.getKey(), convert(vals));
+                converted.put(e.getKey(), convert((Map<String, Object>) e.getValue()));
             } else {
                 converted.put(e.getKey(), e.getValue());
             }
@@ -256,16 +256,10 @@ public final class KernelExecutor {
             return v.asLong();
         } else if (type.equals(Boolean.class)) {
             return v.asBoolean();
-        } else if (type.equals(Map.class)) {
-            return v.asMap();
         } else if (type instanceof ParameterizedType) {
             return handleParameterizedType(v, type);
-        } else if (v.isMap()) {
-            return handleMap(v, type);
-        } else if (type.equals(List.class)) {
-            if (v.isList()) {
-                return handleList(v);
-            }
+        } else if (type.equals(Map.class) || type.equals(List.class)) {
+            return handleParameterizedType(v, type);
         } else if (type instanceof Class && ((Class<?>) type).isEnum()) {
             return Enum.valueOf((Class<Enum>) type, v.asString());
         }
@@ -279,23 +273,6 @@ public final class KernelExecutor {
             e.printStackTrace();
             return null;
         }
-    }
-
-    private static Object handleList(ReflexValue v) {
-        List<Object> ret = new ArrayList<Object>();
-        List<ReflexValue> vals = v.asList();
-        for (ReflexValue vi : vals) {
-            if (vi.isList()) {
-                ret.add(handleList(vi));
-            } else if (v.isMap()) {
-                ret.add(handleMap(vi, Map.class));
-            } else if (v.isComplex()) {
-                ret.add(convertObject(v.asObject()));
-            } else {
-                ret.add(vi.asObject());
-            }
-        }
-        return ret;
     }
 
     public static ReflexValue reconstructFromObject(Object x) throws ClassNotFoundException {
@@ -326,70 +303,74 @@ public final class KernelExecutor {
         }
     }
 
-    private static Object handleMap(ReflexValue v, Type type) {
-        // If we have a map, we may be able to convert this into the Type by
-        // using a JacksonUtil conversion
-        // But first we need to walk the map to convert the values to native
-        // types
-        Map<String, Object> convertedMap = convert(v.asMap());
-        if (convertedMap.containsKey("CLASS")) {
-            convertedMap.remove("CLASS");
-        }
-        String json = JacksonUtil.jsonFromObject(convertedMap);
-        Object x = JacksonUtil.objectFromJson(json, (Class<?>) type);
-        return x;
-    }
-
     private static Object handleParameterizedType(ReflexValue v, Type type) {
+        if (!(type instanceof ParameterizedType)) {
+            if (type.equals(String.class)) return v.asString();
+            if (type.equals(Double.class)) return v.asDouble();
+            if (type.equals(Long.class)) return v.asLong();
+            if (type.equals(BigDecimal.class)) return v.asBigDecimal();
+            return v.asObject();
+        }
+
         ParameterizedType pType = (ParameterizedType) type;
-        if (pType.getRawType().equals(List.class)) {
+        if (pType.getRawType().equals(Map.class)) {
+            if (!v.isMap()) {
+                log.error(v.toString() + " is not a map");
+                return null;
+            }
+            Map<String, Object> convertedMap = new LinkedHashMap<>();
+
+            for (Entry<String, Object> entry : v.asMap().entrySet()) {
+                Type[] innerType = pType.getActualTypeArguments();
+                String key = null;
+                if (!innerType[0].equals(String.class)) {
+                    // This could get tricky
+                    log.warn("Keys for maps should always be Strings");
+                }
+                key = entry.getKey().toString();
+                Object value = handleParameterizedType((ReflexValue) entry.getValue(), innerType[1]);
+                convertedMap.put(key, value);
+            }
+            return convertedMap;
+        } else if (pType.getRawType().equals(List.class)) {
+            if (!v.isList()) {
+                log.error(v.toString() + " is not a list");
+                return null;
+            }
+            List<ReflexValue> inner = v.asList();
             Type innerType = pType.getActualTypeArguments()[0];
             if (innerType.equals(String.class)) {
-                List<ReflexValue> inner = v.asList();
                 List<String> ret = new ArrayList<String>(inner.size());
                 for (ReflexValue vi : inner) {
                     ret.add(vi.asString());
                 }
                 return ret;
             } else if (innerType.equals(Double.class)) {
-                List<ReflexValue> inner = v.asList();
                 List<Double> ret = new ArrayList<>(inner.size());
                 for (ReflexValue vi : inner) {
                     ret.add(vi.asDouble());
                 }
                 return ret;
             } else if (innerType.equals(Long.class)) {
-                List<ReflexValue> inner = v.asList();
                 List<Long> ret = new ArrayList<>(inner.size());
                 for (ReflexValue vi : inner) {
                     ret.add(vi.asLong());
                 }
                 return ret;
             } else if (innerType.equals(BigDecimal.class)) {
-                List<ReflexValue> inner = v.asList();
                 List<BigDecimal> ret = new ArrayList<>(inner.size());
                 for (ReflexValue vi : inner) {
                     ret.add(vi.asBigDecimal());
                 }
                 return ret;
-
-                // Collections etc
-
-            } else if (innerType.getClass().isInstance(ParameterizedType.class)) {
-                List<ReflexValue> inner = v.asList();
-                List<List<?>> ret = new ArrayList<List<?>>(inner.size());
+            } else if (innerType instanceof ParameterizedType || inner instanceof List) {
+                List<Object> ret = new ArrayList<>();
                 for (ReflexValue vi : inner) {
-                    ret.add((List<?>) handleList(vi));
+                    ret.add(handleParameterizedType(vi, innerType));
                 }
                 return ret;
             } else {
-                // TODO: Do the above, f knows how to test this "List of Lists bull"
-                List<ReflexValue> inner = v.asList();
-                List<List<?>> ret = new ArrayList<List<?>>(inner.size());
-                for (ReflexValue vi : inner) {
-                    ret.add((List<?>) handleList(vi));
-                }
-                return ret;
+                log.warn("Cannot convert " + v.toString() + " to " + type.toString());
             }
         }
         return v.asObject();
