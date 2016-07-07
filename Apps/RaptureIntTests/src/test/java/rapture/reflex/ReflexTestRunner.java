@@ -32,7 +32,7 @@ import rapture.helper.IntegrationTestHelper;
 public class ReflexTestRunner {
     String raptureUrl = null;
     private HttpScriptApi scriptApi = null;
-    private RaptureURI scriptRepo = null;
+
     private List<String> scriptList = new ArrayList<String>();
     IntegrationTestHelper helper;
 
@@ -42,11 +42,11 @@ public class ReflexTestRunner {
         helper = new IntegrationTestHelper(url, user, password);
         scriptApi = helper.getScriptApi();
         loadScripts(helper.getRandomAuthority(Scheme.SCRIPT));
-        scriptRepo = helper.getRandomAuthority(Scheme.SCRIPT);
+ 
         HttpAdminApi admin = helper.getAdminApi();
     }
 
-    Map<String, String> getParams() {
+    	Map<String, String> getParams() {
         Map<String, String> paramMap = new HashMap<String, String>();
 
         RaptureURI blobRepo = helper.getRandomAuthority(Scheme.BLOB);
@@ -61,8 +61,14 @@ public class ReflexTestRunner {
         helper.configureTestRepo(seriesRepo, "MEMORY");
         paramMap.put("seriesRepoUri", seriesRepo.toString());
 
+        RaptureURI scriptRepo = helper.getRandomAuthority(Scheme.SCRIPT);
         paramMap.put("scriptRepoUri", scriptRepo.toString());
+        
+        RaptureURI structuredRepo = helper.getRandomAuthority(Scheme.STRUCTURED);
+        paramMap.put("structuredRepoUri", structuredRepo.toString());
+        
         paramMap.put("user", helper.getUser());
+        
         return paramMap;
     }
 
