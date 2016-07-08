@@ -262,6 +262,9 @@ public final class KernelExecutor {
             return handleParameterizedType(v, type);
         } else if (type instanceof Class && ((Class<?>) type).isEnum()) {
             return Enum.valueOf((Class<Enum>) type, v.asString());
+        } else if (v.isMap()) {
+            // If it's a map then JacksonUtil may be able to recreate the type
+            return handleMap(v, type);
         }
         return v.asObject();
     }
@@ -373,6 +376,9 @@ public final class KernelExecutor {
             } else {
                 log.warn("Cannot convert " + v.toString() + " to " + type.toString());
             }
+        } else if (v.isMap()) {
+            // If it's a map then JacksonUtil may be able to recreate the type
+            return handleMap(v, type);
         }
         return v.asObject();
     }
@@ -404,5 +410,19 @@ public final class KernelExecutor {
             return retMap;
         }
         return ret;
+    }
+
+    private static Object handleMap(ReflexValue v, Type type) {
+        // If we have a map, we may be able to convert this into the Type by
+        // using a JacksonUtil conversion
+        // But first we need to walk the map to convert the values to native
+        // types
+        Map<String, Object> convertedMap = convert(v.asMap());
+        if (convertedMap.containsKey("CLASS")) {
+            convertedMap.remove("CLASS");
+        }
+        String json = JacksonUtil.jsonFromObject(convertedMap);
+        Object x = JacksonUtil.objectFromJson(json, (Class<?>) type);
+        return x;
     }
 }
