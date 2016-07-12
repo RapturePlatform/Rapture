@@ -1,6 +1,8 @@
 repo = "document://operation"+date();
 docu = repo+"/data4";
-parent = repo+"/parent4";
+parent1 = repo+"/parent1";
+parent2 = repo+"/parent2";
+parent3 = repo+"/parent3";
 
 println(repo);
 if (!#doc.docRepoExists(repo)) do
@@ -8,18 +10,35 @@ if (!#doc.docRepoExists(repo)) do
 end
 
 // simple document with $parent
-#doc.putDoc(docu, "{\"alpha\":1,\"bravo\":2,\"charlie\":3,\"$parent\":\""+parent+"\"}");
+#doc.putDoc(docu, "{\"alpha\":1,\"bravo\":2,\"charlie\":3,\"$parent\":\""+parent1+"\"}");
 
 // Put the operations in $parent document
-#doc.putDoc(parent, "{ \"setVal\" : \"this[params['fieldToChange']] = params['newFieldValue']; return this;\", \"increment\" : \"this[params['fieldToIncrement']] = cast(this[params['fieldToIncrement']], 'integer') + 1; println(this); return this;\" }");
+#doc.putDoc(parent1, "{\"$parent\":\""+parent2+"\", \"setVal\" : \"this['alpha'] = params['newFieldValue']; return this;\" }");
+#doc.putDoc(parent2, "{\"$parent\":\""+parent3+"\", \"setVal\" : \"this['bravo'] = params['newFieldValue']; return this;\" }");
+#doc.putDoc(parent3, "{\"increment\" : \"this[params['fieldToIncrement']] = cast(this[params['fieldToIncrement']], 'integer') + 1; println(this); return this;\"}");
 
 para = {};
-para['fieldToChange'] = 'bravo';
 para['newFieldValue'] = 5;
+// This will call setVal from parent1 because parent1 is imported via the $PARENT clause
+content = #operation.invokeSave(docu, 'setVal', para);
+
+para['fieldToIncrement'] = 'charlie';
+// This will call increment from parent3 because parent3 is imported via the chain of $PARENT clauses
+content = #operation.invoke(docu, 'increment', para);
+assert(content.alpha == 5);
+assert(content.bravo == 2);
+assert(content['charlie'] == 4);
+
+#doc.putDoc(docu, "{\"alpha\":1,\"bravo\":2,\"charlie\":3,\"$parent\":\""+parent1+"\",\"$interface\":\""+parent2+"\"}");
+para = {};
+para['newFieldValue'] = 5;
+// This will call setVal from parent2 because although parent1 is imported via the $PARENT clause 
+// parent2 is imported via the $INTERFACE clause, which takes precedence.
 content = #operation.invokeSave(docu, 'setVal', para);
 
 para['fieldToIncrement'] = 'charlie';
 content = #operation.invoke(docu, 'increment', para);
+assert(content.alpha == 1);
 assert(content.bravo == 5);
 assert(content['charlie'] == 4);
 #doc.deleteDocRepo(repo);
