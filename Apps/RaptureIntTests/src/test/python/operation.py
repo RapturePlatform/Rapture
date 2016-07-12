@@ -38,12 +38,10 @@ def test_simpleAltOperation():
     # Put the operations in an Alterate document
     rapture.doDoc_PutDoc(oper, '{ "setVal" : "this[params[\'fieldToChange\']] = params[\'newFieldValue\']; return this;", "increment" : "this[params[\'fieldToIncrement\']] = cast(this[params[\'fieldToIncrement\']], \'integer\') + 1; println(this); return this;" }')
 
-    m = {'fieldToChange':'bravo', 'newFieldValue': '5', 'fieldToIncrement': 'charlie'}
+    m = {'fieldToChange':'bravo', 'newFieldValue': 'Five', 'fieldToIncrement': 'charlie'}
     rapture.doOperation_InvokeSaveAlt(docu, 'setVal', m, oper)
     content = rapture.doOperation_InvokeAlt(docu, 'increment', m, oper)
-    ## So this is kinda wierd. bravo is String 5 but Charlie is Number 4
-    ## This may be a bug.  
-    assert content['bravo'] == "5" 
+    assert content['bravo'] == "Five" 
     assert content['charlie'] == 4 
 
 def test_interfaceOperation():
@@ -53,11 +51,11 @@ def test_interfaceOperation():
     # Put the operations in $interface document
     rapture.doDoc_PutDoc(oper, '{ "setVal" : "this[params[\'fieldToChange\']] = params[\'newFieldValue\']; return this;", "increment" : "this[params[\'fieldToIncrement\']] = cast(this[params[\'fieldToIncrement\']], \'integer\') + 1; println(this); return this;" }')
 
-    m = {'fieldToChange':'bravo', 'newFieldValue': '5', 'fieldToIncrement': 'charlie'}
+    m = {'fieldToChange':'bravo', 'newFieldValue': 'Five', 'fieldToIncrement': 'charlie'}
     rapture.doOperation_InvokeSave(docu, 'setVal', m)
     content = rapture.doOperation_Invoke(docu, 'increment', m)
     ## bug?
-    assert content['bravo'] == "5" 
+    assert content['bravo'] == "Five" 
     assert content['charlie'] == 4 
 
 def test_parentOperation():
@@ -67,8 +65,8 @@ def test_parentOperation():
     # Put the operations in $parent document
     rapture.doDoc_PutDoc(oper, '{ "setVal" : "this[params[\'fieldToChange\']] = params[\'newFieldValue\']; return this;", "increment" : "this[params[\'fieldToIncrement\']] = cast(this[params[\'fieldToIncrement\']], \'integer\') + 1; println(this); return this;" }')
 
-    m = {'fieldToChange':'bravo', 'newFieldValue': '5', 'fieldToIncrement': 'charlie'}
+    m = {'fieldToChange':'bravo', 'newFieldValue': 'Five', 'fieldToIncrement': 'charlie'}
     rapture.doOperation_InvokeSave(docu, 'setVal', m)
     content = rapture.doOperation_Invoke(docu, 'increment', m)
-    assert content['bravo'] == "5" 
+    assert content['bravo'] == "Five" 
     assert content['charlie'] == 4 
