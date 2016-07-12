@@ -1,0 +1,26 @@
+repo = "document://operation"+date();
+docu = repo+"/data3";
+iface = repo+"/iface3";
+
+println(repo);
+if (!#doc.docRepoExists(repo)) do
+  #doc.createDocRepo(repo, "NREP {} USING MEMORY {}");
+end
+
+// simple document with $interface
+#doc.putDoc(docu, "{\"alpha\":1,\"bravo\":2,\"charlie\":3,\"$interface\":\""+iface+"\"}");
+
+// Put the operations in $interface document
+#doc.putDoc(iface, "{ \"setVal\" : \"this[params['fieldToChange']] = params['newFieldValue']; return this;\", \"increment\" : \"this[params['fieldToIncrement']] = cast(this[params['fieldToIncrement']], 'integer') + 1; println(this); return this;\" }");
+
+para = {};
+para['fieldToChange'] = 'bravo';
+para['newFieldValue'] = 5;
+content = #operation.invokeSave(docu, 'setVal', para);
+
+para['fieldToIncrement'] = 'charlie';
+content = #operation.invoke(docu, 'increment', para);
+assert(content.bravo == 5);
+assert(content['charlie'] == 4);
+#doc.deleteDocRepo(repo);
+return true;

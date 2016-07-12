@@ -1,0 +1,74 @@
+    structuredRepoUri='structured://test'+rand(10000000);
+    config = 'STRUCTURED { } USING POSTGRES { marvin="paranoid" }';   
+        repoExists = #structured.structuredRepoExists(structuredRepoUri);
+        assert(!repoExists);
+        #structured.createStructuredRepo(structuredRepoUri, config);
+        repoExists = #structured.structuredRepoExists(structuredRepoUri);
+        assert(repoExists);
+        // Verify the config
+        rc = #structured.getStructuredRepoConfig(structuredRepoUri);
+        assert(rc['config']== config);
+        // Create a table. Add and remove data
+        table = structuredRepoUri + '/table';
+    colMap={};
+    colMap['id']='int';
+    colMap['name']='varchar(255), PRIMARY KEY (id)';
+        #structured.createTable(table, colMap);
+        row = {};
+        row['id']=42;
+        row['name']='Don\'t Panic';
+        #structured.insertRow(table, row);
+        contents = #structured.selectRows(table, [], '', [], false, -1);
+        assert(size(contents)== 1);
+        assert(contents[0]== row);
+        // Batch insert
+    nameList=[];
+    nameList= nameList + 'Ford Prefect';
+    nameList= nameList + 'Zaphod Beeblebrox';
+    nameList= nameList + 'Arthur Dend';
+    nameList= nameList + 'Slartibartfast';
+    nameList= nameList + 'Trillian';
+    batch = [];
+        for s in nameList do
+            cha = cast(s.charAt(0),"INTEGER");
+        record={};
+            record['id']=cha;
+            record['name']=s;
+            batch=batch+record;
+        end 
+        #structured.insertRows(table, batch);
+        contents = #structured.selectRows(table, [], '', [], false, -1);
+        assert(size(contents)==(size(batch) + 1));
+        #structured.deleteRows(table, 'id=42');
+        contents = #structured.selectRows(table, null, null, null, null, -1);
+        assert(size(contents)== size(batch));
+        for  m in batch do
+            assert(contents contains m);
+    end
+    row={};
+    row['id']='Z';
+    row['name']='Zaphod Beeblebrox';
+        assert(contents contains row);
+        // Update a row
+    updateRow={};
+    updateRow['id']='Z';
+    updateRow['name']='Zarniwoop';
+        #structured.updateRows(table, updateRow,'id=Z');
+        contents = #structured.selectRows(table, null, null, null, null, -1);
+        assert(size(contents), size(batch));
+        assert(contents contains updateRow);
+        assert(!contents contains row);
+        #structured.dropTable(table);
+        try do 
+            contents = #structured.selectRows(table, null, null, null, null, -1);
+            assert(false);
+    end
+        catch e do
+    end
+       
+        // Good enough. Delete the repo.
+        #structured.deleteStructuredRepo(structuredRepoUri);
+        repoExists = #structured.structuredRepoExists(structuredRepoUri);
+        assert(!repoExists);
+    return true;
+
