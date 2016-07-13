@@ -91,19 +91,19 @@ Furthermore, given a document like this:
 the following call could be used:
 
 \begin{lstlisting}
-  #operation.invokeAltSave('//orders/ORD1', 'claim', '//interface/order', { 'trader' : 'Alan'});
+  #operation.invokeSaveAlt('//orders/ORD1', 'claim', '//interface/order', { 'trader' : 'Alan'});
 \end{lstlisting}
 
-\subsection{Search in base}
-A \Rapture document can specify a parent document that can contain an interface definition. This base document works in the same
-way as the interface document declaration except that any base reference in the parent document can also be followed.
+\subsection{Search in parent}
+A \Rapture document can specify a parent document that can contain an interface definition. This document works in the same
+way as the interface document declaration except that any reference in the parent document can also be followed.
 
 \begin{lstlisting}
   {
     "strategy" : "ABC",
     "trader" : "Alan",
     "face" : 12234,
-    "$base" : "//order/prime"
+    "$parent" : "//order/prime"
   }
 \end{lstlisting}
 
@@ -120,7 +120,7 @@ the following API call would work:
 \end{lstlisting}
 
 \subsection{Order of search}
-The order of function search is the following : direct reference, search in base (up the parent hierarchy), search in interface, search in alt interface. For each base search the interface
+The order of function search is the following : direct reference, search in parent (up the hierarchy), search in interface, search in alt interface. For each parent search the interface
 is also searched in those specification documents.
 
 \section{Usage example}
