@@ -42,6 +42,7 @@ import rapture.common.client.HttpDocApi;
 import rapture.common.client.HttpEntitlementApi;
 import rapture.common.client.HttpEventApi;
 import rapture.common.client.HttpLoginApi;
+import rapture.common.client.HttpOperationApi;
 import rapture.common.client.HttpPluginApi;
 import rapture.common.client.HttpScriptApi;
 import rapture.common.client.HttpSearchApi;
@@ -65,6 +66,7 @@ public class IntegrationTestHelper {
     HttpPluginApi pluginApi = null;
     HttpDecisionApi decisionApi = null;
     HttpStructuredApi structApi = null;
+    HttpOperationApi operationApi = null;
 
     static final String testPrefix = "__RESERVED__";
 
@@ -96,6 +98,10 @@ public class IntegrationTestHelper {
 
     public HttpDocApi getDocApi() {
         return docApi;
+    }
+
+    public HttpOperationApi getOperationApi() {
+        return operationApi;
     }
 
     public HttpBlobApi getBlobApi() {
@@ -144,6 +150,7 @@ public class IntegrationTestHelper {
         pluginApi = new HttpPluginApi(raptureLogin);
         decisionApi = new HttpDecisionApi(raptureLogin);
         structApi = new HttpStructuredApi(raptureLogin);
+        operationApi = new HttpOperationApi(raptureLogin);
         uriCache = new HashSet<>();
     }
 
