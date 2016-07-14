@@ -80,7 +80,7 @@ public class LockApiTest {
     public void testLock() throws InterruptedException {
 
         // Player 1 acquires a lock
-        RaptureURI lockUri = helper.getRandomAuthority(Scheme.LOCK);
+        RaptureURI lockUri = RaptureURI.builder(helper.getRandomAuthority(Scheme.DOCUMENT)).docPath("foo/bar").build();
         RaptureLockConfig lockConfig = lockApi.createLockManager(lockUri.toString(), "LOCKING USING MONGODB {}", "");
         assertNotNull(lockConfig);
         LockHandle lockHandle = lockApi.acquireLock(lockUri.toString(), lockConfig.getName(), 1, 60);
