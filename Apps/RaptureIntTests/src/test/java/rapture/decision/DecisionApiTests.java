@@ -223,13 +223,13 @@ public class DecisionApiTests {
             catch (Exception e) {}
             numRetries++;
         }
-        
+        Assert.assertEquals(decisionApi.getWorkOrderStatus(createWorkOrder).getStatus(), WorkOrderExecutionState.FINISHED);
         /////////////////////////////////////////////////////////////////////////////////////
         //check output in doc repos was as expected + context var is returned from workorder
         
         String duri = decisionApi.getContextValue(createWorkOrder, "docRepoUri");
         try {
-            Thread.sleep(1500);
+            Thread.sleep(7500);
         }
         catch (Exception e) {}
         Map<String, RaptureFolderInfo> allChildrenMap = helper.getDocApi().listDocsByUriPrefix(duri, 10);  
