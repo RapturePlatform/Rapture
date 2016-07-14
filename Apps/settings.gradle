@@ -1,5 +1,7 @@
 include "ReflexRunner"
 include "RaptureAPIServer"
+include "RaptureWebServer"
 include "ScheduleServer"
 include "PluginInstaller"
 include "RaptureIntTests"
+include "OperationTest"

@@ -1,0 +1,11 @@
+{
+  "authority": "otest",
+  "strictCheck":true,
+  "indexes":[],
+  "fullTextIndexes":[],
+  "documentRepo":
+    {
+       "authority":"otest",
+       "config":"NREP {} USING MONGODB { config=\"otest\"}"
+    }
+}

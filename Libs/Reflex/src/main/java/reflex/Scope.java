@@ -181,7 +181,7 @@ public class Scope {
             }
         }
 
-        mapper.put(parts[parts.length - 1], value);
+        mapper.put(parts[parts.length - 1], value.asObject());
         return true;
     }
 

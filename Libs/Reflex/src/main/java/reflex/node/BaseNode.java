@@ -63,7 +63,7 @@ public abstract class BaseNode implements ReflexNode {
 		return true;
 	}
 
-    static final Logger log = Logger.getLogger(BaseNode.class);
+    protected static final Logger log = Logger.getLogger(BaseNode.class);
     protected static boolean disableAudit = true;
     protected String nodeId;
     protected int lineNumber;

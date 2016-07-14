@@ -36,3 +36,8 @@ println("y="+y);
 
 z.a = 'b';
 println("z="+z);
+
+aa = fromjson("{\"a\" : 1, \"b\" : 2, \"c\" : 3}");
+aa['b'] = 6;
+aa.a = 5;
+println(json(aa));
