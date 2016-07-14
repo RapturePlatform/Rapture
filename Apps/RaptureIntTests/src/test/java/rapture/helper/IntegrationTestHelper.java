@@ -54,6 +54,7 @@ import rapture.common.client.SimpleCredentialsProvider;
 public class IntegrationTestHelper {
     
     HttpLoginApi raptureLogin = null;
+    HttpLockApi lockApi = null;
     HttpSeriesApi seriesApi = null;
     HttpScriptApi scriptApi = null;
     HttpSearchApi searchApi = null;
@@ -66,7 +67,6 @@ public class IntegrationTestHelper {
     HttpPluginApi pluginApi = null;
     HttpDecisionApi decisionApi = null;
     HttpStructuredApi structApi = null;
-    HttpLockApi lockApi = null;
 
     static final String testPrefix = "__RESERVED__";
 
@@ -141,6 +141,7 @@ public class IntegrationTestHelper {
         searchApi = new HttpSearchApi(raptureLogin);
         seriesApi = new HttpSeriesApi(raptureLogin);
         scriptApi = new HttpScriptApi(raptureLogin);
+        lockApi = new HttpLockApi(raptureLogin);
         docApi = new HttpDocApi(raptureLogin);
         blobApi = new HttpBlobApi(raptureLogin);
         userApi = new HttpUserApi(raptureLogin);
@@ -150,7 +151,6 @@ public class IntegrationTestHelper {
         pluginApi = new HttpPluginApi(raptureLogin);
         decisionApi = new HttpDecisionApi(raptureLogin);
         structApi = new HttpStructuredApi(raptureLogin);
-        lockApi = new HttpLockApi(raptureLogin);
         uriCache = new HashSet<>();
     }
 
