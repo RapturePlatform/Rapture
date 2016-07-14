@@ -364,6 +364,16 @@ public class DecisionApiTests {
             numRetries++;
         }
        
+        Assert.assertEquals(decisionApi.getWorkOrderStatus(createWorkOrder).getStatus(), WorkOrderExecutionState.FINISHED);
+        /////////////////////////////////////////////////////////////////////////////////////
+        //check output in doc repos was as expected + context var is returned from workorder
+        
+        try {
+            Thread.sleep(7500);
+        }
+        catch (Exception e) {}
+        
+        
         //get worker threads using getWorkerIds()
         WorkOrderDebug woDebug = decisionApi.getWorkOrderDebug(createWorkOrder);
         List<WorkerDebug> woDebugsList = woDebug.getWorkerDebugs();
