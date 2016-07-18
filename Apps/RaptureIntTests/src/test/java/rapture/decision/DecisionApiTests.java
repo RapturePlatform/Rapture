@@ -223,11 +223,15 @@ public class DecisionApiTests {
             catch (Exception e) {}
             numRetries++;
         }
-        
+        Assert.assertEquals(decisionApi.getWorkOrderStatus(createWorkOrder).getStatus(), WorkOrderExecutionState.FINISHED);
         /////////////////////////////////////////////////////////////////////////////////////
         //check output in doc repos was as expected + context var is returned from workorder
         
         String duri = decisionApi.getContextValue(createWorkOrder, "docRepoUri");
+        try {
+            Thread.sleep(7500);
+        }
+        catch (Exception e) {}
         Map<String, RaptureFolderInfo> allChildrenMap = helper.getDocApi().listDocsByUriPrefix(duri, 10);  
         Assert.assertEquals(allChildrenMap.size(), 3,"Check number of documents created is 3.");
         
@@ -360,6 +364,16 @@ public class DecisionApiTests {
             numRetries++;
         }
        
+        Assert.assertEquals(decisionApi.getWorkOrderStatus(createWorkOrder).getStatus(), WorkOrderExecutionState.FINISHED);
+        /////////////////////////////////////////////////////////////////////////////////////
+        //check output in doc repos was as expected + context var is returned from workorder
+        
+        try {
+            Thread.sleep(7500);
+        }
+        catch (Exception e) {}
+        
+        
         //get worker threads using getWorkerIds()
         WorkOrderDebug woDebug = decisionApi.getWorkOrderDebug(createWorkOrder);
         List<WorkerDebug> woDebugsList = woDebug.getWorkerDebugs();

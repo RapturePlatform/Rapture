@@ -66,7 +66,7 @@ public class CassandraBase {
 
     private ConsistencyLevel readCL = ConsistencyLevel.ONE;
     private ConsistencyLevel writeCL = ConsistencyLevel.ONE;
-    
+
     public Messages messageCatalog;
 
     public String getColumnFamily() {
@@ -85,7 +85,7 @@ public class CassandraBase {
         // writeConsistency (optional)
 
         messageCatalog = new Messages("Cassandra");
-        
+
         // The connection to Cassandra comes from RaptureCASSANDRA.cfg
         // and has host and port
         cassHost = MultiValueConfigLoader.getConfig("CASSANDRA-" + instance + ".host");
@@ -156,7 +156,7 @@ public class CassandraBase {
             }
             client.set_keyspace(keySpace);
             ensureStandardCF(columnFamily);
-        } catch (InvalidRequestException | TException | UnavailableException | TimedOutException | SchemaDisagreementException e) {
+        } catch (TException e) {
             throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, messageCatalog.getMessage("DbCommsError"), e);
         }
     }
