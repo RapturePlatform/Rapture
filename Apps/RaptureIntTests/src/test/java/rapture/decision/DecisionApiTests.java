@@ -223,75 +223,84 @@ public class DecisionApiTests {
             catch (Exception e) {}
             numRetries++;
         }
-        
+        Assert.assertEquals(decisionApi.getWorkOrderStatus(createWorkOrder).getStatus(), WorkOrderExecutionState.FINISHED);
         /////////////////////////////////////////////////////////////////////////////////////
         //check output in doc repos was as expected + context var is returned from workorder
         
         String duri = decisionApi.getContextValue(createWorkOrder, "docRepoUri");
+        try {
+            Thread.sleep(7500);
+        }
+        catch (Exception e) {}
         Map<String, RaptureFolderInfo> allChildrenMap = helper.getDocApi().listDocsByUriPrefix(duri, 10);  
         Assert.assertEquals(allChildrenMap.size(), 3,"Check number of documents created is 3.");
         
         //check worker 0. this should have 2 set records
         WorkOrderDebug woDebug = decisionApi.getWorkOrderDebug(createWorkOrder);
         List<WorkerDebug> woDebugs = woDebug.getWorkerDebugs();
-        WorkerDebug woDebug0 = woDebugs.get(0);
-        //Worker worker0 = decision.getWorker(createWorkOrder, "0");
-        List<StepRecordDebug> stepRecords0 = woDebug0.getStepRecordDebugs();
-        //List<StepRecord> stepRecords0 = worker0.getStepRecords();
-        Assert.assertEquals(stepRecords0.size(), 2, "Check number of step records in worker 0.");
+        if (woDebugs.size() > 0) {
+	        WorkerDebug woDebug0 = woDebugs.get(0);
+	        //Worker worker0 = decision.getWorker(createWorkOrder, "0");
+	        List<StepRecordDebug> stepRecords0 = woDebug0.getStepRecordDebugs();
+	        //List<StepRecord> stepRecords0 = worker0.getStepRecords();
+	        Assert.assertEquals(stepRecords0.size(), 2, "Check number of step records in worker 0.");
+	        
+	        
+	        //first step record 
+	        String stepName0_1 = stepRecords0.get(0).getStepRecord().getName();
+	        String retVal0_1 = stepRecords0.get(0).getStepRecord().getRetVal();
+	        String stepURI0_1 = stepRecords0.get(0).getStepRecord().getStepURI();
+	        String executable0_1 = decisionApi.getWorkflowStep(stepURI0_1).getExecutable();
+	        Assert.assertEquals(executable0_1, scriptMap.get("parentFork1.rfx"), "check step 1 executable for worker 0");
+	        Assert.assertEquals(stepName0_1,"parentStep","check step name for worker 0");
+	        Assert.assertEquals(retVal0_1,"ok","check ret val for worker 0");
+	        Assert.assertEquals(stepURI0_1,forkSplit.getWorkflowURI() + "#" + "parentStep","check step uri for worker 0");
+	        //second step record
+	        String stepName0_2 = stepRecords0.get(1).getStepRecord().getName();
+	        String retVal0_2 = stepRecords0.get(1).getStepRecord().getRetVal();
+	        String stepURI0_2 = stepRecords0.get(1).getStepRecord().getStepURI();
+	        String executable0_2 = decisionApi.getWorkflowStep(stepURI0_2).getExecutable();
+	        Assert.assertEquals(executable0_2, "$FORK:forkChild1,forkChild2", "check step 1 executable for worker 0");
+	        Assert.assertEquals(stepName0_2,"step2fork","check step name for worker 0");
+	        Assert.assertEquals(retVal0_2,"ok","check ret val for worker 0");
+	        Assert.assertEquals(stepURI0_2,forkSplit.getWorkflowURI() + "#" + "step2fork","check step uri for worker 0");
+        }
         
-        
-        //first step record 
-        String stepName0_1 = stepRecords0.get(0).getStepRecord().getName();
-        String retVal0_1 = stepRecords0.get(0).getStepRecord().getRetVal();
-        String stepURI0_1 = stepRecords0.get(0).getStepRecord().getStepURI();
-        String executable0_1 = decisionApi.getWorkflowStep(stepURI0_1).getExecutable();
-        Assert.assertEquals(executable0_1, scriptMap.get("parentFork1.rfx"), "check step 1 executable for worker 0");
-        Assert.assertEquals(stepName0_1,"parentStep","check step name for worker 0");
-        Assert.assertEquals(retVal0_1,"ok","check ret val for worker 0");
-        Assert.assertEquals(stepURI0_1,forkSplit.getWorkflowURI() + "#" + "parentStep","check step uri for worker 0");
-        //second step record
-        String stepName0_2 = stepRecords0.get(1).getStepRecord().getName();
-        String retVal0_2 = stepRecords0.get(1).getStepRecord().getRetVal();
-        String stepURI0_2 = stepRecords0.get(1).getStepRecord().getStepURI();
-        String executable0_2 = decisionApi.getWorkflowStep(stepURI0_2).getExecutable();
-        Assert.assertEquals(executable0_2, "$FORK:forkChild1,forkChild2", "check step 1 executable for worker 0");
-        Assert.assertEquals(stepName0_2,"step2fork","check step name for worker 0");
-        Assert.assertEquals(retVal0_2,"ok","check ret val for worker 0");
-        Assert.assertEquals(stepURI0_2,forkSplit.getWorkflowURI() + "#" + "step2fork","check step uri for worker 0");
-        
+        if (woDebugs.size() > 1) {
         //check worker 1. this should have 1 record
-        WorkerDebug woDebug1 = woDebugs.get(1);
-
-        List<StepRecordDebug> stepRecords1 = woDebug1.getStepRecordDebugs();
-        Assert.assertEquals(stepRecords1.size(), 1, "Check number of step records in worker 1.");
-        //first step record 
-        String stepName1 = stepRecords1.get(0).getStepRecord().getName();
-        String retVal1 = stepRecords1.get(0).getStepRecord().getRetVal();
-        String stepURI1 = stepRecords1.get(0).getStepRecord().getStepURI();
-        String executable1 = decisionApi.getWorkflowStep(stepURI1).getExecutable();
-        Assert.assertEquals(executable1, scriptMap.get("childForkShareCtxVar1.rfx"), "check forkstep1 executable for worker 1");
-        Assert.assertEquals(stepName1,"forkChild1","check step name for worker 1");
-        Assert.assertEquals(retVal1,"ok","check ret val for worker 1");
-        Assert.assertEquals(stepURI1,forkSplit.getWorkflowURI() + "#" + "forkChild1","check step uri for worker 1");
-     
-        //check worker 1. this should have 1 record
-        WorkerDebug woDebug2 = woDebugs.get(2);
-        List<StepRecordDebug> stepRecords2 = woDebug2.getStepRecordDebugs();
-        Assert.assertEquals(stepRecords2.size(), 1, "Check number of step records in worker 1.");
-        //first step record 
-        String stepName2 = stepRecords2.get(0).getStepRecord().getName();
-        String retVal2 = stepRecords2.get(0).getStepRecord().getRetVal();
-        String stepURI2 = stepRecords2.get(0).getStepRecord().getStepURI();
-        String executable2 = decisionApi.getWorkflowStep(stepURI2).getExecutable();
-        Assert.assertEquals(executable2, scriptMap.get("childForkShareCtxVar2.rfx"), "check forkstep2 executable for worker 2");
-        Assert.assertEquals(stepName2,"forkChild2","check step name for worker 2");
-        Assert.assertEquals(retVal2,"ok","check ret val for worker 2");
-        Assert.assertEquals(stepURI2,forkSplit.getWorkflowURI() + "#" + "forkChild2","check step uri for worker 2");
+	        WorkerDebug woDebug1 = woDebugs.get(1);
+	
+	        List<StepRecordDebug> stepRecords1 = woDebug1.getStepRecordDebugs();
+	        Assert.assertEquals(stepRecords1.size(), 1, "Check number of step records in worker 1.");
+	        //first step record 
+	        String stepName1 = stepRecords1.get(0).getStepRecord().getName();
+	        String retVal1 = stepRecords1.get(0).getStepRecord().getRetVal();
+	        String stepURI1 = stepRecords1.get(0).getStepRecord().getStepURI();
+	        String executable1 = decisionApi.getWorkflowStep(stepURI1).getExecutable();
+	        Assert.assertEquals(executable1, scriptMap.get("childForkShareCtxVar1.rfx"), "check forkstep1 executable for worker 1");
+	        Assert.assertEquals(stepName1,"forkChild1","check step name for worker 1");
+	        Assert.assertEquals(retVal1,"ok","check ret val for worker 1");
+	        Assert.assertEquals(stepURI1,forkSplit.getWorkflowURI() + "#" + "forkChild1","check step uri for worker 1");
+        }
         
+        if (woDebugs.size() > 2) {
+        	//check worker 1. this should have 1 record
+	        WorkerDebug woDebug2 = woDebugs.get(2);
+	        List<StepRecordDebug> stepRecords2 = woDebug2.getStepRecordDebugs();
+	        Assert.assertEquals(stepRecords2.size(), 1, "Check number of step records in worker 1.");
+	        //first step record 
+	        String stepName2 = stepRecords2.get(0).getStepRecord().getName();
+	        String retVal2 = stepRecords2.get(0).getStepRecord().getRetVal();
+	        String stepURI2 = stepRecords2.get(0).getStepRecord().getStepURI();
+	        String executable2 = decisionApi.getWorkflowStep(stepURI2).getExecutable();
+	        Assert.assertEquals(executable2, scriptMap.get("childForkShareCtxVar2.rfx"), "check forkstep2 executable for worker 2");
+	        Assert.assertEquals(stepName2,"forkChild2","check step name for worker 2");
+	        Assert.assertEquals(retVal2,"ok","check ret val for worker 2");
+	        Assert.assertEquals(stepURI2,forkSplit.getWorkflowURI() + "#" + "forkChild2","check step uri for worker 2");
+        }
         Assert.assertEquals(helper.getDocApi().getDoc(docURI+"/"+randInt+"/docFromFork1"),"{\"KeyFromForkChild1\":\"ValueFromForkChild1\"}");
         Assert.assertEquals(helper.getDocApi().getDoc(docURI+"/"+randInt+"/docFromFork2"),"{\"KeyFromChild2\":\"ValueFromChild2\"}");
-        
+
     }
     
     
@@ -360,6 +369,16 @@ public class DecisionApiTests {
             numRetries++;
         }
        
+        Assert.assertEquals(decisionApi.getWorkOrderStatus(createWorkOrder).getStatus(), WorkOrderExecutionState.FINISHED);
+        /////////////////////////////////////////////////////////////////////////////////////
+        //check output in doc repos was as expected + context var is returned from workorder
+        
+        try {
+            Thread.sleep(7500);
+        }
+        catch (Exception e) {}
+        
+        
         //get worker threads using getWorkerIds()
         WorkOrderDebug woDebug = decisionApi.getWorkOrderDebug(createWorkOrder);
         List<WorkerDebug> woDebugsList = woDebug.getWorkerDebugs();
