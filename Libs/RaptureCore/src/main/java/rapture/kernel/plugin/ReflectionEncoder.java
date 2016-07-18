@@ -28,6 +28,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 import org.apache.commons.codec.binary.Hex;
+import org.apache.log4j.Logger;
 
 import rapture.common.CallingContext;
 import rapture.common.PluginTransportItem;
@@ -41,6 +42,9 @@ import rapture.common.impl.jackson.JacksonUtil;
  * @author mel
  */
 public abstract class ReflectionEncoder implements RaptureEncoder {
+
+    static Logger log = Logger.getLogger(ReflectionEncoder.class);
+
     @Override
     public PluginTransportItem encode(CallingContext ctx, String uri) {
         try {
