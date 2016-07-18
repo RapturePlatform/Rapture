@@ -118,6 +118,7 @@ public class PluginApiImpl extends KernelBase implements PluginApi {
             .put(Scheme.DOCUMENT, new DocumentEncoder())
             .put(Scheme.FIELD, new FieldEncoder())
             .put(Scheme.TABLE, new IndexEncoder())
+            .put(Scheme.INDEX, new IndexEncoder())
             .put(Scheme.EVENT, new EventEncoder())
             .put(Scheme.WORKFLOW, new WorkflowEncoder())
             .put(Scheme.LOCK, new LockEncoder())
