@@ -29,6 +29,7 @@ import static rapture.common.Scheme.DOCUMENT;
 import static rapture.common.Scheme.EVENT;
 import static rapture.common.Scheme.FIELD;
 import static rapture.common.Scheme.IDGEN;
+import static rapture.common.Scheme.INDEX;
 import static rapture.common.Scheme.JAR;
 import static rapture.common.Scheme.JOB;
 import static rapture.common.Scheme.SCRIPT;
@@ -58,6 +59,12 @@ import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 
+import com.google.common.base.Objects;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.ImmutableBiMap;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.io.Closeables;
+
 import rapture.common.PluginTransportItem;
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
@@ -65,12 +72,6 @@ import rapture.common.api.ScriptingApi;
 import rapture.common.exception.RaptureException;
 import rapture.common.exception.RaptureExceptionFactory;
 import rapture.util.MimeTypeResolver;
-
-import com.google.common.base.Objects;
-import com.google.common.collect.BiMap;
-import com.google.common.collect.ImmutableBiMap;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.io.Closeables;
 
 /**
  * This class maintains a two-way binding between a content file in the expanded directory for a PluginSandbox and the corresponding object on the rapture
@@ -359,6 +360,7 @@ public class PluginSandboxItem {
             .put(".revent", EVENT)
             .put(".field", FIELD)
             .put(".table", TABLE)
+            .put(".index", INDEX)
             .put(".job", JOB)
             .put(".workflow", WORKFLOW)
             .put(".lock", Scheme.LOCK)
