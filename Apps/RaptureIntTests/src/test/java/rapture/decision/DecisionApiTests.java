@@ -307,7 +307,6 @@ public class DecisionApiTests {
     @Test(groups = { "decision","nightly"}) 
     public void testBasicForkFirstStepReflexInvocableTest() {
      
-        
         RaptureURI docRepoURI=helper.getRandomAuthority(Scheme.DOCUMENT);
         helper.configureTestRepo(docRepoURI, "MONGODB");
         //Setup the overall workflow step object
@@ -358,32 +357,41 @@ public class DecisionApiTests {
         Reporter.log("Work order uri: " + createWorkOrder,true);
         
        
-        int numRetries=0;
-        long waitTimeMS=2000;
-        while (IntegrationTestHelper.isWorkOrderRunning(decisionApi,createWorkOrder)  && numRetries < 20) {
-            Reporter.log("Checking workorder status, retry count="+numRetries+", waiting "+(waitTimeMS/1000)+" seconds...",true);
+        int numRetries = 20;
+        long waitTimeMS = 500;
+        while (IntegrationTestHelper.isWorkOrderRunning(decisionApi, createWorkOrder) && (numRetries-- > 0)) {
+            Reporter.log("+++ Checking workorder status, retry count=" + numRetries + ", waiting " + (waitTimeMS / 1000) + " seconds...", true);
             try {
                 Thread.sleep(waitTimeMS);
             }
-            catch (Exception e) {}
-            numRetries++;
+            catch (InterruptedException e) {
+            }
         }
        
+        Reporter.log("+++ Work order no longer running", true);
+
         Assert.assertEquals(decisionApi.getWorkOrderStatus(createWorkOrder).getStatus(), WorkOrderExecutionState.FINISHED);
         /////////////////////////////////////////////////////////////////////////////////////
         //check output in doc repos was as expected + context var is returned from workorder
         
-        try {
-            Thread.sleep(7500);
-        }
-        catch (Exception e) {}
-        
+        numRetries = 30;
+        List<WorkerDebug> woDebugsList = null;
+        WorkOrderDebug woDebug = decisionApi.getWorkOrderDebug(createWorkOrder);
+        do {
+            if (woDebugsList != null) try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+            }
+
+            woDebugsList = woDebug.getWorkerDebugs();
+            Reporter.log("+++ Got " + woDebugsList.size() + " WorkerDebugs", true);
+            for (WorkerDebug wd : woDebugsList) {
+                Reporter.log(wd.toString());
+            }
+        } while ((numRetries-- > 0) && (woDebugsList.size() != 3));
         
         //get worker threads using getWorkerIds()
-        WorkOrderDebug woDebug = decisionApi.getWorkOrderDebug(createWorkOrder);
-        List<WorkerDebug> woDebugsList = woDebug.getWorkerDebugs();
         Assert.assertEquals(woDebugsList.size(), 3,"Check number of worker ids is 3");
-
        
         for(WorkerDebug wo :woDebugsList){
 
