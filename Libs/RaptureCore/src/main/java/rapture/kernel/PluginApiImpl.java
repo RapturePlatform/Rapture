@@ -178,7 +178,7 @@ public class PluginApiImpl extends KernelBase implements PluginApi {
             .put(Scheme.SCRIPT, new ScriptInstaller())
             .put(Scheme.JOB, new ScheduleInstaller()).put(Scheme.DOCUMENT, new DocumentInstaller())
             .put(Scheme.EVENT, new EventInstaller()).put(Scheme.FIELD, new FieldInstaller())
-            .put(Scheme.IDGEN, new IdGenInstaller()).put(Scheme.TABLE, new IndexInstaller())
+            .put(Scheme.IDGEN, new IdGenInstaller()).put(Scheme.TABLE, new IndexInstaller()).put(Scheme.INDEX, new IndexInstaller())
             .put(Scheme.WORKFLOW, new WorkflowInstaller()).put(Scheme.ENTITLEMENT, new EntitlementInstaller())
             .put(Scheme.ENTITLEMENTGROUP, new EntitlementGroupInstaller()).put(Scheme.LOCK, new LockInstaller())
             .put(Scheme.SNIPPET, new SnippetInstaller())

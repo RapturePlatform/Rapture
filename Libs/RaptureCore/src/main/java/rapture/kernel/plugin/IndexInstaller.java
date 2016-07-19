@@ -26,6 +26,8 @@ package rapture.kernel.plugin;
 import rapture.common.CallingContext;
 import rapture.common.PluginTransportItem;
 import rapture.common.RaptureURI;
+import rapture.common.Scheme;
+import rapture.common.exception.RaptureExceptionFactory;
 import rapture.common.impl.jackson.JacksonUtil;
 import rapture.common.model.IndexConfig;
 import rapture.kernel.Kernel;
@@ -39,7 +41,11 @@ public class IndexInstaller implements RaptureInstaller {
 
     @Override
     public void remove(CallingContext context, RaptureURI uri, PluginTransportItem item) {
-        Kernel.getIndex().deleteIndex(context, uri.toString());
-
+        Scheme scheme = uri.getScheme();
+        if (Scheme.TABLE.equals(scheme)) {
+            Kernel.getIndex().deleteTable(context, uri.toString());
+        } else if (Scheme.INDEX.equals(scheme)) {
+            Kernel.getIndex().deleteIndex(context, uri.toString());
+        } else throw RaptureExceptionFactory.create(this.getClass().getName() + " cannot remove " + uri);
     }
 }
