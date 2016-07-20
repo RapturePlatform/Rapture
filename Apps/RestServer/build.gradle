@@ -1,0 +1,27 @@
+version = '1.0.0'
+
+jar.manifest.attributes "Implementation-Title" : "RestServer application"
+jar.manifest.attributes "Implementation-Version" : version
+
+dependencies {
+  compile "net.rapture:RaptureAPI:$project.platformVersion"
+  compile "net.rapture:RaptureCore:$project.platformVersion"
+  compile "net.rapture:RaptureAppConfig:$project.platformVersion"
+  compile "net.rapture:MongoDb:$project.platformVersion"
+  compile "net.rapture:RabbitMQ:$project.platformVersion"
+  compile "net.rapture:ElasticSearch:$project.platformVersion"
+  compile "net.rapture:Postgres:$project.platformVersion"
+  compile "net.rapture:Cassandra:$project.platformVersion"
+  compile "com.sparkjava:spark-core:2.5"
+  compile 'com.mashape.unirest:unirest-java:1.4.9'
+}
+
+startScripts {
+  classpath = files(['[REPLACEME]'])
+  doLast {
+    // gradle always puts extra classpaths relative to the lib folder, so we have to replace
+    windowsScript.text = windowsScript.text.replace('%APP_HOME%\\lib\\[REPLACEME]', '%APP_HOME%\\lib\\*;%APP_HOME%\\etc')
+    unixScript.text = unixScript.text.replace('$APP_HOME/lib/[REPLACEME]', '$APP_HOME/lib/*:$APP_HOME/etc')
+  }
+}
+mainClassName = "rapture.server.rest.RestServer"
