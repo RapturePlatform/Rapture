@@ -1,13 +1,19 @@
 package rapture.plugin;
 
+import static org.junit.Assert.assertNotNull;
+import static org.testng.AssertJUnit.assertEquals;
+
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.security.NoSuchAlgorithmException;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -26,6 +32,7 @@ import rapture.common.PluginConfig;
 import rapture.common.PluginTransportItem;
 import rapture.common.WorkOrderExecutionState;
 import rapture.common.client.HttpDecisionApi;
+import rapture.common.client.HttpIndexApi;
 import rapture.common.client.HttpPluginApi;
 import rapture.common.exception.ExceptionToString;
 import rapture.common.exception.RaptureExceptionFactory;
@@ -248,6 +255,55 @@ public class PluginApiTest {
         return null;
     }
     
+    @Test
+    public void testGetPluginItem() throws IOException {
+        String tableUri = "table://foo/bar";
+        String indexUri = "index://baz";
+
+        HttpIndexApi index = helper.getIndexApi();
+        index.createTable(tableUri, "TABLE {} USING MONGO { prefix=\"foo\"}");
+        index.createIndex(indexUri, "field1($1) number");
+
+        String pluginName = "Jeff" + System.currentTimeMillis();
+
+        pluginApi.createManifest(pluginName);
+        pluginApi.addManifestItem(pluginName, tableUri);
+        pluginApi.addManifestItem(pluginName, indexUri);
+        pluginApi.verifyPlugin(pluginName);
+        String plug = pluginApi.exportPlugin(pluginName, "/tmp/" + pluginName);
+        Map<String, Object> map = JacksonUtil.getMapFromJson(plug);
+        ZipFile zip = new ZipFile("/tmp/" + pluginName + "/" + map.get("filePath").toString());
+
+        Enumeration<? extends ZipEntry> ennui = zip.entries();
+        while (ennui.hasMoreElements()) {
+            ZipEntry ze = ennui.nextElement();
+            String name = ze.getName();
+            Map<String, Object> contents = null;
+            try (BufferedReader br = new BufferedReader(new InputStreamReader(zip.getInputStream(ze)))) {
+                contents = JacksonUtil.getMapFromJson(br.lines().collect(Collectors.joining()));
+            }
+            assertNotNull(contents);
+
+            switch (name) {
+            case "plugin.txt":
+                assertEquals(pluginName, contents.get("plugin").toString());
+                break;
+            case "content/foo/bar.table":
+                assertEquals("foo", contents.get("authority").toString());
+                assertEquals("bar", contents.get("name").toString());
+                assertEquals("TABLE {} USING MONGO { prefix=\"foo\"}", contents.get("config").toString());
+                break;
+            case "content/baz/.index":
+                assertEquals("baz", contents.get("name").toString());
+                assertEquals("field1($1) number", contents.get("config").toString());
+                break;
+            default:
+                Assert.fail("Unexpected file " + name + " in plugin zip ");
+            }
+        }
+
+        pluginApi.uninstallPlugin(pluginName);
+    }
     
     @AfterClass(groups={"plugin", "nightly"})
     public void AfterTest(){

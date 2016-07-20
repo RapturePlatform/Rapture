@@ -25,10 +25,13 @@
 package rapture.helper;
 
 import java.util.HashSet;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 
 import org.testng.Assert;
+import org.testng.Reporter;
 
 import com.google.common.collect.ImmutableList;
 
@@ -41,6 +44,8 @@ import rapture.common.client.HttpDecisionApi;
 import rapture.common.client.HttpDocApi;
 import rapture.common.client.HttpEntitlementApi;
 import rapture.common.client.HttpEventApi;
+import rapture.common.client.HttpIndexApi;
+import rapture.common.client.HttpLockApi;
 import rapture.common.client.HttpLoginApi;
 import rapture.common.client.HttpOperationApi;
 import rapture.common.client.HttpPluginApi;
@@ -50,10 +55,13 @@ import rapture.common.client.HttpSeriesApi;
 import rapture.common.client.HttpStructuredApi;
 import rapture.common.client.HttpUserApi;
 import rapture.common.client.SimpleCredentialsProvider;
+import rapture.common.dp.WorkOrder;
 
 public class IntegrationTestHelper {
     
     HttpLoginApi raptureLogin = null;
+    HttpLockApi lockApi = null;
+    HttpIndexApi indexApi = null;
     HttpSeriesApi seriesApi = null;
     HttpScriptApi scriptApi = null;
     HttpSearchApi searchApi = null;
@@ -80,6 +88,10 @@ public class IntegrationTestHelper {
         return eventApi;
     }
     
+    public HttpIndexApi getIndexApi() {
+        return indexApi;
+    }
+
     public HttpPluginApi getPluginApi() {
         return pluginApi;
     }
@@ -124,6 +136,10 @@ public class IntegrationTestHelper {
         return decisionApi;
     }
 
+    public HttpLockApi getLockApi() {
+        return lockApi;
+    }
+
     public HttpStructuredApi getStructApi() {
         return structApi;
     }
@@ -141,6 +157,8 @@ public class IntegrationTestHelper {
         searchApi = new HttpSearchApi(raptureLogin);
         seriesApi = new HttpSeriesApi(raptureLogin);
         scriptApi = new HttpScriptApi(raptureLogin);
+        lockApi = new HttpLockApi(raptureLogin);
+        indexApi = new HttpIndexApi(raptureLogin);
         docApi = new HttpDocApi(raptureLogin);
         blobApi = new HttpBlobApi(raptureLogin);
         userApi = new HttpUserApi(raptureLogin);
@@ -242,6 +260,19 @@ public class IntegrationTestHelper {
 
     public static boolean isWorkOrderRunning (HttpDecisionApi decisionApi,String workOrderURI ) {
         WorkOrderExecutionState state = decisionApi.getWorkOrderStatus(workOrderURI).getStatus();
+        Reporter.log("+++ Status of " + workOrderURI + " is " + state, true);
+        if (state == WorkOrderExecutionState.ERROR || state == WorkOrderExecutionState.FAILING) {
+            WorkOrder wo = decisionApi.getWorkOrder(workOrderURI);
+            if (wo == null) Reporter.log("+++ NULL WORK ORDER \n" + workOrderURI, true);
+            else {
+                Map<String, String> out = wo.getOutputs();
+                if (out == null) Reporter.log("+++ WORK ORDER HAS NO OUTPUTS \n" + workOrderURI, true);
+                else for (Entry<String, String> e : wo.getOutputs().entrySet()) {
+                    Reporter.log("+++ " + e.getKey() + " : " + e.getValue() + "\n", true);
+                }
+
+            }
+        }
         return !(state == WorkOrderExecutionState.FINISHED || state == WorkOrderExecutionState.CANCELLED || state == WorkOrderExecutionState.ERROR ||  state == WorkOrderExecutionState.FAILING);
     }
     
