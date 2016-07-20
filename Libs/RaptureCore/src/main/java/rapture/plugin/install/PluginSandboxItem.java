@@ -418,7 +418,7 @@ public class PluginSandboxItem {
         } else {
             download(client, false);
         }
-        if (content != null)
+        if ((content != null) && (content.length > 0))
             out.write(content);
     }
 

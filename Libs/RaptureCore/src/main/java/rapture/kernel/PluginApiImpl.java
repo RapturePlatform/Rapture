@@ -169,7 +169,8 @@ public class PluginApiImpl extends KernelBase implements PluginApi {
             installRepo(context, item);
         }
         for (PluginTransportItem item : payload.values()) {
-            installItem(context, item);
+            byte[] content = item.getContent();
+            if ((content != null) && (content.length > 0)) installItem(context, item);
         }
     }
 
