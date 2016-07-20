@@ -195,7 +195,8 @@ public class DefaultDecisionProcessExecutor implements DecisionProcessExecutor {
                 workOrder.getWorkerIds().add(child.getId());
                 workOrder.getPendingIds().add(child.getId());
                 if (target == null) {
-                    log.error("Attempt to start worker with non-extant step " + name + " from " + step.getName() + " in " + flow.getWorkflowURI());
+                    child.setDetail("Attempt to start worker with non-extant step " + name + " from " + step.getName() + " in " + flow.getWorkflowURI());
+                    log.error(child.getDetail());
                     child.setStatus(WorkerExecutionState.ERROR);
                     saveWorker(child);
                 } else {
@@ -228,7 +229,8 @@ public class DefaultDecisionProcessExecutor implements DecisionProcessExecutor {
             Step target = getStep(names[i], flow);
             Worker child = SplitUtils.createSplitChild(parent, flow, i, names.length, target);
             if (target == null) {
-                log.error("Attempt to start worker with non-extant step " + names[i] + " from " + step.getName() + " in " + flow.getWorkflowURI());
+                child.setDetail("Attempt to start worker with non-extant step " + names[i] + " from " + step.getName() + " in " + flow.getWorkflowURI());
+                log.error(child.getDetail());
                 parent.setWaitCount(parent.getWaitCount() - 1);
                 child.setStatus(WorkerExecutionState.ERROR);
                 saveWorker(child);
@@ -333,14 +335,15 @@ public class DefaultDecisionProcessExecutor implements DecisionProcessExecutor {
         saveWorker(worker);
 
         String workerURI = createWorkerURI(worker.getWorkOrderURI(), worker.getId()).toString();
-        
+
         workOrder.setStatus(WorkOrderStatusUtil.computeStatus(workOrder, false));
-        WorkOrderStorage.add(new RaptureURI(workOrder.getWorkOrderURI(), Scheme.WORKORDER), workOrder, ContextFactory.getKernelUser().getUser(), "Updating status");
+        WorkOrderStorage.add(new RaptureURI(workOrder.getWorkOrderURI(), Scheme.WORKORDER), workOrder, ContextFactory.getKernelUser().getUser(),
+                "Updating status");
 
         String stepURI = stack.get(0); // don't pop stack just yet -- we are
         // currently executing this
         log.info("Processing step: " + stepURI);
-  
+
         CallingContext kernelUser = ContextFactory.getKernelUser();
         Pair<Workflow, Step> pair = Kernel.getDecision().getTrusted().getWorkflowWithStep(kernelUser, stepURI);
         Workflow flow = pair.getLeft();
@@ -386,7 +389,8 @@ public class DefaultDecisionProcessExecutor implements DecisionProcessExecutor {
                         saveWorker(worker);
 
                         workOrder.setStatus(WorkOrderStatusUtil.computeStatus(workOrder, false));
-                        WorkOrderStorage.add(new RaptureURI(workOrder.getWorkOrderURI(), Scheme.WORKORDER), workOrder, ContextFactory.getKernelUser().getUser(), "Updating status");
+                        WorkOrderStorage.add(new RaptureURI(workOrder.getWorkOrderURI(), Scheme.WORKORDER), workOrder, ContextFactory.getKernelUser().getUser(),
+                                "Updating status");
                     } else {
                         log.trace("no suppress " + transitionName);
                         transitionWorker(worker, workOrder, step, stepURI, transitionName);
@@ -505,8 +509,11 @@ public class DefaultDecisionProcessExecutor implements DecisionProcessExecutor {
             grabMultiWorkerLock(workOrder, worker, NO_FORCE);
             worker.setStatus(status);
             if (re.isPresent()) {
+                if (worker.getDetail() == null) worker.setDetail("State is " + status.name() + " due to exception");
                 ErrorWrapper exceptionInfo = ErrorWrapperFactory.create(re.get());
                 worker.setExceptionInfo(exceptionInfo);
+            } else if (status == WorkerExecutionState.ERROR) {
+                if (worker.getDetail() == null) worker.setDetail("Error is not due to an exception");
             }
             CallingContext kernelUser = ContextFactory.getKernelUser();
             saveWorker(worker);
@@ -557,7 +564,8 @@ public class DefaultDecisionProcessExecutor implements DecisionProcessExecutor {
                     outputs.put(key, map.get(key).toString());
                 }
             }
-            WorkOrderStorage.add(new RaptureURI(workOrder.getWorkOrderURI(), Scheme.WORKORDER), workOrder, ContextFactory.getKernelUser().getUser(), "Updating status");
+            WorkOrderStorage.add(new RaptureURI(workOrder.getWorkOrderURI(), Scheme.WORKORDER), workOrder, ContextFactory.getKernelUser().getUser(),
+                    "Updating status");
         } finally {
             releaseMultiWorkerLock(workOrder, worker, NO_FORCE);
         }
@@ -593,8 +601,8 @@ public class DefaultDecisionProcessExecutor implements DecisionProcessExecutor {
             public void run() {
                 WorkOrderInitialArgsHash argsHash = WorkOrderInitialArgsHashStorage.readByFields(workOrder.getWorkOrderURI());
                 String workerURI = createWorkerURI(worker.getWorkOrderURI(), worker.getId()).toString();
-                String jobUriString = Kernel.getDecision().getTrusted()
-                        .getContextValue(ContextFactory.getKernelUser(), workerURI, ContextVariables.PARENT_JOB_URI);
+                String jobUriString = Kernel.getDecision().getTrusted().getContextValue(ContextFactory.getKernelUser(), workerURI,
+                        ContextVariables.PARENT_JOB_URI);
                 RaptureURI jobURI;
                 if (jobUriString != null) {
                     jobURI = new RaptureURI(jobUriString, Scheme.JOB);
@@ -740,8 +748,7 @@ public class DefaultDecisionProcessExecutor implements DecisionProcessExecutor {
      * Check whether the given workerOrder has more than one workers
      */
     private boolean multiWorker(WorkOrder workOrder, Worker worker) {
-        return (workOrder.getWorkerIds().size() > 1) ||
-                (worker.getParent() != null && worker.getParent().length() > 0);
+        return (workOrder.getWorkerIds().size() > 1) || (worker.getParent() != null && worker.getParent().length() > 0);
     }
 
     /**
@@ -759,10 +766,15 @@ public class DefaultDecisionProcessExecutor implements DecisionProcessExecutor {
                 stepRecord.setRetVal(stepRetVal);
                 Transition transition = getTransition(step, stepRetVal);
                 if (transition == null) transition = RETURN_TRANSITION;
-                if (re.isPresent() || FAIL_TRANSITION.equals(transition.getTargetStep())) {
+                boolean present = re.isPresent();
+                if (present || FAIL_TRANSITION.equals(transition.getTargetStep())) {
                     stepRecord.setStatus(WorkOrderExecutionState.ERROR);
-                    if (re.isPresent()) {
+                    if (present) {
                         stepRecord.setExceptionInfo(ErrorWrapperFactory.create(re.get()));
+                    }
+
+                    if (worker.getDetail() == null) {
+                        worker.setDetail("Target step is " + transition.getTargetStep() + " - exception is " + ((present) ? "present" : "absent"));
                     }
                     String activityId = stepRecord.getActivityId();
                     if (activityId != null) {
@@ -811,8 +823,8 @@ public class DefaultDecisionProcessExecutor implements DecisionProcessExecutor {
         stepRecord.setStartTime(System.currentTimeMillis());
         stepRecord.setHostname(HOST_NAME);
         stepRecord.setStatus(WorkOrderExecutionState.ACTIVE);
-        StepRecordUtil
-                .writeStepRecord(ContextFactory.getKernelUser(), worker.getWorkOrderURI(), worker.getId(), stepRecord, "Writing step from pre-execute-step");
+        StepRecordUtil.writeStepRecord(ContextFactory.getKernelUser(), worker.getWorkOrderURI(), worker.getId(), stepRecord,
+                "Writing step from pre-execute-step");
 
         if (log.isDebugEnabled()) {
             log.debug(String.format("PRE: Saving worker:\n%s", JacksonUtil.jsonFromObject(worker)));

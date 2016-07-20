@@ -371,7 +371,7 @@ public class DecisionApiTests {
         int numRetries = 20;
         long waitTimeMS = 500;
         while (IntegrationTestHelper.isWorkOrderRunning(decisionApi, createWorkOrder) && (numRetries-- > 0)) {
-            Reporter.log("+++ Checking workorder status, retry count=" + numRetries + ", waiting " + (waitTimeMS / 1000) + " seconds...", true);
+            Reporter.log("Checking workorder status, retry count=" + numRetries + ", waiting " + (waitTimeMS / 1000) + " seconds...", true);
             try {
                 Thread.sleep(waitTimeMS);
             }
@@ -379,7 +379,7 @@ public class DecisionApiTests {
             }
         }
        
-        Reporter.log("+++ Work order no longer running", true);
+        Reporter.log("Work order no longer running", true);
 
         Assert.assertEquals(decisionApi.getWorkOrderStatus(createWorkOrder).getStatus(), WorkOrderExecutionState.FINISHED);
         /////////////////////////////////////////////////////////////////////////////////////
@@ -395,7 +395,7 @@ public class DecisionApiTests {
             }
 
             woDebugsList = woDebug.getWorkerDebugs();
-            Reporter.log("+++ Got " + woDebugsList.size() + " WorkerDebugs", true);
+            Reporter.log("Got " + woDebugsList.size() + " WorkerDebugs", true);
             for (WorkerDebug wd : woDebugsList) {
                 Reporter.log(wd.toString());
             }
@@ -555,6 +555,9 @@ public class DecisionApiTests {
             String workerState = wo.getWorker().getStatus().name();         
             Assert.assertEquals(workerState, "FINISHED","status check on worker.");
         }
+
+        IntegrationTestHelper.isWorkOrderRunning(decisionApi, createWorkOrder);
+
         Assert.assertEquals(helper.getDocApi().getDoc(docRepoUri+randInt+"/docFromFork1"),"{\"KeyFromChild1\":\"ValueFromChild1\"}");
         Assert.assertEquals(helper.getDocApi().getDoc(docRepoUri+randInt+"/docFromFork2"),"{\"KeyFromChild2\":\"ValueFromChild2\"}");
         Assert.assertEquals(helper.getDocApi().getDoc(docRepoUri+randInt+"/docFromFork3"),"{\"KeyFromChild3\":\"ValueFromChild3\"}");
@@ -1206,12 +1209,8 @@ public class DecisionApiTests {
             catch (Exception e) {}
             numRetries++;
         }
-
         Assert.assertEquals(decisionApi.getWorkOrderStatus(woUri).getStatus(), WorkOrderExecutionState.ERROR, "We did not get a status of ERROR back, we got > " + decisionApi.getWorkOrderStatus(woUri).getStatus());
-
     }
-    
-    
     
     private void loadScripts(RaptureURI tempScripts) {
     	HttpScriptApi scriptApi = helper.getScriptApi();
