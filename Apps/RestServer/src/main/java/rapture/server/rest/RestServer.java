@@ -23,7 +23,9 @@
  */
 package rapture.server.rest;
 
+import static rapture.server.rest.JsonUtil.json;
 import static spark.Spark.before;
+import static spark.Spark.delete;
 import static spark.Spark.get;
 import static spark.Spark.put;
 
@@ -77,13 +79,36 @@ public class RestServer {
             return Kernel.getDoc().getDoc(getContext(req), getDocUriParam(req));
         });
 
-        put("doc/*", (req, res) -> {
+        put("/doc/*", (req, res) -> {
             return Kernel.getDoc().putDoc(getContext(req), getDocUriParam(req), req.body());
+        });
+
+        delete("/doc/*", (req, res) -> {
+            return Kernel.getDoc().deleteDoc(getContext(req), getDocUriParam(req));
+        });
+
+        get("/blob/*", (req, res) -> {
+            return Kernel.getBlob().getBlob(getContext(req), getBlobUriParam(req));
+        }, json());
+
+        put("/blob/*", (req, res) -> {
+            String uri = getBlobUriParam(req);
+            Kernel.getBlob().putBlob(getContext(req), uri, req.bodyAsBytes(), req.contentType());
+            return uri;
+        });
+
+        delete("/blob/*", (req, res) -> {
+            Kernel.getBlob().deleteBlob(getContext(req), getBlobUriParam(req));
+            return null;
         });
     }
 
     private String getDocUriParam(Request req) {
         return req.pathInfo().substring("/doc/".length());
+    }
+
+    private String getBlobUriParam(Request req) {
+        return req.pathInfo().substring("/blob/".length());
     }
 
     private CallingContext getContext(Request req) {
