@@ -1,0 +1,11 @@
+syskeys=[];
+syskeys=syskeys+'PATH';
+syskeys=syskeys+'SHELL';
+syskeys=syskeys+'LOGNAME';
+syskeys=syskeys+'HOME';
+
+keyList=keys(#admin.getSystemProperties(syskeys));
+for k in syskeys do
+    assert(keyList contains k);
+end
+return true;

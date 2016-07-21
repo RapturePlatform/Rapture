@@ -1,0 +1,11 @@
+userName='testuser'+rand(1000000);
+description = 'This is Test User';
+pwd='testpassword';
+email=userName+'@test.com';
+#admin.addUser(userName, description, pwd, email);
+
+user = #admin.getUser(userName);
+assert(user['username']== userName);
+#admin.destroyUser(userName);
+assert(#admin.getUser(userName)==null);
+return true;
