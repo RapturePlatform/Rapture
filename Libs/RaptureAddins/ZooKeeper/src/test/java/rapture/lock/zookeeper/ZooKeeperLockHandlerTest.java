@@ -20,7 +20,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -30,6 +29,7 @@ import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.RetryUntilElapsed;
 import org.apache.curator.test.TestingServer;
+import org.apache.zookeeper.data.Stat;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -61,25 +61,25 @@ public class ZooKeeperLockHandlerTest {
 
     @Before
     public void setup() throws Exception {
-       z = new ZooKeeperLockHandler(CONNECT_STRING);
+        z = new ZooKeeperLockHandler(CONNECT_STRING);
     }
 
     @AfterClass
-    public static  void  omega() throws IOException {
+    public static void omega() throws IOException {
         zkServer.stop();
         zkServer.close();
         client.close();
     }
 
     @After
-    public  void  tearDown() throws IOException {
+    public void tearDown() throws IOException {
         String lockPath = z.createLockPath("/test");
 
         try {
             client.delete().forPath(lockPath);
         } catch (Exception e) {
             e.printStackTrace();
-          //ignore
+            // ignore
         }
         z = null;
     }
@@ -116,21 +116,18 @@ public class ZooKeeperLockHandlerTest {
         assertTrue(lockExists(lockName, lockHolder));
         assertNotNull(lockHandle);
 
-        //now try and get the lock and this should not work
+        // now try and get the lock and this should not work
         LockHandle lockHandle2 = z2.acquireLock(lockHolder, lockName, secondsToWait, secondsToHold);
         assertNull(lockHandle2);
 
         // now release lock and try again. this time should work
-        z.releaseLock(lockHolder,lockName,lockHandle);
-        assertFalse(lockExists(lockName, lockHolder));
+        z.releaseLock(lockHolder, lockName, lockHandle);
         lockHandle2 = z2.acquireLock(lockHolder, lockName, secondsToWait, secondsToHold);
         assertNotNull(lockHandle2);
 
         assertEquals(lockHolder, lockHandle.getLockHolder());
         assertEquals(lockName, lockHandle.getLockName());
-        assertTrue(lockExists(lockName, lockHolder));
         assertTrue(z2.releaseLock(lockHolder, lockName, lockHandle));
-        assertFalse(lockExists(lockName, lockHolder));
     }
 
     @Test
@@ -191,7 +188,7 @@ public class ZooKeeperLockHandlerTest {
             taskExecutor.execute(new Runnable() {
                 @Override
                 public void run() {
-                    //z = new ZooKeeperLockHandler(CONNECT_STRING);
+                    // z = new ZooKeeperLockHandler(CONNECT_STRING);
 
                     LockHandle lockHandle = z.acquireLock(lockHolder + String.valueOf(counter), lockName, secondsToWait, secondsToHold);
 
@@ -219,26 +216,14 @@ public class ZooKeeperLockHandlerTest {
         assertEquals(4, handlesDenied.size());
     }
 
-    // use client to check node.
     private boolean lockExists(String lockName, String lockHolder) {
-        String lockPath = z.createLockPath(lockName);
-        List<String> children;
-
+        Stat exists;
         try {
-            children = client.getChildren().forPath(lockPath);
+            exists = client.checkExists().forPath(z.createLockPath(lockName));
+            return (exists != null);
         } catch (Exception e) {
             System.out.println(ExceptionToString.format(e));
             return false;
         }
-
-        // There should be only one node under the lockName
-        // which is the lock.this is a bit hokey as i should be able to
-        // get the node name and compare...
-        if (children == null || children.size() < 1) {
-            return false;
-        } else {
-            return true;
-        }
     }
-
 }
