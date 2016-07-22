@@ -35,14 +35,14 @@ import java.net.HttpURLConnection;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -53,6 +53,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Logger;
 
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+
 import rapture.common.PluginConfig;
 import rapture.common.PluginManifest;
 import rapture.common.PluginManifestItem;
@@ -62,12 +68,6 @@ import rapture.common.api.ScriptingApi;
 import rapture.common.exception.RaptureExceptionFactory;
 import rapture.common.impl.jackson.JacksonUtil;
 import rapture.plugin.PluginUtil;
-
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 
 /**
  * The Plugin Sandbox is a client-side representation of a plugin. The plugin
@@ -92,7 +92,7 @@ public class PluginSandbox {
     public static final String PLUGIN_TXT = "plugin.txt";
     public static final String DEPRECATED_FEATURE_TXT = "feature.txt";
 
-    private Map<RaptureURI, PluginSandboxItem> uri2item = new LinkedHashMap<>();
+    private Map<String, PluginSandboxItem> uri2item = new TreeMap<>();
     private Map<String, PluginVersion> depends = new LinkedHashMap<>();
     private Map<String, Map<RaptureURI, PluginSandboxItem>> variant2map = new LinkedHashMap<>();
 
@@ -127,13 +127,13 @@ public class PluginSandbox {
         PluginSandboxItem item = uri2item.get(uri);
         if (item == null) {
             item = makeItem(uri);
-            uri2item.put(uri, item);
+            uri2item.put(uri.toString(), item);
         }
         return item;
     }
 
     public PluginSandboxItem getItem(RaptureURI uri) {
-        return uri2item.get(uri);
+        return uri2item.get(uri.toString());
     }
 
     private PluginSandboxItem makeItem(RaptureURI uri) {
@@ -214,14 +214,14 @@ public class PluginSandbox {
     }
 
     public Iterable<PluginSandboxItem> getItems(String variant) {
-        Map<RaptureURI, PluginSandboxItem> result = new HashMap<RaptureURI, PluginSandboxItem>();
-        Set<RaptureURI> uris = uri2item.keySet();
-        for (RaptureURI uri : uris) {
+        Map<String, PluginSandboxItem> result = new TreeMap<String, PluginSandboxItem>();
+        Set<String> uris = uri2item.keySet();
+        for (String uri : uris) {
             result.put(uri, uri2item.get(uri));
         }
         Collection<PluginSandboxItem> variantItems = getVariantItems(variant);
         for (PluginSandboxItem variantItem : variantItems) {
-            result.put(variantItem.getURI(), variantItem);
+            result.put(variantItem.getURI().toString(), variantItem);
         }
         return result.values();
     }
@@ -286,7 +286,7 @@ public class PluginSandbox {
     }
 
     private void updateIndex(RaptureURI uri, String variant, PluginSandboxItem item) {
-        if (variant == null) uri2item.put(uri, item);
+        if (variant == null) uri2item.put(uri.toString(), item);
         else putVariantItem(uri, variant, item);
     }
 
@@ -325,33 +325,33 @@ public class PluginSandbox {
         if (thisVariant == null) readAllVariants();
         else readContent(thisVariant);
 
-        ZipOutputStream out = null;
         File zipFile = new File(filename);
         File p = zipFile.getParentFile();
         if (p != null) {
             p.mkdirs();
         }
-        out = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(zipFile)));
-        ZipEntry entry = new ZipEntry(PLUGIN_TXT);
-        out.putNextEntry(entry);
-        writePlugin(out);
-        for (PluginSandboxItem item : uri2item.values()) {
-            item.writeZipEntry(out, client, build);
-        }
-        for (Entry<String, Map<RaptureURI, PluginSandboxItem>> nut : variant2map.entrySet()) {
-            if (thisVariant != null && !thisVariant.equals(nut.getKey())) continue;
-            for (PluginSandboxItem item : nut.getValue().values()) {
-                item.writeZipEntry(out, client, build);
+        try (ZipOutputStream out = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(zipFile)))) {
+            ZipEntry entry = new ZipEntry(PLUGIN_TXT);
+            out.putNextEntry(entry);
+            writePlugin(out);
+            // Sort the keys
+            for (String uri : uri2item.keySet()) {
+                uri2item.get(uri).writeZipEntry(out, client, build);
+            }
+            for (Entry<String, Map<RaptureURI, PluginSandboxItem>> nut : variant2map.entrySet()) {
+                if (thisVariant != null && !thisVariant.equals(nut.getKey())) continue;
+                for (PluginSandboxItem item : nut.getValue().values()) {
+                    item.writeZipEntry(out, client, build);
+                }
             }
         }
-        out.close();
     }
 
     /**
      * As written, this assumes that the hashes have already been cached. FIXME
      */
     public PluginManifest makeManifest(String variant) {
-        Map<RaptureURI, PluginManifestItem> hashes = new HashMap<>();
+        Map<RaptureURI, PluginManifestItem> hashes = new LinkedHashMap<>();
         PluginManifest manifest = new PluginManifest();
         manifest.setPlugin(pluginName);
         manifest.setDescription(description);
@@ -434,7 +434,7 @@ public class PluginSandbox {
             variant = variant.toLowerCase();
         }
         if (!variant2map.containsKey(variant)) {
-            variant2map.put(variant, Maps.<RaptureURI, PluginSandboxItem>newHashMap());
+            variant2map.put(variant, Maps.<RaptureURI, PluginSandboxItem> newLinkedHashMap());
         }
         variant2map.get(variant).put(uri, result);
     }
@@ -452,7 +452,7 @@ public class PluginSandbox {
         File ignoreFile = new File(dir, IGNORE);
         if (ignoreFile.exists()) {
             try (BufferedReader br = new BufferedReader(new FileReader(ignoreFile))) {
-                Set<Pattern> ignores = new HashSet<>();
+                Set<Pattern> ignores = new TreeSet<>();
                 while (br.ready()) {
                     String line = br.readLine();
                     // NULL means we are done reading
@@ -533,7 +533,7 @@ public class PluginSandbox {
         String variant = pair.getRight();
         PluginSandboxItem item = new PluginSandboxItem(uri, rootDir, variant);
         item.setFullFilePath(f.getAbsolutePath());
-        if (variant == null) uri2item.put(uri, item);
+        if (variant == null) uri2item.put(uri.toString(), item);
         else putVariantItem(uri, variant, item);
     }
 

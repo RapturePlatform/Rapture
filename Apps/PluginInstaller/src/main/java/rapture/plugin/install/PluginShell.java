@@ -122,7 +122,7 @@ public class PluginShell {
     private String featureName;
     private String zipFile;
 
-    protected Map<String, PluginSandbox> name2sandbox = Maps.newHashMap();
+    protected Map<String, PluginSandbox> name2sandbox = Maps.newLinkedHashMap();
 
     private boolean isLocal;
 
@@ -1196,7 +1196,7 @@ public class PluginShell {
             }
             String thisVariant = nextToken(args);
             if (thisVariant == null) thisVariant = variant;
-            Map<String, PluginTransportItem> payload = Maps.newHashMap();
+            Map<String, PluginTransportItem> payload = Maps.newLinkedHashMap();
             for (PluginSandboxItem item : sandbox.getItems(thisVariant)) {
                 try {
                     if (debug) System.out.println("Packaging " + item.getURI().toString());

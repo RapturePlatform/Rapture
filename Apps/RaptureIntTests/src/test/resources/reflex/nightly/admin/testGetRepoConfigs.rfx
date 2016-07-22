@@ -1,0 +1,15 @@
+repokeys=[];
+repokeys=repokeys+'PATH';
+repokeys=repokeys+'SHELL';
+repokeys=repokeys+'LOGNAME';
+repokeys=repokeys+'HOME';
+
+keyList=[];
+for rc in #admin.getRepoConfig() do
+    keyList = keyList + rc['name'];
+end
+
+assert (keyList contains 'RaptureEphemeral');
+assert (keyList contains 'RaptureSettings');
+assert (keyList contains 'RaptureConfig');
+return true;

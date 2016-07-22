@@ -26,6 +26,7 @@ package rapture.common.dp;
 import org.apache.commons.codec.CharEncoding;
 import org.apache.commons.httpclient.URIException;
 import org.apache.commons.httpclient.util.URIUtil;
+import org.apache.log4j.Logger;
 
 import rapture.common.RaptureURI;
 import rapture.common.exception.RaptureExceptionFactory;
@@ -37,6 +38,7 @@ public class StepHelper {
     public static final String FORK_PREFIX = "$FORK";
     public static final String SPLIT_PREFIX = "$SPLIT";
     public static final String RETURN_PREFIX_COLUMN = RETURN_PREFIX + ":";
+    private static Logger log = Logger.getLogger(StepHelper.class);
 
     public static boolean isSpecialStep(String decoded) {
         return decoded.startsWith("$");
@@ -66,7 +68,8 @@ public class StepHelper {
 
     private static String decodedExecutable(Step step) {
         String raw = step.getExecutable();
-        if (isSpecialStep(raw)) return raw;
+        if ((raw == null) || (raw.length() == 0)) log.warn("No executable found for step " + step);
+        else if (isSpecialStep(raw)) return raw;
         String authority = new RaptureURI(step.getExecutable()).getAuthority();
         return decode(authority);
     }

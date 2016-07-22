@@ -30,6 +30,8 @@ import java.security.NoSuchAlgorithmException;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang.StringUtils;
 
+import com.google.common.base.Charsets;
+
 import rapture.common.CallingContext;
 import rapture.common.PluginTransportItem;
 import rapture.common.RaptureURI;
@@ -37,8 +39,6 @@ import rapture.common.exception.RaptureExceptionFactory;
 import rapture.common.impl.jackson.JacksonUtil;
 import rapture.common.model.DocumentRepoConfig;
 import rapture.kernel.Kernel;
-
-import com.google.common.base.Charsets;
 
 public class DocumentEncoder implements RaptureEncoder {
     @Override
@@ -49,7 +49,8 @@ public class DocumentEncoder implements RaptureEncoder {
                 DocumentRepoConfig config = Kernel.getDoc().getDocRepoConfig(ctx, uri);
                 content = JacksonUtil.bytesJsonFromObject(config);
             } else {
-                content = Kernel.getDoc().getDoc(ctx, uri).getBytes(Charsets.UTF_8);
+                String str = Kernel.getDoc().getDoc(ctx, uri);
+                content = (str != null) ? str.getBytes(Charsets.UTF_8) : new byte[0];
             }
             MessageDigest md = MessageDigest.getInstance("MD5");
             PluginTransportItem item = new PluginTransportItem();
