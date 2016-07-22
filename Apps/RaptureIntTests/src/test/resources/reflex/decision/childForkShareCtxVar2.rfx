@@ -17,6 +17,7 @@ workOrderURI = _params['$DP_WORK_ORDER_URI'];
 println('******* DP_WORKER_URI    : ' + workerURI);
 println('******* DP_WORK_ORDER_URI: ' + workOrderURI);
 
+sleep(1000);
 workOrderStatus = #decision.getWorkOrderStatus(workOrderURI);
 println("******* Status is        : " + workOrderStatus);
 
