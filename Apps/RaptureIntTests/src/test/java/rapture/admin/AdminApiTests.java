@@ -146,13 +146,13 @@ public class AdminApiTests {
         helper.configureTestRepo(srcRepo, "MONGODB");
         RaptureURI targetRepo = helper.getRandomAuthority(Scheme.DOCUMENT);
         int MAX_DOC=20;
-        Reporter.log("Adding "+MAX_DOC + " documents to source repo");
+        Reporter.log("Adding "+MAX_DOC + " documents to source repo",true);
         for (int i = 0; i < MAX_DOC;i++){
         	String docUri = RaptureURI.builder(DOCUMENT, srcRepo.getAuthority()).docPath("docTest" + System.nanoTime()).asString();
             helper.getDocApi().putDoc(docUri, "{\"testkey\":\"testvalue"+System.nanoTime()+"\"}");
 		}
 
-        Reporter.log("Copying "+srcRepo.getAuthority() +" to " +targetRepo.getAuthority());
+        Reporter.log("Copying "+srcRepo.getAuthority() +" to " +targetRepo.getAuthority(),true);
 		adminApi.copyDocumentRepo(srcRepo.getAuthority(), targetRepo.getAuthority(), false);
 		Map<String,String> srcMap= new HashMap<String,String> ();
 		Map<String,String> targetMap= new HashMap<String,String> ();
@@ -162,29 +162,28 @@ public class AdminApiTests {
 		for (String uri:helper.getDocApi().listDocsByUriPrefix(RaptureURI.builder(DOCUMENT, targetRepo.getAuthority()).asString(), 2).keySet()) {
 			targetMap.put(uri,helper.getDocApi().getDoc(uri));
 		}
-		Reporter.log("Checking all data in "+srcRepo.getAuthority() +" is in " +targetRepo.getAuthority());
+		Reporter.log("Checking all data in "+srcRepo.getAuthority() +" is in " +targetRepo.getAuthority(),true);
 		Assert.assertEquals(srcMap, targetMap);
 	}
 	
 	@Test(groups={"admin","nightly"})
     public void testGetSystemProperties() {
-		Reporter.log("Checking for some keys in system properties");
         List<String> keys = new ArrayList<String>();
         keys.add("PATH");
-        keys.add("SHELL");
-        keys.add("LOGNAME");
         keys.add("HOME");
         
+		Reporter.log("Checking for some keys in system properties "+keys,true);
+        
         Map<String, String> propMap=adminApi.getSystemProperties(keys);
-        for (String propKey : propMap.keySet()) {
+        for (String propKey : keys) {
             Assert.assertNotNull(propMap.get(propKey));
         }
         
     }
 	
     @Test (groups= {"admin","nightly"})
-    public void getRepoConfigTest() {
-    	Reporter.log("Checking default repo names");
+    public void testGetRepoConfig() {
+    	Reporter.log("Checking default repo names",true);
         List<RepoConfig> repoConfigs = adminApi.getRepoConfig();
         Set<String> repoNameSet=new HashSet<String> ();
         for(RepoConfig repoConfig: repoConfigs ) {
