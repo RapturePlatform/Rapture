@@ -12,23 +12,31 @@
  */
 package rapture.lock.zookeeper;
 
-import org.apache.curator.framework.CuratorFramework;
-import org.apache.curator.framework.CuratorFrameworkFactory;
-import org.apache.curator.retry.RetryUntilElapsed;
-import org.apache.curator.test.TestingServer;
-import org.junit.*;
-import rapture.common.LockHandle;
-import rapture.lock.zookeeper.ZooKeeperLockHandler;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.Assert.*;
+import org.apache.curator.framework.CuratorFramework;
+import org.apache.curator.framework.CuratorFrameworkFactory;
+import org.apache.curator.retry.RetryUntilElapsed;
+import org.apache.zookeeper.data.Stat;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import rapture.common.LockHandle;
+import rapture.common.exception.ExceptionToString;
 
 public class ZooKeeperLockHandlerIntegrationTest {
 
@@ -125,7 +133,6 @@ public class ZooKeeperLockHandlerIntegrationTest {
         final int secondsToWait = 10;
         final int secondsToHold = 30; // ignored in zk impl
 
-        final Set<LockHandle> handles = new HashSet<LockHandle>();
         final Set<String> locksAcquired = new HashSet<String>();
 
         assertFalse(lockExists(lockName, lockHolder));
@@ -134,6 +141,7 @@ public class ZooKeeperLockHandlerIntegrationTest {
         for (int i = 0; i < 5; i++) {
             final int counter = i;
             taskExecutor.execute(new Runnable() {
+                @Override
                 public void run() {
                     z = new ZooKeeperLockHandler(CONNECT_STRING);
 
@@ -166,12 +174,11 @@ public class ZooKeeperLockHandlerIntegrationTest {
         final Set<String> handlesAcquired = new HashSet<String>();
         final Set<String> handlesDenied = new HashSet<String>();
 
-//        assertFalse(lockExists(lockName, lockHolder));
-
         ExecutorService taskExecutor = Executors.newFixedThreadPool(10);
         for (int i = 0; i < 5; i++) {
             final int counter = i;
             taskExecutor.execute(new Runnable() {
+                @Override
                 public void run() {
                     //z = new ZooKeeperLockHandler(CONNECT_STRING);
 
@@ -202,26 +209,14 @@ public class ZooKeeperLockHandlerIntegrationTest {
     }
 
     // use client to check node.
-    private boolean lockExists(String lockName, String lockHolder) {
-        String lockPath = z.createLockPath(lockName);
-        List<String> children;
-
+    boolean lockExists(String lockName, String lockHolder) {
+        Stat exists;
         try {
-            children = client.getChildren().forPath(lockPath);
+            exists = client.checkExists().forPath(z.createLockPath(lockName));
+            return (exists != null);
         } catch (Exception e) {
-            System.out.println(e.getMessage());
-            e.printStackTrace();
+            System.out.println(ExceptionToString.format(e));
             return false;
-        }
-
-        // There should be only one node under the lockName
-        // which is the lock.this is a bit hokey as i should be able to
-        // get the node name and compare...
-        if (children == null || children.size() < 1) {
-            return false;
-        } else {
-            return true;
         }
     }
-
 }
