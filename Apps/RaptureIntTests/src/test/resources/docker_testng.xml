@@ -18,6 +18,7 @@
                         <package name="rapture.reflex" />
                         <package name="rapture.operation" />
                         <package name="rapture.user" />
+                        <package name="rapture.admin" />
                 </packages>
 	</test>
 </suite> <!-- Suite -->

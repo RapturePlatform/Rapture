@@ -427,7 +427,10 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
         RaptureURI internalUri = new RaptureURI(docUri, Scheme.DOCUMENT);
         Repository repository = getRepoFromCache(internalUri.getAuthority());
         DocumentRepoConfig type = getConfigFromCache(internalUri.getAuthority());
-        if (repository == null) return false;
+        if (repository == null) {
+            log.warn("No repository for " + docUri);
+            return false;
+        }
         boolean ret = repository.removeDocument(internalUri.getDocPath(), context.getUser(), "");
         if (ret) {
             SearchPublisher.publishDeleteMessage(context, type, internalUri);
