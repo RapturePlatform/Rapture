@@ -36,6 +36,7 @@ dependencies {
     compile "net.rapture:RabbitMQ:$project.platformVersion"
     compile "net.rapture:ElasticSearch:$project.platformVersion"
     compile "net.rapture:Postgres:$project.platformVersion"
+    compile "net.rapture:ZooKeeper:$project.platformVersion"
     compile("net.rapture:Cassandra:$project.platformVersion") {
        exclude module: 'servlet-api'
     }
