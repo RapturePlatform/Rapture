@@ -29,6 +29,7 @@ import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.RetryUntilElapsed;
 import org.apache.curator.test.TestingServer;
+import org.apache.log4j.Logger;
 import org.apache.zookeeper.data.Stat;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -49,6 +50,7 @@ public class ZooKeeperLockHandlerTest {
     private ZooKeeperLockHandler z;
     private static TestingServer zkServer;
     private static CuratorFramework client;
+    private static Logger log = Logger.getLogger(ZooKeeperLockHandlerTest.class);
 
     @BeforeClass
     public static void alpha() throws Exception {
@@ -222,7 +224,7 @@ public class ZooKeeperLockHandlerTest {
             exists = client.checkExists().forPath(z.createLockPath(lockName));
             return (exists != null);
         } catch (Exception e) {
-            System.out.println(ExceptionToString.format(e));
+            log.warn(ExceptionToString.format(e));
             return false;
         }
     }

@@ -25,11 +25,17 @@ package rapture.kernel.plugin;
 
 import rapture.common.BlobContainer;
 import rapture.common.CallingContext;
+import rapture.common.PluginTransportItem;
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
 import rapture.kernel.Kernel;
 
 public class JarEncoder extends BlobEncoder {
+    @Override
+    public PluginTransportItem encode(CallingContext context, String uriString) {
+        return encodeRaw(context, new RaptureURI(uriString, scheme));
+    }
+
     public JarEncoder() {
         super();
         scheme = Scheme.JAR;

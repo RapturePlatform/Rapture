@@ -360,6 +360,7 @@ public class PluginSandbox {
             PluginManifestItem mItem = new PluginManifestItem();
             mItem.setURI(item.getURI().toShortString());
             mItem.setHash(item.getHash());
+
             hashes.put(item.getURI(), mItem);
         }
         if (variant != null) {
@@ -419,6 +420,7 @@ public class PluginSandbox {
                 logger.debug("********* SAME??? " + (content.length == entry.getSize()));
             }
             String hash = Hex.encodeHexString(md.digest());
+
             PluginSandboxItem result = new PluginSandboxItem(uri, variant, hash, content);
             if (rootDir != null) {
                 result.updateFilePath(rootDir);
@@ -477,9 +479,9 @@ public class PluginSandbox {
 
     public void readContent(String variant) {
         Set<Pattern> ignore = parseIgnoreFile(rootDir);
-
-        for (File f : rootDir.listFiles()) {
-            if (f.isDirectory()) {
+        File[] files = rootDir.listFiles();
+        if (files != null) for (File f : files) {
+            if ((f != null) && f.isDirectory()) {
                 String name = f.getName();
                 if (variant == null || "*".equals(variant) || "content".equals(name) || name.equalsIgnoreCase(variant)) {
                     loadDir(f, ignore);
