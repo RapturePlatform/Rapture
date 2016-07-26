@@ -220,7 +220,7 @@ public class PluginShell {
             return;
         }
 
-        System.out.println("\nWelcome to the pluginInstaller.\nPlease enter your command, or type 'help' for help");
+        println("\nWelcome to the pluginInstaller.\nPlease enter your command, or type 'help' for help");
 
         try (Scanner in = new Scanner(System.in)) {
             while (true) {
@@ -231,7 +231,7 @@ public class PluginShell {
                 eval(line);
             }
         } catch (NoSuchElementException nsee) {
-            System.out.println("Be seeing you");
+            println("Be seeing you");
         }
     }
 

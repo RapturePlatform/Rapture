@@ -297,8 +297,8 @@ public class PluginApiImpl extends KernelBase implements PluginApi {
                     // Defensive code -- this should not happen
                     result.put(item.getURI(), "No MD5 in manifest");
                 } else if (!item.getHash().equals(xport.getHash())) {
-                    result.put(item.getURI(), "Changed");
-                } // else ok -- do nothing
+                    result.put(item.getURI(), "MD5 Hash in manifest " + item.getHash() + " does not match hash for content " + xport.getHash());
+                } else result.put(item.getURI(), "Verified");
             } catch (Exception ex) {
                 result.put(item.getURI(), "Exception:" + ex.getMessage());
             }
@@ -582,7 +582,6 @@ public class PluginApiImpl extends KernelBase implements PluginApi {
                 try {
                     RaptureURI ruri = new RaptureURI(uri);
                     PluginTransportItem pti = getPluginItem(context, uri);
-
                     String filePath = PluginSandboxItem.calculatePath(ruri, null);
                     ZipEntry zentry = new ZipEntry(filePath);
                     out.putNextEntry(zentry);
