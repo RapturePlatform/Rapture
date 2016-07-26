@@ -257,7 +257,7 @@ public class PluginApiTest {
         return null;
     }
     
-    @Test
+    @Test(groups = { "plugin", "nightly" })
     public void testGetPluginItem() throws IOException {
         String tableUri = "table://foo/bar";
         String indexUri = "index://baz";
@@ -307,10 +307,10 @@ public class PluginApiTest {
         pluginApi.uninstallPlugin(pluginName);
     }
     
-    @Test
+    @Test(groups = { "plugin", "nightly" })
     public void testVerifyPlugin() throws IOException {
 
-        RaptureURI docRepo = RaptureURI.builder(Scheme.DOCUMENT, "foo" + System.currentTimeMillis()).build();
+        RaptureURI docRepo = helper.getRandomAuthority(Scheme.DOCUMENT);
 
         HttpDocApi docApi = helper.getDocApi();
         docApi.createDocRepo(docRepo.toString(), "NREP {} USING MEMORY { prefix=\"foo\"}");
