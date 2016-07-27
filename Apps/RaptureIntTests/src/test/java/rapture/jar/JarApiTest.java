@@ -133,7 +133,7 @@ public class JarApiTest {
         List<String> localJarList=new ArrayList<String>();
         localJarList.add(jarUri);
         testWf.setJarUriDependencies(localJarList);
-        String wfURI = "workflow://workflow"+System.nanoTime()+"/jar/CreateDatates";
+        String wfURI = "workflow://workflow"+System.nanoTime()+"/jar/CreateDataTest";
         Reporter.log("Creating workflow definition "+wfURI,true);
         testWf.setWorkflowURI(wfURI);
 
