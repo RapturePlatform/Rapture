@@ -311,7 +311,6 @@ public class PluginApiTest {
     public void testVerifyPlugin() throws IOException {
 
         RaptureURI docRepo = helper.getRandomAuthority(Scheme.DOCUMENT);
-
         HttpDocApi docApi = helper.getDocApi();
         docApi.createDocRepo(docRepo.toString(), "NREP {} USING MEMORY { prefix=\"foo\"}");
         String doc1 = RaptureURI.builder(docRepo).docPath("foo/doc1").asString();
