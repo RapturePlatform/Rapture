@@ -41,7 +41,6 @@ import rapture.common.SemaphoreLockStorage;
 import rapture.common.api.LockApi;
 import rapture.common.exception.RaptureException;
 import rapture.common.impl.jackson.JsonContent;
-import rapture.config.ConfigLoader;
 import rapture.dp.semaphore.URIGenerator;
 import rapture.lock.ILockingHandler;
 import rapture.lock.LockFactory;
@@ -89,19 +88,24 @@ public class LockApiImpl extends KernelBase implements LockApi {
     @Override
     public RaptureLockConfig createLockManager(CallingContext context, String managerUri, String config, String pathPosition) {
         RaptureURI internalUri = new RaptureURI(managerUri, Scheme.LOCK);
-        RaptureLockConfig newL = new RaptureLockConfig();
-        newL.setName(internalUri.getDocPath());
-        newL.setAuthority(internalUri.getAuthority());
-        newL.setConfig(config);
-        newL.setPathPosition(pathPosition);
-        RaptureLockConfigStorage.add(newL, context.getUser(), "Created lock config");
-        return newL;
+        RaptureLockConfig lockConf = RaptureLockConfigStorage.readByAddress(internalUri);
+        if (lockConf == null) {
+            lockConf = new RaptureLockConfig();
+            lockConf.setName(internalUri.getDocPath());
+            lockConf.setAuthority(internalUri.getAuthority());
+            lockConf.setConfig(config);
+            lockConf.setPathPosition(pathPosition);
+            RaptureLockConfigStorage.add(lockConf, context.getUser(), "Created lock config");
+        } else {
+            log.warn("Lock manger exists for " + internalUri.toString());
+        }
+        return lockConf;
     }
 
+    @Deprecated
     @Override
     public void deleteLockManager(CallingContext context, String managerUri) {
-        RaptureURI internalUri = new RaptureURI(managerUri, Scheme.LOCK);
-        RaptureLockConfigStorage.deleteByAddress(internalUri, context.getUser(), "Remove lock provider");
+        log.warn("Cannot delete a lock manager");
     }
 
     @Override

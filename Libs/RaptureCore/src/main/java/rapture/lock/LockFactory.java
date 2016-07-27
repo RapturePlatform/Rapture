@@ -27,7 +27,6 @@ import java.net.HttpURLConnection;
 import java.util.HashMap;
 import java.util.Map;
 
-import rapture.config.MultiValueConfigLoader;
 import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
@@ -37,6 +36,7 @@ import rapture.common.RaptureLockConfig;
 import rapture.common.exception.RaptureException;
 import rapture.common.exception.RaptureExceptionFactory;
 import rapture.common.exception.RaptureExceptionFormatter;
+import rapture.config.MultiValueConfigLoader;
 import rapture.generated.LGenLexer;
 import rapture.generated.LGenParser;
 import rapture.kernel.ContextFactory;
@@ -58,6 +58,7 @@ public final class LockFactory {
             LGenParser parser = parseConfig(config);
             switch (parser.getStore().getType()) {
             case LGenLexer.MONGODB:
+                // MongoLockHandler2 may be dangerous in a multi-node system if the system clocks are not exactly in sync
                 boolean useMongo2 = Boolean.parseBoolean(MultiValueConfigLoader.getConfig("MONGODB-lock.useVersion2", "false"));
                 if (useMongo2) {
                     return getLockStore("rapture.lock.mongodb.MongoLockHandler2", parser.getConfig().getConfig());
