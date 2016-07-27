@@ -55,14 +55,14 @@ public class BlobEncoder extends ReflectionEncoder {
     @Override
     public PluginTransportItem encode(CallingContext context, String uriString) {
         RaptureURI uri = new RaptureURI(uriString, scheme);
-        return uri.hasAttribute() ? encodeRaw(context, uri) : super.encode(context, uriString);
+        return uri.hasDocPath() ? encodeRaw(context, uri) : super.encode(context, uriString);
     }
 
     protected BlobContainer getBlob(CallingContext context, RaptureURI uri) {
         return Kernel.getBlob().getBlob(context, uri.withoutAttribute().toString());
     }
 
-    private PluginTransportItem encodeRaw(CallingContext context, RaptureURI uri) {
+    protected PluginTransportItem encodeRaw(CallingContext context, RaptureURI uri) {
         BlobContainer blob = getBlob(context, uri);
         String mimeType = getMimeType(blob);
         RaptureURI revisedUri = RaptureURI.builder(uri).attribute(mimeType).build();

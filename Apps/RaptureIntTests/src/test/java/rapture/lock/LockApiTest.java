@@ -23,6 +23,7 @@
  */
 package rapture.lock;
 
+import static org.testng.AssertJUnit.assertEquals;
 import static org.testng.AssertJUnit.assertFalse;
 import static org.testng.AssertJUnit.assertNotNull;
 import static org.testng.AssertJUnit.assertNull;
@@ -85,12 +86,50 @@ public class LockApiTest {
     @AfterClass(groups = { "nightly" })
     public void tearDown() {
     }
-        
-    @Test(groups = { "nightly" }, enabled = true)
-    public void testLock() throws InterruptedException {
+
+    @Test(groups = { "nightly", "zookeeper" }, enabled = true)
+    public void testZookeeperLock() throws InterruptedException {
 
         // Player 1 acquires a lock
-        RaptureURI lockUri = RaptureURI.builder(helper.getRandomAuthority(Scheme.DOCUMENT)).docPath("foo/bar").build();
+        RaptureURI lockUri = RaptureURI.builder(helper.getRandomAuthority(Scheme.DOCUMENT)).docPath("foo/bar" + System.currentTimeMillis()).build();
+        RaptureLockConfig lockConfig = lockApi.createLockManager(lockUri.toString(), "LOCKING USING ZOOKEEPER {}", "");
+        assertNotNull(lockConfig);
+        LockHandle lockHandle = lockApi.acquireLock(lockUri.toString(), lockConfig.getName(), 1, 60);
+        assertNotNull(lockHandle);
+        Thread.sleep(100);
+
+        // Meanwhile elsewhere Player 2 tries to acquire the lock
+        RaptureLockConfig lockConfig2 = lockApi.getLockManagerConfig(lockUri.toString());
+        assertNotNull(lockConfig2);
+        LockHandle lockHandle2 = lockApi2.acquireLock(lockUri.toString(), lockConfig2.getName(), 1, 60);
+        // but fails
+        assertNull(lockHandle2);
+
+        // Eventually player1 releases the lock
+        Thread.sleep(100);
+        assertTrue(lockApi.releaseLock(lockUri.toString(), lockConfig.getName(), lockHandle));
+        assertFalse(lockApi2.releaseLock(lockUri.toString(), lockConfig2.getName(), lockHandle2));
+
+        // and now Player 2 can acquire it
+        lockHandle2 = lockApi2.acquireLock(lockUri.toString(), lockConfig2.getName(), 1, 60);
+        assertNotNull(lockHandle2);
+        assertTrue(lockApi2.releaseLock(lockUri.toString(), lockConfig2.getName(), lockHandle2));
+        assertFalse(lockApi2.releaseLock(lockUri.toString(), lockConfig2.getName(), lockHandle2));
+
+        assertNotNull(lockApi.getLockManagerConfig(lockUri.toString()));
+        assertTrue(lockApi.lockManagerExists(lockUri.toString()));
+        lockApi.deleteLockManager(lockUri.toString());
+        assertFalse(lockApi.lockManagerExists(lockUri.toString()));
+        assertNull(lockApi.getLockManagerConfig(lockUri.toString()));
+        System.out.println(lockUri.toString());
+
+    }
+
+    @Test(groups = { "nightly", "mongodb" }, enabled = true)
+    public void testMongoDBLock() throws InterruptedException {
+
+        // Player 1 acquires a lock
+        RaptureURI lockUri = RaptureURI.builder(helper.getRandomAuthority(Scheme.DOCUMENT)).docPath("foo/bar" + System.currentTimeMillis()).build();
         RaptureLockConfig lockConfig = lockApi.createLockManager(lockUri.toString(), "LOCKING USING MONGODB {}", "");
         assertNotNull(lockConfig);
         LockHandle lockHandle = lockApi.acquireLock(lockUri.toString(), lockConfig.getName(), 1, 60);
@@ -106,12 +145,14 @@ public class LockApiTest {
 
         // Eventually player1 releases the lock
         Thread.sleep(100);
-        lockApi.releaseLock(lockUri.toString(), lockConfig.getName(), lockHandle);
+        assertTrue(lockApi.releaseLock(lockUri.toString(), lockConfig.getName(), lockHandle));
+        assertFalse(lockApi2.releaseLock(lockUri.toString(), lockConfig2.getName(), lockHandle2));
 
         // and now Player 2 can acquire it
         lockHandle2 = lockApi2.acquireLock(lockUri.toString(), lockConfig2.getName(), 1, 60);
         assertNotNull(lockHandle2);
-        lockApi2.releaseLock(lockUri.toString(), lockConfig2.getName(), lockHandle2);
+        assertTrue(lockApi2.releaseLock(lockUri.toString(), lockConfig2.getName(), lockHandle2));
+        // assertFalse(lockApi2.releaseLock(lockUri.toString(), lockConfig2.getName(), lockHandle2));
 
         assertNotNull(lockApi.getLockManagerConfig(lockUri.toString()));
         assertTrue(lockApi.lockManagerExists(lockUri.toString()));
@@ -120,7 +161,30 @@ public class LockApiTest {
         assertNull(lockApi.getLockManagerConfig(lockUri.toString()));
         System.out.println(lockUri.toString());
 
-        // Map<String, RaptureFolderInfo> dox = docApi.listDocsByUriPrefix("document://sys.RaptureConfig", 99);
-        // System.out.println(JacksonUtil.jsonFromObject(dox));
+    }
+
+    @Test(groups = { "nightly", "mongodb" }, enabled = true)
+    public void testRecreateLockManager() throws InterruptedException {
+
+        // Player 1 acquires a lock
+        RaptureURI lockUri = RaptureURI.builder(helper.getRandomAuthority(Scheme.DOCUMENT)).docPath("foo/bar" + System.currentTimeMillis()).build();
+        RaptureLockConfig lockConfig = lockApi.createLockManager(lockUri.toString(), "LOCKING USING MONGODB {}", "");
+        assertNotNull(lockConfig);
+        LockHandle lockHandle = lockApi.acquireLock(lockUri.toString(), lockConfig.getName(), 1, 60);
+        assertNotNull(lockHandle);
+
+        // Player 2 tries to create a different lock manager for the same URI - this will be ignored
+        RaptureLockConfig lockConfig2 = lockApi2.createLockManager(lockUri.toString(), "LOCKING USING MEMORY {}", "");
+        assertNotNull(lockConfig);
+        assertEquals(lockConfig, lockConfig2);
+        RaptureLockConfig lockConfig3 = lockApi2.getLockManagerConfig(lockUri.toString());
+        assertEquals(lockConfig, lockConfig3);
+
+        LockHandle lockHandle2 = lockApi.acquireLock(lockUri.toString(), lockConfig3.getName(), 1, 60);
+        assertNull(lockHandle2);
+        assertTrue(lockApi.releaseLock(lockUri.toString(), lockConfig.getName(), lockHandle));
+        lockHandle2 = lockApi2.acquireLock(lockUri.toString(), lockConfig3.getName(), 1, 60);
+        assertNotNull(lockHandle2);
+        assertTrue(lockApi2.releaseLock(lockUri.toString(), lockConfig3.getName(), lockHandle2));
     }
 }

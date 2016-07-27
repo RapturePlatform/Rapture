@@ -30,8 +30,11 @@ import com.google.common.collect.Maps;
 
 import rapture.common.PluginConfig;
 import rapture.common.PluginTransportItem;
+import rapture.common.RaptureURI;
+import rapture.common.Scheme;
 import rapture.common.WorkOrderExecutionState;
 import rapture.common.client.HttpDecisionApi;
+import rapture.common.client.HttpDocApi;
 import rapture.common.client.HttpIndexApi;
 import rapture.common.client.HttpPluginApi;
 import rapture.common.exception.ExceptionToString;
@@ -304,6 +307,32 @@ public class PluginApiTest {
         pluginApi.uninstallPlugin(pluginName);
     }
     
+    @Test
+    public void testVerifyPlugin() throws IOException {
+
+        RaptureURI docRepo = RaptureURI.builder(Scheme.DOCUMENT, "foo" + System.currentTimeMillis()).build();
+
+        HttpDocApi docApi = helper.getDocApi();
+        docApi.createDocRepo(docRepo.toString(), "NREP {} USING MEMORY { prefix=\"foo\"}");
+        String doc1 = RaptureURI.builder(docRepo).docPath("foo/doc1").asString();
+        String doc2 = RaptureURI.builder(docRepo).docPath("bar/doc2").asString();
+        String doc3 = RaptureURI.builder(docRepo).docPath("baz/doc3").asString();
+        docApi.putDoc(doc1, "{ \"val\" : \"foo\" }");
+        docApi.putDoc(doc2, "{ \"val\" : \"bar\" }");
+        docApi.putDoc(doc3, "{ \"val\" : \"baz\" }");
+
+        String pluginName = "Jeff" + System.currentTimeMillis();
+        pluginApi.createManifest(pluginName);
+        pluginApi.addManifestItem(pluginName, doc1);
+        pluginApi.addManifestItem(pluginName, doc2);
+        pluginApi.addManifestItem(pluginName, doc3);
+        pluginApi.addManifestItem(pluginName, docRepo.toString());
+        pluginApi.exportPlugin(pluginName, "/tmp/" + pluginName + ".zip");
+
+        Map<String, String> verify = pluginApi.verifyPlugin(pluginName);
+        assertNotNull(verify);
+    }
+
     @AfterClass(groups={"plugin", "nightly"})
     public void AfterTest(){
         //delete all plugins installed during test
