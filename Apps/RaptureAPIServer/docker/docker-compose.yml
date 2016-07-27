@@ -35,6 +35,7 @@ services:
     depends_on:
       - rabbit
   cassandra:
+    network_mode: "host"
     image: 'incapture/cassandra:latest'
     ports:
       - '9160:9160'
