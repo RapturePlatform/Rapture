@@ -1,8 +1,5 @@
 package rapture.plugin;
 
-
-import static org.testng.AssertJUnit.assertEquals;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -271,13 +268,13 @@ public class PluginApiTest {
         pluginApi.addManifestItem(pluginName, tableUri);
         pluginApi.addManifestItem(pluginName, indexUri);
         Map<String, String> verify = pluginApi.verifyPlugin(pluginName);
-        assertEquals(verify.size(), 2);
+        Assert.assertEquals(verify.size(), 2);
         for (String key : verify.keySet()) {
-            assertEquals(key, "Verified", verify.get(key));
+        	Assert.assertEquals(verify.get(key), "Verified",key +" was not verified");
         }
         String plug = pluginApi.exportPlugin(pluginName, "/tmp/" + pluginName);
         Map<String, Object> map = JacksonUtil.getMapFromJson(plug);
-        assertEquals(map.get("objectCount"), new Integer(2));
+        Assert.assertEquals(map.get("objectCount"), new Integer(2));
         String path = "/tmp/" + pluginName + "/" + map.get("filePath").toString();
 
         // If API server is local you can check the zip file is correct.
@@ -295,22 +292,23 @@ public class PluginApiTest {
                 Assert.assertNotNull(contents);
 
                 switch (name) {
-                case "plugin.txt":
-                    assertEquals(pluginName, contents.get("plugin").toString());
-                    break;
-                case "content/foo/bar.table":
-                    assertEquals("foo", contents.get("authority").toString());
-                    assertEquals("bar", contents.get("name").toString());
-                    assertEquals("TABLE {} USING MONGO { prefix=\"foo\"}", contents.get("config").toString());
-                    break;
-                case "content/baz/.index":
-                    assertEquals("baz", contents.get("name").toString());
-                    assertEquals("field1($1) number", contents.get("config").toString());
-                    break;
-                default:
-                    Assert.fail("Unexpected file " + name + " in plugin zip ");
+	                case "plugin.txt":
+	                	Assert.assertEquals(pluginName, contents.get("plugin").toString());
+	                    break;
+	                case "content/foo/bar.table":
+	                	Assert.assertEquals("foo", contents.get("authority").toString());
+	                	Assert.assertEquals("bar", contents.get("name").toString());
+	                	Assert.assertEquals("TABLE {} USING MONGO { prefix=\"foo\"}", contents.get("config").toString());
+	                    break;
+	                case "content/baz/.index":
+	                	Assert.assertEquals("baz", contents.get("name").toString());
+	                    Assert.assertEquals("field1($1) number", contents.get("config").toString());
+	                    break;
+	                default:
+	                    Assert.fail("Unexpected file " + name + " in plugin zip ");
                 }
             }
+            zip.close();
         }
         pluginApi.uninstallPlugin(pluginName);
     }
