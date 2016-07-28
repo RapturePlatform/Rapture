@@ -270,39 +270,48 @@ public class PluginApiTest {
         pluginApi.createManifest(pluginName);
         pluginApi.addManifestItem(pluginName, tableUri);
         pluginApi.addManifestItem(pluginName, indexUri);
-        pluginApi.verifyPlugin(pluginName);
+        Map<String, String> verify = pluginApi.verifyPlugin(pluginName);
+        assertEquals(verify.size(), 2);
+        for (String key : verify.keySet()) {
+            assertEquals(key, "Verified", verify.get(key));
+        }
         String plug = pluginApi.exportPlugin(pluginName, "/tmp/" + pluginName);
         Map<String, Object> map = JacksonUtil.getMapFromJson(plug);
-        ZipFile zip = new ZipFile("/tmp/" + pluginName + "/" + map.get("filePath").toString());
+        assertEquals(map.get("objectCount"), new Integer(2));
+        String path = "/tmp/" + pluginName + "/" + map.get("filePath").toString();
 
-        Enumeration<? extends ZipEntry> ennui = zip.entries();
-        while (ennui.hasMoreElements()) {
-            ZipEntry ze = ennui.nextElement();
-            String name = ze.getName();
-            Map<String, Object> contents = null;
-            try (BufferedReader br = new BufferedReader(new InputStreamReader(zip.getInputStream(ze)))) {
-                contents = JacksonUtil.getMapFromJson(br.lines().collect(Collectors.joining()));
-            }
-            Assert.assertNotNull(contents);
+        // If API server is local you can check the zip file is correct.
+        if ((new File(path)).exists()) {
+            ZipFile zip = new ZipFile(path);
 
-            switch (name) {
-            case "plugin.txt":
-                assertEquals(pluginName, contents.get("plugin").toString());
-                break;
-            case "content/foo/bar.table":
-                assertEquals("foo", contents.get("authority").toString());
-                assertEquals("bar", contents.get("name").toString());
-                assertEquals("TABLE {} USING MONGO { prefix=\"foo\"}", contents.get("config").toString());
-                break;
-            case "content/baz/.index":
-                assertEquals("baz", contents.get("name").toString());
-                assertEquals("field1($1) number", contents.get("config").toString());
-                break;
-            default:
-                Assert.fail("Unexpected file " + name + " in plugin zip ");
+            Enumeration<? extends ZipEntry> ennui = zip.entries();
+            while (ennui.hasMoreElements()) {
+                ZipEntry ze = ennui.nextElement();
+                String name = ze.getName();
+                Map<String, Object> contents = null;
+                try (BufferedReader br = new BufferedReader(new InputStreamReader(zip.getInputStream(ze)))) {
+                    contents = JacksonUtil.getMapFromJson(br.lines().collect(Collectors.joining()));
+                }
+                Assert.assertNotNull(contents);
+
+                switch (name) {
+                case "plugin.txt":
+                    assertEquals(pluginName, contents.get("plugin").toString());
+                    break;
+                case "content/foo/bar.table":
+                    assertEquals("foo", contents.get("authority").toString());
+                    assertEquals("bar", contents.get("name").toString());
+                    assertEquals("TABLE {} USING MONGO { prefix=\"foo\"}", contents.get("config").toString());
+                    break;
+                case "content/baz/.index":
+                    assertEquals("baz", contents.get("name").toString());
+                    assertEquals("field1($1) number", contents.get("config").toString());
+                    break;
+                default:
+                    Assert.fail("Unexpected file " + name + " in plugin zip ");
+                }
             }
         }
-
         pluginApi.uninstallPlugin(pluginName);
     }
     
