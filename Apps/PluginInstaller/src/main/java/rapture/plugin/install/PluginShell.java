@@ -610,7 +610,7 @@ public class PluginShell {
                 boolean uninstallAll = false;
                 String manifestURIstring = Scheme.PLUGIN_MANIFEST.toString() + "://" + plugin;
                 PluginManifest manifest = client.getPlugin().getPluginManifest(manifestURIstring);
-                for (PluginManifestItem item : manifest.getContents()) {
+                for (PluginManifestItem item : Lists.reverse(manifest.getContents())) {
                     boolean uninstallThis = uninstallAll;
                     if (!uninstallThis) {
                         println("Uninstall " + item.getURI() + " ? [nyaq]");
