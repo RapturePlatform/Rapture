@@ -1,6 +1,6 @@
 package rapture.plugin;
 
-import static org.junit.Assert.assertNotNull;
+
 import static org.testng.AssertJUnit.assertEquals;
 
 import java.io.BufferedReader;
@@ -121,7 +121,7 @@ public class PluginApiTest {
                 PluginTransportItem payloadItem = item.makeTransportItem();
                 payload.put(item.getURI().toString(), payloadItem);
                 
-                itemSet.add(item.getURI().toString());
+                itemSet.add(item.getURI().toString().contains("$")?item.getURI().toString().substring(0, item.getURI().toString().indexOf("$")-1) :item.getURI().toString());
             } catch (Exception ex) {
                 Reporter.log("Exception creating plugin " +ex.getMessage(),true);
             }
@@ -134,9 +134,8 @@ public class PluginApiTest {
         	if (c.getPlugin().compareTo(pluginName) ==0)
         		thePlugin=c;
         Assert.assertEquals (thePlugin.getPlugin(),pluginName,"Plugin "+pluginName+" has unexpected name.");
-        Assert.assertEquals (thePlugin.getDescription(),description,"Plugin "+pluginName+" has unexpected description.");
-        //TODO: Uncomment after RAP-4203 is fixed
-    //    Assert.assertEquals(pluginApi.verifyPlugin(pluginName).keySet(),itemSet,"Problem with installed items");
+        Assert.assertEquals (thePlugin.getDescription(),description,"Plugin "+pluginName+" has unexpected description.");       
+        Assert.assertEquals(pluginApi.verifyPlugin(pluginName).keySet(),itemSet,"Problem with installed items");
 
         pluginApi.uninstallPlugin(pluginName);
         
@@ -284,7 +283,7 @@ public class PluginApiTest {
             try (BufferedReader br = new BufferedReader(new InputStreamReader(zip.getInputStream(ze)))) {
                 contents = JacksonUtil.getMapFromJson(br.lines().collect(Collectors.joining()));
             }
-            assertNotNull(contents);
+            Assert.assertNotNull(contents);
 
             switch (name) {
             case "plugin.txt":
@@ -329,7 +328,7 @@ public class PluginApiTest {
         pluginApi.exportPlugin(pluginName, "/tmp/" + pluginName + ".zip");
 
         Map<String, String> verify = pluginApi.verifyPlugin(pluginName);
-        assertNotNull(verify);
+        Assert.assertNotNull(verify);
     }
 
     @AfterClass(groups={"plugin", "nightly"})
