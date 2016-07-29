@@ -25,6 +25,7 @@ package rapture.kernel;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -46,6 +47,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.google.common.net.MediaType;
 
 import rapture.common.CallingContext;
 import rapture.common.PluginConfig;
@@ -59,6 +61,7 @@ import rapture.common.RaptureFolderInfo;
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
 import rapture.common.api.PluginApi;
+import rapture.common.exception.RaptureException;
 import rapture.common.exception.RaptureExceptionFactory;
 import rapture.common.impl.jackson.JacksonUtil;
 import rapture.common.storable.helpers.PluginConfigHelper;
@@ -555,6 +558,17 @@ public class PluginApiImpl extends KernelBase implements PluginApi {
         String zipDirName = IDGenerator.getUUID();
         String zipFileName = pluginName + ".zip";
 
+        RaptureURI blobUri = null;
+        try {
+            blobUri = new RaptureURI(path);
+            if (blobUri.getScheme().equals(Scheme.BLOB)) {
+                path = "/tmp/" + blobUri.getDocPath();
+            } else {
+                blobUri = null;
+            }
+        } catch (RaptureException re) {
+            log.debug(path + " is not a Blob URI");
+        }
         File zipDir = new File(path, zipDirName);
 
         if (!zipDir.mkdirs()) {
@@ -596,8 +610,20 @@ public class PluginApiImpl extends KernelBase implements PluginApi {
             throw RaptureExceptionFactory.create(HttpStatus.SC_UNAUTHORIZED, "Cannot export " + pluginName, e);
         }
 
-        String user = Kernel.getUser().getWhoAmI(context).getUsername();
         String filePath = zipDirName + "/" + zipFileName;
+        if (blobUri != null) {
+            byte[] rawFileData = new byte[(int) zipFile.length()];
+            filePath = blobUri.toString();
+            try (FileInputStream fileInputStream = new FileInputStream(zipFile)) {
+                fileInputStream.read(rawFileData);
+                fileInputStream.close();
+                Kernel.getBlob().putBlob(context, filePath, rawFileData, MediaType.ZIP.toString());
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+        String user = Kernel.getUser().getWhoAmI(context).getUsername();
         String[] fna = objectsNotAdded.toArray(new String[objectsNotAdded.size()]);
         
         Metadata metadata = new Metadata(zipFile, filePath, user, objectCount, fna);
