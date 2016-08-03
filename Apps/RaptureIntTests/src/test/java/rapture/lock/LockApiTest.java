@@ -23,11 +23,11 @@
  */
 package rapture.lock;
 
-import static org.testng.AssertJUnit.assertEquals;
-import static org.testng.AssertJUnit.assertFalse;
-import static org.testng.AssertJUnit.assertNotNull;
-import static org.testng.AssertJUnit.assertNull;
-import static org.testng.AssertJUnit.assertTrue;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertNull;
+import static org.testng.Assert.assertTrue;
 
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -40,35 +40,25 @@ import rapture.common.RaptureLockConfig;
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
 import rapture.common.client.HttpAdminApi;
-import rapture.common.client.HttpDocApi;
 import rapture.common.client.HttpLockApi;
-import rapture.common.client.HttpLoginApi;
 import rapture.common.impl.jackson.MD5Utils;
 import rapture.helper.IntegrationTestHelper;
 
 public class LockApiTest {
     
     private IntegrationTestHelper helper;
-    private HttpLoginApi raptureLogin = null;
-    private HttpDocApi docApi = null;
     private HttpLockApi lockApi = null;
     private HttpAdminApi admin = null;
 
     private static final String user = "User";
     private IntegrationTestHelper helper2;
-    private HttpDocApi docApi2 = null;
     private HttpLockApi lockApi2 = null;
-    private HttpLoginApi raptureLogin2 = null;
     private RaptureURI repoUri = null;
 
     @BeforeClass(groups = { "nightly" })
     @Parameters({ "RaptureURL", "RaptureUser", "RapturePassword" })
     public void setUp(@Optional("http://localhost:8665/rapture") String url, @Optional("rapture") String username, @Optional("rapture") String password) {
-
-
         helper = new IntegrationTestHelper(url, username, password);
-        raptureLogin = helper.getRaptureLogin();
-        docApi = helper.getDocApi();
         lockApi = helper.getLockApi();
         admin = helper.getAdminApi();
         if (!admin.doesUserExist(user)) {
@@ -76,7 +66,6 @@ public class LockApiTest {
         }
 
         helper2 = new IntegrationTestHelper(url, user, user);
-        docApi2 = helper2.getDocApi();
         lockApi2 = helper2.getLockApi();
 
         repoUri = helper.getRandomAuthority(Scheme.DOCUMENT);
@@ -118,11 +107,6 @@ public class LockApiTest {
 
         assertNotNull(lockApi.getLockManagerConfig(lockUri.toString()));
         assertTrue(lockApi.lockManagerExists(lockUri.toString()));
-        lockApi.deleteLockManager(lockUri.toString());
-        assertFalse(lockApi.lockManagerExists(lockUri.toString()));
-        assertNull(lockApi.getLockManagerConfig(lockUri.toString()));
-        System.out.println(lockUri.toString());
-
     }
 
     @Test(groups = { "nightly", "mongodb" }, enabled = true)
@@ -156,11 +140,6 @@ public class LockApiTest {
 
         assertNotNull(lockApi.getLockManagerConfig(lockUri.toString()));
         assertTrue(lockApi.lockManagerExists(lockUri.toString()));
-        lockApi.deleteLockManager(lockUri.toString());
-        assertFalse(lockApi.lockManagerExists(lockUri.toString()));
-        assertNull(lockApi.getLockManagerConfig(lockUri.toString()));
-        System.out.println(lockUri.toString());
-
     }
 
     @Test(groups = { "nightly", "mongodb" }, enabled = true)
