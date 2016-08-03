@@ -37,6 +37,11 @@ import rapture.kernel.Kernel;
  */
 public class WorkOrderSemaphore {
 
+    @Override
+    public String toString() {
+        return "WorkOrderSemaphore [callingContext=" + callingContext + ", maxAllowed=" + maxAllowed + ", timeout=" + timeout + "]";
+    }
+
     private CallingContext callingContext;
     private Integer maxAllowed;
     private int timeout;

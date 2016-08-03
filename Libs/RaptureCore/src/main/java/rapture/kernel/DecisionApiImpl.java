@@ -468,6 +468,8 @@ public class DecisionApiImpl extends KernelBase implements DecisionApi {
 
     @Override
     public WorkOrderStatus getWorkOrderStatus(CallingContext context, String workOrderURI) {
+
+        if (workOrderURI == null) return null;
         WorkOrder workOrder = WorkOrderFactory.getWorkOrderNotNull(context, workOrderURI);
         WorkOrderStatus retVal = new WorkOrderStatus();
         retVal.setStatus(workOrder.getStatus());

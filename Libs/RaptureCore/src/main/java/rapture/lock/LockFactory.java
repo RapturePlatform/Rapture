@@ -33,6 +33,7 @@ import org.antlr.runtime.RecognitionException;
 import org.apache.log4j.Logger;
 
 import rapture.common.RaptureLockConfig;
+import rapture.common.exception.ExceptionToString;
 import rapture.common.exception.RaptureException;
 import rapture.common.exception.RaptureExceptionFactory;
 import rapture.common.exception.RaptureExceptionFormatter;
@@ -94,10 +95,15 @@ public final class LockFactory {
     }
 
     private static ILockingHandler getLockStore(String className, Map<String, String> config) {
+        Class<?> klass = null;
         try {
-            Class<?> idgenClass = Class.forName(className);
+            klass = Class.forName(className);
+            if (klass == null) {
+                RaptureException raptException = RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, "Cannot obtain class for " + className);
+                throw raptException;
+            }
             Object fStore;
-            fStore = idgenClass.newInstance();
+            fStore = klass.newInstance();
             if (fStore instanceof ILockingHandler) {
                 ILockingHandler ret = (ILockingHandler) fStore;
                 ret.setConfig(config);
@@ -108,8 +114,9 @@ public final class LockFactory {
                 throw raptException;
             }
         } catch (Exception e) {
-            RaptureException raptException = RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, "Could not create lock handler");
-            log.error(RaptureExceptionFormatter.getExceptionMessage(raptException, e));
+            log.error(ExceptionToString.format(e));
+            RaptureException raptException = RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR,
+                    "Could not create lock handler for " + className + " : " + e.getMessage(), e);
             throw raptException;
         }
     }

@@ -25,6 +25,8 @@ package rapture.dp.semaphore;
 
 import java.util.Map;
 
+import rapture.common.RaptureURI;
+import rapture.common.Scheme;
 import rapture.common.dp.PropertyBasedSemaphoreConfig;
 import rapture.common.dp.SemaphoreType;
 import rapture.common.exception.RaptureExceptionFactory;
@@ -65,7 +67,7 @@ public class LockKeyFactory {
      * Limits the number of Work Orders based on WorkflowURI
      */
     private static String createWorkflowLockKey(String workflowURI) {
-        return new LockKeyBuilder().add(workflowURI).build();
+        return new RaptureURI(workflowURI, Scheme.WORKFLOW).getShortPath();
     }
 
     /**

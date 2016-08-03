@@ -56,7 +56,7 @@ public class ZooKeeperLockHandlerIntegrationTest {
 
      @Before
     public void setup() throws Exception {
-       z = ZooKeeperLockHandler.getForInstance();
+        z = new ZooKeeperLockHandler();
     }
 
     @AfterClass
@@ -101,7 +101,7 @@ public class ZooKeeperLockHandlerIntegrationTest {
         int secondsToWait = 10;
         int secondsToHold = 30;
 
-        ZooKeeperLockHandler z2 = new ZooKeeperLockHandler(CONNECT_STRING);
+        ZooKeeperLockHandler z2 = new ZooKeeperLockHandler();
 
         assertFalse(lockExists(lockName, lockHolder));
 
@@ -143,7 +143,7 @@ public class ZooKeeperLockHandlerIntegrationTest {
             taskExecutor.execute(new Runnable() {
                 @Override
                 public void run() {
-                    z = new ZooKeeperLockHandler(CONNECT_STRING);
+                    z = new ZooKeeperLockHandler();
 
                     LockHandle lockHandle = z.acquireLock(lockHolder + String.valueOf(counter), lockName, secondsToWait, secondsToHold);
                     locksAcquired.add(lockName + String.valueOf(counter));
