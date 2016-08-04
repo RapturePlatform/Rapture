@@ -281,12 +281,20 @@ public class DecisionApiImpl extends KernelBase implements DecisionApi {
 
         WorkOrderSemaphore semaphore = WorkOrderSemaphoreFactory.create(context, workflow.getSemaphoreType(), workflow.getSemaphoreConfig());
         Long startInstant = System.currentTimeMillis();
-        String lockKey = LockKeyFactory.createLockKey(workflow.getSemaphoreType(), workflow.getSemaphoreConfig(), workflow.getWorkflowURI(), contextMap);
-        /**
-         * Save the lock key so we can use it when releasing later
-         */
-        if (lockKey != null) {
-            contextMap.put(ContextVariables.LOCK_KEY, lockKey);
+        String lockKey = null;
+        try {
+            lockKey = LockKeyFactory.createLockKey(workflow.getSemaphoreType(), workflow.getSemaphoreConfig(), workflow.getWorkflowURI(), contextMap);
+            /**
+             * Save the lock key so we can use it when releasing later
+             */
+            if (lockKey != null) {
+                contextMap.put(ContextVariables.LOCK_KEY, lockKey);
+            }
+        } catch (RaptureException e) {
+            CreateResponse ret = new CreateResponse();
+            ret.setIsCreated(false);
+            ret.setMessage(e.getMessage());
+            return ret;
         }
 
         long timeout = semaphore.getTimeout();

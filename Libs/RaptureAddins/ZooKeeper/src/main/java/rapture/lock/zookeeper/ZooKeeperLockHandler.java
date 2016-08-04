@@ -56,7 +56,6 @@ public class ZooKeeperLockHandler implements ILockingHandler {
     CuratorFramework client;
     String instanceName = "dunno";
     Map<String, String> config = null;
-    private static Logger log = Logger.getLogger(ZooKeeperLockHandler.class);
 
     public ZooKeeperLockHandler(String connectionString) {
         client = makeClient(connectionString, 0);
@@ -77,7 +76,7 @@ public class ZooKeeperLockHandler implements ILockingHandler {
             int ttw = Integer.parseInt(ttws);
             timeToWait = ttw;
         } catch (NumberFormatException nfe) {
-            log.warn("invalid time to wait value " + ttws);
+            logger.warn("invalid time to wait value " + ttws);
         }
 
         logger.debug("connectionString is " + connectionString);
@@ -154,7 +153,7 @@ public class ZooKeeperLockHandler implements ILockingHandler {
         if (lock == null) {
             logger.debug(lockName + " lock was never obtained");
             // TODO maybe ignore as we dont really care
-            throw new IllegalStateException(lockName + " lock was never obtained!");
+            throw new IllegalStateException("Cannot release " + lockName + " since lock does not exist (was never obtained?)");
         }
 
         try {
@@ -162,8 +161,8 @@ public class ZooKeeperLockHandler implements ILockingHandler {
             lock.release();
             return true;
         } catch (Exception e) {
-            System.out.println(ExceptionToString.format(e));
             logger.debug("exception swallowed while trying to release lock " + lockName, e);
+            logger.trace(ExceptionToString.format(e));
         }
         return false;
     }

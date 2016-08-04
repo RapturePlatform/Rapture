@@ -23,10 +23,12 @@
  */
 package rapture.dp.semaphore;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -43,6 +45,7 @@ import rapture.common.SemaphoreLockStorage;
 import rapture.common.dp.PropertyBasedSemaphoreConfig;
 import rapture.common.dp.SemaphoreType;
 import rapture.common.dp.WorkflowBasedSemaphoreConfig;
+import rapture.common.exception.RaptureException;
 import rapture.common.impl.jackson.JacksonUtil;
 import rapture.kernel.ContextFactory;
 import rapture.kernel.Kernel;
@@ -134,7 +137,7 @@ public class SemaphoreTest {
     }
 
     @Test
-    public void lenientPropertyBased() {
+    public void propertyBased() {
         SemaphoreType type = SemaphoreType.PROPERTY_BASED;
         PropertyBasedSemaphoreConfig config = new PropertyBasedSemaphoreConfig();
         config.setMaxAllowed(MAX_ALLOWED);
@@ -143,11 +146,13 @@ public class SemaphoreTest {
         WorkOrderSemaphore semaphore = WorkOrderSemaphoreFactory.create(ContextFactory.getKernelUser(), type, configString);
 
         Map<String, String> map = new HashMap<String, String>();
-        String lockKey = LockKeyFactory.createLockKey(SemaphoreType.PROPERTY_BASED, configString, WORKFLOW_URI, map);
-        SemaphoreLockStorage.deleteByFields(lockKey, "user", "test");
-        // We can acquire as many as we want if key not set in map
-        for (int i = 0; i < MAX_ALLOWED * 5; i++) {
-            acquireGood(semaphore, i, lockKey);
+        String lockKey;
+        try {
+            lockKey = LockKeyFactory.createLockKey(SemaphoreType.PROPERTY_BASED, configString, WORKFLOW_URI, map);
+            fail("You must specify the property name in the map");
+        } catch (RaptureException e) {
+            // TODO Auto-generated catch block
+            assertEquals("Property strategy is not defined and property based locking is in force", e.getMessage());
         }
 
         for (int strategy = 0; strategy < 5; strategy++) {

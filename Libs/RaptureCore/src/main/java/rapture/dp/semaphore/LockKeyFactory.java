@@ -26,7 +26,6 @@ package rapture.dp.semaphore;
 import java.util.Map;
 
 import rapture.common.RaptureURI;
-import rapture.common.Scheme;
 import rapture.common.dp.PropertyBasedSemaphoreConfig;
 import rapture.common.dp.SemaphoreType;
 import rapture.common.exception.RaptureExceptionFactory;
@@ -53,13 +52,13 @@ public class LockKeyFactory {
      */
     public static String createLockKey(SemaphoreType type, String configString, String workflowURI, Map<String, String> contextMap) {
         if (type == SemaphoreType.PROPERTY_BASED) {
-            return createLenientPropertyBasedLockKey(configString, workflowURI, contextMap);
+            return createPropertyBasedLockKey(configString, workflowURI, contextMap);
         } else if (type == SemaphoreType.UNLIMITED) {
             return null;
         } else if (type == SemaphoreType.WORKFLOW_BASED) {
             return createWorkflowLockKey(workflowURI);
         } else {
-            throw RaptureExceptionFactory.create(String.format("Error! Unsupported semaphore type '%s'", type));
+            throw RaptureExceptionFactory.create(String.format("Unsupported semaphore type '%s'", type));
         }
     }
 
@@ -67,33 +66,25 @@ public class LockKeyFactory {
      * Limits the number of Work Orders based on WorkflowURI
      */
     private static String createWorkflowLockKey(String workflowURI) {
-        return new RaptureURI(workflowURI, Scheme.WORKFLOW).getShortPath();
+        RaptureURI uri = new RaptureURI(workflowURI);
+        return uri.getScheme().toString() + uri.getShortPath();
     }
 
     /**
-     * Limits the number of Work Orders that can be created for a Workflow if
-     * those WorkOrders have one property set the same. E.g. if the
-     * maxConcurrent is set to 1, and two Work Orders have a property called
-     * "name" set to "bob", only one of them can run. However another Work Order
-     * for the same workflow with "name" set to "alice" can run simultaneously
-     * with a "bob" Work Order
-     * 
-     * 
-     * Note: This semaphore is lenient. An unlimited amount of WorkOrders with
-     * the property not set is allowed. So in the example above, we can have
-     * unlimited Work Orders for "name" not set at all.
+     * Limits the number of Work Orders that can be created for a Workflow if those WorkOrders have one property set the same. E.g. if the maxConcurrent is set
+     * to 1, and two Work Orders have a property called "name" set to "bob", only one of them can run. However another Work Order for the same workflow with
+     * "name" set to "alice" can run simultaneously with a "bob" Work Order. The property must be set to a non-null value since there is no way to distinguish
+     * between deliberate and accidental omission.
      */
-    private static String createLenientPropertyBasedLockKey(String configString, String workflowURI, Map<String, String> contextMap) {
+    private static String createPropertyBasedLockKey(String configString, String workflowURI, Map<String, String> contextMap) {
 
         PropertyBasedSemaphoreConfig config = JacksonUtil.objectFromJson(configString, PropertyBasedSemaphoreConfig.class);
 
         String propertyName = config.getPropertyName();
         String propertyValue = contextMap.get(propertyName);
         if (propertyValue == null) {
-            return null; // no lock key means unlocked!
-        } else {
-            return new LockKeyBuilder().add(workflowURI).add(config.getPropertyName()).add(propertyValue).build();
+            throw RaptureExceptionFactory.create(String.format("Property %s is not defined and property based locking is in force", propertyName));
         }
+        return new LockKeyBuilder().add(createWorkflowLockKey(workflowURI)).add(config.getPropertyName()).add(propertyValue).build();
     }
-
 }

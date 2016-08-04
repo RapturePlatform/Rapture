@@ -115,9 +115,8 @@ public final class LockFactory {
             }
         } catch (Exception e) {
             log.error(ExceptionToString.format(e));
-            RaptureException raptException = RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR,
+            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR,
                     "Could not create lock handler for " + className + " : " + e.getMessage(), e);
-            throw raptException;
         }
     }
 
