@@ -32,8 +32,7 @@ import rapture.config.MultiValueConfigLoader;
 import rapture.lock.ILockingHandler;
 
 /**
- * An implementation of a lock strategy on ZK.
- * { name = lockName, locked=true, freeTime=(some long time) }
+ * An implementation of a lock strategy on ZK. { name = lockName, locked=true, freeTime=(some long time) }
  * 
  * @author James Howe
  * 
@@ -45,11 +44,11 @@ public class ZooKeeperLockHandler implements ILockingHandler {
         return "ZooKeeperLockHandler [locks=" + locks + ", client=" + client + ", instanceName=" + instanceName + ", config=" + config + "]";
     }
 
-    private static Logger logger = Logger.getLogger(ZooKeeperLockHandler.class);
+    static Logger logger = Logger.getLogger(ZooKeeperLockHandler.class);
     private static final int TIME_TO_WAIT_DEFAULT = 3;
     private static final String LOCK_BASE = "/rapture_locking";
 
-    private Map<String, InterProcessSemaphoreMutex> locks;
+    private Map<String, InterProcessSemaphoreMutex> locks = new HashMap<>();
 
     // TODO put this mutex in a map with the key being lockName...
     // InterProcessSemaphoreMutex lock;
@@ -58,17 +57,36 @@ public class ZooKeeperLockHandler implements ILockingHandler {
     String instanceName = "dunno";
     Map<String, String> config = null;
 
-    public ZooKeeperLockHandler(String connectionString, int timeToWait) {
-        locks = new HashMap<>();
-        if (timeToWait == 0) {
-            logger.info("time to wait not set. setting to default: " + TIME_TO_WAIT_DEFAULT);
-            timeToWait = TIME_TO_WAIT_DEFAULT;
+    public ZooKeeperLockHandler(String connectionString) {
+        client = makeClient(connectionString, 0);
+    }
+
+    public ZooKeeperLockHandler() {
+        String zkHost = MultiValueConfigLoader.getConfig("ZOOKEEPER-serverHost");
+        String zkPort = MultiValueConfigLoader.getConfig("ZOOKEEPER-serverPort");
+
+        if (zkHost == null) zkHost = "localhost";
+        if (zkPort == null) zkPort = "2181";
+
+        String connectionString = zkHost + ":" + zkPort;
+        int timeToWait = TIME_TO_WAIT_DEFAULT;
+
+        String ttws = MultiValueConfigLoader.getConfig("ZOOKEEPER-timeToWait");
+        if (ttws != null) try {
+            int ttw = Integer.parseInt(ttws);
+            timeToWait = ttw;
+        } catch (NumberFormatException nfe) {
+            logger.warn("invalid time to wait value " + ttws);
         }
 
         logger.debug("connectionString is " + connectionString);
         logger.debug("timeToWait is " + timeToWait);
 
-        client = CuratorFrameworkFactory.newClient(connectionString, new RetryUntilElapsed(3, 250));
+        client = makeClient(connectionString, timeToWait);
+    }
+
+    static CuratorFramework makeClient(String connectionString, int timeToWait) {
+        CuratorFramework client = CuratorFrameworkFactory.newClient(connectionString, new RetryUntilElapsed(timeToWait, timeToWait / 4));
 
         client.getConnectionStateListenable().addListener(new ConnectionStateListener() {
             @Override
@@ -83,15 +101,7 @@ public class ZooKeeperLockHandler implements ILockingHandler {
             }
         });
         client.start();
-    }
-
-    public ZooKeeperLockHandler() {
-        this("localhost:2181", 0);
-    }
-
-
-    public ZooKeeperLockHandler(String connectionString) {
-        this(connectionString, 0);
+        return client;
     }
 
     @Override
@@ -112,7 +122,7 @@ public class ZooKeeperLockHandler implements ILockingHandler {
                     logger.info(lockName + " doesn't exist. creating in zookeeper");
                     client.create().creatingParentsIfNeeded().forPath(lockPath);
                 } catch (KeeperException.NodeExistsException e) {
-                    //ignore as someone else created it at the same time
+                    // ignore as someone else created it at the same time
                     logger.debug("hey! someone else created the node: " + lockPath);
                 }
             }
@@ -128,7 +138,7 @@ public class ZooKeeperLockHandler implements ILockingHandler {
             throw new RuntimeException("Could not obtain lock", e);
         }
 
-        locks.put(lockName,lock);
+        locks.put(lockName, lock);
         logger.debug("lock obtained");
 
         LockHandle lh = new LockHandle();
@@ -142,8 +152,8 @@ public class ZooKeeperLockHandler implements ILockingHandler {
         InterProcessSemaphoreMutex lock = locks.get(lockName);
         if (lock == null) {
             logger.debug(lockName + " lock was never obtained");
-            //TODO maybe ignore as we dont really care
-            throw new IllegalStateException(lockName + " lock was never obtained!");
+            // TODO maybe ignore as we dont really care
+            throw new IllegalStateException("Cannot release " + lockName + " since lock does not exist (was never obtained?)");
         }
 
         try {
@@ -151,8 +161,8 @@ public class ZooKeeperLockHandler implements ILockingHandler {
             lock.release();
             return true;
         } catch (Exception e) {
-            System.out.println(ExceptionToString.format(e));
             logger.debug("exception swallowed while trying to release lock " + lockName, e);
+            logger.trace(ExceptionToString.format(e));
         }
         return false;
     }
@@ -182,25 +192,7 @@ public class ZooKeeperLockHandler implements ILockingHandler {
 
     @Override
     public Boolean forceReleaseLock(String lockName) {
-        //TODO maybe this should create a client that just removes the lock node ? ...
+        // TODO maybe this should create a client that just removes the lock node ? ...
         return this.releaseLock(null, lockName, null);
     }
-
-    public static ZooKeeperLockHandler getForInstance(String instanceName) {
-        if (instanceName == null) {
-            instanceName = "default";
-        }
-
-        String zkConnectionString = MultiValueConfigLoader.getConfig("ZOOKEEPER-" + instanceName);
-
-        // dont cache
-        ZooKeeperLockHandler zooKeeperLockHandler = new ZooKeeperLockHandler(zkConnectionString);
-        return zooKeeperLockHandler;
-    }
-
-    public static ZooKeeperLockHandler getForInstance() {
-        return ZooKeeperLockHandler.getForInstance(null);
-    }
-
 }
-
