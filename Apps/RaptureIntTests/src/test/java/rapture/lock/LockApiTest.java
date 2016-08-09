@@ -55,7 +55,7 @@ public class LockApiTest {
     private HttpLockApi lockApi2 = null;
     private RaptureURI repoUri = null;
 
-    @BeforeClass(groups = { "nightly" })
+    @BeforeClass(groups =  { "nightly", "lock" })
     @Parameters({ "RaptureURL", "RaptureUser", "RapturePassword" })
     public void setUp(@Optional("http://localhost:8665/rapture") String url, @Optional("rapture") String username, @Optional("rapture") String password) {
         helper = new IntegrationTestHelper(url, username, password);
@@ -72,11 +72,13 @@ public class LockApiTest {
         helper.configureTestRepo(repoUri, "MONGODB"); // TODO Make this configurable
     }
 
-    @AfterClass(groups = { "nightly" })
+    @AfterClass(groups =  { "nightly", "lock" })
     public void tearDown() {
+    	helper.cleanAllAssets();
+    	helper2.cleanAllAssets();
     }
 
-    @Test(groups = { "nightly", "zookeeper" }, enabled = true)
+    @Test(groups = { "nightly", "lock" })
     public void testZookeeperLock() throws InterruptedException {
 
         // Player 1 acquires a lock
@@ -109,7 +111,7 @@ public class LockApiTest {
         assertTrue(lockApi.lockManagerExists(lockUri.toString()));
     }
 
-    @Test(groups = { "nightly", "mongodb" }, enabled = true)
+    @Test(groups =  { "nightly", "lock" })
     public void testMongoDBLock() throws InterruptedException {
 
         // Player 1 acquires a lock
@@ -142,7 +144,7 @@ public class LockApiTest {
         assertTrue(lockApi.lockManagerExists(lockUri.toString()));
     }
 
-    @Test(groups = { "nightly", "mongodb" }, enabled = true)
+    @Test(groups =  { "nightly", "lock" })
     public void testRecreateLockManager() throws InterruptedException {
 
         // Player 1 acquires a lock

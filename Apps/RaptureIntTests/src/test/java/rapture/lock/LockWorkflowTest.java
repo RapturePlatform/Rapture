@@ -71,10 +71,9 @@ public class LockWorkflowTest {
     private IntegrationTestHelper helper2;
     private RaptureURI repoUri = null;
 
-    @BeforeClass(groups = { "nightly" })
+    @BeforeClass(groups = { "nightly","lock" })
     @Parameters({ "RaptureURL", "RaptureUser", "RapturePassword" })
     public void setUp(@Optional("http://localhost:8665/rapture") String url, @Optional("rapture") String username, @Optional("rapture") String password) {
-
 
         helper = new IntegrationTestHelper(url, username, password);
         lockApi = helper.getLockApi();
@@ -89,11 +88,13 @@ public class LockWorkflowTest {
         helper.configureTestRepo(repoUri, "MONGODB"); // TODO Make this configurable
     }
 
-    @AfterClass(groups = { "nightly" })
+    @AfterClass(groups = { "nightly","lock" })
     public void tearDown() {
+    	helper.cleanAllAssets();
+    	helper2.cleanAllAssets();
     }
 
-    @Test(groups = { "locking", "nightly" })
+    @Test(groups = { "lock", "nightly" })
     public void lockWorkflowTest() {
         RaptureLockConfig lockConfig = lockApi.createLockManager(LockApiImpl.SEMAPHORE_MANAGER_URI.toString(), "LOCKING USING ZOOKEEPER {}", "");
         RaptureURI workflowRepo = helper.getRandomAuthority(Scheme.WORKFLOW);
@@ -199,7 +200,7 @@ public class LockWorkflowTest {
     }
 
     // Cover bad cases
-    @Test(groups = { "locking", "nightly" }, enabled = false)
+    @Test(groups = { "lock", "nightly" }, enabled = false)
     public void lockWorkflowTest2() {
         RaptureLockConfig lockConfig = lockApi.createLockManager(LockApiImpl.SEMAPHORE_MANAGER_URI.toString(), "LOCKING USING ZOOKEEPER {}", "");
         RaptureURI workflowRepo = helper.getRandomAuthority(Scheme.WORKFLOW);
