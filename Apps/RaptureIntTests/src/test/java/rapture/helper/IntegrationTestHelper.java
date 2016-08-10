@@ -55,7 +55,9 @@ import rapture.common.client.HttpSeriesApi;
 import rapture.common.client.HttpStructuredApi;
 import rapture.common.client.HttpUserApi;
 import rapture.common.client.SimpleCredentialsProvider;
+import rapture.common.dp.ExecutionContext;
 import rapture.common.dp.WorkOrder;
+import rapture.common.dp.WorkOrderDebug;
 
 public class IntegrationTestHelper {
     
@@ -260,19 +262,26 @@ public class IntegrationTestHelper {
 
     public static boolean isWorkOrderRunning (HttpDecisionApi decisionApi,String workOrderURI ) {
         WorkOrderExecutionState state = decisionApi.getWorkOrderStatus(workOrderURI).getStatus();
-        Reporter.log("+++ Status of " + workOrderURI + " is " + state, true);
-        if (state == WorkOrderExecutionState.ERROR || state == WorkOrderExecutionState.FAILING) {
+        Reporter.log("Status of " + workOrderURI + " is " + state, true);
+        // if (state == WorkOrderExecutionState.ERROR || state == WorkOrderExecutionState.FAILING) {
             WorkOrder wo = decisionApi.getWorkOrder(workOrderURI);
-            if (wo == null) Reporter.log("+++ NULL WORK ORDER \n" + workOrderURI, true);
+            if (wo == null) Reporter.log("NULL WORK ORDER \n" + workOrderURI, true);
             else {
                 Map<String, String> out = wo.getOutputs();
-                if (out == null) Reporter.log("+++ WORK ORDER HAS NO OUTPUTS \n" + workOrderURI, true);
+                if (out == null) Reporter.log("WORK ORDER HAS NO OUTPUTS \n" + workOrderURI, true);
                 else for (Entry<String, String> e : wo.getOutputs().entrySet()) {
-                    Reporter.log("+++ " + e.getKey() + " : " + e.getValue() + "\n", true);
+                    Reporter.log("" + e.getKey() + " : " + e.getValue() + "\n", true);
                 }
 
+            Reporter.log("EXECUTION CONTEXT \n", true);
+                WorkOrderDebug workOrderDebug = decisionApi.getWorkOrderDebug(workOrderURI);
+                ExecutionContext ec = workOrderDebug.getContext();
+                Map<String, String> data = ec.getData();
+                for (Entry<String, String> datum : data.entrySet()) {
+                    Reporter.log("" + datum.getKey() + " : " + datum.getValue(), true);
+                }
             }
-        }
+        // }
         return !(state == WorkOrderExecutionState.FINISHED || state == WorkOrderExecutionState.CANCELLED || state == WorkOrderExecutionState.ERROR ||  state == WorkOrderExecutionState.FAILING);
     }
     

@@ -113,7 +113,10 @@ task pythonStructuredTests(type: Exec) {
     println 'Running structured api tests'
     commandLine nosetestsCmd, 'src/test/python/structured.py'
 }
-
+task pythonLockTests(type: Exec) {
+    println 'Running Lock tests'
+    commandLine nosetestsCmd, 'src/test/python/workflowLock.py'
+}
 task pythonSearchTests(type: Exec) {
     description 'Run Python search tests using nosetests'
     println 'Running Python search tests'
@@ -127,6 +130,7 @@ task pythonTests(type: Test) {
     dependsOn pythonEntitlementTests
     dependsOn pythonStructuredTests
     dependsOn pythonSearchTests
+    dependsOn pythonLockTests
     description 'Run Python tests'
     println 'Running Python tests'
 }

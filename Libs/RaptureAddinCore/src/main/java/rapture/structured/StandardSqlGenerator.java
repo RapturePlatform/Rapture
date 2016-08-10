@@ -119,7 +119,7 @@ public abstract class StandardSqlGenerator implements SqlGenerator {
 
     @Override
     public String constructDropTable(String schema, String table) {
-        return String.format("DROP TABLE IF EXISTS %s", getSafeFullName(schema, table));
+        return String.format("DROP TABLE IF EXISTS %s CASCADE", getSafeFullName(schema, table));
     }
 
     @Override
