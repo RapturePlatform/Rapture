@@ -25,18 +25,42 @@ package rapture.server.rest;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+
+import org.junit.Before;
 import org.junit.Test;
 
+import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 
 public class RestServerIntTest {
 
+    private void printResponse(HttpResponse<String> result) {
+        System.out.println(result.getBody());
+        System.out.println(result.getStatus() + ": " + result.getStatusText());
+    }
+
+    @Before
+    public void setup() throws UnirestException, KeyManagementException, NoSuchAlgorithmException, KeyStoreException {
+        HttpResponse<String> result = Unirest.post("http://localhost:4567/login")
+                .body("{\"username\":\"rapture\", \"password\":\"rapture\"}")
+                .asString();
+        printResponse(result);
+        if (result.getStatus() != 200) {
+            fail("Failed to login");
+        }
+    }
+
     @Test
     public void testDocGet() throws UnirestException {
-        String result = Unirest.get("http://localhost:4567/doc/matrix.config/mqSeriesConfig").asString().getBody();
-        assertTrue(result.indexOf("connectionFactory") != -1);
+        HttpResponse<String> result = Unirest.get("http://localhost:4567/doc/matrix.config/mqSeriesConfig").asString();
+        printResponse(result);
+        assertTrue(result.getBody().indexOf("connectionFactory") != -1);
     }
 
     @Test
