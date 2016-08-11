@@ -23,10 +23,11 @@
  */
 package rapture.lock;
 
-import static org.testng.AssertJUnit.assertFalse;
-import static org.testng.AssertJUnit.assertNotNull;
-import static org.testng.AssertJUnit.assertNull;
-import static org.testng.AssertJUnit.assertTrue;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertNull;
+import static org.testng.Assert.assertTrue;
 
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -39,35 +40,25 @@ import rapture.common.RaptureLockConfig;
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
 import rapture.common.client.HttpAdminApi;
-import rapture.common.client.HttpDocApi;
 import rapture.common.client.HttpLockApi;
-import rapture.common.client.HttpLoginApi;
 import rapture.common.impl.jackson.MD5Utils;
 import rapture.helper.IntegrationTestHelper;
 
 public class LockApiTest {
     
     private IntegrationTestHelper helper;
-    private HttpLoginApi raptureLogin = null;
-    private HttpDocApi docApi = null;
     private HttpLockApi lockApi = null;
     private HttpAdminApi admin = null;
 
     private static final String user = "User";
     private IntegrationTestHelper helper2;
-    private HttpDocApi docApi2 = null;
     private HttpLockApi lockApi2 = null;
-    private HttpLoginApi raptureLogin2 = null;
     private RaptureURI repoUri = null;
 
-    @BeforeClass(groups = { "nightly" })
+    @BeforeClass(groups =  { "nightly", "lock" })
     @Parameters({ "RaptureURL", "RaptureUser", "RapturePassword" })
     public void setUp(@Optional("http://localhost:8665/rapture") String url, @Optional("rapture") String username, @Optional("rapture") String password) {
-
-
         helper = new IntegrationTestHelper(url, username, password);
-        raptureLogin = helper.getRaptureLogin();
-        docApi = helper.getDocApi();
         lockApi = helper.getLockApi();
         admin = helper.getAdminApi();
         if (!admin.doesUserExist(user)) {
@@ -75,22 +66,56 @@ public class LockApiTest {
         }
 
         helper2 = new IntegrationTestHelper(url, user, user);
-        docApi2 = helper2.getDocApi();
         lockApi2 = helper2.getLockApi();
 
         repoUri = helper.getRandomAuthority(Scheme.DOCUMENT);
         helper.configureTestRepo(repoUri, "MONGODB"); // TODO Make this configurable
     }
 
-    @AfterClass(groups = { "nightly" })
+    @AfterClass(groups =  { "nightly", "lock" })
     public void tearDown() {
+    	helper.cleanAllAssets();
+    	helper2.cleanAllAssets();
     }
-        
-    @Test(groups = { "nightly" }, enabled = true)
-    public void testLock() throws InterruptedException {
+
+    @Test(groups = { "nightly", "lock" })
+    public void testZookeeperLock() throws InterruptedException {
 
         // Player 1 acquires a lock
-        RaptureURI lockUri = RaptureURI.builder(helper.getRandomAuthority(Scheme.DOCUMENT)).docPath("foo/bar").build();
+        RaptureURI lockUri = RaptureURI.builder(helper.getRandomAuthority(Scheme.DOCUMENT)).docPath("foo/bar" + System.currentTimeMillis()).build();
+        RaptureLockConfig lockConfig = lockApi.createLockManager(lockUri.toString(), "LOCKING USING ZOOKEEPER {}", "");
+        assertNotNull(lockConfig);
+        LockHandle lockHandle = lockApi.acquireLock(lockUri.toString(), lockConfig.getName(), 1, 60);
+        assertNotNull(lockHandle);
+        Thread.sleep(100);
+
+        // Meanwhile elsewhere Player 2 tries to acquire the lock
+        RaptureLockConfig lockConfig2 = lockApi.getLockManagerConfig(lockUri.toString());
+        assertNotNull(lockConfig2);
+        LockHandle lockHandle2 = lockApi2.acquireLock(lockUri.toString(), lockConfig2.getName(), 1, 60);
+        // but fails
+        assertNull(lockHandle2);
+
+        // Eventually player1 releases the lock
+        Thread.sleep(100);
+        assertTrue(lockApi.releaseLock(lockUri.toString(), lockConfig.getName(), lockHandle));
+        assertFalse(lockApi2.releaseLock(lockUri.toString(), lockConfig2.getName(), lockHandle2));
+
+        // and now Player 2 can acquire it
+        lockHandle2 = lockApi2.acquireLock(lockUri.toString(), lockConfig2.getName(), 1, 60);
+        assertNotNull(lockHandle2);
+        assertTrue(lockApi2.releaseLock(lockUri.toString(), lockConfig2.getName(), lockHandle2));
+        assertFalse(lockApi2.releaseLock(lockUri.toString(), lockConfig2.getName(), lockHandle2));
+
+        assertNotNull(lockApi.getLockManagerConfig(lockUri.toString()));
+        assertTrue(lockApi.lockManagerExists(lockUri.toString()));
+    }
+
+    @Test(groups =  { "nightly", "lock" })
+    public void testMongoDBLock() throws InterruptedException {
+
+        // Player 1 acquires a lock
+        RaptureURI lockUri = RaptureURI.builder(helper.getRandomAuthority(Scheme.DOCUMENT)).docPath("foo/bar" + System.currentTimeMillis()).build();
         RaptureLockConfig lockConfig = lockApi.createLockManager(lockUri.toString(), "LOCKING USING MONGODB {}", "");
         assertNotNull(lockConfig);
         LockHandle lockHandle = lockApi.acquireLock(lockUri.toString(), lockConfig.getName(), 1, 60);
@@ -106,21 +131,41 @@ public class LockApiTest {
 
         // Eventually player1 releases the lock
         Thread.sleep(100);
-        lockApi.releaseLock(lockUri.toString(), lockConfig.getName(), lockHandle);
+        assertTrue(lockApi.releaseLock(lockUri.toString(), lockConfig.getName(), lockHandle));
+        assertFalse(lockApi2.releaseLock(lockUri.toString(), lockConfig2.getName(), lockHandle2));
 
         // and now Player 2 can acquire it
         lockHandle2 = lockApi2.acquireLock(lockUri.toString(), lockConfig2.getName(), 1, 60);
         assertNotNull(lockHandle2);
-        lockApi2.releaseLock(lockUri.toString(), lockConfig2.getName(), lockHandle2);
+        assertTrue(lockApi2.releaseLock(lockUri.toString(), lockConfig2.getName(), lockHandle2));
+        // assertFalse(lockApi2.releaseLock(lockUri.toString(), lockConfig2.getName(), lockHandle2));
 
         assertNotNull(lockApi.getLockManagerConfig(lockUri.toString()));
         assertTrue(lockApi.lockManagerExists(lockUri.toString()));
-        lockApi.deleteLockManager(lockUri.toString());
-        assertFalse(lockApi.lockManagerExists(lockUri.toString()));
-        assertNull(lockApi.getLockManagerConfig(lockUri.toString()));
-        System.out.println(lockUri.toString());
+    }
 
-        // Map<String, RaptureFolderInfo> dox = docApi.listDocsByUriPrefix("document://sys.RaptureConfig", 99);
-        // System.out.println(JacksonUtil.jsonFromObject(dox));
+    @Test(groups =  { "nightly", "lock" })
+    public void testRecreateLockManager() throws InterruptedException {
+
+        // Player 1 acquires a lock
+        RaptureURI lockUri = RaptureURI.builder(helper.getRandomAuthority(Scheme.DOCUMENT)).docPath("foo/bar" + System.currentTimeMillis()).build();
+        RaptureLockConfig lockConfig = lockApi.createLockManager(lockUri.toString(), "LOCKING USING MONGODB {}", "");
+        assertNotNull(lockConfig);
+        LockHandle lockHandle = lockApi.acquireLock(lockUri.toString(), lockConfig.getName(), 1, 60);
+        assertNotNull(lockHandle);
+
+        // Player 2 tries to create a different lock manager for the same URI - this will be ignored
+        RaptureLockConfig lockConfig2 = lockApi2.createLockManager(lockUri.toString(), "LOCKING USING MEMORY {}", "");
+        assertNotNull(lockConfig);
+        assertEquals(lockConfig, lockConfig2);
+        RaptureLockConfig lockConfig3 = lockApi2.getLockManagerConfig(lockUri.toString());
+        assertEquals(lockConfig, lockConfig3);
+
+        LockHandle lockHandle2 = lockApi.acquireLock(lockUri.toString(), lockConfig3.getName(), 1, 60);
+        assertNull(lockHandle2);
+        assertTrue(lockApi.releaseLock(lockUri.toString(), lockConfig.getName(), lockHandle));
+        lockHandle2 = lockApi2.acquireLock(lockUri.toString(), lockConfig3.getName(), 1, 60);
+        assertNotNull(lockHandle2);
+        assertTrue(lockApi2.releaseLock(lockUri.toString(), lockConfig3.getName(), lockHandle2));
     }
 }

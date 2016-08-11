@@ -156,8 +156,11 @@ public class SeriesApiImpl extends KernelBase implements SeriesApi {
     @Override
     public void deletePointsFromSeriesByPointKey(CallingContext context, String seriesURI, List<String> columns) {
         RaptureURI internalURI = new RaptureURI(seriesURI, Scheme.SERIES);
-        SeriesRepo repo = getRepoOrFail(internalURI);
-        repo.deletePointsFromSeriesByColumn(internalURI.getDocPath(), columns);
+        String docPath = internalURI.getDocPath();
+        SeriesRepo repo = getRepoFromCache(internalURI.getAuthority());
+        if ((repo != null) && (docPath != null)) {
+            repo.deletePointsFromSeriesByColumn(internalURI.getDocPath(), columns);
+        }
         if (SearchPublisher.shouldPublish(getConfigFromCache(internalURI.getAuthority()), internalURI)) {
             // Need to delete points from ES.
             // Drop the old series and re-add all the points that remain.
@@ -177,8 +180,11 @@ public class SeriesApiImpl extends KernelBase implements SeriesApi {
     @Override
     public void deletePointsFromSeries(CallingContext context, String seriesURI) {
         RaptureURI internalURI = new RaptureURI(seriesURI, Scheme.SERIES);
-        SeriesRepo repo = getRepoOrFail(internalURI);
-        repo.deletePointsFromSeries(internalURI.getDocPath());
+        String docPath = internalURI.getDocPath();
+        SeriesRepo repo = getRepoFromCache(internalURI.getAuthority());
+        if ((repo != null) && (docPath != null)) {
+            repo.deletePointsFromSeries(docPath);
+        }
         SearchPublisher.publishDeleteMessage(context, getConfigFromCache(internalURI.getAuthority()), internalURI);
     }
 

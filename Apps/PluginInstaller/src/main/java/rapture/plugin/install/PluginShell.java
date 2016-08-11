@@ -33,6 +33,7 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.SortedSet;
 import java.util.regex.Matcher;
@@ -46,6 +47,11 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Appender;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
+
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 import rapture.common.PluginConfig;
 import rapture.common.PluginManifest;
@@ -79,11 +85,6 @@ import rapture.plugin.validators.ScriptValidator;
 import rapture.plugin.validators.SeriesValidator;
 import rapture.plugin.validators.SnippetValidator;
 import rapture.plugin.validators.WorkflowValidator;
-
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 
 /**
  * This class implements a simple DSL for defining, uploading, downloading, installing, uninstalling, and upgrading collections of user content called "plugins"
@@ -121,7 +122,7 @@ public class PluginShell {
     private String featureName;
     private String zipFile;
 
-    protected Map<String, PluginSandbox> name2sandbox = Maps.newHashMap();
+    protected Map<String, PluginSandbox> name2sandbox = Maps.newLinkedHashMap();
 
     private boolean isLocal;
 
@@ -219,7 +220,7 @@ public class PluginShell {
             return;
         }
 
-        System.out.println("\nWelcome to the pluginInstaller.\nPlease enter your command, or type 'help' for help");
+        println("\nWelcome to the pluginInstaller.\nPlease enter your command, or type 'help' for help");
 
         try (Scanner in = new Scanner(System.in)) {
             while (true) {
@@ -229,6 +230,8 @@ public class PluginShell {
                 }
                 eval(line);
             }
+        } catch (NoSuchElementException nsee) {
+            println("Be seeing you");
         }
     }
 
@@ -607,7 +610,7 @@ public class PluginShell {
                 boolean uninstallAll = false;
                 String manifestURIstring = Scheme.PLUGIN_MANIFEST.toString() + "://" + plugin;
                 PluginManifest manifest = client.getPlugin().getPluginManifest(manifestURIstring);
-                for (PluginManifestItem item : manifest.getContents()) {
+                for (PluginManifestItem item : Lists.reverse(manifest.getContents())) {
                     boolean uninstallThis = uninstallAll;
                     if (!uninstallThis) {
                         println("Uninstall " + item.getURI() + " ? [nyaq]");
@@ -1193,7 +1196,7 @@ public class PluginShell {
             }
             String thisVariant = nextToken(args);
             if (thisVariant == null) thisVariant = variant;
-            Map<String, PluginTransportItem> payload = Maps.newHashMap();
+            Map<String, PluginTransportItem> payload = Maps.newLinkedHashMap();
             for (PluginSandboxItem item : sandbox.getItems(thisVariant)) {
                 try {
                     if (debug) System.out.println("Packaging " + item.getURI().toString());

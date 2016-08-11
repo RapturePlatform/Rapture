@@ -1,0 +1,9 @@
+jar.manifest.attributes "Implementation-Title" : "Rapture ZooKeeper Addin"
+
+dependencies {
+  compile project(":RaptureAPI")
+  compile project(":RaptureAddinCore")
+  compile 'org.apache.curator:curator-framework:2.7.1'
+  compile 'org.apache.curator:curator-recipes:2.7.1'
+  testCompile 'org.apache.curator:curator-test:2.7.1'
+}

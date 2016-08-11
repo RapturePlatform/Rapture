@@ -27,7 +27,10 @@ import static rapture.server.rest.JsonUtil.json;
 import static spark.Spark.before;
 import static spark.Spark.delete;
 import static spark.Spark.get;
+import static spark.Spark.halt;
+import static spark.Spark.post;
 import static spark.Spark.put;
+import static spark.Spark.secure;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -39,8 +42,8 @@ import com.google.common.collect.ImmutableMap;
 import rapture.app.RaptureAppService;
 import rapture.common.CallingContext;
 import rapture.common.exception.RaptureException;
+import rapture.common.impl.jackson.JacksonUtil;
 import rapture.config.ConfigLoader;
-import rapture.kernel.ContextFactory;
 import rapture.kernel.Kernel;
 import spark.Request;
 
@@ -62,17 +65,46 @@ public class RestServer {
     }
 
     private void run() {
+        // setupHttps();
         setupRoutes();
+    }
+
+    private void setupHttps() {
+        String keyStoreLocation = "keystore.jks";
+        secure(keyStoreLocation, keyStoreLocation, null, null);
+
     }
 
     private void setupRoutes() {
 
         before((req, res) -> {
-            String authentication = req.headers("Authentication");
-            log.info("checking auth...");
-            // TODO: check auth
-            CallingContext ctx = ContextFactory.getKernelUser();
-            ctxs.put(req.session().id(), ctx);
+            if (!req.pathInfo().startsWith("/login")) {
+                CallingContext ctx = ctxs.get(req.session().id());
+                if (ctx == null) {
+                    log.warn("CallingContext not found, halting...");
+                    halt(401, "Please login first to /login");
+                }
+            }
+        });
+
+        post("/login", (req, res) -> {
+            log.info("Logging in...");
+            // TODO: check authorization token
+            // String authentication = req.headers("Authentication");
+            Map<String, Object> data = JacksonUtil.getMapFromJson(req.body());
+            String username = (String) data.get("username");
+            String password = (String) data.get("password");
+            CallingContext ctx = null;
+            try {
+                ctx = Kernel.getLogin().login(username, password, null);
+            } catch (RaptureException re) {
+                String msg = "Invalid login: " + re.getMessage();
+                log.warn(msg);
+                halt(401, msg);
+            }
+            String id = req.session(true).id();
+            ctxs.put(id, ctx);
+            return id;
         });
 
         get("/doc/*", (req, res) -> {

@@ -50,11 +50,11 @@ public class PluginApiTest {
         plugin.verifyPlugin(context, pluginName);
 
         PluginTransportItem item1 = plugin.getPluginItem(context, tableUri);
-        System.out.println(new String(item1.getContent()));
         assertNotNull(item1);
+        assertNotNull(item1.getContent());
 
         PluginTransportItem item2 = plugin.getPluginItem(context, indexUri);
-        System.out.println(new String(item2.getContent()));
         assertNotNull(item2);
+        assertNotNull(item2.getContent());
     }
 }

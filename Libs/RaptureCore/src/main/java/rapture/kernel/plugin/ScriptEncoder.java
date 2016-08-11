@@ -48,7 +48,7 @@ public class ScriptEncoder extends ReflectionEncoder {
     @Override
     public PluginTransportItem encode(CallingContext context, String uriString) {
         RaptureURI uri = new RaptureURI(uriString, Scheme.SCRIPT);
-        return uri.hasAttribute() ? encodeRaw(context, uri) : super.encode(context, uriString);
+        return uri.hasDocPath() ? encodeRaw(context, uri) : super.encode(context, uriString);
     }
 
     private PluginTransportItem encodeRaw(CallingContext context, RaptureURI uri) {
