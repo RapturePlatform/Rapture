@@ -29,12 +29,12 @@ import java.util.Set;
 
 import org.apache.http.HttpStatus;
 
+import com.google.common.collect.Sets;
+
 import rapture.common.dp.ExpectedArgument;
 import rapture.common.dp.Step;
 import rapture.common.dp.Workflow;
 import rapture.common.exception.RaptureExceptionFactory;
-
-import com.google.common.collect.Sets;
 
 /**
  * @author bardhi
@@ -54,13 +54,14 @@ public class WorkflowValidator {
     private static void validateArgs(List<ExpectedArgument> expectedArguments) {
         List<String> badArgs = new LinkedList<>();
         for (ExpectedArgument arg : expectedArguments) {
-            if (arg.getIsRequired() && arg.getDefaultValue() != null) {
+            if ((arg.getIsRequired() == Boolean.TRUE) && (arg.getDefaultValue() != null)) {
                 badArgs.add(arg.getName());
             }
         }
         if (badArgs.size() > 0) {
             throw RaptureExceptionFactory.create(HttpStatus.SC_BAD_REQUEST,
-                    String.format("Expected arguments that the user is required to specify cannot have defaults. These are set incorrectly: %s", badArgs));
+                    String.format("The following arguments cannot have defaults: %s", badArgs));
         }
     }
 }
+
