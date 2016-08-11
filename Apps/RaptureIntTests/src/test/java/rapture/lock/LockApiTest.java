@@ -29,8 +29,15 @@ import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
+import org.testng.Assert;
+import org.testng.Reporter;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Optional;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
@@ -72,11 +79,135 @@ public class LockApiTest {
         helper.configureTestRepo(repoUri, "MONGODB"); // TODO Make this configurable
     }
 
-    @AfterClass(groups =  { "nightly", "lock" })
-    public void tearDown() {
-    	helper.cleanAllAssets();
-    	helper2.cleanAllAssets();
-    }
+	@AfterClass(groups = { "nightly", "lock" })
+	public void tearDown() {
+		helper.cleanAllAssets();
+		helper2.cleanAllAssets();
+	}
+
+	String winningContent;
+	String winningPath;
+	LockHandle lockHandleJson;
+	LockHandle lockHandle;
+	List<String> winningContentList;
+
+	@Test(groups = { "nightly", "lock" })
+	public void testMultipleRequestsAcquireReleaseLockZookeeper() {
+		int threadCount = 25;
+		winningContentList = new ArrayList<String>();
+		winningContent = "";
+		winningPath = "";
+		lockHandleJson = null;
+		lockHandle = null;
+		RaptureURI lockUri = RaptureURI.builder(helper.getRandomAuthority(Scheme.DOCUMENT)).docPath("foo/bar" + System.currentTimeMillis()).build();
+		RaptureLockConfig lockConfig = lockApi.createLockManager(lockUri.toString(), "LOCKING USING ZOOKEEPER {}", "");
+		Random rand = new Random();
+
+		RaptureURI docRepoUri = helper.getRandomAuthority(Scheme.DOCUMENT);
+		helper.configureTestRepo(docRepoUri, "MONGODB", true);
+		List<Long> threadList = new ArrayList<Long>();
+
+		class LockThread implements Runnable {
+			public void run() {
+				long currThreadId = Thread.currentThread().getId();
+				threadList.add(new Long(currThreadId));
+				try {
+					Double timeDelay = rand.nextDouble() * 5000;
+					String content = "{\"key_" + currThreadId + "_" + rand.nextInt(5000) + "\" : \"" + currThreadId + "\" }";
+					Reporter.log("Thread id " + currThreadId + " waiting for " + timeDelay.longValue() + " ms.", true);
+					Thread.sleep(timeDelay.longValue());
+
+					lockHandle = lockApi.acquireLock(lockUri.toString(), lockConfig.getName(), 2, 10);
+					if (lockHandle != null) {
+						winningPath = docRepoUri + "doc" + currThreadId;
+						helper.getDocApi().putDoc(winningPath, content);
+						winningContentList.add(content);
+						Reporter.log("Thread id " + currThreadId + " acquired lock and wrote doc: " + content + " to " + winningPath, true);
+						lockHandleJson = lockHandle;
+						Thread.sleep(1000);
+						Assert.assertTrue(lockApi.releaseLock(lockUri.toString(), lockConfig.getName(), lockHandle));
+					} else {
+						Reporter.log("Thread id " + currThreadId + " did not acquire lock.", true);
+					}
+
+				} catch (Exception e) {
+					Reporter.log("Exception with thread " + currThreadId + ", " + e.getMessage(), true);
+				}
+				threadList.remove(new Long(currThreadId));
+			}
+		}
+
+		Reporter.log("Running test with " + threadCount + " threads", true);
+		for (int i = 0; i < threadCount; i++)
+			new Thread(new LockThread()).start();
+
+		while (threadList.size() > 0) {
+			try {
+				Thread.sleep(500);
+				if (helper.getDocApi().getDoc(winningPath) != null) {
+					Assert.assertTrue(winningContentList.contains(helper.getDocApi().getDoc(winningPath)));
+				}
+			} catch (Exception e) {
+			}
+		}
+
+	}
+
+	@Test(groups = { "nightly", "lock" }, dataProvider = "threadScenarios")
+	public void testOneThreadBlockingMultipleRequestsZookeeper(Integer threadCount) {
+		winningContent = "";
+		winningPath = "";
+		lockHandleJson = null;
+		lockHandle = null;
+		RaptureURI lockUri = RaptureURI.builder(helper.getRandomAuthority(Scheme.DOCUMENT)).docPath("foo/bar" + System.currentTimeMillis()).build();
+		RaptureLockConfig lockConfig = lockApi.createLockManager(lockUri.toString(), "LOCKING USING ZOOKEEPER {}", "");
+		Random rand = new Random();
+
+		RaptureURI docRepoUri = helper.getRandomAuthority(Scheme.DOCUMENT);
+		helper.configureTestRepo(docRepoUri, "MONGODB", true);
+		List<Long> threadList = new ArrayList<Long>();
+
+		class LockThread implements Runnable {
+			public void run() {
+				long currThreadId = Thread.currentThread().getId();
+				threadList.add(new Long(currThreadId));
+				try {
+					Double timeDelay = rand.nextDouble() * 5000;
+					String content = "{\"key_" + currThreadId + "_" + rand.nextInt(5000) + "\" : \"" + currThreadId + "\" }";
+					Reporter.log("Thread id " + currThreadId + " waiting for " + timeDelay.longValue() + " ms.", true);
+					Thread.sleep(timeDelay.longValue());
+
+					lockHandle = lockApi.acquireLock(lockUri.toString(), lockConfig.getName(), 2, 10);
+					if (lockHandle != null) {
+						winningPath = docRepoUri + "doc" + currThreadId;
+						helper.getDocApi().putDoc(winningPath, content);
+						Reporter.log("Thread id " + currThreadId + " acquired lock and wrote doc: " + content + " to " + winningPath, true);
+						winningContent = content;
+						lockHandleJson = lockHandle;
+					} else {
+						Reporter.log("Thread id " + currThreadId + " did not acquire lock.", true);
+					}
+
+				} catch (Exception e) {
+					Reporter.log("Exception with thread " + currThreadId + ", " + e.getMessage(), true);
+				}
+				threadList.remove(new Long(currThreadId));
+			}
+		}
+
+		Reporter.log("Running test with " + threadCount + " threads", true);
+		for (int i = 0; i < threadCount; i++)
+			new Thread(new LockThread()).start();
+
+		while (threadList.size() > 0) {
+			try {
+				Thread.sleep(100);
+			} catch (Exception e) {
+			}
+		}
+		Assert.assertEquals(helper.getDocApi().getDoc(winningPath), winningContent);
+		Assert.assertTrue(lockApi.releaseLock(lockUri.toString(), lockConfig.getName(), lockHandle));
+	}
 
     @Test(groups = { "nightly", "lock" })
     public void testZookeeperLock() throws InterruptedException {
@@ -167,5 +298,13 @@ public class LockApiTest {
         lockHandle2 = lockApi2.acquireLock(lockUri.toString(), lockConfig3.getName(), 1, 60);
         assertNotNull(lockHandle2);
         assertTrue(lockApi2.releaseLock(lockUri.toString(), lockConfig3.getName(), lockHandle2));
+    }
+    
+    @DataProvider(name = "threadScenarios")
+    public Object[][] threadScenariosData() {
+        return new Object[][] { {new Integer(10)},  
+        					    {new Integer(20)},
+        					    {new Integer(30)}
+        					    };
     }
 }
