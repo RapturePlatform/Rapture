@@ -88,9 +88,9 @@ public class ImportHandler {
             try {
                 return possibleNativeCallNode.evaluate(debugger, scope);
             } catch (Exception e) {
-                // No native call possible
+                logStack(e);
+                throw new ReflexException(-1, "Error calling module " + fnParts[0]+" : "+e.getMessage());
             }
-            throw new ReflexException(-1, "No such module " + fnParts[0]);
         }
         Module module = modules.get(fnParts[0]);
         List<ReflexValue> parameters = evaluateParameters(params, debugger, scope);
@@ -127,6 +127,7 @@ public class ImportHandler {
                     throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, "Error with reflection call", e);
                 } catch (Exception e) {
                     log("Found error of class " + e.getClass().toString());
+                    logStack(e);
                     throw new ReflexException(-1, "Cannot handle module invocation " + e.getMessage());
                 }
             }
