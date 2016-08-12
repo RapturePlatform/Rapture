@@ -69,6 +69,18 @@ public class RestServerIntTest {
     }
 
     @Test
+    public void testDocCreateRepo() throws UnirestException {
+        HttpResponse<String> result = Unirest.post("https://localhost:4567/doc/newrepo")
+                .body("{\"config\":\"NREP {} USING MONGODB {prefix=\\\"newrepo\\\"}\"}").asString();
+        printResponse(result);
+        assertEquals(200, result.getStatus());
+        result = Unirest.post("https://localhost:4567/doc/newrepo")
+                .body("{\"config\":\"NREP {} USING MONGODB {prefix=\\\"newrepo\\\"}\"}").asString();
+        printResponse(result);
+        assertEquals(409, result.getStatus());
+    }
+
+    @Test
     public void testDocGet() throws UnirestException {
         HttpResponse<String> result = Unirest.get("https://localhost:4567/doc/config/mqSeriesConfig").asString();
         printResponse(result);
@@ -89,6 +101,22 @@ public class RestServerIntTest {
         printResponse(result);
         int status = Unirest.get("https://localhost:4567/doc/config/mqSeriesConfig").asString().getStatus();
         assertEquals(404, status);
+    }
+
+    @Test
+    public void testBlobCreateRepo() throws UnirestException {
+        HttpResponse<String> result = Unirest.post("https://localhost:4567/blob/newrepo")
+                .body("{\"config\":\"BLOB {} USING MONGODB {prefix=\\\"newrepo\\\"}\","
+                        + "\"metaConfig\":\"REP {} USING MONGODB {prefix=\\\"newrepo\\\"}\"}")
+                .asString();
+        printResponse(result);
+        assertEquals(200, result.getStatus());
+        result = Unirest.post("https://localhost:4567/blob/newrepo")
+                .body("{\"config\":\"BLOB {} USING MONGODB {prefix=\\\"newrepo\\\"}\","
+                        + "\"metaConfig\":\"REP {} USING MONGODB {prefix=\\\"newrepo\\\"}\"}")
+                .asString();
+        printResponse(result);
+        assertEquals(409, result.getStatus());
     }
 
     @Test

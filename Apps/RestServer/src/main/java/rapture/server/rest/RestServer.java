@@ -41,6 +41,8 @@ import com.google.common.collect.ImmutableMap;
 
 import rapture.app.RaptureAppService;
 import rapture.common.CallingContext;
+import rapture.common.RaptureURI;
+import rapture.common.Scheme;
 import rapture.common.exception.RaptureException;
 import rapture.common.impl.jackson.JacksonUtil;
 import rapture.config.ConfigLoader;
@@ -107,6 +109,19 @@ public class RestServer {
             return id;
         });
 
+        post("/doc/:authority", (req, res) -> {
+            log.info(req.body());
+            Map<String, Object> data = JacksonUtil.getMapFromJson(req.body());
+            String authority = req.params(":authority");
+            String config = (String) data.get("config");
+            CallingContext ctx = getContext(req);
+            if (Kernel.getDoc().docRepoExists(ctx, authority)) {
+                halt(409, String.format("Repo [%s] already exists", authority));
+            }
+            Kernel.getDoc().createDocRepo(ctx, authority, config);
+            return new RaptureURI(authority, Scheme.DOCUMENT).toString();
+        });
+
         get("/doc/*", (req, res) -> {
             return Kernel.getDoc().getDoc(getContext(req), getDocUriParam(req));
         });
@@ -117,6 +132,20 @@ public class RestServer {
 
         delete("/doc/*", (req, res) -> {
             return Kernel.getDoc().deleteDoc(getContext(req), getDocUriParam(req));
+        });
+
+        post("/blob/:authority", (req, res) -> {
+            log.info(req.body());
+            Map<String, Object> data = JacksonUtil.getMapFromJson(req.body());
+            String authority = req.params(":authority");
+            String config = (String) data.get("config");
+            String metaConfig = (String) data.get("metaConfig");
+            CallingContext ctx = getContext(req);
+            if (Kernel.getBlob().blobRepoExists(ctx, authority)) {
+                halt(409, String.format("Repo [%s] already exists", authority));
+            }
+            Kernel.getBlob().createBlobRepo(ctx, authority, config, metaConfig);
+            return new RaptureURI(authority, Scheme.BLOB).toString();
         });
 
         get("/blob/*", (req, res) -> {
@@ -136,11 +165,15 @@ public class RestServer {
     }
 
     private String getDocUriParam(Request req) {
-        return req.pathInfo().substring("/doc/".length());
+        return getUriParam(req, "/doc/");
     }
 
     private String getBlobUriParam(Request req) {
-        return req.pathInfo().substring("/blob/".length());
+        return getUriParam(req, "/blob/");
+    }
+
+    private String getUriParam(Request req, String prefix) {
+        return req.pathInfo().substring(prefix.length());
     }
 
     private CallingContext getContext(Request req) {
