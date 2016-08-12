@@ -79,6 +79,7 @@ public class ImportHandler {
     }
 
     private void log(String msg) {
+        log.info(msg);
         handler.getOutputHandler().printOutput(msg);
     }
 
@@ -100,6 +101,7 @@ public class ImportHandler {
             }
         }
         Module module = modules.get(fnParts[0]);
+        if (module != null) log.info("Found module");
         List<ReflexValue> parameters = evaluateParameters(params, debugger, scope);
         if (module.handlesKeyhole()) {
             // log("Attempting keyhole call of " + fnParts[1]);
@@ -131,7 +133,8 @@ public class ImportHandler {
                     log("Underlying exception thrown of type " + e.getTargetException().getClass().toString() + " with message "
                             + e.getTargetException().getMessage());
                     logStack(e.getTargetException());
-                    throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, "Error with reflection call", e);
+                    throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR,
+                            "Error " + e.getTargetException().getMessage() + " with reflection call", e);
                 } catch (Exception e) {
                     log("Found error of class " + e.getClass().toString());
                     logStack(e);
