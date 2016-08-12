@@ -27,11 +27,14 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import org.apache.log4j.Logger;
 
 import rapture.common.exception.RaptureExceptionFactory;
+import rapture.common.impl.jackson.JacksonUtil;
 import reflex.IReflexHandler;
 import reflex.ReflexException;
 import reflex.Scope;
@@ -53,8 +56,9 @@ import reflex.value.internal.ReflexVoidValue;
  */
 public class ImportHandler {
     private IReflexHandler handler;
+    private static Logger log = Logger.getLogger(ImportHandler.class);
 
-    private Map<String, Module> modules = new HashMap<String, Module>();
+    private static Map<String, Module> modules = new ConcurrentHashMap<String, Module>();
 
     public void setReflexHandler(IReflexHandler handler) {
         this.handler = handler;
@@ -64,12 +68,14 @@ public class ImportHandler {
         Module module = ModuleFactory.createModule(name, "", handler, debugger, classLoader);
         module.configure(config);
         modules.put(name, module);
+        log.info("Caching module named " + name);
     }
 
     public void addImportModuleWithAlias(String name, String alias, List<ReflexValue> configParams, IReflexDebugger debugger, ClassLoader classLoader) {
         Module module = ModuleFactory.createModule(name, alias, handler, debugger, classLoader);
         module.configure(configParams);
         modules.put(alias, module);
+        log.info("Caching module with alias " + alias);
     }
 
     private void log(String msg) {
@@ -82,14 +88,15 @@ public class ImportHandler {
         if (fnParts.length != 2) {
             throw new ReflexException(-1, "Cannot call module method like this");
         }
-        // log("Attempting to call " + functionName);
-        // log("Module name (or alias) is " + fnParts[0]);
+        log.info("Attempting to call " + functionName);
+        log.info("Module name (or alias) is " + fnParts[0]);
         if (!modules.containsKey(fnParts[0])) {
+            log.info("No module found named " + fnParts[0] + " - try native call");
+            log.info("Known modules are : " + JacksonUtil.jsonFromObject(modules.keySet()));
             try {
                 return possibleNativeCallNode.evaluate(debugger, scope);
             } catch (Exception e) {
-                logStack(e);
-                throw new ReflexException(-1, "Error calling module " + fnParts[0]+" : "+e.getMessage());
+                throw new ReflexException(-1, "Error calling " + fnParts[0] + " - not a recognised module or variable name");
             }
         }
         Module module = modules.get(fnParts[0]);
