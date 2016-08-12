@@ -65,7 +65,7 @@ public class RestServer {
     }
 
     private void run() {
-        // setupHttps();
+        setupHttps();
         setupRoutes();
     }
 
@@ -81,7 +81,7 @@ public class RestServer {
             if (!req.pathInfo().startsWith("/login")) {
                 CallingContext ctx = ctxs.get(req.session().id());
                 if (ctx == null) {
-                    log.warn("CallingContext not found, halting...");
+                    log.warn("CallingContext not found, rejecting...");
                     halt(401, "Please login first to /login");
                 }
             }
