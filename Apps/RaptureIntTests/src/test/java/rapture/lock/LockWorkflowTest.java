@@ -72,7 +72,6 @@ public class LockWorkflowTest {
     @AfterClass(groups = { "nightly","lock" })
     public void tearDown() {
     	helper.cleanAllAssets();
-    	helper2.cleanAllAssets();
     }
 
     @Test(groups = { "lock", "nightly" })

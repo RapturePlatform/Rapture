@@ -34,4 +34,10 @@ public class ListTest extends ResourceBasedTest {
         String result = runTestFor("/list.rfx");
         assertEquals("--RETURNS--" + Boolean.TRUE.toString(), result);
     }
+
+    @Test
+    public void runListTest2() throws RecognitionException {
+        String result = runTestFor("/list2.rfx");
+        assertEquals("--RETURNS--" + Boolean.TRUE.toString(), result);
+    }
 }
