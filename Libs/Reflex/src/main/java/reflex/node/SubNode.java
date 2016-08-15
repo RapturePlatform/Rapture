@@ -26,6 +26,7 @@ package reflex.node;
 import java.util.List;
 
 import reflex.IReflexHandler;
+import reflex.ReflexException;
 import reflex.Scope;
 import reflex.debug.IReflexDebugger;
 import reflex.value.ReflexValue;
@@ -66,6 +67,9 @@ public class SubNode extends BaseNode {
             ret = new ReflexValue(a.asDate().sub(b.asInt()));
         } else if (a.isList()) {
             List<ReflexValue> list = a.asList();
+            if (!list.contains(b)) {
+                throw new ReflexException(lineNumber, "List does not contain the value " + b.toString());
+            }
             list.remove(b);
             ret = new ReflexValue(lineNumber, list);
         } else {
