@@ -33,6 +33,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
 
+import rapture.common.exception.ExceptionToString;
 import rapture.common.exception.RaptureExceptionFactory;
 import rapture.common.impl.jackson.JacksonUtil;
 import reflex.IReflexHandler;
@@ -132,23 +133,17 @@ public class ImportHandler {
                 } catch (InvocationTargetException e) {
                     log("Underlying exception thrown of type " + e.getTargetException().getClass().toString() + " with message "
                             + e.getTargetException().getMessage());
-                    logStack(e.getTargetException());
+                    log(ExceptionToString.format(e));
                     throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR,
                             "Error " + e.getTargetException().getMessage() + " with reflection call", e);
                 } catch (Exception e) {
                     log("Found error of class " + e.getClass().toString());
-                    logStack(e);
+                    log(ExceptionToString.format(e));
                     throw new ReflexException(-1, "Cannot handle module invocation " + e.getMessage());
                 }
             }
         }
         return new ReflexVoidValue();
-    }
-
-    private void logStack(Throwable targetException) {
-        for (StackTraceElement el : targetException.getStackTrace()) {
-            log(String.format("%s:%d %s", el.getFileName(), el.getLineNumber(), el.getMethodName()));
-        }
     }
 
     private List<ReflexValue> evaluateParameters(List<ReflexNode> params, IReflexDebugger debugger, Scope scope) {
