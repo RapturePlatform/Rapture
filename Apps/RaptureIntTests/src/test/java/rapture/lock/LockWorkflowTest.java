@@ -61,7 +61,7 @@ public class LockWorkflowTest {
     private IntegrationTestHelper helper;
     private RaptureURI repoUri = null;
 
-    @BeforeClass(groups = { "nightly" })
+    @BeforeClass(groups = { "nightly","lock" })
     @Parameters({ "RaptureURL", "RaptureUser", "RapturePassword" })
     public void setUp(@Optional("http://localhost:8665/rapture") String url, @Optional("rapture") String username, @Optional("rapture") String password) {
         helper = new IntegrationTestHelper(url, username, password);
@@ -69,11 +69,13 @@ public class LockWorkflowTest {
         helper.configureTestRepo(repoUri, "MONGODB"); // TODO Make this configurable
     }
 
-    @AfterClass(groups = { "nightly" })
+    @AfterClass(groups = { "nightly","lock" })
     public void tearDown() {
+    	helper.cleanAllAssets();
+    	helper2.cleanAllAssets();
     }
 
-    @Test(groups = { "locking", "nightly" })
+    @Test(groups = { "lock", "nightly" })
     public void lockWorkflowTest() {
         RaptureURI workflowRepo = helper.getRandomAuthority(Scheme.WORKFLOW);
         HttpDecisionApi decisionApi = helper.getDecisionApi();
@@ -178,7 +180,7 @@ public class LockWorkflowTest {
     }
 
     // Cover bad cases
-    @Test(groups = { "locking", "nightly" }, enabled = false)
+    @Test(groups = { "lock", "nightly" }, enabled = false)
     public void lockWorkflowTest2() {
         RaptureURI workflowRepo = helper.getRandomAuthority(Scheme.WORKFLOW);
         HttpDecisionApi decisionApi = helper.getDecisionApi();
