@@ -1,0 +1,25 @@
+[The operation API gives you the ability to treat Rapture documents as class objects.]
+
+api(Operation) {
+   [ Invoke a method on a Rapture object, returning the response from the function. ]
+   @entitle=/operation/run
+   @public Map<String, Object> invoke(String docUri, String method, Map<String, Object> params);
+
+   [ Invoke a method on a Rapture object, returning the response from the function. The function could be available
+     on the passed interface document. ]
+   @entitle=/operation/run
+   @public Map<String, Object> invokeAlt(String docUri, String method, Map<String, Object> params, String altInterface);
+   
+    [ Invoke a method on a Rapture object, returning the response from the function. The document is updated if the this variable is changed. ]
+   @entitle=/operation/run
+   @public Map<String, Object> invokeSave(String docUri, String method, Map<String, Object> params);
+   
+    [ Invoke a method on a Rapture object, returning the response from the function. The document is updated if the this variable is changed. The
+      function could be available on the passed interface document.]
+   @entitle=/operation/run
+   @public Map<String, Object> invokeSaveAlt(String docUri, String method, Map<String, Object> params, String altInterface);	
+   
+   [ Invoke a set of methods in parallel, returning the merged response from the function. ]
+   @entitle=/operation/run
+   @public Map<String, Object> invokeParallel(String docUri, List<String> methods, Map<String, Object> params);
+}

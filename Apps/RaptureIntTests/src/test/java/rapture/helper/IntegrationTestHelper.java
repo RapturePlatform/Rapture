@@ -34,16 +34,19 @@ import com.google.common.collect.ImmutableList;
 
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
+import rapture.common.WorkOrderExecutionState;
 import rapture.common.client.HttpAdminApi;
 import rapture.common.client.HttpBlobApi;
+import rapture.common.client.HttpDecisionApi;
 import rapture.common.client.HttpDocApi;
-import rapture.common.client.HttpEventApi;
 import rapture.common.client.HttpEntitlementApi;
+import rapture.common.client.HttpEventApi;
 import rapture.common.client.HttpLoginApi;
 import rapture.common.client.HttpPluginApi;
 import rapture.common.client.HttpScriptApi;
 import rapture.common.client.HttpSearchApi;
 import rapture.common.client.HttpSeriesApi;
+import rapture.common.client.HttpStructuredApi;
 import rapture.common.client.HttpUserApi;
 import rapture.common.client.SimpleCredentialsProvider;
 
@@ -60,6 +63,8 @@ public class IntegrationTestHelper {
     HttpEntitlementApi entApi = null;
     HttpEventApi eventApi = null;
     HttpPluginApi pluginApi = null;
+    HttpDecisionApi decisionApi = null;
+    HttpStructuredApi structApi = null;
 
     static final String testPrefix = "__RESERVED__";
 
@@ -109,6 +114,14 @@ public class IntegrationTestHelper {
         return entApi;
     }
 
+    public HttpDecisionApi getDecisionApi() {
+        return decisionApi;
+    }
+
+    public HttpStructuredApi getStructApi() {
+        return structApi;
+    }
+
     String user = null;
 
     public String getUser() {
@@ -129,6 +142,8 @@ public class IntegrationTestHelper {
         entApi = new HttpEntitlementApi(raptureLogin);
         eventApi = new HttpEventApi(raptureLogin);
         pluginApi = new HttpPluginApi(raptureLogin);
+        decisionApi = new HttpDecisionApi(raptureLogin);
+        structApi = new HttpStructuredApi(raptureLogin);
         uriCache = new HashSet<>();
     }
 
@@ -199,16 +214,30 @@ public class IntegrationTestHelper {
             seriesApi.deleteSeriesRepo(authString);
             Assert.assertFalse(seriesApi.seriesRepoExists(authString), authString + " Delete failed");
             break;
+
         case SCRIPT:
             scriptApi.deleteScriptsByUriPrefix(authString);
             scriptApi.deleteScript(authString);
             break;
+        case STRUCTURED:
+        	if (structApi.structuredRepoExists(authString))
+        		structApi.deleteStructuredRepo(authString);
+            Assert.assertFalse(structApi.structuredRepoExists(authString), authString + " Delete failed");
+            break;
+        case WORKFLOW:
+            // TODO
+
         default:
-            Assert.fail(repo.toString() + " not supported");
+            System.out.println(repo.toString() + " not supported");
         }
         uriCache.remove(repo);
     }
 
+    public static boolean isWorkOrderRunning (HttpDecisionApi decisionApi,String workOrderURI ) {
+        WorkOrderExecutionState state = decisionApi.getWorkOrderStatus(workOrderURI).getStatus();
+        return !(state == WorkOrderExecutionState.FINISHED || state == WorkOrderExecutionState.CANCELLED || state == WorkOrderExecutionState.ERROR ||  state == WorkOrderExecutionState.FAILING);
+    }
+    
     /**
      * Delete any created assets that we know about
      */

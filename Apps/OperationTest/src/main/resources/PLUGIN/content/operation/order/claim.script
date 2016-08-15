@@ -1,0 +1,3 @@
+// Claim an order
+this['trader'] = params['trader'];
+return this;

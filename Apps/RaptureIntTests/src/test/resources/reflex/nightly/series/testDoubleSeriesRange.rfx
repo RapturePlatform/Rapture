@@ -18,4 +18,4 @@ assert(seriesList.size() > 0);
 for s in seriesList do 
 	assert(cast(s.getKey(),"number") >=(LOW_VALUE+OFFSET) && cast(s.getKey(),"number") <=(HIGH_VALUE+OFFSET));
 end  
-
+return true;

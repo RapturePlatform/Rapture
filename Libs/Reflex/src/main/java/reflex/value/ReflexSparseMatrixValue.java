@@ -28,12 +28,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import reflex.value.internal.ReflexNullValue;
-
 import com.google.common.collect.Table;
 import com.google.common.collect.Table.Cell;
 import com.google.common.collect.Tables;
 import com.google.common.collect.TreeBasedTable;
+
+import reflex.value.internal.ReflexNullValue;
 
 /**
  * For now, implement a sparse matrix as simply a list
@@ -52,12 +52,20 @@ public class ReflexSparseMatrixValue {
 	private List<ReflexValue> rowOrder;
 	private List<ReflexValue> colOrder;
 	
-	public ReflexSparseMatrixValue(int dimension) {
-		table = TreeBasedTable.create();
-		rowOrder = new ArrayList<ReflexValue>();
-		colOrder = new ArrayList<ReflexValue>();
-	}
-	
+    public ReflexSparseMatrixValue(int dimension) {
+        table = TreeBasedTable.create();
+        rowOrder = new ArrayList<ReflexValue>();
+        colOrder = new ArrayList<ReflexValue>();
+    }
+
+    public ReflexSparseMatrixValue copyOf() {
+        ReflexSparseMatrixValue copy = new ReflexSparseMatrixValue(0);
+        copy.rowOrder.addAll(rowOrder);
+        copy.colOrder.addAll(colOrder);
+        copy.table.putAll(table);
+        return copy;
+    }
+
 	public void set(ReflexValue row, ReflexValue column, ReflexValue value) {
 		table.put(row, column, value);
 		if (!rowOrder.contains(row)) {
@@ -76,7 +84,8 @@ public class ReflexSparseMatrixValue {
 		return ret;
 	}
 	
-	public String toString() {
+	@Override
+    public String toString() {
 		StringBuilder sb = new StringBuilder();
 		for(ReflexValue c : colOrder) {
 			sb.append(",");

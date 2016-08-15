@@ -1,0 +1,166 @@
+\chapter{Operations - Documents as Objects}
+
+The operation api of \Rapture can be used to treat \Rapture documents as a kind
+of object from a programming perspective. The idea is simple -- fields in a \Rapture
+document can contain a \Reflex script or a reference to a \Reflex script - an this
+script can be invoked on the document object through the api. Furthermore special keys
+in the document can refer to alternative documents that define a base implementation or
+an interface implementation, with the operation call picking the most specific reference
+to a function upon execution.
+
+This approach gives a flexible way of dereferencing or delegating the functions that
+can be applied to classes of document in \Rapture. Some specific examples are produced below but
+as a preview consider a \emph{transform} function that can be used to convert a \Rapture document
+to a different form -- perhaps as part of a general ETL process. This transform function could be
+defined in a general way for all document objects of a given type and then overridden as necessary for
+specific documents from an unknown source. In this way the \emph{transform} workflow process can run
+on any set of document types -- the specialization is now data driven within the documents
+themselves.
+
+\section{API styles}
+
+The calls in the operation API have two different variants, combining to create four calls. The first variant is
+whether the document that is being acted upon is being modified by the function -- if so the \emph{Save} calls can
+be used to save back the document after the function completes. The second variant provides an alternative source
+for the function/method declaration. If large sets of documents have the same implementation this saves writing that reference
+into each document. The \emph{Alt} calls have an additional parameter that is the uri of such a specification document.
+
+\section{Method location}
+
+In all cases we provide the operation API with a document uri and a method name. The implementation of the call searches
+for the function to execute using the following strategy.
+
+\subsection{Search in document}
+The most specific strategy is one where the method is defined on the document given. For example, given a requirement to
+search for the method \emph{claim} on a document, the following documents would be cases where this strategy would
+succeed:
+
+\begin{lstlisting}
+  {
+    "strategy" : "ABC",
+    "trader" : "Alan",
+    "face" : 12234,
+    "claim" : "script://myoperations/order/claim"
+  }
+\end{lstlisting}
+
+\begin{lstlisting}
+  {
+    "strategy" : "ABC",
+    "trader" : "Alan",
+    "face" : 12234,
+    "claim" : "this['trader'] = params['trader']; return this;"
+  }
+\end{lstlisting}
+
+\subsection{Search in interface}
+A \Rapture document (or the \emph{Alt} API calls) can specify a document that contains an interface definition. So for example given
+the following documents:
+
+\begin{lstlisting}
+  {
+    "strategy" : "ABC",
+    "trader" : "Alan",
+    "face" : 12234,
+    "$interface" : "//interface/order"
+  }
+\end{lstlisting}
+
+\begin{lstlisting}[caption={//interface/order}]
+  {
+    "claim" : "this['trader'] = params['trader']; return this;"
+  }
+\end{lstlisting}
+
+the following API call would work:
+
+\begin{lstlisting}
+  #operation.invokeSave('//orders/ORD1', 'claim', { 'trader' : 'Alan'});
+\end{lstlisting}
+
+Furthermore, given a document like this:
+
+\begin{lstlisting}
+  {
+    "strategy" : "ABC",
+    "trader" : "Alan",
+    "face" : 12234
+  }
+\end{lstlisting}
+
+the following call could be used:
+
+\begin{lstlisting}
+  #operation.invokeAltSave('//orders/ORD1', 'claim', '//interface/order', { 'trader' : 'Alan'});
+\end{lstlisting}
+
+\subsection{Search in base}
+A \Rapture document can specify a parent document that can contain an interface definition. This base document works in the same
+way as the interface document declaration except that any base reference in the parent document can also be followed.
+
+\begin{lstlisting}
+  {
+    "strategy" : "ABC",
+    "trader" : "Alan",
+    "face" : 12234,
+    "$base" : "//order/prime"
+  }
+\end{lstlisting}
+
+\begin{lstlisting}[caption={//order/prime}]
+  {
+    "claim" : "this['trader'] = params['trader']; return this;"
+  }
+\end{lstlisting}
+
+the following API call would work:
+
+\begin{lstlisting}
+  #operation.invokeSave('//orders/ORD1', 'claim', { 'trader' : 'Alan'});
+\end{lstlisting}
+
+\subsection{Order of search}
+The order of function search is the following : direct reference, search in base (up the parent hierarchy), search in interface, search in alt interface. For each base search the interface
+is also searched in those specification documents.
+
+\section{Usage example}
+In this approach a document has many fields and a method is used to retrieve some combination of their values according to some logic.
+\begin{lstlisting}
+  {
+    "sources" : [
+        "SS" : 122.23,
+        "BBG" : 122.25,
+        "Internal" : 122.26
+    ],
+    "$interface" : '//logic/preferredPrice'
+  }
+\end{lstlisting}
+\begin{lstlisting}[caption={//logic/preferredPrice}]
+  {
+    "preferredPrice" : "
+        preferredOrder = [ 'Internal', 'BBG', 'SS'];
+        for x in preferredOrder do
+          if this.sources[x] != null do
+            return this.sources[x];
+          end
+        end
+        throw 'No preferred price';
+      "
+  }
+\end{lstlisting}
+
+In the above example calling the method \emph{preferredPrice} on any \emph{price} document in a \Rapture system could imply some kind of
+price structure that is preferred. However if a price document or instrument was special in some way, an override could be defined within
+the document itself:
+
+\begin{lstlisting}
+  {
+    "sources" : [
+    ],
+    "computedPrice" : 122.23,
+    "preferredPrice" : "return this.computedPrice;
+  }
+\end{lstlisting}
+
+In this way the method \emph{preferredPrice} can be called on all price documents with the majority following a price preference approach. Special
+prices will follow a different computational approach but can still be used in a general workflow or computation that relies on the \emph{preferredPrice} approach.

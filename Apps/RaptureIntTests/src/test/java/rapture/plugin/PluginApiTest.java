@@ -205,7 +205,7 @@ public class PluginApiTest {
    
         int numRetries=0;
         long waitTimeMS=5000;
-        while (isWorkOrderRunning(decisionApi,workOrderURI)  && numRetries < 20) {
+        while (IntegrationTestHelper.isWorkOrderRunning(decisionApi,workOrderURI)  && numRetries < 20) {
             Reporter.log("Checking workorder status, retry count="+numRetries+", waiting "+(waitTimeMS/1000)+" seconds...",true);
             try {
                 Thread.sleep(waitTimeMS);
@@ -248,11 +248,6 @@ public class PluginApiTest {
         return null;
     }
     
-    public static boolean isWorkOrderRunning (HttpDecisionApi decisionApi,String workOrderURI ) {
-        return !(decisionApi.getWorkOrderStatus(workOrderURI).getStatus() == WorkOrderExecutionState.FINISHED || 
-                decisionApi.getWorkOrderStatus(workOrderURI).getStatus() == WorkOrderExecutionState.CANCELLED || 
-                decisionApi.getWorkOrderStatus(workOrderURI).getStatus() == WorkOrderExecutionState.ERROR);
-    }
     
     @AfterClass(groups={"plugin", "nightly"})
     public void AfterTest(){

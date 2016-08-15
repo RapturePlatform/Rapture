@@ -30,3 +30,4 @@ assert(res3['rows']==[['token2','ts2','data3'], ['token2','ts2','data2']]);
 res4 = #index.findIndex(docRepoUri,query4);
 assert(res4['columnNames']==['keyField']);
 assert(res4['rows']==[['data3'], ['data2']]);
+return true;

@@ -1,0 +1,4 @@
+println("Playing around in oper2");
+ret = {};
+ret.moore = 'Moore';
+return ret;

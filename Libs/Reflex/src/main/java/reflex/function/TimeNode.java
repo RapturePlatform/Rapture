@@ -23,6 +23,8 @@
  */
 package reflex.function;
 
+import org.joda.time.DateTimeZone;
+
 import reflex.IReflexHandler;
 import reflex.Scope;
 import reflex.debug.IReflexDebugger;
@@ -57,7 +59,7 @@ public class TimeNode extends BaseNode {
             if (initVal.isString()) {
                 val = new ReflexTimeValue(initVal.asString());
             } else if (initVal.isTime()) {
-                val = new ReflexTimeValue(initVal.asTime());
+                val = new ReflexTimeValue(initVal.asTime(), DateTimeZone.UTC);
             } else if (initVal.isNumber()) {
             	val = new ReflexTimeValue(initVal.asLong());
             }

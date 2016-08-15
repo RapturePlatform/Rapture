@@ -1,0 +1,7 @@
+
+workerURI =  _params['$DP_WORKER_URI'];
+sleep(20000);
+println('******* DP_WORKER_URI: ' + workerURI);
+println('******* STEP RECORD TEST step 1');
+
+return "ok";

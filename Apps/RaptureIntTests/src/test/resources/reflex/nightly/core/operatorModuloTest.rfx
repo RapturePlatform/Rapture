@@ -37,3 +37,4 @@ if u==M3ans do
 end
 
 assert(returnVal);
+return true;

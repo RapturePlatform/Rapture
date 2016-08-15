@@ -10,7 +10,7 @@ end
 
 newSeries=seriesRepoUri+'/addLongs';
 #series.addLongsToSeries(newSeries, pointKeys, pointValues);
-seriesList=#series.getPointsAsLongs(newSeries);
+seriesList=#series.getPointsAsDoubles(newSeries);
 assert(seriesList.size() > 0);
 resultsKeys=[];
 resultsValues=[];
@@ -28,3 +28,4 @@ for k in pointValues do
 	res=(resultsValues contains k);
         assert(res);
 end
+return true;

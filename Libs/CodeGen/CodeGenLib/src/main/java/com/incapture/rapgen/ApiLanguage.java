@@ -35,4 +35,5 @@ public enum ApiLanguage {
     VB,
     DOTNET, 
     CURTISDOC,
+    CPP
 }

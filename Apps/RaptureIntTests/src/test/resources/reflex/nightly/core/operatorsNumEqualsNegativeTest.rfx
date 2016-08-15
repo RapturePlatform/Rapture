@@ -18,3 +18,4 @@ if (i != j) do
 end
 
 assert(returnVal);
+return true;

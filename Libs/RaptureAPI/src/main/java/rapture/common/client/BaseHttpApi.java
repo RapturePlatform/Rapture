@@ -354,7 +354,7 @@ public class BaseHttpApi {
         if (exceptionMessage == null || exceptionMessage.length() == 0) {
             exceptionMessage = "Received an unknown error from the API";
         }
-        RaptureException raptException = new RaptureException(wrapper.getId(), wrapper.getStatus(), wrapper.getMessage());
+        RaptureException raptException = new RaptureException(wrapper.getId(), wrapper.getStatus(), wrapper.getStackTrace());
         throw raptException;
     }
 

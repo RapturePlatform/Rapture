@@ -1,0 +1,7 @@
+{
+  "strategy" : "ALPHA",
+  "asset" : "ABC123345",
+  "face"  : 1223.34,
+  "trader" : "alan",
+  "$interface" : "//otest/impl/order"
+}

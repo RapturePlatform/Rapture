@@ -32,7 +32,7 @@ import rapture.helper.IntegrationTestHelper;
 public class ReflexTestRunner {
     String raptureUrl = null;
     private HttpScriptApi scriptApi = null;
-    private RaptureURI scriptRepo = null;
+
     private List<String> scriptList = new ArrayList<String>();
     IntegrationTestHelper helper;
 
@@ -42,11 +42,11 @@ public class ReflexTestRunner {
         helper = new IntegrationTestHelper(url, user, password);
         scriptApi = helper.getScriptApi();
         loadScripts(helper.getRandomAuthority(Scheme.SCRIPT));
-        scriptRepo = helper.getRandomAuthority(Scheme.SCRIPT);
+ 
         HttpAdminApi admin = helper.getAdminApi();
     }
 
-    Map<String, String> getParams() {
+    	Map<String, String> getParams() {
         Map<String, String> paramMap = new HashMap<String, String>();
 
         RaptureURI blobRepo = helper.getRandomAuthority(Scheme.BLOB);
@@ -61,8 +61,14 @@ public class ReflexTestRunner {
         helper.configureTestRepo(seriesRepo, "MEMORY");
         paramMap.put("seriesRepoUri", seriesRepo.toString());
 
+        RaptureURI scriptRepo = helper.getRandomAuthority(Scheme.SCRIPT);
         paramMap.put("scriptRepoUri", scriptRepo.toString());
+        
+        RaptureURI structuredRepo = helper.getRandomAuthority(Scheme.STRUCTURED);
+        paramMap.put("structuredRepoUri", structuredRepo.toString());
+        
         paramMap.put("user", helper.getUser());
+        
         return paramMap;
     }
 
@@ -72,24 +78,28 @@ public class ReflexTestRunner {
         String checkStr = scriptApi.checkScript(scriptName);
         Assert.assertEquals(0, checkStr.length(), "Found error in script " + scriptName + ": " + checkStr);
         Reporter.log("Running script: " + scriptName, true);
+        String scriptResult="";
         try {
-            scriptApi.runScript(scriptName, getParams());
+        	scriptResult=scriptApi.runScript(scriptName, getParams());
         } catch (Exception e) {
-            Reporter.log(e.getMessage());
-            Assert.fail("Failed running script: " + scriptName + " : " + e.getMessage());
+            Assert.fail("Failed running script: " + scriptName + "\n" + ExceptionToString.format(e));
         } 
+        Assert.assertTrue(Boolean.parseBoolean(scriptResult),"Script result was not true for "+scriptName);
+
     }
 
     // Checks all non search scripts for syntax and then attempts to run
-    @Test(groups = { "script", "nightly","nosearch" }, dataProvider = "nonSearchScripts")
+    @Test(groups = { "script", "nightly", "nosearch" }, dataProvider = "nonSearchScripts")
     public void runNonSearchScripts(String scriptName) {
         Assert.assertEquals(0, scriptApi.checkScript(scriptName).length(), "Found error in script " + scriptName);
         Reporter.log("Running script: " + scriptName, true);
+        String scriptResult="";
         try {
-            scriptApi.runScript(scriptName, getParams());
+        	scriptResult=scriptApi.runScript(scriptName, getParams());
         } catch (Exception e) {
             Assert.fail("Failed running script: " + scriptName + "\n" + ExceptionToString.format(e));
         }
+        Assert.assertTrue(Boolean.parseBoolean(scriptResult),"Script result was not true for "+scriptName);
     }
 
     List<File> recursiveList(File file) {
@@ -106,6 +116,9 @@ public class ReflexTestRunner {
         return (file.exists() && file.getName().endsWith("rfx")) ? ImmutableList.of(file) : ImmutableList.of();
     }
 
+    // DO NOT CHECK THIS IN WITH A VALUE OTHER THAN NULL. IT IS FOR DEBUGGING PURPOSES ONLY
+    String testOnly = null;
+
     // Read in all reflex scripts in all subdirs of ($HOME)/bin/reflex/nightly and creates scripts in Rapture
     private void loadScripts(RaptureURI tempScripts) {
         String rootPath = System.getProperty("user.dir") + File.separator + "src" + File.separator + "test" + File.separator + "resources" + File.separator
@@ -116,11 +129,13 @@ public class ReflexTestRunner {
             return;
         }
         for (File file : files) {
+            if ((testOnly == null) || file.getName().contains(testOnly))
             try {
                 String scriptName = file.getName();
                 String subdirName = file.getParent().substring(file.getParent().lastIndexOf('/') + 1);
                 String scriptPath = RaptureURI.builder(tempScripts).docPath(subdirName + "/" + scriptName).asString();
                 Reporter.log("Reading in file: " + file.getAbsolutePath(), true);
+
                 if (!scriptApi.doesScriptExist(scriptPath)) {
                     byte[] scriptBytes = Files.readAllBytes(file.toPath());
                     scriptApi.createScript(scriptPath, RaptureScriptLanguage.REFLEX, RaptureScriptPurpose.PROGRAM, new String(scriptBytes));
@@ -159,6 +174,6 @@ public class ReflexTestRunner {
 
     @AfterClass
     public void cleanUp() {
-    	helper.cleanAllAssets();
+        helper.cleanAllAssets();
     }
 }

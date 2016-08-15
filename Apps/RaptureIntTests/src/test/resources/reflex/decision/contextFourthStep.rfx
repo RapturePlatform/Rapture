@@ -1,0 +1,10 @@
+
+workerURI = _params['$DP_WORKER_URI'];
+
+threadName = #decision.getContextValue(workerURI, 'thread');
+println("script for fourth step  >>>> worker=" + workerURI + " >>>> thread is " + threadName);
+sleep(11000);
+
+println(#decision.getContextValue(workerURI, 'param1'));
+#decision.setContextLiteral(workerURI, 'param1', 'I got your param1 [fourthStep] random num[' + num + ']');
+return "wrongtransition";

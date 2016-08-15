@@ -33,13 +33,14 @@ api(Script) {
     @public ScriptInterface getInterface(String scriptURI);
    
     [Stores a script in the system using a RaptureScript object. 
-     TODO is there really any point in passing the URI? The storage location is based on RaptureScript.
-     All we do is extract the Authority from the URI; the caller can do that. ]
+    TODO is there really any point in passing the URI? The storage location is based on RaptureScript.
+    All we do is extract the Authority from the URI; the caller can do that. ]
     @entitle=/script/write/$f(scriptURI)
     @public RaptureScript putScript(String scriptURI, RaptureScript script);
     
     [Store a script in the system using raw inputs. Most users will want the value PROGRAM for purpose.]
     @entitle=/script/write/$f(scriptURI)
+    @deprecated="use createScript to create a new script or getScript followed by putScript to modify an existing one."
     @public RaptureScript putRawScript(String scriptURI, String content, String language, String purpose, List(String) param_types, List(String) param_names);
    
     [Run a script in the Rapture environment. ]

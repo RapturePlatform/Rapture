@@ -56,3 +56,4 @@ end
 println('overall result : ' + returnVal);
 
 assert(returnVal);
+return true;

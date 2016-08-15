@@ -1,0 +1,15 @@
+returnVal = false;
+
+try do
+	println ('Testing split size positive case');
+	testString = 'testing a basic replace to see if it works';
+	testList = split(testString, ' ', true);
+	if (size(testList)== 9) do
+		returnVal = true;
+	end
+end
+catch e do
+end
+    
+assert(returnVal);
+return true;

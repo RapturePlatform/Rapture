@@ -34,17 +34,53 @@
 // Unless explicit permission obtained in writing this software cannot be distributed.
 //
 
-// Test of the stats module
+// Test the RaptureURI module
 
 import raptureUriModule as uri;
 println ($uri.about());
-docUri = $uri.raptureURI("document://foo/bar/baz");
-println ($uri.getScheme(docUri));
-println ($uri.getAuthority(docUri));
-println ($uri.getDocPath(docUri));
 
-assert ($uri.getScheme(docUri) == 'document');
-assert ($uri.getAuthority(docUri) == 'foo');
-assert ($uri.getDocPath(docUri) == 'bar/baz');
 
-return docUri;
+try do
+  println("This is illegal");
+  testUri = $uri.raptureURI("foo://");
+  assert (testUri+" That should not have succeeded", false);
+end
+catch e do
+  println("Expected");
+end
+
+println("This is legal");
+
+testUri = $uri.raptureURI(2.0);
+assert ($uri.getAuthority(testUri) == '2.0');
+
+testUri = $uri.raptureURI("series://foo/bar/baz@1#2$3");
+assert ($uri.getScheme(testUri) == 'series');
+assert ($uri.getAuthority(testUri) == 'foo');
+assert ($uri.getDocPath(testUri) == 'bar/baz');
+assert ($uri.getElement(testUri) == '2');
+assert ($uri.getAttribute(testUri) == '3');
+assert ($uri.getVersion(testUri) == '1');
+
+testUri = $uri.raptureURI("script://u/v/w/x/y/z");
+assert ($uri.getScheme(testUri) == 'script');
+assert ($uri.getAuthority(testUri) == 'u');
+assert ($uri.getDocPath(testUri) == 'v/w/x/y/z');
+assert ($uri.getElement(testUri) == null);
+assert ($uri.getAttribute(testUri) == null);
+assert ($uri.getVersion(testUri) == null);
+
+testUri = $uri.raptureURI("blob://foo/bar/baz#brown");
+assert ($uri.getScheme(testUri) == 'blob');
+assert ($uri.getAuthority(testUri) == 'foo');
+assert ($uri.getDocPath(testUri) == 'bar/baz');
+assert ($uri.getElement(testUri) == 'brown');
+assert ($uri.getAttribute(testUri) == null);
+assert ($uri.getVersion(testUri) == null);
+
+testUri = $uri.raptureURI("document://foo/bar/baz");
+assert ($uri.getScheme(testUri) == 'document');
+assert ($uri.getAuthority(testUri) == 'foo');
+assert ($uri.getDocPath(testUri) == 'bar/baz');
+
+return testUri;

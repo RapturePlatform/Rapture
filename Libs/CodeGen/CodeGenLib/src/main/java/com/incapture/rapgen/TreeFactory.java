@@ -62,6 +62,9 @@ public class TreeFactory {
             case PYTHON:
                 val = new TTreePython(ns);
                 break;
+            case CPP:
+                val = new TTreeCpp(ns);
+                break;
         }
 
         val.setTemplateLib(templates);

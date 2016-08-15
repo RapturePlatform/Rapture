@@ -10,9 +10,11 @@
                         <package name="rapture.blob" />
                         <package name="rapture.series" />
                         <package name="rapture.document" />
+                        <package name="rapture.decision" />
                         <package name="rapture.plugin" />
                         <package name="rapture.entitlement" />
                         <package name="rapture.search" />
+                        <package name="rapture.structured" />
                         <package name="rapture.reflex" />
                 </packages>
 	</test>

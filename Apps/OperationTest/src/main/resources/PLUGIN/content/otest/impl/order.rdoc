@@ -1,0 +1,5 @@
+{
+  "claim" : "script://operation/order/claim",
+  "oper1" : "script://operation/order/oper1",
+  "oper2" : "script://operation/order/oper2"
+}

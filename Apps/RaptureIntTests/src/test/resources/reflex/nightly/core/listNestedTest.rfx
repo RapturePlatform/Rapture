@@ -8,3 +8,4 @@ else do
 	returnVal = false;
 end
 assert(returnVal);
+return true;

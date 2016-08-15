@@ -1,0 +1,11 @@
+{
+   "depends":{},
+   "description":"Operation Test",
+   "plugin":"OperationTest",
+   "version":{
+   		"major":1,
+   		"minor":1,
+   		"release":32,
+   		"timestamp":99999999999999
+   }
+}

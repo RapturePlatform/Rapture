@@ -32,3 +32,4 @@ for i = 0 to 49 do
 end
 
 assert(returnVal);
+return true;

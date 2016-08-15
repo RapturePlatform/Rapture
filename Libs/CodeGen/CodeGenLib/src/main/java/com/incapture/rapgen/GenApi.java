@@ -131,6 +131,10 @@ class GenApi {
                 System.out.println("Running for Go");
                 /* TTreeGo.hmxdef_return out = */
                 ((TTreeGo) walker).hmxdef();
+            } else if (walker instanceof TTreeCpp) {
+                System.out.println("Running for Cpp");
+                /* TTreeGo.hmxdef_return out = */
+                ((TTreeCpp) walker).hmxdef();
             } else if (walker instanceof TTreePython) {
                 System.out.println("Running for Python");
                 /* TTreePython.hmxdef_return out = */

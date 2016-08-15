@@ -22,3 +22,4 @@ for base = 1 to 20 do
 end
 
 assert(returnVal);
+return true;

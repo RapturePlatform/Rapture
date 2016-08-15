@@ -1,0 +1,9 @@
+println('******* Error Handler Step 3');
+workerURI =  _params['$DP_WORKER_URI'];
+workOrderURI = _params['$DP_WORK_ORDER_URI'];
+println('******* DP_WORKER_URI    : ' + workerURI);
+println('******* DP_WORK_ORDER_URI: ' + workOrderURI);
+
+#decision.setContextLiteral(workerURI, "retValFromErrorHandler", "ugh");
+
+return "ok";

@@ -1,0 +1,53 @@
+installed = #plugin.getInstalledPlugins();
+println(installed);
+x = time();
+y = dateformat(x, "hhmmss");
+pluginName = "baby"+y;
+
+try do
+#plugin.uninstallPlugin(pluginName);
+end
+catch e do
+println('.');
+end
+
+// jim = #plugin.verifyPlugin(pluginName);
+// assert(jim['<manifest not found>'] == 'Plugin is not installed');
+
+plugs = #plugin.getInstalledPlugins();
+count = size(plugs);
+
+docPath=docRepoUri+'/foo/bar';
+content = '{"foo":"bar"}';
+#doc.putDoc(docPath,content);
+
+#plugin.createManifest(pluginName);
+#plugin.setManifestVersion(pluginName, "1.2.3.4");
+#plugin.addManifestDataFolder(pluginName, docRepoUri+"/foo");
+jim = #plugin.verifyPlugin(pluginName);
+// empty map indicates success
+println(jim);
+println(size(jim));
+println (jim == {});
+
+manifest = #plugin.getPluginManifest(pluginName);
+assert(manifest['plugin'] == pluginName);
+
+// Bit of a bodge here. I don't know that this actually works, but that's not really the point;
+// we are just testing that the API does what it's told from Reflex, not trying to install a usable plugin.
+// Which quite frankly you probably shouldn't be doing from Reflex anyway - just because you can doesn't mean you should.
+
+payload = #plugin.getPluginItem(docPath);
+#plugin.installPluginItem(manifest, payload);
+#plugin.installPlugin(manifest, {});
+
+plugs = #plugin.getInstalledPlugins();
+assert(count != size(plugs));
+
+#plugin.uninstallPlugin(pluginName);
+#doc.deleteDoc(docPath);
+
+plugs = #plugin.getInstalledPlugins();
+assert (count == size(plugs));
+
+return true;

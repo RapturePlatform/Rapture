@@ -513,7 +513,7 @@ func2
   |  Vars '(' ')'                    -> ^(FUNC_CALL[$Vars] Vars)
   |  MergeIf '(' exprList ')'     -> ^(FUNC_CALL[$MergeIf] MergeIf exprList)
   |  Format '(' exprList ')' -> ^(FUNC_CALL[$Format] Format exprList)
-  |  DateFormat '(' date=expression (',' format=expression)? ')' -> ^(FUNC_CALL[$DateFormat] DateFormat $date $format?) 
+  |  DateFormat '(' date=expression ',' format=expression (',' timezone=expression)? ')' -> ^(FUNC_CALL[$DateFormat] DateFormat $date $format $timezone?) 
   |  Merge '(' exprList ')'       -> ^(FUNC_CALL[$Merge] Merge exprList)
   |  Message '(' a=expression ',' m=expression ')' -> ^(FUNC_CALL[$Message] Message $a $m)
   |  PutCache '(' v=expression ',' n=expression (',' exp=expression)? ')' -> ^(FUNC_CALL[$PutCache] PutCache $v $n $exp?)

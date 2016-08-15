@@ -13,7 +13,6 @@ gradle.properties
 *.lot
 *.toc
 *.jar
-*.pdf
 *.iml
 *.idea
 bin/
@@ -38,4 +37,8 @@ Libs/API/VB
 **/antlr3/**/*.tokens
 **/antlr3/**/*.java
 Doc/slate/source/includes
+**/CMakeFiles/**
 Libs/API/Slate*
+Libs/APILang/cpp/api/generated/**
+
+
