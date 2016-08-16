@@ -87,7 +87,6 @@ public class LockApiTest {
 
 	String winningContent;
 	String winningPath;
-	LockHandle lockHandleJson;
 	LockHandle lockHandle;
 	List<String> winningContentList;
 
@@ -97,7 +96,6 @@ public class LockApiTest {
 		winningContentList = new ArrayList<String>();
 		winningContent = "";
 		winningPath = "";
-		lockHandleJson = null;
 		lockHandle = null;
 		RaptureURI lockUri = RaptureURI.builder(helper.getRandomAuthority(Scheme.DOCUMENT)).docPath("foo/bar" + System.currentTimeMillis()).build();
 		RaptureLockConfig lockConfig = lockApi.createLockManager(lockUri.toString(), "LOCKING USING ZOOKEEPER {}", "");
@@ -123,7 +121,7 @@ public class LockApiTest {
 						helper.getDocApi().putDoc(winningPath, content);
 						winningContentList.add(content);
 						Reporter.log("Thread id " + currThreadId + " acquired lock and wrote doc: " + content + " to " + winningPath, true);
-						lockHandleJson = lockHandle;
+
 						Thread.sleep(1000);
 						Assert.assertTrue(lockApi.releaseLock(lockUri.toString(), lockConfig.getName(), lockHandle));
 					} else {
@@ -157,7 +155,6 @@ public class LockApiTest {
 	public void testOneThreadBlockingMultipleRequestsZookeeper(Integer threadCount) {
 		winningContent = "";
 		winningPath = "";
-		lockHandleJson = null;
 		lockHandle = null;
 		RaptureURI lockUri = RaptureURI.builder(helper.getRandomAuthority(Scheme.DOCUMENT)).docPath("foo/bar" + System.currentTimeMillis()).build();
 		RaptureLockConfig lockConfig = lockApi.createLockManager(lockUri.toString(), "LOCKING USING ZOOKEEPER {}", "");
@@ -183,7 +180,6 @@ public class LockApiTest {
 						helper.getDocApi().putDoc(winningPath, content);
 						Reporter.log("Thread id " + currThreadId + " acquired lock and wrote doc: " + content + " to " + winningPath, true);
 						winningContent = content;
-						lockHandleJson = lockHandle;
 					} else {
 						Reporter.log("Thread id " + currThreadId + " did not acquire lock.", true);
 					}
