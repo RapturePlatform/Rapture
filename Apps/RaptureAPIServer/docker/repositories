@@ -1,2 +1,5 @@
-http://dl-4.alpinelinux.org/alpine/v3.3/main
+http://alpine.gliderlabs.com/alpine/v3.4/main
+http://alpine.gliderlabs.com/alpine/v3.4/community
+http://dl-4.alpinelinux.org/alpine/edge/main
+http://dl-4.alpinelinux.org/alpine/edge/community
 @testing http://dl-4.alpinelinux.org/alpine/edge/testing
