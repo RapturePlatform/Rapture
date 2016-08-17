@@ -161,7 +161,7 @@ public class LockApiTest {
 		Random rand = new Random();
 
 		RaptureURI docRepoUri = helper.getRandomAuthority(Scheme.DOCUMENT);
-		helper.configureTestRepo(docRepoUri, "MONGODB", true);
+		helper.configureTestRepo(docRepoUri, "MONGODB", false);
 		List<Long> threadList = new ArrayList<Long>();
 
 		class LockThread implements Runnable {
