@@ -24,5 +24,5 @@
 package rapture.common;
 
 public enum RaptureParameterType {
-    STRING, NUMBER, DATE, MAP, LIST, VOID
+    STRING, NUMBER, DATE, MAP, LIST, BOOLEAN, VOID
 }
