@@ -389,11 +389,11 @@ public class ScriptApiFileTest extends AbstractFileTest {
         Map<String, String> parameters = new HashMap<>();
         parameters.put("a", "{\"A\":\"B\",\"C\":\"D\"}");
         parameters.put("b", "-6e08");
-        parameters.put("i", "-6e08");
+        parameters.put("i", "2.112e03");
         parameters.put("c", Boolean.TRUE.toString());
         parameters.put("d", "[1,2,3,4,5]");
         String name = "key";
         ScriptResult ret = Kernel.getScript().runScriptExtended(ctx, script.getAddressURI().toString(), parameters);
-        assertEquals("{A=B, C=D} {A=B, C=D, W=X, Y=Z} -6E+8 true [1, 2, 3, 4, 5] -1.2E+9 false", ret.getReturnValue());
+        assertEquals("{A=B, C=D} {A=B, C=D, W=X, Y=Z} -6E+8 true [1, 2, 3, 4, 5] -1.2E+9 false 2112", ret.getReturnValue());
     }
 }
