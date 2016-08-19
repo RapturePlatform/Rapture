@@ -26,7 +26,6 @@ package rapture.kernel;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -374,22 +373,27 @@ public class ScriptApiFileTest extends AbstractFileTest {
         script.setName("Candy");
         script.setPurpose(RaptureScriptPurpose.PROGRAM);
         script.setParameters(Collections.EMPTY_LIST);
-        String scriptWrite = "meta do \n" + "return string,'Just the parameters put together'; \n" + "param 'a',string,'The a parameter'; \n"
-                + "param 'b',string,'The b parameter'; \n" + "param 'c',string,'The c parameter'; \n" + "param 'd',string,'The d parameter'; \n"
-                + "property 'color','blue'; \n" + "end \n" + "println(\"a is ${a}\"); \n" + "println(\"b is ${b}\"); \n" + "println(\"c is ${c}\"); \n"
-                + "println(\"d is ${d}\"); \n" + "return \"${a}${b}${c}${d}\"; \n";
+        String scriptWrite = "meta do \n" + "return string,'Just the parameters put together'; \n" + "param 'a',map,'The a parameter'; \n"
+                + "param 'b',number,'The b parameter'; \n" + "param 'c',boolean,'The c parameter'; \n" + "param 'd',list,'The d parameter'; \n"
+                + "param 'i',integer,'The i parameter'; \n"
+                + "property 'color','blue'; \n" + "end \n" + "println(a); \n" + "println(b); \n" + "println(c); \n" + "println(d); \n"
+                + "aa=${a}; aa.W='X'; \n aa['Y']='Z'; \n println(\"a is ${a}\"); \n"
+                + "println(\"b is ${b}\"); \n"
+                + "println(\"c is ${c}\"); \n"
+                + "println(\"d is ${d}\"); \n" + "e=2 * ${b}; \n" + "f = !${c}; \n" + "return \"${a} ${aa} ${b} ${c} ${d} ${e} ${f} ${i}\";\n";
         script.setScript(scriptWrite);
         scriptImpl.putScript(ctx, script.getAddressURI().toString(), script);
         RaptureScript scriptRead = scriptImpl.getScript(ctx, script.getAddressURI().toString());
         assertEquals(scriptWrite, scriptRead.getScript());
 
         Map<String, String> parameters = new HashMap<>();
-        parameters.put("a", "A");
-        parameters.put("b", "B");
-        parameters.put("c", "C");
-        parameters.put("d", "D");
+        parameters.put("a", "{\"A\":\"B\",\"C\":\"D\"}");
+        parameters.put("b", "-6e08");
+        parameters.put("i", "-6e08");
+        parameters.put("c", Boolean.TRUE.toString());
+        parameters.put("d", "[1,2,3,4,5]");
         String name = "key";
         ScriptResult ret = Kernel.getScript().runScriptExtended(ctx, script.getAddressURI().toString(), parameters);
-        assertEquals("ABCD", ret.getReturnValue());
+        assertEquals("{A=B, C=D} {A=B, C=D, W=X, Y=Z} -6E+8 true [1, 2, 3, 4, 5] -1.2E+9 false", ret.getReturnValue());
     }
 }

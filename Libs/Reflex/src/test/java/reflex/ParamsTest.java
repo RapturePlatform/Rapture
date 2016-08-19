@@ -41,9 +41,4 @@ public class ParamsTest extends AbstractReflexScriptTest {
         String output = runScript(program, params);
         assertEquals("Foo foo Bar -1 Baz true", output.trim());
     }
-
-    @Test
-    public void testParams4() throws RecognitionException {
-        MetaParam mp = new MetaParam("X", "Integer", "Z");
-    }
 }

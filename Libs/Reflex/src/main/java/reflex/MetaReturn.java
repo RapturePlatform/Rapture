@@ -28,6 +28,11 @@ import org.apache.log4j.Logger;
 import rapture.common.RaptureParameterType;
 
 public class MetaReturn {
+    @Override
+    public String toString() {
+        return "MetaReturn [type=" + type + ", description=" + description + "]";
+    }
+
     private RaptureParameterType type;
     private String description;
     private static final Logger log = Logger.getLogger(MetaReturn.class);

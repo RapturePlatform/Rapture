@@ -29,6 +29,11 @@ import rapture.common.RaptureParameterType;
 
 public class MetaParam {
    
+    @Override
+    public String toString() {
+        return "MetaParam [parameterName=" + parameterName + ", parameterType=" + parameterType + ", description=" + description + "]";
+    }
+
     private String parameterName;
     private RaptureParameterType parameterType;
     private String description;

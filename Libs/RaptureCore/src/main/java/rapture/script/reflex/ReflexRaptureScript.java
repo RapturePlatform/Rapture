@@ -23,7 +23,7 @@
  */
 package rapture.script.reflex;
 
-import java.net.HttpURLConnection;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -35,14 +35,10 @@ import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.CommonTreeNodeStream;
 import org.apache.log4j.Logger;
 
-import rapture.audit.AuditLog;
 import rapture.common.CallingContext;
 import rapture.common.RaptureScript;
-import rapture.common.RaptureURI;
 import rapture.common.ScriptResult;
 import rapture.common.api.ScriptingApi;
-import rapture.common.exception.RaptureException;
-import rapture.common.exception.RaptureExceptionFactory;
 import rapture.common.impl.jackson.JacksonUtil;
 import rapture.config.ConfigLoader;
 import rapture.index.IndexHandler;
@@ -58,6 +54,9 @@ import reflex.AddingOutputReflexHandler;
 import reflex.DummyReflexOutputHandler;
 import reflex.IReflexHandler;
 import reflex.IReflexOutputHandler;
+import reflex.MetaParam;
+import reflex.MetaReturn;
+import reflex.MetaScriptInfo;
 import reflex.ReflexException;
 import reflex.ReflexExecutor;
 import reflex.ReflexLexer;
@@ -68,6 +67,7 @@ import reflex.debug.NullDebugger;
 import reflex.node.ReflexNode;
 import reflex.value.ReflexValue;
 import reflex.value.internal.ReflexNullValue;
+import reflex.value.internal.ReflexVoidValue;
 
 /**
  * Provides an execution context for Rapture Reflex Scripts
@@ -133,6 +133,7 @@ public class ReflexRaptureScript implements IRaptureScript {
         walker.getReflexHandler().setOutputHandler(new DummyReflexOutputHandler());
         walker.getReflexHandler().setDataHandler(new ReflexDataHelper(ctx));
         walker.getReflexHandler().setIOHandler(new BlobOnlyIOHandler());
+        walker.setScriptInfo(parser.scriptInfo);
         return walker;
     }
 
@@ -239,7 +240,7 @@ public class ReflexRaptureScript implements IRaptureScript {
         } else try {
             MDCService.INSTANCE.setReflexMDC(script.getName());
             ScriptRunInfoCollector collector = ScriptRunInfoCollector.createServerCollector(context, script.getAddressURI().getFullPath());
-            
+
             log.info("Running script " + getScriptName(script));
 
             ScriptResult res = _doRunProgram(context, activity, script, extraVals, -1, ScriptRunInfoCollector.createServerCollector(context, "remote"));
@@ -287,39 +288,98 @@ public class ReflexRaptureScript implements IRaptureScript {
     private ScriptResult _doRunProgram(CallingContext context, IActivityInfo activity, RaptureScript script, Map<String, Object> params, int timeout,
             ScriptRunInfoCollector collector) throws RecognitionException, ReflexException {
         ScriptResult res = new ScriptResult();
-            ReflexTreeWalker walker = getParserWithStandardContext(context, script.getScript(), params);
-            ProgressDebugger progress = (timeout > 0) ? new TimeoutReflexDebugger(activity, script.getScript(), timeout)
-                    : new ProgressDebugger(activity, script.getScript());
-            // Setup an alternate output handler, and a standard data handler
-            walker.getReflexHandler().setDataHandler(new ReflexDataHelper(context));
-            walker.getReflexHandler().setOutputHandler(new ScriptResultOutputHandler(res));
-            ReflexNode execRes = walker.walk();
+        ReflexTreeWalker walker = getParserWithStandardContext(context, script.getScript(), params);
+        ProgressDebugger progress = (timeout > 0) ? new TimeoutReflexDebugger(activity, script.getScript(), timeout)
+                : new ProgressDebugger(activity, script.getScript());
+        // Setup an alternate output handler, and a standard data handler
+        walker.getReflexHandler().setDataHandler(new ReflexDataHelper(context));
+        walker.getReflexHandler().setOutputHandler(new ScriptResultOutputHandler(res));
+        ReflexNode execRes = walker.walk();
 
-            ReflexExecutor.injectSystemIntoScope(walker.currentScope);
+        ReflexExecutor.injectSystemIntoScope(walker.currentScope);
 
-            for (Map.Entry<String, Object> val : params.entrySet()) {
-                log.debug("Looking to inject " + val.getKey());
-                ReflexValue v = walker.currentScope.resolve(val.getKey());
-                if (v != null && v.getValue() != ReflexValue.Internal.VOID && v.getValue() != ReflexValue.Internal.NULL) {
-                    log.debug("Injecting " + v.asObject() + " as " + val.getKey());
-                    val.setValue(v.asObject());
-                } else walker.currentScope.assign(val.getKey(), val.getValue() == null ? new ReflexNullValue() : new ReflexValue(val.getValue()));
+        MetaScriptInfo scriptInfo = walker.getScriptInfo();
 
+        for (Map.Entry<String, Object> entry : params.entrySet()) {
+            String key = entry.getKey();
+            String value = entry.getValue().toString();
+            ReflexValue v = walker.currentScope.resolve(key);
+            MetaParam param = scriptInfo.getParameter(key);
+            if (param != null) {
+                switch (param.getParameterType()) {
+                case STRING:
+                default:
+                    v = new ReflexValue(value);
+                    break;
+                case VOID:
+                    v = new ReflexVoidValue(-1);
+                    break;
+                case NUMBER:
+                    v = new ReflexValue(new BigDecimal(value.toString()));
+                    break;
+                case INTEGER:
+                    v = new ReflexValue(new BigDecimal(value.toString()).intValue());
+                    break;
+                case BOOLEAN:
+                    v = new ReflexValue(Boolean.valueOf(value.toString()));
+                    break;
+                case MAP:
+                    v = new ReflexValue(JacksonUtil.getMapFromJson(value.toString()));
+                    break;
+                case LIST:
+                    List<ReflexValue> list = JacksonUtil.objectFromJson(value.toString(), ArrayList.class);
+                    v = new ReflexValue(list);
+                    break;
+                }
             }
-            // TODO replace this with abortable invocation
-            if (timeout > 0) log.info("Warning: script is not abortable");
-            ReflexValue val = execRes.evaluateWithoutScope(progress);
-            progress.getInstrumenter().log();
+            walker.currentScope.assign(key, (v == null) ? new ReflexNullValue() : v);
 
-            if (walker.getReflexHandler() instanceof AddingOutputReflexHandler) {
-                AddingOutputReflexHandler aorf = (AddingOutputReflexHandler) walker.getReflexHandler();
-                SimpleCollectingOutputHandler sc = aorf.getOutputHandlerLike(SimpleCollectingOutputHandler.class);
-                collector.addOutput(sc.getLog());
+        }
+        // TODO replace this with abortable invocation
+        if (timeout > 0) log.info("Warning: script is not abortable");
+        ReflexValue val = execRes.evaluateWithoutScope(progress);
+        progress.getInstrumenter().log();
+
+        if (walker.getReflexHandler() instanceof AddingOutputReflexHandler) {
+            AddingOutputReflexHandler aorf = (AddingOutputReflexHandler) walker.getReflexHandler();
+            SimpleCollectingOutputHandler sc = aorf.getOutputHandlerLike(SimpleCollectingOutputHandler.class);
+            collector.addOutput(sc.getLog());
+        }
+        collector.addInstrumentationLog(progress.getInstrumenter().getTextLog());
+        // Now record collector
+        ScriptCollectorHelper.writeCollector(context, collector);
+
+        // Meta block specifies the return type
+        MetaReturn mri = scriptInfo.getReturnInfo();
+        if (mri != null) {
+            switch (mri.getType()) {
+            case STRING:
+            default:
+                val = new ReflexValue(val.asString());
+                break;
+            case VOID:
+                val = new ReflexVoidValue(-1);
+                break;
+            case NUMBER:
+                val = new ReflexValue(new BigDecimal(val.asString()));
+                break;
+            case INTEGER:
+                val = new ReflexValue(new BigDecimal(val.asString()).intValue());
+                break;
+            case BOOLEAN:
+                val = new ReflexValue(Boolean.valueOf(val.asString()));
+                break;
+            case MAP:
+                val = new ReflexValue(JacksonUtil.getMapFromJson(val.asString()));
+                break;
+            case LIST:
+                List<ReflexValue> list = JacksonUtil.objectFromJson(val.asString(), ArrayList.class);
+                val = new ReflexValue(list);
+                break;
             }
-            collector.addInstrumentationLog(progress.getInstrumenter().getTextLog());
-            // Now record collector
-            ScriptCollectorHelper.writeCollector(context, collector);
-            res.setReturnValue(val.asString());
+        }
+        // But we still return String - that needs to change?
+        res.setReturnValue(val.asString());
         return res;
     }
 
