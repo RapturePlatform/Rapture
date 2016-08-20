@@ -202,7 +202,7 @@ public class ReflexRaptureScript implements IRaptureScript {
     }
 
     @Override
-    public String runProgram(CallingContext context, IActivityInfo activity, RaptureScript script, Map<String, Object> extraVals) {
+    public Object runProgram(CallingContext context, IActivityInfo activity, RaptureScript script, Map<String, Object> extraVals) {
         return runProgram(context, activity, script, extraVals, -1);
     }
 
@@ -233,7 +233,7 @@ public class ReflexRaptureScript implements IRaptureScript {
         return msg.toString();
     }
 
-    public String runProgram(CallingContext context, IActivityInfo activity, RaptureScript script, Map<String, Object> extraVals, int timeout) {
+    public Object runProgram(CallingContext context, IActivityInfo activity, RaptureScript script, Map<String, Object> extraVals, int timeout) {
         if (script == null) {
             log.info("in runProgram: RaptureScript is null");
             return null;
@@ -355,31 +355,33 @@ public class ReflexRaptureScript implements IRaptureScript {
             switch (mri.getType()) {
             case STRING:
             default:
-                val = new ReflexValue(val.asString());
+                res.setReturnValue(val.asString());
                 break;
             case VOID:
-                val = new ReflexVoidValue(-1);
+                res.setReturnValue(null);
                 break;
             case NUMBER:
-                val = new ReflexValue(new BigDecimal(val.asString()));
+                if (val.isNumber()) res.setReturnValue(val.asBigDecimal());
+                else res.setReturnValue(new BigDecimal(val.asString()));
                 break;
             case INTEGER:
-                val = new ReflexValue(new BigDecimal(val.asString()).intValue());
+                if (val.isInteger()) res.setReturnValue(val.asInt());
+                else res.setReturnValue(new BigDecimal(val.asString()).intValue());
                 break;
             case BOOLEAN:
-                val = new ReflexValue(Boolean.valueOf(val.asString()));
+                if (val.isBoolean()) res.setReturnValue(val.asBoolean());
+                else res.setReturnValue(Boolean.valueOf(val.asString()));
                 break;
             case MAP:
-                val = new ReflexValue(JacksonUtil.getMapFromJson(val.asString()));
+                if (val.isMap()) res.setReturnValue(val.asMap());
+                else res.setReturnValue(JacksonUtil.getMapFromJson(val.asString()));
                 break;
             case LIST:
-                List<ReflexValue> list = JacksonUtil.objectFromJson(val.asString(), ArrayList.class);
-                val = new ReflexValue(list);
+                if (val.isList()) res.setReturnValue(val.asList());
+                else res.setReturnValue(JacksonUtil.objectFromJson(val.asString(), ArrayList.class));
                 break;
             }
         }
-        // But we still return String - that needs to change?
-        res.setReturnValue(val.asString());
         return res;
     }
 

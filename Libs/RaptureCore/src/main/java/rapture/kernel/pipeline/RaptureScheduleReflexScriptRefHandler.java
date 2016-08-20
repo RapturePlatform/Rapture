@@ -23,6 +23,11 @@
  */
 package rapture.kernel.pipeline;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.log4j.Logger;
+
 import rapture.common.RaptureJobExec;
 import rapture.common.RapturePipelineTask;
 import rapture.common.RaptureScript;
@@ -35,11 +40,6 @@ import rapture.kernel.Kernel;
 import rapture.kernel.schedule.ScheduleManager;
 import rapture.script.IActivityInfo;
 import rapture.script.reflex.ReflexRaptureScript;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import org.apache.log4j.Logger;
 
 // Handles application/vnd.rapture.reflex.script
 
@@ -68,7 +68,7 @@ public class RaptureScheduleReflexScriptRefHandler implements QueueHandler {
         ReflexRaptureScript reflex = new ReflexRaptureScript();
         final String activityId = Kernel.getActivity().createActivity(ContextFactory.getKernelUser(), task.getTaskId(), "Running schedule script", 1L, 100L);
         try {
-            String resp = reflex.runProgram(ContextFactory.getKernelUser(), new IActivityInfo() {
+            Object resp = reflex.runProgram(ContextFactory.getKernelUser(), new IActivityInfo() {
 
                 @Override
                 public String getActivityId() {
@@ -82,7 +82,7 @@ public class RaptureScheduleReflexScriptRefHandler implements QueueHandler {
 
             }, script, info.getParameters());
             if (resp != null) {
-                log.info("Reflex script returned " + resp);
+                log.info("Reflex script returned " + resp.toString());
             }
             statusManager.finishRunningWithSuccess(task);
             // And update job using the schedule manager

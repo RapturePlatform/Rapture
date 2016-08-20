@@ -86,7 +86,7 @@ public class ScriptBodyStep<T> extends AbstractInvocable<T> {
             m.put(outputUri.toString(), sb.toString());
             String json = JacksonUtil.jsonFromObject(m);
             docApi.putDocEphemeral(context, outputUri.toShortString(), JacksonUtil.jsonFromObject(m));
-            return resp.getReturnValue();
+            return resp.getReturnValue().toString();
         } catch (Exception e) {
             sb.append(e.getMessage());
             Map<String, Object> m = new HashMap<>();

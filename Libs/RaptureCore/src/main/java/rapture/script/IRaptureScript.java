@@ -23,13 +23,13 @@
  */
 package rapture.script;
 
+import java.util.List;
+import java.util.Map;
+
 import rapture.common.CallingContext;
 import rapture.common.RaptureScript;
 import rapture.common.ScriptResult;
 import rapture.index.IndexHandler;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * This is used to provide a standard interface to running scripts in Rapture
@@ -88,7 +88,7 @@ public interface IRaptureScript {
      * @param extraVals
      * @return
      */
-    String runProgram(CallingContext context, IActivityInfo activityInfo, RaptureScript script, Map<String, Object> extraVals);
+    Object runProgram(CallingContext context, IActivityInfo activityInfo, RaptureScript script, Map<String, Object> extraVals);
 
     /**
      * Run a script with extended return value
