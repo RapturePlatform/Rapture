@@ -26,9 +26,11 @@ package rapture.kernel;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -149,13 +151,16 @@ public class ScriptApiFileTest extends AbstractFileTest {
     public void testPutSnippet() {
         String snipUri = auth + "/the/web";
         String script = "// And thus begins the web";
+        @SuppressWarnings("unused")
         RaptureSnippet snip = scriptImpl.createSnippet(ContextFactory.getKernelUser(), snipUri, script);
         RaptureSnippet snipRead = scriptImpl.getSnippet(ContextFactory.getKernelUser(), snipUri);
         assertEquals(script, snipRead.getSnippet());
 
+        script = "// Compliments on unnatural size";
         String snipUri2 = UUID.randomUUID() + "/the/web";
+        @SuppressWarnings("unused")
         RaptureSnippet snip2 = scriptImpl.createSnippet(ContextFactory.getKernelUser(), snipUri2, script);
-        RaptureSnippet snip2Read = scriptImpl.getSnippet(ContextFactory.getKernelUser(), snipUri);
+        RaptureSnippet snip2Read = scriptImpl.getSnippet(ContextFactory.getKernelUser(), snipUri2);
         assertEquals(script, snip2Read.getSnippet());
     }
 
@@ -318,10 +323,10 @@ public class ScriptApiFileTest extends AbstractFileTest {
             }
         }
 
-        @SuppressWarnings("unused")
         ReflexNode returned = walker.walk();
         InstrumentDebugger instrument = new InstrumentDebugger();
         instrument.setProgram(program);
+        @SuppressWarnings("unused")
         ReflexValue retVal = (returned == null) ? null : returned.evaluateWithoutScope(instrument);
         instrument.getInstrumenter().log();
         return sb.toString();
@@ -360,9 +365,9 @@ public class ScriptApiFileTest extends AbstractFileTest {
         parameters.put("b", "B");
         parameters.put("c", "C");
         parameters.put("d", "D");
-        String name = "key";
         String ret = Kernel.getScript().runScript(ctx, script.getAddressURI().toString(), parameters);
         assertEquals("ABCD", ret);
+        scriptImpl.deleteScript(ctx, script.getAddressURI().toString());
     }
 
     @Test
@@ -373,23 +378,147 @@ public class ScriptApiFileTest extends AbstractFileTest {
         script.setLanguage(RaptureScriptLanguage.REFLEX);
         script.setName("Candy");
         script.setPurpose(RaptureScriptPurpose.PROGRAM);
-        script.setParameters(Collections.EMPTY_LIST);
-        String scriptWrite = "meta do \n" + "return string,'Just the parameters put together'; \n" + "param 'a',string,'The a parameter'; \n"
-                + "param 'b',string,'The b parameter'; \n" + "param 'c',string,'The c parameter'; \n" + "param 'd',string,'The d parameter'; \n"
-                + "property 'color','blue'; \n" + "end \n" + "println(\"a is ${a}\"); \n" + "println(\"b is ${b}\"); \n" + "println(\"c is ${c}\"); \n"
-                + "println(\"d is ${d}\"); \n" + "return \"${a}${b}${c}${d}\"; \n";
+        String scriptWrite = "meta do \n" + "return string,'Just the parameters put together'; \n" + "param 'a',map,'The a parameter'; \n"
+                + "param 'b',number,'The b parameter'; \n" + "param 'c',boolean,'The c parameter'; \n" + "param 'd',list,'The d parameter'; \n"
+                + "param 'i',integer,'The i parameter'; \n"
+                + "property 'color','blue'; \n" + "end \n" + "println(a); \n" + "println(b); \n" + "println(c); \n" + "println(d); \n"
+                + "aa=${a}; aa.W='X'; \n aa['Y']='Z'; \n println(\"a is ${a}\"); \n"
+                + "println(\"b is ${b}\"); \n"
+                + "println(\"c is ${c}\"); \n"
+                + "println(\"d is ${d}\"); \n" + "e=2 * ${b}; \n" + "f = !${c}; \n" + "return \"${a} ${aa} ${b} ${c} ${d} ${e} ${f} ${i}\";\n";
         script.setScript(scriptWrite);
         scriptImpl.putScript(ctx, script.getAddressURI().toString(), script);
         RaptureScript scriptRead = scriptImpl.getScript(ctx, script.getAddressURI().toString());
         assertEquals(scriptWrite, scriptRead.getScript());
 
         Map<String, String> parameters = new HashMap<>();
-        parameters.put("a", "A");
-        parameters.put("b", "B");
-        parameters.put("c", "C");
-        parameters.put("d", "D");
-        String name = "key";
+        parameters.put("a", "{\"A\":\"B\",\"C\":\"D\"}");
+        parameters.put("b", "-6e08");
+        parameters.put("i", "2.112e03");
+        parameters.put("c", Boolean.TRUE.toString());
+        parameters.put("d", "[1,2,3,4,5]");
         ScriptResult ret = Kernel.getScript().runScriptExtended(ctx, script.getAddressURI().toString(), parameters);
-        assertEquals("ABCD", ret.getReturnValue());
+        assertEquals("{A=B, C=D} {A=B, C=D, W=X, Y=Z} -6E+8 true [1, 2, 3, 4, 5] -1.2E+9 false 2112", ret.getReturnValue());
+        scriptImpl.deleteScript(ctx, script.getAddressURI().toString());
     }
+
+    @Test
+    public void testScriptReturnsInteger() {
+        RaptureScript script = new RaptureScript();
+        CallingContext ctx = ContextFactory.getKernelUser();
+        script.setAuthority(auth);
+        script.setLanguage(RaptureScriptLanguage.REFLEX);
+        script.setName("Candy");
+        script.setPurpose(RaptureScriptPurpose.PROGRAM);
+        String scriptWrite = "meta do \n return integer,'Half the supplied value'; \n param 'a',number,'A number'; \n end \n return ${a} / 2;\n";
+        script.setScript(scriptWrite);
+        scriptImpl.putScript(ctx, script.getAddressURI().toString(), script);
+        RaptureScript scriptRead = scriptImpl.getScript(ctx, script.getAddressURI().toString());
+        assertEquals(scriptWrite, scriptRead.getScript());
+
+        Map<String, String> parameters = new HashMap<>();
+        parameters.put("a", "2.112e03");
+        ScriptResult ret = Kernel.getScript().runScriptExtended(ctx, script.getAddressURI().toString(), parameters);
+        assertEquals(new Integer(1056), ret.getReturnValue());
+        scriptImpl.deleteScript(ctx, script.getAddressURI().toString());
+    }
+
+    @Test
+    public void testScriptReturnsBoolean() {
+        RaptureScript script = new RaptureScript();
+        CallingContext ctx = ContextFactory.getKernelUser();
+        script.setAuthority(auth);
+        script.setLanguage(RaptureScriptLanguage.REFLEX);
+        script.setName("Candy");
+        script.setPurpose(RaptureScriptPurpose.PROGRAM);
+        String scriptWrite = "meta do \n return boolean,'True if a is 2112'; \n param 'a',number,'A number'; \n end \n return ${a} == 2112;\n";
+        script.setScript(scriptWrite);
+        scriptImpl.putScript(ctx, script.getAddressURI().toString(), script);
+        RaptureScript scriptRead = scriptImpl.getScript(ctx, script.getAddressURI().toString());
+        assertEquals(scriptWrite, scriptRead.getScript());
+
+        Map<String, String> parameters = new HashMap<>();
+        parameters.put("a", "2.112e03");
+        ScriptResult ret = Kernel.getScript().runScriptExtended(ctx, script.getAddressURI().toString(), parameters);
+        assertEquals(Boolean.TRUE, ret.getReturnValue());
+        scriptImpl.deleteScript(ctx, script.getAddressURI().toString());
+    }
+
+    @Test
+    public void testScriptReturnsMap() {
+        RaptureScript script = new RaptureScript();
+        CallingContext ctx = ContextFactory.getKernelUser();
+        script.setAuthority(auth);
+        script.setLanguage(RaptureScriptLanguage.REFLEX);
+        script.setName("Candy");
+        script.setPurpose(RaptureScriptPurpose.PROGRAM);
+        String scriptWrite = "meta do \n return map,'map[b:a]'; \n param 'a',number,'A number'; \n param 'b',string,'A string'; \n end \n c = {}; \n c[b]=a; \n return ${c};\n";
+        script.setScript(scriptWrite);
+        scriptImpl.putScript(ctx, script.getAddressURI().toString(), script);
+        RaptureScript scriptRead = scriptImpl.getScript(ctx, script.getAddressURI().toString());
+        assertEquals(scriptWrite, scriptRead.getScript());
+
+        Map<String, String> parameters = new HashMap<>();
+        parameters.put("a", "2112");
+        parameters.put("b", "Rush");
+        ScriptResult ret = Kernel.getScript().runScriptExtended(ctx, script.getAddressURI().toString(), parameters);
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("Rush", BigDecimal.valueOf(2112));
+        Map retmap = (Map) ret.getReturnValue();
+        assertEquals(map.size(), retmap.size());
+        for (String key : map.keySet()) {
+            assertEquals(map.get(key), retmap.get(key));
+        }
+        scriptImpl.deleteScript(ctx, script.getAddressURI().toString());
+    }
+
+    @Test
+    public void testScriptReturnsList() {
+        RaptureScript script = new RaptureScript();
+        CallingContext ctx = ContextFactory.getKernelUser();
+        script.setAuthority(auth);
+        script.setLanguage(RaptureScriptLanguage.REFLEX);
+        script.setName("Candy");
+        script.setPurpose(RaptureScriptPurpose.PROGRAM);
+        String scriptWrite = "meta do \n return list,'list[b,a]'; \n param 'a',number,'A number'; \n param 'b',string,'A string'; \n end \n c = []; \n c+=a; \n c+=b; \n return ${c};\n";
+        script.setScript(scriptWrite);
+        scriptImpl.putScript(ctx, script.getAddressURI().toString(), script);
+        RaptureScript scriptRead = scriptImpl.getScript(ctx, script.getAddressURI().toString());
+        assertEquals(scriptWrite, scriptRead.getScript());
+
+        Map<String, String> parameters = new HashMap<>();
+        parameters.put("a", "2112");
+        parameters.put("b", "Rush");
+        ScriptResult ret = Kernel.getScript().runScriptExtended(ctx, script.getAddressURI().toString(), parameters);
+        List<Object> list = new ArrayList<>();
+        list.add("Rush");
+        list.add(BigDecimal.valueOf(2112));
+        List retlist = (List) ret.getReturnValue();
+        assertEquals(list.size(), retlist.size());
+        scriptImpl.deleteScript(ctx, script.getAddressURI().toString());
+    }
+
+    @Test
+    public void testScriptParamsCannotOverwrite() {
+        RaptureScript script = new RaptureScript();
+        CallingContext ctx = ContextFactory.getKernelUser();
+        script.setAuthority(auth);
+        script.setLanguage(RaptureScriptLanguage.REFLEX);
+        script.setName("Candy");
+        script.setPurpose(RaptureScriptPurpose.PROGRAM);
+        String scriptWrite = "meta do \n param 'a',number,'A number'; \n param 'b',string,'A string'; \n end \n a=1984;\n b='Van Halen';\n return \"${a} ${b}\";\n";
+        script.setScript(scriptWrite);
+        scriptImpl.putScript(ctx, script.getAddressURI().toString(), script);
+        RaptureScript scriptRead = scriptImpl.getScript(ctx, script.getAddressURI().toString());
+        assertEquals(scriptWrite, scriptRead.getScript());
+
+        Map<String, String> parameters = new HashMap<>();
+        parameters.put("a", "2112");
+        parameters.put("b", "Rush");
+        ScriptResult ret = Kernel.getScript().runScriptExtended(ctx, script.getAddressURI().toString(), parameters);
+        assertEquals("1984 Van Halen", ret.getReturnValue().toString());
+
+        scriptImpl.deleteScript(ctx, script.getAddressURI().toString());
+    }
+
 }

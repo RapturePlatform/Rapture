@@ -53,12 +53,13 @@ public class PropertyPlaceholderNode extends BaseNode {
 
         RaptureRunnerConfig raptureConfig = reflexValue.asObjectOfType(RaptureRunnerConfig.class);
         
-        ReflexValue value = new ReflexNullValue(lineNumber);;
+        ReflexValue value = new ReflexNullValue(lineNumber);
         
         if(raptureConfig.getConfig() != null && raptureConfig.getConfig().get(identifier) != null) {
             value = new ReflexValue(raptureConfig.getConfig().get(identifier));
-        } 
-
+        } else {
+            value = scope.resolve(identifier);
+        }
         debugger.stepEnd(this, value, scope);
         return value;
     }
