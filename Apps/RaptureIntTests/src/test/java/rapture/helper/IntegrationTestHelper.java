@@ -198,8 +198,8 @@ public class IntegrationTestHelper {
             break;
     
         case DOCUMENT:
-            if (docApi.docRepoExists(repo.toAuthString())) docApi.deleteDocRepo(authString);
-            	docApi.createDocRepo(authString, "NREP {} USING " + storage + " {prefix=\"D_" + repo.getAuthority()+ (versioned? ", separateVersion=\"true\"}":"") + "\"}");
+            if (docApi.docRepoExists(repo.toAuthString())) docApi.deleteDocRepo(authString);            
+            	docApi.createDocRepo(authString, "NREP {} USING " + storage + " {prefix=\"D_" + repo.getAuthority()+ (versioned? "\", separateVersion=\"true":"") + "\"}");
             Assert.assertTrue(docApi.docRepoExists(authString), authString + " Create failed");
             break;
     

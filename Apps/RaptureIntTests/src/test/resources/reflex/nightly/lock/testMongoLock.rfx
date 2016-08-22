@@ -1,0 +1,7 @@
+lockUri=docRepoUri + 'reflexLock'+rand(1000000);
+lockConfig = #lock.createLockManager(lockUri, "LOCKING USING MONGODB {}", "");
+assert(lockConfig != null);
+lockHandle = #lock.acquireLock(lockUri, lockConfig, 1, 60);
+assert(lockHandle!=null);
+assert(#lock.releaseLock(lockUri, lockConfig, lockHandle));
+return true;

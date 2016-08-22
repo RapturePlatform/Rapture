@@ -41,27 +41,27 @@ public class SyntaxError extends AbstractReflexScriptTest {
 	public void incrementNotSupported1() throws RecognitionException {
 		String program = "i=1; \n i++; \n println(i); \n";
 		String output = this.runScriptCatchingExceptions(program, null);
-		assertEquals("Unexpected identifier at token i  at line 2 while parsing", output.split(":")[0]);
+        assertEquals("Unexpected identifier at token i  at line 2", output.split("\n")[0]);
 	}
 	
 	@Test
 	public void incrementNotSupported2() throws RecognitionException {
 		String program = "i=1; \n ++i; \n println(i); \n";
 		String output = this.runScriptCatchingExceptions(program, null);
-		assertEquals("Unsupported Operation at token ++  at line 2 while parsing", output.split(":")[0]);
+        assertEquals("Unsupported Operation at token ++  at line 2", output.split("\n")[0]);
 	}
 	
 	@Test
 	public void incrementNotSupported3() throws RecognitionException {
 		String program = "i=1; \n i--; \n println(i); \n";
 		String output = this.runScriptCatchingExceptions(program, null);
-		assertEquals("Unexpected identifier at token i  at line 2 while parsing", output.split(":")[0]);
+        assertEquals("Unexpected identifier at token i  at line 2", output.split("\n")[0]);
 	}
 	
 	@Test
 	public void incrementNotSupported4() throws RecognitionException {
 		String program = "i=1; \n --i; \n println(i); \n";
 		String output = this.runScriptCatchingExceptions(program, null);
-		assertEquals("Unsupported Operation at token --  at line 2 while parsing", output.split(":")[0]);
+        assertEquals("Unsupported Operation at token --  at line 2", output.split("\n")[0]);
 	}
 }
