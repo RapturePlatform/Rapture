@@ -33,6 +33,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
 
+import rapture.common.exception.ExceptionToString;
 import rapture.common.exception.RaptureExceptionFactory;
 import rapture.common.impl.jackson.JacksonUtil;
 import reflex.IReflexHandler;
@@ -56,7 +57,7 @@ import reflex.value.internal.ReflexVoidValue;
  */
 public class ImportHandler {
     private IReflexHandler handler;
-    private static Logger log = Logger.getLogger(ImportHandler.class);
+    private static Logger logger = Logger.getLogger(ImportHandler.class);
 
     private static Map<String, Module> modules = new ConcurrentHashMap<String, Module>();
 
@@ -68,18 +69,18 @@ public class ImportHandler {
         Module module = ModuleFactory.createModule(name, "", handler, debugger, classLoader);
         module.configure(config);
         modules.put(name, module);
-        log.info("Caching module named " + name);
+        logger.debug("Caching module named " + name);
     }
 
     public void addImportModuleWithAlias(String name, String alias, List<ReflexValue> configParams, IReflexDebugger debugger, ClassLoader classLoader) {
         Module module = ModuleFactory.createModule(name, alias, handler, debugger, classLoader);
         module.configure(configParams);
         modules.put(alias, module);
-        log.info("Caching module with alias " + alias);
+        logger.debug("Caching module with alias " + alias);
     }
 
     private void log(String msg) {
-        log.info(msg);
+        logger.info(msg);
         handler.getOutputHandler().printOutput(msg);
     }
 
@@ -89,11 +90,11 @@ public class ImportHandler {
         if (fnParts.length != 2) {
             throw new ReflexException(-1, "Cannot call module method like this");
         }
-        log.info("Attempting to call " + functionName);
-        log.info("Module name (or alias) is " + fnParts[0]);
+        logger.debug("Attempting to call " + functionName);
+        logger.debug("Module name (or alias) is " + fnParts[0]);
         if (!modules.containsKey(fnParts[0])) {
-            log.info("No module found named " + fnParts[0] + " - try native call");
-            log.info("Known modules are : " + JacksonUtil.jsonFromObject(modules.keySet()));
+            logger.debug("No module found named " + fnParts[0] + " - try native call");
+            logger.debug("Known modules are : " + JacksonUtil.jsonFromObject(modules.keySet()));
             try {
                 return possibleNativeCallNode.evaluate(debugger, scope);
             } catch (Exception e) {
@@ -101,16 +102,16 @@ public class ImportHandler {
             }
         }
         Module module = modules.get(fnParts[0]);
-        if (module != null) log.info("Found module");
+        if (module != null) logger.debug("Found module");
         List<ReflexValue> parameters = evaluateParameters(params, debugger, scope);
         if (module.handlesKeyhole()) {
-            // log("Attempting keyhole call of " + fnParts[1]);
+            logger.debug("Attempting keyhole call of " + fnParts[1]);
             return module.keyholeCall(fnParts[1], parameters);
         } else if (module.canUseReflection()) {
-            // log("Attempting reflect call of " + fnParts[1]);
+            logger.debug("Attempting reflect call of " + fnParts[1]);
             return reflectCall(module, node, scope, fnParts[1], parameters, debugger);
         } else {
-            throw new ReflexException(-1, "Unexpected module cannot handle anything");
+            throw new ReflexException(-1, "Cannot call " + functionName + " - module does not support access from Reflex");
         }
     }
 
@@ -130,11 +131,25 @@ public class ImportHandler {
                         return (ReflexValue) ret;
                     }
                 } catch (InvocationTargetException e) {
-                    log("Underlying exception thrown of type " + e.getTargetException().getClass().toString() + " with message "
-                            + e.getTargetException().getMessage());
-                    logStack(e.getTargetException());
+                    String message = e.getMessage();
+                    Throwable cause = e;
+                    Throwable parent = e.getCause();
+                    String why = "Underlying exception thrown of type " + e.getTargetException().getClass().toString() + " with message "
+                            + e.getTargetException().getMessage() + " " + Integer.toHexString(e.hashCode());
+                    log(why);
+                    logger.debug(ExceptionToString.format(e));
+                    while (parent != null) {
+                        cause = parent;
+                        parent = parent.getCause();
+                        String because = "caused by " + cause.getClass().toString() + " with message " + cause.getMessage() + " "
+                                + Integer.toHexString(e.hashCode());
+                        log(because);
+                        String msg = cause.getMessage();
+                        if (msg != null) message = msg;
+                        if (cause.equals(parent)) break;
+                    }
                     throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR,
-                            "Error " + e.getTargetException().getMessage() + " with reflection call", e);
+                            "Please contact Incapture support. " + cause.getClass().getSimpleName() + " : " + message + " when calling " + name, e);
                 } catch (Exception e) {
                     log("Found error of class " + e.getClass().toString());
                     logStack(e);

@@ -46,7 +46,7 @@ public class SyntaxErrorChecksTest extends AbstractReflexScriptTest {
             ReflexExecutor.runReflexProgram("var x;");
             fail("Should have thrown an exception");
         } catch (ReflexException e) {
-            assertEquals("Unexpected identifier at token var  at line 1 while parsing: \n    1: var x;\n-------^^^^\n", e.getCause().getMessage());
+            assertEquals("Unexpected identifier at token var  at line 1\n    1: var x;\n-------^^^^\n", e.getCause().getMessage());
         }
     }
 
@@ -104,7 +104,7 @@ public class SyntaxErrorChecksTest extends AbstractReflexScriptTest {
 		String output = this.runScriptCatchingExceptions(program, null);
 		System.out.println(output);
 		String split[] = output.split("\n");
-		assertEquals("Found newline in string abc; at token \" at line 2 while parsing: ", split[2]);
+        assertEquals("Found newline in string abc; at token \" at line 2", split[2]);
 	}
 
     @Test
@@ -116,7 +116,7 @@ public class SyntaxErrorChecksTest extends AbstractReflexScriptTest {
 		String output = this.runScriptCatchingExceptions(program, null);
 		System.out.println(output);
 		String split[] = output.split("\n");
-		assertEquals("Found newline in string abc; at token ' at line 2 while parsing: ", split[2]);
+        assertEquals("Found newline in string abc; at token ' at line 2", split[2]);
 	}
 
     @Test
@@ -128,7 +128,7 @@ public class SyntaxErrorChecksTest extends AbstractReflexScriptTest {
 		String output = this.runScriptCatchingExceptions(program, null);
 		System.out.println(output);
 		String split[] = output.split("\n");
-		assertEquals("Found newline in string abc; at token \u201D at line 2 while parsing: ", split[2]);
+        assertEquals("Found newline in string abc; at token \u201D at line 2", split[2]);
 	}
 
     @Test
@@ -140,6 +140,6 @@ public class SyntaxErrorChecksTest extends AbstractReflexScriptTest {
 		String output = this.runScriptCatchingExceptions(program, null);
 		System.out.println(output);
 		String split[] = output.split("\n");
-		assertEquals("Found newline in string abc; at token \u201C at line 2 while parsing: ", split[2]);
+        assertEquals("Found newline in string abc; at token \u201C at line 2", split[2]);
 	}
 }
