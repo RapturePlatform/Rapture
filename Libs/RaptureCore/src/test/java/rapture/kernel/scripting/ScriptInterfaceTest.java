@@ -18,6 +18,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.testng.Assert;
 
+import rapture.common.RaptureParameterType;
 import rapture.common.impl.jackson.JacksonUtil;
 import rapture.kernel.ContextFactory;
 import rapture.script.ScriptFactory;
@@ -113,13 +114,13 @@ public class ScriptInterfaceTest {
         Assert.assertEquals(parameters.get(2).getParameterName(),"c");
         Assert.assertEquals(parameters.get(3).getParameterName(),"d");
         Assert.assertEquals(parameters.get(4).getParameterName(),"e");
-        Assert.assertEquals(parameters.get(0).getParameterType(),"string");
-        Assert.assertEquals(parameters.get(1).getParameterType(),"string");
-        Assert.assertEquals(parameters.get(2).getParameterType(),"string");
-        Assert.assertEquals(parameters.get(3).getParameterType(),"string");
-        Assert.assertEquals(parameters.get(4).getParameterType(),"number");
+        Assert.assertEquals(parameters.get(0).getParameterType(), RaptureParameterType.STRING);
+        Assert.assertEquals(parameters.get(1).getParameterType(), RaptureParameterType.STRING);
+        Assert.assertEquals(parameters.get(2).getParameterType(), RaptureParameterType.STRING);
+        Assert.assertEquals(parameters.get(3).getParameterType(), RaptureParameterType.STRING);
+        Assert.assertEquals(parameters.get(4).getParameterType(), RaptureParameterType.NUMBER);
         
-        Assert.assertEquals(returnInfo.getType(),"string");
+        Assert.assertEquals(returnInfo.getType(), RaptureParameterType.STRING);
         Assert.assertEquals(returnInfo.getDescription(),"Just the parameters put together");
         
         String color = properties.get("color");
