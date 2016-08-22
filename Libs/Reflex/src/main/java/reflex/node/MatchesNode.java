@@ -31,8 +31,6 @@ import java.util.regex.Pattern;
 import reflex.IReflexHandler;
 import reflex.Scope;
 import reflex.debug.IReflexDebugger;
-import reflex.importer.ImportHandler;
-import reflex.util.function.LanguageRegistry;
 import reflex.value.ReflexValue;
 import reflex.value.internal.ReflexNullValue;
 
@@ -59,7 +57,8 @@ public class MatchesNode extends BaseNode {
         ReflexValue ret = new ReflexNullValue();
         List<ReflexValue> retInfo = new ArrayList<ReflexValue>();
         while(m.find()) {
-        	for (int group = 0; group < m.groupCount(); group++) {
+            if (m.groupCount() == 0) retInfo.add(new ReflexValue(m.group()));
+            else for (int group = 1; group <= m.groupCount(); group++) {
                 retInfo.add(new ReflexValue(m.group(group)));
             }
         }
