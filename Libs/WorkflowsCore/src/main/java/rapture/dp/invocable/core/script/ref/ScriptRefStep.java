@@ -65,7 +65,7 @@ public class ScriptRefStep extends AbstractInvocable {
                 rScript.setAuditLogUri(workerAuditUri);
             }
 
-            String resp = rScript.runProgram(context, null, script, params);
+            Object resp = rScript.runProgram(context, null, script, params);
             if (resp != null) {
                 log.info("Reflex script returned " + resp);
             }

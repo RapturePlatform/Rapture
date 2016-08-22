@@ -931,8 +931,8 @@ public class DefaultDecisionProcessExecutor implements DecisionProcessExecutor {
                 if (workerAuditUri != null) {
                     rScript.setAuditLogUri(workerAuditUri);
                 }
-                String result = rScript.runProgram(ctx, null, script, createScriptValsMap(worker, workerURI, stepRecord), limit);
-                return (result == null) ? "" : result;
+                Object result = rScript.runProgram(ctx, null, script, createScriptValsMap(worker, workerURI, stepRecord), limit);
+                return (result == null) ? "" : result.toString();
             case WORKFLOW:
                 Workflow workflow = WorkflowStorage.readByAddress(executableUri);
                 String stepName = executableUri.getElement();

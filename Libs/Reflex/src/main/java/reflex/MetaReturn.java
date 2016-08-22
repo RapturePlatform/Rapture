@@ -23,16 +23,31 @@
  */
 package reflex;
 
+import org.apache.log4j.Logger;
+
+import rapture.common.RaptureParameterType;
+
 public class MetaReturn {
-    private String type;
+    @Override
+    public String toString() {
+        return "MetaReturn [type=" + type + ", description=" + description + "]";
+    }
+
+    private RaptureParameterType type;
     private String description;
-    
+    private static final Logger log = Logger.getLogger(MetaReturn.class);
+
     public MetaReturn(String type, String description) {
-        this.type = type;
+        try {
+            this.type = RaptureParameterType.valueOf(type.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            log.warn("Unsupported parameter type " + type);
+            this.type = RaptureParameterType.VOID;
+        }
         this.description = description;
     }
     
-    public String getType() {
+    public RaptureParameterType getType() {
         return type;
     }
     
