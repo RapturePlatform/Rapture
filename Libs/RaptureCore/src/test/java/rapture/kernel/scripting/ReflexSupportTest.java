@@ -23,6 +23,12 @@
  */
 package rapture.kernel.scripting;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.junit.Before;
+import org.junit.Test;
+
 import rapture.common.CallingContext;
 import rapture.common.RaptureScript;
 import rapture.common.RaptureScriptLanguage;
@@ -31,12 +37,6 @@ import rapture.kernel.ContextFactory;
 import rapture.kernel.Kernel;
 import rapture.script.IRaptureScript;
 import rapture.script.ScriptFactory;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import org.junit.Before;
-import org.junit.Test;
 
 /**
  * Tests use of Rapture Reflex
@@ -70,7 +70,7 @@ public class ReflexSupportTest {
         IRaptureScript scr = ScriptFactory.getScript(script);
         Map<String, Object> extra = new HashMap<String, Object>();
         extra.put("hello", "world");
-        String res = scr.runProgram(ContextFactory.getKernelUser(), null, script, extra);
-        System.out.println(res);
+        Object res = scr.runProgram(ContextFactory.getKernelUser(), null, script, extra);
+        System.out.println(res.toString());
     }
 }

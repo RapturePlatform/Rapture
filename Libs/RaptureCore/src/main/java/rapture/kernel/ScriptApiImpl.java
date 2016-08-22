@@ -668,14 +668,11 @@ public class ScriptApiImpl extends KernelBase implements ScriptApi {
             for (MetaParam param : parameters) {
                 ScriptParameter scriptParam = new ScriptParameter();
                 scriptParam.setDescription(param.getDescription());
-                String type = param.getParameterType().toUpperCase();
-                scriptParam.setParameterType(RaptureParameterType.valueOf(type));
+                scriptParam.setParameterType(param.getParameterType());
                 inputs.put(param.getParameterName(), scriptParam);
             }
             MetaReturn returnInfo = parser.scriptInfo.getReturnInfo();
-
-            String type = returnInfo.getType().toUpperCase();
-            output.setParameterType(RaptureParameterType.valueOf(type));
+            output.setParameterType(returnInfo.getType());
             output.setDescription(returnInfo.getDescription());
 
             result.setProperties(parser.scriptInfo.getProperties());

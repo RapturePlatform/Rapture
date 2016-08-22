@@ -47,7 +47,6 @@ public class Scope {
     private Map<String, ReflexValue> variables;
 
     public Scope() {
-
     }
 
     // NB. Added this back in as the variables are retrieved in the NetBeans
@@ -248,7 +247,7 @@ public class Scope {
         }
 
         if (value != null) {
-            // The variable resides in this scope
+
             return value;
         } else if (parent != null) {
             // Let the parent scope look for the variable
