@@ -28,15 +28,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import rapture.common.RaptureParameterType;
-
 public class MetaScriptInfo {
     @Override
     public String toString() {
         return "MetaScriptInfo [returnInfo=" + returnInfo + ", params=" + params + ", properties=" + properties + "]";
     }
 
-    private MetaReturn returnInfo = new MetaReturn("void","");    
+    private MetaReturn returnInfo = null;
     private List<MetaParam> params = new ArrayList<MetaParam>();
     private Map<String, String> properties = new HashMap<String, String>();
     
@@ -75,6 +73,6 @@ public class MetaScriptInfo {
                 if (paramName.equals(param.getParameterName())) return param;
             }
         }
-        return new MetaParam(paramName, RaptureParameterType.STRING.toString(), "");
+        return null;
     }
 }

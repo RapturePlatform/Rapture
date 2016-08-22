@@ -497,4 +497,28 @@ public class ScriptApiFileTest extends AbstractFileTest {
         assertEquals(list.size(), retlist.size());
         scriptImpl.deleteScript(ctx, script.getAddressURI().toString());
     }
+
+    @Test
+    public void testScriptParamsCannotOverwrite() {
+        RaptureScript script = new RaptureScript();
+        CallingContext ctx = ContextFactory.getKernelUser();
+        script.setAuthority(auth);
+        script.setLanguage(RaptureScriptLanguage.REFLEX);
+        script.setName("Candy");
+        script.setPurpose(RaptureScriptPurpose.PROGRAM);
+        String scriptWrite = "meta do \n param 'a',number,'A number'; \n param 'b',string,'A string'; \n end \n a=1984;\n b='Van Halen';\n return \"${a} ${b}\";\n";
+        script.setScript(scriptWrite);
+        scriptImpl.putScript(ctx, script.getAddressURI().toString(), script);
+        RaptureScript scriptRead = scriptImpl.getScript(ctx, script.getAddressURI().toString());
+        assertEquals(scriptWrite, scriptRead.getScript());
+
+        Map<String, String> parameters = new HashMap<>();
+        parameters.put("a", "2112");
+        parameters.put("b", "Rush");
+        ScriptResult ret = Kernel.getScript().runScriptExtended(ctx, script.getAddressURI().toString(), parameters);
+        assertEquals("1984 Van Halen", ret.getReturnValue().toString());
+
+        scriptImpl.deleteScript(ctx, script.getAddressURI().toString());
+    }
+
 }

@@ -36,6 +36,7 @@ import org.antlr.runtime.tree.CommonTreeNodeStream;
 import org.apache.log4j.Logger;
 
 import rapture.common.CallingContext;
+import rapture.common.RaptureParameterType;
 import rapture.common.RaptureScript;
 import rapture.common.ScriptResult;
 import rapture.common.api.ScriptingApi;
@@ -303,10 +304,11 @@ public class ReflexRaptureScript implements IRaptureScript {
         for (Map.Entry<String, Object> entry : params.entrySet()) {
             String key = entry.getKey();
             String value = entry.getValue().toString();
-            ReflexValue v = walker.currentScope.resolve(key);
+            ReflexValue v;
             MetaParam param = scriptInfo.getParameter(key);
-            if (param != null) {
-                switch (param.getParameterType()) {
+            // If a parameter type is not defined then it's a String
+            RaptureParameterType type = (param == null) ? RaptureParameterType.STRING : param.getParameterType();
+            switch (type) {
                 case STRING:
                 default:
                     v = new ReflexValue(value);
@@ -330,10 +332,8 @@ public class ReflexRaptureScript implements IRaptureScript {
                     List<ReflexValue> list = JacksonUtil.objectFromJson(value.toString(), ArrayList.class);
                     v = new ReflexValue(list);
                     break;
-                }
             }
-            walker.currentScope.assign(key, (v == null) ? new ReflexNullValue() : v);
-
+            walker.currentScope.assign(key, v);
         }
         // TODO replace this with abortable invocation
         if (timeout > 0) log.info("Warning: script is not abortable");
@@ -351,8 +351,8 @@ public class ReflexRaptureScript implements IRaptureScript {
 
         // Meta block specifies the return type
         MetaReturn mri = scriptInfo.getReturnInfo();
-        if (mri != null) {
-            switch (mri.getType()) {
+        RaptureParameterType type = (mri == null) ? RaptureParameterType.STRING : mri.getType();
+        switch (type) {
             case STRING:
             default:
                 res.setReturnValue(val.asString());
@@ -380,7 +380,6 @@ public class ReflexRaptureScript implements IRaptureScript {
                 if (val.isList()) res.setReturnValue(val.asList());
                 else res.setReturnValue(JacksonUtil.objectFromJson(val.asString(), ArrayList.class));
                 break;
-            }
         }
         return res;
     }
