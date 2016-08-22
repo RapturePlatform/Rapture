@@ -1,7 +1,7 @@
 version: '2'
 services:
   apiserver:
-    image: 'incapture/apiserver:3.0.4xES'
+    image: 'incapture/raptureapiserver:stable'
     environment:
       - RAPTURE_RANDOMIZEDEFAULTPASSWORDS=False
     links:
