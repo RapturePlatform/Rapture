@@ -66,7 +66,8 @@ public class SubNode extends BaseNode {
             ret = new ReflexValue(a.asDate().sub(b.asInt()));
         } else if (a.isList()) {
             List<ReflexValue> list = a.asList();
-            list.remove(b);
+            // If b is not in the list then that's allowed
+            if (list.contains(b)) list.remove(b);
             ret = new ReflexValue(lineNumber, list);
         } else {
             throwError("both sides must be numeric or the left side must be a list", lhs, rhs, a, b);

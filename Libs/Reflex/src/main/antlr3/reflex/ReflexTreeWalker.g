@@ -378,6 +378,7 @@ functionCall returns [ReflexNode node]
   |  ^(FUNC_CALL UrlDecode expression) { node = new UrlDecodeNode(line, handler, currentScope, $expression.node); }
   |  ^(FUNC_CALL Uuid) { node = new UuidNode(line, handler, currentScope); }
   |  ^(FUNC_CALL Remove Identifier k=expression) { node = new RemoveNode(line, handler, currentScope, $Identifier.text, $k.node); }
+  |  ^(FUNC_CALL Insert Identifier position=expression newvalue=expression) { node = new InsertNode(line, handler, currentScope, $Identifier.text, $position.node, $newvalue.node); }
   |  ^(FUNC_CALL AsyncCall s=expression p=expression?) { node = new AsyncCallNode(line, handler, currentScope, $s.node, $p.node); }
   |  ^(FUNC_CALL AsyncCallScript r=expression s=expression p=expression?) { node = new AsyncCallScriptNode(line, handler, currentScope, $r.node, $s.node, $p.node); }
   |  ^(FUNC_CALL AsyncStatus expression) { node = new AsyncStatusNode(line, handler, currentScope, $expression.node); }
