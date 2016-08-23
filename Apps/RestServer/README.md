@@ -41,10 +41,19 @@ The RestServer REST API will be available at [http://localhost:4567](http://loca
 * [Workflow](#workflow)
 
 <a name="login"/>
-**Login**
+**Login with username and password**
 ```
 POST /login
 Body: {"username":"user1", "password":"somepassword"}
+```
+Response:
+```
+HTTP 200: session_id
+```
+**Login with pre-existing appKey and apiKey**
+```
+POST /login
+Body: {"appKey":"myapp", "apiKey":"98d73ac8-3e28-4d8b-97a9-298028ddd6cb"}
 ```
 Response:
 ```
