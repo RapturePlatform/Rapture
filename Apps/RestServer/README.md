@@ -31,3 +31,47 @@ docker run -d -p 5432:5432 --name postgres incapture/postgres
 ```
 docker run -d -p 4567:4567 --link mongo --link rabbit --link elasticsearch --link postgres --name restserver incapture/restserver
 ```
+The RestServer REST API will be available at [http://localhost:4567](http://localhost:4567) or http://192.168.99.100:4567 or equivalent depending on your docker configuration (native or virtual).
+
+# REST API #
+
+**Login**
+```
+POST /login
+Body: {"username":"user1", "password":"somepassword"}
+```
+Response:
+```
+HTTP 200: session_id
+```
+**Create a document repo**
+```
+POST /doc/:authority
+Example: /doc/mydocs
+Body: {"config":"NREP USING MONGODB {prefix=\"mydocs\"}"}
+```
+Response:
+```
+HTTP 200: document://mydocs
+```
+**Create/Update a document**
+```
+PUT /doc/:uri
+Example: /doc/mydocs/a
+Body: {"a":"b"}
+```
+Response:
+```
+HTTP 200: {"a":"b"}
+```
+**Get a document**
+```
+GET /doc/:uri
+Example: /doc/mydocs/a
+```
+Response:
+```
+{"a":"b"}
+```
+# REST API Examples #
+Refer to the integration test [here](src/integrationTest/java/rapture/server/rest)
