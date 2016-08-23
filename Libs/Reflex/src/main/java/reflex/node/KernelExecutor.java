@@ -248,13 +248,13 @@ public final class KernelExecutor {
             } else {
                 return v.toString();
             }
-        } else if (type.equals(Double.class)) {
+        } else if (type.equals(Double.class) || type.equals(double.class)) {
             return v.asDouble();
-        } else if (type.equals(Integer.class)) {
+        } else if (type.equals(Integer.class) || type.equals(int.class)) {
             return v.asInt();
-        } else if (type.equals(Long.class)) {
+        } else if (type.equals(Long.class) || type.equals(long.class)) {
             return v.asLong();
-        } else if (type.equals(Boolean.class)) {
+        } else if (type.equals(Boolean.class) || type.equals(boolean.class)) {
             return v.asBoolean();
         } else if (type instanceof ParameterizedType) {
             return handleParameterizedType(v, type);
