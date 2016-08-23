@@ -31,6 +31,8 @@ import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
 import org.junit.Test;
 
+import rapture.common.RaptureParameterType;
+
 public class MetaDefinitionTest extends ResourceBasedTest {
 
     @Test
@@ -47,7 +49,7 @@ public class MetaDefinitionTest extends ResourceBasedTest {
         ReflexParser parser = new ReflexParser(tokens);
         parser.parse();
         assertTrue(parser.scriptInfo.getReturnInfo().getDescription().equals("csv"));
-        assertTrue(parser.scriptInfo.getReturnInfo().getType().equals("list"));
+        assertTrue(parser.scriptInfo.getReturnInfo().getType().equals(RaptureParameterType.LIST));
         assertEquals(parser.scriptInfo.getParameters().size(), 1);
         //'alan','a value for Alan';
         assertTrue(parser.scriptInfo.getProperty("alan").equals("a value for Alan"));
