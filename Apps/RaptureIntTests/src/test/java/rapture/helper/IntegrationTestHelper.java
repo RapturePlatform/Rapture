@@ -24,6 +24,9 @@
 
 package rapture.helper;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -34,6 +37,7 @@ import org.testng.Assert;
 import org.testng.Reporter;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.net.MediaType;
 
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
@@ -300,4 +304,22 @@ public class IntegrationTestHelper {
             cleanTestRepo(gagarin);
         }
     }
+
+    public void putBlob(File blob, String blobUri, MediaType type) {
+        if (!blob.exists()) {
+            Assert.fail("Cannot find " + blob.getAbsolutePath());
+        }
+
+        byte[] bytes = null;
+        try (RandomAccessFile jarf = new RandomAccessFile(blob, "r")) {
+            bytes = new byte[(int) jarf.length()];
+            jarf.readFully(bytes);
+        } catch (IOException e) {
+            Assert.fail(e.getMessage());
+        }
+
+        if (blobUri.startsWith("jar")) jarApi.putJar(blobUri, bytes);
+        else blobApi.putBlob(blobUri, bytes, type.toString());
+    }
+
 }
