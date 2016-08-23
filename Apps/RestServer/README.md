@@ -149,7 +149,7 @@ Response:
 ```
 HTTP 200: true
 ```
-**Delete a document repo**
+**Delete a blob repo**
 ```
 DELETE /blob/:authority
 Example: /blob/myblobs
@@ -158,6 +158,53 @@ Response:
 ```
 HTTP 200: true
 ```
+**Create a series repo**
+```
+POST /series/:authority
+Example: /series/myseries
+Body: {"config":"SREP USING MONGODB {prefix=\"myseries\"}"}
+```
+Response:
+```
+HTTP 200: series://myseries
+```
+**Create/Update a series**
+```
+PUT /series/:uri
+Example: /series/myseries/a
+Body: {"keys":["k1", "k2"], "values":["v1", "v2"]}
+```
+Response:
+```
+HTTP 200: series://myseries/a
+```
+**Get a series points**
+```
+GET /series/:uri
+Example: /series/myseries/a
+```
+Response:
+```
+[{"column":"k1","value":"v1"},{"column":"k2","value":"v2"}]
 
+```
+**Delete a series**
+```
+DELETE /series/:uri
+Example: /series/myseries/a
+```
+Response:
+```
+HTTP 200: true
+```
+**Delete a document repo**
+```
+DELETE /series/:authority
+Example: /series/myseries
+```
+Response:
+```
+HTTP 200: true
+```
 # REST API Examples #
 Refer to the integration test [here](src/integrationTest/java/rapture/server/rest)
