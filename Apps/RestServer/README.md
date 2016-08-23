@@ -165,6 +165,7 @@ Response:
 ```
 HTTP 200: true
 ```
+<a name="series"/>
 **Create a series repo**
 ```
 POST /series/:authority
