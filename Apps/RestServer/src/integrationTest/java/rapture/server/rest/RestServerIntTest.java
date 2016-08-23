@@ -70,12 +70,12 @@ public class RestServerIntTest {
 
     @Test
     public void testDocCreateRepo() throws UnirestException {
-        HttpResponse<String> result = Unirest.post("https://localhost:4567/doc/newrepo")
-                .body("{\"config\":\"NREP {} USING MONGODB {prefix=\\\"newrepo\\\"}\"}").asString();
+        HttpResponse<String> result = Unirest.post("https://localhost:4567/doc/config")
+                .body("{\"config\":\"NREP {} USING MONGODB {prefix=\\\"config\\\"}\"}").asString();
         printResponse(result);
         assertEquals(200, result.getStatus());
-        result = Unirest.post("https://localhost:4567/doc/newrepo")
-                .body("{\"config\":\"NREP {} USING MONGODB {prefix=\\\"newrepo\\\"}\"}").asString();
+        result = Unirest.post("https://localhost:4567/doc/config")
+                .body("{\"config\":\"NREP {} USING MONGODB {prefix=\\\"config\\\"}\"}").asString();
         printResponse(result);
         assertEquals(409, result.getStatus());
     }
@@ -83,6 +83,20 @@ public class RestServerIntTest {
     @Test
     public void testDocGet() throws UnirestException {
         HttpResponse<String> result = Unirest.get("https://localhost:4567/doc/config/mqSeriesConfig").asString();
+        printResponse(result);
+        assertTrue(result.getBody().indexOf("connectionFactory") != -1);
+    }
+
+    @Test
+    public void testDocGetWithVersion() throws UnirestException {
+        HttpResponse<String> result = Unirest.get("https://localhost:4567/doc/config/mqSeriesConfig@2").asString();
+        printResponse(result);
+        assertTrue(result.getBody().indexOf("connectionFactory") != -1);
+    }
+
+    @Test
+    public void testDocGetMeta() throws UnirestException {
+        HttpResponse<String> result = Unirest.get("https://localhost:4567/doc/config/mqSeriesConfig?meta=true").asString();
         printResponse(result);
         assertTrue(result.getBody().indexOf("connectionFactory") != -1);
     }
@@ -96,6 +110,12 @@ public class RestServerIntTest {
     }
 
     @Test
+    public void testDocDeleteRepo() throws UnirestException {
+        HttpResponse<String> result = Unirest.delete("https://localhost:4567/doc/config").asString();
+        printResponse(result);
+    }
+
+    @Test
     public void testDocDelete() throws UnirestException {
         HttpResponse<String> result = Unirest.delete("https://localhost:4567/doc/config/mqSeriesConfig").asString();
         printResponse(result);
@@ -105,15 +125,15 @@ public class RestServerIntTest {
 
     @Test
     public void testBlobCreateRepo() throws UnirestException {
-        HttpResponse<String> result = Unirest.post("https://localhost:4567/blob/newrepo")
-                .body("{\"config\":\"BLOB {} USING MONGODB {prefix=\\\"newrepo\\\"}\","
-                        + "\"metaConfig\":\"REP {} USING MONGODB {prefix=\\\"newrepo\\\"}\"}")
+        HttpResponse<String> result = Unirest.post("https://localhost:4567/blob/archive")
+                .body("{\"config\":\"BLOB {} USING MONGODB {prefix=\\\"archive\\\"}\","
+                        + "\"metaConfig\":\"REP {} USING MONGODB {prefix=\\\"archive\\\"}\"}")
                 .asString();
         printResponse(result);
         assertEquals(200, result.getStatus());
-        result = Unirest.post("https://localhost:4567/blob/newrepo")
-                .body("{\"config\":\"BLOB {} USING MONGODB {prefix=\\\"newrepo\\\"}\","
-                        + "\"metaConfig\":\"REP {} USING MONGODB {prefix=\\\"newrepo\\\"}\"}")
+        result = Unirest.post("https://localhost:4567/blob/archive")
+                .body("{\"config\":\"BLOB {} USING MONGODB {prefix=\\\"archive\\\"}\","
+                        + "\"metaConfig\":\"REP {} USING MONGODB {prefix=\\\"archive\\\"}\"}")
                 .asString();
         printResponse(result);
         assertEquals(409, result.getStatus());
@@ -133,11 +153,57 @@ public class RestServerIntTest {
     }
 
     @Test
+    public void testBlobDeleteRepo() throws UnirestException {
+        HttpResponse<String> result = Unirest.delete("https://localhost:4567/blob/archive").asString();
+        printResponse(result);
+    }
+
+    @Test
     public void testBlobDelete() throws UnirestException {
         HttpResponse<String> result = Unirest.delete("https://localhost:4567/blob/archive/FIX/2016/05/18/8668_input").asString();
         printResponse(result);
         int status = Unirest.get("https://localhost:4567/blob/archive/FIX/2016/05/18/8668_input").asString().getStatus();
         assertEquals(404, status);
+    }
+
+    @Test
+    public void testSeriesCreateRepo() throws UnirestException {
+        HttpResponse<String> result = Unirest.post("https://localhost:4567/series/srepo")
+                .body("{\"config\":\"SREP {} USING MONGODB {prefix=\\\"srepo\\\"}\"}").asString();
+        printResponse(result);
+        assertEquals(200, result.getStatus());
+        result = Unirest.post("https://localhost:4567/series/srepo")
+                .body("{\"config\":\"SREP {} USING MONGODB {prefix=\\\"srepo\\\"}\"}").asString();
+        printResponse(result);
+        assertEquals(409, result.getStatus());
+    }
+
+    @Test
+    public void testSeriesGet() throws UnirestException {
+        HttpResponse<String> result = Unirest.get("https://localhost:4567/series/srepo/x").asString();
+        printResponse(result);
+    }
+
+    @Test
+    public void testSeriesPut() throws UnirestException {
+        int status = Unirest.put("https://localhost:4567/series/srepo/x")
+                .body("{ \"keys\":[\"k1\",\"k2\"], \"values\":[\"x\",\"y\"]}").asString()
+                .getStatus();
+        assertEquals(200, status);
+    }
+
+    @Test
+    public void testSeriesDeleteRepo() throws UnirestException {
+        HttpResponse<String> result = Unirest.delete("https://localhost:4567/series/srepo").asString();
+        printResponse(result);
+    }
+
+    @Test
+    public void testSeriesDelete() throws UnirestException {
+        HttpResponse<String> result = Unirest.delete("https://localhost:4567/series/srepo/x").asString();
+        printResponse(result);
+        result = Unirest.get("https://localhost:4567/series/srepo/x").asString();
+        printResponse(result);
     }
 
     private void printResponse(HttpResponse<String> result) {
