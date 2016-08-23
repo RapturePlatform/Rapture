@@ -38,6 +38,7 @@ The RestServer REST API will be available at [http://localhost:4567](http://loca
 * [Document](#document)
 * [Blob](#blob) 
 * [Series](#series)
+* [Workflow](#workflow)
 
 <a name="login"/>
 **Login**
@@ -205,7 +206,7 @@ Response:
 ```
 HTTP 200: true
 ```
-**Delete a document repo**
+**Delete a series repo**
 ```
 DELETE /series/:authority
 Example: /series/myseries
@@ -213,6 +214,26 @@ Example: /series/myseries
 Response:
 ```
 HTTP 200: true
+```
+<a name="workflow"/>
+**Create a workorder (run a workflow)**
+```
+POST /workorder/:uri
+Example: /workorder/workflows/myworkflow
+```
+Response:
+```
+HTTP 200: workorder://1471910400/workflows/myworkflow/WO00000008
+```
+**Create a workorder (run a workflow) with parameters**
+```
+POST /workorder/:uri
+Example: /workorder/workflows/myworkflow
+Body: {"params":{"key1":"value1","key2":"value2"}}
+```
+Response:
+```
+HTTP 200: workorder://1471910400/workflows/myworkflow/WO00000009
 ```
 # REST API Examples #
 Refer to the integration test [here](src/integrationTest/java/rapture/server/rest)
