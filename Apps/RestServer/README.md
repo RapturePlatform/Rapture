@@ -73,5 +73,91 @@ Response:
 ```
 {"a":"b"}
 ```
+**Get a document's meta information**
+```
+GET /doc/:uri?meta=true
+Example: /doc/mydocs/a?meta=true
+```
+Response:
+```
+{"displayName":"a","metaData":{"version":2,"createdTimestamp":1471973694426,"modifiedTimestamp":1471973722727,"user":"rapture","comment":"","deleted":false,"tags":{},"semanticUri":""},"content":"{\"a\":\"b\"}"}
+```
+**Get a document using versions**
+```
+GET /doc/:uri
+Example: /doc/mydocs/a@2
+```
+Response:
+```
+{"a":"b"}
+```
+**Delete a document**
+```
+DELETE /doc/:uri
+Example: /doc/mydocs/a
+```
+Response:
+```
+HTTP 200: true
+```
+**Delete a document repo**
+```
+DELETE /doc/:authority
+Example: /doc/mydocs
+```
+Response:
+```
+HTTP 200: true
+```
+**Create a blob repo**
+```
+POST /blob/:authority
+Example: /blob/myblobs
+Body: {"config":"BLOB USING MONGODB {prefix=\"mydocs\"}", "metaConfig":"REP USING MONGODB {prefix=\"mydocs\"}"}
+```
+Response:
+```
+HTTP 200: blob://myblobs
+```
+**Create/Update a blob**
+```
+PUT /blob/:uri
+Content-Type: :mime-type
+Example: /blob/myblobs/a
+Content-Type: text/plain
+Body: some text value
+```
+Response:
+```
+HTTP 200: blob://myblobs/a
+```
+**Get a blob**
+```
+GET /blob/:uri
+Example: /blob/myblobs/a
+```
+Response:
+```
+{"headers":{"Content-Length":"14","Content-Type":"text/plain"},"content":[97,32,115,116,114,105,110,103,32,118,97,108,117,101]}
+```
+**Delete a blob**
+```
+DELETE /blob/:uri
+Example: /blob/myblobs/a
+```
+Response:
+```
+HTTP 200: true
+```
+**Delete a document repo**
+```
+DELETE /blob/:authority
+Example: /blob/myblobs
+```
+Response:
+```
+HTTP 200: true
+```
+
 # REST API Examples #
 Refer to the integration test [here](src/integrationTest/java/rapture/server/rest)
