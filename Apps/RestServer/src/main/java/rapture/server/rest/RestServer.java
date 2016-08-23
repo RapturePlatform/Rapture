@@ -31,10 +31,13 @@ import static spark.Spark.halt;
 import static spark.Spark.post;
 import static spark.Spark.put;
 import static spark.Spark.secure;
+import static spark.Spark.webSocket;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.google.common.collect.ImmutableMap;
@@ -68,6 +71,7 @@ public class RestServer {
 
     private void run() {
         setupHttps();
+        setupWebSocket();
         setupRoutes();
     }
 
@@ -77,6 +81,11 @@ public class RestServer {
 
     }
 
+    private void setupWebSocket() {
+        webSocket("/websocket", GenericWebSocket.class);
+    }
+
+    @SuppressWarnings("unchecked")
     private void setupRoutes() {
 
         before((req, res) -> {
@@ -123,11 +132,20 @@ public class RestServer {
         });
 
         get("/doc/*", (req, res) -> {
+            String meta = req.queryParams("meta");
+            if (StringUtils.isNotBlank(meta)) {
+                return Kernel.getDoc().getDocAndMeta(getContext(req), getDocUriParam(req));
+            }
             return Kernel.getDoc().getDoc(getContext(req), getDocUriParam(req));
         });
 
         put("/doc/*", (req, res) -> {
             return Kernel.getDoc().putDoc(getContext(req), getDocUriParam(req), req.body());
+        });
+
+        delete("/doc/:authority", (req, res) -> {
+            Kernel.getDoc().deleteDocRepo(getContext(req), req.params(":authority"));
+            return true;
         });
 
         delete("/doc/*", (req, res) -> {
@@ -158,9 +176,61 @@ public class RestServer {
             return uri;
         });
 
+        delete("/blob/:authority", (req, res) -> {
+            Kernel.getBlob().deleteBlobRepo(getContext(req), req.params(":authority"));
+            return true;
+        });
+
         delete("/blob/*", (req, res) -> {
             Kernel.getBlob().deleteBlob(getContext(req), getBlobUriParam(req));
-            return null;
+            return true;
+        });
+
+        post("/series/:authority", (req, res) -> {
+            log.info(req.body());
+            Map<String, Object> data = JacksonUtil.getMapFromJson(req.body());
+            String authority = req.params(":authority");
+            String config = (String) data.get("config");
+            CallingContext ctx = getContext(req);
+            if (Kernel.getSeries().seriesRepoExists(ctx, authority)) {
+                halt(409, String.format("Repo [%s] already exists", authority));
+            }
+            Kernel.getSeries().createSeriesRepo(ctx, authority, config);
+            return new RaptureURI(authority, Scheme.SERIES).toString();
+        });
+
+        get("/series/*", (req, res) -> {
+            return Kernel.getSeries().getPoints(getContext(req), getSeriesUriParam(req));
+        }, json());
+
+        put("/series/*", (req, res) -> {
+            String uri = getSeriesUriParam(req);
+            Map<String, Object> data = JacksonUtil.getMapFromJson(req.body());
+            List<String> keys = (List<String>) data.get("keys");
+            List<Object> values = (List<Object>) data.get("values");
+            if (!values.isEmpty()) {
+                Object obj = values.get(0);
+                if (obj instanceof Long) {
+                    Kernel.getSeries().addLongsToSeries(getContext(req), uri, keys, (List<Long>) (List<?>) values);
+                } else if (obj instanceof String) {
+                    Kernel.getSeries().addStringsToSeries(getContext(req), uri, keys, (List<String>) (List<?>) values);
+                } else if (obj instanceof Double) {
+                    Kernel.getSeries().addDoublesToSeries(getContext(req), uri, keys, (List<Double>) (List<?>) values);
+                } else {
+                    halt(400, "Unknown type in values parameter");
+                }
+            }
+            return uri;
+        });
+
+        delete("/series/:authority", (req, res) -> {
+            Kernel.getSeries().deleteSeriesRepo(getContext(req), req.params(":authority"));
+            return true;
+        });
+
+        delete("/series/*", (req, res) -> {
+            Kernel.getSeries().deleteSeries(getContext(req), getSeriesUriParam(req));
+            return true;
         });
     }
 
@@ -172,8 +242,17 @@ public class RestServer {
         return getUriParam(req, "/blob/");
     }
 
+    private String getSeriesUriParam(Request req) {
+        return getUriParam(req, "/series/");
+    }
+
     private String getUriParam(Request req, String prefix) {
-        return req.pathInfo().substring(prefix.length());
+        String ret = req.pathInfo().substring(prefix.length());
+        int index = ret.indexOf("?");
+        if (index != -1) {
+            ret = ret.substring(0, index);
+        }
+        return ret;
     }
 
     private CallingContext getContext(Request req) {
