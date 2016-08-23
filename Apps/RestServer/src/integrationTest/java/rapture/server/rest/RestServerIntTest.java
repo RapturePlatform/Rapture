@@ -31,15 +31,6 @@ import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
-
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.ssl.SSLContexts;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -47,11 +38,13 @@ import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 
+import rapture.server.rest.util.TestUtils;
+
 public class RestServerIntTest {
 
     @Before
     public void setup() throws UnirestException, KeyManagementException, NoSuchAlgorithmException, KeyStoreException {
-        setupHttpsUnirest();
+        TestUtils.setupHttpsUnirest();
         HttpResponse<String> result = Unirest.post("https://localhost:4567/login")
                 .body("{\"username\":\"rapture\", \"password\":\"rapture\"}").asString();
         printResponse(result);
@@ -216,23 +209,4 @@ public class RestServerIntTest {
         System.out.println(result.getBody());
         System.out.println(result.getStatus() + ": " + result.getStatusText());
     }
-
-    private void setupHttpsUnirest() {
-        SSLContext sslcontext = null;
-        try {
-            sslcontext = SSLContexts.custom().loadTrustMaterial(null, new TrustSelfSignedStrategy()).build();
-        } catch (KeyManagementException | NoSuchAlgorithmException | KeyStoreException e) {
-            fail(e.toString());
-        }
-
-        SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(sslcontext, new HostnameVerifier() {
-            @Override
-            public boolean verify(String hostname, SSLSession session) {
-                return true;
-            }
-        });
-        CloseableHttpClient httpclient = HttpClients.custom().setSSLSocketFactory(sslsf).build();
-        Unirest.setHttpClient(httpclient);
-    }
-
 }
