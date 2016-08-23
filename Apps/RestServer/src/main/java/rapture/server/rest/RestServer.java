@@ -89,6 +89,7 @@ public class RestServer {
     private void setupRoutes() {
 
         before((req, res) -> {
+            log.info("Path is: " + req.pathInfo());
             if (!req.pathInfo().startsWith("/login")) {
                 CallingContext ctx = ctxs.get(req.session().id());
                 if (ctx == null) {
@@ -100,18 +101,27 @@ public class RestServer {
 
         post("/login", (req, res) -> {
             log.info("Logging in...");
-            // TODO: check authorization token
-            // String authentication = req.headers("Authentication");
-            Map<String, Object> data = JacksonUtil.getMapFromJson(req.body());
-            String username = (String) data.get("username");
-            String password = (String) data.get("password");
             CallingContext ctx = null;
-            try {
-                ctx = Kernel.getLogin().login(username, password, null);
-            } catch (RaptureException re) {
-                String msg = "Invalid login: " + re.getMessage();
-                log.warn(msg);
-                halt(401, msg);
+            Map<String, Object> data = JacksonUtil.getMapFromJson(req.body());
+            String apiKey = (String) data.get("apiKey");
+            if (StringUtils.isNotBlank(apiKey)) {
+                String appKey = (String) data.get("appKey");
+                ctx = Kernel.INSTANCE.loadContext(appKey, apiKey);
+                if (ctx == null) {
+                    String msg = String.format("Invalid apiKey [%s] and appKey [%s]", apiKey, appKey);
+                    log.warn(msg);
+                    halt(401, msg);
+                }
+            } else {
+                String username = (String) data.get("username");
+                String password = (String) data.get("password");
+                try {
+                    ctx = Kernel.getLogin().login(username, password, null);
+                } catch (RaptureException re) {
+                    String msg = "Invalid login: " + re.getMessage();
+                    log.warn(msg);
+                    halt(401, msg);
+                }
             }
             String id = req.session(true).id();
             ctxs.put(id, ctx);
