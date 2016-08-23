@@ -33,11 +33,12 @@ docker run -d -p 4567:4567 --link mongo --link rabbit --link elasticsearch --lin
 ```
 The RestServer REST API will be available at [http://localhost:4567](http://localhost:4567) or http://192.168.99.100:4567 or equivalent depending on your docker configuration (native or virtual).
 
-##### REST API 
-[Login](#login)
-[Document](#document)
-[Blob](#blob) 
-[Series](#series) 
+# REST API #
+* [Login](#login) 
+* [Document](#document)
+* [Blob](#blob) 
+* [Series](#series)
+
 <a name="login"/>
 **Login**
 ```
