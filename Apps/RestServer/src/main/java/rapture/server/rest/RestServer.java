@@ -232,6 +232,17 @@ public class RestServer {
             Kernel.getSeries().deleteSeries(getContext(req), getSeriesUriParam(req));
             return true;
         });
+
+        post("/workorder/*", (req, res) -> {
+            Map<String, String> params = new HashMap<>();
+            String body = req.body();
+            if (StringUtils.isNotBlank(body)) {
+                Map<String, Object> data = JacksonUtil.getMapFromJson(body);
+                params = (Map<String, String>) data.get("params");
+            }
+            return Kernel.getDecision().createWorkOrder(getContext(req), getWorkorderUriParam(req), params);
+        });
+
     }
 
     private String getDocUriParam(Request req) {
@@ -244,6 +255,10 @@ public class RestServer {
 
     private String getSeriesUriParam(Request req) {
         return getUriParam(req, "/series/");
+    }
+
+    private String getWorkorderUriParam(Request req) {
+        return getUriParam(req, "/workorder/");
     }
 
     private String getUriParam(Request req, String prefix) {

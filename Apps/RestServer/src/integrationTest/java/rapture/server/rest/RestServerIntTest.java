@@ -206,6 +206,12 @@ public class RestServerIntTest {
         printResponse(result);
     }
 
+    @Test
+    public void testWorkorderCreate() throws UnirestException {
+        HttpResponse<String> result = Unirest.post("https://localhost:4567/workorder/workflows/recon").asString();
+        printResponse(result);
+    }
+
     private void printResponse(HttpResponse<String> result) {
         System.out.println(result.getBody());
         System.out.println(result.getStatus() + ": " + result.getStatusText());
