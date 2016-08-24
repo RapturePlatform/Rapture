@@ -26,6 +26,7 @@ package rapture.server.rest;
 import static rapture.server.rest.JsonUtil.json;
 import static spark.Spark.before;
 import static spark.Spark.delete;
+import static spark.Spark.exception;
 import static spark.Spark.get;
 import static spark.Spark.halt;
 import static spark.Spark.post;
@@ -73,6 +74,9 @@ public class RestServer {
         setupHttps();
         setupWebSocket();
         setupRoutes();
+        exception(Exception.class, (e, req, res) -> {
+            log.error(String.format("Exception for request: %s [%s]%n[%s]", req.requestMethod(), req.pathInfo(), req.body()), e);
+        });
     }
 
     private void setupHttps() {
