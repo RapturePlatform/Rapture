@@ -27,6 +27,16 @@ import reflex.value.ReflexValue;
   public ImportHandler importHandler = new ImportHandler();
   private NamespaceStack namespaceStack;
 
+  private MetaScriptInfo scriptInfo = null;
+
+  public MetaScriptInfo getScriptInfo() {
+      return scriptInfo;
+  }
+
+  public void setScriptInfo(MetaScriptInfo scriptInfo) {
+      this.scriptInfo = scriptInfo;
+  }
+
   public ReflexTreeWalker(CommonTreeNodeStream nodes, LanguageRegistry languageRegistry) {
     this(nodes, null, languageRegistry);
   }

@@ -1,0 +1,58 @@
+version: '2'
+services:
+  apiserver:
+    image: 'incapture/raptureapiserver:stable'
+    environment:
+      - RAPTURE_RANDOMIZEDEFAULTPASSWORDS=False
+    links:
+      - 'postgres:postgres'
+      - 'elasticsearch:elasticsearch'
+      - 'mongo:mongo'
+      - 'rabbit:rabbit'
+      - 'cassandra:cassandra'
+    ports:
+      - '8080:8080'
+      - '8665:8665'
+    restart: always
+    depends_on:
+      - rabbit
+      - mongo
+      - postgres
+      - elasticsearch
+      - cassandra
+  mongo:
+    image: 'incapture/mongo:latest'
+    ports:
+      - '27017:27017'
+    restart: always
+    depends_on:
+      - rabbit
+  postgres:
+    image: 'incapture/postgres:latest'
+    ports:
+      - '5432:5432'
+    restart: always
+    depends_on:
+      - rabbit
+  cassandra:
+    network_mode: "host"
+    image: 'incapture/cassandra:latest'
+    ports:
+      - '9160:9160'
+    restart: always
+    depends_on:
+      - rabbit
+  elasticsearch:
+    image: 'incapture/elasticsearch:latest'
+    ports:
+      - '9200:9200'
+      - '9300:9300'
+    restart: always
+    depends_on:
+      - rabbit
+  rabbit:
+    image: 'incapture/rabbit:latest'
+    ports:
+      - '5672:5672'
+      - '15672:15672'
+    restart: always

@@ -1,0 +1,26 @@
+repo = "document://operation"+date();
+docu = repo+"/data2";
+oper = repo+"/oper2";
+
+println(repo);
+if (!#doc.docRepoExists(repo)) do
+  #doc.createDocRepo(repo, "NREP {} USING MEMORY {}");
+end
+
+// Start with a simple document
+#doc.putDoc(docu, "{\"alpha\":1,\"bravo\":2,\"charlie\":3}");
+
+// Put the operations in an Alterate document
+#doc.putDoc(oper, "{ \"setVal\" : \"this[params['fieldToChange']] = params['newFieldValue']; return this;\", \"increment\" : \"this[params['fieldToIncrement']] = cast(this[params['fieldToIncrement']], 'integer') + 1; println(this); return this;\" }");
+
+para = {};
+para['fieldToChange'] = 'bravo';
+para['newFieldValue'] = 5;
+#operation.invokeSaveAlt(docu, 'setVal', para, oper);
+
+para['fieldToIncrement'] = 'charlie';
+content = #operation.invokeAlt(docu, 'increment', para, oper);
+assert(content.bravo == 5);
+assert(content['charlie'] == 4);
+#doc.deleteDocRepo(repo);
+return true;

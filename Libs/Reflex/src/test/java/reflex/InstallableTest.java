@@ -29,8 +29,8 @@ import org.junit.Test;
 import reflex.handlers.InstallableScriptingApi;
 
 public class InstallableTest extends ResourceBasedTest {
- @Test
- public void runInstall() throws RecognitionException{
-     runTestForWithApi("/installable/installable.rfx", new InstallableScriptingApi(), null);
- }
+    @Test
+    public void runInstall() throws RecognitionException {
+        runTestForWithApi("/installable/installable.rfx", new InstallableScriptingApi(), null, null);
+    }
 }

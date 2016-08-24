@@ -252,16 +252,21 @@ public class ResourceBasedTest {
         return new ReflexTreeWalker(nodes, parser.languageRegistry);
     }
 
-    protected void runTestForWithApi(String fileName) throws RecognitionException {
+    protected String runTestForWithApi(String fileName) throws RecognitionException {
+        return runTestForWithApi(fileName, null);
+    }
+
+    protected String runTestForWithApi(String fileName, Map<String, Object> injectedVars) throws RecognitionException {
 
         HttpLoginApi loginApi = new HttpLoginApi("http://localhost:8665/rapture", new SimpleCredentialsProvider("rapture", "rapture"));
         loginApi.login();
 
         ScriptingApi api = new ScriptClient(loginApi);
-        runTestForWithApi(fileName, api, new ReflexScriptDataHandler(api));
+        return runTestForWithApi(fileName, api, new ReflexScriptDataHandler(api), injectedVars);
     }
 
-    protected String runTestForWithApi(String fileName, ScriptingApi api, IReflexDataHandler dataHandler) throws RecognitionException {
+    protected String runTestForWithApi(String fileName, ScriptingApi api, IReflexDataHandler dataHandler, Map<String, Object> injectedVars)
+            throws RecognitionException {
         ReflexLexer lexer = new ReflexLexer();
         lexer.setCharStream(new ANTLRStringStream(getResourceAsString(this, fileName)));
         CommonTokenStream tokens = new CommonTokenStream(lexer);
@@ -273,6 +278,11 @@ public class ResourceBasedTest {
 
         walker.getReflexHandler().setApi(api);
         walker.getReflexHandler().setDataHandler(dataHandler);
+        if (injectedVars != null && !injectedVars.isEmpty()) {
+            for (Map.Entry<String, Object> kv : injectedVars.entrySet()) {
+                walker.currentScope.assign(kv.getKey(), kv.getValue() == null ? new ReflexNullValue() : new ReflexValue(kv.getValue()));
+            }
+        }
 
         ReflexNode returned = walker.walk();
         return returned.evaluateWithoutScope(new ReflexPrintingDebugger()).asString();

@@ -31,10 +31,16 @@ import java.util.List;
 **/
 
 public class ScriptResult {
-    public String getReturnValue() {
+    @Override
+    public String toString() {
+        return "ScriptResult [returnValue=" + returnValue + ", output=" + output + ", inError=" + inError + "]";
+    }
+
+    public Object getReturnValue() {
         return returnValue;
     }
-    public void setReturnValue(String returnValue) {
+
+    public void setReturnValue(Object returnValue) {
         this.returnValue = returnValue;
     }
     public List<String> getOutput() {
@@ -49,7 +55,8 @@ public class ScriptResult {
     public void setInError(boolean inError) {
         this.inError = inError;
     }
-    private String returnValue;
+
+    private Object returnValue;
     private List<String> output = new ArrayList<String>();
     private boolean inError = false;
 }

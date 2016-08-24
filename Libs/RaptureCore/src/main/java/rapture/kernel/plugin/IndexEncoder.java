@@ -24,11 +24,22 @@
 package rapture.kernel.plugin;
 
 import rapture.common.CallingContext;
+import rapture.common.RaptureURI;
+import rapture.common.Scheme;
+import rapture.common.exception.RaptureExceptionFactory;
 import rapture.kernel.Kernel;
 
 public class IndexEncoder extends ReflectionEncoder {
+
     @Override
     public Object getReflectionObject(CallingContext ctx, String uri) {
-        return Kernel.getIndex().getIndex(ctx, uri);
+        RaptureURI ruri = new RaptureURI(uri);
+        if (ruri.getScheme().equals(Scheme.TABLE)) return Kernel.getIndex().getTable(ctx, uri);
+        else if (ruri.getScheme().equals(Scheme.INDEX)) {
+            if (ruri.hasDocPath()) log.warn(uri + " has unexpected dogPath " + ruri.getDocPath() + " - stripped");
+            return Kernel.getIndex().getIndex(ctx, ruri.toAuthString());
+        }
+        else throw RaptureExceptionFactory.create("URI " + uri + " not supported by IndexEncoder");
+
     }
 }

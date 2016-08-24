@@ -1,0 +1,23 @@
+repo = "document://operation1"+date();
+docu = repo+"/data1";
+scr = "script://oper/incb";
+
+println(repo);
+if (!#doc.docRepoExists(repo)) do
+  #doc.createDocRepo(repo, "NREP {} USING MEMORY {}");
+end
+
+#doc.putDoc(docu, "{ \"a\" : 1, \"b\" : 2, \"c\" : 3, \"incr\" : \"this['b'] = cast(this.b, 'integer') + params.b; return this;\"}");
+
+m = {};
+m.b= 3;
+#operation.invokeSave(docu, 'incr', m);
+m.b= 4;
+#operation.invokeSave(docu, 'incr', m);
+
+content = #doc.getDoc(docu);
+println(content);
+assert(content == "{\"a\":1,\"b\":9,\"c\":3,\"incr\":\"this['b'] = cast(this.b, 'integer') + params.b; return this;\"}");
+#doc.deleteDocRepo(repo);
+return true;
+

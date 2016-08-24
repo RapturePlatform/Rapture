@@ -29,6 +29,7 @@ import static rapture.common.Scheme.DOCUMENT;
 import static rapture.common.Scheme.EVENT;
 import static rapture.common.Scheme.FIELD;
 import static rapture.common.Scheme.IDGEN;
+import static rapture.common.Scheme.INDEX;
 import static rapture.common.Scheme.JAR;
 import static rapture.common.Scheme.JOB;
 import static rapture.common.Scheme.SCRIPT;
@@ -58,6 +59,12 @@ import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 
+import com.google.common.base.Objects;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.ImmutableBiMap;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.io.Closeables;
+
 import rapture.common.PluginTransportItem;
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
@@ -65,12 +72,6 @@ import rapture.common.api.ScriptingApi;
 import rapture.common.exception.RaptureException;
 import rapture.common.exception.RaptureExceptionFactory;
 import rapture.util.MimeTypeResolver;
-
-import com.google.common.base.Objects;
-import com.google.common.collect.BiMap;
-import com.google.common.collect.ImmutableBiMap;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.io.Closeables;
 
 /**
  * This class maintains a two-way binding between a content file in the expanded directory for a PluginSandbox and the corresponding object on the rapture
@@ -85,7 +86,7 @@ public class PluginSandboxItem {
     @Override
     public String toString() {
         return "PluginSandboxItem [uri=" + uri + ", variant=" + variant + ", file=" + file + ", fullFilePath=" + fullFilePath + ", fileHash=" + fileHash
-                + ", remoteHash=" + remoteHash + ", content=" + Arrays.toString(content) + ", fileCurrent=" + fileCurrent + ", remoteCurrent=" + remoteCurrent
+                + ", remoteHash=" + remoteHash + ", content=" + Arrays.toString(getContent()) + ", fileCurrent=" + fileCurrent + ", remoteCurrent=" + remoteCurrent
                 + "]";
     }
 
@@ -133,13 +134,13 @@ public class PluginSandboxItem {
      */
     public PluginSandboxItem(RaptureURI uri, String variant, String hash, byte[] content) {
         this.uri = uri;
-        this.content = content;
+        this.setContent(content);
         this.fileHash = hash;
         this.variant = variant;
     }
 
     public void deflate() {
-        content = null;
+        setContent(null);
     }
 
     public File getFile() {
@@ -262,7 +263,7 @@ public class PluginSandboxItem {
 
     public void cacheFileContent() throws IOException, NoSuchAlgorithmException {
         MessageDigest md = MessageDigest.getInstance("MD5");
-        content = PluginContentReader.readFromFile(file, md);
+        setContent(PluginContentReader.readFromFile(file, md));
         fileHash = Hex.encodeHexString(md.digest());
         fileCurrent = true;
     }
@@ -278,18 +279,18 @@ public class PluginSandboxItem {
         if (!fileCurrent || forceRefresh) {
             cacheFileContent();
         }
-        return content;
+        return getContent();
     }
 
     public void clearCache() {
-        content = null;
+        setContent(null);
     }
 
     /**
      * @return true if this content is a change from the existing content
      */
     public boolean setContentFromRemote(byte[] content, String hash) {
-        this.content = content;
+        this.setContent(content);
         remoteCurrent = true;
         remoteHash = hash;
         if (fileHash != null && !fileHash.equals(remoteHash)) {
@@ -313,12 +314,12 @@ public class PluginSandboxItem {
      */
     public boolean diffWithFile(String hash, boolean cacheIfDifferent) throws IOException, NoSuchAlgorithmException {
         boolean cached = false;
-        byte[] oldContent = content;
+        byte[] oldContent = getContent();
         if (fileHash == null) {
             try {
                 cacheFileContent();
             } catch (FileNotFoundException ex) {
-                content = cacheIfDifferent ? null : oldContent;
+                setContent(cacheIfDifferent ? null : oldContent);
                 return true;
             }
             cached = true;
@@ -329,19 +330,19 @@ public class PluginSandboxItem {
         if (!cached && cacheIfDifferent && different) {
             cacheFileContent();
         } else if (!cacheIfDifferent) {
-            content = oldContent;
+            setContent(oldContent);
         }
         return different;
     }
 
     public void storeFile() throws IOException {
-        if (content == null) return;
+        if (getContent() == null) return;
         PrintWriter writer = null;
         boolean early = true;
         try {
             file.getParentFile().mkdirs();
             writer = new PrintWriter(new BufferedWriter(new FileWriter(file)));
-            writer.print(content);
+            writer.print(getContent());
             early = false;
             fileCurrent = true;
         } finally {
@@ -359,6 +360,7 @@ public class PluginSandboxItem {
             .put(".revent", EVENT)
             .put(".field", FIELD)
             .put(".table", TABLE)
+            .put(".index", INDEX)
             .put(".job", JOB)
             .put(".workflow", WORKFLOW)
             .put(".lock", Scheme.LOCK)
@@ -394,7 +396,7 @@ public class PluginSandboxItem {
     }
 
     protected boolean needExtract() {
-        return !remoteCurrent || content == null || getHash() == null || (fileHash != null && !fileHash.equals(remoteHash));
+        return !remoteCurrent || getContent() == null || getHash() == null || (fileHash != null && !fileHash.equals(remoteHash));
     }
 
     public void delete() {
@@ -412,15 +414,16 @@ public class PluginSandboxItem {
         ZipEntry entry = new ZipEntry(filePath);
         out.putNextEntry(entry);
         if (build && (file != null)) {
-            content = Files.readAllBytes(Paths.get(file.getAbsolutePath()));
+            setContent(Files.readAllBytes(Paths.get(file.getAbsolutePath())));
         } else {
             download(client, false);
         }
-        if (content != null)
-            out.write(content);
+        if ((getContent() != null) && (getContent().length > 0))
+            out.write(getContent());
     }
 
     public String getHash() {
+
         if (fileHash != null) {
             return fileHash;
         }
@@ -437,14 +440,14 @@ public class PluginSandboxItem {
      * @throws NoSuchAlgorithmException
      */
     public PluginTransportItem makeTransportItem() throws NoSuchAlgorithmException, IOException {
-        if (content == null) {
+        if (getContent() == null) {
             cacheFileContent();
-            if (content == null) {
+            if (getContent() == null) {
                 throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, "Content not present");
             }
         }
         PluginTransportItem result = new PluginTransportItem();
-        result.setContent(content);
+        result.setContent(getContent());
         result.setUri(uri.toString());
         result.setHash(getHash());
 
@@ -465,5 +468,13 @@ public class PluginSandboxItem {
 
     public void setFullFilePath(String fullFilePath) {
         this.fullFilePath = fullFilePath;
+    }
+
+    public byte[] getContent() {
+        return content;
+    }
+
+    public void setContent(byte[] content) {
+        this.content = content;
     }
 }

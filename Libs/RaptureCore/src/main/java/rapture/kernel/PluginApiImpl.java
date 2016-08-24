@@ -25,6 +25,7 @@ package rapture.kernel;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -46,6 +47,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.google.common.net.MediaType;
 
 import rapture.common.CallingContext;
 import rapture.common.PluginConfig;
@@ -59,6 +61,7 @@ import rapture.common.RaptureFolderInfo;
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
 import rapture.common.api.PluginApi;
+import rapture.common.exception.RaptureException;
 import rapture.common.exception.RaptureExceptionFactory;
 import rapture.common.impl.jackson.JacksonUtil;
 import rapture.common.storable.helpers.PluginConfigHelper;
@@ -118,6 +121,7 @@ public class PluginApiImpl extends KernelBase implements PluginApi {
             .put(Scheme.DOCUMENT, new DocumentEncoder())
             .put(Scheme.FIELD, new FieldEncoder())
             .put(Scheme.TABLE, new IndexEncoder())
+            .put(Scheme.INDEX, new IndexEncoder())
             .put(Scheme.EVENT, new EventEncoder())
             .put(Scheme.WORKFLOW, new WorkflowEncoder())
             .put(Scheme.LOCK, new LockEncoder())
@@ -168,7 +172,8 @@ public class PluginApiImpl extends KernelBase implements PluginApi {
             installRepo(context, item);
         }
         for (PluginTransportItem item : payload.values()) {
-            installItem(context, item);
+            byte[] content = item.getContent();
+            if ((content != null) && (content.length > 0)) installItem(context, item);
         }
     }
 
@@ -177,7 +182,7 @@ public class PluginApiImpl extends KernelBase implements PluginApi {
             .put(Scheme.SCRIPT, new ScriptInstaller())
             .put(Scheme.JOB, new ScheduleInstaller()).put(Scheme.DOCUMENT, new DocumentInstaller())
             .put(Scheme.EVENT, new EventInstaller()).put(Scheme.FIELD, new FieldInstaller())
-            .put(Scheme.IDGEN, new IdGenInstaller()).put(Scheme.TABLE, new IndexInstaller())
+            .put(Scheme.IDGEN, new IdGenInstaller()).put(Scheme.TABLE, new IndexInstaller()).put(Scheme.INDEX, new IndexInstaller())
             .put(Scheme.WORKFLOW, new WorkflowInstaller()).put(Scheme.ENTITLEMENT, new EntitlementInstaller())
             .put(Scheme.ENTITLEMENTGROUP, new EntitlementGroupInstaller()).put(Scheme.LOCK, new LockInstaller())
             .put(Scheme.SNIPPET, new SnippetInstaller())
@@ -295,8 +300,8 @@ public class PluginApiImpl extends KernelBase implements PluginApi {
                     // Defensive code -- this should not happen
                     result.put(item.getURI(), "No MD5 in manifest");
                 } else if (!item.getHash().equals(xport.getHash())) {
-                    result.put(item.getURI(), "Changed");
-                } // else ok -- do nothing
+                    result.put(item.getURI(), "MD5 Hash in manifest " + item.getHash() + " does not match hash for content " + xport.getHash());
+                } else result.put(item.getURI(), "Verified");
             } catch (Exception ex) {
                 result.put(item.getURI(), "Exception:" + ex.getMessage());
             }
@@ -553,6 +558,17 @@ public class PluginApiImpl extends KernelBase implements PluginApi {
         String zipDirName = IDGenerator.getUUID();
         String zipFileName = pluginName + ".zip";
 
+        RaptureURI blobUri = null;
+        try {
+            blobUri = new RaptureURI(path);
+            if (blobUri.getScheme().equals(Scheme.BLOB)) {
+                path = "/tmp/" + blobUri.getDocPath();
+            } else {
+                blobUri = null;
+            }
+        } catch (RaptureException re) {
+            log.debug(path + " is not a Blob URI");
+        }
         File zipDir = new File(path, zipDirName);
 
         if (!zipDir.mkdirs()) {
@@ -580,7 +596,6 @@ public class PluginApiImpl extends KernelBase implements PluginApi {
                 try {
                     RaptureURI ruri = new RaptureURI(uri);
                     PluginTransportItem pti = getPluginItem(context, uri);
-
                     String filePath = PluginSandboxItem.calculatePath(ruri, null);
                     ZipEntry zentry = new ZipEntry(filePath);
                     out.putNextEntry(zentry);
@@ -595,8 +610,20 @@ public class PluginApiImpl extends KernelBase implements PluginApi {
             throw RaptureExceptionFactory.create(HttpStatus.SC_UNAUTHORIZED, "Cannot export " + pluginName, e);
         }
 
-        String user = Kernel.getUser().getWhoAmI(context).getUsername();
         String filePath = zipDirName + "/" + zipFileName;
+        if (blobUri != null) {
+            byte[] rawFileData = new byte[(int) zipFile.length()];
+            filePath = blobUri.toString();
+            try (FileInputStream fileInputStream = new FileInputStream(zipFile)) {
+                fileInputStream.read(rawFileData);
+                fileInputStream.close();
+                Kernel.getBlob().putBlob(context, filePath, rawFileData, MediaType.ZIP.toString());
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+        String user = Kernel.getUser().getWhoAmI(context).getUsername();
         String[] fna = objectsNotAdded.toArray(new String[objectsNotAdded.size()]);
         
         Metadata metadata = new Metadata(zipFile, filePath, user, objectCount, fna);

@@ -22,7 +22,7 @@ linfo     : LOCKING USING ldef;
 
 ldef   	  : s=lstyle config { addConfig($s.text); };
 
-lstyle    : s=(MEMORY | FILE | REDIS | MONGODB | DUMMY) { setStore($s); };
+lstyle    : s=(MEMORY | FILE | REDIS | MONGODB | DUMMY | ZOOKEEPER) { setStore($s); };
 
 config 	  : LBRACE entrylist RBRACE;
 

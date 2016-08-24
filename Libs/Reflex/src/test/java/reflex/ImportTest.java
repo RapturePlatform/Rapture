@@ -34,38 +34,10 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
 import rapture.common.BlobContainer;
-import rapture.common.InstallableKernel;
 import rapture.common.RaptureFolderInfo;
-import rapture.common.api.ScriptActivityApi;
-import rapture.common.api.ScriptAdminApi;
-import rapture.common.api.ScriptAsyncApi;
-import rapture.common.api.ScriptAuditApi;
-import rapture.common.api.ScriptBlobApi;
-import rapture.common.api.ScriptBootstrapApi;
-import rapture.common.api.ScriptDecisionApi;
-import rapture.common.api.ScriptDocApi;
-import rapture.common.api.ScriptEntitlementApi;
-import rapture.common.api.ScriptEnvironmentApi;
-import rapture.common.api.ScriptEventApi;
-import rapture.common.api.ScriptFieldsApi;
-import rapture.common.api.ScriptIdGenApi;
-import rapture.common.api.ScriptIndexApi;
 import rapture.common.api.ScriptJarApi;
-import rapture.common.api.ScriptLockApi;
-import rapture.common.api.ScriptNotificationApi;
-import rapture.common.api.ScriptOperationApi;
-import rapture.common.api.ScriptPipelineApi;
-import rapture.common.api.ScriptPluginApi;
-import rapture.common.api.ScriptRunnerApi;
-import rapture.common.api.ScriptScheduleApi;
-import rapture.common.api.ScriptScriptApi;
-import rapture.common.api.ScriptSearchApi;
-import rapture.common.api.ScriptSeriesApi;
-import rapture.common.api.ScriptStructuredApi;
-import rapture.common.api.ScriptSysApi;
-import rapture.common.api.ScriptTagApi;
-import rapture.common.api.ScriptUserApi;
 import rapture.common.api.ScriptingApi;
+import rapture.common.client.DummyScriptClient;
 import reflex.handlers.TestScriptHandler;
 import reflex.value.ReflexValue;
 
@@ -82,98 +54,7 @@ public class ImportTest extends ResourceBasedTest {
 
     @Test
     public void testImportFromJar() throws RecognitionException {
-        ScriptingApi api = new ScriptingApi() {
-
-            @Override
-            public ScriptActivityApi getActivity() {
-                // TODO Auto-generated method stub
-                return null;
-            }
-
-            @Override
-            public ScriptBootstrapApi getBootstrap() {
-                // TODO Auto-generated method stub
-                return null;
-            }
-
-            @Override
-            public ScriptScriptApi getScript() {
-                // TODO Auto-generated method stub
-                return null;
-            }
-
-            @Override
-            public ScriptLockApi getLock() {
-                // TODO Auto-generated method stub
-                return null;
-            }
-
-            @Override
-            public ScriptNotificationApi getNotification() {
-                // TODO Auto-generated method stub
-                return null;
-            }
-
-            @Override
-            public ScriptIndexApi getIndex() {
-                // TODO Auto-generated method stub
-                return null;
-            }
-
-            @Override
-            public ScriptAdminApi getAdmin() {
-                // TODO Auto-generated method stub
-                return null;
-            }
-
-            @Override
-            public ScriptIdGenApi getIdGen() {
-                // TODO Auto-generated method stub
-                return null;
-            }
-
-            @Override
-            public ScriptEntitlementApi getEntitlement() {
-                // TODO Auto-generated method stub
-                return null;
-            }
-
-            @Override
-            public ScriptUserApi getUser() {
-                // TODO Auto-generated method stub
-                return null;
-            }
-
-            @Override
-            public ScriptScheduleApi getSchedule() {
-                // TODO Auto-generated method stub
-                return null;
-            }
-
-            @Override
-            public ScriptEventApi getEvent() {
-                // TODO Auto-generated method stub
-                return null;
-            }
-
-            @Override
-            public ScriptAuditApi getAudit() {
-                // TODO Auto-generated method stub
-                return null;
-            }
-
-            @Override
-            public ScriptFieldsApi getFields() {
-                // TODO Auto-generated method stub
-                return null;
-            }
-
-            @Override
-            public ScriptBlobApi getBlob() {
-                // TODO Auto-generated method stub
-                return null;
-            }
-
+        ScriptingApi api = new DummyScriptClient() {
             @Override
             public ScriptJarApi getJar() {
                 return new ScriptJarApi() {
@@ -234,112 +115,8 @@ public class ImportTest extends ResourceBasedTest {
 
                 };
             }
-
-            @Override
-            public ScriptPluginApi getPlugin() {
-                // TODO Auto-generated method stub
-                return null;
-            }
-
-            @Override
-            public ScriptPipelineApi getPipeline() {
-                // TODO Auto-generated method stub
-                return null;
-            }
-
-            @Override
-            public ScriptAsyncApi getAsync() {
-                // TODO Auto-generated method stub
-                return null;
-            }
-
-            @Override
-            public ScriptSysApi getSys() {
-                // TODO Auto-generated method stub
-                return null;
-            }
-
-            @Override
-            public ScriptRunnerApi getRunner() {
-                // TODO Auto-generated method stub
-                return null;
-            }
-
-            @Override
-            public ScriptSeriesApi getSeries() {
-                // TODO Auto-generated method stub
-                return null;
-            }
-
-            @Override
-            public ScriptDecisionApi getDecision() {
-                // TODO Auto-generated method stub
-                return null;
-            }
-
-            @Override
-            public ScriptDocApi getDoc() {
-                // TODO Auto-generated method stub
-                return null;
-            }
-
-            @Override
-            public ScriptEnvironmentApi getEnvironment() {
-                // TODO Auto-generated method stub
-                return null;
-            }
-
-            @Override
-            public ScriptStructuredApi getStructured() {
-                // TODO Auto-generated method stub
-                return null;
-            }
-
-            @Override
-            public ScriptSearchApi getSearch() {
-                // TODO Auto-generated method stub
-                return null;
-            }
-
-            @Override
-            public ScriptTagApi getTag() {
-                // TODO Auto-generated method stub
-                return null;
-            }
-
-            @Override
-            public InstallableKernel getInstalledKernel(String name) {
-                // TODO Auto-generated method stub
-                return null;
-            }
-
-            @Override
-            public String getEndPoint() {
-                // TODO Auto-generated method stub
-                return null;
-            }
-
-            @Override
-            public String getSerializedContext() {
-                // TODO Auto-generated method stub
-                return null;
-            }
-
-			@Override
-			public ScriptOperationApi getOperation() {
-				// TODO Auto-generated method stub
-				return null;
-			}
-
         };
-        assertEquals("{\n" +
-                "  \"data1\": 100,\n" +
-                "  \"data2\": \"hello\",\n" +
-                "  \"list\": [\n" +
-                "    \"String 1\",\n" +
-                "    \"String 2\",\n" +
-                "    \"String 3\"\n" +
-                "  ]\n" +
-                "}", runTestForWithApi("/imports/import2.rfx", api, new ReflexScriptDataHandler(api)));
+        assertEquals("{\n" + "  \"data1\": 100,\n" + "  \"data2\": \"hello\",\n" + "  \"list\": [\n" + "    \"String 1\",\n" + "    \"String 2\",\n"
+                + "    \"String 3\"\n" + "  ]\n" + "}", runTestForWithApi("/imports/import2.rfx", api, new ReflexScriptDataHandler(api), null));
     }
 }
