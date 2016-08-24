@@ -13,8 +13,6 @@ license {
     header file('./LICENSE')
 }
 
-apply plugin: "sonar"
-
 project.group = 'net.rapture'
 
 ext { platformVersion = '3.0.4' }

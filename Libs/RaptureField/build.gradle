@@ -1,0 +1,10 @@
+jar.manifest.attributes "Implementation-Title": "Field Support for Transformations in the Rapture Kernel"
+
+dependencies {
+    testCompile 'xmlunit:xmlunit:1.6'
+}
+
+task testJar(type: Jar) {
+    classifier = 'tests'
+    from sourceSets.test.output
+}
