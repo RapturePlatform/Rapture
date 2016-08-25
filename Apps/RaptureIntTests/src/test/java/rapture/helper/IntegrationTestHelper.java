@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (C) 2011-2016 Incapture Technologies LLC
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,7 +21,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
 package rapture.helper;
 
 import java.io.File;
@@ -65,7 +64,7 @@ import rapture.common.dp.WorkOrder;
 import rapture.common.dp.WorkOrderDebug;
 
 public class IntegrationTestHelper {
-    
+
     HttpLoginApi raptureLogin = null;
     HttpLockApi lockApi = null;
     HttpIndexApi indexApi = null;
@@ -95,7 +94,7 @@ public class IntegrationTestHelper {
     public HttpEventApi getEventApi() {
         return eventApi;
     }
-    
+
     public HttpIndexApi getIndexApi() {
         return indexApi;
     }
@@ -103,7 +102,7 @@ public class IntegrationTestHelper {
     public HttpPluginApi getPluginApi() {
         return pluginApi;
     }
-    
+
     public HttpSeriesApi getSeriesApi() {
         return seriesApi;
     }
@@ -192,9 +191,9 @@ public class IntegrationTestHelper {
     }
 
     public void configureTestRepo(RaptureURI repo, String storage) {
-    	configureTestRepo(repo, storage, false);
+        configureTestRepo(repo, storage, false);
     }
-    
+
     public void configureTestRepo(RaptureURI repo, String storage, boolean versioned) {
         Assert.assertFalse(repo.hasDocPath(), "Doc path not allowed");
         String authString = repo.toAuthString();
@@ -203,31 +202,33 @@ public class IntegrationTestHelper {
         switch (repo.getScheme()) {
         case BLOB:
             if (blobApi.blobRepoExists(repo.toAuthString())) blobApi.deleteBlobRepo(authString);
-            	blobApi.createBlobRepo(authString, "BLOB {} USING " + storage + " {prefix=\"B_" + repo.getAuthority()+ "\"}",
-                "NREP {} USING " + storage + " {prefix=\"M_" + repo.getAuthority() + "\"}");
+            blobApi.createBlobRepo(authString, "BLOB {} USING " + storage + " {prefix=\"B_" + repo.getAuthority() + "\"}",
+                    "NREP {} USING " + storage + " {prefix=\"M_" + repo.getAuthority() + "\"}");
             Assert.assertTrue(blobApi.blobRepoExists(authString), authString + " Create failed");
             break;
-    
+
         case DOCUMENT:
-            if (docApi.docRepoExists(repo.toAuthString())) docApi.deleteDocRepo(authString);            
-            	docApi.createDocRepo(authString, "NREP {} USING " + storage + " {prefix=\"D_" + repo.getAuthority()+ (versioned? "\", separateVersion=\"true":"") + "\"}");
+            if (docApi.docRepoExists(repo.toAuthString())) docApi.deleteDocRepo(authString);
+            docApi.createDocRepo(authString,
+                    "NREP {} USING " + storage + " {prefix=\"D_" + repo.getAuthority() + (versioned ? "\", separateVersion=\"true" : "") + "\"}");
             Assert.assertTrue(docApi.docRepoExists(authString), authString + " Create failed");
             break;
-    
+
         case SCRIPT:
             // Scripts use an existing repo
             break;
 
         case SERIES:
             if (seriesApi.seriesRepoExists(repo.toAuthString())) seriesApi.deleteSeriesRepo(authString);
-            
-            if (storage.equalsIgnoreCase("CASSANDRA"))
-            	seriesApi.createSeriesRepo(authString, "SREP {} USING " + storage + " {keyspace=\""+"s"+repo.getAuthority().substring(repo.getAuthority().length()-8, repo.getAuthority().length())+"KS\", cf=\""+"s"+repo.getAuthority().substring(repo.getAuthority().length()-8, repo.getAuthority().length())+"CF\"}");
-            else
-            	seriesApi.createSeriesRepo(authString, "SREP {} USING " + storage + " {prefix=\"S_" + repo.getAuthority() + "\"}");
+
+            if (storage.equalsIgnoreCase("CASSANDRA")) seriesApi.createSeriesRepo(authString,
+                    "SREP {} USING " + storage + " {keyspace=\"" + "s"
+                            + repo.getAuthority().substring(repo.getAuthority().length() - 8, repo.getAuthority().length()) + "KS\", cf=\"" + "s"
+                            + repo.getAuthority().substring(repo.getAuthority().length() - 8, repo.getAuthority().length()) + "CF\"}");
+            else seriesApi.createSeriesRepo(authString, "SREP {} USING " + storage + " {prefix=\"S_" + repo.getAuthority() + "\"}");
             Assert.assertTrue(seriesApi.seriesRepoExists(authString), authString + " Create failed");
             break;
-    
+
         default:
             Assert.fail(repo.toString() + " not supported");
         }
@@ -236,18 +237,18 @@ public class IntegrationTestHelper {
     public void cleanTestRepo(RaptureURI repo) {
         Assert.assertFalse(repo.hasDocPath());
         String authString = repo.toAuthString();
-    
+
         switch (repo.getScheme()) {
         case BLOB:
             blobApi.deleteBlobRepo(authString);
             Assert.assertFalse(blobApi.blobRepoExists(authString), authString + " Delete failed");
             break;
-    
+
         case DOCUMENT:
             docApi.deleteDocRepo(authString);
             Assert.assertFalse(docApi.docRepoExists(authString), authString + " Delete failed");
             break;
-    
+
         case SERIES:
             seriesApi.deleteSeriesRepo(authString);
             Assert.assertFalse(seriesApi.seriesRepoExists(authString), authString + " Delete failed");
@@ -258,8 +259,7 @@ public class IntegrationTestHelper {
             scriptApi.deleteScript(authString);
             break;
         case STRUCTURED:
-        	if (structApi.structuredRepoExists(authString))
-        		structApi.deleteStructuredRepo(authString);
+            if (structApi.structuredRepoExists(authString)) structApi.deleteStructuredRepo(authString);
             Assert.assertFalse(structApi.structuredRepoExists(authString), authString + " Delete failed");
             break;
         case WORKFLOW:
@@ -271,31 +271,32 @@ public class IntegrationTestHelper {
         uriCache.remove(repo);
     }
 
-    public static boolean isWorkOrderRunning (HttpDecisionApi decisionApi,String workOrderURI ) {
+    public static boolean isWorkOrderRunning(HttpDecisionApi decisionApi, String workOrderURI) {
         WorkOrderExecutionState state = decisionApi.getWorkOrderStatus(workOrderURI).getStatus();
         Reporter.log("Status of " + workOrderURI + " is " + state, true);
         // if (state == WorkOrderExecutionState.ERROR || state == WorkOrderExecutionState.FAILING) {
-            WorkOrder wo = decisionApi.getWorkOrder(workOrderURI);
-            if (wo == null) Reporter.log("NULL WORK ORDER \n" + workOrderURI, true);
-            else {
-                Map<String, String> out = wo.getOutputs();
-                if (out == null) Reporter.log("WORK ORDER HAS NO OUTPUTS \n" + workOrderURI, true);
-                else for (Entry<String, String> e : wo.getOutputs().entrySet()) {
-                    Reporter.log("" + e.getKey() + " : " + e.getValue() + "\n", true);
-                }
+        WorkOrder wo = decisionApi.getWorkOrder(workOrderURI);
+        if (wo == null) Reporter.log("NULL WORK ORDER \n" + workOrderURI, true);
+        else {
+            Map<String, String> out = wo.getOutputs();
+            if (out == null) Reporter.log("WORK ORDER HAS NO OUTPUTS \n" + workOrderURI, true);
+            else for (Entry<String, String> e : wo.getOutputs().entrySet()) {
+                Reporter.log("" + e.getKey() + " : " + e.getValue() + "\n", true);
+            }
 
             Reporter.log("EXECUTION CONTEXT \n", true);
-                WorkOrderDebug workOrderDebug = decisionApi.getWorkOrderDebug(workOrderURI);
-                ExecutionContext ec = workOrderDebug.getContext();
-                Map<String, String> data = ec.getData();
-                for (Entry<String, String> datum : data.entrySet()) {
-                    Reporter.log("" + datum.getKey() + " : " + datum.getValue(), true);
-                }
+            WorkOrderDebug workOrderDebug = decisionApi.getWorkOrderDebug(workOrderURI);
+            ExecutionContext ec = workOrderDebug.getContext();
+            Map<String, String> data = ec.getData();
+            for (Entry<String, String> datum : data.entrySet()) {
+                Reporter.log("" + datum.getKey() + " : " + datum.getValue(), true);
             }
+        }
         // }
-        return !(state == WorkOrderExecutionState.FINISHED || state == WorkOrderExecutionState.CANCELLED || state == WorkOrderExecutionState.ERROR ||  state == WorkOrderExecutionState.FAILING);
+        return !(state == WorkOrderExecutionState.FINISHED || state == WorkOrderExecutionState.CANCELLED || state == WorkOrderExecutionState.ERROR
+                || state == WorkOrderExecutionState.FAILING);
     }
-    
+
     /**
      * Delete any created assets that we know about
      */

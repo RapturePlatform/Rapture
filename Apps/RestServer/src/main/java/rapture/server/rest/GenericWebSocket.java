@@ -21,30 +21,38 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package rapture.dp.invocable.testjar.steps;
+package rapture.server.rest;
+
+import java.io.IOException;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.apache.log4j.Logger;
+import org.eclipse.jetty.websocket.api.Session;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
+import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 
-import rapture.common.CallingContext;
-import rapture.common.dp.AbstractInvocable;
-import rapture.kernel.Kernel;
+@WebSocket
+public class GenericWebSocket {
 
-public class CreateData extends AbstractInvocable<Object> {
-    private static Logger log = Logger.getLogger(CreateData.class.getName());
+    private static final Logger log = Logger.getLogger(GenericWebSocket.class);
 
-    public CreateData(String workerURI, String stepName) {
-        super(workerURI, stepName);
+    private static final Queue<Session> sessions = new ConcurrentLinkedQueue<>();
+
+    @OnWebSocketConnect
+    public void connected(Session session) {
+        sessions.add(session);
     }
 
-    @Override
-    public String invoke(CallingContext ctx) {
-        log.info("Starting test wf: " + getWorkerURI());
-        Kernel.getDecision().writeWorkflowAuditEntry(ctx, getWorkerURI(), "***** Starting test wf for " + getWorkerURI(), false);
-        String docUri = Kernel.getDecision().getContextValue(ctx, getWorkerURI(), "DOC_URI");
-        String docContent = Kernel.getDecision().getContextValue(ctx, getWorkerURI(), "DOC_CONTENT");
-        Kernel.getDoc().putDoc(ctx, docUri, docContent);
-        log.info("Finishing test wf: " + getWorkerURI() + " by writing to " + docUri);
-        Kernel.getDecision().writeWorkflowAuditEntry(ctx, getWorkerURI(), "Finishing test wf: " + getWorkerURI() + " by writing to " + docUri, false);
-        return "next";
+    @OnWebSocketClose
+    public void closed(Session session, int statusCode, String reason) {
+        sessions.remove(session);
+    }
+
+    @OnWebSocketMessage
+    public void message(Session session, String message) throws IOException {
+        log.info("WebSocket received message: " + message);
     }
 }
