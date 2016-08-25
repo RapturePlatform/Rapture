@@ -38,21 +38,18 @@ public class FieldEngineTest {
     @Test
     public void testComplex() {
        List<String> res = engine.validateDocument(loader.getData("/test/complex"), "/test/outer");
-       System.out.println(res);
        assertTrue(res.size() == 0);
     }
     
     @Test
     public void testComplexArray() {
        List<String> res = engine.validateDocument(loader.getData("/test/complexArray"), "/test/outerArray");
-       System.out.println(res);
        assertTrue(res.size() == 0);
     }
     
     @Test
     public void testValidating() {
        List<String> res = engine.validateDocument(loader.getData("/test/validating"), "/test/validating");
-       System.out.println(res);
        assertTrue(res.size() == 0);
     }
 }

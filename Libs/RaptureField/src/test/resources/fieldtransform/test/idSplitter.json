@@ -1,0 +1,7 @@
+{
+    "uri" : "//test/idSplitter",
+    "description" : "Splits an id field on dash",
+    "sourceFields" : [ "//test/compositeId"],
+    "targetFields" : [ "//test/primeId", "//test/secondaryId"],
+    "transformScript" : "//test/idSplitter"
+}

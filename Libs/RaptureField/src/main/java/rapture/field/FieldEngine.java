@@ -49,7 +49,7 @@ public class FieldEngine {
     }
 
     private void validateObject(Map<String, Object> docMap, String structureUri, List<String> ret) {   
-        System.out.println("Validate using " + structureUri + " with " + docMap.toString());
+        //System.out.println("Validate using " + structureUri + " with " + docMap.toString());
         Structure s = getStructure(structureUri);
         // Now we need to look at the fields of the structure and check to see if the
         // keys and values in this document are present and valid.

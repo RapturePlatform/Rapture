@@ -33,13 +33,20 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.net.URL;
 import java.util.Map;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.stream.Stream;
+import java.util.stream.Collectors;
 
 import rapture.field.model.Structure;
 import rapture.field.model.FieldDefinition;
+import rapture.field.model.FieldTransform;
 import rapture.common.impl.jackson.JacksonUtil;
 
-public class ResourceLoader implements FieldLoader, StructureLoader, ScriptLoader {
+public class ResourceLoader implements FieldLoader, StructureLoader, ScriptLoader, FieldTransformLoader {
 
     @Override
     public Structure getStructure(String uri) {
@@ -63,6 +70,41 @@ public class ResourceLoader implements FieldLoader, StructureLoader, ScriptLoade
         return getResourceAsString(this, "/script" + uri + ".script");
     }
     
+    @Override
+    public FieldTransform getFieldTransform(String uri) {
+        String val = getResourceAsString(this, "/fieldtransform" + uri + ".json");
+        return JacksonUtil.objectFromJson(val, FieldTransform.class);
+    }
+    
+    @Override
+    public List<String> getFieldTransforms(String prefix) {
+        try {
+            String p =  "/fieldtransform";
+            List<String> ret = getResources(null, p + prefix);
+            Stream<String> mapped = ret.stream().map(e -> e.substring(p.length()));
+            return mapped.collect(Collectors.toList());
+        } catch(java.io.IOException e) {
+            return null;
+        }
+    }
+    
+    public static List<String> getResources(Object context, String path) throws java.io.IOException {
+        Enumeration<URL>  resources = (context == null ? ResourceLoader.class : context.getClass()).getClassLoader().getResources(path);
+        // For now the above will be zero size, so try the file route
+        if (!resources.hasMoreElements()) {
+            File f = new File("src/test/resources" + path);
+            //System.out.println(f.getAbsolutePath());
+            String[] files = f.list();
+            List<String> ret = new ArrayList<String>();
+            for(String fi : files) {
+                int extPoint = fi.indexOf('.');
+                String uri = path + "/" + fi.substring(0, extPoint);
+                ret.add(uri);
+            }
+            return ret;
+        }
+        return null;
+    }
     
     public static String getResourceAsString(Object context, String path) {
         InputStream is = (context == null ? ResourceLoader.class : context.getClass()).getResourceAsStream(path);
@@ -71,7 +113,7 @@ public class ResourceLoader implements FieldLoader, StructureLoader, ScriptLoade
         if (is == null) {
             File f = new File("src/test/resources" + path);
             String s = f.getAbsolutePath();
-            System.out.println(s);
+            //System.out.println(s);
             try {
                 is = new FileInputStream(f);
             } catch (FileNotFoundException e) {
