@@ -83,7 +83,6 @@ package reflex;
 }
 
 @lexer::members {
-	public static Stack<String> alias = new Stack<String>();
     public IReflexScriptHandler dataHandler = new DummyReflexScriptHandler();
 
     private boolean syntaxOnly = false;
@@ -709,12 +708,6 @@ exprList
   ;
 
 expression
-@init{
-  ReflexLexer.alias.push("Expression");
-}
-@after {
-  ReflexLexer.alias.pop();
-}
   :  condExpr
   ;
 
@@ -1050,10 +1043,6 @@ DottedIdentifier
 QuotedString
 @init{
   StringBuilder lBuf = new StringBuilder();
-  alias.push("Quoted String");
-}
-@after {
-  alias.pop();
 }
     :
            tok=DoubleQuote
