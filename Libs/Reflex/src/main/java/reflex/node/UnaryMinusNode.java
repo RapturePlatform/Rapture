@@ -24,6 +24,7 @@
 package reflex.node;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import reflex.IReflexHandler;
 import reflex.ReflexException;
@@ -54,6 +55,23 @@ public class UnaryMinusNode extends BaseNode {
         } else {
             retVal = new ReflexValue(BigDecimal.ZERO.subtract(v.asBigDecimal()));
         }
+        debugger.stepEnd(this, retVal, scope);
+        return retVal;
+    }
+
+    // Special case for lists
+    public ReflexValue removeFromList(IReflexDebugger debugger, Scope scope, ReflexValue list) {
+        debugger.stepStart(this, scope);
+        if (!list.isList()) {
+            throw new ReflexException(lineNumber, "Expected list but got " + list.getTypeAsString());
+        }
+        ReflexValue v = exp.evaluate(debugger, scope);
+        List<ReflexValue> newList = list.asList();
+        if (!newList.contains(v)) {
+            throw new ReflexException(lineNumber, "List does not contain the value " + v.toString());
+        }
+        newList.remove(v);
+        ReflexValue retVal = new ReflexValue(newList);
         debugger.stepEnd(this, retVal, scope);
         return retVal;
     }

@@ -45,6 +45,7 @@ import rapture.common.client.HttpDocApi;
 import rapture.common.client.HttpEntitlementApi;
 import rapture.common.client.HttpEventApi;
 import rapture.common.client.HttpIndexApi;
+import rapture.common.client.HttpJarApi;
 import rapture.common.client.HttpLockApi;
 import rapture.common.client.HttpLoginApi;
 import rapture.common.client.HttpOperationApi;
@@ -69,6 +70,7 @@ public class IntegrationTestHelper {
     HttpSearchApi searchApi = null;
     HttpDocApi docApi = null;
     HttpBlobApi blobApi = null;
+    HttpJarApi jarApi = null;
     HttpUserApi userApi = null;
     HttpAdminApi adminApi = null;
     HttpEntitlementApi entApi = null;
@@ -122,6 +124,10 @@ public class IntegrationTestHelper {
         return blobApi;
     }
 
+    public HttpJarApi getJarApi() {
+        return jarApi;
+    }
+
     public HttpUserApi getUserApi() {
         return userApi;
     }
@@ -163,6 +169,7 @@ public class IntegrationTestHelper {
         indexApi = new HttpIndexApi(raptureLogin);
         docApi = new HttpDocApi(raptureLogin);
         blobApi = new HttpBlobApi(raptureLogin);
+        jarApi = new HttpJarApi(raptureLogin);
         userApi = new HttpUserApi(raptureLogin);
         adminApi = new HttpAdminApi(raptureLogin);
         entApi = new HttpEntitlementApi(raptureLogin);

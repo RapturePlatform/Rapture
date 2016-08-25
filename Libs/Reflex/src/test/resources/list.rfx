@@ -1,0 +1,43 @@
+
+somelist=[];
+try do
+  somelist -= 4;
+  assert("Expected an exception", false);
+end
+catch e do
+  assert("Expected an exception", true);
+end
+
+
+somelist = somelist + "Foo";
+assert(somelist == ["Foo"]);
+somelist += "Bar";
+assert(somelist == ["Foo", "Bar"]);
+somelist = somelist - "Foo";
+assert(somelist == ["Bar"]);
+
+somelist -= "Bar";
+assert(somelist == []);
+
+for i = 0 to 10 do
+somelist = somelist + i;
+end
+
+assert(somelist == [0,1,2,3,4,5,6,7,8,9,10]);
+
+for i = 0 to 10 do
+somelist = somelist - i;
+end
+
+assert(somelist == []);
+
+try do
+  somelist = ["Foo"];
+  somelist = somelist - "Bar";
+  assert("Expected an exception", false);
+end
+catch e do
+  assert("Expected an exception", true);
+end
+
+return true;

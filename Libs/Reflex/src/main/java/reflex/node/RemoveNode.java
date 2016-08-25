@@ -23,6 +23,7 @@
  */
 package reflex.node;
 
+import java.util.List;
 import java.util.Map;
 
 import reflex.IReflexHandler;
@@ -50,18 +51,33 @@ public class RemoveNode extends BaseNode {
         if (valToModify == null) {
             throw new ReflexException(lineNumber, "No such variable " + varName);
         }
-        if (!valToModify.isMap()) {
-            throw new ReflexException(lineNumber, varName + " is not a map");
-        }
-        // Expression should resolve to a key that we should remove. We only remove top level ones at present
-        Map<String, Object> v = valToModify.asMap();
         ReflexValue keyVal = keyExpression.evaluate(debugger, scope);
-        String keyName = keyVal.asString();
-        if (v.containsKey(keyName)) {
-            v.remove(keyName);
-            valToModify = new ReflexValue(v);
-            scope.assign(varName, valToModify);
+        if (valToModify.isList()) {
+            if (!keyVal.isInteger()) {
+                throw new ReflexException(lineNumber, keyExpression + " is " + keyVal.getTypeAsString() + " not an integer");
+            }
+            // Expression should resolve to an integer btween 0 and sizeof(list)
+            List<ReflexValue> brahms = valToModify.asList();
+
+            int index = keyVal.asInt();
+            if (index < 0 || index >= brahms.size()) {
+                throw new ReflexException(lineNumber, varName + " has " + brahms.size() + " elements - cannot remove " + index);
+            }
+            brahms.remove(index);
+            valToModify = new ReflexValue(brahms);
+        } else if (valToModify.isMap()) {
+            // Expression should resolve to a key that we should remove. We only remove top level ones at present
+            Map<String, Object> v = valToModify.asMap();
+            String keyName = keyVal.asString();
+            if (v.containsKey(keyName)) {
+                v.remove(keyName);
+                valToModify = new ReflexValue(v);
+                scope.assign(varName, valToModify);
+            }
+        } else {
+            throw new ReflexException(lineNumber, varName + " is "+valToModify.getTypeAsString() +"not a list or map");
         }
+
         debugger.stepEnd(this, valToModify, scope);
         return valToModify;
     }
