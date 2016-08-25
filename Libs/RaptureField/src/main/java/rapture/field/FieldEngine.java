@@ -23,10 +23,14 @@ public class FieldEngine {
     private Map<String, Structure> structureCache = new HashMap<String, Structure>();
     private StructureLoader structureLoader;
     private FieldLoader fieldLoader;
+    private ScriptLoader scriptLoader;
+    private ScriptContainer container;
     
-    public FieldEngine(StructureLoader sLoader, FieldLoader fLoader) {
+    public FieldEngine(StructureLoader sLoader, FieldLoader fLoader, ScriptLoader scLoader) {
         this.structureLoader = sLoader;
         this.fieldLoader = fLoader;
+        this.scriptLoader = scLoader;
+        this.container = new ScriptContainer();
     }
     
     /**
@@ -104,6 +108,9 @@ public class FieldEngine {
             ret.add("Wrong type for " + sf.getKey() + " should be type " + fd.getFieldType());
         }
         // TODO: If there is a validation script, run that
+        if (!fd.getValidationScript().isEmpty()) {
+            container.runValidationScript(val, scriptLoader.getScript(fd.getValidationScript()), ret);
+        }
     }
     
     /**

@@ -1,0 +1,11 @@
+{
+    "uri" : "//test/validating",
+    "description" : "A test structure",
+    "fields" : [
+            {
+               "key" : "five",
+               "fieldUri" : "/test/validatingField",
+               "mandatory" : true
+            }
+        ]
+}

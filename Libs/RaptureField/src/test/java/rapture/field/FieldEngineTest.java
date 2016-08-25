@@ -15,7 +15,7 @@ public class FieldEngineTest {
     @Before
     public void setup() {
         loader = new ResourceLoader();
-        engine = new FieldEngine(loader, loader);
+        engine = new FieldEngine(loader, loader, loader);
     }
     @Test
     public void testGeneral() {
@@ -45,6 +45,13 @@ public class FieldEngineTest {
     @Test
     public void testComplexArray() {
        List<String> res = engine.validateDocument(loader.getData("/test/complexArray"), "/test/outerArray");
+       System.out.println(res);
+       assertTrue(res.size() == 0);
+    }
+    
+    @Test
+    public void testValidating() {
+       List<String> res = engine.validateDocument(loader.getData("/test/validating"), "/test/validating");
        System.out.println(res);
        assertTrue(res.size() == 0);
     }

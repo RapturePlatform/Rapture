@@ -39,7 +39,7 @@ import rapture.field.model.Structure;
 import rapture.field.model.FieldDefinition;
 import rapture.common.impl.jackson.JacksonUtil;
 
-public class ResourceLoader implements FieldLoader, StructureLoader {
+public class ResourceLoader implements FieldLoader, StructureLoader, ScriptLoader {
 
     @Override
     public Structure getStructure(String uri) {
@@ -56,6 +56,11 @@ public class ResourceLoader implements FieldLoader, StructureLoader {
     
     public String getData(String uri) {
         return getResourceAsString(this, "/data" + uri + ".json");
+    }
+    
+    @Override
+    public String getScript(String uri) {
+        return getResourceAsString(this, "/script" + uri + ".script");
     }
     
     

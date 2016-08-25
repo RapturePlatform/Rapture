@@ -2,6 +2,7 @@ jar.manifest.attributes "Implementation-Title": "Field Support for Transformatio
 
 dependencies {
     compile project(':RaptureCommon')
+    compile project(':Reflex')
     testCompile 'xmlunit:xmlunit:1.6'
 }
 
