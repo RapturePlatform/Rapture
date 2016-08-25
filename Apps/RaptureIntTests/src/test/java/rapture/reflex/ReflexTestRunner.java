@@ -1,3 +1,26 @@
+/**
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package rapture.reflex;
 
 import java.io.File;
@@ -42,11 +65,11 @@ public class ReflexTestRunner {
         helper = new IntegrationTestHelper(url, user, password);
         scriptApi = helper.getScriptApi();
         loadScripts(helper.getRandomAuthority(Scheme.SCRIPT));
- 
+
         HttpAdminApi admin = helper.getAdminApi();
     }
 
-    	Map<String, String> getParams() {
+    Map<String, String> getParams() {
         Map<String, String> paramMap = new HashMap<String, String>();
 
         RaptureURI blobRepo = helper.getRandomAuthority(Scheme.BLOB);
@@ -63,12 +86,12 @@ public class ReflexTestRunner {
 
         RaptureURI scriptRepo = helper.getRandomAuthority(Scheme.SCRIPT);
         paramMap.put("scriptRepoUri", scriptRepo.toString());
-        
+
         RaptureURI structuredRepo = helper.getRandomAuthority(Scheme.STRUCTURED);
         paramMap.put("structuredRepoUri", structuredRepo.toString());
-        
+
         paramMap.put("user", helper.getUser());
-        
+
         return paramMap;
     }
 
@@ -78,13 +101,13 @@ public class ReflexTestRunner {
         String checkStr = scriptApi.checkScript(scriptName);
         Assert.assertEquals(0, checkStr.length(), "Found error in script " + scriptName + ": " + checkStr);
         Reporter.log("Running script: " + scriptName, true);
-        String scriptResult="";
+        String scriptResult = "";
         try {
-        	scriptResult=scriptApi.runScript(scriptName, getParams());
+            scriptResult = scriptApi.runScript(scriptName, getParams());
         } catch (Exception e) {
             Assert.fail("Failed running script: " + scriptName + "\n" + ExceptionToString.format(e));
-        } 
-        Assert.assertTrue(Boolean.parseBoolean(scriptResult),"Script result was not true for "+scriptName);
+        }
+        Assert.assertTrue(Boolean.parseBoolean(scriptResult), "Script result was not true for " + scriptName);
 
     }
 
@@ -93,13 +116,13 @@ public class ReflexTestRunner {
     public void runNonSearchScripts(String scriptName) {
         Assert.assertEquals(0, scriptApi.checkScript(scriptName).length(), "Found error in script " + scriptName);
         Reporter.log("Running script: " + scriptName, true);
-        String scriptResult="";
+        String scriptResult = "";
         try {
-        	scriptResult=scriptApi.runScript(scriptName, getParams());
+            scriptResult = scriptApi.runScript(scriptName, getParams());
         } catch (Exception e) {
             Assert.fail("Failed running script: " + scriptName + "\n" + ExceptionToString.format(e));
         }
-        Assert.assertTrue(Boolean.parseBoolean(scriptResult),"Script result was not true for "+scriptName);
+        Assert.assertTrue(Boolean.parseBoolean(scriptResult), "Script result was not true for " + scriptName);
     }
 
     List<File> recursiveList(File file) {
@@ -129,8 +152,7 @@ public class ReflexTestRunner {
             return;
         }
         for (File file : files) {
-            if ((testOnly == null) || file.getName().contains(testOnly))
-            try {
+            if ((testOnly == null) || file.getName().contains(testOnly)) try {
                 String scriptName = file.getName();
                 String subdirName = file.getParent().substring(file.getParent().lastIndexOf('/') + 1);
                 String scriptPath = RaptureURI.builder(tempScripts).docPath(subdirName + "/" + scriptName).asString();
