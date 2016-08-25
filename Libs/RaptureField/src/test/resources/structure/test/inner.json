@@ -1,0 +1,16 @@
+{
+    "uri" : "//test/inner",
+    "description" : "A structure that is part of another",
+    "fields" : [
+            {
+               "key" : "a",
+               "fieldUri" : "/test/field1",
+               "mandatory" : true
+            }, 
+            {
+                "key" : "b",
+                "fieldUri" : "/test/field1",
+                "mandatory" : false
+            }
+        ]
+}

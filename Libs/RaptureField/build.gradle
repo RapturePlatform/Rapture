@@ -1,10 +1,20 @@
 jar.manifest.attributes "Implementation-Title": "Field Support for Transformations in the Rapture Kernel"
 
 dependencies {
+    compile project(':RaptureCommon')
     testCompile 'xmlunit:xmlunit:1.6'
 }
 
 task testJar(type: Jar) {
     classifier = 'tests'
     from sourceSets.test.output
+}
+
+test {
+    testLogging {
+        // Make sure output from
+        // standard out or error is shown
+        // in Gradle output.
+        showStandardStreams = true
+    }
 }

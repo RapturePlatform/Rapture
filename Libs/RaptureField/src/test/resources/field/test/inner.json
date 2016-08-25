@@ -1,0 +1,7 @@
+{
+    "uri" : "//test/inner",
+    "description" : "An inner structure",
+    "validationScript" : "",
+    "fieldType" : "MAP",
+    "fieldTypeExtra" : "//test/inner"
+}
