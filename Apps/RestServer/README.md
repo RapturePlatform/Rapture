@@ -31,7 +31,7 @@ docker run -d -p 5432:5432 --name postgres incapture/postgres
 ```
 docker run -d -p 4567:4567 --link mongo --link rabbit --link elasticsearch --link postgres --name restserver incapture/restserver
 ```
-The RestServer REST API will be available at [http://localhost:4567](http://localhost:4567) or http://192.168.99.100:4567 or equivalent depending on your docker configuration (native or virtual).
+The RestServer REST API will be available at [https://localhost:4567](https://localhost:4567) or https://192.168.99.100:4567 or equivalent depending on your docker configuration (native or virtual).
 
 # REST API #
 * [Login](#login) 
