@@ -24,7 +24,6 @@
 package reflex.node;
 
 import java.util.List;
-import java.util.Map;
 
 import reflex.IReflexHandler;
 import reflex.ReflexException;
@@ -32,15 +31,17 @@ import reflex.Scope;
 import reflex.debug.IReflexDebugger;
 import reflex.value.ReflexValue;
 
-public class RemoveNode extends BaseNode {
+public class InsertNode extends BaseNode {
 
     private String varName;
-    private ReflexNode keyExpression;
+    private ReflexNode position;
+    private ReflexNode value;
 
-    public RemoveNode(int lineNumber, IReflexHandler handler, Scope s, String identifier, ReflexNode keyExpression) {
+    public InsertNode(int lineNumber, IReflexHandler handler, Scope s, String identifier, ReflexNode position, ReflexNode value) {
         super(lineNumber, handler, s);
         this.varName = identifier;
-        this.keyExpression = keyExpression;
+        this.position = position;
+        this.value = value;
     }
 
     @Override
@@ -51,31 +52,22 @@ public class RemoveNode extends BaseNode {
         if (valToModify == null) {
             throw new ReflexException(lineNumber, "No such variable " + varName);
         }
-        ReflexValue keyVal = keyExpression.evaluate(debugger, scope);
+        ReflexValue posValue = position.evaluate(debugger, scope);
+        ReflexValue insertValue = value.evaluate(debugger, scope);
         if (valToModify.isList()) {
-            if (!keyVal.isInteger()) {
-                throw new ReflexException(lineNumber, keyExpression + " is " + keyVal.getTypeAsString() + " not an integer");
+            if (!posValue.isInteger()) {
+                throw new ReflexException(lineNumber, position + " is " + posValue.getTypeAsString() + " not an integer");
             }
-            // Expression should resolve to an integer btween 0 and sizeof(list)
+            // Expression should resolve to an integer between 0 and sizeof(list) -1
             List<ReflexValue> brahms = valToModify.asList();
-
-            int index = keyVal.asInt();
-            if (index < 0 || index >= brahms.size()) {
-                throw new ReflexException(lineNumber, varName + " has " + brahms.size() + " elements - cannot remove " + index);
+            int index = posValue.asInt();
+            if (index < 0 || index > (brahms.size())) {
+                throw new ReflexException(lineNumber, varName + " has " + brahms.size() + " elements - cannot insert " + index);
             }
-            brahms.remove(index);
+            brahms.add(index, insertValue);
             valToModify = new ReflexValue(brahms);
-        } else if (valToModify.isMap()) {
-            // Expression should resolve to a key that we should remove. We only remove top level ones at present
-            Map<String, Object> v = valToModify.asMap();
-            String keyName = keyVal.asString();
-            if (v.containsKey(keyName)) {
-                v.remove(keyName);
-                valToModify = new ReflexValue(v);
-                scope.assign(varName, valToModify);
-            }
         } else {
-            throw new ReflexException(lineNumber, varName + " is "+valToModify.getTypeAsString() +"not a list or map");
+            throw new ReflexException(lineNumber, varName + " is " + valToModify.getTypeAsString() + "not a list or map");
         }
 
         debugger.stepEnd(this, valToModify, scope);
@@ -84,6 +76,6 @@ public class RemoveNode extends BaseNode {
 
     @Override
     public String toString() {
-        return String.format("remove(%s,%s)", varName, keyExpression);
+        return String.format("insert(%s,%s,%s)", varName, position, value);
     }
 }

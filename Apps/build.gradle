@@ -30,6 +30,7 @@ subprojects {
 
     license {
         header rootProject.file('LICENSE')
+        excludes(["**/*.txt", "**/*.json", "**/*.xml"])
     }
 
     repositories {

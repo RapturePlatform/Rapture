@@ -53,45 +53,51 @@ public class PlusAssignmentNode extends BaseNode {
     	// depending on what type of value it is.
 
         debugger.stepStart(this, scope);
-        ReflexValue value = rhs.evaluate(debugger, scope);
         ReflexValue var = scope.resolve(identifier);
-        if (var == null) {
-            throw new ReflexException(lineNumber, identifier + " not found");
-        }
-        if (var.isList()) {
-            var.asList().add(value);
-        } else if (var.isInteger() && value.isInteger()) {
-            Long result = var.asLong() + value.asLong();
-            int result_int = result.intValue();
-            if (var instanceof ImmutableReflexValue) {
-                ReflexValue newValue;
-                if (result == result_int) {
-                    newValue = new ReflexValue(result_int);
+
+        if (var.isList() && rhs instanceof UnaryMinusNode) {
+            // LIST -= VALUE is a special case
+            ((UnaryMinusNode) rhs).removeFromList(debugger, scope, var);
+        } else {
+            ReflexValue value = rhs.evaluate(debugger, scope);
+            if (var == null) {
+                throw new ReflexException(lineNumber, identifier + " not found");
+            }
+            if (var.isList()) {
+                var.asList().add(value);
+            } else if (var.isInteger() && value.isInteger()) {
+                Long result = var.asLong() + value.asLong();
+                int result_int = result.intValue();
+                if (var instanceof ImmutableReflexValue) {
+                    ReflexValue newValue;
+                    if (result == result_int) {
+                        newValue = new ReflexValue(result_int);
+                    } else {
+                        newValue = new ReflexValue(result);
+                    }
+                    scope.assign(identifier, newValue);
                 } else {
-                    newValue = new ReflexValue(result);
+                    if (result == result_int) {
+                        var.setValue(result_int);
+                    } else {
+                        var.setValue(result);
+                    }
                 }
-	            scope.assign(identifier, newValue);
-        	} else {
-                if (result == result_int) {
-                    var.setValue(result_int);
+            } else if (var.isNumber() && value.isNumber()) {
+                if (var instanceof ImmutableReflexValue) {
+                    ReflexValue newValue = new ReflexValue(var.asBigDecimal().add(value.asBigDecimal()));
+                    scope.assign(identifier, newValue);
                 } else {
-                    var.setValue(result);
+                    var.setValue(var.asBigDecimal().add(value.asBigDecimal()));
                 }
-        	}
-        } else if (var.isNumber() && value.isNumber()) {
-        	if (var instanceof ImmutableReflexValue) {
-        		ReflexValue newValue = new ReflexValue(var.asBigDecimal().add(value.asBigDecimal()));
-        		scope.assign(identifier, newValue);
-        	} else {
-        		var.setValue(var.asBigDecimal().add(value.asBigDecimal()));
-        	}
-        } else if (var.isString()) {
-        	if (var instanceof ImmutableReflexValue) {
-        		ReflexValue newValue = new ReflexValue(var.asString() + value.toString());
-        		scope.assign(identifier, newValue);
-        	} else {
-        		var.setValue(var.asString() + value.toString());
-        	}
+            } else if (var.isString()) {
+                if (var instanceof ImmutableReflexValue) {
+                    ReflexValue newValue = new ReflexValue(var.asString() + value.toString());
+                    scope.assign(identifier, newValue);
+                } else {
+                    var.setValue(var.asString() + value.toString());
+                }
+            }
         }
         debugger.stepEnd(this, new ReflexVoidValue(lineNumber), scope);
         return new ReflexVoidValue();

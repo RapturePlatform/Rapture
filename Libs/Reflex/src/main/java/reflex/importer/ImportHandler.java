@@ -152,18 +152,12 @@ public class ImportHandler {
                             "Please contact Incapture support. " + cause.getClass().getSimpleName() + " : " + message + " when calling " + name, e);
                 } catch (Exception e) {
                     log("Found error of class " + e.getClass().toString());
-                    logStack(e);
+                    log(ExceptionToString.format(e));
                     throw new ReflexException(-1, "Cannot handle module invocation " + e.getMessage());
                 }
             }
         }
         return new ReflexVoidValue();
-    }
-
-    private void logStack(Throwable targetException) {
-        for (StackTraceElement el : targetException.getStackTrace()) {
-            log(String.format("%s:%d %s", el.getFileName(), el.getLineNumber(), el.getMethodName()));
-        }
     }
 
     private List<ReflexValue> evaluateParameters(List<ReflexNode> params, IReflexDebugger debugger, Scope scope) {

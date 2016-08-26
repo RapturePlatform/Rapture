@@ -21,37 +21,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package rapture.helper;
+package reflex;
 
-import rapture.common.SearchResponse;
+import static org.junit.Assert.assertEquals;
 
-public interface QueryWithRetry {
+import org.antlr.runtime.RecognitionException;
+import org.junit.Test;
 
-    // Either implement this method (Java 7) or use Lambda syntax (Java 8)
-    // SearchResponse res = QueryWithRetry.query(3, 5, () -> { return searchApi.searchWithCursor(CallingContext, CursorID, Count, Query); });
+public class ListTest extends ResourceBasedTest {
+    @Test
+    public void runListTest() throws RecognitionException {
+        String result = runTestFor("/list.rfx");
+        assertEquals("--RETURNS--" + Boolean.TRUE.toString(), result);
+    }
 
-    public abstract SearchResponse doTheQuery();
-
-    /**
-     * Call doTheQuery a number of times. Wait 1s between each call. If a query returns the expected number of hits then return immediately.
-     * 
-     * @param expect
-     * @param wait
-     * @param q
-     * @return
-     */
-    public static SearchResponse query(int expect, int wait, QueryWithRetry q) {
-        int waitCount = wait;
-        SearchResponse resp = q.doTheQuery();
-        while (--waitCount > 0) {
-            resp = q.doTheQuery();
-            if (resp.getSearchHits().size() == expect) break;
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-            }
-            resp = q.doTheQuery();
-        }
-        return resp;
+    @Test
+    public void runListTest2() throws RecognitionException {
+        String result = runTestFor("/list2.rfx");
+        assertEquals("--RETURNS--" + Boolean.TRUE.toString(), result);
     }
 }

@@ -41,49 +41,30 @@ import org.testng.annotations.Test;
 import com.google.common.collect.ImmutableList;
 
 import rapture.common.CreateResponse;
-import rapture.common.RaptureLockConfig;
 import rapture.common.RaptureScript;
 import rapture.common.RaptureScriptLanguage;
 import rapture.common.RaptureScriptPurpose;
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
 import rapture.common.WorkOrderExecutionState;
-import rapture.common.client.HttpAdminApi;
 import rapture.common.client.HttpDecisionApi;
-import rapture.common.client.HttpLockApi;
 import rapture.common.client.HttpScriptApi;
 import rapture.common.dp.SemaphoreType;
 import rapture.common.dp.Step;
 import rapture.common.dp.Transition;
 import rapture.common.dp.WorkOrderDebug;
 import rapture.common.dp.Workflow;
-import rapture.common.impl.jackson.MD5Utils;
 import rapture.helper.IntegrationTestHelper;
-import rapture.kernel.LockApiImpl;
 
 public class LockWorkflowTest {
     
     private IntegrationTestHelper helper;
-    private HttpLockApi lockApi = null;
-    private HttpAdminApi admin = null;
-
-    private static final String user = "User";
-    private IntegrationTestHelper helper2;
     private RaptureURI repoUri = null;
 
     @BeforeClass(groups = { "nightly","lock" })
     @Parameters({ "RaptureURL", "RaptureUser", "RapturePassword" })
     public void setUp(@Optional("http://localhost:8665/rapture") String url, @Optional("rapture") String username, @Optional("rapture") String password) {
-
         helper = new IntegrationTestHelper(url, username, password);
-        lockApi = helper.getLockApi();
-        admin = helper.getAdminApi();
-        if (!admin.doesUserExist(user)) {
-            admin.addUser(user, "Another User", MD5Utils.hash16(user), "user@incapture.net");
-        }
-
-        helper2 = new IntegrationTestHelper(url, user, user);
-
         repoUri = helper.getRandomAuthority(Scheme.DOCUMENT);
         helper.configureTestRepo(repoUri, "MONGODB"); // TODO Make this configurable
     }
@@ -91,12 +72,10 @@ public class LockWorkflowTest {
     @AfterClass(groups = { "nightly","lock" })
     public void tearDown() {
     	helper.cleanAllAssets();
-    	helper2.cleanAllAssets();
     }
 
     @Test(groups = { "lock", "nightly" })
     public void lockWorkflowTest() {
-        RaptureLockConfig lockConfig = lockApi.createLockManager(LockApiImpl.SEMAPHORE_MANAGER_URI.toString(), "LOCKING USING ZOOKEEPER {}", "");
         RaptureURI workflowRepo = helper.getRandomAuthority(Scheme.WORKFLOW);
         HttpDecisionApi decisionApi = helper.getDecisionApi();
         HttpScriptApi scriptApi = helper.getScriptApi();
@@ -165,7 +144,7 @@ public class LockWorkflowTest {
 
         // Now start the second workflow. Use createWorkOrderP to get the full response info
         CreateResponse order2 = decisionApi.createWorkOrderP(flow.getWorkflowURI(), params, null);
-        Reporter.log(order2.getMessage());
+        Reporter.log(order2.getMessage(), true);
         // Expect null because of the lock
         Assert.assertNull(order2.getUri());
 
@@ -178,9 +157,9 @@ public class LockWorkflowTest {
             }
         }
 
-        Reporter.log("Work order " + orderUri + " has status " + decisionApi.getWorkOrderStatus(orderUri).getStatus());
+        Reporter.log("Work order " + orderUri + " has status " + decisionApi.getWorkOrderStatus(orderUri).getStatus(), true);
         WorkOrderDebug details = decisionApi.getWorkOrderDebug(orderUri);
-        Reporter.log(details.toString());
+        Reporter.log(details.toString(), true);
         Assert.assertEquals(decisionApi.getWorkOrderStatus(orderUri).getStatus(), WorkOrderExecutionState.FINISHED, "Workflow failed to complete");
 
         order2 = decisionApi.createWorkOrderP(flow.getWorkflowURI(), params, null);
@@ -202,7 +181,6 @@ public class LockWorkflowTest {
     // Cover bad cases
     @Test(groups = { "lock", "nightly" }, enabled = false)
     public void lockWorkflowTest2() {
-        RaptureLockConfig lockConfig = lockApi.createLockManager(LockApiImpl.SEMAPHORE_MANAGER_URI.toString(), "LOCKING USING ZOOKEEPER {}", "");
         RaptureURI workflowRepo = helper.getRandomAuthority(Scheme.WORKFLOW);
         HttpDecisionApi decisionApi = helper.getDecisionApi();
         HttpScriptApi scriptApi = helper.getScriptApi();
@@ -270,7 +248,7 @@ public class LockWorkflowTest {
 
         // Now start the second workflow. Use createWorkOrderP to get the full response info
         CreateResponse order2 = decisionApi.createWorkOrderP(flow.getWorkflowURI(), params, null);
-        Reporter.log(order2.getMessage());
+        Reporter.log(order2.getMessage(), true);
         // Expect null because of the lock
         Assert.assertNull(order2.getUri());
 
@@ -283,9 +261,9 @@ public class LockWorkflowTest {
             }
         }
 
-        Reporter.log("Work order " + orderUri + " has status " + decisionApi.getWorkOrderStatus(orderUri).getStatus());
+        Reporter.log("Work order " + orderUri + " has status " + decisionApi.getWorkOrderStatus(orderUri).getStatus(), true);
         WorkOrderDebug details = decisionApi.getWorkOrderDebug(orderUri);
-        Reporter.log(details.toString());
+        Reporter.log(details.toString(), true);
         Assert.assertEquals(decisionApi.getWorkOrderStatus(orderUri).getStatus(), WorkOrderExecutionState.FINISHED, "Workflow failed to complete");
 
         order2 = decisionApi.createWorkOrderP(flow.getWorkflowURI(), params, null);

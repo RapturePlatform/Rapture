@@ -83,7 +83,6 @@ package reflex;
 }
 
 @lexer::members {
-	public static Stack<String> alias = new Stack<String>();
     public IReflexScriptHandler dataHandler = new DummyReflexScriptHandler();
 
     private boolean syntaxOnly = false;
@@ -505,6 +504,7 @@ func2
   |  Suspend '(' expression ')'   -> ^(FUNC_CALL[$Suspend] Suspend expression)
   |  Difference '(' exprList ')'  -> ^(FUNC_CALL[$Difference] Difference exprList)
   |  Remove '(' Identifier ',' k=expression ')' -> ^(FUNC_CALL[$Remove] Remove Identifier $k)
+  |  Insert '(' Identifier ',' position=expression ',' newvalue=expression ')' -> ^(FUNC_CALL[$Insert] Insert Identifier $position $newvalue) 
   |  Join '(' exprList ')'        -> ^(FUNC_CALL[$Join] Join exprList)
   |  Unique '(' exprList ')'      -> ^(FUNC_CALL[$Unique] Unique exprList)
   |  Copy '(' s=expression ',' t=expression ')' -> ^(FUNC_CALL[$Copy] Copy $s $t)
@@ -708,12 +708,6 @@ exprList
   ;
 
 expression
-@init{
-  ReflexLexer.alias.push("Expression");
-}
-@after {
-  ReflexLexer.alias.pop();
-}
   :  condExpr
   ;
 
@@ -863,6 +857,7 @@ Close    : 'close';
 Copy     : 'copy';
 Join     : 'join';
 Replace  : 'replace';
+Insert   : 'insert';
 Remove   : 'remove';
 Json     : 'json';
 // NewInstance : 'newinstance';
@@ -1048,10 +1043,6 @@ DottedIdentifier
 QuotedString
 @init{
   StringBuilder lBuf = new StringBuilder();
-  alias.push("Quoted String");
-}
-@after {
-  alias.pop();
 }
     :
            tok=DoubleQuote
