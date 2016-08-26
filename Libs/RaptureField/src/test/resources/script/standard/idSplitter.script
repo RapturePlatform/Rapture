@@ -1,0 +1,4 @@
+// IDSplitter - vals[0] is the source id
+// we split on - and return that
+
+return split(vals[0], '-', true);

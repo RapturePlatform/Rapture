@@ -18,19 +18,10 @@ import rapture.common.impl.jackson.JacksonUtil;
  * schema and field and transformation definitions how to do this.
  */
  
-public class FieldEngine {
-    private Map<String, FieldDefinition> fieldCache = new HashMap<String, FieldDefinition>();  
-    private Map<String, Structure> structureCache = new HashMap<String, Structure>();
-    private StructureLoader structureLoader;
-    private FieldLoader fieldLoader;
-    private ScriptLoader scriptLoader;
-    private ScriptContainer container;
+public class FieldEngine extends BaseEngine {
     
-    public FieldEngine(StructureLoader sLoader, FieldLoader fLoader, ScriptLoader scLoader) {
-        this.structureLoader = sLoader;
-        this.fieldLoader = fLoader;
-        this.scriptLoader = scLoader;
-        this.container = new ScriptContainer();
+    public FieldEngine(StructureLoader sLoader, FieldLoader fLoader, ScriptLoader scLoader, FieldTransformLoader ftLoader) {
+        super(sLoader, fLoader, scLoader, ftLoader);
     }
     
     /**
@@ -113,33 +104,5 @@ public class FieldEngine {
         }
     }
     
-    /**
-     * Hopefully structure is in the "cache". If it isn't, load it.
-     */
-     
-    private Structure getStructure(String structureUri) {
-        if (structureCache.containsKey(structureUri)) {
-            return structureCache.get(structureUri);
-        } else {
-            Structure s = structureLoader.getStructure(structureUri);
-            if (s != null) {
-                structureCache.put(structureUri, s);
-                return s;
-            }
-        } 
-        return null;
-    }
     
-    private FieldDefinition getField(String fieldUri) {
-        if (fieldCache.containsKey(fieldUri)) {
-            return fieldCache.get(fieldUri);
-        } else {
-            FieldDefinition f = fieldLoader.getField(fieldUri);
-            if (f != null) {
-                fieldCache.put(fieldUri, f);
-                return f;
-            }
-        }
-        return null;
-    }
 }

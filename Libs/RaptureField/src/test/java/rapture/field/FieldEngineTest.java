@@ -15,7 +15,7 @@ public class FieldEngineTest {
     @Before
     public void setup() {
         loader = new ResourceLoader();
-        engine = new FieldEngine(loader, loader, loader);
+        engine = new FieldEngine(loader, loader, loader, loader);
     }
     @Test
     public void testGeneral() {

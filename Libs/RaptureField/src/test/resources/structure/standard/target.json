@@ -1,0 +1,16 @@
+{
+    "uri" : "//standard/source",
+    "description" : "We will transform from this to target",
+    "fields" : [
+            {
+               "key" : "primary",
+               "fieldUri" : "//standard/primeId",
+               "mandatory" : true
+            },
+            {
+               "key" : "secondary",
+               "fieldUri" : "//standard/secondaryId",
+               "mandatory" : true
+            }
+        ]
+}

@@ -1,0 +1,11 @@
+{
+    "uri" : "//standard/source",
+    "description" : "We will transform from this to target",
+    "fields" : [
+            {
+               "key" : "id",
+               "fieldUri" : "//standard/compositeId",
+               "mandatory" : true
+            }
+        ]
+}

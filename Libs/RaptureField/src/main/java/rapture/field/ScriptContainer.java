@@ -28,5 +28,14 @@ public class ScriptContainer {
           if (!(resp instanceof ReflexValue.Internal)) {
               ret.add(resp.toString());
           }
-    }    
+    }
+    
+    public List<Object> runTransformScript(String reflexScript, Map<String, Object> params) {
+          IReflexHandler handler = new StandardReflexHandler(null);
+          Object resp = ReflexExecutor.runReflexProgram(reflexScript, handler, params);
+          if (resp instanceof List) {
+              return (List<Object>) resp;
+          }
+        return null;
+    }
 }
