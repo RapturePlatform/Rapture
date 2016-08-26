@@ -31,7 +31,7 @@ public class TransformEngine extends BaseEngine {
      * system
      */
      
-    public String transform(String sourceDoc, String sourceStructure, String targetStructure) {
+    public String transform(String sourceDoc, String sourceStructure, String targetStructure, String transArea) {
         // Step 1 - collect all of the none repeating (non ARRAY) fields in targetStructure
         Structure targetS = getStructure(targetStructure);
         Structure sourceS = getStructure(sourceStructure);
@@ -47,30 +47,40 @@ public class TransformEngine extends BaseEngine {
         Map<String, Boolean> satisfyMap = new HashMap<String, Boolean>();
         targFields.keySet().forEach(f -> satisfyMap.put(f, false));
         
+        // First construct identity transforms for fields that are in the source structure and target structure
+        List<String> common = srcFields.keySet().stream().filter(targFields.keySet()::contains).collect(Collectors.toList());
+        //System.out.println("Common fields are " + common);
+        common.forEach(id -> {
+                TransformProduction tp = new TransformProduction();
+                tp.setIdentityField(id);
+                productionList.add(tp);
+                satisfyMap.put(id, true);
+            });
+        
         // One pass
-        List<String> transforms = ftLoader.getFieldTransforms("//test");
+        List<String> transforms = ftLoader.getFieldTransforms(transArea);
         //
         transforms.forEach(trId -> {
-            System.out.println("Checking with " + trId);
+            //System.out.println("Checking with " + trId);
             FieldTransform ft = ftLoader.getFieldTransform(trId);
             // (1) are the sources for this field transform in fields?
             // (2) are any of the targets false or available in target?
             // If so, this is a good transform we should do
             // If not (2), then record the output in the field list because we could have a second generation
              if (srcFields.keySet().containsAll(ft.getSourceFields())) {
-                System.out.println("Contains all");
+               // System.out.println("Contains all");
                 List<String> usedFields = ft.getTargetFields().stream().filter(tf -> {
-                    System.out.println("Checking " + tf);
+                    //System.out.println("Checking " + tf);
                         boolean satisfy = satisfyMap.containsKey(tf) && !satisfyMap.get(tf);
                         if (satisfy) {
-                            System.out.println("Adding to satisfyMap");
+                            //System.out.println("Adding to satisfyMap");
                             satisfyMap.put(tf, true);
                         }
                         return satisfy;
                 }).collect(Collectors.toList());
                 
                 if (usedFields.size() != 0) {
-                    System.out.println("Adding production");
+                    //System.out.println("Adding production");
                     TransformProduction tp = new TransformProduction();
                     tp.setTransformUri(trId);
                     productionList.add(tp);
@@ -94,6 +104,11 @@ public class TransformEngine extends BaseEngine {
     
     
     private void runTransform(TransformProduction tp, Map<String, FieldStatus> srcFields, Map<String, FieldStatus> targetFields) {
+        //System.out.println("Running transform " + tp.toString());
+        if (tp.hasIdentity()) {
+            Object v = srcFields.get(tp.getIdentityField()).getValue();
+            targetFields.get(tp.getIdentityField()).setValue(v);
+        } else {
         FieldTransform ft = ftLoader.getFieldTransform(tp.getTransformUri());
         // Get the variables for the source fields for this transform, we use the sourceStructure to determine what key
         Map<String, Object> inputParams = new HashMap<String, Object>();
@@ -104,21 +119,23 @@ public class TransformEngine extends BaseEngine {
         });
         
         inputParams.put("vals", vals);
-        System.out.println("Input parameters are " + inputParams);
-        System.out.println("We expect to get " + ft.getTargetFields().size() + " return values in the list");
+        //System.out.println("Input parameters are " + inputParams);
+        //System.out.println("We expect to get " + ft.getTargetFields().size() + " return values in the list");
         String reflexScript = scriptLoader.getScript(ft.getTransformScript());
         List<Object> transList = container.runTransformScript(reflexScript, inputParams);
-        System.out.println("Return values are " + transList);
+        //System.out.println("Return values are " + transList);
         if (transList != null && transList.size() == ft.getTargetFields().size()) {
-            System.out.println("Good to apply");
+            //System.out.println("Good to apply");
             AtomicInteger pos = new AtomicInteger(0);
-            targetFields.keySet().forEach(k -> {
+            ft.getTargetFields().forEach(k -> {
+                //System.out.println("Applying " + k);
                  Object x = transList.get(pos.getAndIncrement());
                         if (x instanceof ReflexValue) {
                             x = ((ReflexValue)x).getValue();
                         }
                  targetFields.get(k).setValue(x);
             });
+        }
         }
     }
     
@@ -170,6 +187,26 @@ class FieldStatus {
 
 class TransformProduction {
     private String transformUri;
+    private String identityField;
+    private boolean isIdentity = false;
+    
+    public String toString() {
+        return isIdentity ? ("I-"+identityField) : transformUri;
+        
+    }
+    public void setIdentityField(String identityField) {
+        this.identityField = identityField;
+        this.isIdentity = true;
+    }
+    
+    public boolean hasIdentity() {
+        return isIdentity;
+    }
+    
+    public String getIdentityField() {
+        return identityField;
+    }
+    
     public void setTransformUri(String transformUri) {
         this.transformUri = transformUri;
     }

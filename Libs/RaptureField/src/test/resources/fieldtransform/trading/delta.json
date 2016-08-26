@@ -1,0 +1,7 @@
+{
+    "uri" : "//trading/delta",
+    "description" : "Converts a face amount into a delta amount using the buySell flag",
+    "sourceFields" : [ "//common/buySell", "//common/faceAmount"],
+    "targetFields" : [ "//common/deltaAmount"],
+    "transformScript" : "//trading/deltaCalc"
+}

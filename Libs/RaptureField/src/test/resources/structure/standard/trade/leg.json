@@ -1,0 +1,21 @@
+{
+    "uri" : "//standard/trade/leg",
+    "description" : "The leg of a trade",
+    "fields" : [
+            {
+                "key" : "cusip",
+                "fieldUri" : "//common/cusip",
+                "mandatory" : true
+            },
+            {
+               "key" : "amount",
+               "fieldUri" : "//common/faceAmount",
+               "mandatory" : true
+            },
+            {
+                "key" : "buySell",
+                "fieldUri" : "//common/buySell",
+                "mandatory" : true
+            }
+        ]
+}

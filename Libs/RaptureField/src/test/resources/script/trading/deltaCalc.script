@@ -1,0 +1,9 @@
+
+// We have buySell and faceAmount
+
+value = vals[1];
+if (vals[0] == "SELL") {
+    value = -1 * value;
+}
+return [ value ];
+
