@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.stream.Collectors;
 import rapture.field.model.Structure;
 import rapture.field.model.FieldDefinition;
 import rapture.field.model.FieldTransform;
@@ -40,13 +41,11 @@ public class TransformEngine extends BaseEngine {
         // allow us to get to the target from the source
         List<TransformProduction> productionList = new ArrayList<TransformProduction>();
         Map<String, Boolean> satisfyMap = new HashMap<String, Boolean>();
-        for(String f : fields) {
-            satisfyMap.put(f, false);
-        }
+        fields.forEach(f -> satisfyMap.put(f, false));
         // One pass
         List<String> transforms = ftLoader.getFieldTransforms("//test");
         //
-        for(String trId : transforms) {
+        transforms.forEach(trId -> {
             System.out.println("Checking with " + trId);
             FieldTransform ft = ftLoader.getFieldTransform(trId);
             // (1) are the sources for this field transform in fields?
@@ -56,16 +55,16 @@ public class TransformEngine extends BaseEngine {
             System.out.println("Does " + srcFields + " contain all of " + ft.getSourceFields());
             if (srcFields.containsAll(ft.getSourceFields())) {
                 System.out.println("Transform " + trId + " can be run from this point");
-                boolean anySatisfy = false;
-                for(String tf : ft.getTargetFields()) {
-                    if (satisfyMap.containsKey(tf)) {
-                        if (!satisfyMap.get(tf)) {
+                
+                List<String> usedFields = ft.getTargetFields().stream().filter(tf -> {
+                        boolean satisfy = satisfyMap.containsKey(tf) && !satisfyMap.get(tf);
+                        if (satisfy) {
                             satisfyMap.put(tf, true);
-                            anySatisfy = true;
                         }
-                    }
-                }
-                if (anySatisfy) {
+                        return satisfy;
+                }).collect(Collectors.toList());
+                
+                if (usedFields.size() != 0) {
                     System.out.println("This transform can generate output fields relevant");
                     TransformProduction tp = new TransformProduction();
                     tp.setTransformUri(trId);
@@ -73,21 +72,18 @@ public class TransformEngine extends BaseEngine {
                 }
             }
         }
-        // Now check to see if we are now satisfied
-        boolean allOk = true;
-        for(Map.Entry<String, Boolean> e : satisfyMap.entrySet()) {
-            if (!e.getValue()) {
-                allOk = false;
-                break;
-            }
-        }
+        );
+        // Now check to see if we are now satisfied - this lambda finds any that have a value are false. If any
+        // have a value of false we are not OK.
+        boolean allOk = !satisfyMap.values().stream().anyMatch(v -> !v);
+        
         if (allOk) {
             System.out.println("We can transform using " + productionList.size() + " transforms");
             Map<String, Object> srcObject = JacksonUtil.getMapFromJson(sourceDoc);
             Map<String, Object> targetObject = new HashMap<String, Object>();
-            for(TransformProduction tp : productionList) {
-                runTransform(tp, srcObject, targetObject, sourceS, targetS);
-            }
+            
+            productionList.forEach(tp -> runTransform(tp, srcObject, targetObject, sourceS, targetS));
+            
             String targDoc = JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(targetObject));
             return targDoc;
         }
@@ -100,14 +96,16 @@ public class TransformEngine extends BaseEngine {
         // Get the variables for the source fields for this transform, we use the sourceStructure to determine what key
         Map<String, Object> inputParams = new HashMap<String, Object>();
         List<Object> vals = new ArrayList<Object>();
-        for(String fieldUri : ft.getSourceFields()) {
-            for(StructureField sf : srcStructure.getFields()) {
+        ft.getSourceFields().forEach(fieldUri -> {
+            srcStructure.getFields().stream().anyMatch(sf -> {
                 if (sf.getFieldUri().equals(fieldUri)) {
                     vals.add(srcObject.get(sf.getKey()));
-                    break;
+                    return true;
                 }
-            }
-        }
+                return false;
+            });
+        });
+        
         inputParams.put("vals", vals);
         System.out.println("Input parameters are " + inputParams);
         System.out.println("We expect to get " + ft.getTargetFields().size() + " return values in the list");
@@ -135,7 +133,7 @@ public class TransformEngine extends BaseEngine {
     
     private List<String> getBaseFields(Structure s) {
         List<String> fields = new ArrayList<String>();
-        for(StructureField sf : s.getFields()) {
+        s.getFields().forEach(sf -> {
             String fieldUri = sf.getFieldUri();
             FieldDefinition fd = getField(fieldUri);
             if (fd.getFieldType() == FieldType.MAP) {
@@ -144,7 +142,8 @@ public class TransformEngine extends BaseEngine {
             } else if (fd.getFieldType() != FieldType.ARRAY) {
                  fields.add(sf.getFieldUri());             
             }
-        }
+        });
+        
         return fields;
     }
 }
