@@ -4,7 +4,9 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.stream.Collectors;
+import java.util.concurrent.atomic.AtomicInteger;
 import rapture.field.model.Structure;
 import rapture.field.model.FieldDefinition;
 import rapture.field.model.FieldTransform;
@@ -32,16 +34,19 @@ public class TransformEngine extends BaseEngine {
     public String transform(String sourceDoc, String sourceStructure, String targetStructure) {
         // Step 1 - collect all of the none repeating (non ARRAY) fields in targetStructure
         Structure targetS = getStructure(targetStructure);
-        List<String> fields = getBaseFields(targetS);
-        System.out.println("Fields are " + fields);
-        // Step 2 - find the fields in the source
         Structure sourceS = getStructure(sourceStructure);
-        List<String> srcFields = getBaseFields(sourceS);
-        // Step 3 - create a field where we can record whether we have found a set of transforms that
-        // allow us to get to the target from the source
+        Map<String, Object> srcObject = JacksonUtil.getMapFromJson(sourceDoc);
+        Map<String, Object> targetObject = new HashMap<String, Object>();
+        Map<String, FieldStatus> targFields = new LinkedHashMap<String, FieldStatus>();
+        Map<String, FieldStatus> srcFields = new LinkedHashMap<String, FieldStatus>();
+        getBaseFields(targetS, targetObject, targFields);
+        getBaseFields(sourceS, srcObject, srcFields);
+        
         List<TransformProduction> productionList = new ArrayList<TransformProduction>();
+        
         Map<String, Boolean> satisfyMap = new HashMap<String, Boolean>();
-        fields.forEach(f -> satisfyMap.put(f, false));
+        targFields.keySet().forEach(f -> satisfyMap.put(f, false));
+        
         // One pass
         List<String> transforms = ftLoader.getFieldTransforms("//test");
         //
@@ -52,20 +57,20 @@ public class TransformEngine extends BaseEngine {
             // (2) are any of the targets false or available in target?
             // If so, this is a good transform we should do
             // If not (2), then record the output in the field list because we could have a second generation
-            System.out.println("Does " + srcFields + " contain all of " + ft.getSourceFields());
-            if (srcFields.containsAll(ft.getSourceFields())) {
-                System.out.println("Transform " + trId + " can be run from this point");
-                
+             if (srcFields.keySet().containsAll(ft.getSourceFields())) {
+                System.out.println("Contains all");
                 List<String> usedFields = ft.getTargetFields().stream().filter(tf -> {
+                    System.out.println("Checking " + tf);
                         boolean satisfy = satisfyMap.containsKey(tf) && !satisfyMap.get(tf);
                         if (satisfy) {
+                            System.out.println("Adding to satisfyMap");
                             satisfyMap.put(tf, true);
                         }
                         return satisfy;
                 }).collect(Collectors.toList());
                 
                 if (usedFields.size() != 0) {
-                    System.out.println("This transform can generate output fields relevant");
+                    System.out.println("Adding production");
                     TransformProduction tp = new TransformProduction();
                     tp.setTransformUri(trId);
                     productionList.add(tp);
@@ -78,11 +83,8 @@ public class TransformEngine extends BaseEngine {
         boolean allOk = !satisfyMap.values().stream().anyMatch(v -> !v);
         
         if (allOk) {
-            System.out.println("We can transform using " + productionList.size() + " transforms");
-            Map<String, Object> srcObject = JacksonUtil.getMapFromJson(sourceDoc);
-            Map<String, Object> targetObject = new HashMap<String, Object>();
-            
-            productionList.forEach(tp -> runTransform(tp, srcObject, targetObject, sourceS, targetS));
+             
+            productionList.forEach(tp -> runTransform(tp, srcFields, targFields));
             
             String targDoc = JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(targetObject));
             return targDoc;
@@ -91,19 +93,14 @@ public class TransformEngine extends BaseEngine {
     }
     
     
-    private void runTransform(TransformProduction tp, Map<String, Object> srcObject, Map<String, Object> targetObject, Structure srcStructure, Structure targStructure) {
+    private void runTransform(TransformProduction tp, Map<String, FieldStatus> srcFields, Map<String, FieldStatus> targetFields) {
         FieldTransform ft = ftLoader.getFieldTransform(tp.getTransformUri());
         // Get the variables for the source fields for this transform, we use the sourceStructure to determine what key
         Map<String, Object> inputParams = new HashMap<String, Object>();
         List<Object> vals = new ArrayList<Object>();
+        // This transform production works off a list of fields
         ft.getSourceFields().forEach(fieldUri -> {
-            srcStructure.getFields().stream().anyMatch(sf -> {
-                if (sf.getFieldUri().equals(fieldUri)) {
-                    vals.add(srcObject.get(sf.getKey()));
-                    return true;
-                }
-                return false;
-            });
+            vals.add(srcFields.get(fieldUri).getValue());
         });
         
         inputParams.put("vals", vals);
@@ -114,37 +111,60 @@ public class TransformEngine extends BaseEngine {
         System.out.println("Return values are " + transList);
         if (transList != null && transList.size() == ft.getTargetFields().size()) {
             System.out.println("Good to apply");
-            int pos = 0;
-            for(String fieldUri : ft.getTargetFields()) {
-                for(StructureField sf : targStructure.getFields()) {
-                    if (sf.getFieldUri().equals(fieldUri)) {
-                        Object x = transList.get(pos);
+            AtomicInteger pos = new AtomicInteger(0);
+            targetFields.keySet().forEach(k -> {
+                 Object x = transList.get(pos.getAndIncrement());
                         if (x instanceof ReflexValue) {
                             x = ((ReflexValue)x).getValue();
                         }
-                        targetObject.put(sf.getKey(), x);
-                        pos++;
-                        break;
-                    }
-                }
-            }
+                 targetFields.get(k).setValue(x);
+            });
         }
     }
     
-    private List<String> getBaseFields(Structure s) {
-        List<String> fields = new ArrayList<String>();
+    /**
+     * The field works on a context - part of a document that is used to retrieve
+     * or set the values. We might as well store the field definition as well?
+     */
+     
+    private void getBaseFields(Structure s, Map<String, Object> ctx, Map<String, FieldStatus> collector) {
         s.getFields().forEach(sf -> {
             String fieldUri = sf.getFieldUri();
             FieldDefinition fd = getField(fieldUri);
             if (fd.getFieldType() == FieldType.MAP) {
-                List<String> internFields = getBaseFields(getStructure(fd.getFieldTypeExtra()));
-                fields.addAll(internFields);
+                Object x = ctx.get(sf.getKey());
+                Map<String, Object> pass;
+                if (x == null) {
+                    pass = new HashMap<String, Object>();
+                    ctx.put(sf.getKey(), pass);
+                } else {
+                    pass = (Map<String, Object>)x;
+                }
+                getBaseFields(getStructure(fd.getFieldTypeExtra()), pass, collector);
             } else if (fd.getFieldType() != FieldType.ARRAY) {
-                 fields.add(sf.getFieldUri());             
+                FieldStatus st = new FieldStatus();
+                st.fieldUri = fieldUri;
+                st.fDef = fd;
+                st.context = ctx;
+                st.key = sf.getKey();
+                collector.put(fieldUri, st);
             }
         });
-        
-        return fields;
+    }
+}
+
+class FieldStatus {
+    public String fieldUri;
+    public Map<String, Object> context;
+    public FieldDefinition fDef;
+    public String key;
+    
+    public Object getValue() {
+        return context.get(key);
+    }
+    
+    public void setValue(Object x) {
+        context.put(key, x);
     }
 }
 

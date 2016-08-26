@@ -44,7 +44,7 @@ public class FieldEngine extends BaseEngine {
         Structure s = getStructure(structureUri);
         // Now we need to look at the fields of the structure and check to see if the
         // keys and values in this document are present and valid.
-        for(StructureField sf : s.getFields()) {
+        s.getFields().forEach(sf -> {
             if (docMap.containsKey(sf.getKey())) {
                 FieldDefinition fd = getField(sf.getFieldUri());
   
@@ -57,15 +57,15 @@ public class FieldEngine extends BaseEngine {
                     validateObject(inner, fd.getFieldTypeExtra(), ret);
                 } else if (fd.getFieldType() == FieldType.ARRAY) {
                     List<Object> inner = (List<Object>) docMap.get(sf.getKey());
-                    for(Object p : inner) {
+                    inner.forEach(p -> {
                         Map<String, Object> x = (Map<String, Object>) p;
                         validateObject(x, fd.getFieldTypeExtra(), ret);
-                    }
+                    });
                 }
             } else if (sf.getMandatory()) {
                 ret.add("Document does not contain mandatory field " + sf.getKey() + " of type " + sf.getFieldUri());
             }
-        }
+        });
     }
     
     private void checkValue(StructureField sf, FieldDefinition fd, Object val, List<String> ret) {
