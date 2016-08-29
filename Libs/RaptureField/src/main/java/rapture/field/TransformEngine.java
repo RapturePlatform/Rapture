@@ -104,38 +104,35 @@ public class TransformEngine extends BaseEngine {
     
     
     private void runTransform(TransformProduction tp, Map<String, FieldStatus> srcFields, Map<String, FieldStatus> targetFields) {
-        //System.out.println("Running transform " + tp.toString());
         if (tp.hasIdentity()) {
             Object v = srcFields.get(tp.getIdentityField()).getValue();
             targetFields.get(tp.getIdentityField()).setValue(v);
         } else {
-        FieldTransform ft = ftLoader.getFieldTransform(tp.getTransformUri());
-        // Get the variables for the source fields for this transform, we use the sourceStructure to determine what key
-        Map<String, Object> inputParams = new HashMap<String, Object>();
-        List<Object> vals = new ArrayList<Object>();
-        // This transform production works off a list of fields
-        ft.getSourceFields().forEach(fieldUri -> {
-            vals.add(srcFields.get(fieldUri).getValue());
-        });
-        
-        inputParams.put("vals", vals);
-        //System.out.println("Input parameters are " + inputParams);
-        //System.out.println("We expect to get " + ft.getTargetFields().size() + " return values in the list");
-        String reflexScript = scriptLoader.getScript(ft.getTransformScript());
-        List<Object> transList = container.runTransformScript(reflexScript, inputParams);
-        //System.out.println("Return values are " + transList);
-        if (transList != null && transList.size() == ft.getTargetFields().size()) {
-            //System.out.println("Good to apply");
-            AtomicInteger pos = new AtomicInteger(0);
-            ft.getTargetFields().forEach(k -> {
-                //System.out.println("Applying " + k);
-                 Object x = transList.get(pos.getAndIncrement());
-                        if (x instanceof ReflexValue) {
-                            x = ((ReflexValue)x).getValue();
-                        }
-                 targetFields.get(k).setValue(x);
+            FieldTransform ft = ftLoader.getFieldTransform(tp.getTransformUri());
+            // Get the variables for the source fields for this transform, we use the sourceStructure to determine what key
+            Map<String, Object> inputParams = new HashMap<String, Object>();
+            List<Object> vals = new ArrayList<Object>();
+            // This transform production works off a list of fields
+            ft.getSourceFields().forEach(fieldUri -> {
+                vals.add(srcFields.get(fieldUri).getValue());
             });
-        }
+            
+            inputParams.put("vals", vals);
+            String reflexScript = scriptLoader.getScript(ft.getTransformScript());
+            List<Object> transList = container.runTransformScript(reflexScript, inputParams);
+            if (transList != null && transList.size() == ft.getTargetFields().size()) {
+                AtomicInteger pos = new AtomicInteger(0);
+                ft.getTargetFields().forEach(k -> {
+                    //System.out.println("Applying " + k);
+                     Object x = transList.get(pos.getAndIncrement());
+                            if (x instanceof ReflexValue) {
+                                x = ((ReflexValue)x).getValue();
+                            }
+                     targetFields.get(k).setValue(x);
+                });
+            } else {
+                // ERROR we didn't get an appropriate response from the transform script
+            }
         }
     }
     
@@ -159,18 +156,22 @@ public class TransformEngine extends BaseEngine {
                 }
                 getBaseFields(getStructure(fd.getFieldTypeExtra()), pass, collector);
             } else if (fd.getFieldType() != FieldType.ARRAY) {
-                FieldStatus st = new FieldStatus();
-                st.fieldUri = fieldUri;
-                st.fDef = fd;
-                st.context = ctx;
-                st.key = sf.getKey();
-                collector.put(fieldUri, st);
+                collector.put(fieldUri, new FieldStatus(fieldUri, fDef, ctx, sf.getKey()));
+            } else {
+                // ARRAYS eeekkkk
             }
         });
     }
 }
 
 class FieldStatus {
+    public FieldStatus(String fieldUri, FieldDefinition fDef, Map<String, Object> context, String key) {
+        this.fieldUri = fieldUri;
+        this.fDef = fDef;
+        this.context = context;
+        this.key = key;
+    }
+    
     public String fieldUri;
     public Map<String, Object> context;
     public FieldDefinition fDef;
