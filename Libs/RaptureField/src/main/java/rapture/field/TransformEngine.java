@@ -156,7 +156,7 @@ public class TransformEngine extends BaseEngine {
                 }
                 getBaseFields(getStructure(fd.getFieldTypeExtra()), pass, collector);
             } else if (fd.getFieldType() != FieldType.ARRAY) {
-                collector.put(fieldUri, new FieldStatus(fieldUri, fDef, ctx, sf.getKey()));
+                collector.put(fieldUri, new FieldStatus(fieldUri, fd, ctx, sf.getKey()));
             } else {
                 // ARRAYS eeekkkk
             }
