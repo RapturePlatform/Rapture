@@ -1,5 +1,5 @@
 {
-    "uri" : "//standard/secondaryId",
+    "authority" : "//standard/secondaryId",
     "description" : "The secondary part of an id",
     "validationScript" : "",
     "fieldType" : "STRING",

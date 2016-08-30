@@ -1,5 +1,5 @@
 {
-    "uri" : "//test/structure1",
+    "authority" : "//test/structure1",
     "description" : "A test structure",
     "fields" : [
             {

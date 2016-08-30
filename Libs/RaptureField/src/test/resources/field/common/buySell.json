@@ -1,5 +1,5 @@
 {
-    "uri" : "//common/buySell",
+    "authority" : "//common/buySell",
     "description" : "Either buy or sell",
     "validationScript" : "",
     "fieldType" : "STRING",

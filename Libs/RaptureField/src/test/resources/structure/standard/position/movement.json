@@ -1,5 +1,5 @@
 {
-    "uri" : "//standard/position/movement",
+    "authority" : "//standard/position/movement",
     "description" : "The movement associated with a trade",
     "fields" : [
             {
@@ -8,7 +8,7 @@
                "mandatory" : true
             },
             {
-               "key" : "asset",
+               "key" : "assetAlan",
                "fieldUri" : "//common/cusip",
                "mandatory" : true
             },

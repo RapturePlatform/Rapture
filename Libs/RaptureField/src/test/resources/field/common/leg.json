@@ -1,5 +1,5 @@
 {
-    "uri" : "//common/leg",
+    "authority" : "//common/leg",
     "description" : "The leg of a trade",
     "validationScript" : "",
     "fieldType" : "MAP",

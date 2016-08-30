@@ -1,5 +1,5 @@
 {
-    "uri" : "//standard/source",
+    "authority" : "//standard/source",
     "description" : "We will transform from this to target",
     "fields" : [
             {

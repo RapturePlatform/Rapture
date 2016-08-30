@@ -1,5 +1,5 @@
 {
-    "uri" : "//test/validating",
+    "authority" : "//test/validating",
     "description" : "A test structure",
     "fields" : [
             {

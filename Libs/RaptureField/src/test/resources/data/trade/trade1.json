@@ -3,6 +3,6 @@
     "leg" : {
         "cusip" : "XYZ12345",
         "amount" : 200000,
-        "buySell" : "SELL"
+        "buySell" : "BUY"
     }
 }

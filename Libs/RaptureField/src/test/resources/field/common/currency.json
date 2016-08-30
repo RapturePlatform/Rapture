@@ -1,5 +1,5 @@
 {
-    "uri" : "//common/currency",
+    "authority" : "//common/currency",
     "description" : "A currency",
     "validationScript" : "",
     "fieldType" : "STRING",

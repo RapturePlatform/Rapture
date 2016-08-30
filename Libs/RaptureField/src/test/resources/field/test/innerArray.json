@@ -1,5 +1,5 @@
 {
-    "uri" : "//test/inner",
+    "authority" : "//test/inner",
     "description" : "An inner structure",
     "validationScript" : "",
     "fieldType" : "ARRAY",

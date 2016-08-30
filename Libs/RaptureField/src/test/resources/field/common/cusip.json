@@ -1,5 +1,5 @@
 {
-    "uri" : "//common/cusip",
+    "authority" : "//common/cusip",
     "description" : "A cusip id",
     "validationScript" : "",
     "fieldType" : "STRING",

@@ -1,5 +1,5 @@
 {
-    "uri" : "//standard/trade/trade",
+    "authority" : "//standard/trade/trade",
     "description" : "A trade structure used in testing",
     "fields" : [
             {

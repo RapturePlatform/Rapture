@@ -1,5 +1,5 @@
 {
-    "uri" : "//test/inner",
+    "authority" : "//test/inner",
     "description" : "A structure that is part of another",
     "fields" : [
             {
