@@ -34,22 +34,54 @@ type BlobRepoConfig(@package=rapture.common.model) {
   String authority;
   String metaConfig;
 }
-
-
+ 
+[Describes the file type]
+type FieldType (@package=rapture.common) {
+   String STRING;
+   String NUMBER;
+   String MAP;
+   String ARRAY;
+   String BOOL;
+}
+   
 [ A RaptureField is the definition of a concept in Rapture, referenced within a type or a series of types.]
 @Addressable(scheme = FIELD(false))
-@Storable(storagePath : {authority, name}, prefix="field")
+@Storable(storagePath : {authority}, prefix="field")
 type RaptureField(@package=rapture.common) {
     String authority;
-    String category;
-    String name;
-    String longName;
     String description;
-    String units;
-    RaptureGroupingFn groupingFn = RaptureGroupingFn.SUM;
-    List<RaptureFieldBand> bands = new ArrayList<RaptureFieldBand>();
-    Set<RaptureFieldPath> fieldPaths = new HashSet<RaptureFieldPath>();
+    String validationScript;
+    String fieldTypeExtra;
+    FieldType fieldType;
 }
+
+[A reference to a field in a structure]
+@Bean
+type StructureField(@package=rapture.common) {
+	String key;
+    String fieldUri;
+    Boolean mandatory;
+}
+
+[ A RaptureStructure is like a schema]
+@Addressable(scheme = STRUCTURE(false))
+@Storable(storagePath : {authority}, prefix="structure")
+type RaptureStructure(@package=rapture.common) {
+    String authority;
+    String description;
+    List<StructureField> fields;
+}
+    
+[ A RaptureTransform is a way of converting one set of fields to another]
+@Addressable(scheme = TRANSFORM(false))
+@Storable(storagePath : {authority}, prefix="transform")
+type RaptureTransform(@package=rapture.common) {
+    String authority;
+    String fromStructureUri;
+    String toStructureUri;
+    String description;
+    List<String> transforms;
+}      
 
 [Defines an audit result to be logged.]
 type AuditLogEntry(@package=rapture.common.model) {

@@ -155,12 +155,12 @@
 		<url-pattern>/mailbox</url-pattern>
 	</servlet-mapping>
 	<servlet>
-		<servlet-name>FIELDS</servlet-name>
-		<servlet-class>rapture.server.web.servlet.FieldsServlet</servlet-class>
+		<servlet-name>TRANSFORM</servlet-name>
+		<servlet-class>rapture.server.web.servlet.TransformServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>FIELDS</servlet-name>
-		<url-pattern>/fields</url-pattern>
+		<servlet-name>TRANSFORM</servlet-name>
+		<url-pattern>/transform</url-pattern>
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>PLUGIN</servlet-name>

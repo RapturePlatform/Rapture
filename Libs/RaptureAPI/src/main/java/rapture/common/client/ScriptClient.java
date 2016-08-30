@@ -49,7 +49,7 @@ public class ScriptClient implements ScriptingApi {
     private final HttpLockApi lock;
     private final HttpEventApi event;
     private final HttpAuditApi audit;
-    private final HttpFieldsApi fields;
+    private final HttpTransformApi transform;
     private final HttpPluginApi plugin;
     private final HttpPipelineApi pipeline;
     private final HttpAsyncApi async;
@@ -82,7 +82,7 @@ public class ScriptClient implements ScriptingApi {
         lock = new HttpLockApi(loginApi);
         event = new HttpEventApi(loginApi);
         audit = new HttpAuditApi(loginApi);
-        fields = new HttpFieldsApi(loginApi);
+        transform = new HttpTransformApi(loginApi);
         plugin = new HttpPluginApi(loginApi);
         pipeline = new HttpPipelineApi(loginApi);
         async = new HttpAsyncApi(loginApi);
@@ -130,8 +130,8 @@ public class ScriptClient implements ScriptingApi {
         return event;
     }
 
-    public HttpFieldsApi getFields() {
-        return fields;
+    public HttpTransformApi getTransform() {
+        return transform;
     }
 
     public HttpIdGenApi getIdGen() {

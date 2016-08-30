@@ -33,33 +33,25 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 
 import rapture.common.DispatchReturn;
-import rapture.common.shared.fields.DispatchFieldsFunction;
+import rapture.common.shared.transform.DispatchTransformFunction;
 
 @MultipartConfig
-public class FieldsServlet extends BaseServlet {
-    /**
-	 * 
-	 */
-    private static final long serialVersionUID = 8778096513617876174L;
-    @SuppressWarnings("unused")
-    private static Logger log = Logger.getLogger(FieldsServlet.class);
+public class TransformServlet extends BaseServlet {
+
+    private static final long serialVersionUID = -42L;
+    private static Logger log = Logger.getLogger(TransformServlet.class);
 
     @Override
     public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
         StandardCallInfo call = processFunctionalRequest(req);
-
-        DispatchFieldsFunction calcDispatch = DispatchFieldsFunction.valueOf(call.getFunctionName());
+        DispatchTransformFunction transformDispatch = DispatchTransformFunction.valueOf(call.getFunctionName());
         DispatchReturn response;
         try {
-            response = calcDispatch.executeDispatch(call.getContent(), req, resp);
+            response = transformDispatch.executeDispatch(call.getContent(), req, resp);
         } catch (Exception e) {
             response = handleUnexpectedException(e);
         }
-
-        // Send the response and we're done
-
-        sendResponseAppropriately(response.getContext(), req, resp, response.getResponse());
-
-
+       sendResponseAppropriately(response.getContext(), req, resp, response.getResponse());
     }
+
 }

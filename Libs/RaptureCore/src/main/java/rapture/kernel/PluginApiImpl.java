@@ -42,13 +42,6 @@ import java.util.zip.ZipOutputStream;
 import org.apache.http.HttpStatus;
 import org.apache.log4j.Logger;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-import com.google.common.net.MediaType;
-
 import rapture.common.CallingContext;
 import rapture.common.PluginConfig;
 import rapture.common.PluginConfigStorage;
@@ -77,8 +70,6 @@ import rapture.kernel.plugin.EntitlementGroupInstaller;
 import rapture.kernel.plugin.EntitlementInstaller;
 import rapture.kernel.plugin.EventEncoder;
 import rapture.kernel.plugin.EventInstaller;
-import rapture.kernel.plugin.FieldEncoder;
-import rapture.kernel.plugin.FieldInstaller;
 import rapture.kernel.plugin.IdGenEncoder;
 import rapture.kernel.plugin.IdGenInstaller;
 import rapture.kernel.plugin.IndexEncoder;
@@ -108,6 +99,13 @@ import rapture.kernel.plugin.WorkflowInstaller;
 import rapture.plugin.install.PluginSandboxItem;
 import rapture.util.IDGenerator;
 
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+import com.google.common.net.MediaType;
+
 public class PluginApiImpl extends KernelBase implements PluginApi {
 
     private static Logger log = Logger.getLogger(PluginApiImpl.class);
@@ -119,7 +117,6 @@ public class PluginApiImpl extends KernelBase implements PluginApi {
             .put(Scheme.SCRIPT, new ScriptEncoder())
             .put(Scheme.JOB, new ScheduleEncoder())
             .put(Scheme.DOCUMENT, new DocumentEncoder())
-            .put(Scheme.FIELD, new FieldEncoder())
             .put(Scheme.TABLE, new IndexEncoder())
             .put(Scheme.INDEX, new IndexEncoder())
             .put(Scheme.EVENT, new EventEncoder())
@@ -181,7 +178,7 @@ public class PluginApiImpl extends KernelBase implements PluginApi {
             .put(Scheme.BLOB, new BlobInstaller()).put(Scheme.SERIES, new SeriesInstaller())
             .put(Scheme.SCRIPT, new ScriptInstaller())
             .put(Scheme.JOB, new ScheduleInstaller()).put(Scheme.DOCUMENT, new DocumentInstaller())
-            .put(Scheme.EVENT, new EventInstaller()).put(Scheme.FIELD, new FieldInstaller())
+            .put(Scheme.EVENT, new EventInstaller())
             .put(Scheme.IDGEN, new IdGenInstaller()).put(Scheme.TABLE, new IndexInstaller()).put(Scheme.INDEX, new IndexInstaller())
             .put(Scheme.WORKFLOW, new WorkflowInstaller()).put(Scheme.ENTITLEMENT, new EntitlementInstaller())
             .put(Scheme.ENTITLEMENTGROUP, new EntitlementGroupInstaller()).put(Scheme.LOCK, new LockInstaller())

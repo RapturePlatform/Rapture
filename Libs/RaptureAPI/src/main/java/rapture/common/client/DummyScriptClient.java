@@ -35,7 +35,6 @@ import rapture.common.api.ScriptDocApi;
 import rapture.common.api.ScriptEntitlementApi;
 import rapture.common.api.ScriptEnvironmentApi;
 import rapture.common.api.ScriptEventApi;
-import rapture.common.api.ScriptFieldsApi;
 import rapture.common.api.ScriptIdGenApi;
 import rapture.common.api.ScriptIndexApi;
 import rapture.common.api.ScriptJarApi;
@@ -52,6 +51,7 @@ import rapture.common.api.ScriptSeriesApi;
 import rapture.common.api.ScriptStructuredApi;
 import rapture.common.api.ScriptSysApi;
 import rapture.common.api.ScriptTagApi;
+import rapture.common.api.ScriptTransformApi;
 import rapture.common.api.ScriptUserApi;
 import rapture.common.api.ScriptingApi;
 
@@ -135,11 +135,6 @@ public class DummyScriptClient implements ScriptingApi {
         return null;
     }
 
-    @Override
-    public ScriptFieldsApi getFields() {
-        // TODO Auto-generated method stub
-        return null;
-    }
 
     @Override
     public ScriptBlobApi getBlob() {
@@ -248,4 +243,10 @@ public class DummyScriptClient implements ScriptingApi {
         // TODO Auto-generated method stub
         return null;
     }
+
+	@Override
+	public ScriptTransformApi getTransform() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
