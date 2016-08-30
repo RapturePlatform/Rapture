@@ -70,6 +70,10 @@ import rapture.kernel.plugin.EntitlementGroupInstaller;
 import rapture.kernel.plugin.EntitlementInstaller;
 import rapture.kernel.plugin.EventEncoder;
 import rapture.kernel.plugin.EventInstaller;
+import rapture.kernel.plugin.FieldEncoder;
+import rapture.kernel.plugin.FieldInstaller;
+import rapture.kernel.plugin.FieldTransformEncoder;
+import rapture.kernel.plugin.FieldTransformInstaller;
 import rapture.kernel.plugin.IdGenEncoder;
 import rapture.kernel.plugin.IdGenInstaller;
 import rapture.kernel.plugin.IndexEncoder;
@@ -91,9 +95,13 @@ import rapture.kernel.plugin.SeriesInstaller;
 import rapture.kernel.plugin.SeriesRepoMaker;
 import rapture.kernel.plugin.SnippetEncoder;
 import rapture.kernel.plugin.SnippetInstaller;
+import rapture.kernel.plugin.StructureEncoder;
+import rapture.kernel.plugin.StructureInstaller;
 import rapture.kernel.plugin.StructuredEncoder;
 import rapture.kernel.plugin.StructuredRepoMaker;
 import rapture.kernel.plugin.StructuredTableInstaller;
+import rapture.kernel.plugin.TransformEncoder;
+import rapture.kernel.plugin.TransformInstaller;
 import rapture.kernel.plugin.WorkflowEncoder;
 import rapture.kernel.plugin.WorkflowInstaller;
 import rapture.plugin.install.PluginSandboxItem;
@@ -127,6 +135,10 @@ public class PluginApiImpl extends KernelBase implements PluginApi {
             .put(Scheme.JAR, new JarEncoder())
             .put(Scheme.ENTITLEMENT, new EntitlementEncoder())
             .put(Scheme.ENTITLEMENTGROUP, new EntitlementGroupEncoder())
+            .put(Scheme.FIELD, new FieldEncoder())
+            .put(Scheme.FIELDTRANSFORM, new FieldTransformEncoder())
+            .put(Scheme.STRUCTURE, new StructureEncoder())
+            .put(Scheme.TRANSFORM, new TransformEncoder())
             .build();
 
     public PluginApiImpl(Kernel raptureKernel) {
@@ -184,6 +196,10 @@ public class PluginApiImpl extends KernelBase implements PluginApi {
             .put(Scheme.ENTITLEMENTGROUP, new EntitlementGroupInstaller()).put(Scheme.LOCK, new LockInstaller())
             .put(Scheme.SNIPPET, new SnippetInstaller())
             .put(Scheme.STRUCTURED, new StructuredTableInstaller()).put(Scheme.JAR, new JarInstaller())
+            .put(Scheme.FIELD, new FieldInstaller())
+            .put(Scheme.STRUCTURE, new StructureInstaller())
+            .put(Scheme.TRANSFORM, new TransformInstaller())
+            .put(Scheme.FIELDTRANSFORM, new FieldTransformInstaller())
             .build();
 
     private Map<Scheme, RaptureInstaller> scheme2repoMaker = ImmutableMap.<Scheme, RaptureInstaller> builder()
