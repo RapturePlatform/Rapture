@@ -358,7 +358,6 @@ public class PluginSandboxItem {
             .put(".rdoc", DOCUMENT)
             .put(".idgen", IDGEN)
             .put(".revent", EVENT)
-            .put(".field", FIELD)
             .put(".table", TABLE)
             .put(".index", INDEX)
             .put(".job", JOB)
@@ -366,6 +365,10 @@ public class PluginSandboxItem {
             .put(".lock", Scheme.LOCK)
             .put(".snippet", Scheme.SNIPPET)
             .put(".structured", Scheme.STRUCTURED)
+            .put(".field", Scheme.FIELD)
+            .put(".structure", Scheme.STRUCTURE)
+            .put(".transform", Scheme.TRANSFORM)
+            .put(".ftransform", Scheme.FIELDTRANSFORM)
             .build();
 
     // do not edit this without making matching edits to extractScheme and getExtFromURI
