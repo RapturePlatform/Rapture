@@ -29,6 +29,8 @@ import java.util.Map;
 import rapture.common.CallingContext;
 import rapture.common.RaptureField;
 import rapture.common.RaptureFieldStorage;
+import rapture.common.RaptureFieldTransform;
+import rapture.common.RaptureFieldTransformStorage;
 import rapture.common.RaptureFolderInfo;
 import rapture.common.RaptureStructure;
 import rapture.common.RaptureStructureStorage;
@@ -126,6 +128,33 @@ public class TransformApiImpl extends KernelBase implements TransformApi {
 	public List<RaptureFolderInfo> getTransformChildren(CallingContext context,
 			String uriPrefix) {
 		return RaptureTransformStorage.getChildren(uriPrefix);
+	}
+
+	@Override
+	public RaptureFieldTransform getFieldTransform(CallingContext context,
+			String transformUri) {
+		RaptureURI transformURI = new RaptureURI(transformUri, Scheme.FIELDTRANSFORM);
+		return RaptureFieldTransformStorage.readByAddress(transformURI);
+	}
+
+	@Override
+	public void putFieldTransform(CallingContext context, String transformUri,
+			RaptureFieldTransform transform) {
+		RaptureURI transformURI = new RaptureURI(transformUri, Scheme.FIELDTRANSFORM);
+		transform.setAuthority(transformURI.getAuthority());
+		RaptureFieldTransformStorage.add(transform, context.getUser(), "Add field transform");
+	}
+
+	@Override
+	public void deleteFieldTransform(CallingContext context, String transformUri) {
+		RaptureURI transformURI = new RaptureURI(transformUri, Scheme.FIELDTRANSFORM);
+		RaptureFieldTransformStorage.deleteByAddress(transformURI, context.getUser(), "Remove field transform");
+	}
+
+	@Override
+	public List<RaptureFolderInfo> getFieldTransformChildren(
+			CallingContext context, String uriPrefix) {
+		return RaptureFieldTransformStorage.getChildren(uriPrefix);
 	}
 
  

@@ -1,9 +1,10 @@
 package rapture.field;
 
-import rapture.field.model.FieldTransform;
 import java.util.List;
 
+import rapture.common.RaptureFieldTransform;
+
 public interface FieldTransformLoader {
-    public FieldTransform getFieldTransform(String uri);
+    public RaptureFieldTransform getFieldTransform(String uri);
     public List<String> getFieldTransforms(String prefix);
 }

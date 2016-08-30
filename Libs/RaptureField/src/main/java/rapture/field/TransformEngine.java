@@ -1,18 +1,20 @@
 package rapture.field;
 
-import java.util.List;
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.stream.Collectors;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
-import rapture.field.model.Structure;
-import rapture.field.model.FieldDefinition;
-import rapture.field.model.FieldTransform;
-import rapture.field.model.StructureField;
-import rapture.field.model.FieldType;
+import java.util.stream.Collectors;
+
+import rapture.common.FieldType;
+import rapture.common.RaptureField;
+import rapture.common.RaptureFieldTransform;
+import rapture.common.RaptureStructure;
 import rapture.common.impl.jackson.JacksonUtil;
+import rapture.field.model.FieldDefinition;
+import rapture.field.model.Structure;
 import reflex.value.ReflexValue;
 
 
@@ -33,8 +35,8 @@ public class TransformEngine extends BaseEngine {
      
     public String transform(String sourceDoc, String sourceStructure, String targetStructure, String transArea) {
         // Step 1 - collect all of the none repeating (non ARRAY) fields in targetStructure
-        Structure targetS = getStructure(targetStructure);
-        Structure sourceS = getStructure(sourceStructure);
+        RaptureStructure targetS = getStructure(targetStructure);
+        RaptureStructure sourceS = getStructure(sourceStructure);
         Map<String, Object> srcObject = JacksonUtil.getMapFromJson(sourceDoc);
         Map<String, Object> targetObject = new HashMap<String, Object>();
         Map<String, FieldStatus> targFields = new LinkedHashMap<String, FieldStatus>();
@@ -62,7 +64,7 @@ public class TransformEngine extends BaseEngine {
         //
         transforms.forEach(trId -> {
             //System.out.println("Checking with " + trId);
-            FieldTransform ft = ftLoader.getFieldTransform(trId);
+            RaptureFieldTransform ft = ftLoader.getFieldTransform(trId);
             // (1) are the sources for this field transform in fields?
             // (2) are any of the targets false or available in target?
             // If so, this is a good transform we should do
@@ -108,7 +110,7 @@ public class TransformEngine extends BaseEngine {
             Object v = srcFields.get(tp.getIdentityField()).getValue();
             targetFields.get(tp.getIdentityField()).setValue(v);
         } else {
-            FieldTransform ft = ftLoader.getFieldTransform(tp.getTransformUri());
+            RaptureFieldTransform ft = ftLoader.getFieldTransform(tp.getTransformUri());
             // Get the variables for the source fields for this transform, we use the sourceStructure to determine what key
             Map<String, Object> inputParams = new HashMap<String, Object>();
             List<Object> vals = new ArrayList<Object>();
@@ -141,10 +143,10 @@ public class TransformEngine extends BaseEngine {
      * or set the values. We might as well store the field definition as well?
      */
      
-    private void getBaseFields(Structure s, Map<String, Object> ctx, Map<String, FieldStatus> collector) {
+    private void getBaseFields(RaptureStructure s, Map<String, Object> ctx, Map<String, FieldStatus> collector) {
         s.getFields().forEach(sf -> {
             String fieldUri = sf.getFieldUri();
-            FieldDefinition fd = getField(fieldUri);
+            RaptureField fd = getField(fieldUri);
             if (fd.getFieldType() == FieldType.MAP) {
                 Object x = ctx.get(sf.getKey());
                 Map<String, Object> pass;
@@ -165,7 +167,7 @@ public class TransformEngine extends BaseEngine {
 }
 
 class FieldStatus {
-    public FieldStatus(String fieldUri, FieldDefinition fDef, Map<String, Object> context, String key) {
+    public FieldStatus(String fieldUri, RaptureField fDef, Map<String, Object> context, String key) {
         this.fieldUri = fieldUri;
         this.fDef = fDef;
         this.context = context;
@@ -174,7 +176,7 @@ class FieldStatus {
     
     public String fieldUri;
     public Map<String, Object> context;
-    public FieldDefinition fDef;
+    public RaptureField fDef;
     public String key;
     
     public Object getValue() {

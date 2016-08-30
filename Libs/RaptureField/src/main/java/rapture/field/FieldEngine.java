@@ -1,14 +1,15 @@
 package rapture.field;
 
-import java.util.Map;
-import java.util.HashMap;
-import java.util.List;
 import java.util.ArrayList;
-import rapture.field.model.FieldDefinition;
-import rapture.field.model.Structure;
-import rapture.field.model.StructureField;
-import rapture.field.model.FieldType;
+import java.util.List;
+import java.util.Map;
+
+import rapture.common.FieldType;
+import rapture.common.RaptureField;
+import rapture.common.RaptureStructure;
+import rapture.common.StructureField;
 import rapture.common.impl.jackson.JacksonUtil;
+
 
 /**
  * This is the engine that performs transformations of data according to field definitions.
@@ -41,12 +42,12 @@ public class FieldEngine extends BaseEngine {
 
     private void validateObject(Map<String, Object> docMap, String structureUri, List<String> ret) {   
         //System.out.println("Validate using " + structureUri + " with " + docMap.toString());
-        Structure s = getStructure(structureUri);
+        RaptureStructure s = getStructure(structureUri);
         // Now we need to look at the fields of the structure and check to see if the
         // keys and values in this document are present and valid.
         s.getFields().forEach(sf -> {
             if (docMap.containsKey(sf.getKey())) {
-                FieldDefinition fd = getField(sf.getFieldUri());
+                RaptureField fd = getField(sf.getFieldUri());
   
                 // Now check the type
                 checkValue(sf, fd, docMap.get(sf.getKey()), ret);
@@ -68,7 +69,7 @@ public class FieldEngine extends BaseEngine {
         });
     }
     
-    private void checkValue(StructureField sf, FieldDefinition fd, Object val, List<String> ret) {
+    private void checkValue(StructureField sf, RaptureField fd, Object val, List<String> ret) {
          // First check that the type is correct
         boolean error = false;
         switch(fd.getFieldType()) {

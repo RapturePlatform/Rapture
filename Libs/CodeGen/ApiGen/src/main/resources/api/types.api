@@ -83,6 +83,17 @@ type RaptureTransform(@package=rapture.common) {
     List<String> transforms;
 }      
 
+[ A RaptureTransform is a way of converting one set of fields to another]
+@Addressable(scheme = FIELDTRANSFORM(false))
+@Storable(storagePath : {authority}, prefix="fieldtransform")
+type RaptureFieldTransform(@package=rapture.common) {
+    String authority;
+    String description;
+    List<String> sourceFields;
+    List<String> targetFields;
+    String transformScript;
+}  
+
 [Defines an audit result to be logged.]
 type AuditLogEntry(@package=rapture.common.model) {
     String category;

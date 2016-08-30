@@ -1,7 +1,7 @@
 package rapture.field;
 
-import rapture.field.model.FieldDefinition;
+import rapture.common.RaptureField;
 
 public interface FieldLoader {
-    public FieldDefinition getField(String uri);
+    public RaptureField getField(String uri);
 }

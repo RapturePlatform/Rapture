@@ -1,7 +1,7 @@
 package rapture.field;
 
-import rapture.field.model.Structure;
+import rapture.common.RaptureStructure;
 
 public interface StructureLoader {
-    public Structure getStructure(String uri);
+    public RaptureStructure getStructure(String uri);
 }

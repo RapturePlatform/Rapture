@@ -34,30 +34,29 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.net.URL;
-import java.util.Map;
-import java.util.List;
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.stream.Stream;
+import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import rapture.field.model.Structure;
-import rapture.field.model.FieldDefinition;
-import rapture.field.model.FieldTransform;
+import rapture.common.RaptureField;
+import rapture.common.RaptureFieldTransform;
+import rapture.common.RaptureStructure;
 import rapture.common.impl.jackson.JacksonUtil;
 
 public class ResourceLoader implements FieldLoader, StructureLoader, ScriptLoader, FieldTransformLoader {
 
     @Override
-    public Structure getStructure(String uri) {
+    public RaptureStructure getStructure(String uri) {
         String val = getResourceAsString(this, "/structure" + uri + ".json");
-        return JacksonUtil.objectFromJson(val, Structure.class);
+        return JacksonUtil.objectFromJson(val, RaptureStructure.class);
     }
     
     @Override
-    public FieldDefinition getField(String uri) {
+    public RaptureField getField(String uri) {
         String val = getResourceAsString(this, "/field" + uri + ".json");
-        return JacksonUtil.objectFromJson(val, FieldDefinition.class);
+        return JacksonUtil.objectFromJson(val, RaptureField.class);
        
     }
     
@@ -71,9 +70,9 @@ public class ResourceLoader implements FieldLoader, StructureLoader, ScriptLoade
     }
     
     @Override
-    public FieldTransform getFieldTransform(String uri) {
+    public RaptureFieldTransform getFieldTransform(String uri) {
         String val = getResourceAsString(this, "/fieldtransform" + uri + ".json");
-        return JacksonUtil.objectFromJson(val, FieldTransform.class);
+        return JacksonUtil.objectFromJson(val, RaptureFieldTransform.class);
     }
     
     @Override

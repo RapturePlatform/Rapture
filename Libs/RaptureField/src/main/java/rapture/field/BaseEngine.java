@@ -3,12 +3,14 @@ package rapture.field;
 import java.util.Map;
 import java.util.HashMap;
 
+import rapture.common.RaptureField;
+import rapture.common.RaptureStructure;
 import rapture.field.model.FieldDefinition;
 import rapture.field.model.Structure;
 
 public class BaseEngine {
-    private Map<String, FieldDefinition> fieldCache = new HashMap<String, FieldDefinition>();  
-    private Map<String, Structure> structureCache = new HashMap<String, Structure>();
+    private Map<String, RaptureField> fieldCache = new HashMap<String, RaptureField>();  
+    private Map<String, RaptureStructure> structureCache = new HashMap<String, RaptureStructure>();
     private StructureLoader structureLoader;
     private FieldLoader fieldLoader;
     protected FieldTransformLoader ftLoader;
@@ -27,11 +29,11 @@ public class BaseEngine {
      * Hopefully structure is in the "cache". If it isn't, load it.
      */
      
-    protected Structure getStructure(String structureUri) {
+    protected RaptureStructure getStructure(String structureUri) {
         if (structureCache.containsKey(structureUri)) {
             return structureCache.get(structureUri);
         } else {
-            Structure s = structureLoader.getStructure(structureUri);
+            RaptureStructure s = structureLoader.getStructure(structureUri);
             if (s != null) {
                 structureCache.put(structureUri, s);
                 return s;
@@ -40,11 +42,11 @@ public class BaseEngine {
         return null;
     }
     
-    protected FieldDefinition getField(String fieldUri) {
+    protected RaptureField getField(String fieldUri) {
         if (fieldCache.containsKey(fieldUri)) {
             return fieldCache.get(fieldUri);
         } else {
-            FieldDefinition f = fieldLoader.getField(fieldUri);
+            RaptureField f = fieldLoader.getField(fieldUri);
             if (f != null) {
                 fieldCache.put(fieldUri, f);
                 return f;
