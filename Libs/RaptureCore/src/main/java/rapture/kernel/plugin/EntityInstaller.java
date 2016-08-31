@@ -34,7 +34,7 @@ public class EntityInstaller implements RaptureInstaller {
     @Override
     public void install(CallingContext context, RaptureURI uri, PluginTransportItem item) {
         RaptureEntity entity = JacksonUtil.objectFromJson(item.getContent(), RaptureEntity.class);
-        Kernel.getEntity().putEntity(context, entity.getAuthority(), entity);
+        Kernel.getEntity().putEntity(context, entity.getName(), entity);
     }
 
     @Override

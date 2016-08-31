@@ -1,41 +1,14 @@
-version = '$project.platformVersion'
-
-apply plugin: 'application'
+version = '3.0.0'
 
 dependencies {
-      compile "net.rapture:SelfPluginInstallerLib:$platformVersion"
+      compile "net.rapture:SelfPluginInstallerLib:$project.platformVersion"
 }
 
 mainClassName = "rapture.plugin.app.SelfInstaller"
 
-apply plugin: 'docker'
-
-buildscript {
-     repositories { jcenter() }
-     dependencies {
-         classpath 'se.transmode.gradle:gradle-docker:1.2'
-     }
-}
-
-docker {
-    baseImage "ubuntu:latest"
-    maintainer "Alan Moore <alan.moore@incapturetechnologies.com>"
-}
-
-task buildDocker(type: Docker, dependsOn: 'fatJar') {
-    applicationName = 'sampleplugin'
-    runCommand "apt-get update"
-    runCommand "apt-get install -y default-jdk"
-    addFile ("build/libs/$jar.archiveName","/rapture/")
-    workingDir "/rapture"
-    exposePort 8665
-    entryPoint( [ "java", "-jar", jar.archiveName])
-}
-
-
 task fatJar(type: Jar) {
      manifest {
-        attributes 'Implementation-Title' : 'EntityTest self installer',
+        attributes 'Implementation-Title' : 'Operation self installer',
                    'Implementation-Version' : version,
                    'Main-Class' : mainClassName
     }
@@ -55,6 +28,3 @@ startScripts {
     }
 }
 
-
-installLocal{
-}

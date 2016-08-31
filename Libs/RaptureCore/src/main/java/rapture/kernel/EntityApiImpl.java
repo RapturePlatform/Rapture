@@ -49,7 +49,7 @@ public class EntityApiImpl extends KernelBase implements EntityApi {
  	public void putEntity(CallingContext context, String entityUri,
  			RaptureEntity entity) {
  		RaptureURI internalURI = new RaptureURI(entityUri, Scheme.ENTITY);
-		entity.setAuthority(internalURI.getAuthority());
+		entity.setName(internalURI.getShortPath());
 		RaptureEntityStorage.add(entity, context.getUser(), "Added entity");
  	}
 

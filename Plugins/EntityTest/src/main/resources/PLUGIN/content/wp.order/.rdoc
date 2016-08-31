@@ -1,0 +1,11 @@
+{
+  "authority":"wp.order",
+  "strictCheck":true,
+  "indexes":[],
+  "fullTextIndexes":[],
+  "documentRepo":
+     {
+        "authority":"wp.order",
+        "config":"NREP {} USING MONGODB { prefix=\"wp.order\" }"
+     }
+}

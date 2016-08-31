@@ -96,9 +96,9 @@ type RaptureFieldTransform(@package=rapture.common) {
 
 [ A RaptureEntity is a mapping of a structure with a repository]
 @Addressable(scheme = ENTITY(false))
-@Storable(storagePath : {authority}, prefix="entity")
+@Storable(storagePath : {name}, prefix="entity")
 type RaptureEntity(@package=rapture.common) {
-    String authority;
+    String name;
     String description;
     String repoUri;
     String prefixInRepo;
