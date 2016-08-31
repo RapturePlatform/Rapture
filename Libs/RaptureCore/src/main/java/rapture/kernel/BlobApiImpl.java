@@ -474,7 +474,7 @@ public class BlobApiImpl extends KernelBase implements BlobApi, RaptureScheme {
         BlobRepo repo = getRepoFromCache(internalUri.getAuthority());
         Boolean getAll = false;
         if (repo == null) {
-            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, apiMessageCatalog.getMessage("NoSuchRepo", internalUri.toAuthString())); //$NON-NLS-1$
+            return ret;
         }
         String parentDocPath = internalUri.getDocPath() == null ? "" : internalUri.getDocPath();
         int startDepth = StringUtils.countMatches(parentDocPath, "/");
@@ -506,7 +506,7 @@ public class BlobApiImpl extends KernelBase implements BlobApi, RaptureScheme {
 
             List<RaptureFolderInfo> children = repo.listMetaByUriPrefix(currParentDocPath);
             if ((children == null) || (children.isEmpty()) && (currDepth == 0) && (internalUri.hasDocPath())) {
-                throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, apiMessageCatalog.getMessage("NoSuchFolder", internalUri.toString())); //$NON-NLS-1$
+                return ret;
             } else {
                 for (RaptureFolderInfo child : children) {
                     String childDocPath = currParentDocPath + (top ? "" : "/") + child.getName();

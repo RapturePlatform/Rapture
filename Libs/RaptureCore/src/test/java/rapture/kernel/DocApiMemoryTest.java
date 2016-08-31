@@ -24,8 +24,10 @@
 package rapture.kernel;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,6 +44,7 @@ import com.google.common.collect.ImmutableList;
 
 import rapture.common.CallingContext;
 import rapture.common.RaptureConstants;
+import rapture.common.RaptureFolderInfo;
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
 import rapture.common.model.DocumentMetadata;
@@ -93,7 +96,7 @@ public class DocApiMemoryTest {
         Kernel.getLock().createLockManager(ContextFactory.getKernelUser(), "lock://kernel", "LOCKING USING DUMMY {}", "");
         docImpl = new DocApiImpl(Kernel.INSTANCE);
     }
-    
+
     static boolean firstTime = true;
 
     @Test
@@ -106,14 +109,14 @@ public class DocApiMemoryTest {
         assertEquals(REPO_USING_MEMORY, docRepoConfig.getDocumentRepo().getConfig());
         assertEquals(auth, docRepoConfig.getAuthority());
     }
-    
+
     @Test
     public void testGetDocRepoStatus() {
         testCreateAndGetRepo();
         Map<String, String> ret = docImpl.getDocRepoStatus(callingContext, docAuthorityURI);
         assertNotEquals(0, ret.size());
     }
-    
+
     @Test
     public void testMetadata() {
         testCreateAndGetRepo();
@@ -132,6 +135,26 @@ public class DocApiMemoryTest {
         System.out.println(met3.get(0).toString());
         assertEquals(met2, met3.get(0));
         assertEquals(met1, met2.getMetaData());
+    }
+
+    @Test
+    public void testListDocsByUriPrefix() {
+        if (!docImpl.docRepoExists(callingContext, "document://almonds")) {
+            docImpl.createDocRepo(callingContext, "document://almonds", "NREP {} USING MEMORY {}");
+        }
+        docImpl.putDoc(callingContext, "document://almonds/1", "{\"x\":\"y\"}");
+        Map<String, RaptureFolderInfo> result = docImpl.listDocsByUriPrefix(callingContext, "document://almonds", -1);
+        assertEquals(1, result.size());
+        Map.Entry<String, RaptureFolderInfo> entry = result.entrySet().iterator().next();
+        assertEquals("document://almonds/1", entry.getKey());
+        assertEquals("1", entry.getValue().getName());
+        assertFalse(entry.getValue().isFolder());
+        result = docImpl.listDocsByUriPrefix(callingContext, "document://thiswontexist", -1);
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+        result = docImpl.listDocsByUriPrefix(callingContext, "document://thiswontexist/so/returnempty", -1);
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
     }
 
     @After
