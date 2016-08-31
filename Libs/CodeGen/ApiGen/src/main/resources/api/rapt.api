@@ -36,3 +36,5 @@ include "api/search.api"
 include "api/tag.api"
 include "api/operation.api"
 include "api/transform.api"
+include "api/entity.api"
+

@@ -149,6 +149,10 @@ public enum Kernel {
     public static TransformApiImplWrapper getTransform() {
         return INSTANCE.transform;
     }
+    
+    public static EntityApiImplWrapper getEntity() {
+    	return INSTANCE.entity;
+    }
 
     public static IdGenApiImplWrapper getIdGen() {
         return INSTANCE.idgen;
@@ -449,6 +453,7 @@ public enum Kernel {
     private EventApiImplWrapper event;
     private AuditApiImplWrapper audit;
     private TransformApiImplWrapper transform;
+    private EntityApiImplWrapper entity;
     private JarApiImplWrapper jar;
     private BlobApiImplWrapper blob;
 
@@ -713,6 +718,8 @@ public enum Kernel {
             kernelApis.add(audit);
             transform = new TransformApiImplWrapper(this);
             kernelApis.add(transform);
+            entity = new EntityApiImplWrapper(this);
+            kernelApis.add(entity);
             blob = new BlobApiImplWrapper(this);
             kernelApis.add(blob);
             jar = new JarApiImplWrapper(this);

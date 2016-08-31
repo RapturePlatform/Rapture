@@ -33,6 +33,7 @@ import rapture.common.api.ScriptBootstrapApi;
 import rapture.common.api.ScriptDecisionApi;
 import rapture.common.api.ScriptDocApi;
 import rapture.common.api.ScriptEntitlementApi;
+import rapture.common.api.ScriptEntityApi;
 import rapture.common.api.ScriptEnvironmentApi;
 import rapture.common.api.ScriptEventApi;
 import rapture.common.api.ScriptIdGenApi;
@@ -243,6 +244,12 @@ public class InstallableScriptingApi implements ScriptingApi {
 
 	@Override
 	public ScriptTransformApi getTransform() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ScriptEntityApi getEntity() {
 		// TODO Auto-generated method stub
 		return null;
 	}

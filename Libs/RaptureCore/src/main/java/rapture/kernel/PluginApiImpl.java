@@ -68,6 +68,8 @@ import rapture.kernel.plugin.EntitlementEncoder;
 import rapture.kernel.plugin.EntitlementGroupEncoder;
 import rapture.kernel.plugin.EntitlementGroupInstaller;
 import rapture.kernel.plugin.EntitlementInstaller;
+import rapture.kernel.plugin.EntityEncoder;
+import rapture.kernel.plugin.EntityInstaller;
 import rapture.kernel.plugin.EventEncoder;
 import rapture.kernel.plugin.EventInstaller;
 import rapture.kernel.plugin.FieldEncoder;
@@ -139,6 +141,7 @@ public class PluginApiImpl extends KernelBase implements PluginApi {
             .put(Scheme.FIELDTRANSFORM, new FieldTransformEncoder())
             .put(Scheme.STRUCTURE, new StructureEncoder())
             .put(Scheme.TRANSFORM, new TransformEncoder())
+            .put(Scheme.ENTITY, new EntityEncoder())
             .build();
 
     public PluginApiImpl(Kernel raptureKernel) {
@@ -200,6 +203,7 @@ public class PluginApiImpl extends KernelBase implements PluginApi {
             .put(Scheme.STRUCTURE, new StructureInstaller())
             .put(Scheme.TRANSFORM, new TransformInstaller())
             .put(Scheme.FIELDTRANSFORM, new FieldTransformInstaller())
+            .put(Scheme.ENTITY, new EntityInstaller())
             .build();
 
     private Map<Scheme, RaptureInstaller> scheme2repoMaker = ImmutableMap.<Scheme, RaptureInstaller> builder()

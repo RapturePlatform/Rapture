@@ -369,6 +369,7 @@ public class PluginSandboxItem {
             .put(".structure", Scheme.STRUCTURE)
             .put(".transform", Scheme.TRANSFORM)
             .put(".ftransform", Scheme.FIELDTRANSFORM)
+            .put(".entity", Scheme.ENTITY)
             .build();
 
     // do not edit this without making matching edits to extractScheme and getExtFromURI

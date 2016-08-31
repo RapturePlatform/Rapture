@@ -1,0 +1,40 @@
+
+[ The entity api is used to manage structures that are stored in repositories. ]
+
+api(Entity) {
+
+   [Retrieve an entity]
+   @entitle=/entity/read/$f(entityUri)
+   @public RaptureEntity getEntity(String entityUri);
+   
+   [Save an entity]
+   @entitle=/entity/write/$f(entityUri)
+   @public void putEntity(String entityUri, RaptureEntity entity);
+   
+   [remove an entity]
+   @entitle=/entity/write/$f(entityUri)
+   @public void deleteEntity(String entityUri);
+ 
+   [Returns full pathnames for an entire subtree as a map of the path to RFI.]
+   @entitle=/entity/list/$f(uriPrefix)
+   @public List(RaptureFolderInfo) getChildren(String uriPrefix);
+ 
+   [Puts a document that is an entity]
+   @entitle=/entity/write/$f(entityUri)
+   @public void putEntityDocument(String entityUri, String content);
+   
+   [Retrieves a document that is an entity]
+   @entitle=/entity/read/$f(entityUri)
+   @public String getEntityDocument(String entityUri, String contentUri);
+   
+   [Remove a document that is an entity]
+   @entitle=/entity/read/$f(entityUri)
+   @public void deleteEntityDocument(String entityUri, String contentUri);
+   
+   [Returns full pathnames for an entire subtree as a map of the path to RFI.]
+   @entitle=/entity/list/$f(entityUri)/$f(uriPrefix)
+   @public List(RaptureFolderInfo) getEntityChildren(String entityUri, String uriPrefix);
+   
+}
+
+

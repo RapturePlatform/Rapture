@@ -50,6 +50,7 @@ public class ScriptClient implements ScriptingApi {
     private final HttpEventApi event;
     private final HttpAuditApi audit;
     private final HttpTransformApi transform;
+    private final HttpEntityApi entity;
     private final HttpPluginApi plugin;
     private final HttpPipelineApi pipeline;
     private final HttpAsyncApi async;
@@ -83,6 +84,7 @@ public class ScriptClient implements ScriptingApi {
         event = new HttpEventApi(loginApi);
         audit = new HttpAuditApi(loginApi);
         transform = new HttpTransformApi(loginApi);
+        entity = new HttpEntityApi(loginApi);
         plugin = new HttpPluginApi(loginApi);
         pipeline = new HttpPipelineApi(loginApi);
         async = new HttpAsyncApi(loginApi);
@@ -134,6 +136,10 @@ public class ScriptClient implements ScriptingApi {
         return transform;
     }
 
+    public HttpEntityApi getEntity() {
+    	return entity;
+    }
+    
     public HttpIdGenApi getIdGen() {
         return idgen;
     }

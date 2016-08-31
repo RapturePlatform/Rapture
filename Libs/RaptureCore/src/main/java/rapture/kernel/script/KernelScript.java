@@ -48,6 +48,7 @@ public class KernelScript implements IRaptureScriptHelper, IRaptureKernelScriptH
     private final ScriptEvent event;
     private final ScriptAudit audit;
     private final ScriptTransform transform;
+    private final ScriptEntity entity;
     private final ScriptPlugin plugin;
     private final ScriptPipeline pipeline;
     private final ScriptAsync async;
@@ -80,6 +81,7 @@ public class KernelScript implements IRaptureScriptHelper, IRaptureKernelScriptH
         event = new ScriptEvent(Kernel.getEvent());
         audit = new ScriptAudit(Kernel.getAudit());
         transform = new ScriptTransform(Kernel.getTransform());
+        entity = new ScriptEntity(Kernel.getEntity());
         plugin = new ScriptPlugin(Kernel.getPlugin());
         pipeline = new ScriptPipeline(Kernel.getPipeline());
         async = new ScriptAsync(Kernel.getAsync());
@@ -129,6 +131,10 @@ public class KernelScript implements IRaptureScriptHelper, IRaptureKernelScriptH
 
     public ScriptTransform getTransform() {
         return transform;
+    }
+    
+    public ScriptEntity getEntity() {
+    	return entity;
     }
 
     public ScriptIdGen getIdGen() {

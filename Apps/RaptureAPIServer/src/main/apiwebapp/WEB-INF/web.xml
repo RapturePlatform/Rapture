@@ -163,6 +163,14 @@
 		<url-pattern>/transform</url-pattern>
 	</servlet-mapping>
 	<servlet>
+		<servlet-name>ENTITY</servlet-name>
+		<servlet-class>rapture.server.web.servlet.EntityServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ENTITY</servlet-name>
+		<url-pattern>/entity</url-pattern>
+	</servlet-mapping>
+	<servlet>
 		<servlet-name>PLUGIN</servlet-name>
 		<servlet-class>rapture.server.web.servlet.PluginServlet</servlet-class>
 	</servlet>
