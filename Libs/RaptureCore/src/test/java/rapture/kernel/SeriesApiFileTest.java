@@ -325,8 +325,8 @@ public class SeriesApiFileTest extends AbstractFileTest {
         ensureSeries(seriesAuthorityURI, "die/series");
         ensureSeries(seriesAuthorityURI, "nested/die/series");
         ensureSeries(seriesAuthorityURI, "die/nested/series");
-        
-        assertNotNull(seriesImpl.getLastPoint(callingContext, seriesAuthorityURI+"/top"));
+
+        assertNotNull(seriesImpl.getLastPoint(callingContext, seriesAuthorityURI + "/top"));
 
         Map<String, RaptureFolderInfo> resultsMap;
         resultsMap = seriesImpl.listSeriesByUriPrefix(callingContext, seriesAuthorityURI, 0);
@@ -334,19 +334,19 @@ public class SeriesApiFileTest extends AbstractFileTest {
 
         List<String> removed = seriesImpl.deleteSeriesByUriPrefix(callingContext, seriesAuthorityURI + "/die");
         assertEquals(2, removed.size());
-        String s1 = seriesAuthorityURI+"/die/series";
-        String s2 = seriesAuthorityURI+"/die/nested/series";
-        
+        String s1 = seriesAuthorityURI + "/die/series";
+        String s2 = seriesAuthorityURI + "/die/nested/series";
+
         assertTrue(removed.contains(s1));
         assertTrue(removed.contains(s2));
-        
+
         resultsMap = seriesImpl.listSeriesByUriPrefix(callingContext, seriesAuthorityURI, 0);
         Set<String> keys = resultsMap.keySet();
-        assertNotNull(seriesImpl.getLastPoint(callingContext, seriesAuthorityURI+"/top"));
+        assertNotNull(seriesImpl.getLastPoint(callingContext, seriesAuthorityURI + "/top"));
 
-        assertTrue(keys.contains(seriesAuthorityURI+"/top"));
-        assertTrue(keys.contains(seriesAuthorityURI+"/live/series"));
-        assertTrue(keys.contains(seriesAuthorityURI+"/nested/die/series"));
+        assertTrue(keys.contains(seriesAuthorityURI + "/top"));
+        assertTrue(keys.contains(seriesAuthorityURI + "/live/series"));
+        assertTrue(keys.contains(seriesAuthorityURI + "/nested/die/series"));
 
         assertEquals(6, resultsMap.size());
     }
@@ -432,7 +432,7 @@ public class SeriesApiFileTest extends AbstractFileTest {
         }
         legacy = seriesImpl.getSeriesRepoConfigs(callingContext);
         assertTrue(legacy.isEmpty());
-        
+
         ensureRepo(seriesAuthorityURI);
 
         String uriPrefix = seriesAuthorityURI + "/uriFragment/";
@@ -494,7 +494,10 @@ public class SeriesApiFileTest extends AbstractFileTest {
         assertEquals(10, resultsMap.size());
         resultsMap = seriesImpl.listSeriesByUriPrefix(callingContext, "series://", -1);
         assertEquals(10, resultsMap.size());
-
+        resultsMap = seriesImpl.listSeriesByUriPrefix(callingContext, "series://thiswontexist", -1);
+        assertTrue(resultsMap.isEmpty());
+        resultsMap = seriesImpl.listSeriesByUriPrefix(callingContext, "series://thiswontexist/so/returnempty", -1);
+        assertTrue(resultsMap.isEmpty());
     }
 
     @Test

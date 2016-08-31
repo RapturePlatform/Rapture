@@ -332,7 +332,7 @@ public class ScriptApiImpl extends KernelBase implements ScriptApi {
             List<RaptureFolderInfo> children = RaptureScriptStorage.getChildren(currParentDocPath);
 
             if (((children == null) || children.isEmpty()) && (currDepth == 0) && internalUri.hasDocPath()) {
-                throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, apiMessageCatalog.getMessage("NoSuchFolder", internalUri.toString())); //$NON-NLS-1$
+                return ret;
             } else if (children != null) {
                 for (RaptureFolderInfo child : children) {
                     String childDocPath = currParentDocPath + (top ? "" : "/") + child.getName();
