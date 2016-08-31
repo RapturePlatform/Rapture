@@ -24,6 +24,7 @@
 package rapture.kernel;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.math.BigDecimal;
@@ -94,7 +95,7 @@ public class ScriptApiFileTest extends AbstractFileTest {
                 "LOG {} using FILE {prefix=\"/tmp/" + auth + "\"}");
         Kernel.getLock().createLockManager(callingContext, "lock://kernel", "LOCKING USING DUMMY {}", "");
         scriptImpl = new ScriptApiImpl(Kernel.INSTANCE);
-        
+
         Kernel.getIdGen().setupDefaultIdGens(callingContext, false);
         String systemBlobRepo = "//sys.blob";
         Kernel.getBlob().deleteBlobRepo(callingContext, systemBlobRepo);
@@ -238,7 +239,10 @@ public class ScriptApiFileTest extends AbstractFileTest {
         assertEquals(10, resultsMap.size());
         resultsMap = scriptImpl.listScriptsByUriPrefix(callingContext, "script://", -1);
         assertEquals(10, resultsMap.size());
-
+        resultsMap = scriptImpl.listScriptsByUriPrefix(callingContext, "script://thiswontexist", -1);
+        assertTrue(resultsMap.isEmpty());
+        resultsMap = scriptImpl.listScriptsByUriPrefix(callingContext, "script://thiswontexist/so/returnempty", -1);
+        assertTrue(resultsMap.isEmpty());
     }
 
     @Test
