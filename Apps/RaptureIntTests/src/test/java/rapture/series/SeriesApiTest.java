@@ -23,6 +23,8 @@
  */
 package rapture.series;
 
+import static rapture.common.Scheme.SERIES;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -85,6 +87,46 @@ public class SeriesApiTest {
         Assert.assertEquals(valueSet, new HashSet<String>(pointValues));
     }
 
+    @Test(groups = { "series", "cassandra", "nightly" })
+    public void testSeriesListByUriPrefix() {
+        RaptureURI repo = helper.getRandomAuthority(Scheme.SERIES);
+        helper.configureTestRepo(repo, "MONGODB");
+
+        Reporter.log("Create some test series", true);
+        String seriesURIf1d1 = RaptureURI.builder(SERIES, repo.getAuthority()).docPath("folder1/doc1").build().toString();
+        String seriesURIf1d2 = RaptureURI.builder(SERIES, repo.getAuthority()).docPath("folder1/doc2").build().toString();
+        String seriesURIf1d3 = RaptureURI.builder(SERIES, repo.getAuthority()).docPath("folder1/doc3").build().toString();
+        String seriesURIf2f21d1 = RaptureURI.builder(SERIES, repo.getAuthority()).docPath("folder2/folder21/doc1").build().toString();
+        String seriesURIf2f21d2 = RaptureURI.builder(SERIES, repo.getAuthority()).docPath("folder2/folder21/doc2").build().toString();
+        String seriesURIf3d1 = RaptureURI.builder(SERIES, repo.getAuthority()).docPath("folder3/doc1").build().toString();
+
+        seriesApi.addLongToSeries(seriesURIf1d1, "key1",new Long (1));
+        seriesApi.addLongToSeries(seriesURIf1d2, "key1",new Long (1));
+        seriesApi.addLongToSeries(seriesURIf1d3,"key1",new Long (1));
+        seriesApi.addLongToSeries(seriesURIf2f21d1, "key1",new Long (1));
+        seriesApi.addLongToSeries(seriesURIf2f21d2, "key1",new Long (1));
+        seriesApi.addLongToSeries(seriesURIf3d1,"key1",new Long (1));
+
+        Reporter.log("Check folder contents using different depths", true);
+        Assert.assertEquals(seriesApi.listSeriesByUriPrefix(RaptureURI.builder(SERIES, repo.getAuthority()).docPath("folder1").build().toString(), 2).size(), 3);
+        Assert.assertEquals(seriesApi.listSeriesByUriPrefix(RaptureURI.builder(SERIES, repo.getAuthority()).docPath("folder1").build().toString(), 1).size(), 3);
+        Assert.assertEquals(seriesApi.listSeriesByUriPrefix(RaptureURI.builder(SERIES, repo.getAuthority()).docPath("folder2").build().toString(), 2).size(), 3);
+        Assert.assertEquals(seriesApi.listSeriesByUriPrefix(RaptureURI.builder(SERIES, repo.getAuthority()).docPath("folder2").build().toString(), 1).size(), 1);
+        Assert.assertEquals(seriesApi.listSeriesByUriPrefix(RaptureURI.builder(SERIES, repo.getAuthority()).docPath("folder2").build().toString(), 0).size(), 3);
+        Assert.assertEquals(seriesApi.listSeriesByUriPrefix(RaptureURI.builder(SERIES, repo.getAuthority()).docPath("folder3").build().toString(), 0).size(), 1);
+
+        Reporter.log("Delete some series and check folder contents", true);
+        seriesApi.deleteSeries(seriesURIf1d1);
+        seriesApi.deleteSeries(seriesURIf3d1);
+        Assert.assertEquals(seriesApi.listSeriesByUriPrefix(RaptureURI.builder(SERIES, repo.getAuthority()).docPath("folder1").build().toString(), 2).size(), 2);
+        Assert.assertEquals(seriesApi.listSeriesByUriPrefix(RaptureURI.builder(SERIES, repo.getAuthority()).docPath("folder1").build().toString(), 1).size(), 2);
+        Assert.assertEquals(seriesApi.listSeriesByUriPrefix(RaptureURI.builder(SERIES, repo.getAuthority()).docPath("folder3").build().toString(), 0).size(), 0);
+      
+        Reporter.log("Recreated some series and check folder contents", true);
+        seriesApi.addLongToSeries(seriesURIf3d1, "key2",new Long (1));
+        Assert.assertEquals(seriesApi.listSeriesByUriPrefix(RaptureURI.builder(SERIES, repo.getAuthority()).docPath("folder3").build().toString(), 1).size(), 1);
+    }
+    
     @Test(groups = { "series", "cassandra", "nightly" })
     public void testAddLongsToSeries() {
         int MAX_VALUES = 50;
