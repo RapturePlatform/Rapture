@@ -23,6 +23,8 @@
  */
 package rapture.blob;
 
+import static rapture.common.Scheme.BLOB;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -257,6 +259,46 @@ public class BlobApiTests {
         Assert.assertEquals(retrievedNewContent, newContent, "Blob should be overwritten by newContent bx100");
     }
 
+    @Test(groups = { "blob", "mongo", "nightly" })
+    public void testBlobListByUriPrefix() {
+        RaptureURI repo = helper.getRandomAuthority(Scheme.BLOB);
+        helper.configureTestRepo(repo, "MONGODB");
+
+        Reporter.log("Create some test blobs", true);
+        String blobURIf1d1 = RaptureURI.builder(BLOB, repo.getAuthority()).docPath("folder1/doc1").build().toString();
+        String blobURIf1d2 = RaptureURI.builder(BLOB, repo.getAuthority()).docPath("folder1/doc2").build().toString();
+        String blobURIf1d3 = RaptureURI.builder(BLOB, repo.getAuthority()).docPath("folder1/doc3").build().toString();
+        String blobURIf2f21d1 = RaptureURI.builder(BLOB, repo.getAuthority()).docPath("folder2/folder21/doc1").build().toString();
+        String blobURIf2f21d2 = RaptureURI.builder(BLOB, repo.getAuthority()).docPath("folder2/folder21/doc2").build().toString();
+        String blobURIf3d1 = RaptureURI.builder(BLOB, repo.getAuthority()).docPath("folder3/doc1").build().toString();
+        String content = "TEST_CONTENT";
+        blobApi.putBlob(blobURIf1d1, content.getBytes(), "text/plain");
+        blobApi.putBlob(blobURIf1d2, content.getBytes(), "text/plain");
+        blobApi.putBlob(blobURIf1d3, content.getBytes(), "text/plain");
+        blobApi.putBlob(blobURIf2f21d1, content.getBytes(), "text/plain");
+        blobApi.putBlob(blobURIf2f21d2, content.getBytes(), "text/plain");
+        blobApi.putBlob(blobURIf3d1, content.getBytes(), "text/plain");
+
+        Reporter.log("Check folder contents using different depths", true);
+        Assert.assertEquals(blobApi.listBlobsByUriPrefix(RaptureURI.builder(BLOB, repo.getAuthority()).docPath("folder1").build().toString(), 2).size(), 3);
+        Assert.assertEquals(blobApi.listBlobsByUriPrefix(RaptureURI.builder(BLOB, repo.getAuthority()).docPath("folder1").build().toString(), 1).size(), 3);
+        Assert.assertEquals(blobApi.listBlobsByUriPrefix(RaptureURI.builder(BLOB, repo.getAuthority()).docPath("folder2").build().toString(), 2).size(), 3);
+        Assert.assertEquals(blobApi.listBlobsByUriPrefix(RaptureURI.builder(BLOB, repo.getAuthority()).docPath("folder2").build().toString(), 1).size(), 1);
+        Assert.assertEquals(blobApi.listBlobsByUriPrefix(RaptureURI.builder(BLOB, repo.getAuthority()).docPath("folder2").build().toString(), 0).size(), 3);
+        Assert.assertEquals(blobApi.listBlobsByUriPrefix(RaptureURI.builder(BLOB, repo.getAuthority()).docPath("folder3").build().toString(), 0).size(), 1);
+
+        Reporter.log("Delete some blobs and check folder contents", true);
+        blobApi.deleteBlob(blobURIf1d1);
+        blobApi.deleteBlob(blobURIf3d1);
+        Assert.assertEquals(blobApi.listBlobsByUriPrefix(RaptureURI.builder(BLOB, repo.getAuthority()).docPath("folder1").build().toString(), 2).size(), 2);
+        Assert.assertEquals(blobApi.listBlobsByUriPrefix(RaptureURI.builder(BLOB, repo.getAuthority()).docPath("folder1").build().toString(), 1).size(), 2);
+        Assert.assertEquals(blobApi.listBlobsByUriPrefix(RaptureURI.builder(BLOB, repo.getAuthority()).docPath("folder3").build().toString(), 0).size(), 0);
+      
+        Reporter.log("Recreated some blobs and check folder contents", true);
+        blobApi.putBlob(blobURIf3d1, content.getBytes(),"text/plain");
+        Assert.assertEquals(blobApi.listBlobsByUriPrefix(RaptureURI.builder(BLOB, repo.getAuthority()).docPath("folder3").build().toString(), 1).size(), 1);
+    }
+    
     @Test(groups = { "blob", "mongo", "nightly" }, description = "overwrite an application/pdf blob with a different blob type.", enabled = true)
     public void overwriteExistingPDFBlobWithTextBlobTest() throws FileNotFoundException {
 
