@@ -1,5 +1,5 @@
 {
-    "authority" : "//test/inner",
+    "name" : "//test/inner",
     "description" : "A structure that is part of another",
     "fields" : [
             {

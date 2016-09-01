@@ -1,5 +1,5 @@
 {
-    "authority" : "//test/validatingField",
+    "name" : "//test/validatingField",
     "description" : "A test field with validation",
     "validationScript" : "//validate/length5",
     "fieldType" : "STRING",

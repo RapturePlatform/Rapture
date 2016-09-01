@@ -1,5 +1,5 @@
 {
-    "authority" : "//standard/primeId",
+    "name" : "//standard/primeId",
     "description" : "The prime part of an id",
     "validationScript" : "",
     "fieldType" : "STRING",

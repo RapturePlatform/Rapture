@@ -1,5 +1,5 @@
 {
-    "authority" : "//trading/currencyLookup",
+    "name" : "//trading/currencyLookup",
     "description" : "Retrieves the currency of settlement for a cusip",
     "sourceFields" : [ "//common/cusip"],
     "targetFields" : [ "//common/currency"],

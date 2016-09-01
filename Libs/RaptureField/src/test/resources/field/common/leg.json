@@ -1,5 +1,5 @@
 {
-    "authority" : "//common/leg",
+    "name" : "//common/leg",
     "description" : "The leg of a trade",
     "validationScript" : "",
     "fieldType" : "MAP",

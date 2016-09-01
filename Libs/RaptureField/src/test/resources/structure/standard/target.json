@@ -1,5 +1,5 @@
 {
-    "authority" : "//standard/source",
+    "name" : "//standard/source",
     "description" : "We will transform from this to target",
     "fields" : [
             {

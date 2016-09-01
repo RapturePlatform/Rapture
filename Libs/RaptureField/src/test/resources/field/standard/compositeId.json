@@ -1,5 +1,5 @@
 {
-    "authority" : "//standard/compositeId",
+    "name" : "//standard/compositeId",
     "description" : "CompositeId - two ids separated by a dash",
     "validationScript" : "",
     "fieldType" : "STRING",

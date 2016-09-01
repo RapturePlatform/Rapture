@@ -1,5 +1,5 @@
 {
-    "authority" : "//standard/trade/leg",
+    "name" : "//standard/trade/leg",
     "description" : "The leg of a trade",
     "fields" : [
             {

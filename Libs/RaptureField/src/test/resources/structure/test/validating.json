@@ -1,5 +1,5 @@
 {
-    "authority" : "//test/validating",
+    "name" : "//test/validating",
     "description" : "A test structure",
     "fields" : [
             {

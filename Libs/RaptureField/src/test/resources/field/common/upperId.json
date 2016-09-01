@@ -1,5 +1,5 @@
 {
-    "authority" : "//common/upperId",
+    "name" : "//common/upperId",
     "description" : "A id in upper case",
     "validationScript" : "",
     "fieldType" : "STRING",

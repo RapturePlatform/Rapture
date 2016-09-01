@@ -1,5 +1,5 @@
 {
-    "authority" : "//standard/trade/trade",
+    "name" : "//standard/trade/trade",
     "description" : "A trade structure used in testing",
     "fields" : [
             {
