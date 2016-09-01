@@ -34,7 +34,7 @@ public class TransformInstaller implements RaptureInstaller {
     @Override
     public void install(CallingContext context, RaptureURI uri, PluginTransportItem item) {
         RaptureTransform transform = JacksonUtil.objectFromJson(item.getContent(), RaptureTransform.class);
-        Kernel.getTransform().putTransform(context, transform.getAuthority(), transform);
+        Kernel.getTransform().putTransform(context, transform.getName(), transform);
     }
 
     @Override

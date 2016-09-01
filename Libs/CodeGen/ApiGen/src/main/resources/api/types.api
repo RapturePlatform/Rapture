@@ -46,9 +46,9 @@ type FieldType (@package=rapture.common) {
    
 [ A RaptureField is the definition of a concept in Rapture, referenced within a type or a series of types.]
 @Addressable(scheme = FIELD(false))
-@Storable(storagePath : {authority}, prefix="field")
+@Storable(storagePath : {name}, prefix="field")
 type RaptureField(@package=rapture.common) {
-    String authority;
+    String name;
     String description;
     String validationScript;
     String fieldTypeExtra;
@@ -65,18 +65,18 @@ type StructureField(@package=rapture.common) {
 
 [ A RaptureStructure is like a schema]
 @Addressable(scheme = STRUCTURE(false))
-@Storable(storagePath : {authority}, prefix="structure")
+@Storable(storagePath : {name}, prefix="structure")
 type RaptureStructure(@package=rapture.common) {
-    String authority;
+    String name;
     String description;
     List<StructureField> fields;
 }
     
 [ A RaptureTransform is a way of converting one set of fields to another]
 @Addressable(scheme = TRANSFORM(false))
-@Storable(storagePath : {authority}, prefix="transform")
+@Storable(storagePath : {name}, prefix="transform")
 type RaptureTransform(@package=rapture.common) {
-    String authority;
+    String name;
     String fromStructureUri;
     String toStructureUri;
     String description;
@@ -85,9 +85,9 @@ type RaptureTransform(@package=rapture.common) {
 
 [ A RaptureTransform is a way of converting one set of fields to another]
 @Addressable(scheme = FIELDTRANSFORM(false))
-@Storable(storagePath : {authority}, prefix="fieldtransform")
+@Storable(storagePath : {name}, prefix="fieldtransform")
 type RaptureFieldTransform(@package=rapture.common) {
-    String authority;
+    String name;
     String description;
     List<String> sourceFields;
     List<String> targetFields;

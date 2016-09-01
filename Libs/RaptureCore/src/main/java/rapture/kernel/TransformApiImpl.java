@@ -56,7 +56,7 @@ public class TransformApiImpl extends KernelBase implements TransformApi {
 	public void putField(CallingContext context, String fieldUri,
 			RaptureField field) {
 		RaptureURI internalURI = new RaptureURI(fieldUri, Scheme.FIELD);
-		field.setAuthority(internalURI.getAuthority());
+		field.setName(internalURI.getShortPath());
 		RaptureFieldStorage.add(field, context.getUser(), "Added field");
 	}
 
@@ -79,7 +79,7 @@ public class TransformApiImpl extends KernelBase implements TransformApi {
 	public void putStructure(CallingContext context, String structureUri,
 			RaptureStructure structure) {
 		RaptureURI structureURI = new RaptureURI(structureUri, Scheme.STRUCTURE);
-		structure.setAuthority(structureURI.getAuthority());
+		structure.setName(structureURI.getShortPath());
 		RaptureStructureStorage.add(structure, context.getUser(), "Added structure");
 	}
 
@@ -101,7 +101,7 @@ public class TransformApiImpl extends KernelBase implements TransformApi {
 	public void putTransform(CallingContext context, String transformUri,
 			RaptureTransform transform) {
 		RaptureURI transformURI = new RaptureURI(transformUri, Scheme.TRANSFORM);
-		transform.setAuthority(transformURI.getAuthority());
+		transform.setName(transformURI.getShortPath());
 		RaptureTransformStorage.add(transform, context.getUser(), "Added transform");
 	}
 
@@ -141,7 +141,7 @@ public class TransformApiImpl extends KernelBase implements TransformApi {
 	public void putFieldTransform(CallingContext context, String transformUri,
 			RaptureFieldTransform transform) {
 		RaptureURI transformURI = new RaptureURI(transformUri, Scheme.FIELDTRANSFORM);
-		transform.setAuthority(transformURI.getAuthority());
+		transform.setName(transformURI.getShortPath());
 		RaptureFieldTransformStorage.add(transform, context.getUser(), "Add field transform");
 	}
 

@@ -34,7 +34,7 @@ public class StructureInstaller implements RaptureInstaller {
     @Override
     public void install(CallingContext context, RaptureURI uri, PluginTransportItem item) {
         RaptureStructure structure = JacksonUtil.objectFromJson(item.getContent(), RaptureStructure.class);
-        Kernel.getTransform().putStructure(context, structure.getAuthority(), structure);
+        Kernel.getTransform().putStructure(context, structure.getName(), structure);
     }
 
     @Override

@@ -1,0 +1,7 @@
+{
+    "name" : "//test/common/cusip",
+    "description" : "The cusip id",
+    "validationScript" : "",
+    "fieldType" : "STRING",
+    "fieldTypeExtra" : ""
+}

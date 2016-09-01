@@ -1,0 +1,26 @@
+{
+    "name" : "//test/wp.order",
+    "description" : "A test trading order like structure, used in a test entity",
+    "fields" : [
+        {
+            "key" : "id",
+            "fieldUri" : "//test/order/orderId",
+            "mandatory" : true
+        },
+        {
+            "key" : "trader",
+            "fieldUri" : "//test/common/trader",
+            "mandatory" : true
+        },
+        {
+            "key" : "asset",
+            "fieldUri" : "//test/common/cusip",
+            "mandatory" : true
+        },
+        {
+            "key" : "amount",
+            "fieldUri" : "//test/common/number",
+            "mandatory" : true
+        }
+    ]
+}

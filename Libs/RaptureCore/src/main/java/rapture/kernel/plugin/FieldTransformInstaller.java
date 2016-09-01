@@ -34,7 +34,7 @@ public class FieldTransformInstaller implements RaptureInstaller {
     @Override
     public void install(CallingContext context, RaptureURI uri, PluginTransportItem item) {
         RaptureFieldTransform fieldTransform = JacksonUtil.objectFromJson(item.getContent(), RaptureFieldTransform.class);
-        Kernel.getTransform().putFieldTransform(context, fieldTransform.getAuthority(), fieldTransform);
+        Kernel.getTransform().putFieldTransform(context, fieldTransform.getName(), fieldTransform);
     }
 
     @Override
