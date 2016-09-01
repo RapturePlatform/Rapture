@@ -238,12 +238,8 @@ public class DocumentApiTest {
         docApi.deleteDoc(docURIf3d1);
         Assert.assertEquals(docApi.listDocsByUriPrefix(RaptureURI.builder(DOCUMENT, repo.getAuthority()).docPath("folder1").build().toString(), 2).size(), 2);
         Assert.assertEquals(docApi.listDocsByUriPrefix(RaptureURI.builder(DOCUMENT, repo.getAuthority()).docPath("folder1").build().toString(), 1).size(), 2);
-        try {
-            docApi.listDocsByUriPrefix(RaptureURI.builder(DOCUMENT, repo.getAuthority()).docPath("folder3").build().toString(), 0).size();
-            Assert.fail();
-        } catch (Exception e) {
-        }
-
+        Assert.assertEquals(docApi.listDocsByUriPrefix(RaptureURI.builder(DOCUMENT, repo.getAuthority()).docPath("folder3").build().toString(), 0).size(), 0);
+      
         Reporter.log("Recreated some doc and check folder contents", true);
         docApi.putDoc(docURIf3d1, content);
         Assert.assertEquals(docApi.listDocsByUriPrefix(RaptureURI.builder(DOCUMENT, repo.getAuthority()).docPath("folder3").build().toString(), 1).size(), 1);

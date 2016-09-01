@@ -464,7 +464,6 @@ public class LockWorkflowTest {
         try {
         	Thread.sleep(1000);
         } catch (Exception e) {
-        	e.printStackTrace();
         }
 
         for (String currKey : resultsMap.keySet()) {
