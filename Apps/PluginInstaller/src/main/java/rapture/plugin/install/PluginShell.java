@@ -85,6 +85,9 @@ import rapture.plugin.validators.ScriptValidator;
 import rapture.plugin.validators.SeriesValidator;
 import rapture.plugin.validators.SnippetValidator;
 import rapture.plugin.validators.WorkflowValidator;
+import rapture.plugin.validators.TransformValidator;
+import rapture.plugin.validators.StructureValidator;
+import rapture.plugin.validators.FieldTransformValidator;
 
 /**
  * This class implements a simple DSL for defining, uploading, downloading, installing, uninstalling, and upgrading collections of user content called "plugins"
@@ -422,6 +425,15 @@ public class PluginShell {
             case TABLE:
                 errors.add(new Note(Note.Level.ERROR, "No Installer available for TABLE scheme"));
                 break;
+            case TRANSFORM:
+            	TransformValidator.getValidator().validate(content, uri, errors);
+            	break;
+            case FIELDTRANSFORM:
+            	FieldTransformValidator.getValidator().validate(content, uri, errors);
+            	break;
+            case STRUCTURE:
+            	StructureValidator.getValidator().validate(content, uri, errors);
+            	break;            	
             case WORKFLOW:
                 WorkflowValidator.getValidator().validate(content, uri, errors);
                 break;

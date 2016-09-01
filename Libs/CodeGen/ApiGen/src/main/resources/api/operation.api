@@ -18,4 +18,8 @@ api(Operation) {
       function could be available on the passed interface document.]
    @entitle=/operation/run
    @public Map<String, Object> invokeSaveAlt(String docUri, String method, Map<String, Object> parameters, String altInterface);	
+   
+   [ Invoke a set of methods in parallel, returning the merged response from the function. ]
+   @entitle=/operation/run
+   @public Map<String, Object> invokeParallel(String docUri, List<String> methods, Map<String, Object> params);
 }

@@ -26,16 +26,15 @@ package rapture.batch.kernel;
 import java.io.OutputStream;
 import java.util.Map;
 
-import rapture.batch.kernel.handler.CreateFieldHandler;
+import rapture.batch.kernel.handler.CreateDocRepoHandler;
 import rapture.batch.kernel.handler.CreateIdGenTypeHandler;
 import rapture.batch.kernel.handler.CreateScriptHandler;
-import rapture.batch.kernel.handler.CreateDocRepoHandler;
 import rapture.batch.kernel.handler.UpdateDataHandler;
 import rapture.common.CallingContext;
 
 public enum ContextCommandEnum {
     DOCREPO(new CreateDocRepoHandler()), SCRIPT(new CreateScriptHandler()),
-    IDGENTYPE(new CreateIdGenTypeHandler()), FIELD(new CreateFieldHandler()), DATA(new UpdateDataHandler());
+    IDGENTYPE(new CreateIdGenTypeHandler()),  DATA(new UpdateDataHandler());
 
     private ICommandHandler handler;
 

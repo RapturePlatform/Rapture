@@ -1,0 +1,11 @@
+{
+    "name" : "//test/structure1",
+    "description" : "A test structure",
+    "fields" : [
+            {
+               "key" : "field1",
+               "fieldUri" : "/test/field1",
+               "mandatory" : true
+            }
+        ]
+}

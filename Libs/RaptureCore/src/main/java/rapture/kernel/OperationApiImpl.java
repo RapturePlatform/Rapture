@@ -23,6 +23,7 @@
  */
 package rapture.kernel;
 
+import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -72,5 +73,11 @@ public class OperationApiImpl extends KernelBase implements OperationApi {
 		return mgr.invokeSaveAlt(context, docUri, method, params, altInterface);
 	}
 
+	@Override
+	public Map<String, Object> invokeParallel(CallingContext context, String docUri, List<String> methods,
+			Map<String, Object> params) {
+		OperationManager mgr = new OperationManager();
+		return mgr.invokeParallel(context, docUri, methods, params);
+	}
  
 }

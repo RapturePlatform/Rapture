@@ -42,13 +42,6 @@ import java.util.zip.ZipOutputStream;
 import org.apache.http.HttpStatus;
 import org.apache.log4j.Logger;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-import com.google.common.net.MediaType;
-
 import rapture.common.CallingContext;
 import rapture.common.PluginConfig;
 import rapture.common.PluginConfigStorage;
@@ -75,10 +68,14 @@ import rapture.kernel.plugin.EntitlementEncoder;
 import rapture.kernel.plugin.EntitlementGroupEncoder;
 import rapture.kernel.plugin.EntitlementGroupInstaller;
 import rapture.kernel.plugin.EntitlementInstaller;
+import rapture.kernel.plugin.EntityEncoder;
+import rapture.kernel.plugin.EntityInstaller;
 import rapture.kernel.plugin.EventEncoder;
 import rapture.kernel.plugin.EventInstaller;
 import rapture.kernel.plugin.FieldEncoder;
 import rapture.kernel.plugin.FieldInstaller;
+import rapture.kernel.plugin.FieldTransformEncoder;
+import rapture.kernel.plugin.FieldTransformInstaller;
 import rapture.kernel.plugin.IdGenEncoder;
 import rapture.kernel.plugin.IdGenInstaller;
 import rapture.kernel.plugin.IndexEncoder;
@@ -100,13 +97,24 @@ import rapture.kernel.plugin.SeriesInstaller;
 import rapture.kernel.plugin.SeriesRepoMaker;
 import rapture.kernel.plugin.SnippetEncoder;
 import rapture.kernel.plugin.SnippetInstaller;
+import rapture.kernel.plugin.StructureEncoder;
+import rapture.kernel.plugin.StructureInstaller;
 import rapture.kernel.plugin.StructuredEncoder;
 import rapture.kernel.plugin.StructuredRepoMaker;
 import rapture.kernel.plugin.StructuredTableInstaller;
+import rapture.kernel.plugin.TransformEncoder;
+import rapture.kernel.plugin.TransformInstaller;
 import rapture.kernel.plugin.WorkflowEncoder;
 import rapture.kernel.plugin.WorkflowInstaller;
 import rapture.plugin.install.PluginSandboxItem;
 import rapture.util.IDGenerator;
+
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+import com.google.common.net.MediaType;
 
 public class PluginApiImpl extends KernelBase implements PluginApi {
 
@@ -119,7 +127,6 @@ public class PluginApiImpl extends KernelBase implements PluginApi {
             .put(Scheme.SCRIPT, new ScriptEncoder())
             .put(Scheme.JOB, new ScheduleEncoder())
             .put(Scheme.DOCUMENT, new DocumentEncoder())
-            .put(Scheme.FIELD, new FieldEncoder())
             .put(Scheme.TABLE, new IndexEncoder())
             .put(Scheme.INDEX, new IndexEncoder())
             .put(Scheme.EVENT, new EventEncoder())
@@ -130,6 +137,11 @@ public class PluginApiImpl extends KernelBase implements PluginApi {
             .put(Scheme.JAR, new JarEncoder())
             .put(Scheme.ENTITLEMENT, new EntitlementEncoder())
             .put(Scheme.ENTITLEMENTGROUP, new EntitlementGroupEncoder())
+            .put(Scheme.FIELD, new FieldEncoder())
+            .put(Scheme.FIELDTRANSFORM, new FieldTransformEncoder())
+            .put(Scheme.STRUCTURE, new StructureEncoder())
+            .put(Scheme.TRANSFORM, new TransformEncoder())
+            .put(Scheme.ENTITY, new EntityEncoder())
             .build();
 
     public PluginApiImpl(Kernel raptureKernel) {
@@ -181,12 +193,17 @@ public class PluginApiImpl extends KernelBase implements PluginApi {
             .put(Scheme.BLOB, new BlobInstaller()).put(Scheme.SERIES, new SeriesInstaller())
             .put(Scheme.SCRIPT, new ScriptInstaller())
             .put(Scheme.JOB, new ScheduleInstaller()).put(Scheme.DOCUMENT, new DocumentInstaller())
-            .put(Scheme.EVENT, new EventInstaller()).put(Scheme.FIELD, new FieldInstaller())
+            .put(Scheme.EVENT, new EventInstaller())
             .put(Scheme.IDGEN, new IdGenInstaller()).put(Scheme.TABLE, new IndexInstaller()).put(Scheme.INDEX, new IndexInstaller())
             .put(Scheme.WORKFLOW, new WorkflowInstaller()).put(Scheme.ENTITLEMENT, new EntitlementInstaller())
             .put(Scheme.ENTITLEMENTGROUP, new EntitlementGroupInstaller()).put(Scheme.LOCK, new LockInstaller())
             .put(Scheme.SNIPPET, new SnippetInstaller())
             .put(Scheme.STRUCTURED, new StructuredTableInstaller()).put(Scheme.JAR, new JarInstaller())
+            .put(Scheme.FIELD, new FieldInstaller())
+            .put(Scheme.STRUCTURE, new StructureInstaller())
+            .put(Scheme.TRANSFORM, new TransformInstaller())
+            .put(Scheme.FIELDTRANSFORM, new FieldTransformInstaller())
+            .put(Scheme.ENTITY, new EntityInstaller())
             .build();
 
     private Map<Scheme, RaptureInstaller> scheme2repoMaker = ImmutableMap.<Scheme, RaptureInstaller> builder()

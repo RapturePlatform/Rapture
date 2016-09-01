@@ -1,0 +1,7 @@
+{
+    "name" : "//test/order/orderId",
+    "description" : "The id of an order",
+    "validationScript" : "",
+    "fieldType" : "STRING",
+    "fieldTypeExtra" : ""
+}

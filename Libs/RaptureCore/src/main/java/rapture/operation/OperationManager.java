@@ -1,14 +1,20 @@
 package rapture.operation;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import org.apache.log4j.Logger;
 
 import rapture.common.CallingContext;
 import rapture.common.RaptureScript;
 import rapture.common.exception.RaptureExceptionFactory;
 import rapture.common.impl.jackson.JacksonUtil;
 import rapture.kernel.Kernel;
+import rapture.kernel.OperationApiImpl;
 import rapture.script.reflex.ReflexHandler;
 import reflex.ReflexExecutor;
 
@@ -22,6 +28,7 @@ public class OperationManager {
 	private static String INTERFACE = "$interface";
 	private static String BASE = "$parent";
 	private static int MAXFOLLOW = 10;
+	   private static Logger logger = Logger.getLogger(OperationManager.class);
 
 	public Map<String, Object> invoke(CallingContext ctx, String docUri,
 			String function, Map<String, Object> params) {
@@ -159,6 +166,67 @@ public class OperationManager {
 			 Kernel.getDoc().putDoc(ctx, docUri, modifiedThis);
 		}
 		return ret;
+	}
+
+	private void invokeContext(OperationContext context) {
+		logger.info("Invoke on context - " + context.getFunction());
+		// Given a context, run the script and then save the output back into the context
+		Map<String, Object> masterParameterMap = new HashMap<String, Object>();
+		masterParameterMap.put("this", context.getThisPtr());
+		masterParameterMap.put("function", context.getFunction());
+		masterParameterMap.put("params", context.getParams());
+		masterParameterMap.put("ctx", context.getCtx());
+
+		// Now run script
+		ReflexHandler handler = new ReflexHandler(context.getCtx());
+		Object ret = ReflexExecutor.runReflexProgram(context.getReflexScript(), handler,
+				masterParameterMap);
+		context.setModifiedThisPtr((Map<String, Object>) masterParameterMap.get("this"));
+		context.setRet((Map<String, Object>) ret);
+		logger.info("Finshed invoke on context " + context.getFunction());
+	}
+	
+	public Map<String, Object> invokeParallel(CallingContext context, String docUri, List<String> methods,
+			Map<String, Object> params) {
+		List<OperationContext> contextList = new ArrayList<OperationContext>();
+		OperationContext first = new OperationContext();
+		first.setCtx(context);
+		first.setParams(params);
+		String doc = Kernel.getDoc().getDoc(context, docUri);
+		first.setThisPtr(JacksonUtil.getMapFromJson(doc));
+		for(String method : methods) {
+			first.setFunction(method);
+			String funcRef = findFunction(context, docUri, method, null, true, 0);
+			first.setReflexScript(loadScript(context, funcRef));
+			contextList.add(first);
+			first = new OperationContext(first);
+		}
+		
+		// Now we run all of these scripts (ideally in parallel)
+		ExecutorService executor = Executors.newCachedThreadPool();
+		for(OperationContext oc : contextList) {
+			executor.execute(new Runnable() {
+
+				@Override
+				public void run() {
+					invokeContext(oc);
+				}
+				
+			});
+		}
+		executor.shutdown();
+		while(!executor.isTerminated()) {
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+			}
+		}
+		// Now we have finished calling everything, we merge the results
+		OperationMergeResult res = new OperationMergeResult();
+		for(OperationContext oc : contextList) {
+			res.merge(oc);
+		}
+		return res.mergedRet();
 	}
 
 	

@@ -1,0 +1,75 @@
+
+[ The transform api manages transforms, fields and structures. ]
+
+api(Transform) {
+
+   [Retrieve a field]
+   @entitle=/field/read/$f(fieldUri)
+   @public RaptureField getField(String fieldUri);
+   
+   [Save a field]
+   @entitle=/field/write/$f(fieldUri)
+   @public void putField(String fieldUri, RaptureField field);
+   
+   [remove a field]
+   @entitle=/field/read/$f(fieldUri)
+   @public void deleteField(String fieldUri);
+ 
+   [Returns full pathnames for an entire subtree as a map of the path to RFI.]
+   @entitle=/field/list/$f(uriPrefix)
+   @public List(RaptureFolderInfo) getFieldChildren(String uriPrefix);
+ 
+   [Retrieve a structure]
+   @entitle=/structure/read/$f(structureUri)
+   @public RaptureStructure getStructure(String structureUri);
+   
+   [Save a structure]
+   @entitle=/structure/write/$f(structureUri)
+   @public void putStructure(String structureUri, RaptureStructure structure);
+   
+   [remove a structure]
+   @entitle=/structure/read/$f(structureUri)
+   @public void deleteStructure(String structureUri);
+ 
+   [Returns full pathnames for an entire subtree as a map of the path to RFI.]
+   @entitle=/structure/list/$f(uriPrefix)
+   @public List(RaptureFolderInfo) getStructureChildren(String uriPrefix);
+   
+   [Retrieve a transform]
+   @entitle=/transform/read/$f(transformUri)
+   @public RaptureTransform getTransform(String transformUri);
+   
+   [Save a transform]
+   @entitle=/transform/write/$f(transformUri)
+   @public void putTransform(String transformUri, RaptureTransform transform);
+   
+   [remove a transform]
+   @entitle=/transform/read/$f(transformUri)
+   @public void deleteTransform(String transformUri);
+ 
+   [Returns full pathnames for an entire subtree as a map of the path to RFI.]
+   @entitle=/transform/list/$f(uriPrefix)
+   @public List(RaptureFolderInfo) getTransformChildren(String uriPrefix);
+ 
+   [Retrieve a transform]
+   @entitle=/transform/read/$f(transformUri)
+   @public RaptureFieldTransform getFieldTransform(String transformUri);
+   
+   [Save a transform]
+   @entitle=/transform/write/$f(transformUri)
+   @public void putFieldTransform(String transformUri, RaptureFieldTransform transform);
+   
+   [remove a transform]
+   @entitle=/transform/read/$f(transformUri)
+   @public void deleteFieldTransform(String transformUri);
+ 
+   [Returns full pathnames for an entire subtree as a map of the path to RFI.]
+   @entitle=/transform/list/$f(uriPrefix)
+   @public List(RaptureFolderInfo) getFieldTransformChildren(String uriPrefix);
+ 
+   [Validates a document (content) against a structure]
+   @entitle=/transform/read/$f(transformUri)
+   @public List<String> validateDocument(String content, String transformUri);
+}
+
+

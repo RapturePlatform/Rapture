@@ -1,0 +1,9 @@
+
+// We have cusip
+// For now, fake it
+
+if (size(vals[0]) > 6) {
+    return [ 'GBP'];
+}
+return [ 'USD' ];
+

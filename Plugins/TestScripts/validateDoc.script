@@ -1,0 +1,14 @@
+d = {};
+d.id = "ABC";
+d.trader = 'Alan';
+d.asset = 'XYZ123';
+d.amount = 1000;
+
+y = #transform.validateDocument(json(d), '//test/wp.order');
+println(y);
+
+uri = #entity.putEntityDocument('//test/wp.order', json(d));
+println("URI is ${uri}");
+
+d2 = #entity.getEntityDocument('//test/wp.order', uri);
+println(d2);
