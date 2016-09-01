@@ -53,6 +53,7 @@ type RaptureField(@package=rapture.common) {
     String validationScript;
     String fieldTypeExtra;
     FieldType fieldType;
+    String associatedEntity = "";
 }
 
 [A reference to a field in a structure]
