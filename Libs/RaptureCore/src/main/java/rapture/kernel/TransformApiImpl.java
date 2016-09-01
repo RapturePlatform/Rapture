@@ -39,6 +39,8 @@ import rapture.common.RaptureTransformStorage;
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
 import rapture.common.api.TransformApi;
+import rapture.field.FieldEngine;
+import rapture.kernel.field.ScriptedLoader;
 
 public class TransformApiImpl extends KernelBase implements TransformApi {
 
@@ -157,5 +159,10 @@ public class TransformApiImpl extends KernelBase implements TransformApi {
 		return RaptureFieldTransformStorage.getChildren(uriPrefix);
 	}
 
- 
+	@Override
+	public List<String> validateDocument(CallingContext context, String content, String structureUri) {
+		ScriptedLoader loader = new ScriptedLoader(context);
+		FieldEngine engine = new FieldEngine(loader, loader, loader, loader);
+		return engine.validateDocument(content, structureUri);
+	}
 }

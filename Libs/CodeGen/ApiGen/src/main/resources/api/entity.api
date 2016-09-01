@@ -21,7 +21,7 @@ api(Entity) {
  
    [Puts a document that is an entity]
    @entitle=/entity/write/$f(entityUri)
-   @public void putEntityDocument(String entityUri, String content);
+   @public String putEntityDocument(String entityUri, String content);
    
    [Retrieves a document that is an entity]
    @entitle=/entity/read/$f(entityUri)
@@ -33,8 +33,7 @@ api(Entity) {
    
    [Returns full pathnames for an entire subtree as a map of the path to RFI.]
    @entitle=/entity/list/$f(entityUri)/$f(uriPrefix)
-   @public List(RaptureFolderInfo) getEntityChildren(String entityUri, String uriPrefix);
-   
+   @public Map<String, RaptureFolderInfo> listDocsByUriPrefix(String entityUri, String uriPrefix, int depth);
 }
 
 

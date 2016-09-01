@@ -24,7 +24,9 @@
 package rapture.kernel;
 
 import java.util.List;
+import java.util.Map;
 
+import rapture.kernel.Kernel;
 import rapture.common.CallingContext;
 import rapture.common.RaptureEntity;
 import rapture.common.RaptureEntityStorage;
@@ -32,6 +34,8 @@ import rapture.common.RaptureFolderInfo;
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
 import rapture.common.api.EntityApi;
+import rapture.common.impl.jackson.JacksonUtil;
+import rapture.common.RaptureFolderInfo;
 
 public class EntityApiImpl extends KernelBase implements EntityApi {
 
@@ -67,21 +71,65 @@ public class EntityApiImpl extends KernelBase implements EntityApi {
 
 
 	@Override
-	public void putEntityDocument(CallingContext context, String entityUri,
+	public String putEntityDocument(CallingContext context, String entityUri,
 			String content) {
 		// 1. Load the entity definition
+		RaptureEntity e = getEntity(context, entityUri);
 		// 2. Validate document against the structure in that definition
-		// 3. Work out the URI based on the fields in the document
-		// 4. Do a put document on that		
+		List<String> res = Kernel.getTransform().validateDocument(context, content, e.getStructureUri());
+		if (res.isEmpty()) {
+			// 3. Work out the URI based on the fields in the document
+		       Map<String, Object> docMap = JacksonUtil.getMapFromJson(content);
+			   String entityUriPart = getUriPart(docMap, e.getNamingFields());
+			// 4. Do a put document on that	
+			   String fullUri = e.getRepoUri() + e.getPrefixInRepo() + entityUriPart;
+			   System.out.println("Document URI for entity is " + fullUri);
+			   Kernel.getDoc().putDoc(context, fullUri, content);
+			   return entityUriPart;
+		}
+		return "";
 	}
 
+    private String getUriPart(Map<String, Object> docMap, List<String> fields) {
+    	StringBuilder sb = new StringBuilder();
+    	fields.forEach( s -> {
+    		sb.append("/");
+    		sb.append(getField(docMap, s.split("\\.")));
+    		});
+    	return sb.toString();
+    }
+    
+    private String getField(Map<String, Object> docMap, String[] s) {
+    	Map<String, Object> current = docMap;
+    	for(int i=0; i< s.length; i++) {
+    		if (i == (s.length-1)) {
+    			return current.get(s[i]).toString();
+    		} else {
+    			current = (Map<String, Object>)current.get(s[i]);
+    		}
+    	}
+    	return "";
+    }
+    
+    private String fixContentUri(String contentUri) {
+    	if (contentUri.startsWith("//")) {
+			contentUri = contentUri.substring(1);
+		} else if (!contentUri.startsWith("/")) {
+			contentUri = "/" + contentUri;
+		}
+		return contentUri;	
+    }
+    
 	@Override
 	public String getEntityDocument(CallingContext context, String entityUri,
 			String contentUri) {
 		// 1. Load the entity definition
 		// 2. Construct the real URI for this document
 		// 3. Load it.
-		return null;
+		RaptureEntity e = getEntity(context, entityUri);
+		String fullUri = e.getRepoUri() + e.getPrefixInRepo() + fixContentUri(contentUri);	
+		System.out.println("Full URI is " + fullUri);
+		return Kernel.getDoc().getDoc(context, fullUri);
 	}
 
 	@Override
@@ -90,15 +138,21 @@ public class EntityApiImpl extends KernelBase implements EntityApi {
 		// 1. Load the entity definition
 		// 2. Construct the real URI for this document
 		// 3. Delete it.	
+		RaptureEntity e = getEntity(context, entityUri);
+		String fullUri = e.getRepoUri() + e.getPrefixInRepo() + fixContentUri(contentUri);	
+		System.out.println("Full URI is " + fullUri);
+		Kernel.getDoc().deleteDoc(context, fullUri);
 	}
 
 	@Override
-	public List<RaptureFolderInfo> getEntityChildren(CallingContext context,
-			String entityUri, String uriPrefix) {
+	public Map<String, RaptureFolderInfo> listDocsByUriPrefix(CallingContext context, String entityUri, String uriPrefix, int depth) {
 		// 1. Load the entity definition
 		// 2. Construct the prefix
 		// 3. Call getChildren through the doc interface
-		return null;
+		RaptureEntity e = getEntity(context, entityUri);
+		String fullUri = e.getRepoUri() + e.getPrefixInRepo() + fixContentUri(uriPrefix);	
+		System.out.println("Full URI is " + fullUri);
+		return Kernel.getDoc().listDocsByUriPrefix(context, fullUri, depth);
 	}
 
  

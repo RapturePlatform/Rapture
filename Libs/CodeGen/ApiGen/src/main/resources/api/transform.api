@@ -67,6 +67,9 @@ api(Transform) {
    @entitle=/transform/list/$f(uriPrefix)
    @public List(RaptureFolderInfo) getFieldTransformChildren(String uriPrefix);
  
+   [Validates a document (content) against a structure]
+   @entitle=/transform/read/$f(transformUri)
+   @public List<String> validateDocument(String content, String transformUri);
 }
 
 
