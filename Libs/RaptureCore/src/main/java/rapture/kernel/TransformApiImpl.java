@@ -40,6 +40,7 @@ import rapture.common.RaptureURI;
 import rapture.common.Scheme;
 import rapture.common.api.TransformApi;
 import rapture.field.FieldEngine;
+import rapture.field.TransformEngine;
 import rapture.kernel.field.ScriptedLoader;
 
 public class TransformApiImpl extends KernelBase implements TransformApi {
@@ -164,5 +165,12 @@ public class TransformApiImpl extends KernelBase implements TransformApi {
 		ScriptedLoader loader = new ScriptedLoader(context);
 		FieldEngine engine = new FieldEngine(loader, loader, loader, loader);
 		return engine.validateDocument(content, structureUri);
+	}
+	
+	@Override
+	public String transformDocument(CallingContext context, String content, String sourceUri, String targetUri) {
+		ScriptedLoader loader = new ScriptedLoader(context);
+		TransformEngine engine = new TransformEngine(loader, loader, loader, loader);
+		return engine.transform(content, sourceUri, targetUri, "/");
 	}
 }

@@ -1,0 +1,7 @@
+{
+    "name" : "//country/englishName",
+    "description" : "A country's customary English short name (CLDR)",
+    "validationScript" : "",
+    "fieldType" : "STRING",
+    "fieldTypeExtra" : ""
+}

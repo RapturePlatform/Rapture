@@ -61,6 +61,9 @@ public class TransformEngine extends BaseEngine {
         
         // One pass
         List<String> transforms = ftLoader.getFieldTransforms(transArea);
+        if (transforms == null) {
+            transforms = new ArrayList<String>();
+        }
         //
         transforms.forEach(trId -> {
             //System.out.println("Checking with " + trId);

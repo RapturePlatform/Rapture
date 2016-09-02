@@ -1,0 +1,3 @@
+
+x = #entity.getEntityDocument('//standard/country', 'AUS');
+println(x);

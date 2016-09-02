@@ -1,0 +1,7 @@
+{
+    "name" : "//country/ioc",
+    "description" : "A country's code from the International Olympics Committee",
+    "validationScript" : "",
+    "fieldType" : "STRING",
+    "fieldTypeExtra" : ""
+}

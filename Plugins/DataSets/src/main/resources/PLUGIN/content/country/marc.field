@@ -1,0 +1,7 @@
+{
+    "name" : "//country/marc",
+    "description" : "A country's MAchine-Readable Cataloging code from the Library of Congress",
+    "validationScript" : "",
+    "fieldType" : "STRING",
+    "fieldTypeExtra" : ""
+}

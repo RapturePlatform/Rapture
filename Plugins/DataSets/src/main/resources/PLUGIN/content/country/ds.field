@@ -1,0 +1,7 @@
+{
+    "name" : "//country/ds",
+    "description" : "A country's distinguising sign for vehicles",
+    "validationScript" : "",
+    "fieldType" : "STRING",
+    "fieldTypeExtra" : ""
+}

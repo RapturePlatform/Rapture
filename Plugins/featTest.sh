@@ -61,7 +61,7 @@ if $msys ; then
     WRAPPER_END=".bat $*\"" 
 fi
 
-for f in 'EntityTest'
+for f in 'EntityTest' 'DataSets'
 do
    CALL="$f/build/install/$f/bin/$f"
 

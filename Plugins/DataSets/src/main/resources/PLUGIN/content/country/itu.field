@@ -1,0 +1,7 @@
+{
+    "name" : "//country/itu",
+    "description" : "A country's ITU code",
+    "validationScript" : "",
+    "fieldType" : "STRING",
+    "fieldTypeExtra" : ""
+}
