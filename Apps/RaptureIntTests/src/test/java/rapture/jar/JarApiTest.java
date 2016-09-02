@@ -41,6 +41,7 @@ import org.testng.Assert;
 import org.testng.Reporter;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Optional;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
@@ -89,7 +90,7 @@ public class JarApiTest {
     }
 
     @Test(groups = { "jar", "nightly" })
-    public void testJarListByUriPrefix() {
+    public void testJarListByUriPrefixFolderDepths() {
         String jarAuthority="jar" + System.nanoTime();
         byte[] jarContent = "TEST_CONTENT".getBytes();
 
@@ -146,12 +147,11 @@ public class JarApiTest {
         Assert.assertFalse(jarApi.jarExists(jarUri));
     }
 
-    @Test(groups = { "jar", "nightly" })
-    public void testListJarByUriPrefix() {
-        int MAX_JAR = 20;
+    @Test(groups = { "jar", "nightly" }, dataProvider="jarCounts")
+    public void testJarListByUriPrefixJarCounts(Integer jarCount) {
         String jarPrefix = "jar://test/jar" + System.nanoTime();
         Set<String> jarSet = new HashSet<String>();
-        for (int i = 0; i < MAX_JAR; i++) {
+        for (int i = 0; i < jarCount; i++) {
             String jarUri = jarPrefix + "/jar" + System.nanoTime();
             byte[] jarContent = "TEST_CONTENT".getBytes();
             jarApi.putJar(jarUri, jarContent);
@@ -237,6 +237,16 @@ public class JarApiTest {
         Assert.assertEquals(helper.getDocApi().getDoc(docPath), content);
     }
 
+    @DataProvider
+    public Object[][] jarCounts() {
+        return new Object[][] {
+                new Object[] {new Integer(5)},
+                new Object[] {new Integer(20)},
+                new Object[] {new Integer(150)},
+        };
+    } 
+
+    
     @AfterClass
     public void cleanUp() {
         helper.cleanAllAssets();
