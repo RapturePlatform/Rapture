@@ -5,8 +5,8 @@
 
 const srcFile = 'country-codes.csv';
 const srcStructure = '//import/countryDP';
-const targStructure = '//standard/country';
-const targEntity = '//standard/country';
+const targStructure = '//standard/currency';
+const targEntity = '//standard/currency';
 
 fi = file(srcFile);
 headers = false;

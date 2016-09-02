@@ -86,6 +86,11 @@
             "key" : "edgar",
             "fieldUri" : "//country/edgar",
             "mandatory" : true
+        },
+        {
+            "key" : "ccy",
+            "fieldUri" : "//currency/id",
+            "mandatory" : true
         }
     ]
 }

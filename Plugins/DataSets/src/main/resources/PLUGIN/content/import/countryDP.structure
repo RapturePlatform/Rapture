@@ -83,8 +83,28 @@
             "mandatory" : true
         },
         {
+            "key" : "ISO4217-currency_alphabetic_code",
+            "fieldUri" : "//currency/id",
+            "mandatory" : true
+        },
+        {
             "key" : "EDGAR",
             "fieldUri" : "//country/edgar",
+            "mandatory" : true
+        },
+        {
+            "key" : "ISO4217-currency_minor_unit",
+            "fieldUri" : "//currency/minor",
+            "mandatory" : true
+        },
+        {
+            "key" : "ISO4217-currency_name",
+            "fieldUri" : "//currency/name",
+            "mandatory" : true
+        },
+        {
+            "key" : "ISO4217-currency_numeric_code",
+            "fieldUri" : "//currency/code",
             "mandatory" : true
         }
     ]

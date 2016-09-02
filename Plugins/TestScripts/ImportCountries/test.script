@@ -1,3 +1,6 @@
 
 x = #entity.getEntityDocument('//standard/country', 'AUS');
 println(x);
+
+y = #entity.getEntityDocument('//standard/currency', 'AUD');
+println(y);
