@@ -1,0 +1,7 @@
+{
+    "name" : "//country/fips",
+    "description" : "A country's code from FIPS PUB 10-4",
+    "validationScript" : "",
+    "fieldType" : "STRING",
+    "fieldTypeExtra" : ""
+}

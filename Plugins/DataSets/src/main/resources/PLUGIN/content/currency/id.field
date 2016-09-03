@@ -1,0 +1,7 @@
+{
+    "name" : "//currency/id",
+    "description" : "A currency id field",
+    "validationScript" : "",
+    "fieldType" : "STRING",
+    "fieldTypeExtra" : ""
+}

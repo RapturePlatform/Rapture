@@ -86,6 +86,8 @@ public class EntityApiImpl extends KernelBase implements EntityApi {
 			   System.out.println("Document URI for entity is " + fullUri);
 			   Kernel.getDoc().putDoc(context, fullUri, content);
 			   return entityUriPart;
+		} else {
+			System.out.println(res);
 		}
 		return "";
 	}

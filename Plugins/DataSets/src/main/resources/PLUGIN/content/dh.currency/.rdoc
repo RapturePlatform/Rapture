@@ -1,0 +1,11 @@
+{
+  "authority":"dh.currency",
+  "strictCheck":true,
+  "indexes":[],
+  "fullTextIndexes":[],
+  "documentRepo":
+     {
+        "authority":"dh.currency",
+        "config":"NREP {} USING MONGODB { prefix=\"dh.currency\" }"
+     }
+}

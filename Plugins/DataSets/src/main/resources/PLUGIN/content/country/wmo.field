@@ -1,0 +1,7 @@
+{
+    "name" : "//country/wmo",
+    "description" : "A country's abbreviation by the World Meteorological Organization",
+    "validationScript" : "",
+    "fieldType" : "STRING",
+    "fieldTypeExtra" : ""
+}

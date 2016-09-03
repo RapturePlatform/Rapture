@@ -1,0 +1,7 @@
+{
+    "name" : "//country/edgar",
+    "description" : "A country's EDGAR country code from SEC",
+    "validationScript" : "",
+    "fieldType" : "STRING",
+    "fieldTypeExtra" : ""
+}

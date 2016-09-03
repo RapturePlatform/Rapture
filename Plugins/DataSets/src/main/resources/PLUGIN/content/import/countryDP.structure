@@ -1,0 +1,111 @@
+{
+    "name" : "//import/countryDP",
+    "description" : "The structure of the CSV file containing country information",
+    "fields" : [
+        {
+            "key" : "name",
+            "fieldUri" : "//country/englishName",
+            "mandatory" : true
+        },
+        {
+            "key" : "official_name_en",
+            "fieldUri" : "//country/officialName",
+            "mandatory" : true
+        },
+        {
+            "key" : "official_name_fr",
+            "fieldUri" : "//country/officialFrench",
+            "mandatory" : true
+        },
+        {
+            "key" : "ISO3166-1-Alpha-2",
+            "fieldUri" : "//country/alpha2",
+            "mandatory" : true
+        },
+        {
+            "key" : "ISO3166-1-Alpha-3",
+            "fieldUri" : "//country/id",
+            "mandatory" : true
+        },
+        {
+            "key" : "ISO3166-1-numeric",
+            "fieldUri" : "//country/numericId",
+            "mandatory" : true
+        },
+        {
+            "key" : "ITU",
+            "fieldUri" : "//country/itu",
+            "mandatory" : true
+        },
+        {
+            "key" : "MARC",
+            "fieldUri" : "//country/marc",
+            "mandatory" : true
+        },
+        {
+            "key" : "WMO",
+            "fieldUri" : "//country/wmo",
+            "mandatory" : true
+        },
+        {
+            "key" : "DS",
+            "fieldUri" : "//country/ds",
+            "mandatory" : true
+        },
+        {
+            "key" : "Dial",
+            "fieldUri" : "//country/dial",
+            "mandatory" : true
+        },
+        {
+            "key" : "FIFA",
+            "fieldUri" : "//country/fifa",
+            "mandatory" : true
+        },
+        {
+            "key" : "FIPS",
+            "fieldUri" : "//country/fips",
+            "mandatory" : true
+        },
+        {
+            "key" : "GAUL",
+            "fieldUri" : "//country/gaul",
+            "mandatory" : true
+        },
+        {
+            "key" : "IOC",
+            "fieldUri" : "//country/ioc",
+            "mandatory" : true
+        },
+        {
+            "key" : "Capital",
+            "fieldUri" : "//country/capital",
+            "mandatory" : true
+        },
+        {
+            "key" : "ISO4217-currency_alphabetic_code",
+            "fieldUri" : "//currency/id",
+            "mandatory" : true
+        },
+        {
+            "key" : "EDGAR",
+            "fieldUri" : "//country/edgar",
+            "mandatory" : true
+        },
+        {
+            "key" : "ISO4217-currency_minor_unit",
+            "fieldUri" : "//currency/minor",
+            "mandatory" : true
+        },
+        {
+            "key" : "ISO4217-currency_name",
+            "fieldUri" : "//currency/name",
+            "mandatory" : true
+        },
+        {
+            "key" : "ISO4217-currency_numeric_code",
+            "fieldUri" : "//currency/code",
+            "mandatory" : true
+        }
+    ]
+}

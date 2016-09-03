@@ -70,6 +70,10 @@ api(Transform) {
    [Validates a document (content) against a structure]
    @entitle=/transform/read/$f(transformUri)
    @public List<String> validateDocument(String content, String transformUri);
+   
+   [Transforms a document (content) from one structure to another]
+   @entitle=/transform/read/$f(sourceUri)
+   @public String transformDocument(String content, String sourceUri, String targUri);
 }
 
 

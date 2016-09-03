@@ -1,0 +1,7 @@
+{
+    "name" : "//country/numericId",
+    "description" : "A country's numeric code (ISO 3166-1)",
+    "validationScript" : "",
+    "fieldType" : "NUMBER",
+    "fieldTypeExtra" : ""
+}

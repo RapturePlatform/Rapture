@@ -1,0 +1,7 @@
+{
+    "name" : "//country/gaul",
+    "description" : "A country's Global Administrative Unit Layer from the Food and Agriculture Organization",
+    "validationScript" : "",
+    "fieldType" : "STRING",
+    "fieldTypeExtra" : ""
+}

@@ -233,6 +233,7 @@ public class KernelScript implements IRaptureScriptHelper, IRaptureKernelScriptH
         getEvent().setCallingContext(ctx);
         getAudit().setCallingContext(ctx);
         getTransform().setCallingContext(ctx);
+        getEntity().setCallingContext(ctx);
         getPipeline().setCallingContext(ctx);
         getAsync().setCallingContext(ctx);
         getSys().setCallingContext(ctx);
