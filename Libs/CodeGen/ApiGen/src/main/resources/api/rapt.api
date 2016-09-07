@@ -37,4 +37,6 @@ include "api/tag.api"
 include "api/operation.api"
 include "api/transform.api"
 include "api/entity.api"
+include "api/widget.api"
+include "api/program.api"
 

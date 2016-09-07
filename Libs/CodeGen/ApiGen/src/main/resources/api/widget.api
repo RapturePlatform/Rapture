@@ -1,0 +1,23 @@
+
+[ The widget api is used to manage structures that are used to build User Interfaces. ]
+
+api(Widget) {
+
+   [Retrieve a widget]
+   @entitle=/widget/read/$f(widgetUri)
+   @public RaptureWidget getWidget(String widgetUri);
+   
+   [Save a widget]
+   @entitle=/widget/write/$f(widgetUri)
+   @public void putWidget(String widgetUri, RaptureWidget widget);
+   
+   [remove a widget]
+   @entitle=/widget/write/$f(widgetUri)
+   @public void deleteWidget(String widgetUri);
+ 
+   [Returns full pathnames for an entire subtree as a map of the path to RFI.]
+   @entitle=/widget/list/$f(uriPrefix)
+   @public List(RaptureFolderInfo) getChildren(String uriPrefix);
+}
+
+

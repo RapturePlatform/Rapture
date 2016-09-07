@@ -107,6 +107,46 @@ type RaptureEntity(@package=rapture.common) {
     List<String> namingFields;
 }
 
+[ A source context for a widget action (where does it get the data from) ]
+@Bean
+type WidgetSource(@package=rapture.common) {
+	String fromId;
+	String fromContext;
+	String toParameter;
+}
+
+[ A target of a widget action]
+@Bean
+type WidgetTarget(@package=rapture.common) {
+	String targetWidget;
+	List<WidgetSource> sources;
+}
+
+[ A RaptureWidget is a definition of a UI entity]
+@Addressable(scheme = WIDGET(false))
+@Storable(storagePath : {name}, prefix="widget")
+type RaptureWidget(@package=rapture.common) {
+    String name;
+    List<String> menuPath;
+    String title; // Title on window (if not provided from script for Structure)
+    String paneType; // e.g. data table, list, form, chart etc.
+    List<String> parameterNames; // What parameters this widget needs to run
+    List<WidgetTarget> produces; // What does this widget produce (on click etc.) -- i.e. where should these be bound to?
+    String scriptForContent; // What script should be run (with the parameters passed + mode=content) to get the data needed for this widget?
+    String scriptForStructure; // What script should be run (with the parameters passed + mode=structure) to get the structure for this widget (e.g. column names, types etc.)
+}      
+
+[ A RaptureProgram is the definition of a program ]
+@Addressable(scheme = PROGRAM(false))
+@Storable(storagePath : {name}, prefix="program")
+type RaptureProgram(@package=rapture.common) {
+    String name;
+    String programType;
+    String programUri;
+    // Maybe some things about schedule here
+    // Some things about parameters here
+}
+
 [Defines an audit result to be logged.]
 type AuditLogEntry(@package=rapture.common.model) {
     String category;

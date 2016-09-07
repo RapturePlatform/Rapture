@@ -44,6 +44,7 @@ import rapture.common.api.ScriptNotificationApi;
 import rapture.common.api.ScriptOperationApi;
 import rapture.common.api.ScriptPipelineApi;
 import rapture.common.api.ScriptPluginApi;
+import rapture.common.api.ScriptProgramApi;
 import rapture.common.api.ScriptRunnerApi;
 import rapture.common.api.ScriptScheduleApi;
 import rapture.common.api.ScriptScriptApi;
@@ -54,6 +55,7 @@ import rapture.common.api.ScriptSysApi;
 import rapture.common.api.ScriptTagApi;
 import rapture.common.api.ScriptTransformApi;
 import rapture.common.api.ScriptUserApi;
+import rapture.common.api.ScriptWidgetApi;
 import rapture.common.api.ScriptingApi;
 
 public class DummyScriptClient implements ScriptingApi {
@@ -253,6 +255,18 @@ public class DummyScriptClient implements ScriptingApi {
 
 	@Override
 	public ScriptEntityApi getEntity() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ScriptWidgetApi getWidget() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ScriptProgramApi getProgram() {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -65,6 +65,8 @@ public class KernelScript implements IRaptureScriptHelper, IRaptureKernelScriptH
     private final ScriptSearch search;
     private final ScriptTag tag;
     private final ScriptOperation operation;
+    private final ScriptWidget widget;
+    private final ScriptProgram program;
 
     public KernelScript() {
         login = Kernel.getLogin();
@@ -98,6 +100,8 @@ public class KernelScript implements IRaptureScriptHelper, IRaptureKernelScriptH
         search = new ScriptSearch(Kernel.getSearch());
         tag = new ScriptTag(Kernel.getTag());
         operation = new ScriptOperation(Kernel.getOperation());
+        widget = new ScriptWidget(Kernel.getWidget());
+        program = new ScriptProgram(Kernel.getProgram());
     }
 
     public Login getLogin() {
@@ -214,6 +218,14 @@ public class KernelScript implements IRaptureScriptHelper, IRaptureKernelScriptH
     public ScriptSeries getSeries() {
         return series;
     }
+    
+    public ScriptWidget getWidget() {
+    	return widget;
+    }
+    
+    public ScriptProgram getProgram() {
+    	return program;
+    }
 
     private CallingContext ctx;
 
@@ -250,6 +262,8 @@ public class KernelScript implements IRaptureScriptHelper, IRaptureKernelScriptH
         getTag().setCallingContext(ctx);
         getJar().setCallingContext(ctx);
         getOperation().setCallingContext(ctx);
+        getWidget().setCallingContext(ctx);
+        getProgram().setCallingContext(ctx);
 
         for (InstallableKernel installedKernel : Kernel.getInstalledKernels()) {
             installedKernel.getKernelScript().setCallingContext(ctx);
