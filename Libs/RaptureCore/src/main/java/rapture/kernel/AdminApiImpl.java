@@ -23,9 +23,6 @@
  */
 package rapture.kernel;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -42,8 +39,8 @@ import org.apache.commons.codec.binary.Hex;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 
-import rapture.batch.ScriptParser;
-import rapture.batch.kernel.ContextCommandExecutor;
+import com.google.common.collect.Lists;
+
 import rapture.common.CallingContext;
 import rapture.common.CallingContextStorage;
 import rapture.common.EnvironmentInfo;
@@ -60,7 +57,6 @@ import rapture.common.TypeArchiveConfigStorage;
 import rapture.common.api.AdminApi;
 import rapture.common.exception.RaptureException;
 import rapture.common.exception.RaptureExceptionFactory;
-import rapture.common.exception.RaptureExceptionFormatter;
 import rapture.common.impl.jackson.JacksonUtil;
 import rapture.common.impl.jackson.JsonContent;
 import rapture.common.model.RaptureEntitlementGroup;
@@ -79,8 +75,6 @@ import rapture.repo.Repository;
 import rapture.util.IDGenerator;
 import rapture.util.RaptureURLCoder;
 import rapture.util.encode.RaptureURLCoderFilter;
-
-import com.google.common.collect.Lists;
 
 /**
  * Admin is really dealing with the topLevel admin needs of a RaptureServer
@@ -263,6 +257,7 @@ public class AdminApiImpl extends KernelBase implements AdminApi {
     /**
      * @return @
      */
+    @Override
     public List<RepoConfig> getRepoConfig(CallingContext context) {
         return RepoConfigStorage.readAll();
     }
@@ -453,13 +448,9 @@ public class AdminApiImpl extends KernelBase implements AdminApi {
         RaptureUser user = getUser(context, userName);
         if (user != null) {
             templateValues.put("user", user);
-            Mailer.email(context, emailTemplate, templateValues);
-        } else {
-            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, adminMessageCatalog.getMessage("NoExistUser", userName)); //$NON-NLS-1$
         }
+        Mailer.email(context, emailTemplate, templateValues);
     }
-
-
 
     @Override
     public String runTemplate(CallingContext context, String name, String params) {

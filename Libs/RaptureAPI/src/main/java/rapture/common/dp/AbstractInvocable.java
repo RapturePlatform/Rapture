@@ -119,4 +119,18 @@ public abstract class AbstractInvocable<T> implements Steps {
     public void setClassLoader(ClassLoader classLoader) {
         this.classLoader = classLoader;
     }
+
+    // Can be overridden
+    protected String getNextTransition() {
+        return Steps.NEXT;
+    }
+
+    protected String getErrorTransition() {
+        return Steps.ERROR;
+    }
+
+    protected String getFailTransition() {
+        return Steps.QUIT;
+    }
+
 }

@@ -53,10 +53,12 @@ import rapture.common.client.HttpLockApi;
 import rapture.common.client.HttpLoginApi;
 import rapture.common.client.HttpOperationApi;
 import rapture.common.client.HttpPluginApi;
+import rapture.common.client.HttpScheduleApi;
 import rapture.common.client.HttpScriptApi;
 import rapture.common.client.HttpSearchApi;
 import rapture.common.client.HttpSeriesApi;
 import rapture.common.client.HttpStructuredApi;
+import rapture.common.client.HttpSysApi;
 import rapture.common.client.HttpUserApi;
 import rapture.common.client.SimpleCredentialsProvider;
 import rapture.common.dp.ExecutionContext;
@@ -70,7 +72,9 @@ public class IntegrationTestHelper {
     HttpIndexApi indexApi = null;
     HttpSeriesApi seriesApi = null;
     HttpScriptApi scriptApi = null;
+    HttpScheduleApi scheduleApi = null;
     HttpSearchApi searchApi = null;
+    HttpSysApi sysApi = null;
     HttpDocApi docApi = null;
     HttpBlobApi blobApi = null;
     HttpJarApi jarApi = null;
@@ -111,6 +115,10 @@ public class IntegrationTestHelper {
         return searchApi;
     }
 
+    public HttpScheduleApi getScheduleApi() {
+        return scheduleApi;
+    }
+
     public HttpScriptApi getScriptApi() {
         return scriptApi;
     }
@@ -129,6 +137,10 @@ public class IntegrationTestHelper {
 
     public HttpJarApi getJarApi() {
         return jarApi;
+    }
+
+    public HttpSysApi getSysApi() {
+        return sysApi;
     }
 
     public HttpUserApi getUserApi() {
@@ -165,11 +177,13 @@ public class IntegrationTestHelper {
         user = username;
         raptureLogin = new HttpLoginApi(url, new SimpleCredentialsProvider(username, password));
         raptureLogin.login();
+        scheduleApi = new HttpScheduleApi(raptureLogin);
         searchApi = new HttpSearchApi(raptureLogin);
         seriesApi = new HttpSeriesApi(raptureLogin);
         scriptApi = new HttpScriptApi(raptureLogin);
         lockApi = new HttpLockApi(raptureLogin);
         indexApi = new HttpIndexApi(raptureLogin);
+        sysApi = new HttpSysApi(raptureLogin);
         docApi = new HttpDocApi(raptureLogin);
         blobApi = new HttpBlobApi(raptureLogin);
         jarApi = new HttpJarApi(raptureLogin);
