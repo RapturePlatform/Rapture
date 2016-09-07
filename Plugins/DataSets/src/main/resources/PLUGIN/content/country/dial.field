@@ -1,0 +1,7 @@
+{
+    "name" : "//country/dial",
+    "description" : "A country's dial code from ITU-T E.164",
+    "validationScript" : "",
+    "fieldType" : "STRING",
+    "fieldTypeExtra" : ""
+}

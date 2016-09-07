@@ -1,0 +1,27 @@
+{
+    "name" : "//standard/position/movement",
+    "description" : "The movement associated with a trade",
+    "fields" : [
+            {
+               "key" : "id",
+               "fieldUri" : "//common/upperId",
+               "mandatory" : true
+            },
+            {
+               "key" : "assetAlan",
+               "fieldUri" : "//common/cusip",
+               "mandatory" : true
+            },
+            {
+                "key" : "currency",
+                "fieldUri" : "//common/currency",
+                "mandatory" : true
+            },
+            {
+                "key" : "delta",
+                "fieldUri" : "//common/deltaAmount",
+                "mandatory" : true
+            }
+
+        ]
+}

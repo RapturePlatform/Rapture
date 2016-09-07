@@ -41,6 +41,8 @@ import org.testng.annotations.Test;
 import com.google.common.collect.ImmutableList;
 
 import rapture.common.CreateResponse;
+import rapture.common.LockHandle;
+import rapture.common.RaptureLockConfig;
 import rapture.common.RaptureScript;
 import rapture.common.RaptureScriptLanguage;
 import rapture.common.RaptureScriptPurpose;
@@ -48,6 +50,7 @@ import rapture.common.RaptureURI;
 import rapture.common.Scheme;
 import rapture.common.WorkOrderExecutionState;
 import rapture.common.client.HttpDecisionApi;
+import rapture.common.client.HttpLockApi;
 import rapture.common.client.HttpScriptApi;
 import rapture.common.dp.SemaphoreType;
 import rapture.common.dp.Step;
@@ -60,12 +63,14 @@ public class LockWorkflowTest {
     
     private IntegrationTestHelper helper;
     private RaptureURI repoUri = null;
+    private HttpLockApi lockApi = null;
 
     @BeforeClass(groups = { "nightly","lock" })
     @Parameters({ "RaptureURL", "RaptureUser", "RapturePassword" })
     public void setUp(@Optional("http://localhost:8665/rapture") String url, @Optional("rapture") String username, @Optional("rapture") String password) {
         helper = new IntegrationTestHelper(url, username, password);
         repoUri = helper.getRandomAuthority(Scheme.DOCUMENT);
+        lockApi = helper.getLockApi();
         helper.configureTestRepo(repoUri, "MONGODB"); // TODO Make this configurable
     }
 
@@ -75,7 +80,7 @@ public class LockWorkflowTest {
     }
 
     @Test(groups = { "lock", "nightly" })
-    public void lockWorkflowTest() {
+    public void testTwoWorkflowsWithLocks() {
         RaptureURI workflowRepo = helper.getRandomAuthority(Scheme.WORKFLOW);
         HttpDecisionApi decisionApi = helper.getDecisionApi();
         HttpScriptApi scriptApi = helper.getScriptApi();
@@ -180,7 +185,7 @@ public class LockWorkflowTest {
 
     // Cover bad cases
     @Test(groups = { "lock", "nightly" }, enabled = false)
-    public void lockWorkflowTest2() {
+    public void testTwoWorkflowsWithLocksFail() {
         RaptureURI workflowRepo = helper.getRandomAuthority(Scheme.WORKFLOW);
         HttpDecisionApi decisionApi = helper.getDecisionApi();
         HttpScriptApi scriptApi = helper.getScriptApi();
@@ -280,5 +285,283 @@ public class LockWorkflowTest {
         }
         Assert.assertEquals(decisionApi.getWorkOrderStatus(uri2).getStatus(), WorkOrderExecutionState.FINISHED, "Workflow failed to complete");
         scriptApi.deleteScript(scriptUri);
+    }
+    
+    @Test(groups = { "lock", "nightly" })
+    public void testMultipleWorkflowsWithLocks() {
+        RaptureURI workflowRepo = helper.getRandomAuthority(Scheme.WORKFLOW);
+        HttpDecisionApi decisionApi = helper.getDecisionApi();
+        HttpScriptApi scriptApi = helper.getScriptApi();
+        List<Step> thirtyNine = new ArrayList<Step>();
+        String scriptUri = RaptureURI.builder(helper.getRandomAuthority(Scheme.SCRIPT)).docPath("sleep").asString();
+        long scriptSleepTime=10000;
+        long timeoutValueSeconds=2;
+        int numWorkflows=15;
+        
+        if (!scriptApi.doesScriptExist(scriptUri)) {
+            @SuppressWarnings("unused")
+            RaptureScript executable = scriptApi.createScript(scriptUri, RaptureScriptLanguage.REFLEX, RaptureScriptPurpose.PROGRAM,
+                    "println(\"Thread sleeping\");\nsleep("+scriptSleepTime+");\nreturn 'next';");
+        }
+
+        Step s1 = new Step();
+        s1.setName("first");
+        s1.setExecutable(scriptUri);
+        s1.setDescription("first sleep step");
+
+        Transition trans1 = new Transition();
+        trans1.setName("next");
+        trans1.setTargetStep("$RETURN");
+
+        Transition error = new Transition();
+        error.setName("error");
+        error.setTargetStep("$FAIL");
+
+        s1.setTransitions(ImmutableList.of(trans1, error));
+        thirtyNine.add(s1);
+
+        String semaphoreConfig = "{\"maxAllowed\":1, \"timeout\":"+timeoutValueSeconds+" }";
+
+        // Begin by creating a couple of workflows.
+        // In the real world these would be created by two different threads/users/applications,
+        // so they use the same URI and semaphore config.
+
+        Workflow flow = new Workflow();
+        flow.setStartStep("first");
+        flow.setSteps(thirtyNine);
+        String flowUri = RaptureURI.builder(workflowRepo).docPath("lockTest").asString();
+        flow.setWorkflowURI(flowUri);
+        flow.setSemaphoreType(SemaphoreType.WORKFLOW_BASED);
+        flow.setSemaphoreConfig(semaphoreConfig);
+        decisionApi.putWorkflow(flow);
+
+        
+        RaptureURI lockUri = RaptureURI.builder(helper.getRandomAuthority(Scheme.DOCUMENT)).build();
+		RaptureLockConfig lockConfig = lockApi.createLockManager(lockUri.toString(), "LOCKING USING ZOOKEEPER {}", "");
+        // Start the first workflow. It will sleep for 5s then exit
+        Map<String, String> params = new HashMap<String, String>();
+        CreateResponse orderUri = decisionApi.createWorkOrderP(flow.getWorkflowURI(), params, null);
+        assertNotNull(orderUri);
+
+        List<String>woList = new ArrayList<String> ();
+        for (int woCount =0; woCount<=numWorkflows; woCount++) {
+        	CreateResponse woUri = decisionApi.createWorkOrderP(flow.getWorkflowURI(), params, null);
+        	
+        	try {
+        		Thread.sleep(200);
+            } catch (InterruptedException e) {
+            }
+        	Reporter.log("Checking work order attempt "+woCount,true);
+        	long successfulWoNumber=scriptSleepTime/(timeoutValueSeconds*1000);
+        	if (woCount % successfulWoNumber ==0 && woCount >0) {
+        		Assert.assertNotNull(woUri.getUri());
+        		woList.add(woUri.getUri());
+        	}
+        	else
+        		Assert.assertNull(woUri.getUri());
+        	
+        }
+        try {
+        	Thread.sleep(10000);
+        } catch (Exception e) {}
+        for (String wo : woList) {
+        	Reporter.log ("Checking status of "+wo,true);
+        	Assert.assertEquals(decisionApi.getWorkOrderStatus(wo).getStatus(),WorkOrderExecutionState.FINISHED);
+        }
+    }
+       
+    @Test(groups = { "lock", "nightly" })
+    public void testAcquireReleaseLockWithinWorkflows() {
+        RaptureURI workflowRepo = helper.getRandomAuthority(Scheme.WORKFLOW);
+        HttpDecisionApi decisionApi = helper.getDecisionApi();
+        HttpScriptApi scriptApi = helper.getScriptApi();
+        List<Step> thirtyNine = new ArrayList<Step>();
+        String scriptUri = RaptureURI.builder(helper.getRandomAuthority(Scheme.SCRIPT)).docPath("acquire").asString();
+        int numOrders=15;
+        
+        if (!scriptApi.doesScriptExist(scriptUri)) {
+            @SuppressWarnings("unused")
+            RaptureScript executable = scriptApi.createScript(scriptUri, RaptureScriptLanguage.REFLEX, RaptureScriptPurpose.PROGRAM,
+                   "workOrderURI = _params['$DP_WORK_ORDER_URI'];\nworkerURI =  _params['$DP_WORKER_URI'];\n"
+                   + "docRepoUri=#decision.getContextValue(workerURI, 'docRepoUri');\n"
+                   + "lockUri=#decision.getContextValue(workerURI, 'lockUri');\n"
+                   + "lockConfig=#decision.getContextValue(workerURI, 'lockConfig');\n"
+            	   + "lockHandle=#lock.acquireLock(lockUri, lockConfig, 2, 10);\n"
+            	   + "if (lockHandle != null) do\n"
+                   + "l=workOrderURI.split('/');\n"
+                   + "woId=l[size(l)-1];\nwinningPath=docRepoUri+'doc/'+woId;\nwinningContent='{\"key\":\"'+woId+'\"}';\n"
+                   + "#doc.putDoc(winningPath,winningContent);\n"
+                   + "sleep(1000);\n"
+                   + "#decision.setContextLiteral(workerURI,'winningPath',winningPath);\n"
+            		+"#decision.setContextLiteral(workerURI,'winningContent',winningContent);\n"
+            		+ "#lock.releaseLock(lockUri, lockConfig, lockHandle);\n"
+            		+ "end\n"
+            		+ "return 'next';");
+        }
+        Reporter.log("Creating script "+scriptUri, true);
+        Step s1 = new Step();
+        s1.setName("first");
+        s1.setExecutable(scriptUri);
+        s1.setDescription("first acquire step");
+
+        Transition trans1 = new Transition();
+        trans1.setName("next");
+        trans1.setTargetStep("$RETURN");
+
+        Transition error = new Transition();
+        error.setName("error");
+        error.setTargetStep("$FAIL");
+
+        s1.setTransitions(ImmutableList.of(trans1, error));
+        thirtyNine.add(s1);
+
+        Workflow flow = new Workflow();
+        flow.setStartStep("first");
+        flow.setSteps(thirtyNine);
+        String flowUri = RaptureURI.builder(workflowRepo).docPath("lockTest").asString();
+        flow.setWorkflowURI(flowUri);
+        
+        Reporter.log("Creating workflow "+flowUri, true);
+        decisionApi.putWorkflow(flow);
+
+        // Start the first workflow. It will sleep for 5s then exit
+        Map<String, String> params = new HashMap<String, String>();
+        RaptureURI docRepoUri =helper.getRandomAuthority(Scheme.DOCUMENT);
+		helper.configureTestRepo(docRepoUri, "MONGODB", false);
+		RaptureURI lockUri = RaptureURI.builder(helper.getRandomAuthority(Scheme.DOCUMENT)).docPath("locktest"+System.nanoTime()).build();
+		RaptureLockConfig lockConfig = lockApi.createLockManager(lockUri.toString(), "LOCKING USING ZOOKEEPER {}", "");
+
+		params.put("docRepoUri", docRepoUri.toString());
+		params.put("lockUri", lockUri.toString());
+		params.put("lockConfig", lockConfig.getName());
+
+		List<String> woList = new ArrayList<String> ();
+		for (int i = 0; i <numOrders; i++) {
+			try {
+	        	Thread.sleep(500);
+	        } catch (Exception e) {}
+			CreateResponse orderUri = decisionApi.createWorkOrderP(flow.getWorkflowURI(), params, null);
+			assertNotNull(orderUri);
+			Reporter.log("Creating workorder "+orderUri.getUri(), true);
+			woList.add(orderUri.getUri());
+		}
+		try {
+        	Thread.sleep(500);
+        } catch (Exception e) {}
+		String winningPath="";
+		String winningContent="";
+
+		Map <String,String> resultsMap = new HashMap<String,String> ();
+        for (String orderUri:woList) {
+        	String currPath=decisionApi.getContextValue(orderUri+"#0", "winningPath");
+	       	if (currPath != null) {
+	       		Reporter.log("Found workorder winning path: "+orderUri, true);
+		       	winningPath=currPath;
+		       	winningContent=decisionApi.getContextValue(orderUri+"#0", "winningContent");
+		        resultsMap.put(winningPath, winningContent);
+	       	}
+        }
+        try {
+        	Thread.sleep(1000);
+        } catch (Exception e) {
+        }
+
+        for (String currKey : resultsMap.keySet()) {
+        	Reporter.log("Checking data "+currKey,true);
+        	Assert.assertEquals(helper.getDocApi().getDoc(currKey),resultsMap.get(currKey));
+        }
+    }
+    
+    @Test(groups = { "lock", "nightly" })
+    public void testBlockingLockWithinWorkflows() {
+        RaptureURI workflowRepo = helper.getRandomAuthority(Scheme.WORKFLOW);
+        HttpDecisionApi decisionApi = helper.getDecisionApi();
+        HttpScriptApi scriptApi = helper.getScriptApi();
+        List<Step> thirtyNine = new ArrayList<Step>();
+        String scriptUri = RaptureURI.builder(helper.getRandomAuthority(Scheme.SCRIPT)).docPath("acquire").asString();
+        int numOrders=10;
+        
+        if (!scriptApi.doesScriptExist(scriptUri)) {
+            @SuppressWarnings("unused")
+            RaptureScript executable = scriptApi.createScript(scriptUri, RaptureScriptLanguage.REFLEX, RaptureScriptPurpose.PROGRAM,
+                   "workOrderURI = _params['$DP_WORK_ORDER_URI'];\nworkerURI =  _params['$DP_WORKER_URI'];\n"
+                   + "docRepoUri=#decision.getContextValue(workerURI, 'docRepoUri');\n"
+                   + "lockUri=#decision.getContextValue(workerURI, 'lockUri');\n"
+                   + "lockConfig=#decision.getContextValue(workerURI, 'lockConfig');\n"
+            	   + "lockHandle=#lock.acquireLock(lockUri, lockConfig, 2, 10);\n"
+            	   + "if (lockHandle != null) do\n"
+                   + "l=workOrderURI.split('/');\n"
+                   + "woId=l[size(l)-1];\nwinningPath=docRepoUri+'doc/'+woId;\nwinningContent='{\"key\":\"'+woId+'\"}';\n"
+                   + "#doc.putDoc(winningPath,winningContent);\n"
+                   + "#decision.setContextLiteral(workerURI,'winningPath',winningPath);\n"
+            		+"#decision.setContextLiteral(workerURI,'winningContent',winningContent);\n"
+            		+"#decision.setContextLiteral(workerURI,'lockHolder',lockHandle['lockHolder']);\n"
+            		+"#decision.setContextLiteral(workerURI,'lockName',lockHandle['lockName']);\n"
+            		+ "end\n"
+            		+ "return 'next';");
+        }
+        Reporter.log("Creating script "+scriptUri, true);
+        Step s1 = new Step();
+        s1.setName("first");
+        s1.setExecutable(scriptUri);
+        s1.setDescription("first acquire step");
+
+        Transition trans1 = new Transition();
+        trans1.setName("next");
+        trans1.setTargetStep("$RETURN");
+
+        Transition error = new Transition();
+        error.setName("error");
+        error.setTargetStep("$FAIL");
+
+        s1.setTransitions(ImmutableList.of(trans1, error));
+        thirtyNine.add(s1);
+
+        Workflow flow = new Workflow();
+        flow.setStartStep("first");
+        flow.setSteps(thirtyNine);
+        String flowUri = RaptureURI.builder(workflowRepo).docPath("lockTest").asString();
+        flow.setWorkflowURI(flowUri);
+        
+        Reporter.log("Creating workflow "+flowUri, true);
+        decisionApi.putWorkflow(flow);
+
+        // Start the first workflow. It will sleep for 5s then exit
+        Map<String, String> params = new HashMap<String, String>();
+        RaptureURI docRepoUri =helper.getRandomAuthority(Scheme.DOCUMENT);
+		helper.configureTestRepo(docRepoUri, "MONGODB", false);
+		RaptureURI lockUri = RaptureURI.builder(helper.getRandomAuthority(Scheme.DOCUMENT)).docPath("locktest"+System.nanoTime()).build();
+		RaptureLockConfig lockConfig = lockApi.createLockManager(lockUri.toString(), "LOCKING USING ZOOKEEPER {}", "");
+
+		params.put("docRepoUri", docRepoUri.toString());
+		params.put("lockUri", lockUri.toString());
+		params.put("lockConfig", lockConfig.getName());
+
+		List<String> woList = new ArrayList<String> ();
+		for (int i = 0; i <numOrders; i++) {
+			try {
+	        	Thread.sleep(1000);
+	        } catch (Exception e) {}
+			CreateResponse orderUri = decisionApi.createWorkOrderP(flow.getWorkflowURI(), params, null);
+			assertNotNull(orderUri);
+			Reporter.log("Creating workorder "+orderUri.getUri(), true);
+			woList.add(orderUri.getUri());
+		}
+        
+		LockHandle lockHandle= new LockHandle();
+		String winningPath="";
+		String winningContent="";
+        for (String orderUri:woList) {
+        	String currPath=decisionApi.getContextValue(orderUri+"#0", "winningPath");
+	       	if (currPath != null) {
+	       		Reporter.log("Found workorder winning path: "+orderUri, true);
+		       	winningPath=currPath;
+		       	winningContent=decisionApi.getContextValue(orderUri+"#0", "winningContent");
+		       	lockHandle.setLockHolder(decisionApi.getContextValue(orderUri+"#0", "lockHolder"));
+		       	lockHandle.setLockName(decisionApi.getContextValue(orderUri+"#0", "lockName"));	
+	       	}
+        }
+        Assert.assertTrue(lockApi.releaseLock(lockUri.toString(), lockConfig.getName(), lockHandle));
+        Assert.assertEquals(helper.getDocApi().getDoc(winningPath),winningContent);
     }
 }

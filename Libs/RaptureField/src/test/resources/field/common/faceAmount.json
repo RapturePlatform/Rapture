@@ -1,0 +1,7 @@
+{
+    "name" : "//common/faceAmount",
+    "description" : "The face amount of a trade",
+    "validationScript" : "",
+    "fieldType" : "NUMBER",
+    "fieldTypeExtra" : ""
+}

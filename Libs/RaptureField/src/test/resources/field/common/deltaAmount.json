@@ -1,0 +1,7 @@
+{
+    "name" : "//common/deltaAmount",
+    "description" : "The movement with sign",
+    "validationScript" : "",
+    "fieldType" : "NUMBER",
+    "fieldTypeExtra" : ""
+}

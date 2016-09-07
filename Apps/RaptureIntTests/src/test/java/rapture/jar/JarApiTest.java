@@ -23,6 +23,8 @@
  */
 package rapture.jar;
 
+import static rapture.common.Scheme.JAR;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -39,6 +41,7 @@ import org.testng.Assert;
 import org.testng.Reporter;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Optional;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
@@ -87,6 +90,53 @@ public class JarApiTest {
     }
 
     @Test(groups = { "jar", "nightly" })
+    public void testJarListByUriPrefixFolderDepths() {
+        String jarAuthority="jar" + System.nanoTime();
+        byte[] jarContent = "TEST_CONTENT".getBytes();
+
+        Reporter.log("Create some test jars", true);
+        String jarURIf1d1 = RaptureURI.builder(JAR, jarAuthority).docPath("folder1/doc1").build().toString();
+        String jarURIf1d2 = RaptureURI.builder(JAR, jarAuthority).docPath("folder1/doc2").build().toString();
+        String jarURIf1d3 = RaptureURI.builder(JAR, jarAuthority).docPath("folder1/doc3").build().toString();
+        String jarURIf2f21d1 = RaptureURI.builder(JAR,jarAuthority).docPath("folder2/folder21/doc1").build().toString();
+        String jarURIf2f21d2 = RaptureURI.builder(JAR, jarAuthority).docPath("folder2/folder21/doc2").build().toString();
+        String jarURIf3d1 = RaptureURI.builder(JAR, jarAuthority).docPath("folder3/doc1").build().toString();
+
+        jarApi.putJar(jarURIf1d1, jarContent);
+        jarList.add(jarURIf1d1);
+        jarApi.putJar(jarURIf1d2, jarContent);
+        jarList.add(jarURIf1d2);
+        jarApi.putJar(jarURIf1d3,jarContent);
+        jarList.add(jarURIf1d3);
+        jarApi.putJar(jarURIf2f21d1,jarContent);
+        jarList.add(jarURIf2f21d1);
+        jarApi.putJar(jarURIf2f21d2,jarContent);
+        jarList.add(jarURIf2f21d2);
+        jarApi.putJar(jarURIf3d1,jarContent);
+
+        Reporter.log("Check folder contents using different depths", true);
+        Assert.assertEquals(jarApi.listJarsByUriPrefix(RaptureURI.builder(JAR, jarAuthority).docPath("folder1").build().toString(), 2).size(), 3);
+        Assert.assertEquals(jarApi.listJarsByUriPrefix(RaptureURI.builder(JAR, jarAuthority).docPath("folder1").build().toString(), 1).size(), 3);
+        Assert.assertEquals(jarApi.listJarsByUriPrefix(RaptureURI.builder(JAR, jarAuthority).docPath("folder2").build().toString(), 2).size(), 3);
+        Assert.assertEquals(jarApi.listJarsByUriPrefix(RaptureURI.builder(JAR, jarAuthority).docPath("folder2").build().toString(), 1).size(), 1);
+        Assert.assertEquals(jarApi.listJarsByUriPrefix(RaptureURI.builder(JAR, jarAuthority).docPath("folder2").build().toString(), 0).size(), 3);
+        Assert.assertEquals(jarApi.listJarsByUriPrefix(RaptureURI.builder(JAR, jarAuthority).docPath("folder3").build().toString(), 0).size(), 1);
+
+        Reporter.log("Delete some series and check folder contents", true);
+        jarApi.deleteJar(jarURIf1d1);
+        jarList.remove(jarURIf1d1);
+        jarApi.deleteJar(jarURIf3d1);
+        jarList.remove(jarURIf3d1);
+        Assert.assertEquals(jarApi.listJarsByUriPrefix(RaptureURI.builder(JAR, jarAuthority).docPath("folder1").build().toString(), 2).size(), 2);
+        Assert.assertEquals(jarApi.listJarsByUriPrefix(RaptureURI.builder(JAR, jarAuthority).docPath("folder1").build().toString(), 1).size(), 2);
+        Assert.assertEquals(jarApi.listJarsByUriPrefix(RaptureURI.builder(JAR, jarAuthority).docPath("folder3").build().toString(), 0).size(), 0);
+      
+        Reporter.log("Recreated some series and check folder contents", true);
+        jarApi.putJar(jarURIf3d1, jarContent);
+        Assert.assertEquals(jarApi.listJarsByUriPrefix(RaptureURI.builder(JAR, jarAuthority).docPath("folder3").build().toString(), 1).size(), 1);
+    }
+    
+    @Test(groups = { "jar", "nightly" })
     public void testDeleteJar() {
         String jarUri = "jar://test/jar" + System.nanoTime();
         byte[] jarContent = "TEST_CONTENT".getBytes();
@@ -97,12 +147,11 @@ public class JarApiTest {
         Assert.assertFalse(jarApi.jarExists(jarUri));
     }
 
-    @Test(groups = { "jar", "nightly" })
-    public void testListJarByUriPrefix() {
-        int MAX_JAR = 20;
+    @Test(groups = { "jar", "nightly" }, dataProvider="jarCounts")
+    public void testJarListByUriPrefixJarCounts(Integer jarCount) {
         String jarPrefix = "jar://test/jar" + System.nanoTime();
         Set<String> jarSet = new HashSet<String>();
-        for (int i = 0; i < MAX_JAR; i++) {
+        for (int i = 0; i < jarCount; i++) {
             String jarUri = jarPrefix + "/jar" + System.nanoTime();
             byte[] jarContent = "TEST_CONTENT".getBytes();
             jarApi.putJar(jarUri, jarContent);
@@ -188,6 +237,16 @@ public class JarApiTest {
         Assert.assertEquals(helper.getDocApi().getDoc(docPath), content);
     }
 
+    @DataProvider
+    public Object[][] jarCounts() {
+        return new Object[][] {
+                new Object[] {new Integer(5)},
+                new Object[] {new Integer(20)},
+                new Object[] {new Integer(150)},
+        };
+    } 
+
+    
     @AfterClass
     public void cleanUp() {
         helper.cleanAllAssets();

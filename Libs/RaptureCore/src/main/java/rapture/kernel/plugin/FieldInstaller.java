@@ -34,12 +34,12 @@ public class FieldInstaller implements RaptureInstaller {
     @Override
     public void install(CallingContext context, RaptureURI uri, PluginTransportItem item) {
         RaptureField field = JacksonUtil.objectFromJson(item.getContent(), RaptureField.class);
-        Kernel.getFields().putField(context, field);
+        Kernel.getTransform().putField(context, field.getName(), field);
     }
 
     @Override
     public void remove(CallingContext context, RaptureURI uri, PluginTransportItem item) {
-        Kernel.getFields().deleteField(context, uri.toString());
-
+        Kernel.getTransform().deleteField(context, uri.toString());
+        
     }
 }

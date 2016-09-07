@@ -1,0 +1,96 @@
+{
+    "name" : "//standard/country",
+    "description" : "The standard structure of country information in Rapture",
+    "fields" : [
+        {
+            "key" : "englishName",
+            "fieldUri" : "//country/englishName",
+            "mandatory" : true
+        },
+        {
+            "key" : "name",
+            "fieldUri" : "//country/officialName",
+            "mandatory" : true
+        },
+        {
+            "key" : "frenchName",
+            "fieldUri" : "//country/officialFrench",
+            "mandatory" : true
+        },
+        {
+            "key" : "code2",
+            "fieldUri" : "//country/alpha2",
+            "mandatory" : true
+        },
+        {
+            "key" : "id",
+            "fieldUri" : "//country/id",
+            "mandatory" : true
+        },
+        {
+            "key" : "numId",
+            "fieldUri" : "//country/numericId",
+            "mandatory" : true
+        },
+        {
+            "key" : "itu",
+            "fieldUri" : "//country/itu",
+            "mandatory" : true
+        },
+        {
+            "key" : "marc",
+            "fieldUri" : "//country/marc",
+            "mandatory" : true
+        },
+        {
+            "key" : "wmo",
+            "fieldUri" : "//country/wmo",
+            "mandatory" : true
+        },
+        {
+            "key" : "ds",
+            "fieldUri" : "//country/ds",
+            "mandatory" : true
+        },
+        {
+            "key" : "dial",
+            "fieldUri" : "//country/dial",
+            "mandatory" : true
+        },
+        {
+            "key" : "fifa",
+            "fieldUri" : "//country/fifa",
+            "mandatory" : true
+        },
+        {
+            "key" : "fips",
+            "fieldUri" : "//country/fips",
+            "mandatory" : true
+        },
+        {
+            "key" : "gaul",
+            "fieldUri" : "//country/gaul",
+            "mandatory" : true
+        },
+        {
+            "key" : "ioc",
+            "fieldUri" : "//country/ioc",
+            "mandatory" : true
+        },
+        {
+            "key" : "capital",
+            "fieldUri" : "//country/capital",
+            "mandatory" : true
+        },
+        {
+            "key" : "edgar",
+            "fieldUri" : "//country/edgar",
+            "mandatory" : true
+        },
+        {
+            "key" : "ccy",
+            "fieldUri" : "//currency/id",
+            "mandatory" : true
+        }
+    ]
+}

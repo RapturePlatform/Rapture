@@ -1,0 +1,7 @@
+{
+    "uri" : "a test",
+    "parts" : {
+        "a" : "First",
+        "b" : "Second"
+    }
+}

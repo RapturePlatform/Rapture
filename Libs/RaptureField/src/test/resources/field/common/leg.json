@@ -1,0 +1,7 @@
+{
+    "name" : "//common/leg",
+    "description" : "The leg of a trade",
+    "validationScript" : "",
+    "fieldType" : "MAP",
+    "fieldTypeExtra" : "//standard/trade/leg"
+}

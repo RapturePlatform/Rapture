@@ -1,0 +1,12 @@
+{
+    "uri" : "a test",
+    "parts" : [ {
+        "a" : "First",
+        "b" : "Second"
+    },
+    {
+        "a" : "Three",
+        "b" : "Four"
+    }
+    ]
+}

@@ -29,6 +29,6 @@ import rapture.kernel.Kernel;
 public class FieldEncoder extends ReflectionEncoder {
     @Override
     public Object getReflectionObject(CallingContext ctx, String uri) {
-        return Kernel.getFields().getField(ctx, uri);
-    }
+        return Kernel.getTransform().getField(ctx, uri);
+    }  
 }

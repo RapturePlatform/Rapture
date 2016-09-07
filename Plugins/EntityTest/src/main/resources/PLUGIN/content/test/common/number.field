@@ -1,0 +1,7 @@
+{
+    "name" : "//test/common/number",
+    "description" : "A number",
+    "validationScript" : "",
+    "fieldType" : "NUMBER",
+    "fieldTypeExtra" : ""
+}

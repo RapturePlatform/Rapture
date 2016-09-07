@@ -1,0 +1,26 @@
+{
+    "name" : "//standard/currency",
+    "description" : "The standard structure of currency information in Rapture",
+    "fields" : [
+        {
+            "key" : "id",
+            "fieldUri" : "//currency/id",
+            "mandatory" : true
+        },
+        {
+            "key" : "name",
+            "fieldUri" : "//currency/name",
+            "mandatory" : true
+        },
+        {
+            "key" : "minor",
+            "fieldUri" : "//currency/minor",
+            "mandatory" : true
+        },
+        {
+            "key" : "code",
+            "fieldUri" : "//currency/code",
+            "mandatory" : true
+        }
+    ]
+}

@@ -1,0 +1,7 @@
+{
+    "name" : "//country/fifa",
+    "description" : "A country's code from FIFA",
+    "validationScript" : "",
+    "fieldType" : "STRING",
+    "fieldTypeExtra" : ""
+}
