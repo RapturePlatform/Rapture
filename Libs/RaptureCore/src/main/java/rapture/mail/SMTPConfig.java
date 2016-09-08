@@ -34,39 +34,50 @@ public class SMTPConfig {
         return username;
     }
 
-    public void setUsername(String username) {
+    @Override
+    public String toString() {
+        return "SMTPConfig [host=" + host + ", port=" + port + ", username=" + username + ", password=" + password.replaceAll(".", "*") + ", from=" + from
+                + "]";
+    }
+
+    public SMTPConfig setUsername(String username) {
         this.username = username;
+        return this;
     }
 
     public String getPassword() {
         return password;
     }
 
-    public void setPassword(String password) {
+    public SMTPConfig setPassword(String password) {
         this.password = password;
+        return this;
     }
 
     public String getHost() {
         return host;
     }
 
-    public void setHost(String host) {
+    public SMTPConfig setHost(String host) {
         this.host = host;
+        return this;
     }
 
     public int getPort() {
         return port;
     }
 
-    public void setPort(int port) {
+    public SMTPConfig setPort(int port) {
         this.port = port;
+        return this;
     }
 
     public String getFrom() {
         return from;
     }
 
-    public void setFrom(String from) {
+    public SMTPConfig setFrom(String from) {
         this.from = from;
+        return this;
     }
 }
