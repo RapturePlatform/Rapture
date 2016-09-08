@@ -21,12 +21,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package rapture.dsl.iqry;
+package rapture.kernel.plugin;
 
-public enum WhereTest {
-	EQUAL,
-	LT,
-	GT,
-	NOTEQUAL,
-	LIKE
+import rapture.common.CallingContext;
+import rapture.common.PluginTransportItem;
+import rapture.common.RaptureURI;
+import rapture.common.RaptureWidget;
+import rapture.common.impl.jackson.JacksonUtil;
+import rapture.kernel.Kernel;
+
+public class WidgetInstaller implements RaptureInstaller {
+    @Override
+    public void install(CallingContext context, RaptureURI uri, PluginTransportItem item) {
+        RaptureWidget widget = JacksonUtil.objectFromJson(item.getContent(), RaptureWidget.class);
+        Kernel.getWidget().putWidget(context, widget.getName(), widget);
+    }
+
+    @Override
+    public void remove(CallingContext context, RaptureURI uri, PluginTransportItem item) {
+        Kernel.getWidget().deleteWidget(context, uri.toString());
+        
+    }
 }

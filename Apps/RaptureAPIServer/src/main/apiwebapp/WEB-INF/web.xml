@@ -338,6 +338,22 @@
 		<servlet-name>TAG</servlet-name>
 		<url-pattern>/tag/*</url-pattern>
 	</servlet-mapping>
+		<servlet>
+		<servlet-name>WIDGET</servlet-name>
+		<servlet-class>rapture.server.web.servlet.WidgetServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>WIDGET</servlet-name>
+		<url-pattern>/widget/*</url-pattern>
+	</servlet-mapping>
+		<servlet>
+		<servlet-name>PROGRAM</servlet-name>
+		<servlet-class>rapture.server.web.servlet.ProgramServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>PROGRAM</servlet-name>
+		<url-pattern>/program/*</url-pattern>
+	</servlet-mapping>
     <!-- end of WebServlet list -->
 </web-app>
 	

@@ -84,6 +84,8 @@ import rapture.kernel.plugin.JarEncoder;
 import rapture.kernel.plugin.JarInstaller;
 import rapture.kernel.plugin.LockEncoder;
 import rapture.kernel.plugin.LockInstaller;
+import rapture.kernel.plugin.ProgramEncoder;
+import rapture.kernel.plugin.ProgramInstaller;
 import rapture.kernel.plugin.RaptureEncoder;
 import rapture.kernel.plugin.RaptureInstaller;
 import rapture.kernel.plugin.RawBlobInstaller;
@@ -104,6 +106,8 @@ import rapture.kernel.plugin.StructuredRepoMaker;
 import rapture.kernel.plugin.StructuredTableInstaller;
 import rapture.kernel.plugin.TransformEncoder;
 import rapture.kernel.plugin.TransformInstaller;
+import rapture.kernel.plugin.WidgetEncoder;
+import rapture.kernel.plugin.WidgetInstaller;
 import rapture.kernel.plugin.WorkflowEncoder;
 import rapture.kernel.plugin.WorkflowInstaller;
 import rapture.plugin.install.PluginSandboxItem;
@@ -142,6 +146,8 @@ public class PluginApiImpl extends KernelBase implements PluginApi {
             .put(Scheme.STRUCTURE, new StructureEncoder())
             .put(Scheme.TRANSFORM, new TransformEncoder())
             .put(Scheme.ENTITY, new EntityEncoder())
+            .put(Scheme.WIDGET, new WidgetEncoder())
+            .put(Scheme.PROGRAM, new ProgramEncoder())
             .build();
 
     public PluginApiImpl(Kernel raptureKernel) {
@@ -204,6 +210,8 @@ public class PluginApiImpl extends KernelBase implements PluginApi {
             .put(Scheme.TRANSFORM, new TransformInstaller())
             .put(Scheme.FIELDTRANSFORM, new FieldTransformInstaller())
             .put(Scheme.ENTITY, new EntityInstaller())
+            .put(Scheme.WIDGET, new WidgetInstaller())
+            .put(Scheme.PROGRAM, new ProgramInstaller())
             .build();
 
     private Map<Scheme, RaptureInstaller> scheme2repoMaker = ImmutableMap.<Scheme, RaptureInstaller> builder()
