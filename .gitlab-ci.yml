@@ -1,19 +1,18 @@
 before_script:
-  - sudo apt-get -y install python-pip
-  - sudo pip install --upgrade pip
-  - sudo pip install docker-cloud
+  - apt-get -y install python-pip
+  - pip install --upgrade pip
+  - pip install docker-cloud
   - DATE=`date +%Y%m%d%H%M%S`
   - echo $DATE > timestamp.txt
 
 Rapture_Libs:
   script:
-    - cd Libs/
     - git fetch -t
 
     - GIT_TAG=$(git describe --tags)
     - echo $GIT_TAG
     - PLATFORM_VERSION="${GIT_TAG%%-*}"
-    - TS=$(cat ../timestamp.txt)
+    - TS=$(cat timestamp.txt)
     - PTS_VERSION="$PLATFORM_VERSION.$TS"
     - TARGET=$gitLabStagingUploadRepoUrl/$TS
     - echo "platformVersion=$PLATFORM_VERSION" > dependencies.properties
@@ -23,6 +22,12 @@ Rapture_Libs:
     - RIM_VERSION=$(echo $PTS_VERSION | sed s/./1/1)
     - echo "rimVersion=$RIM_VERSION" >> dependencies.properties
     - cat dependencies.properties
+
+    - cd Libs/
+    - ARCHIVE_PATH="/srv/release/staging/repository/$TS/"
+    - mkdir ARCHIVE_PATH
+    - ./gradlew clean genAll publishSlate install uploadArchives -Ptag=true -PuploadRepoUrl=$gitLabStagingUploadRepoUrl/${TS}
+    - ./gradlew test
 
 #Rapture_New:
 #  script:
