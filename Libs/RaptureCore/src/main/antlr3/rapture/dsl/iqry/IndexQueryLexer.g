@@ -32,6 +32,8 @@ CBRAC : ')';
 AND   : 'AND';
 OR    : 'OR';
 LIMIT : 'LIMIT';
+SKIP  : 'SKIP';
+LIKE  : 'LIKE';
 
 NUMBER : ('0' ..'9')+;
 ID : ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')*;

@@ -27,5 +27,6 @@ public enum WhereTest {
 	EQUAL,
 	LT,
 	GT,
-	NOTEQUAL
+	NOTEQUAL,
+	LIKE
 }
