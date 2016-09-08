@@ -4,5 +4,8 @@
     "repoUri" : "//dh.country",
     "prefixInRepo" : "",
     "structureUri" : "//standard/country",
-    "namingFields" : [ "id" ]
+    "namingFields" : [ "id" ],
+    "indexFields" : [ "id", "name", "ccy" ],
+    "primeIndexField" : "id",
+    "viewFields" : [ "id", "name", "ccy", "capital"]
 }

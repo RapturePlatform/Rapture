@@ -1,0 +1,11 @@
+// Query the country index directly
+
+//r = #index.findIndex("//dh.country", "SELECT rowId, id, name LIMIT 10 SKIP 20");
+//println(json(r));
+
+//r = #entity.getViewConfiguration("//standard/country");
+//println(json(r));
+
+d = #entity.getViewData("//standard/country", "name LIKE '^P'", 0, 10);
+println(json(d));
+

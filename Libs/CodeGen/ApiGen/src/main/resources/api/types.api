@@ -105,6 +105,23 @@ type RaptureEntity(@package=rapture.common) {
     String prefixInRepo;
     String structureUri;
     List<String> namingFields;
+    List<String> indexFields = new ArrayList<String>(); // A list of fields that should form part of an index for this entity
+    String primeIndexField = ""; // When set, which index field can I use to locate a document given its "key"
+    List<String> viewFields = new ArrayList<String>(); // A list of fields that should be shown in "getView" calls, usually a superset or equivalent to indexFields
+}
+
+[A column in an Entity View configuration]
+@Bean
+type ViewColumn(@package=rapture.common) {
+	String name;
+	RaptureField field;
+}
+
+[A row in a view result set]
+@Bean
+type ViewRecord(@package=rapture.common) {
+	String rowId;
+	Map<String, Object> data;
 }
 
 [ A source context for a widget action (where does it get the data from) ]
