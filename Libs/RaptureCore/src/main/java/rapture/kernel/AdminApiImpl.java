@@ -140,7 +140,7 @@ public class AdminApiImpl extends KernelBase implements AdminApi {
         if (usr == null) {
             String iAm = context.getUser();
             // High-level audit log message.
-            Kernel.getAudit().writeAuditEntry(context, RaptureConstants.DEFAULT_AUDIT_URI, "admin", 2, "New user "+userName+" added by "+iAm);
+            Kernel.getAudit().writeAuditEntry(context, RaptureConstants.DEFAULT_AUDIT_URI, "admin", 2, "New user " + userName + " added by " + iAm);
             usr = new RaptureUser();
             usr.setUsername(userName);
             usr.setDescription(description);
@@ -154,33 +154,32 @@ public class AdminApiImpl extends KernelBase implements AdminApi {
         }
     }
 
-
     /**
      * Clone the data from the src type to the target
      */
     @Override
     public void copyDocumentRepo(CallingContext context, String srcAuthority, String targAuthority, final Boolean wipe) {
-        Repository srcRepo = Kernel.getKernel().getRepo(srcAuthority); //$NON-NLS-1$
-        final Repository targRepo = Kernel.getKernel().getRepo(targAuthority); //$NON-NLS-1$
+        Repository srcRepo = Kernel.getKernel().getRepo(srcAuthority); // $NON-NLS-1$
+        final Repository targRepo = Kernel.getKernel().getRepo(targAuthority); // $NON-NLS-1$
         if (wipe) {
             targRepo.drop();
         }
 
         srcRepo.visitAll("", null, new RepoVisitor() { //$NON-NLS-1$
 
-                    @Override
-                    public boolean visit(String name, JsonContent content, boolean isFolder) {
-                        try {
-                            log.info(adminMessageCatalog.getMessage("Copying", name).toString()); //$NON-NLS-1$
-                            targRepo.addDocument(name, content.getContent(), "$copy", //$NON-NLS-1$
-                                    adminMessageCatalog.getMessage("CopyRepo", name).toString(), wipe); //$NON-NLS-1$
-                        } catch (RaptureException e) {
-                            log.info(adminMessageCatalog.getMessage("NoAddDoc", name)); //$NON-NLS-1$
-                        }
-                        return true;
-                    }
+            @Override
+            public boolean visit(String name, JsonContent content, boolean isFolder) {
+                try {
+                    log.info(adminMessageCatalog.getMessage("Copying", name).toString()); //$NON-NLS-1$
+                    targRepo.addDocument(name, content.getContent(), "$copy", //$NON-NLS-1$
+                            adminMessageCatalog.getMessage("CopyRepo", name).toString(), wipe); //$NON-NLS-1$
+                } catch (RaptureException e) {
+                    log.info(adminMessageCatalog.getMessage("NoAddDoc", name)); //$NON-NLS-1$
+                }
+                return true;
+            }
 
-                });
+        });
     }
 
     /**
@@ -211,7 +210,7 @@ public class AdminApiImpl extends KernelBase implements AdminApi {
         RaptureUser usr = getUser(context, userName);
         if (usr.getInactive()) {
             usr.setInactive(false);
-            RaptureUserStorage.add(usr, context.getUser(),  adminMessageCatalog.getMessage("Active", userName).toString()); //$NON-NLS-1$ //$NON-NLS-2$
+            RaptureUserStorage.add(usr, context.getUser(), adminMessageCatalog.getMessage("Active", userName).toString()); //$NON-NLS-1$ //$NON-NLS-2$
         }
     }
 
@@ -251,8 +250,6 @@ public class AdminApiImpl extends KernelBase implements AdminApi {
         RaptureIPWhiteList wlist = RaptureIPWhiteListStorage.readByFields();
         return wlist.getIpWhiteList();
     }
-
-
 
     /**
      * @return @
@@ -316,8 +313,6 @@ public class AdminApiImpl extends KernelBase implements AdminApi {
         return ret;
     }
 
-
-
     @Override
     public String getTemplate(CallingContext context, String name) {
         return templates.get(name);
@@ -327,14 +322,12 @@ public class AdminApiImpl extends KernelBase implements AdminApi {
         log.error(adminMessageCatalog.getMessage("CouldNotLoadDoc", name).toString());
     }
 
-
     @Override
     public void removeIPFromWhiteList(CallingContext context, String ipAddress) {
         RaptureIPWhiteList wlist = RaptureIPWhiteListStorage.readByFields();
         wlist.getIpWhiteList().remove(ipAddress);
         RaptureIPWhiteListStorage.add(wlist, context.getUser(), adminMessageCatalog.getMessage("RemoveWhiteList", ipAddress).toString()); //$NON-NLS-1$
     }
-
 
     @Override
     public void resetUserPassword(CallingContext context, String userName, String newHashPassword) {
@@ -448,8 +441,10 @@ public class AdminApiImpl extends KernelBase implements AdminApi {
         RaptureUser user = getUser(context, userName);
         if (user != null) {
             templateValues.put("user", user);
+            Mailer.email(context, emailTemplate, templateValues);
+        } else {
+            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, adminMessageCatalog.getMessage("NoExistUser", userName)); //$NON-NLS-1$ }
         }
-        Mailer.email(context, emailTemplate, templateValues);
     }
 
     @Override
@@ -465,7 +460,6 @@ public class AdminApiImpl extends KernelBase implements AdminApi {
         log.info(adminMessageCatalog.getMessage("TemplateOutput", ret).toString()); //$NON-NLS-1$
         return ret;
     }
-
 
     @Override
     public List<RaptureUser> getAllUsers(CallingContext context) {
