@@ -46,6 +46,10 @@ api(Entity) {
    [Retrieve data for an entity view]
    @entitle=/entity/read/$f(entityUri)
    @public List<ViewRecord> getViewData(String entityUri, String where, int skip, int limit);
+   
+   [Retrieve an entity document given its key. Assumes that the entity has a preferred key index (prime key index)]
+   @entitle=/entity/read/$f(entityUri)
+   @public String getEntityDocByKey(String entityUri, String key);
 }
 
 

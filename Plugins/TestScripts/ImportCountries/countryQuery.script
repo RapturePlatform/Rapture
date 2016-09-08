@@ -9,3 +9,6 @@
 d = #entity.getViewData("//standard/country", "name LIKE '^P'", 0, 10);
 println(json(d));
 
+c = #entity.getEntityDocByKey("//standard/country", "PRT");
+println(c);
+

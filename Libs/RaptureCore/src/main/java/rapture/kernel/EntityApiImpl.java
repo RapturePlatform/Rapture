@@ -42,6 +42,7 @@ import rapture.common.TableQueryResult;
 import rapture.common.ViewColumn;
 import rapture.common.ViewRecord;
 import rapture.common.api.EntityApi;
+import rapture.common.exception.RaptureExceptionFactory;
 import rapture.common.impl.jackson.JacksonUtil;
 
 public class EntityApiImpl extends KernelBase implements EntityApi {
@@ -85,6 +86,7 @@ public class EntityApiImpl extends KernelBase implements EntityApi {
 			String content) {
 		// 1. Load the entity definition
 		RaptureEntity e = getEntity(context, entityUri);
+		checkEntity(e, entityUri);
 		// 2. Validate document against the structure in that definition
 		List<String> res = Kernel.getTransform().validateDocument(context,
 				content, e.getStructureUri());
@@ -141,6 +143,7 @@ public class EntityApiImpl extends KernelBase implements EntityApi {
 		// 2. Construct the real URI for this document
 		// 3. Load it.
 		RaptureEntity e = getEntity(context, entityUri);
+		checkEntity(e, entityUri);
 		String fullUri = e.getRepoUri() + e.getPrefixInRepo()
 				+ fixContentUri(contentUri);
 		System.out.println("Full URI is " + fullUri);
@@ -154,6 +157,7 @@ public class EntityApiImpl extends KernelBase implements EntityApi {
 		// 2. Construct the real URI for this document
 		// 3. Delete it.
 		RaptureEntity e = getEntity(context, entityUri);
+		checkEntity(e, entityUri);
 		String fullUri = e.getRepoUri() + e.getPrefixInRepo()
 				+ fixContentUri(contentUri);
 		System.out.println("Full URI is " + fullUri);
@@ -168,6 +172,7 @@ public class EntityApiImpl extends KernelBase implements EntityApi {
 		// 2. Construct the prefix
 		// 3. Call getChildren through the doc interface
 		RaptureEntity e = getEntity(context, entityUri);
+		checkEntity(e, entityUri);
 		String fullUri = e.getRepoUri() + e.getPrefixInRepo()
 				+ fixContentUri(uriPrefix);
 		System.out.println("Full URI is " + fullUri);
@@ -179,6 +184,7 @@ public class EntityApiImpl extends KernelBase implements EntityApi {
 			Boolean replaceIfExist) {
 		// If the RaptureEntity contains a non-zero size index fields
 		RaptureEntity e = getEntity(context, entityUri);
+		checkEntity(e, entityUri);
 		// Compute the index configuration and save it, with the same name as
 		// the repo
 		// The configuration types come from the structure
@@ -247,6 +253,7 @@ public class EntityApiImpl extends KernelBase implements EntityApi {
 		// the field name + the Rapture Field as determined by the structure of
 		// the entity
 		RaptureEntity e = getEntity(context, entityUri);
+		checkEntity(e, entityUri);
 		// Compute the index configuration and save it, with the same name as
 		// the repo
 		// The configuration types come from the structure
@@ -285,6 +292,8 @@ public class EntityApiImpl extends KernelBase implements EntityApi {
 
 		// Do the slow one first
 		RaptureEntity e = getEntity(context, entityUri);
+		checkEntity(e, entityUri);
+		
 		StringBuilder sb = new StringBuilder();
 		sb.append("SELECT rowId");
 		if (!where.isEmpty()) {
@@ -313,6 +322,34 @@ public class EntityApiImpl extends KernelBase implements EntityApi {
 			ret.add(record);
 		});
 		return ret;
+	}
+
+	private void checkEntity(RaptureEntity e, String name) {
+		if (e == null) {
+			throw RaptureExceptionFactory.create("No entity found - " + name);
+		}
+	}
+	
+	@Override
+	public String getEntityDocByKey(CallingContext context, String entityUri,
+			String key) {
+		RaptureEntity e = getEntity(context, entityUri);
+		checkEntity(e, entityUri);
+		if (e.getPrimeIndexField().isEmpty()) {
+			throw RaptureExceptionFactory.create("No prime index field on this entity");
+		}
+		StringBuilder sb = new StringBuilder();
+		sb.append("SELECT rowId WHERE ");
+		sb.append(e.getPrimeIndexField());
+		sb.append("='");
+		sb.append(key);
+		sb.append("'");
+		System.out.println("Query is " + sb.toString());
+		TableQueryResult res = Kernel.getIndex().findIndex(context, e.getRepoUri(), sb.toString());
+		if (res != null && !res.getRows().isEmpty()) {
+			return getEntityDocument(context, entityUri, res.getRows().get(0).get(0).toString());
+		}
+		return null;
 	}
 
 }
