@@ -81,9 +81,11 @@ import rapture.plugin.validators.IdGenValidator;
 import rapture.plugin.validators.JobValidator;
 import rapture.plugin.validators.LockValidator;
 import rapture.plugin.validators.Note;
+import rapture.plugin.validators.ProgramValidator;
 import rapture.plugin.validators.ScriptValidator;
 import rapture.plugin.validators.SeriesValidator;
 import rapture.plugin.validators.SnippetValidator;
+import rapture.plugin.validators.WidgetValidator;
 import rapture.plugin.validators.WorkflowValidator;
 import rapture.plugin.validators.TransformValidator;
 import rapture.plugin.validators.StructureValidator;
@@ -437,6 +439,12 @@ public class PluginShell {
             case WORKFLOW:
                 WorkflowValidator.getValidator().validate(content, uri, errors);
                 break;
+            case WIDGET:
+            	WidgetValidator.getValidator().validate(content, uri, errors);
+            	break;
+            case PROGRAM:
+            	ProgramValidator.getValidator().validate(content, uri, errors);
+            	break;
             default:
                 errors.add(new Note(Note.Level.WARNING, "No validator registered for type " + uri.getScheme()));
                 break;

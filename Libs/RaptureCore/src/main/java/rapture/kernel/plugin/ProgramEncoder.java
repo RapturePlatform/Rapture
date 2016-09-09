@@ -21,12 +21,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package rapture.dsl.iqry;
+package rapture.kernel.plugin;
 
-public enum WhereTest {
-	EQUAL,
-	LT,
-	GT,
-	NOTEQUAL,
-	LIKE
+import rapture.common.CallingContext;
+import rapture.kernel.Kernel;
+
+public class ProgramEncoder extends ReflectionEncoder {
+    @Override
+    public Object getReflectionObject(CallingContext ctx, String uri) {
+        return Kernel.getProgram().getProgram(ctx, uri);
+    }  
 }

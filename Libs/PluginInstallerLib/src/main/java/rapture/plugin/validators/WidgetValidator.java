@@ -21,12 +21,29 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package rapture.dsl.iqry;
+package rapture.plugin.validators;
 
-public enum WhereTest {
-	EQUAL,
-	LT,
-	GT,
-	NOTEQUAL,
-	LIKE
+import java.util.List;
+
+import rapture.common.RaptureURI;
+import rapture.common.RaptureWidget;
+
+public class WidgetValidator extends JsonValidator<RaptureWidget> {
+    public static final Validator singleton = new WidgetValidator(RaptureWidget.class);
+
+    public static final Validator getValidator() {
+        return singleton;
+    }
+
+    public WidgetValidator(Class<RaptureWidget> clazz) {
+        super(clazz);
+    }
+
+    @Override
+    void validateObject(RaptureWidget thing, RaptureURI uri, List<Note> errors) {
+    }
+
+    @Override
+    void validateRaw(String content, RaptureURI uri, List<Note> errors) {
+    }
 }

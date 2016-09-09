@@ -24,7 +24,9 @@ qry returns [IndexQuery qry]
 }     
 : SELECT (DISTINCT { $qry.setDistinct(true); } )? x=fieldSet { $qry.setSelect($x.select); } (WHERE w=whereClause { $qry.setWhere($w.where); })?
   (ORDER BY o=fieldSet { $qry.setOrderBy($o.select); } (ASC { $qry.setOrderDirection(OrderDirection.ASC); } | DESC { $qry.setOrderDirection(OrderDirection.DESC); })? )?
-  (LIMIT NUMBER { $qry.setLimit(Integer.parseInt($NUMBER.text)); })?;
+  (LIMIT l=NUMBER { $qry.setLimit(Integer.parseInt($l.text)); })?
+  (SKIP n=NUMBER { $qry.setSkip(Integer.parseInt($n.text)); })?  
+  ;
 
 fieldSet returns [SelectList select]
 @init {
@@ -43,5 +45,6 @@ whereStatement returns [WhereStatement stmt] :
          | b=ID GT y=value { $stmt = new WhereStatement($b.text, WhereTest.GT, $y.val); }
          | c=ID LT x=value { $stmt = new WhereStatement($c.text, WhereTest.LT, $x.val); }
          | d=ID NOTEQUAL w=value { $stmt = new WhereStatement($d.text, WhereTest.NOTEQUAL, $w.val); }
+         | e=ID LIKE w=value { $stmt = new WhereStatement($e.text, WhereTest.LIKE, $w.val); }
          ;
          

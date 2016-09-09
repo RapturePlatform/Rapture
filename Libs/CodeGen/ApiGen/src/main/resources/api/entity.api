@@ -34,6 +34,22 @@ api(Entity) {
    [Returns full pathnames for an entire subtree as a map of the path to RFI.]
    @entitle=/entity/list/$f(entityUri)/$f(uriPrefix)
    @public Map<String, RaptureFolderInfo> listDocsByUriPrefix(String entityUri, String uriPrefix, int depth);
+   
+   [Generate index definition for repository that underpins this entity]
+   @entitle=/entity/write/$f(entityUri)
+   @public void createEntityIndex(String entityUri, Boolean replaceIfExist);
+   
+   [Retrieve view display configuration (columns)]
+   @entitle=/entity/read/$f(entityUri)
+   @public List<ViewColumn> getViewConfiguration(String entityUri);
+   
+   [Retrieve data for an entity view]
+   @entitle=/entity/read/$f(entityUri)
+   @public List<ViewRecord> getViewData(String entityUri, String where, int skip, int limit);
+   
+   [Retrieve an entity document given its key. Assumes that the entity has a preferred key index (prime key index)]
+   @entitle=/entity/read/$f(entityUri)
+   @public String getEntityDocByKey(String entityUri, String key);
 }
 
 

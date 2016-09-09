@@ -241,6 +241,14 @@ public enum Kernel {
     public static OperationApiImplWrapper getOperation() {
     	return INSTANCE.operation;
     }
+    
+    public static WidgetApiImplWrapper getWidget() {
+    	return INSTANCE.widget;
+    }
+    
+    public static ProgramApiImplWrapper getProgram() {
+    	return INSTANCE.program;
+    }
 
     public static MetricsService getMetricsService() {
         return INSTANCE.metricsService;
@@ -471,6 +479,8 @@ public enum Kernel {
     private SearchApiImplWrapper search;
     private TagApiImplWrapper tag;
     private OperationApiImplWrapper operation;
+    private WidgetApiImplWrapper widget;
+    private ProgramApiImplWrapper program;
 
     private MetricsService metricsService = MetricsFactory.createDummyService(); // initialize to a dummy service initially, as this is not nullable
     private LogManagerConnection logManagerConnection;
@@ -752,6 +762,10 @@ public enum Kernel {
             kernelApis.add(tag);
             operation = new OperationApiImplWrapper(this);
             kernelApis.add(operation);
+            widget = new WidgetApiImplWrapper(this);
+            kernelApis.add(widget);
+            program = new ProgramApiImplWrapper(this);
+            kernelApis.add(program);
 
             // sys depends on series and doc
             sys = new SysApiImplWrapper(this);
