@@ -24,7 +24,6 @@
 package rapture.kernel;
 
 import java.util.List;
-import java.util.Map;
 
 import rapture.common.CallingContext;
 import rapture.common.RaptureField;
@@ -34,8 +33,6 @@ import rapture.common.RaptureFieldTransformStorage;
 import rapture.common.RaptureFolderInfo;
 import rapture.common.RaptureStructure;
 import rapture.common.RaptureStructureStorage;
-import rapture.common.RaptureTransform;
-import rapture.common.RaptureTransformStorage;
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
 import rapture.common.api.TransformApi;
@@ -94,28 +91,6 @@ public class TransformApiImpl extends KernelBase implements TransformApi {
 
 
 	@Override
-	public RaptureTransform getTransform(CallingContext context,
-			String transformUri) {
-		RaptureURI transformURI = new RaptureURI(transformUri, Scheme.TRANSFORM);
-		return RaptureTransformStorage.readByAddress(transformURI);
-	}
-
-	@Override
-	public void putTransform(CallingContext context, String transformUri,
-			RaptureTransform transform) {
-		RaptureURI transformURI = new RaptureURI(transformUri, Scheme.TRANSFORM);
-		transform.setName(transformURI.getShortPath());
-		RaptureTransformStorage.add(transform, context.getUser(), "Added transform");
-	}
-
-	@Override
-	public void deleteTransform(CallingContext context, String transformUri) {
-		RaptureURI transformURI = new RaptureURI(transformUri, Scheme.TRANSFORM);
-		RaptureTransformStorage.deleteByAddress(transformURI, context.getUser(), "Removed transform");
-	}
-
-
-	@Override
 	public List<RaptureFolderInfo> getFieldChildren(CallingContext context,
 			String uriPrefix) {
 		return RaptureFieldStorage.getChildren(uriPrefix);
@@ -127,11 +102,6 @@ public class TransformApiImpl extends KernelBase implements TransformApi {
 		return RaptureStructureStorage.getChildren(uriPrefix);
 	}
 
-	@Override
-	public List<RaptureFolderInfo> getTransformChildren(CallingContext context,
-			String uriPrefix) {
-		return RaptureTransformStorage.getChildren(uriPrefix);
-	}
 
 	@Override
 	public RaptureFieldTransform getFieldTransform(CallingContext context,

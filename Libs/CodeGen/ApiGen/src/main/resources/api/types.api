@@ -71,18 +71,9 @@ type RaptureStructure(@package=rapture.common) {
     String name;
     String description;
     List<StructureField> fields;
+    Map<String, List<String>> transformPaths = new HashMap<String, List<String>>(); // replacement for "TRANSFORM"
 }
     
-[ A RaptureTransform is a way of converting one set of fields to another]
-@Addressable(scheme = TRANSFORM(false))
-@Storable(storagePath : {name}, prefix="transform")
-type RaptureTransform(@package=rapture.common) {
-    String name;
-    String fromStructureUri;
-    String toStructureUri;
-    String description;
-    List<String> transforms;
-}      
 
 [ A RaptureTransform is a way of converting one set of fields to another]
 @Addressable(scheme = FIELDTRANSFORM(false))
