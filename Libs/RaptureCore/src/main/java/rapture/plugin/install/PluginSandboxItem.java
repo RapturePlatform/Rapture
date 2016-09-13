@@ -367,7 +367,6 @@ public class PluginSandboxItem {
             .put(".structured", Scheme.STRUCTURED)
             .put(".field", Scheme.FIELD)
             .put(".structure", Scheme.STRUCTURE)
-            .put(".transform", Scheme.TRANSFORM)
             .put(".ftransform", Scheme.FIELDTRANSFORM)
             .put(".entity", Scheme.ENTITY)
             .build();

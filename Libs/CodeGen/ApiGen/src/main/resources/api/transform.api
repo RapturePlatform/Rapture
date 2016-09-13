@@ -37,22 +37,6 @@ api(Transform) {
    
    [Retrieve a transform]
    @entitle=/transform/read/$f(transformUri)
-   @public RaptureTransform getTransform(String transformUri);
-   
-   [Save a transform]
-   @entitle=/transform/write/$f(transformUri)
-   @public void putTransform(String transformUri, RaptureTransform transform);
-   
-   [remove a transform]
-   @entitle=/transform/read/$f(transformUri)
-   @public void deleteTransform(String transformUri);
- 
-   [Returns full pathnames for an entire subtree as a map of the path to RFI.]
-   @entitle=/transform/list/$f(uriPrefix)
-   @public List(RaptureFolderInfo) getTransformChildren(String uriPrefix);
- 
-   [Retrieve a transform]
-   @entitle=/transform/read/$f(transformUri)
    @public RaptureFieldTransform getFieldTransform(String transformUri);
    
    [Save a transform]
