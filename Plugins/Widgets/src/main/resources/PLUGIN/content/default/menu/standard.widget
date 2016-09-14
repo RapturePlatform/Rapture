@@ -1,0 +1,10 @@
+{
+    "name"      :    "//default/menu/standard",
+    "menuPath"  :   [],
+    "title"     :   "Standard Menu",
+    "paneType"  :   "menu",
+    "parameterNames" :  [],
+    "actions" : {
+        "data" : "/widget/default/menu/standard"
+    }
+}
