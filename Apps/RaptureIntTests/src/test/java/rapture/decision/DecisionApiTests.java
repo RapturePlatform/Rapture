@@ -27,6 +27,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -59,6 +60,7 @@ import rapture.common.dp.WorkerDebug;
 import rapture.common.dp.WorkerExecutionState;
 import rapture.common.dp.Workflow;
 import rapture.common.exception.ExceptionToString;
+import rapture.common.impl.jackson.JacksonUtil;
 import rapture.helper.IntegrationTestHelper;
 
 public class DecisionApiTests {
@@ -163,10 +165,24 @@ public class DecisionApiTests {
         }
 
         WorkOrderDebug woDebug = decisionApi.getWorkOrderDebug(createWorkOrder);
+        Map <String, Object> woMap=JacksonUtil.getMapFromJson(woDebug.toString());
+        Assert.assertEquals(((Map <String, Object>)woMap.get("order")).get("workOrderURI").toString(),createWorkOrder);
+        Assert.assertNotNull(((Map <String, Object>)woMap.get("order")).get("workerIds"));
         List<WorkerDebug> workerDebugs = woDebug.getWorkerDebugs();
         Reporter.log("Overall runtime : " + (decisionApi.getWorkOrderDebug(createWorkOrder).getOrder().getEndTime()
                 - decisionApi.getWorkOrderDebug(createWorkOrder).getOrder().getStartTime()) + "ms", true);
+        
+        List<WorkerDebug> woDebugsList=woDebug.getWorkerDebugs();
+        for (WorkerDebug wd : woDebugsList) {
+            Reporter.log(wd.toString(), true);
+            Map <String, Object> workerMap=JacksonUtil.getMapFromJson(wd.toString());
+            for (Map<String,Object> currStepRecordDebug : (List <Map<String, Object>>)workerMap.get("stepRecordDebugs")) {
 
+            	Object currStepRecord=((Map<String,Object>)currStepRecordDebug).get("stepRecord");
+            	Map<String,Object> stepRecordMap =(Map<String,Object>)currStepRecord;
+            	Assert.assertTrue(stepRecordMap.keySet().containsAll(Arrays.asList(new String[]{"stepURI","name","startTime","endTime"})));
+            }
+        }
         Assert.assertEquals(workerDebugs.get(0).getWorker().getStatus().name(), "FINISHED", "worker1 status");
         Assert.assertEquals(workerDebugs.get(1).getWorker().getStatus().name(), "FINISHED", "worker2 status");
         Assert.assertEquals(workerDebugs.get(2).getWorker().getStatus().name(), "FINISHED", "worker2 status");
@@ -261,17 +277,28 @@ public class DecisionApiTests {
 
         numRetries = 30;
         List<WorkerDebug> woDebugsList = null;
-        WorkOrderDebug woDebug = decisionApi.getWorkOrderDebug(createWorkOrder);
+        WorkOrderDebug woDebug = decisionApi.getWorkOrderDebug(createWorkOrder);;
+        Map <String, Object> woMap=JacksonUtil.getMapFromJson(woDebug.toString());
+        Assert.assertEquals(((Map <String, Object>)woMap.get("order")).get("workOrderURI").toString(),createWorkOrder);
+        Assert.assertNotNull(((Map <String, Object>)woMap.get("order")).get("workerIds"));
         do {
             if (woDebugsList != null) try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
             }
 
+            
             woDebugsList = woDebug.getWorkerDebugs();
             Reporter.log("+++ Got " + woDebugsList.size() + " WorkerDebugs", true);
             for (WorkerDebug wd : woDebugsList) {
                 Reporter.log(wd.toString(), true);
+                Map <String, Object> workerMap=JacksonUtil.getMapFromJson(wd.toString());
+                for (Map<String,Object> currStepRecordDebug : (List <Map<String, Object>>)workerMap.get("stepRecordDebugs")) {
+
+                	Object currStepRecord=((Map<String,Object>)currStepRecordDebug).get("stepRecord");
+                	Map<String,Object> stepRecordMap =(Map<String,Object>)currStepRecord;
+                	Assert.assertTrue(stepRecordMap.keySet().containsAll(Arrays.asList(new String[]{"stepURI","name","startTime","endTime"})));
+                }
             }
         } while ((numRetries-- > 0) && (woDebugsList.size() != 3));
 
@@ -407,6 +434,10 @@ public class DecisionApiTests {
         numRetries = 30;
         List<WorkerDebug> woDebugsList = null;
         WorkOrderDebug woDebug = decisionApi.getWorkOrderDebug(createWorkOrder);
+        
+        Map <String, Object> woMap=JacksonUtil.getMapFromJson(woDebug.toString());
+        Assert.assertEquals(((Map <String, Object>)woMap.get("order")).get("workOrderURI").toString(),createWorkOrder);
+        Assert.assertNotNull(((Map <String, Object>)woMap.get("order")).get("workerIds"));
         do {
             if (woDebugsList != null) try {
                 Thread.sleep(1000);
@@ -422,7 +453,16 @@ public class DecisionApiTests {
 
         // get worker threads using getWorkerIds()
         Assert.assertEquals(woDebugsList.size(), 3, "Check number of worker ids is 3");
+        for (WorkerDebug wd : woDebugsList) {
+            Reporter.log(wd.toString(), true);
+            Map <String, Object> workerMap=JacksonUtil.getMapFromJson(wd.toString());
+            for (Map<String,Object> currStepRecordDebug : (List <Map<String, Object>>)workerMap.get("stepRecordDebugs")) {
 
+            	Object currStepRecord=((Map<String,Object>)currStepRecordDebug).get("stepRecord");
+            	Map<String,Object> stepRecordMap =(Map<String,Object>)currStepRecord;
+            	Assert.assertTrue(stepRecordMap.keySet().containsAll(Arrays.asList(new String[]{"stepURI","name","startTime","endTime"})));
+            }
+        }
         for (WorkerDebug wo : woDebugsList) {
 
             List<StepRecordDebug> stepRecordDebugs = wo.getStepRecordDebugs();
@@ -566,6 +606,9 @@ public class DecisionApiTests {
             numRetries++;
         }
         WorkOrderDebug woDebug = decisionApi.getWorkOrderDebug(createWorkOrder);
+        Map <String, Object> woMap=JacksonUtil.getMapFromJson(woDebug.toString());
+        Assert.assertEquals(((Map <String, Object>)woMap.get("order")).get("workOrderURI").toString(),createWorkOrder);
+        Assert.assertNotNull(((Map <String, Object>)woMap.get("order")).get("workerIds"));
         List<WorkerDebug> woDebugsList = woDebug.getWorkerDebugs();
 
         for (WorkerDebug wo : woDebugsList) {
@@ -573,6 +616,16 @@ public class DecisionApiTests {
             Assert.assertEquals(workerState, "FINISHED", "status check on worker.");
         }
 
+        for (WorkerDebug wd : woDebugsList) {
+            Reporter.log(wd.toString(), true);
+            Map <String, Object> workerMap=JacksonUtil.getMapFromJson(wd.toString());
+            for (Map<String,Object> currStepRecordDebug : (List <Map<String, Object>>)workerMap.get("stepRecordDebugs")) {
+
+            	Object currStepRecord=((Map<String,Object>)currStepRecordDebug).get("stepRecord");
+            	Map<String,Object> stepRecordMap =(Map<String,Object>)currStepRecord;
+            	Assert.assertTrue(stepRecordMap.keySet().containsAll(Arrays.asList(new String[]{"stepURI","name","startTime","endTime"})));
+            }
+        }
         IntegrationTestHelper.isWorkOrderRunning(decisionApi, createWorkOrder);
 
         Assert.assertEquals(helper.getDocApi().getDoc(docRepoUri + randInt + "/docFromFork1"), "{\"KeyFromChild1\":\"ValueFromChild1\"}");
@@ -651,7 +704,24 @@ public class DecisionApiTests {
         Reporter.log("Verifying cancelled status of " + woUri, true);
         Assert.assertEquals(decisionApi.getWorkOrderStatus(woUri).getStatus(), WorkOrderExecutionState.CANCELLED,
                 "We did not get a status of cancelled back, we got > " + decisionApi.getWorkOrderStatus(woUri).getStatus());
+        
 
+        WorkOrderDebug woDebug = decisionApi.getWorkOrderDebug(woUri);
+        Map <String, Object> woMap=JacksonUtil.getMapFromJson(woDebug.toString());
+        Assert.assertEquals(((Map <String, Object>)woMap.get("order")).get("workOrderURI").toString(),woUri);
+        Assert.assertNotNull(((Map <String, Object>)woMap.get("order")).get("workerIds"));
+        
+        List<WorkerDebug> woDebugsList=woDebug.getWorkerDebugs();
+        for (WorkerDebug wd : woDebugsList) {
+            Reporter.log(wd.toString(), true);
+            Map <String, Object> workerMap=JacksonUtil.getMapFromJson(wd.toString());
+            for (Map<String,Object> currStepRecordDebug : (List <Map<String, Object>>)workerMap.get("stepRecordDebugs")) {
+
+            	Object currStepRecord=((Map<String,Object>)currStepRecordDebug).get("stepRecord");
+            	Map<String,Object> stepRecordMap =(Map<String,Object>)currStepRecord;
+            	Assert.assertTrue(stepRecordMap.keySet().containsAll(Arrays.asList(new String[]{"stepURI","name","startTime","endTime"})));
+            }
+        }
     }
 
     @Test(groups = { "decision", "nightly" })
@@ -724,6 +794,9 @@ public class DecisionApiTests {
         Assert.assertEquals(decisionApi.getWorkOrderStatus(woUri).getStatus(), WorkOrderExecutionState.CANCELLED,
                 "We did not get a status of cancelled back, we got > " + decisionApi.getWorkOrderStatus(woUri).getStatus());
         WorkOrderDebug woDebug = decisionApi.getWorkOrderDebug(woUri);
+        Map <String, Object> woMap=JacksonUtil.getMapFromJson(woDebug.toString());
+        Assert.assertEquals(((Map <String, Object>)woMap.get("order")).get("workOrderURI").toString(),woUri);
+        Assert.assertNotNull(((Map <String, Object>)woMap.get("order")).get("workerIds"));
         List<WorkerDebug> workerList = woDebug.getWorkerDebugs();
         String resumeStepURI = "";
         for (WorkerDebug runWorker : workerList) {
@@ -748,6 +821,18 @@ public class DecisionApiTests {
             } catch (Exception e) {
             }
             numRetries++;
+        }
+        woDebug = decisionApi.getWorkOrderDebug(resumeURI);
+        List<WorkerDebug> woDebugsList=woDebug.getWorkerDebugs();
+        for (WorkerDebug wd : woDebugsList) {
+            Reporter.log(wd.toString(), true);
+            Map <String, Object> workerMap=JacksonUtil.getMapFromJson(wd.toString());
+            for (Map<String,Object> currStepRecordDebug : (List <Map<String, Object>>)workerMap.get("stepRecordDebugs")) {
+
+            	Object currStepRecord=((Map<String,Object>)currStepRecordDebug).get("stepRecord");
+            	Map<String,Object> stepRecordMap =(Map<String,Object>)currStepRecord;
+            	Assert.assertTrue(stepRecordMap.keySet().containsAll(Arrays.asList(new String[]{"stepURI","name","startTime","endTime"})));
+            }
         }
         Assert.assertEquals(decisionApi.getWorkOrderStatus(resumeURI).getStatus(), WorkOrderExecutionState.FINISHED,
                 "We did not get a status of finsihed back, we got > " + decisionApi.getWorkOrderStatus(resumeURI).getStatus());
@@ -809,6 +894,21 @@ public class DecisionApiTests {
             numRetries++;
         }
         WorkOrderDebug woDebug = decisionApi.getWorkOrderDebug(woUri);
+        Map <String, Object> woMap=JacksonUtil.getMapFromJson(woDebug.toString());
+        Assert.assertEquals(((Map <String, Object>)woMap.get("order")).get("workOrderURI").toString(),woUri);
+        Assert.assertNotNull(((Map <String, Object>)woMap.get("order")).get("workerIds"));
+        
+        List<WorkerDebug> woDebugsList=woDebug.getWorkerDebugs();
+        for (WorkerDebug wd : woDebugsList) {
+            Reporter.log(wd.toString(), true);
+            Map <String, Object> workerMap=JacksonUtil.getMapFromJson(wd.toString());
+            for (Map<String,Object> currStepRecordDebug : (List <Map<String, Object>>)workerMap.get("stepRecordDebugs")) {
+
+            	Object currStepRecord=((Map<String,Object>)currStepRecordDebug).get("stepRecord");
+            	Map<String,Object> stepRecordMap =(Map<String,Object>)currStepRecord;
+            	Assert.assertTrue(stepRecordMap.keySet().containsAll(Arrays.asList(new String[]{"stepURI","name","startTime","endTime"})));
+            }
+        }
 
         // Test state of workorder, step and worker
         Assert.assertEquals(woDebug.getWorkerDebugs().get(0).getStepRecordDebugs().size(), 1, "only first step should be exercised.");
@@ -873,7 +973,23 @@ public class DecisionApiTests {
             }
             numRetries++;
         }
+
         WorkOrderDebug woDebug = decisionApi.getWorkOrderDebug(woUri);
+        Map <String, Object> woMap=JacksonUtil.getMapFromJson(woDebug.toString());
+        Assert.assertEquals(((Map <String, Object>)woMap.get("order")).get("workOrderURI").toString(),woUri);
+        Assert.assertNotNull(((Map <String, Object>)woMap.get("order")).get("workerIds"));
+        
+        List<WorkerDebug> woDebugsList=woDebug.getWorkerDebugs();
+        for (WorkerDebug wd : woDebugsList) {
+            Reporter.log(wd.toString(), true);
+            Map <String, Object> workerMap=JacksonUtil.getMapFromJson(wd.toString());
+            for (Map<String,Object> currStepRecordDebug : (List <Map<String, Object>>)workerMap.get("stepRecordDebugs")) {
+
+            	Object currStepRecord=((Map<String,Object>)currStepRecordDebug).get("stepRecord");
+            	Map<String,Object> stepRecordMap =(Map<String,Object>)currStepRecord;
+            	Assert.assertTrue(stepRecordMap.keySet().containsAll(Arrays.asList(new String[]{"stepURI","name","startTime","endTime"})));
+            }
+        }
 
         // Test state of workorder, step and worker
         Assert.assertEquals(woDebug.getWorkerDebugs().get(0).getStepRecordDebugs().size(), 1, "only first step should be exercised.");
@@ -945,11 +1061,26 @@ public class DecisionApiTests {
             }
             numRetries++;
         }
-
+        WorkOrderDebug woDebug = decisionApi.getWorkOrderDebug(woUri);
+        Map <String, Object> woMap=JacksonUtil.getMapFromJson(woDebug.toString());
+        Assert.assertEquals(((Map <String, Object>)woMap.get("order")).get("workOrderURI").toString(),woUri);
+        Assert.assertNotNull(((Map <String, Object>)woMap.get("order")).get("workerIds"));
         Worker worker = decisionApi.getWorker(woUri, "0");
         Reporter.log("Checking context value from last step", true);
         String contextValue = decisionApi.getContextValue(worker.getWorkOrderURI(), "retValFromErrorHandler");
         Assert.assertEquals(contextValue, "ugh");
+        
+        List<WorkerDebug> woDebugsList=woDebug.getWorkerDebugs();
+        for (WorkerDebug wd : woDebugsList) {
+            Reporter.log(wd.toString(), true);
+            Map <String, Object> workerMap=JacksonUtil.getMapFromJson(wd.toString());
+            for (Map<String,Object> currStepRecordDebug : (List <Map<String, Object>>)workerMap.get("stepRecordDebugs")) {
+
+            	Object currStepRecord=((Map<String,Object>)currStepRecordDebug).get("stepRecord");
+            	Map<String,Object> stepRecordMap =(Map<String,Object>)currStepRecord;
+            	Assert.assertTrue(stepRecordMap.keySet().containsAll(Arrays.asList(new String[]{"stepURI","name","startTime","endTime"})));
+            }
+        }
 
         // Test state of workorder, step and worker
         Assert.assertEquals(decisionApi.getWorkOrderDebug(woUri).getWorkerDebugs().get(0).getStepRecordDebugs().size(), 3, "3 steps should be run.");
@@ -1038,7 +1169,22 @@ public class DecisionApiTests {
             }
             numRetries++;
         }
+        WorkOrderDebug woDebug = decisionApi.getWorkOrderDebug(woUri);
+        Map <String, Object> woMap=JacksonUtil.getMapFromJson(woDebug.toString());
+        Assert.assertEquals(((Map <String, Object>)woMap.get("order")).get("workOrderURI").toString(),woUri);
+        Assert.assertNotNull(((Map <String, Object>)woMap.get("order")).get("workerIds"));
+        
+        List<WorkerDebug> woDebugsList=woDebug.getWorkerDebugs();
+        for (WorkerDebug wd : woDebugsList) {
+            Reporter.log(wd.toString(), true);
+            Map <String, Object> workerMap=JacksonUtil.getMapFromJson(wd.toString());
+            for (Map<String,Object> currStepRecordDebug : (List <Map<String, Object>>)workerMap.get("stepRecordDebugs")) {
 
+            	Object currStepRecord=((Map<String,Object>)currStepRecordDebug).get("stepRecord");
+            	Map<String,Object> stepRecordMap =(Map<String,Object>)currStepRecord;
+            	Assert.assertTrue(stepRecordMap.keySet().containsAll(Arrays.asList(new String[]{"stepURI","name","startTime","endTime"})));
+            }
+        }
         Worker worker = decisionApi.getWorker(woUri, "0");
 
         Reporter.log("Checking workorder results", true);
@@ -1165,6 +1311,23 @@ public class DecisionApiTests {
 
         // second wf finished
         Assert.assertEquals(decisionApi.getWorkOrderStatus(woUri2).getStatus().name(), "FINISHED", "Overall work order status");
+        
+        WorkOrderDebug woDebug = decisionApi.getWorkOrderDebug(woUri2);
+        Map <String, Object> woMap=JacksonUtil.getMapFromJson(woDebug.toString());
+        Assert.assertEquals(((Map <String, Object>)woMap.get("order")).get("workOrderURI").toString(),woUri2);
+        Assert.assertNotNull(((Map <String, Object>)woMap.get("order")).get("workerIds"));
+        
+        List<WorkerDebug> woDebugsList=woDebug.getWorkerDebugs();
+        for (WorkerDebug wd : woDebugsList) {
+            Reporter.log(wd.toString(), true);
+            Map <String, Object> workerMap=JacksonUtil.getMapFromJson(wd.toString());
+            for (Map<String,Object> currStepRecordDebug : (List <Map<String, Object>>)workerMap.get("stepRecordDebugs")) {
+
+            	Object currStepRecord=((Map<String,Object>)currStepRecordDebug).get("stepRecord");
+            	Map<String,Object> stepRecordMap =(Map<String,Object>)currStepRecord;
+            	Assert.assertTrue(stepRecordMap.keySet().containsAll(Arrays.asList(new String[]{"stepURI","name","startTime","endTime"})));
+            }
+        }
     }
 
     @Test(groups = { "decision", "nightly" })
@@ -1246,6 +1409,23 @@ public class DecisionApiTests {
         }
         Assert.assertEquals(decisionApi.getWorkOrderStatus(woUri).getStatus(), WorkOrderExecutionState.ERROR,
                 "We did not get a status of ERROR back, we got > " + decisionApi.getWorkOrderStatus(woUri).getStatus());
+        
+        WorkOrderDebug woDebug = decisionApi.getWorkOrderDebug(woUri);
+        Map <String, Object> woMap=JacksonUtil.getMapFromJson(woDebug.toString());
+        Assert.assertEquals(((Map <String, Object>)woMap.get("order")).get("workOrderURI").toString(),woUri);
+        Assert.assertNotNull(((Map <String, Object>)woMap.get("order")).get("workerIds"));
+        
+        List<WorkerDebug> woDebugsList=woDebug.getWorkerDebugs();
+        for (WorkerDebug wd : woDebugsList) {
+            Reporter.log(wd.toString(), true);
+            Map <String, Object> workerMap=JacksonUtil.getMapFromJson(wd.toString());
+            for (Map<String,Object> currStepRecordDebug : (List <Map<String, Object>>)workerMap.get("stepRecordDebugs")) {
+
+            	Object currStepRecord=((Map<String,Object>)currStepRecordDebug).get("stepRecord");
+            	Map<String,Object> stepRecordMap =(Map<String,Object>)currStepRecord;
+            	Assert.assertTrue(stepRecordMap.keySet().containsAll(Arrays.asList(new String[]{"stepURI","name","startTime","endTime"})));
+            }
+        }
     }
 
     private void loadScripts(RaptureURI tempScripts) {
