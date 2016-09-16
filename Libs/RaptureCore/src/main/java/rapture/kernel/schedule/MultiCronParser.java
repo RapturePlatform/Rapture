@@ -23,9 +23,10 @@
  */
 package rapture.kernel.schedule;
 
-import org.joda.time.DateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.joda.time.DateTime;
 
 import rapture.common.exception.RaptureExceptionFactory;
 
@@ -60,7 +61,7 @@ public class MultiCronParser extends CronParser {
             }
             return result;
         } catch (Exception ex) {
-            throw RaptureExceptionFactory.create("Unsupported cron specification: " + cronSpec);
+            throw RaptureExceptionFactory.create("Unsupported cron specification: " + cronSpec, ex);
         }
     }
         /**
@@ -69,6 +70,7 @@ public class MultiCronParser extends CronParser {
          * @param fromPoint
          * @return
          */
+    @Override
     public DateTime nextRunDate(DateTime fromPoint) {
         DateTime result = null;
         // Take the earliest non-null nextRunDate for each CronParser, and return it.
