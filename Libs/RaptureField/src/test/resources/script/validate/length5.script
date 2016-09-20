@@ -1,0 +1,3 @@
+if (size(value) != 5) {
+    return "The size is not 5";
+}

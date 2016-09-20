@@ -31,13 +31,6 @@ end
 
 assert(somelist == []);
 
-try do
-  somelist = ["Foo"];
-  somelist = somelist - "Bar";
-  assert("Expected an exception", false);
-end
-catch e do
-  assert("Expected an exception", true);
-end
-
+somelist = ["Foo"];
+somelist = somelist - "Bar";
 return true;

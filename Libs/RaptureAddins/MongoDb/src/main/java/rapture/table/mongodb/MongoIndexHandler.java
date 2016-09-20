@@ -361,6 +361,10 @@ public class MongoIndexHandler implements IndexHandler {
                     if (indexQuery.getLimit() != 0) {
                         ret = ret.limit(indexQuery.getLimit());
                     }
+                    
+                    if (indexQuery.getSkip() != 0) {
+                    	ret = ret.skip(indexQuery.getSkip());
+                    }
 
                     return ret;
                 }
@@ -439,6 +443,9 @@ public class MongoIndexHandler implements IndexHandler {
             case NOTEQUAL:
                 inner.append("$ne", whereClause.getValue().getValue());
                 break;
+            case LIKE:
+            	inner.append("$regex", whereClause.getValue().getValue());
+            	break;
             default:
                 break;
             }

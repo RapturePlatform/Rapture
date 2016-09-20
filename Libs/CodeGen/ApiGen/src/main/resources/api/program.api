@@ -1,0 +1,23 @@
+
+[ The program api is used to manage structures that are used to manage things that run in Rapture. ]
+
+api(Program) {
+
+   [Retrieve a program]
+   @entitle=/program/read/$f(programUri)
+   @public RaptureProgram getProgram(String programUri);
+   
+   [Save a program]
+   @entitle=/program/write/$f(programUri)
+   @public void putProgram(String programUri, RaptureProgram program);
+   
+   [remove a program]
+   @entitle=/program/write/$f(programUri)
+   @public void deleteProgram(String programUri);
+ 
+   [Returns full pathnames for an entire subtree as a map of the path to RFI.]
+   @entitle=/program/list/$f(uriPrefix)
+   @public List(RaptureFolderInfo) getChildren(String uriPrefix);
+}
+
+

@@ -1,0 +1,3 @@
+// This script will/should be called with web['entity'] set to the entity we wish to show in a datatable
+
+// TBD: Return the columns (and information about those columns) that we wish to show in our table

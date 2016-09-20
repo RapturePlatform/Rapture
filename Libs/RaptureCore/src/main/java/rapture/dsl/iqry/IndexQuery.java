@@ -38,6 +38,7 @@ public class IndexQuery {
     }
 
     private int limit;
+    private int skip = 0;
 
     public SelectList getOrderBy() {
         return orderBy;
@@ -104,5 +105,13 @@ public class IndexQuery {
 
     public void setLimit(int limit) {
         this.limit = limit;
+    }
+    
+    public void setSkip(int skip) {
+    	this.skip = skip;
+    }
+    
+    public int getSkip() {
+    	return skip;
     }
 }

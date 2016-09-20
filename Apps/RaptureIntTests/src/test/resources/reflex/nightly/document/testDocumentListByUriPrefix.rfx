@@ -24,10 +24,5 @@ assert(size(#doc.listDocsByUriPrefix(docRepoUri+'/folder3',0))==1);
 #doc.deleteDoc(docURIf3d1);
 assert(size(#doc.listDocsByUriPrefix(docRepoUri+'/folder1',2))==2);
 assert(size(#doc.listDocsByUriPrefix(docRepoUri+'/folder1',1))==2);
-try do
-	#doc.listDocsByUriPrefix(docRepoUri+'/folder3',0);
-	assert(false);
-end
-catch e do
-end
+assert(size(#doc.listDocsByUriPrefix(docRepoUri+'/folder3',0))==0);
 return true;

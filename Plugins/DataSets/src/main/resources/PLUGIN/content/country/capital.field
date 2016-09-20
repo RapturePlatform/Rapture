@@ -1,0 +1,7 @@
+{
+    "name" : "//country/capital",
+    "description" : "A country's capital",
+    "validationScript" : "",
+    "fieldType" : "STRING",
+    "fieldTypeExtra" : ""
+}

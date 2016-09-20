@@ -1,0 +1,7 @@
+{
+    "name" : "//currency/minor",
+    "description" : "The number of minor units for a currency",
+    "validationScript" : "",
+    "fieldType" : "NUMBER",
+    "fieldTypeExtra" : ""
+}

@@ -48,11 +48,6 @@ import org.apache.log4j.Appender;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-
 import rapture.common.PluginConfig;
 import rapture.common.PluginManifest;
 import rapture.common.PluginManifestItem;
@@ -76,15 +71,24 @@ import rapture.plugin.util.PluginUtils;
 import rapture.plugin.validators.BlobValidator;
 import rapture.plugin.validators.DocumentValidator;
 import rapture.plugin.validators.EventValidator;
+import rapture.plugin.validators.FieldTransformValidator;
 import rapture.plugin.validators.FieldValidator;
 import rapture.plugin.validators.IdGenValidator;
 import rapture.plugin.validators.JobValidator;
 import rapture.plugin.validators.LockValidator;
 import rapture.plugin.validators.Note;
+import rapture.plugin.validators.ProgramValidator;
 import rapture.plugin.validators.ScriptValidator;
 import rapture.plugin.validators.SeriesValidator;
 import rapture.plugin.validators.SnippetValidator;
+import rapture.plugin.validators.StructureValidator;
+import rapture.plugin.validators.WidgetValidator;
 import rapture.plugin.validators.WorkflowValidator;
+
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 /**
  * This class implements a simple DSL for defining, uploading, downloading, installing, uninstalling, and upgrading collections of user content called "plugins"
@@ -422,9 +426,21 @@ public class PluginShell {
             case TABLE:
                 errors.add(new Note(Note.Level.ERROR, "No Installer available for TABLE scheme"));
                 break;
+            case FIELDTRANSFORM:
+            	FieldTransformValidator.getValidator().validate(content, uri, errors);
+            	break;
+            case STRUCTURE:
+            	StructureValidator.getValidator().validate(content, uri, errors);
+            	break;            	
             case WORKFLOW:
                 WorkflowValidator.getValidator().validate(content, uri, errors);
                 break;
+            case WIDGET:
+            	WidgetValidator.getValidator().validate(content, uri, errors);
+            	break;
+            case PROGRAM:
+            	ProgramValidator.getValidator().validate(content, uri, errors);
+            	break;
             default:
                 errors.add(new Note(Note.Level.WARNING, "No validator registered for type " + uri.getScheme()));
                 break;

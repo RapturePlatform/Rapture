@@ -1,0 +1,7 @@
+s = #transform.getStructure('//test/wp.order');
+fs = s['fields'];
+for f in fs do
+  fi = #transform.getField(f.fieldUri);
+println("field is ${f}, info is ${fi}");
+end
+

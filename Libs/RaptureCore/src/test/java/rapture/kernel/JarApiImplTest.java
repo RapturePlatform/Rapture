@@ -26,8 +26,8 @@ package rapture.kernel;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
@@ -47,7 +47,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import rapture.common.RaptureFolderInfo;
-import rapture.common.exception.RaptureException;
 import rapture.common.jar.JarCache;
 import rapture.kernel.script.KernelScript;
 import rapture.kernel.script.ScriptJar;
@@ -119,11 +118,10 @@ public class JarApiImplTest {
 
     @Test
     public void testListJarsByUriPrefix() {
-        try {
-            jarApi.listJarsByUriPrefix("jar://bogus", -1);
-            fail("Should have thrown error since this doesn't exist");
-        } catch (RaptureException e) {
-        }
+
+        Map<String, RaptureFolderInfo> res = jarApi.listJarsByUriPrefix("jar://bogus", -1);
+        assertNotNull(res);
+        assertTrue(res.isEmpty());
 
         jarApi.putJar("jar://folder1/jar-1.jar", SAMPLE_JAR);
         jarApi.putJar("jar://folder1/jar-2.jar", SAMPLE_JAR);

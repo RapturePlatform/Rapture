@@ -146,8 +146,12 @@ public enum Kernel {
         return INSTANCE.event;
     }
 
-    public static FieldsApiImplWrapper getFields() {
-        return INSTANCE.fields;
+    public static TransformApiImplWrapper getTransform() {
+        return INSTANCE.transform;
+    }
+    
+    public static EntityApiImplWrapper getEntity() {
+    	return INSTANCE.entity;
     }
 
     public static IdGenApiImplWrapper getIdGen() {
@@ -236,6 +240,14 @@ public enum Kernel {
     
     public static OperationApiImplWrapper getOperation() {
     	return INSTANCE.operation;
+    }
+    
+    public static WidgetApiImplWrapper getWidget() {
+    	return INSTANCE.widget;
+    }
+    
+    public static ProgramApiImplWrapper getProgram() {
+    	return INSTANCE.program;
     }
 
     public static MetricsService getMetricsService() {
@@ -448,7 +460,8 @@ public enum Kernel {
     private LockApiImplWrapper lock;
     private EventApiImplWrapper event;
     private AuditApiImplWrapper audit;
-    private FieldsApiImplWrapper fields;
+    private TransformApiImplWrapper transform;
+    private EntityApiImplWrapper entity;
     private JarApiImplWrapper jar;
     private BlobApiImplWrapper blob;
 
@@ -466,6 +479,8 @@ public enum Kernel {
     private SearchApiImplWrapper search;
     private TagApiImplWrapper tag;
     private OperationApiImplWrapper operation;
+    private WidgetApiImplWrapper widget;
+    private ProgramApiImplWrapper program;
 
     private MetricsService metricsService = MetricsFactory.createDummyService(); // initialize to a dummy service initially, as this is not nullable
     private LogManagerConnection logManagerConnection;
@@ -711,8 +726,10 @@ public enum Kernel {
             kernelApis.add(event);
             audit = new AuditApiImplWrapper(this);
             kernelApis.add(audit);
-            fields = new FieldsApiImplWrapper(this);
-            kernelApis.add(fields);
+            transform = new TransformApiImplWrapper(this);
+            kernelApis.add(transform);
+            entity = new EntityApiImplWrapper(this);
+            kernelApis.add(entity);
             blob = new BlobApiImplWrapper(this);
             kernelApis.add(blob);
             jar = new JarApiImplWrapper(this);
@@ -745,6 +762,10 @@ public enum Kernel {
             kernelApis.add(tag);
             operation = new OperationApiImplWrapper(this);
             kernelApis.add(operation);
+            widget = new WidgetApiImplWrapper(this);
+            kernelApis.add(widget);
+            program = new ProgramApiImplWrapper(this);
+            kernelApis.add(program);
 
             // sys depends on series and doc
             sys = new SysApiImplWrapper(this);

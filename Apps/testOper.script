@@ -1,0 +1,4 @@
+params = {};
+params['trader'] = 'fred';
+x = #operation.invokeParallel('//otest/test1/one',['oper1','oper2'], params);
+println(json(x));

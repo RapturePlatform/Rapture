@@ -66,9 +66,9 @@ public class BlobApiFileTest extends AbstractFileTest {
     static String blobURI = blobAuthorityURI + "/SwampThing";
 
     @BeforeClass
-    static public void setUp() {        
+    static public void setUp() {
         AbstractFileTest.setUp();
-        
+
         config.RaptureRepo = REPO_USING_FILE;
         config.InitSysConfig = "NREP {} USING FILE { prefix=\"/tmp/" + auth + ".sys.config\"}";
         // config.DefaultPipelineTaskStatus = "TABLE {} USING FILE {prefix=\"/tmp/" + auth + "\"}";
@@ -87,10 +87,9 @@ public class BlobApiFileTest extends AbstractFileTest {
 
     @AfterClass
     static public void cleanUp() {
-        if (blobImpl.blobRepoExists(callingContext, "blob://dummy"))
-            blobImpl.deleteBlobRepo(callingContext, "blob://dummy");
+        if (blobImpl.blobRepoExists(callingContext, "blob://dummy")) blobImpl.deleteBlobRepo(callingContext, "blob://dummy");
     }
-    
+
     static boolean firstTime = true;
 
     @Test
@@ -104,7 +103,7 @@ public class BlobApiFileTest extends AbstractFileTest {
         assertEquals(META_USING_FILE, blobRepoConfig.getMetaConfig());
         assertEquals(auth, blobRepoConfig.getAuthority());
     }
-    
+
     @Test
     public void testGetChildren() {
         testPutAndGetBlob();
@@ -113,7 +112,10 @@ public class BlobApiFileTest extends AbstractFileTest {
         Map<String, RaptureFolderInfo> children = blobImpl.listBlobsByUriPrefix(callingContext, blobAuthorityURI, -1);
         int size = children.size();
         assertEquals(1, children.size());
-        
+        children = blobImpl.listBlobsByUriPrefix(callingContext, "blob://thiswontexist", -1);
+        assertTrue(children.isEmpty());
+        children = blobImpl.listBlobsByUriPrefix(callingContext, "blob://thiswontexist/so/returnempty", -1);
+        assertTrue(children.isEmpty());
     }
 
     @Test
@@ -142,14 +144,14 @@ public class BlobApiFileTest extends AbstractFileTest {
         } catch (Exception e) {
             assertTrue(e.getMessage(), e.getMessage().contains("prefix"));
         }
-        
+
         try {
             // because the config gets stored even though it's not valid
             blobImpl.deleteBlobRepo(callingContext, dummyAuthorityURI);
         } catch (Exception e) {
             assertTrue(e.getMessage(), e.getMessage().contains("prefix"));
         }
-        
+
         try {
             blobImpl.createBlobRepo(callingContext, dummyAuthorityURI, "BLOB {} USING FILE { prefix=\"\" }", META_USING_FILE);
             BlobContainer blob = blobImpl.getBlob(callingContext, dummyURI);
@@ -160,7 +162,7 @@ public class BlobApiFileTest extends AbstractFileTest {
 
         // because the config gets stored even though it's not valid
         blobImpl.deleteBlobRepo(callingContext, dummyAuthorityURI);
-        
+
         Map<String, String> hashMap = new HashMap<>();
         try {
             // Don't pass NULL - that's bad.
@@ -173,7 +175,7 @@ public class BlobApiFileTest extends AbstractFileTest {
 
         // because the config gets stored even though it's not valid
         blobImpl.deleteBlobRepo(callingContext, dummyAuthorityURI);
-        
+
         hashMap.put("prefix", "  ");
         try {
             blobImpl.createBlobRepo(callingContext, dummyAuthorityURI, "BLOB {} USING FILE { prefix=\"  \" }", "REP {} USING FILE { prefix=\"  \" }");
@@ -193,19 +195,19 @@ public class BlobApiFileTest extends AbstractFileTest {
         blobImpl.createBlobRepo(callingContext, "blob://dummy2", "BLOB {} USING FILE { prefix=\"/tmp/foo\" }", "REP {} USING FILE { prefix=\"/tmp/foo\" }");
 
     }
-    
+
     @Test
     public void testGetBlobRepositories() {
         testCreateAndGetRepo();
         List<BlobRepoConfig> before = blobImpl.getBlobRepoConfigs(callingContext);
-        
+
         blobImpl.createBlobRepo(callingContext, "blob://somewhereelse/",
                 "BLOB {} USING FILE {prefix=/tmp/somewhereelse\"}",
                 "REP {} USING FILE {prefix=/tmp/somewhereelse\"}");
 
         List<BlobRepoConfig> after = blobImpl.getBlobRepoConfigs(callingContext);
         // And then there were three
-        assertEquals(JacksonUtil.jsonFromObject(after), before.size()+1, after.size());
+        assertEquals(JacksonUtil.jsonFromObject(after), before.size() + 1, after.size());
     }
 
     @Test
@@ -251,7 +253,7 @@ public class BlobApiFileTest extends AbstractFileTest {
             blobImpl.getBlob(callingContext, blobURI);
             fail("Repository should have been deleted");
         } catch (RaptureException e) {
-            assertEquals(Messages.getMessage("Api", "NoSuchRepo", new String[] { blobAuthorityURI } , null).format(), e.getMessage());
+            assertEquals(Messages.getMessage("Api", "NoSuchRepo", new String[] { blobAuthorityURI }, null).format(), e.getMessage());
         }
     }
 
@@ -268,7 +270,7 @@ public class BlobApiFileTest extends AbstractFileTest {
         Long blobSize = blobImpl.getBlobSize(callingContext, blobURI);
         assertEquals(14L, blobSize.longValue());
     }
-    
+
     // deleteBlobsByUriPrefix called on a non-existent blob deletes all existing blobs in folder
     @Test
     public void testRap3945() {
@@ -283,21 +285,21 @@ public class BlobApiFileTest extends AbstractFileTest {
         blobImpl.putBlob(callingContext, blobURI2, SAMPLE_BLOB, MediaType.CSS_UTF_8.toString());
         blobImpl.putBlob(callingContext, blobURI3, SAMPLE_BLOB, MediaType.CSS_UTF_8.toString());
         blobImpl.putBlob(callingContext, blobURI4, SAMPLE_BLOB, MediaType.CSS_UTF_8.toString());
-        
+
         BlobContainer blob;
-        
+
         blob = blobImpl.getBlob(callingContext, blobURI1);
         assertNotNull(blob);
         assertNotNull(blob.getContent());
         assertArrayEquals(SAMPLE_BLOB, blob.getContent());
-        
+
         blob = blobImpl.getBlob(callingContext, blobURI4);
         assertNotNull(blob);
         assertNotNull(blob.getContent());
         assertArrayEquals(SAMPLE_BLOB, blob.getContent());
-        
+
         assertNull(blobImpl.getBlob(callingContext, blobURI5));
-                
+
         try {
             blobImpl.deleteBlobsByUriPrefix(callingContext, blobURI5);
             // SHOULD FAIL OR DO NOTHING
@@ -307,6 +309,6 @@ public class BlobApiFileTest extends AbstractFileTest {
         blob = blobImpl.getBlob(callingContext, blobURI1);
         assertNotNull(blob);
         assertNotNull(blob.getContent());
-        assertArrayEquals(SAMPLE_BLOB, blob.getContent());        
+        assertArrayEquals(SAMPLE_BLOB, blob.getContent());
     }
 }

@@ -1,0 +1,16 @@
+{
+    "name" : "//standard/trade/trade",
+    "description" : "A trade structure used in testing",
+    "fields" : [
+            {
+               "key" : "id",
+               "fieldUri" : "//common/upperId",
+               "mandatory" : true
+            },
+            {
+                "key" : "leg",
+                "fieldUri" : "//common/leg",
+                "mandatory" : true
+            }
+        ]
+}

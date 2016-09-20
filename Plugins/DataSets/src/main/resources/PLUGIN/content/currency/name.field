@@ -1,0 +1,7 @@
+{
+    "name" : "//currency/name",
+    "description" : "The name of a currency",
+    "validationScript" : "",
+    "fieldType" : "STRING",
+    "fieldTypeExtra" : ""
+}

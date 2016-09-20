@@ -1,0 +1,7 @@
+{
+    "name" : "//country/id",
+    "description" : "A country's alpha 3 code (ISO 3166-1), used as a unique id",
+    "validationScript" : "",
+    "fieldType" : "STRING",
+    "fieldTypeExtra" : ""
+}
