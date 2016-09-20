@@ -41,6 +41,8 @@ import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 
 import rapture.common.RaptureFolderInfo;
 import rapture.common.RaptureScriptLanguage;
@@ -1428,6 +1430,58 @@ public class DecisionApiTests {
         }
     }
 
+    @Test(groups = { "decision", "nightly" })
+    public void testWorkordersWithContextLinks() {
+        Map<String, Object> lookup = ImmutableMap.of("foo", "bar", "hope", "anchor", "Bolton", "Wanderers", "word", "association", "association", "football");
+        RaptureURI repo = helper.getRandomAuthority(Scheme.DOCUMENT);
+        helper.configureTestRepo(repo, "MONGODB");
+        String docPath = new RaptureURI.Builder(repo).docPath("doc" + System.nanoTime()).build().toString();
+
+        Step returnStep = new Step();
+        returnStep.setName("firstStep");
+        returnStep.setTransitions(Lists.<Transition> newArrayList());
+        List<Step> steps = Lists.newArrayList(returnStep);
+        
+        Workflow contextLiteralLinksWF = new Workflow();
+        contextLiteralLinksWF.setStartStep("firstStep");
+        contextLiteralLinksWF.setSteps(steps);
+        String wfURI = "workflow://" + workFlowPrefix + "/nightly/linkTest";
+        contextLiteralLinksWF.setWorkflowURI(wfURI);
+        decisionApi.putWorkflow(contextLiteralLinksWF);
+        workflowList.add(wfURI);
+        
+        String workOrderUri = decisionApi.createWorkOrder(wfURI, new HashMap<String,String>());
+        int numRetries = 0;
+        long waitTimeMS = 1000;
+        while (IntegrationTestHelper.isWorkOrderRunning(decisionApi, workOrderUri) && numRetries < 20) {
+            Reporter.log("Checking workorder status, retry count=" + numRetries + ", waiting " + (waitTimeMS / 1000) + " seconds...", true);
+            try {
+                Thread.sleep(waitTimeMS);
+            } catch (Exception e) {
+            }
+            numRetries++;
+        }
+
+        helper.getDocApi().putDoc( docPath, JacksonUtil.jsonFromObject(lookup));
+
+        // POSITIVE TESTS
+        decisionApi.setContextLink( workOrderUri, "BAR", docPath + "#foo");
+        decisionApi.setContextLink( workOrderUri, "FIZZ", docPath + "#Bolton");
+        String value = decisionApi.getContextValue(workOrderUri, "BAR");
+        Assert.assertEquals("bar", value);
+        value = decisionApi.getContextValue(workOrderUri, "FIZZ");
+        Assert.assertEquals("Wanderers", value);
+        
+        // NEGATIVE TESTS
+        Assert.assertNull(decisionApi.getContextValue(workOrderUri, "LIZZ"));
+        decisionApi.setContextLink( workOrderUri, "BIZZ", docPath + "#NONEXIST");
+        try {
+        	value = decisionApi.getContextValue(workOrderUri, "BIZZ");
+        	Assert.fail();
+        } catch (Exception e) {}
+        
+    }
+    
     private void loadScripts(RaptureURI tempScripts) {
         HttpScriptApi scriptApi = helper.getScriptApi();
         String rootPath = System.getProperty("user.dir") + File.separator + "build" + File.separator + "resources" + File.separator + "test" + File.separator
