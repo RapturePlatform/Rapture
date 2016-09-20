@@ -85,21 +85,6 @@ public class ExecutionContextUtil {
         }
     }
 
-    private static ContextValueType getValueType(String retVal) {
-        if (retVal == null || retVal.isEmpty()) {
-            return ContextValueType.LITERAL;
-        } else if (retVal.charAt(0) == ContextValueType.LINK.marker) {
-            return ContextValueType.LINK;
-        } else if (retVal.charAt(0) == ContextValueType.LITERAL.marker) {
-            return ContextValueType.LITERAL;
-        } else if (retVal.charAt(0) == ContextValueType.TEMPLATE.marker) {
-            return ContextValueType.TEMPLATE;
-        } else {
-            return null;
-        }
-
-    }
-
     private static String evalLinkExpression(CallingContext ctx, String uri) {
         // The content here is a uri to content, with an attribute that
         // describes the field we want
