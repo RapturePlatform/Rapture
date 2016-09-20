@@ -31,12 +31,16 @@ import static org.junit.Assert.assertThat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 
 import rapture.common.CallingContext;
 import rapture.common.RaptureScriptLanguage;
@@ -47,12 +51,11 @@ import rapture.common.dp.Step;
 import rapture.common.dp.Transition;
 import rapture.common.dp.WorkOrderDebug;
 import rapture.common.dp.Workflow;
+import rapture.common.impl.jackson.JacksonUtil;
 import rapture.common.model.RaptureExchange;
 import rapture.common.model.RaptureExchangeQueue;
 import rapture.common.model.RaptureExchangeType;
 import rapture.config.ConfigLoader;
-
-import com.google.common.collect.Lists;
 
 public class DecisionApiTest {
     private static CallingContext ctx = ContextFactory.getKernelUser();
@@ -128,6 +131,7 @@ public class DecisionApiTest {
         for (i = 0; i < SIZE; i++) {
             final String var = "var" + Integer.toString(i);
             threads[i] = new Runnable() {
+                @Override
                 public void run() {
                     for (int j = 0; j < SIZE; j++) {
                         String varJ = var + "." + Integer.toString(j);
@@ -226,5 +230,47 @@ public class DecisionApiTest {
         workflow.setSteps(steps);
         workflow.setWorkflowURI(workflowUri);
         Kernel.getDecision().putWorkflow(ctx, workflow);
+    }
+
+    @Test
+    public void linkTest() {
+        CallingContext context = ContextFactory.getKernelUser();
+        Map<String, Object> lookup = ImmutableMap.of("foo", "bar", "hope", "anchor", "Bolton", "Wanderers", "word", "association", "association", "football");
+        String uri = "document://look/up/table";
+
+        Step returnStep = new Step();
+        returnStep.setExecutable(PUT_SCRIPT);
+        returnStep.setName("get");
+        returnStep.setTransitions(Lists.<Transition> newArrayList());
+        List<Step> steps = Lists.newArrayList(returnStep);
+        String workOrderUri = createWorkOrder("get", steps, LITERAL_RETURN_WORKFLOW);
+
+        Kernel.getDoc().putDoc(context, uri, JacksonUtil.jsonFromObject(lookup));
+
+        Kernel.getDecision().setContextLink(context, workOrderUri, "Bar", uri + "#foo");
+        String value = Kernel.getDecision().getContextValue(context, workOrderUri, "Bar");
+        assertEquals("bar", value);
+    }
+
+    @Test
+    public void templateTest() {
+        CallingContext context = ContextFactory.getKernelUser();
+
+        Step returnStep = new Step();
+        returnStep.setExecutable(PUT_SCRIPT);
+        returnStep.setName("get");
+        returnStep.setTransitions(Lists.<Transition> newArrayList());
+        List<Step> steps = Lists.newArrayList(returnStep);
+        String workOrderUri = createWorkOrder("get", steps, LITERAL_RETURN_WORKFLOW);
+
+        Kernel.getDecision().setContextLiteral(context, workOrderUri, "MANCHESTER", "Bolton");
+        Kernel.getDecision().setContextLiteral(context, workOrderUri, "UNITED", "Wanderers");
+        Kernel.getDecision().setContextLiteral(context, workOrderUri, "TEAM", "${MANCHESTER} ${UNITED} FOREVER");
+        String value = Kernel.getDecision().getContextValue(context, workOrderUri, "TEAM");
+        assertEquals("${MANCHESTER} ${UNITED} FOREVER", value);
+
+        Kernel.getDecision().setContextTemplate(context, workOrderUri, "TEAM", "${MANCHESTER} ${UNITED} FOREVER");
+        value = Kernel.getDecision().getContextValue(context, workOrderUri, "TEAM");
+        assertEquals("Bolton Wanderers FOREVER", value);
     }
 }
