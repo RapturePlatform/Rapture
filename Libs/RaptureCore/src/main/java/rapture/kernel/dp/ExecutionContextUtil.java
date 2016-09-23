@@ -67,8 +67,11 @@ public class ExecutionContextUtil {
         }
         if (valueType == ContextValueType.LINK) {
             return evalLinkExpression(callingContext, toEval.substring(1));
-        } else if (valueType == ContextValueType.LITERAL || valueType == ContextValueType.NULL) {
+        } else if (valueType == ContextValueType.LITERAL) {
             return evalLiteral(toEval);
+        } else if (valueType == ContextValueType.NULL) {
+            log.warn("Variable " + varAlias + " has no type - assuming Literal");
+            return toEval;
         } else if (valueType == ContextValueType.TEMPLATE) {
             return evalTemplateECF(callingContext, workOrderUri, toEval.substring(1), view);
         } else {
