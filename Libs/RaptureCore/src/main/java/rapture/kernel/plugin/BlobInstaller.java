@@ -23,22 +23,29 @@
  */
 package rapture.kernel.plugin;
 
+import com.google.common.net.MediaType;
+
 import rapture.common.BlobContainer;
 import rapture.common.CallingContext;
-import rapture.common.ContentEnvelope;
 import rapture.common.PluginTransportItem;
 import rapture.common.RaptureURI;
 import rapture.common.api.BlobApi;
+import rapture.common.exception.RaptureException;
 import rapture.common.impl.jackson.JacksonUtil;
+import rapture.kernel.JarApiImpl;
 import rapture.kernel.Kernel;
 
 public class BlobInstaller implements RaptureInstaller {
     @Override
     public void install(CallingContext context, RaptureURI uri, PluginTransportItem item) {
-        BlobContainer blob = JacksonUtil.objectFromJson(item.getContent(), BlobContainer.class);
         BlobApi api = Kernel.getBlob();
-        api.putBlob(context, uri.toString(), blob.getContent(),
-                blob.getHeaders().get(ContentEnvelope.CONTENT_TYPE_HEADER));
+        try {
+            BlobContainer blob = JacksonUtil.objectFromJson(item.getContent(), BlobContainer.class);
+        } catch (RaptureException e) {
+            // It's a raw blob without a container
+            String mimeType = (uri.getDocPath().endsWith(".jar")) ? JarApiImpl.CONTENT_TYPE : MediaType.ANY_APPLICATION_TYPE.toString();
+            api.putBlob(context, uri.toString(), item.getContent(), mimeType);
+        }
     }
 
     @Override
