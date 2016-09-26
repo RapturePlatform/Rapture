@@ -1,0 +1,8 @@
+{
+    "id" : "ABC123",
+    "leg" : {
+        "cusip" : "XYZ12345",
+        "amount" : 200000,
+        "buySell" : "BUY"
+    }
+}

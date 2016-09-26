@@ -229,7 +229,7 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
         DocumentRepoConfigStorage.add(internalUri, drc, context.getUser(), "Mark config as deleted");
         log.info("Config for " + internalUri.toString() + " marked as deleted ");
         removeRepoFromCache(internalUri.getAuthority());
-        
+
         String idGenUri = getDocRepoIdGenUri(context, docRepoUri);
         if (Kernel.getIdGen().idGenExists(context, idGenUri)) {
             Kernel.getIdGen().deleteIdGen(context, idGenUri);
@@ -427,7 +427,10 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
         RaptureURI internalUri = new RaptureURI(docUri, Scheme.DOCUMENT);
         Repository repository = getRepoFromCache(internalUri.getAuthority());
         DocumentRepoConfig type = getConfigFromCache(internalUri.getAuthority());
-
+        if (repository == null) {
+            log.warn("No repository for " + docUri);
+            return false;
+        }
         boolean ret = repository.removeDocument(internalUri.getDocPath(), context.getUser(), "");
         if (ret) {
             SearchPublisher.publishDeleteMessage(context, type, internalUri);
@@ -811,7 +814,7 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
 
         Repository repository = getRepoFromCache(authority);
         if (repository == null) {
-            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, apiMessageCatalog.getMessage("NoSuchRepo", internalUri.toAuthString())); //$NON-NLS-1$
+            return ret;
         }
 
         String parentDocPath = internalUri.getDocPath() == null ? "" : internalUri.getDocPath();
@@ -845,9 +848,10 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
             }
 
             List<RaptureFolderInfo> children = repository.getChildren(currParentDocPath);
-            if (((children == null) || children.isEmpty()) && (currDepth == 0) && internalUri.hasDocPath()) throw RaptureExceptionFactory
-                    .create(HttpURLConnection.HTTP_BAD_REQUEST, apiMessageCatalog.getMessage("NoSuchFolder", internalUri.toString())); //$NON-NLS-1$
-            else if (children != null) {
+            if (((children == null) || children.isEmpty()) && (currDepth == 0) && internalUri.hasDocPath()) {
+                // return empty result
+                return ret;
+            } else if (children != null) {
                 for (RaptureFolderInfo child : children) {
                     String name = child.getName();
                     String childDocPath = currParentDocPath + (top ? "" : "/") + name;

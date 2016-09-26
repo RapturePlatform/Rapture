@@ -218,11 +218,13 @@ public abstract class BaseReflexScriptPageServlet extends BaseServlet {
             if (cause instanceof RaptureException) {
                 rapEx = (RaptureException) cause;
             } else {
-                if (re.getMessage() != null) {
-                    rapEx = RaptureExceptionFactory.create("Error calling Reflex script: " + re.getMessage(), re);
-                } else {
-                    rapEx = RaptureExceptionFactory.create("Error calling Reflex script", re);
+                String msg = re.getMessage();
+                if (msg == null) msg = "Error calling Reflex script";
+                else {
+                    int i = msg.indexOf('\n');
+                    if (i > 0) msg = msg.substring(0, i);
                 }
+                rapEx = RaptureExceptionFactory.create(msg, re);
             }
             logger.error("Cannot execute script " + getPrintableScript(req) + " : " + rapEx.getFormattedMessage());
 

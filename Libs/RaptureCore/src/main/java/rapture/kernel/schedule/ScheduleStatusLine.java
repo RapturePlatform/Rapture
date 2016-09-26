@@ -26,6 +26,12 @@ package rapture.kernel.schedule;
 import java.util.Date;
 
 public class ScheduleStatusLine {
+    @Override
+    public String toString() {
+        return "ScheduleStatusLine [name=" + name + ", schedule=" + schedule + ", description=" + description + ", when=" + when + ", activated=" + activated
+                + ", status=" + status + ", predecessor=" + predecessor + ", majorLoc=" + majorLoc + ", minorLoc=" + minorLoc + "]";
+    }
+
     public String getName() {
         return name;
     }

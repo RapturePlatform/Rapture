@@ -10,6 +10,7 @@ dependencies {
     compile project(':RaptureCommon')
     compile project(':WorkflowsCommon')
     compile project(':CodeGen:PersistenceGen')
+    compile project(':RaptureField')
     compile 'org.antlr:antlr-runtime:3.5.2', { transitive = false }
     antlr3 'org.antlr:antlr:3.5.2'
     compile 'org.apache.lucene:lucene-core:4.10.3'

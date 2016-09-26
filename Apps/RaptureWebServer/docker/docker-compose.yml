@@ -1,0 +1,45 @@
+version: '2'
+services:
+  apiserver:
+    image: 'incapture/webserver:xESlatest'
+    environment:
+      - RAPTURE_RANDOMIZEDEFAULTPASSWORDS=False
+      - SEARCH_ON=False
+    links:
+      - 'mongo:mongo'
+      - 'rabbit:rabbit'
+    ports:
+      - '8080:8080'
+      - '8665:8665'
+    restart: always
+    depends_on:
+      - rabbit
+      - mongo
+  mongo:
+    image: 'incapture/mongo:latest'
+    ports:
+      - '27017:27017'
+    restart: always
+    depends_on:
+      - rabbit
+  rabbit:
+    image: 'incapture/rabbit:latest'
+    ports:
+      - '5672:5672'
+      - '15672:15672'
+    restart: always
+  rim:
+    image: 'incapture/rim:standalone'
+    ports:
+      - '8000:8000'
+    links:
+      - 'apiserver:curtis'
+    restart: always
+    depends_on:
+      - apiserver
+  idpdata:
+    image: 'incapture/idpdata:standalone'
+    entrypoint: /tmp/feat.sh
+    links:
+      - 'apiserver:curtis'
+    restart: 'on-failure'

@@ -1,0 +1,7 @@
+{
+    "name" : "//test/common/trader",
+    "description" : "A trader",
+    "validationScript" : "",
+    "fieldType" : "STRING",
+    "fieldTypeExtra" : ""
+}

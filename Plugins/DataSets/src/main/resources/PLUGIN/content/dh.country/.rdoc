@@ -1,0 +1,11 @@
+{
+  "authority":"dh.country",
+  "strictCheck":true,
+  "indexes":[],
+  "fullTextIndexes":[],
+  "documentRepo":
+     {
+        "authority":"dh.country",
+        "config":"NREP {} USING MONGODB { prefix=\"dh.country\" }"
+     }
+}

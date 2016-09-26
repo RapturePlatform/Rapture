@@ -226,7 +226,7 @@ public class ResourceBasedTest {
 
             String[] lines = token.getInputStream().substring(0, token.getInputStream().size() - 1).split("\n");
 
-            sb.append("Error at token ").append(token.getText()).append(" on line ").append(e.line).append(" while parsing: \n");
+            sb.append("Error at token ").append(token.getText()).append(" on line ").append(e.line).append("\n");
 
             int start = Math.max(0, token.getLine() - 5);
             int end = Math.min(lines.length, token.getLine() + 5);

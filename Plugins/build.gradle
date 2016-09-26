@@ -1,0 +1,167 @@
+import groovy.json.JsonSlurper
+import groovy.text.SimpleTemplateEngine
+
+project.group = 'net.rapture'
+
+ext {
+    platformVersion = "3.0.4"
+}
+
+subprojects {
+    apply plugin: 'application'
+
+    project.group = parent.group
+    project.version = parent.version
+
+    project.ext {
+        generatedMainJava = "$buildDir/generated-sources/main/java"
+        generatedTestJava = "$buildDir/generated-sources/test/java"
+    }
+
+    repositories {
+	mavenLocal()
+	mavenCentral()
+	jcenter()
+	maven {
+		url "https://oss.sonatype.org/content/repositories/releases/"
+	}
+    }
+
+    def loggingVersion = '1.6.1'
+    def httpVersion = '4.2.2'
+    def jacksonVersion = '1.9.2'
+
+    // Include messages/bundle properties files from the java area
+
+    jar {
+        manifest {
+            attributes "Implementation-Vendor" : "Incapture Technologies"
+            attributes "Implementation-Version" : project.version
+            attributes "Built-By" : System.getProperty('user.name')
+        }
+    }
+
+    tasks.withType(Zip) { task ->
+        task.doLast {
+            ant.checksum file: it.archivePath
+        }
+    }
+
+    configurations {
+        pluginShell
+    }
+
+    dependencies {
+        compile "net.rapture:RaptureAPI:$platformVersion"
+        compile "net.rapture:RaptureCommon:$platformVersion"
+
+        pluginShell "net.rapture:PluginInstallerLib:$platformVersion"
+        pluginShell "net.rapture:RaptureAPI:$platformVersion"
+        pluginShell "net.rapture:PluginInstaller:$platformVersion"
+    }
+
+    // make a symlink from src into build, force overwrite
+    task symlinkLocal () {
+        File f = file('src/main/resources/PLUGIN/plugin.txt')
+        inputs.file f
+        FileTree sourceTree = fileTree(dir: 'src/main/resources/PLUGIN')
+        FileTree contentTree = sourceTree.matching {
+            exclude 'plugin.txt'
+            exclude '**/.blob'
+            exclude '**/*.bits'
+            exclude '**/*.csv'
+            exclude '**/*.idgen'
+            exclude '**/*.jjs'
+            exclude '**/*.rdoc'
+            exclude '**/*.rfx'
+            exclude '**/*.script'
+        }
+        FileTree otherTree = sourceTree.matching {
+            include 'plugin.txt'
+            include '**/.blob'
+            include '**/*.bits'
+            include '**/*.csv'
+            include '**/*.idgen'
+            include '**/*.jjs'
+            include '**/*.rdoc'
+            include '**/*.rfx'
+            include '**/*.script'
+        }
+
+        def destDir = file(new File('localPlugin'))
+        if (f.exists()) doLast {
+            def fileJsonConfig = f.getText('UTF-8')
+            def pconfig = new JsonSlurper().parseText(fileJsonConfig)
+            File pluginDir = new File(destDir, pconfig.plugin)
+            if (!pluginDir.exists()) {
+                println("creating localPlugin")
+                pluginDir.mkdirs()
+            }
+            // add .bits to symlink names in content tree
+            contentTree.visit { element ->
+                if (element.isDirectory()) {
+                    File targetDir = new File(pluginDir, element.getPath())
+                    targetDir.mkdirs()
+                } else {
+                    def source = element.getFile().getPath()
+                    File targetFile = new File(pluginDir, element.getPath())
+                    def target = targetFile.getPath()
+                    exec { commandLine "ln", "-f", "-s", "${source}", "${target}.bits" }
+                }
+            }
+            // just symlink everything else
+            otherTree.visit { element ->
+                if (element.isDirectory()) {
+                    File targetDir = new File(pluginDir, element.getPath())
+                    targetDir.mkdirs()
+                } else {
+                    def source = element.getFile().getPath()
+                    File targetFile = new File(pluginDir, element.getPath())
+                    def target = targetFile.getPath()
+
+                    exec { commandLine "ln", "-f", "-s", "${source}", "${target}" }
+                }
+            }
+        }
+    }
+
+    // don't use gradle file delete, it follows symlinks and deletes
+    task cleanLocal () {
+        def f = file(new File('localPlugin'))
+        if (f.exists()) doLast {
+            exec { commandLine "rm", "-f", "-r",  "${f.getPath()}" }
+        }
+    }
+
+    task installLocal(type:JavaExec, dependsOn: symlinkLocal) {
+        File destDir = new File('localPlugin')
+        inputs.dir destDir
+        // always run, never up to date
+        outputs.upToDateWhen { false }
+        File f = file('src/main/resources/PLUGIN/plugin.txt')
+        // disable if there is no localPlugin dir
+        enabled = f.exists()
+        if (enabled) {
+            def fileJsonConfig = f.getText('UTF-8')
+            def pconfig = new JsonSlurper().parseText(fileJsonConfig)
+            def pluginName = pconfig.plugin
+            main = "rapture.plugin.install.PluginShell"
+            args "-loaddir", "${destDir}", "-importoverlay", "file"
+            classpath configurations.pluginShell
+        }
+    }
+
+    clean.dependsOn cleanLocal
+}
+
+task symlinkLocal
+symlinkLocal.dependsOn subprojects.symlinkLocal
+
+task installLocal
+installLocal.dependsOn subprojects.installLocal
+
+task cleanLocal
+cleanLocal.dependsOn subprojects.cleanLocal
+
+task clean
+clean.dependsOn cleanLocal

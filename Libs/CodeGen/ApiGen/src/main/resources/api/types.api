@@ -34,21 +34,123 @@ type BlobRepoConfig(@package=rapture.common.model) {
   String authority;
   String metaConfig;
 }
-
-
+ 
+[Describes the file type]
+type FieldType (@package=rapture.common) {
+   String STRING;
+   String NUMBER;
+   String MAP;
+   String ARRAY;
+   String BOOL;
+}
+   
 [ A RaptureField is the definition of a concept in Rapture, referenced within a type or a series of types.]
 @Addressable(scheme = FIELD(false))
-@Storable(storagePath : {authority, name}, prefix="field")
+@Storable(storagePath : {name}, prefix="field")
 type RaptureField(@package=rapture.common) {
-    String authority;
-    String category;
     String name;
-    String longName;
     String description;
-    String units;
-    RaptureGroupingFn groupingFn = RaptureGroupingFn.SUM;
-    List<RaptureFieldBand> bands = new ArrayList<RaptureFieldBand>();
-    Set<RaptureFieldPath> fieldPaths = new HashSet<RaptureFieldPath>();
+    String validationScript;
+    String fieldTypeExtra;
+    FieldType fieldType;
+    String associatedEntity = "";
+}
+
+[A reference to a field in a structure]
+@Bean
+type StructureField(@package=rapture.common) {
+	String key;
+    String fieldUri;
+    Boolean mandatory;
+}
+
+[ A RaptureStructure is like a schema]
+@Addressable(scheme = STRUCTURE(false))
+@Storable(storagePath : {name}, prefix="structure")
+type RaptureStructure(@package=rapture.common) {
+    String name;
+    String description;
+    List<StructureField> fields;
+    Map<String, List<String>> transformPaths = new HashMap<String, List<String>>(); // replacement for "TRANSFORM"
+}
+    
+
+[ A RaptureTransform is a way of converting one set of fields to another]
+@Addressable(scheme = FIELDTRANSFORM(false))
+@Storable(storagePath : {name}, prefix="fieldtransform")
+type RaptureFieldTransform(@package=rapture.common) {
+    String name;
+    String description;
+    List<String> sourceFields;
+    List<String> targetFields;
+    String transformScript;
+}  
+
+[ A RaptureEntity is a mapping of a structure with a repository]
+@Addressable(scheme = ENTITY(false))
+@Storable(storagePath : {name}, prefix="entity")
+type RaptureEntity(@package=rapture.common) {
+    String name;
+    String description;
+    String repoUri;
+    String prefixInRepo;
+    String structureUri;
+    List<String> namingFields;
+    List<String> indexFields = new ArrayList<String>(); // A list of fields that should form part of an index for this entity
+    String primeIndexField = ""; // When set, which index field can I use to locate a document given its "key"
+    List<String> viewFields = new ArrayList<String>(); // A list of fields that should be shown in "getView" calls, usually a superset or equivalent to indexFields
+}
+
+[A column in an Entity View configuration]
+@Bean
+type ViewColumn(@package=rapture.common) {
+	String name;
+	RaptureField field;
+}
+
+[A row in a view result set]
+@Bean
+type ViewRecord(@package=rapture.common) {
+	String rowId;
+	Map<String, Object> data;
+}
+
+[ A source context for a widget action (where does it get the data from) ]
+@Bean
+type WidgetSource(@package=rapture.common) {
+	String fromId;
+	String fromContext;
+	String toParameter;
+}
+
+[ A target of a widget action]
+@Bean
+type WidgetTarget(@package=rapture.common) {
+	String targetWidget;
+	List<WidgetSource> sources;
+}
+
+[ A RaptureWidget is a definition of a UI entity]
+@Addressable(scheme = WIDGET(false))
+@Storable(storagePath : {name}, prefix="widget")
+type RaptureWidget(@package=rapture.common) {
+    String name;
+    List<String> menuPath;
+    String title; // Title on window (if not provided from script for Structure)
+    String paneType; // e.g. data table, list, form, chart etc.
+    List<String> parameterNames; // What parameters this widget needs to run
+    Map<String, String> actions; // What actions can be done for this widget (keys dependent on paneType)
+}      
+
+[ A RaptureProgram is the definition of a program ]
+@Addressable(scheme = PROGRAM(false))
+@Storable(storagePath : {name}, prefix="program")
+type RaptureProgram(@package=rapture.common) {
+    String name;
+    String programType;
+    String programUri;
+    // Maybe some things about schedule here
+    // Some things about parameters here
 }
 
 [Defines an audit result to be logged.]

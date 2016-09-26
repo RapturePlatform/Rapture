@@ -29,7 +29,12 @@ import java.util.List;
 import java.util.Map;
 
 public class MetaScriptInfo {
-    private MetaReturn returnInfo = new MetaReturn("void","");    
+    @Override
+    public String toString() {
+        return "MetaScriptInfo [returnInfo=" + returnInfo + ", params=" + params + ", properties=" + properties + "]";
+    }
+
+    private MetaReturn returnInfo = null;
     private List<MetaParam> params = new ArrayList<MetaParam>();
     private Map<String, String> properties = new HashMap<String, String>();
     
@@ -61,4 +66,13 @@ public class MetaScriptInfo {
 	public Map<String, String> getProperties() {
 		return properties;
 	}
+
+    public MetaParam getParameter(String paramName) {
+        if (paramName != null) {
+            for (MetaParam param : params) {
+                if (paramName.equals(param.getParameterName())) return param;
+            }
+        }
+        return null;
+    }
 }

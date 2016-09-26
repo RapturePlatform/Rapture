@@ -49,7 +49,8 @@ public class ScriptClient implements ScriptingApi {
     private final HttpLockApi lock;
     private final HttpEventApi event;
     private final HttpAuditApi audit;
-    private final HttpFieldsApi fields;
+    private final HttpTransformApi transform;
+    private final HttpEntityApi entity;
     private final HttpPluginApi plugin;
     private final HttpPipelineApi pipeline;
     private final HttpAsyncApi async;
@@ -67,6 +68,8 @@ public class ScriptClient implements ScriptingApi {
     private final HttpSearchApi search;
     private final HttpTagApi tag;
     private final HttpOperationApi operation;
+    private final HttpWidgetApi widget;
+    private final HttpProgramApi program;
 
     public ScriptClient(HttpLoginApi loginApi) {
         login = loginApi;
@@ -82,7 +85,8 @@ public class ScriptClient implements ScriptingApi {
         lock = new HttpLockApi(loginApi);
         event = new HttpEventApi(loginApi);
         audit = new HttpAuditApi(loginApi);
-        fields = new HttpFieldsApi(loginApi);
+        transform = new HttpTransformApi(loginApi);
+        entity = new HttpEntityApi(loginApi);
         plugin = new HttpPluginApi(loginApi);
         pipeline = new HttpPipelineApi(loginApi);
         async = new HttpAsyncApi(loginApi);
@@ -99,6 +103,8 @@ public class ScriptClient implements ScriptingApi {
         search = new HttpSearchApi(loginApi);
         tag = new HttpTagApi(loginApi);
         operation = new HttpOperationApi(loginApi);
+        widget = new HttpWidgetApi(loginApi);
+        program = new HttpProgramApi(loginApi);
     }
 
     public HttpLoginApi getLogin() {
@@ -130,10 +136,14 @@ public class ScriptClient implements ScriptingApi {
         return event;
     }
 
-    public HttpFieldsApi getFields() {
-        return fields;
+    public HttpTransformApi getTransform() {
+        return transform;
     }
 
+    public HttpEntityApi getEntity() {
+    	return entity;
+    }
+    
     public HttpIdGenApi getIdGen() {
         return idgen;
     }
@@ -209,6 +219,14 @@ public class ScriptClient implements ScriptingApi {
 
     public HttpStructuredApi getStructured() {
         return structured;
+    }
+    
+    public HttpWidgetApi getWidget() {
+    	return widget;
+    }
+    
+    public HttpProgramApi getProgram() {
+    	return program;
     }
 
     @Override

@@ -1,0 +1,50 @@
+
+liszt = [1,2,1,3];
+val = liszt[2];
+assert (val == 1);
+liszt -= val;
+assert (liszt == [2,1,3]);
+
+liszt = [1,2,1,3];
+val = "REMOVE";
+liszt[2] = val;
+liszt -= val;
+assert (liszt == [1,2,3]);
+
+
+mappy = {};
+mappy["Foo"] = "Bar";
+fappy = {};
+fappy["Foo"] = "Bar";
+
+assert (mappy == fappy);
+
+remove (fappy, "Foo");
+assert (fappy == {});
+
+
+liszt = [1,2,1,3];
+remove(liszt, 2);
+assert (liszt == [1,2,3]);
+
+insert(liszt, liszt[0]+1, liszt[1]+liszt[2]);
+assert (liszt == [1,2,5,3]);
+
+try do
+  insert (liszt, 5, 5);
+  assert("Exception expected", false);
+end
+catch e do
+  assert("Exception expected", true);
+end
+
+try do
+  insert (liszt, 4, 4);
+end
+catch e do
+  assert (e, false);
+end
+
+assert (liszt == [1,2,5,3,4]);
+
+return true;

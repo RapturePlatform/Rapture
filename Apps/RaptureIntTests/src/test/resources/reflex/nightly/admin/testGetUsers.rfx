@@ -1,0 +1,19 @@
+description = 'This is Test User';
+pwd='testpassword';
+userList=[];
+for i = 1 to 10 do
+    userName='testuser'+rand(1000000);
+    email=userName+'@test.com';
+    #admin.addUser(userName, description, pwd, email);
+    userList = userList + userName;
+end
+
+raptureUserList=[];
+for u in #admin.getAllUsers() do
+    raptureUserList = raptureUserList + u['username'];
+end
+
+for u in userList do
+    assert(raptureUserList contains u);
+end
+return true;

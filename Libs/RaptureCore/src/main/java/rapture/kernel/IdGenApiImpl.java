@@ -77,14 +77,21 @@ public class IdGenApiImpl extends KernelBase implements IdGenApi {
     public void deleteIdGen(CallingContext context, String idGenUri) {
         RaptureURI uri = new RaptureURI(idGenUri, Scheme.IDGEN);
         String normalized = uri.toString();
-        RaptureIdGen idgen = getIdGenConfig(uri);
-
-        // RAP-2107 Can't delete the IdGen Store?
-        idgen.getIdGenStore().resetIdGen(0L);
-
-        idgen.invalidate();
-        idgenCache.remove(normalized);
-        RaptureIdGenConfigStorage.deleteByFields(uri.getAuthority(), uri.getDocPath(), context.getUser(), "deleted idgen");
+        try {
+            RaptureIdGen idgen = getIdGenConfig(uri);
+            if (idgen != null) {
+                // RAP-2107 Can't delete the IdGen Store?
+                idgen.getIdGenStore().resetIdGen(0L);
+                idgen.invalidate();
+                idgenCache.remove(normalized);
+                RaptureIdGenConfigStorage.deleteByFields(uri.getAuthority(), uri.getDocPath(), context.getUser(), "deleted idgen");
+            } else {
+                log.warn(idGenUri + " does not exist");
+            }
+        } catch (RaptureException e) {
+            log.warn("Cannot delete " + idGenUri + " : " + e.getMessage());
+            // Probably already deleted
+        }
     }
 
     @Override

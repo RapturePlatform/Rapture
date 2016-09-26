@@ -1,0 +1,8 @@
+{
+    "name" : "//test/wp.order",
+    "description" : "Test order entity",
+    "repoUri" : "//wp.order",
+    "prefixInRepo" : "",
+    "structureUri" : "//test/wp.order",
+    "namingFields" : [ "id" ]
+}

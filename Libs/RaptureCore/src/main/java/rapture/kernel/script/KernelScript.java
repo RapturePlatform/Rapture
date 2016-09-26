@@ -47,7 +47,8 @@ public class KernelScript implements IRaptureScriptHelper, IRaptureKernelScriptH
     private final ScriptLock lock;
     private final ScriptEvent event;
     private final ScriptAudit audit;
-    private final ScriptFields fields;
+    private final ScriptTransform transform;
+    private final ScriptEntity entity;
     private final ScriptPlugin plugin;
     private final ScriptPipeline pipeline;
     private final ScriptAsync async;
@@ -64,6 +65,8 @@ public class KernelScript implements IRaptureScriptHelper, IRaptureKernelScriptH
     private final ScriptSearch search;
     private final ScriptTag tag;
     private final ScriptOperation operation;
+    private final ScriptWidget widget;
+    private final ScriptProgram program;
 
     public KernelScript() {
         login = Kernel.getLogin();
@@ -79,7 +82,8 @@ public class KernelScript implements IRaptureScriptHelper, IRaptureKernelScriptH
         lock = new ScriptLock(Kernel.getLock());
         event = new ScriptEvent(Kernel.getEvent());
         audit = new ScriptAudit(Kernel.getAudit());
-        fields = new ScriptFields(Kernel.getFields());
+        transform = new ScriptTransform(Kernel.getTransform());
+        entity = new ScriptEntity(Kernel.getEntity());
         plugin = new ScriptPlugin(Kernel.getPlugin());
         pipeline = new ScriptPipeline(Kernel.getPipeline());
         async = new ScriptAsync(Kernel.getAsync());
@@ -96,6 +100,8 @@ public class KernelScript implements IRaptureScriptHelper, IRaptureKernelScriptH
         search = new ScriptSearch(Kernel.getSearch());
         tag = new ScriptTag(Kernel.getTag());
         operation = new ScriptOperation(Kernel.getOperation());
+        widget = new ScriptWidget(Kernel.getWidget());
+        program = new ScriptProgram(Kernel.getProgram());
     }
 
     public Login getLogin() {
@@ -127,8 +133,12 @@ public class KernelScript implements IRaptureScriptHelper, IRaptureKernelScriptH
         return event;
     }
 
-    public ScriptFields getFields() {
-        return fields;
+    public ScriptTransform getTransform() {
+        return transform;
+    }
+    
+    public ScriptEntity getEntity() {
+    	return entity;
     }
 
     public ScriptIdGen getIdGen() {
@@ -208,6 +218,14 @@ public class KernelScript implements IRaptureScriptHelper, IRaptureKernelScriptH
     public ScriptSeries getSeries() {
         return series;
     }
+    
+    public ScriptWidget getWidget() {
+    	return widget;
+    }
+    
+    public ScriptProgram getProgram() {
+    	return program;
+    }
 
     private CallingContext ctx;
 
@@ -226,7 +244,8 @@ public class KernelScript implements IRaptureScriptHelper, IRaptureKernelScriptH
         getLock().setCallingContext(ctx);
         getEvent().setCallingContext(ctx);
         getAudit().setCallingContext(ctx);
-        getFields().setCallingContext(ctx);
+        getTransform().setCallingContext(ctx);
+        getEntity().setCallingContext(ctx);
         getPipeline().setCallingContext(ctx);
         getAsync().setCallingContext(ctx);
         getSys().setCallingContext(ctx);
@@ -243,6 +262,8 @@ public class KernelScript implements IRaptureScriptHelper, IRaptureKernelScriptH
         getTag().setCallingContext(ctx);
         getJar().setCallingContext(ctx);
         getOperation().setCallingContext(ctx);
+        getWidget().setCallingContext(ctx);
+        getProgram().setCallingContext(ctx);
 
         for (InstallableKernel installedKernel : Kernel.getInstalledKernels()) {
             installedKernel.getKernelScript().setCallingContext(ctx);

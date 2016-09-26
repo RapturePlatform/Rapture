@@ -1,0 +1,10 @@
+userName='testuser'+rand(1000000);
+description = 'This is Test User';
+pwd='testpassword';
+email=userName+'@test.com';
+#admin.addUser(userName, description, pwd, email);
+
+newEmail=userName+"@testnew.com";
+#admin.updateUserEmail(userName, newEmail);
+assert(#admin.getUser(userName)['emailAddress']==newEmail);
+return true;

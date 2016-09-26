@@ -332,7 +332,7 @@ public class ScriptApiImpl extends KernelBase implements ScriptApi {
             List<RaptureFolderInfo> children = RaptureScriptStorage.getChildren(currParentDocPath);
 
             if (((children == null) || children.isEmpty()) && (currDepth == 0) && internalUri.hasDocPath()) {
-                throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, apiMessageCatalog.getMessage("NoSuchFolder", internalUri.toString())); //$NON-NLS-1$
+                return ret;
             } else if (children != null) {
                 for (RaptureFolderInfo child : children) {
                     String childDocPath = currParentDocPath + (top ? "" : "/") + child.getName();
@@ -668,14 +668,11 @@ public class ScriptApiImpl extends KernelBase implements ScriptApi {
             for (MetaParam param : parameters) {
                 ScriptParameter scriptParam = new ScriptParameter();
                 scriptParam.setDescription(param.getDescription());
-                String type = param.getParameterType().toUpperCase();
-                scriptParam.setParameterType(RaptureParameterType.valueOf(type));
+                scriptParam.setParameterType(param.getParameterType());
                 inputs.put(param.getParameterName(), scriptParam);
             }
             MetaReturn returnInfo = parser.scriptInfo.getReturnInfo();
-
-            String type = returnInfo.getType().toUpperCase();
-            output.setParameterType(RaptureParameterType.valueOf(type));
+            output.setParameterType(returnInfo.getType());
             output.setDescription(returnInfo.getDescription());
 
             result.setProperties(parser.scriptInfo.getProperties());

@@ -28,6 +28,11 @@ package rapture.common;
 **/
 
 public class PluginManifestItem implements RaptureTransferObject {
+    @Override
+    public String toString() {
+        return "PluginManifestItem [uri=" + uri + ", hash=" + hash + "]";
+    }
+
     private String uri;
     private String hash;
 

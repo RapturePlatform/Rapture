@@ -55,6 +55,8 @@ public class IndexApiImpl extends KernelBase implements IndexApi {
     public IndexConfig createIndex(CallingContext context, String indexUri, String config) {
 
         RaptureURI internalUri = new RaptureURI(indexUri, Scheme.INDEX);
+        if (internalUri.hasDocPath()) log.warn(indexUri + " has unexpected docPath " + internalUri.getDocPath() + " - ignored");
+
         IndexConfig newP = new IndexConfig();
         newP.setName(internalUri.getAuthority());
         newP.setConfig(config);

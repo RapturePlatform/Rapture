@@ -155,12 +155,20 @@
 		<url-pattern>/mailbox</url-pattern>
 	</servlet-mapping>
 	<servlet>
-		<servlet-name>FIELDS</servlet-name>
-		<servlet-class>rapture.server.web.servlet.FieldsServlet</servlet-class>
+		<servlet-name>TRANSFORM</servlet-name>
+		<servlet-class>rapture.server.web.servlet.TransformServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>FIELDS</servlet-name>
-		<url-pattern>/fields</url-pattern>
+		<servlet-name>TRANSFORM</servlet-name>
+		<url-pattern>/transform</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>ENTITY</servlet-name>
+		<servlet-class>rapture.server.web.servlet.EntityServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ENTITY</servlet-name>
+		<url-pattern>/entity</url-pattern>
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>PLUGIN</servlet-name>
@@ -329,6 +337,22 @@
 	<servlet-mapping>
 		<servlet-name>TAG</servlet-name>
 		<url-pattern>/tag/*</url-pattern>
+	</servlet-mapping>
+		<servlet>
+		<servlet-name>WIDGET</servlet-name>
+		<servlet-class>rapture.server.web.servlet.WidgetServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>WIDGET</servlet-name>
+		<url-pattern>/widget/*</url-pattern>
+	</servlet-mapping>
+		<servlet>
+		<servlet-name>PROGRAM</servlet-name>
+		<servlet-class>rapture.server.web.servlet.ProgramServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>PROGRAM</servlet-name>
+		<url-pattern>/program/*</url-pattern>
 	</servlet-mapping>
     <!-- end of WebServlet list -->
 </web-app>

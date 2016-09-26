@@ -1,0 +1,7 @@
+{
+    "name" : "//country/officialFrench",
+    "description" : "A country's official French short name",
+    "validationScript" : "",
+    "fieldType" : "STRING",
+    "fieldTypeExtra" : ""
+}

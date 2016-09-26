@@ -27,16 +27,15 @@ import java.net.HttpURLConnection;
 import java.util.HashMap;
 import java.util.Map;
 
-import rapture.config.MultiValueConfigLoader;
 import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
 import org.apache.log4j.Logger;
 
 import rapture.common.RaptureLockConfig;
-import rapture.common.exception.RaptureException;
+import rapture.common.exception.ExceptionToString;
 import rapture.common.exception.RaptureExceptionFactory;
-import rapture.common.exception.RaptureExceptionFormatter;
+import rapture.config.MultiValueConfigLoader;
 import rapture.generated.LGenLexer;
 import rapture.generated.LGenParser;
 import rapture.kernel.ContextFactory;
@@ -58,6 +57,7 @@ public final class LockFactory {
             LGenParser parser = parseConfig(config);
             switch (parser.getStore().getType()) {
             case LGenLexer.MONGODB:
+                // MongoLockHandler2 may be dangerous in a multi-node system if the system clocks are not exactly in sync
                 boolean useMongo2 = Boolean.parseBoolean(MultiValueConfigLoader.getConfig("MONGODB-lock.useVersion2", "false"));
                 if (useMongo2) {
                     return getLockStore("rapture.lock.mongodb.MongoLockHandler2", parser.getConfig().getConfig());
@@ -93,23 +93,19 @@ public final class LockFactory {
     }
 
     private static ILockingHandler getLockStore(String className, Map<String, String> config) {
+        Class<?> klass = null;
         try {
-            Class<?> idgenClass = Class.forName(className);
-            Object fStore;
-            fStore = idgenClass.newInstance();
-            if (fStore instanceof ILockingHandler) {
-                ILockingHandler ret = (ILockingHandler) fStore;
-                ret.setConfig(config);
-                return ret;
-            } else {
-                RaptureException raptException = RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, "Could not create lock handler");
-                log.error(RaptureExceptionFormatter.getExceptionMessage(raptException, className + " is not a lock implementation, cannot instantiate"));
-                throw raptException;
+            klass = Class.forName(className);
+            if (klass == null) {
+                throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, "Cannot obtain class for " + className);
             }
+            ILockingHandler ret = (ILockingHandler) klass.newInstance();
+            ret.setConfig(config);
+            return ret;
         } catch (Exception e) {
-            RaptureException raptException = RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, "Could not create lock handler");
-            log.error(RaptureExceptionFormatter.getExceptionMessage(raptException, e));
-            throw raptException;
+            log.debug(ExceptionToString.format(e));
+            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR,
+                    "Could not create lock handler for " + className + " : " + e.getMessage(), e);
         }
     }
 

@@ -16,6 +16,11 @@
 			<package name="rapture.search" />
 			<package name="rapture.structured" />
 			<package name="rapture.reflex" />
+			<package name="rapture.operation" />
+			<package name="rapture.user" />
+			<package name="rapture.admin" />
+			<package name="rapture.jar" />
+			<package name="rapture.lock" />
 		</packages>
 	</test>
 </suite> <!-- Suite -->

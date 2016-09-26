@@ -33,6 +33,7 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.SortedSet;
 import java.util.regex.Matcher;
@@ -70,14 +71,18 @@ import rapture.plugin.util.PluginUtils;
 import rapture.plugin.validators.BlobValidator;
 import rapture.plugin.validators.DocumentValidator;
 import rapture.plugin.validators.EventValidator;
+import rapture.plugin.validators.FieldTransformValidator;
 import rapture.plugin.validators.FieldValidator;
 import rapture.plugin.validators.IdGenValidator;
 import rapture.plugin.validators.JobValidator;
 import rapture.plugin.validators.LockValidator;
 import rapture.plugin.validators.Note;
+import rapture.plugin.validators.ProgramValidator;
 import rapture.plugin.validators.ScriptValidator;
 import rapture.plugin.validators.SeriesValidator;
 import rapture.plugin.validators.SnippetValidator;
+import rapture.plugin.validators.StructureValidator;
+import rapture.plugin.validators.WidgetValidator;
 import rapture.plugin.validators.WorkflowValidator;
 
 import com.google.common.collect.ImmutableMap;
@@ -121,7 +126,7 @@ public class PluginShell {
     private String featureName;
     private String zipFile;
 
-    protected Map<String, PluginSandbox> name2sandbox = Maps.newHashMap();
+    protected Map<String, PluginSandbox> name2sandbox = Maps.newLinkedHashMap();
 
     private boolean isLocal;
 
@@ -219,7 +224,7 @@ public class PluginShell {
             return;
         }
 
-        System.out.println("\nWelcome to the pluginInstaller.\nPlease enter your command, or type 'help' for help");
+        println("\nWelcome to the pluginInstaller.\nPlease enter your command, or type 'help' for help");
 
         try (Scanner in = new Scanner(System.in)) {
             while (true) {
@@ -229,6 +234,8 @@ public class PluginShell {
                 }
                 eval(line);
             }
+        } catch (NoSuchElementException nsee) {
+            println("Be seeing you");
         }
     }
 
@@ -419,9 +426,21 @@ public class PluginShell {
             case TABLE:
                 errors.add(new Note(Note.Level.ERROR, "No Installer available for TABLE scheme"));
                 break;
+            case FIELDTRANSFORM:
+            	FieldTransformValidator.getValidator().validate(content, uri, errors);
+            	break;
+            case STRUCTURE:
+            	StructureValidator.getValidator().validate(content, uri, errors);
+            	break;            	
             case WORKFLOW:
                 WorkflowValidator.getValidator().validate(content, uri, errors);
                 break;
+            case WIDGET:
+            	WidgetValidator.getValidator().validate(content, uri, errors);
+            	break;
+            case PROGRAM:
+            	ProgramValidator.getValidator().validate(content, uri, errors);
+            	break;
             default:
                 errors.add(new Note(Note.Level.WARNING, "No validator registered for type " + uri.getScheme()));
                 break;
@@ -607,7 +626,7 @@ public class PluginShell {
                 boolean uninstallAll = false;
                 String manifestURIstring = Scheme.PLUGIN_MANIFEST.toString() + "://" + plugin;
                 PluginManifest manifest = client.getPlugin().getPluginManifest(manifestURIstring);
-                for (PluginManifestItem item : manifest.getContents()) {
+                for (PluginManifestItem item : Lists.reverse(manifest.getContents())) {
                     boolean uninstallThis = uninstallAll;
                     if (!uninstallThis) {
                         println("Uninstall " + item.getURI() + " ? [nyaq]");
@@ -1193,7 +1212,7 @@ public class PluginShell {
             }
             String thisVariant = nextToken(args);
             if (thisVariant == null) thisVariant = variant;
-            Map<String, PluginTransportItem> payload = Maps.newHashMap();
+            Map<String, PluginTransportItem> payload = Maps.newLinkedHashMap();
             for (PluginSandboxItem item : sandbox.getItems(thisVariant)) {
                 try {
                     if (debug) System.out.println("Packaging " + item.getURI().toString());
