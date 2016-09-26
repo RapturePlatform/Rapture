@@ -1,3 +1,4 @@
 include "EntityTest"
 include "DataSets"
 include "Widgets"
+include "DataEntities"
