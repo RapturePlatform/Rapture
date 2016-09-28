@@ -1,0 +1,7 @@
+{
+    "name" : "//pico/equity/vol5",
+    "description" : "Average 5 Day Volume",
+    "validationScript" : "",
+    "fieldType" : "NUMBER",
+    "fieldTypeExtra" : ""
+}

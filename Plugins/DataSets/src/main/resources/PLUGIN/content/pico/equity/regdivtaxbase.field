@@ -1,0 +1,7 @@
+{
+    "name" : "//pico/equity/regdivtaxbase",
+    "description" : "Regular dividend tax base code",
+    "validationScript" : "",
+    "fieldType" : "STRING",
+    "fieldTypeExtra" : ""
+}

@@ -1,0 +1,11 @@
+{
+  "authority":"dh.equity",
+  "strictCheck":true,
+  "indexes":[],
+  "fullTextIndexes":[],
+  "documentRepo":
+     {
+        "authority":"dh.equity",
+        "config":"NREP {} USING MONGODB { prefix=\"dh.equity\" }"
+     }
+}

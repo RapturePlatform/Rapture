@@ -1,0 +1,7 @@
+{
+    "name" : "//pico/equity/specdivamt",
+    "description" : "Special Dividend Amount",
+    "validationScript" : "",
+    "fieldType" : "NUMBER",
+    "fieldTypeExtra" : ""
+}

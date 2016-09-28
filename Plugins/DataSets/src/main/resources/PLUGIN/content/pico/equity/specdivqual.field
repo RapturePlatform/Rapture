@@ -1,0 +1,7 @@
+{
+    "name" : "//pico/equity/specdivqual",
+    "description" : "Special dividend qualifier",
+    "validationScript" : "",
+    "fieldType" : "STRING",
+    "fieldTypeExtra" : ""
+}

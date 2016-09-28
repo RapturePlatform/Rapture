@@ -1,0 +1,7 @@
+{
+    "name" : "//pico/equity/ecpu",
+    "description" : "Estimated cash per unit",
+    "validationScript" : "",
+    "fieldType" : "NUMBER",
+    "fieldTypeExtra" : ""
+}

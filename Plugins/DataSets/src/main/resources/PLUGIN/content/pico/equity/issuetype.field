@@ -1,0 +1,7 @@
+{
+    "name" : "//pico/equity/issuetype",
+    "description" : "The type of this equity",
+    "validationScript" : "",
+    "fieldType" : "STRING",
+    "fieldTypeExtra" : ""
+}

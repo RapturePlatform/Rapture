@@ -1,0 +1,7 @@
+{
+    "name" : "//pico/equity/beta",
+    "description" : "The beta of this entity",
+    "validationScript" : "",
+    "fieldType" : "NUMBER",
+    "fieldTypeExtra" : ""
+}

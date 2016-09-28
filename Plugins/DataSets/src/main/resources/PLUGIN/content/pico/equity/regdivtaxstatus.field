@@ -1,0 +1,7 @@
+{
+    "name" : "//pico/equity/regdivtaxstatus",
+    "description" : "Regular dividend tax status",
+    "validationScript" : "",
+    "fieldType" : "STRING",
+    "fieldTypeExtra" : ""
+}

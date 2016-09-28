@@ -1,0 +1,73 @@
+// A standard Reflex script to import data from a CSV file
+// which is formatted to a given structure,
+// to be transformed to another structure
+// and then saved to an entity
+
+const srcFile = '/Users/alanmoore/Downloads/reference_data/prodRealtime/EquityFundamental.csv';
+const srcStructure = '//import/equityFund';
+const targStructure = '//standard/equity';
+const targEntity = '//standard/equity';
+
+fi = file(srcFile);
+headers = false;
+
+srcS = #transform.getStructure(srcStructure);
+println(srcS);
+fieldDefs = loadFields(srcS);
+
+for f in fi do
+    fields = split(f, ',', false);
+    if (size(fields) > 0) do
+        if (!headers) do
+            headerCodes = fields;
+            headers = true;
+        else do
+            d = {};
+            for i = 0 to size(fields) -1  do
+                v = fields[i];
+                valid = true;
+                if (fieldDefs[headerCodes[i]]['fieldType'] == 'NUMBER') do
+                   if (size(v) > 0) do
+                    v2 = split(v, ' ', true);
+                    v = cast(v2[0], 'number');
+                   else do
+                    valid = false;
+                   end
+                end
+                if valid do
+                    d[headerCodes[i]] = v;
+                end
+            end
+            process(d);
+        end
+    end
+end
+
+def process(d)
+    // Process this document
+    val = #transform.validateDocument(json(d), srcStructure);
+    if (size(val) != 0) do
+        println(d);
+        println(val);
+    else do
+        // Now convert this to a different structure and save that as an entity
+        newD = #transform.transformDocument(json(d), srcStructure, targStructure);
+        // And save this
+        println("Saving ${newD}");
+        try do
+          #entity.putEntityDocument(targEntity, newD);
+        end
+        catch e do
+          println(e);
+        end
+    end
+end
+
+def loadFields(srcS)
+    ret = {};
+    for f in srcS['fields'] do
+        fi = #transform.getField(f.fieldUri);
+        ret[f.key] = fi;
+    end
+    return ret;
+end
