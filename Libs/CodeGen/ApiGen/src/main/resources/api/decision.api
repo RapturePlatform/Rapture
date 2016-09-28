@@ -120,10 +120,19 @@ api(Decision) {
     @entitle=/decision/write
     @public void setContextLiteral(String workerURI, String varAlias, String literalValue);
 
-    [Set a literal in the context. This means that whatever is stored will be evaluated before being returned, so it must be a valid expression.
+    [Set a link in the context. Links take the form !uri#element where uri refers to a document and element is a key within the document.
+    A call to GetContextValue returns the value associated with the key in the document at that moment.
+    This means that whatever is stored will be evaluated before being returned, so it must be a valid expression.
     The workerURI is a workOrderURI with the element set to the worker id]
     @entitle=/decision/write
     @public void setContextLink(String workerURI, String varAlias, String expressionValue);
+
+    [Set a template in the context. Templates take the form %string 
+    A call to GetContextValue returns the string with any ocurrances of ${VALUE} expanded to their context values.
+    This is done recursively, so ${VALUE} can refer to links and templates.
+    The workerURI is a workOrderURI with the element set to the worker id]
+    @entitle=/decision/write
+    @public void setContextTemplate(String workerURI, String varAlias, String templateValue);
 
     [Gets a value in the context, as json. The workerURI is a workOrderURI with the element set to the worker id.]
     @entitle=/decision/read

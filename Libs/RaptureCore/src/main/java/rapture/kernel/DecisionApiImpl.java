@@ -354,7 +354,7 @@ public class DecisionApiImpl extends KernelBase implements DecisionApi {
             ExecutionContext executionContext = new ExecutionContext();
             Map<String, String> data = new HashMap<String, String>();
             for (Entry<String, String> entry : contextMap.entrySet()) {
-                data.put(entry.getKey(), ExecutionContextUtil.LITERAL_MARKER + entry.getValue());
+                data.put(entry.getKey(), ContextValueType.LITERAL.marker + entry.getValue());
             }
 
             executionContext.setWorkOrderURI(workOrder.getWorkOrderURI());
@@ -641,6 +641,11 @@ public class DecisionApiImpl extends KernelBase implements DecisionApi {
         } else {
             return step.getCategoryOverride();
         }
+    }
+
+    @Override
+    public void setContextTemplate(CallingContext context, String workerURI, String varAlias, String literalValue) {
+        setContextValue(context, workerURI, varAlias, ContextValueType.TEMPLATE, literalValue);
     }
 
     @Override

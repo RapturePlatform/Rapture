@@ -40,71 +40,44 @@ import rapture.kernel.Kernel;
 
 public class ExecutionContextUtil {
     private static final Logger log = Logger.getLogger(ExecutionContextUtil.class);
-    public static final char VAR_MARKER = '$';
-    public static final char TEMPLATE_MARKER = '%';
-    public static final char LINK_MARKER = '!';
-    public static final char LITERAL_MARKER = '#';
 
     // getValue with ExecutionContextField
     public static String getValueECF(CallingContext callingContext, String workOrderUri, String varAlias, Map<String, String> view) {
-        String realId = addContextMarkerAndLookupInView(view, varAlias, VAR_MARKER);
+        String realId = addContextMarkerAndLookupInView(view, varAlias, ContextValueType.VAR.marker);
 
         if (realId == null || realId.length() <= 1) {
             throw RaptureExceptionFactory.create(String.format("Cannot get real name for alias %s", varAlias));
         }
 
-        char controlChar = realId.charAt(0);
-        if (controlChar == VAR_MARKER || isExpressionChar(controlChar)) {
-            String toEval;
-            /**
-             * If something is stored as the value of a context variable, or if it is an expression coming from the View, then we need to evaluate it
+        String toEval = realId;
+        ContextValueType valueType = ContextValueType.getContextValueType(realId.charAt(0));
+        if (valueType == ContextValueType.VAR) {
+            /*
+             * If a variable, first retrieve the val we need to evaluate
              */
-            if (controlChar == VAR_MARKER) {
-                /*
-                 * If a variable, first retrieve the val we need to evaluate
-                 */
-                String idNoMarker = realId.substring(1);
-                ExecutionContextField ecf = ExecutionContextFieldStorage.readByFields(workOrderUri, idNoMarker);
-                if (ecf != null) {
-                    toEval = ecf.getValue();
-                } else {
-                    toEval = null;
-                }
+            String idNoMarker = realId.substring(1);
+            ExecutionContextField ecf = ExecutionContextFieldStorage.readByFields(workOrderUri, idNoMarker);
+            if (ecf != null) {
+                toEval = ecf.getValue();
+                valueType = ContextValueType.getContextValueType(toEval.charAt(0));
             } else {
-                /*
-                 * If an expression, the "realId" is what we got from the mapping inside the View, so that's what we need to evaluate
-                 */
-                toEval = realId;
+                toEval = null;
+                valueType = ContextValueType.NULL;
             }
-
-            ContextValueType valueType = getValueType(toEval);
-            if (valueType == ContextValueType.LINK) {
-                return evalLinkExpression(callingContext, toEval.substring(1));
-            } else if (valueType == ContextValueType.LITERAL) {
-                return evalLiteral(toEval);
-            } else {
-                log.error(String.format("id='%s', value='%s' is not a literal nor expression!", varAlias, toEval));
-                return null;
-            }
-
-        } else if (controlChar == LITERAL_MARKER) {
-            return realId.substring(1);
-        } else if (controlChar == TEMPLATE_MARKER) {
-            return evalTemplateECF(callingContext, workOrderUri, realId.substring(1), view);
-        } else {
-            throw RaptureExceptionFactory.create(String.format("Error! Unrecognized mapping: %s -> %s", varAlias, realId));
         }
-    }
-
-
-    /**
-     * Does this char denote an expression?
-     * 
-     * @param controlChar
-     * @return
-     */
-    private static boolean isExpressionChar(char controlChar) {
-        return controlChar == LINK_MARKER;
+        if (valueType == ContextValueType.LINK) {
+            return evalLinkExpression(callingContext, toEval.substring(1));
+        } else if (valueType == ContextValueType.LITERAL) {
+            return evalLiteral(toEval);
+        } else if (valueType == ContextValueType.NULL) {
+            log.warn("Variable " + varAlias + " has no type - assuming Literal");
+            return toEval;
+        } else if (valueType == ContextValueType.TEMPLATE) {
+            return evalTemplateECF(callingContext, workOrderUri, toEval.substring(1), view);
+        } else {
+            log.error(String.format("Unable to evaluate id='%s', value='%s'", varAlias, toEval));
+            return null;
+        }
     }
 
     private static String evalLiteral(String literalVal) {
@@ -113,19 +86,6 @@ public class ExecutionContextUtil {
         } else {
             return literalVal.substring(1);
         }
-    }
-
-    private static ContextValueType getValueType(String retVal) {
-        if (retVal == null || retVal.isEmpty()) {
-            return ContextValueType.LITERAL;
-        } else if (retVal.charAt(0) == LINK_MARKER) {
-            return ContextValueType.LINK;
-        } else if (retVal.charAt(0) == LITERAL_MARKER) {
-            return ContextValueType.LITERAL;
-        } else {
-            return null;
-        }
-
     }
 
     private static String evalLinkExpression(CallingContext ctx, String uri) {
@@ -163,26 +123,26 @@ public class ExecutionContextUtil {
             sb.append(template.substring(bolt, nut));
             try {
                 switch (template.charAt(nut + 1)) {
-                    case '$':
-                        sb.append('$');
-                        bolt = nut + 2;
-                        break;
-                    case '{':
-                        int startVar = nut + 2;
-                        int endVar = template.indexOf('}', nut);
-                        if (endVar < 0) {
-                            throw RaptureExceptionFactory.create("'${' has no matching '}' in " + template);
-                        }
-                        String varName = template.substring(startVar, endVar);
-                        String val = getValueECF(ctx, workOrderUri, varName, view);
-                        if (val == null) {
-                            throw RaptureExceptionFactory.create("Variable ${" + varName + "} required but missing");
-                        }
-                        sb.append(val);
-                        bolt = endVar + 1;
-                        break;
-                    default:
-                        throw RaptureExceptionFactory.create("Unescaped $ with no { varName } in " + template);
+                case '$':
+                    sb.append('$');
+                    bolt = nut + 2;
+                    break;
+                case '{':
+                    int startVar = nut + 2;
+                    int endVar = template.indexOf('}', nut);
+                    if (endVar < 0) {
+                        throw RaptureExceptionFactory.create("'${' has no matching '}' in " + template);
+                    }
+                    String varName = template.substring(startVar, endVar);
+                    String val = getValueECF(ctx, workOrderUri, varName, view);
+                    if (val == null) {
+                        throw RaptureExceptionFactory.create("Variable ${" + varName + "} required but missing");
+                    }
+                    sb.append(val);
+                    bolt = endVar + 1;
+                    break;
+                default:
+                    throw RaptureExceptionFactory.create("Unescaped $ with no { varName } in " + template);
                 }
             } catch (IndexOutOfBoundsException ex) {
                 throw RaptureExceptionFactory.create("$ with no variable in " + template);
@@ -195,47 +155,44 @@ public class ExecutionContextUtil {
 
     public static void setValue(ExecutionContext context, Map<String, String> view, String varAlias, ContextValueType type, String value) {
         switch (type) {
-            case LINK:
-                setValue(context, view, varAlias, LINK_MARKER + value);
-                break;
-            case LITERAL:
-                setValue(context, view, varAlias, LITERAL_MARKER + value);
-                break;
-            default:
-                log.error("Unsupported type " + type);
-                break;
+        case LINK:
+        case LITERAL:
+        case TEMPLATE:
+            setValue(context, view, varAlias, type.marker + value);
+            break;
+        default:
+            log.error("Unsupported type " + type);
         }
     }
 
     private static void setValue(ExecutionContext context, Map<String, String> view, String varAlias, String value) {
-        String realId = addContextMarkerAndLookupInView(view, varAlias, VAR_MARKER);
-        if (realId != null && realId.length() > 1 && realId.charAt(0) == VAR_MARKER) {
+        String realId = addContextMarkerAndLookupInView(view, varAlias, ContextValueType.VAR.marker);
+        if (realId != null && realId.length() > 1 && realId.charAt(0) == ContextValueType.VAR.marker) {
             String idNoMarker = realId.substring(1);
             context.getData().put(idNoMarker, value);
         } else {
-            throw RaptureExceptionFactory.create(String.format(
-                    "Error! Can only set context values on variables, which start with '%s'. This is not the case: varAlias='%s', realId='%s'!", VAR_MARKER,
-                    varAlias, realId));
+            throw RaptureExceptionFactory.create(
+                    String.format("Error! Can only set context values on variables, which start with '%s'. This is not the case: varAlias='%s', realId='%s'!",
+                            ContextValueType.VAR.marker, varAlias, realId));
         }
     }
 
-    public static void setValueECF(CallingContext context, String workOrderUri, Map<String, String> view, String varAlias, ContextValueType type, String value) {
+    public static void setValueECF(CallingContext context, String workOrderUri, Map<String, String> view, String varAlias, ContextValueType type,
+            String value) {
         switch (type) {
-            case LINK:
-                setValueECF(context, workOrderUri, view, varAlias, LINK_MARKER + value);
-                break;
-            case LITERAL:
-                setValueECF(context, workOrderUri, view, varAlias, LITERAL_MARKER + value);
-                break;
-            default:
-                log.error("Unsupported type " + type);
-                break;
+        case LINK:
+        case LITERAL:
+        case TEMPLATE:
+            setValueECF(context, workOrderUri, view, varAlias, type.marker + value);
+            break;
+        default:
+            log.error("Unsupported type " + type);
         }
     }
 
     private static void setValueECF(CallingContext context, String workOrderUri, Map<String, String> view, String varAlias, String value) {
-        String realId = addContextMarkerAndLookupInView(view, varAlias, VAR_MARKER);
-        if (realId != null && realId.length() > 1 && realId.charAt(0) == VAR_MARKER) {
+        String realId = addContextMarkerAndLookupInView(view, varAlias, ContextValueType.VAR.marker);
+        if (realId != null && realId.length() > 1 && realId.charAt(0) == ContextValueType.VAR.marker) {
             String idNoMarker = realId.substring(1);
             ExecutionContextField ecf = new ExecutionContextField();
             ecf.setWorkOrderURI(workOrderUri);
@@ -243,9 +200,9 @@ public class ExecutionContextUtil {
             ecf.setValue(value);
             ExecutionContextFieldStorage.add(ecf, context.getUser(), "Set context field value");
         } else {
-            throw RaptureExceptionFactory.create(String.format(
-                    "Error! Can only set context values on variables, which start with '%s'. This is not the case: varAlias='%s', realId='%s'!", VAR_MARKER,
-                    varAlias, realId));
+            throw RaptureExceptionFactory.create(
+                    String.format("Error! Can only set context values on variables, which start with '%s'. This is not the case: varAlias='%s', realId='%s'!",
+                            ContextValueType.VAR.marker, varAlias, realId));
         }
     }
 
@@ -270,7 +227,7 @@ public class ExecutionContextUtil {
             String realId = view.get(alias);
             if (realId.length() < 2) {
                 log.warn(String.format("Bad view definition: %s -> %s", alias, realId));
-                return VAR_MARKER + alias;
+                return ContextValueType.VAR.marker + alias;
             } else {
                 return realId;
             }
@@ -285,14 +242,15 @@ public class ExecutionContextUtil {
             // If null or empty, just leave it alone.
             return alias;
         }
-        switch (alias.charAt(0)) {
-            case LINK_MARKER:
-            case LITERAL_MARKER:
-            case TEMPLATE_MARKER:
-                // Don't add if we have a known context marker.
-                return alias;
+        switch (ContextValueType.getContextValueType(alias.charAt(0))) {
+        case LINK:
+        case LITERAL:
+        case TEMPLATE:
+            // Don't add if we have a known context marker.
+            return alias;
+        default:
+            return defaultMarker + alias;
         }
-        return defaultMarker + alias;
     }
 
     public static void saveContext(ExecutionContext executionContext, String user, String comment) {
@@ -309,20 +267,18 @@ public class ExecutionContextUtil {
     }
 
     public static String treatValueAsDefaultLiteral(String value) {
-        // prepend a LITERAL_MARKER if it was a naked value, strip the $ if it was a variable.
+        // prepend a ContextValueType.LITERAL.marker if it was a naked value, strip the $ if it was a variable.
         if (value != null && value.length() > 0) {
-            switch (value.charAt(0)) {
-                case ExecutionContextUtil.LINK_MARKER:
-                case ExecutionContextUtil.LITERAL_MARKER:
-                case ExecutionContextUtil.TEMPLATE_MARKER:
-                    break;
-
-                case ExecutionContextUtil.VAR_MARKER:
-                    value = value.substring(1);
-                    break;
-
-                default:
-                    value = ExecutionContextUtil.LITERAL_MARKER + value;
+            switch (ContextValueType.getContextValueType(value.charAt(0))) {
+            case LINK:
+            case LITERAL:
+            case TEMPLATE:
+                break;
+            case VAR:
+                value = value.substring(1);
+                break;
+            default:
+                value = ContextValueType.LITERAL.marker + value;
             }
         }
         return value;
