@@ -70,7 +70,7 @@ public class ExecutionContextUtil {
         } else if (valueType == ContextValueType.LITERAL) {
             return evalLiteral(toEval);
         } else if (valueType == ContextValueType.NULL) {
-            log.warn("Variable " + varAlias + " has no type - assuming Literal");
+            log.debug("Variable " + varAlias + " has no type - assuming Literal");
             return toEval;
         } else if (valueType == ContextValueType.TEMPLATE) {
             return evalTemplateECF(callingContext, workOrderUri, toEval.substring(1), view);
