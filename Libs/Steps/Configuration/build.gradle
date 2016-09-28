@@ -1,0 +1,10 @@
+version = '1.0.0'
+
+jar.manifest.attributes "Implementation-Title": "Rapture Calendar library"
+jar.manifest.attributes "Implementation-Version": version
+
+dependencies {
+    compile project(':RaptureCore')
+    compile project(':RaptureAPI')
+    compile 'commons-net:commons-net:3.1'
+}

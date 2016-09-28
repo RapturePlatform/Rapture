@@ -13,3 +13,4 @@ include "WorkflowsCommon"
 include 'WorkflowsCore'
 include 'SlateDocGenerator'
 include 'ExplodedDeps'
+include "Steps:Calendar", "Steps:Configuration", "Steps:FTPCommon", "Steps:Notification"
