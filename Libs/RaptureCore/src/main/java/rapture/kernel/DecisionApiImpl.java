@@ -57,10 +57,13 @@ import rapture.common.CreateResponse;
 import rapture.common.ErrorWrapper;
 import rapture.common.LogQueryResponse;
 import rapture.common.RaptureFolderInfo;
+import rapture.common.RaptureJobExec;
+import rapture.common.RaptureJobExecStorage;
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
 import rapture.common.SemaphoreAcquireResponse;
 import rapture.common.WorkOrderExecutionState;
+import rapture.common.WorkflowJobDetails;
 import rapture.common.api.DecisionApi;
 import rapture.common.dp.AppStatusDetails;
 import rapture.common.dp.ContextValueType;
@@ -834,6 +837,35 @@ public class DecisionApiImpl extends KernelBase implements DecisionApi {
                 for (WorkOrder workOrder : workOrders) {
                     ret.add(workOrder.getWorkOrderURI());
                 }
+            }
+        }
+        return ret;
+    }
+
+    @Override
+    public WorkOrder getWorkOrderByJobExec(CallingContext context, RaptureJobExec raptureJobExec) {
+        if (raptureJobExec == null) {
+            throw RaptureExceptionFactory.create("Invalid jobexec");
+        }
+        String execDetails = raptureJobExec.getExecDetails();
+        if (StringUtils.isNotBlank(execDetails)) {
+            return getWorkOrder(context, JacksonUtil.objectFromJson(execDetails, WorkflowJobDetails.class).getWorkOrderURI());
+        }
+        return null;
+    }
+
+    @Override
+    public Map<RaptureJobExec, WorkOrder> getJobExecsAndWorkOrdersByDay(CallingContext context, Long startTimeInstant) {
+        Map<RaptureJobExec, WorkOrder> ret = new HashMap<>();
+        List<WorkOrder> workOrders = getWorkOrdersByDay(context, startTimeInstant);
+        for (WorkOrder workOrder : workOrders) {
+            // we find the associated RaptureJobExec using the built-in execution context params
+            String jobUri = ExecutionContextUtil.getValueECF(context, workOrder.getWorkOrderURI(), ContextVariables.PARENT_JOB_URI, null);
+            // this will be blank if its a workorder that was not initiated by a job, so we skip those
+            if (!StringUtils.isBlank(jobUri)) {
+                String execTime = ExecutionContextUtil.getValueECF(context, workOrder.getWorkOrderURI(), ContextVariables.TIMESTAMP, null);
+                log.info(String.format("Retrieving job exec for job uri [%s] and time [%s]", jobUri, execTime));
+                ret.put(RaptureJobExecStorage.readByFields(jobUri, Long.valueOf(execTime)), workOrder);
             }
         }
         return ret;

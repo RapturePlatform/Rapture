@@ -82,6 +82,14 @@ api(Decision) {
     [Gets all the workorder URIs associated with the given workflow uri, from a starting point given in Unix epoch time.  Passing in 0 or null as the start time will get all workorders from the beginning of time.]    
     @entitle=/decision/read
     @public List<String> getWorkOrdersByWorkflow(Long startTimeInstant, String workflowUri);
+    
+    [Get the WorkOrder object associated with the given RaptureJobExec object]    
+    @entitle=/decision/read
+    @public WorkOrder getWorkOrderByJobExec(RaptureJobExec raptureJobExec);
+    
+    [Get a map of RaptureJobExec objects to their associated WorkOrder objects for a given day]    
+    @entitle=/decision/read
+    @public Map(RaptureJobExec, WorkOrder) getJobExecsAndWorkOrdersByDay(Long startTimeInstant);
 
     [Gets the top-level status object associated with the work order]
     @entitle=/decision/read/$f(workOrderURI)
