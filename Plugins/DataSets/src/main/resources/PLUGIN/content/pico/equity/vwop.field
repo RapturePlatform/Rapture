@@ -1,0 +1,7 @@
+{
+    "name" : "//pico/equity/vwop",
+    "description" : "VWOP Market Value",
+    "validationScript" : "",
+    "fieldType" : "NUMBER",
+    "fieldTypeExtra" : ""
+}

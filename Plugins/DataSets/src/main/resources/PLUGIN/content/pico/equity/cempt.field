@@ -1,0 +1,7 @@
+{
+    "name" : "//pico/equity/cempt",
+    "description" : "Caveat Emptor",
+    "validationScript" : "",
+    "fieldType" : "STRING",
+    "fieldTypeExtra" : ""
+}

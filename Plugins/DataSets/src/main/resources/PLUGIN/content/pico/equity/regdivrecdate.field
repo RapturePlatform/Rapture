@@ -1,0 +1,7 @@
+{
+    "name" : "//pico/equity/regdivrecdate",
+    "description" : "Regular Dividend Record Date",
+    "validationScript" : "",
+    "fieldType" : "DATE",
+    "fieldTypeExtra" : ""
+}

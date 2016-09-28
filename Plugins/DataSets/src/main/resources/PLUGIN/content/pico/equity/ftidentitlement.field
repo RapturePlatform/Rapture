@@ -1,0 +1,7 @@
+{
+    "name" : "//pico/equity/ftidentitlement",
+    "description" : "The entitlement",
+    "validationScript" : "",
+    "fieldType" : "STRING",
+    "fieldTypeExtra" : ""
+}

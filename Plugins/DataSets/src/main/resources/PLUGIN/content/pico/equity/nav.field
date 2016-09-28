@@ -1,0 +1,7 @@
+{
+    "name" : "//pico/equity/nav",
+    "description" : "Net asset value",
+    "validationScript" : "",
+    "fieldType" : "NUMBER",
+    "fieldTypeExtra" : ""
+}

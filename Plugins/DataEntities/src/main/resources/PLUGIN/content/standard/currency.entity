@@ -1,0 +1,8 @@
+{
+    "name" : "//standard/currency",
+    "description" : "Currency Information",
+    "repoUri" : "//dh.currency",
+    "prefixInRepo" : "",
+    "structureUri" : "//standard/currency",
+    "namingFields" : [ "id" ]
+}

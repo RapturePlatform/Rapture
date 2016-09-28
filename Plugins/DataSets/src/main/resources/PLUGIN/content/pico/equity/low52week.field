@@ -1,0 +1,7 @@
+{
+    "name" : "//pico/equity/low52week",
+    "description" : "The low over a 52 week period",
+    "validationScript" : "",
+    "fieldType" : "NUMBER",
+    "fieldTypeExtra" : ""
+}

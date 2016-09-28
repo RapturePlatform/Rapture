@@ -1,0 +1,7 @@
+{
+    "name" : "//pico/equity/source",
+    "description" : "The source for this content",
+    "validationScript" : "",
+    "fieldType" : "STRING",
+    "fieldTypeExtra" : ""
+}
