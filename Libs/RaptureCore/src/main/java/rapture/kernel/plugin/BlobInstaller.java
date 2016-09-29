@@ -43,7 +43,7 @@ public class BlobInstaller implements RaptureInstaller {
             BlobContainer blob = JacksonUtil.objectFromJson(item.getContent(), BlobContainer.class);
         } catch (RaptureException e) {
             // It's a raw blob without a container
-            String mimeType = (uri.getDocPath().endsWith(".jar")) ? JarApiImpl.CONTENT_TYPE : MediaType.ANY_APPLICATION_TYPE.toString();
+            String mimeType = (uri.getDocPath().endsWith(".jar")) ? JarApiImpl.CONTENT_TYPE : MediaType.ANY_TYPE.toString();
             api.putBlob(context, uri.toString(), item.getContent(), mimeType);
         }
     }
