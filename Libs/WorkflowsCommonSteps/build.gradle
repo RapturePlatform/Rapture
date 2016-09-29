@@ -10,8 +10,8 @@ configurations {
 }
 
 dependencies {
-    compile "net.rapture:RaptureCore:3.0.4+"
-    compile "net.rapture:RaptureAPI:3.0.4+"
+    compile project(":RaptureCore")
+    compile project(":RaptureAPI")
     addToJar 'commons-net:commons-net:3.1'
     addToJar 'com.jcraft:jsch:0.1.51'
 }

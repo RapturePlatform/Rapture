@@ -186,9 +186,9 @@ public class CopyFileStepTest {
     public void testCopyFileStep() {
 
         CallingContext context = ContextFactory.getKernelUser();
-
+        String target = "/tmp/dummy/file";
         Map<String, String> args = new HashMap<>();
-        args.put("COPY_FILES", JacksonUtil.jsonFromObject(ImmutableMap.of("/bin/ls", "/tmp/ls.dummyfile")));
+        args.put("COPY_FILES", JacksonUtil.jsonFromObject(ImmutableMap.of("/bin/ls", target)));
 
         CreateResponse response = Kernel.getDecision().createWorkOrderP(context, workflowUri, args, null);
         assertTrue(response.getIsCreated());
@@ -221,7 +221,7 @@ public class CopyFileStepTest {
             }
         }
         assertEquals(WorkOrderExecutionState.FINISHED, debug.getOrder().getStatus());
-        File dummy = new File("/tmp/ls.dummyfile");
+        File dummy = new File(target);
         assertTrue(dummy.exists());
         dummy.delete();
     }
@@ -230,8 +230,9 @@ public class CopyFileStepTest {
     public void testCopyBlobStep() {
         CallingContext context = ContextFactory.getKernelUser();
 
+        String target = "/tmp/blobby/dummy/file";
         Map<String, String> args = new HashMap<>();
-        args.put("COPY_FILES", JacksonUtil.jsonFromObject(ImmutableMap.of("blob://tmp/blobby", "file://tmp/blobby.dummyfile")));
+        args.put("COPY_FILES", JacksonUtil.jsonFromObject(ImmutableMap.of("blob://tmp/blobby", "file:/" + target)));
 
         CreateResponse response = Kernel.getDecision().createWorkOrderP(context, workflowUri, args, null);
         assertTrue(response.getIsCreated());
@@ -264,7 +265,7 @@ public class CopyFileStepTest {
             }
         }
         assertEquals(WorkOrderExecutionState.FINISHED, debug.getOrder().getStatus());
-        File dummy = new File("/tmp/blobby.dummyfile");
+        File dummy = new File(target);
         assertTrue(dummy.exists());
         dummy.delete();
     }
@@ -272,9 +273,9 @@ public class CopyFileStepTest {
     @Test
     public void testCopyDocStep() {
         CallingContext context = ContextFactory.getKernelUser();
-
+        String target = "/tmp/emerson/lake/palmer";
         Map<String, String> args = new HashMap<>();
-        args.put("COPY_FILES", JacksonUtil.jsonFromObject(ImmutableMap.of("document://tmp/elp", "file://tmp/elp")));
+        args.put("COPY_FILES", JacksonUtil.jsonFromObject(ImmutableMap.of("document://tmp/elp", "file:/" + target)));
 
         CreateResponse response = Kernel.getDecision().createWorkOrderP(context, workflowUri, args, null);
         assertTrue(response.getIsCreated());

@@ -19,7 +19,7 @@ api(Lock) {
    
     [Intended to delete a lock manager, but in a multi-node environment this would be dangerous. Furthermore LockFactory caches the Lock Handler locally]
     @entitle=/admin/lock/$f(managerUri)
-    @deprecated="Cannot delete a lock manager once it's assigned because we cannot determine whether the lock manager is in use on a different node"
+    @deprecated="Cannot delete a lock manager once it has been assigned because we cannot determine whether the lock manager is in use on a different node"
     @public void deleteLockManager(String managerUri);
 
     [Acquire a lock. Returns a LockHandle, which you need to pass to releaseLock when calling it. If
