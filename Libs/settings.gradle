@@ -10,6 +10,7 @@ include "RaptureCommon"
 include "PluginInstallerLib", "SelfPluginInstallerLib"
 include "RaptureAppConfig"
 include "WorkflowsCommon"
+include "WorkflowsCommonSteps"
 include 'WorkflowsCore'
 include 'SlateDocGenerator'
 include 'ExplodedDeps'
