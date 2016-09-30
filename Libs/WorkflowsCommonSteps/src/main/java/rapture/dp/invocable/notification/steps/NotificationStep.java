@@ -103,16 +103,27 @@ public class NotificationStep extends AbstractInvocable {
     }
 
     private boolean sendSlack(CallingContext ctx) {
+        String message = StringUtils.stripToNull(decision.getContextValue(ctx, getWorkerURI(), "MESSAGE_BODY"));
+        // Legacy: use template if values are not set
         String templateName = StringUtils.stripToNull(decision.getContextValue(ctx, getWorkerURI(), "MESSAGE_TEMPLATE"));
         String webhook = StringUtils.stripToNull(decision.getContextValue(ctx, getWorkerURI(), "SLACK_WEBHOOK"));
-        if ((webhook == null) || (templateName == null)) return false;
+        if (webhook == null) {
+            log.error("No webhook specified");
+            return false;
+        }
 
         try {
-            EmailTemplate template = Mailer.getEmailTemplate(ctx, templateName);
-
+            if (message == null) {
+                if (templateName == null) {
+                    log.error("No message specified");
+                    return false;
+                }
+                EmailTemplate template = Mailer.getEmailTemplate(ctx, templateName);
+                message = template.getMsgBody();
+            }
             URL url = new URL(webhook);
             Map<String, String> slackNotification = new HashMap<>();
-            slackNotification.put("text", renderTemplate(ctx, template.getMsgBody()));
+            slackNotification.put("text", renderTemplate(ctx, message));
             int response = doPost(url, JacksonUtil.bytesJsonFromObject(slackNotification));
             if (response == 200) return true;
         } catch (Exception e) {
@@ -125,12 +136,20 @@ public class NotificationStep extends AbstractInvocable {
     private boolean sendEmail(CallingContext ctx) {
 
         final SMTPConfig config = Mailer.getSMTPConfig();
-
+        String message = StringUtils.stripToNull(decision.getContextValue(ctx, getWorkerURI(), "MESSAGE_BODY"));
+        String subject = StringUtils.stripToNull(decision.getContextValue(ctx, getWorkerURI(), "MESSAGE_SUBJECT"));
+        String recipientList = StringUtils.stripToNull(decision.getContextValue(ctx, getWorkerURI(), "EMAIL_RECIPIENTS"));
+        // Legacy: use template if values are not set
         String templateName = StringUtils.stripToNull(decision.getContextValue(ctx, getWorkerURI(), "MESSAGE_TEMPLATE"));
-        if (templateName == null) return false;
-        EmailTemplate template = Mailer.getEmailTemplate(ctx, templateName);
-        
-        String recipientList = renderTemplate(ctx, template.getEmailTo());
+
+        if (templateName != null) {
+            EmailTemplate template = Mailer.getEmailTemplate(ctx, templateName);
+            if (template != null) {
+                if (message == null) message = template.getMsgBody();
+                if (subject == null) subject = template.getSubject();
+                if (recipientList == null) recipientList = template.getEmailTo();
+            }
+        }
 
         Properties props = System.getProperties();
         props.put("mail.smtp.auth", "true");
@@ -148,15 +167,15 @@ public class NotificationStep extends AbstractInvocable {
         try {
             Message msg = new MimeMessage(session);
             msg.setFrom(new InternetAddress(config.getFrom()));
-            String[] recipients = recipientList.split("[, ]+");
+            String[] allRecipients = renderTemplate(ctx, recipientList).split("[, ]+");
 
-            InternetAddress[] address = new InternetAddress[recipients.length];
-            for (int i = 0; i < recipients.length; i++)
-                address[i] = new InternetAddress(recipients[i]);
+            InternetAddress[] address = new InternetAddress[allRecipients.length];
+            for (int i = 0; i < allRecipients.length; i++)
+                address[i] = new InternetAddress(allRecipients[i]);
 
             msg.setRecipients(Message.RecipientType.TO, address);
-            msg.setSubject(renderTemplate(ctx, template.getSubject()));
-            msg.setContent(renderTemplate(ctx, template.getMsgBody()), MediaType.ANY_TEXT_TYPE.toString());
+            msg.setSubject(renderTemplate(ctx, renderTemplate(ctx, subject)));
+            msg.setContent(renderTemplate(ctx, renderTemplate(ctx, message)), MediaType.ANY_TEXT_TYPE.toString());
             msg.setSentDate(new Date());
             Transport.send(msg);
         } catch (MessagingException e) {
