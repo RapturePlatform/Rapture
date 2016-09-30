@@ -52,7 +52,8 @@ public class ExecutionContextUtil {
         String toEval = realId;
         ContextValueType valueType = ContextValueType.getContextValueType(realId.charAt(0));
 
-        while (true) {
+        int recursionLimit = 20; // In case somebody accidentally creates a cycle
+        while (--recursionLimit > 0) {
             if (valueType == ContextValueType.VAR) {
                 /*
                  * If a variable, first retrieve the val we need to evaluate
@@ -89,6 +90,8 @@ public class ExecutionContextUtil {
                 return null;
             }
         }
+        log.error("Recursion limit reached - there must be a cyclic reference ");
+        return null;
     }
 
     private static String evalLiteral(String literalVal) {
