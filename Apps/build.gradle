@@ -15,7 +15,7 @@ license {
 
 project.group = 'net.rapture'
 
-ext { platformVersion = '3.0.4' }
+ext { platformVersion = '3.0.5' }
 
 
 subprojects {

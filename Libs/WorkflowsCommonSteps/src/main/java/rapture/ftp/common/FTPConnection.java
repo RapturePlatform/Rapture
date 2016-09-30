@@ -288,7 +288,7 @@ public class FTPConnection implements Connection {
                         outStream = new RaptureURIOutputStream(new RaptureURI(localName)).setContext(context);
                     } else {
                         Path target = Paths.get(localName);
-                        Files.createDirectories(target.getParent());
+                        if (!target.getParent().toFile().exists()) Files.createDirectories(target.getParent());
                         outStream = new FileOutputStream(target.toFile());
                     }
                 }
