@@ -18,6 +18,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -74,7 +77,9 @@ public class CopyFileStep extends AbstractInvocable {
             } else if (remoteName.contains("://")) {
                 outStream = new RaptureURIOutputStream(new RaptureURI(remoteName));
             } else {
-                outStream = new FileOutputStream(new File(remoteName));
+                Path target = Paths.get(remoteName);
+                Files.createDirectories(target.getParent());
+                outStream = new FileOutputStream(target.toFile());
             }
             IOUtils.copy(inStream, outStream);
             outStream.close();
