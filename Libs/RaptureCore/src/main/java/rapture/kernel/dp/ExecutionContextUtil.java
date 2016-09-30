@@ -42,7 +42,7 @@ public class ExecutionContextUtil {
     private static final Logger log = Logger.getLogger(ExecutionContextUtil.class);
 
     // getValue with ExecutionContextField
-    public static String getValueECF(CallingContext callingContext, String workOrderUri, String varAlias, Map<String, String> view) {
+    public static String getValue__ECF(CallingContext callingContext, String workOrderUri, String varAlias, Map<String, String> view) {
         String realId = addContextMarkerAndLookupInView(view, varAlias, ContextValueType.VAR.marker);
 
         if (realId == null || realId.length() <= 1) {
@@ -51,32 +51,43 @@ public class ExecutionContextUtil {
 
         String toEval = realId;
         ContextValueType valueType = ContextValueType.getContextValueType(realId.charAt(0));
-        if (valueType == ContextValueType.VAR) {
-            /*
-             * If a variable, first retrieve the val we need to evaluate
-             */
-            String idNoMarker = realId.substring(1);
-            ExecutionContextField ecf = ExecutionContextFieldStorage.readByFields(workOrderUri, idNoMarker);
-            if (ecf != null) {
-                toEval = ecf.getValue();
-                valueType = ContextValueType.getContextValueType(toEval.charAt(0));
-            } else {
-                toEval = null;
-                valueType = ContextValueType.NULL;
+
+        while (true) {
+            if (valueType == ContextValueType.VAR) {
+                /*
+                 * If a variable, first retrieve the val we need to evaluate
+                 */
+                String idNoMarker = realId.substring(1);
+                ExecutionContextField ecf = ExecutionContextFieldStorage.readByFields(workOrderUri, idNoMarker);
+                if (ecf != null) {
+                    toEval = ecf.getValue();
+                    valueType = ContextValueType.getContextValueType(toEval.charAt(0));
+                } else {
+                    toEval = null;
+                    valueType = ContextValueType.NULL;
+                }
             }
-        }
-        if (valueType == ContextValueType.LINK) {
-            return evalLinkExpression(callingContext, toEval.substring(1));
-        } else if (valueType == ContextValueType.LITERAL) {
-            return evalLiteral(toEval);
-        } else if (valueType == ContextValueType.NULL) {
-            log.debug("Variable " + varAlias + " has no type - assuming Literal");
-            return toEval;
-        } else if (valueType == ContextValueType.TEMPLATE) {
-            return evalTemplateECF(callingContext, workOrderUri, toEval.substring(1), view);
-        } else {
-            log.error(String.format("Unable to evaluate id='%s', value='%s'", varAlias, toEval));
-            return null;
+            if (valueType == ContextValueType.LINK) {
+                toEval = evalLinkExpression(callingContext, toEval.substring(1));
+                valueType = ContextValueType.getContextValueType(toEval.charAt(0));
+                if (valueType == ContextValueType.NULL) {
+                    return toEval;
+                }
+            } else if (valueType == ContextValueType.LITERAL) {
+                return evalLiteral(toEval);
+            } else if (valueType == ContextValueType.NULL) {
+                log.debug("Variable " + varAlias + " has no type - assuming Literal");
+                return toEval;
+            } else if (valueType == ContextValueType.TEMPLATE) {
+                toEval = evalTemplateECF(callingContext, workOrderUri, toEval.substring(1), view);
+                valueType = ContextValueType.getContextValueType(toEval.charAt(0));
+                if (valueType == ContextValueType.NULL) {
+                    return toEval;
+                }
+            } else {
+                log.error(String.format("Unable to evaluate id='%s', value='%s'", varAlias, toEval));
+                return null;
+            }
         }
     }
 
@@ -134,7 +145,7 @@ public class ExecutionContextUtil {
                         throw RaptureExceptionFactory.create("'${' has no matching '}' in " + template);
                     }
                     String varName = template.substring(startVar, endVar);
-                    String val = getValueECF(ctx, workOrderUri, varName, view);
+                    String val = getValue__ECF(ctx, workOrderUri, varName, view);
                     if (val == null) {
                         throw RaptureExceptionFactory.create("Variable ${" + varName + "} required but missing");
                     }

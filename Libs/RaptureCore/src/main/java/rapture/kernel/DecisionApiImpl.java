@@ -685,7 +685,7 @@ public class DecisionApiImpl extends KernelBase implements DecisionApi {
         RaptureURI uri = new RaptureURI(workerURI, Scheme.WORKORDER);
         String workOrderURI = uri.toShortString();
         Map<String, String> view = getView(uri, workOrderURI);
-        return ExecutionContextUtil.getValueECF(callingContext, workOrderURI, varAlias, view);
+        return ExecutionContextUtil.getValue__ECF(callingContext, workOrderURI, varAlias, view);
     }
 
     @Override
