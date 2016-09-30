@@ -42,7 +42,7 @@ public class ExecutionContextUtil {
     private static final Logger log = Logger.getLogger(ExecutionContextUtil.class);
 
     // getValue with ExecutionContextField
-    public static String getValue__ECF(CallingContext callingContext, String workOrderUri, String varAlias, Map<String, String> view) {
+    public static String getValueECF(CallingContext callingContext, String workOrderUri, String varAlias, Map<String, String> view) {
         String realId = addContextMarkerAndLookupInView(view, varAlias, ContextValueType.VAR.marker);
 
         if (realId == null || realId.length() <= 1) {
@@ -145,7 +145,7 @@ public class ExecutionContextUtil {
                         throw RaptureExceptionFactory.create("'${' has no matching '}' in " + template);
                     }
                     String varName = template.substring(startVar, endVar);
-                    String val = getValue__ECF(ctx, workOrderUri, varName, view);
+                    String val = getValueECF(ctx, workOrderUri, varName, view);
                     if (val == null) {
                         throw RaptureExceptionFactory.create("Variable ${" + varName + "} required but missing");
                     }
