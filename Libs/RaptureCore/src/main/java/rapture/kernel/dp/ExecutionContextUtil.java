@@ -25,6 +25,7 @@ package rapture.kernel.dp;
 
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import rapture.common.CallingContext;
@@ -70,10 +71,10 @@ public class ExecutionContextUtil {
             }
             if (valueType == ContextValueType.LINK) {
                 toEval = evalLinkExpression(callingContext, toEval.substring(1));
+                if (StringUtils.isEmpty(toEval)) return toEval;
                 valueType = ContextValueType.getContextValueType(toEval.charAt(0));
-                if (valueType == ContextValueType.NULL) {
+                if (valueType == ContextValueType.NULL)
                     return toEval;
-                }
             } else if (valueType == ContextValueType.LITERAL) {
                 return evalLiteral(toEval);
             } else if (valueType == ContextValueType.NULL) {
@@ -113,7 +114,8 @@ public class ExecutionContextUtil {
         } else {
             String content = Kernel.getDoc().getDoc(ctx, "//" + innerUri.getShortPath());
             if (content == null) {
-                return "";
+                String attr = innerUri.getAttribute();
+                return (attr != null) ? attr : "";
             }
             Map<String, Object> parsedDoc = JacksonUtil.getMapFromJson(content);
             String[] parts = fieldName.split("\\.");
@@ -124,7 +126,10 @@ public class ExecutionContextUtil {
                 Map<String, Object> unchecked = (Map<String, Object>) parsedDoc.get(parts[i]);
                 parsedDoc = unchecked;
             }
-            return parsedDoc.get(parts[parts.length - 1]).toString();
+            Object o = parsedDoc.get(parts[parts.length - 1]);
+            if (o != null) return o.toString();
+            String attr = innerUri.getAttribute();
+            return (attr != null) ? attr : "";
         }
     }
 
@@ -147,10 +152,11 @@ public class ExecutionContextUtil {
                     if (endVar < 0) {
                         throw RaptureExceptionFactory.create("'${' has no matching '}' in " + template);
                     }
-                    String varName = template.substring(startVar, endVar);
-                    String val = getValueECF(ctx, workOrderUri, varName, view);
+                    String[] varName = template.substring(startVar, endVar).split("\\$");
+                    String val = getValueECF(ctx, workOrderUri, varName[0], view);
                     if (val == null) {
-                        throw RaptureExceptionFactory.create("Variable ${" + varName + "} required but missing");
+                        if (varName.length > 0) val = varName[1];
+                        else throw RaptureExceptionFactory.create("Variable ${" + varName[0] + "} required but missing");
                     }
                     sb.append(val);
                     bolt = endVar + 1;
