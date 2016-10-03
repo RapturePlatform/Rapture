@@ -58,7 +58,7 @@ public class CronParser {
     private Set<Integer> years;
 
     public CronParser(String cronLine) {
-        String[] params = cronLine.split(" ");
+        String[] params = cronLine.split(" +");
         String cronExp = cronLine;
         if (params.length > 5) {
             years = parseRangeParam(params[5], YEARMAX, YEARMIN, YEARMIN, YEARMAX);
