@@ -1,0 +1,11 @@
+// A script to return the information needed for a menu pane (called through a widget reference)
+
+ret = [];
+menu1 = {};
+menu1.title = "Show demonstration table";
+menu1.widget = "//default/table/demo";
+params = {};
+params.entity = "//standard/country";
+menu1.params = params;
+ret = ret + menu1;
+println(json(ret));

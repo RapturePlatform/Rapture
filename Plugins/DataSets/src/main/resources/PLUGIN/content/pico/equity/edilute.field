@@ -1,0 +1,7 @@
+{
+    "name" : "//pico/equity/edilute",
+    "description" : "Earnings Diluted",
+    "validationScript" : "",
+    "fieldType" : "NUMBER",
+    "fieldTypeExtra" : ""
+}

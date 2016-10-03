@@ -1,0 +1,7 @@
+{
+    "name" : "//pico/equity/specdivpaydate",
+    "description" : "Special Dividend Pay Date",
+    "validationScript" : "",
+    "fieldType" : "DATE",
+    "fieldTypeExtra" : ""
+}

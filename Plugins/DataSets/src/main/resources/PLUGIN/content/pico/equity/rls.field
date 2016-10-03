@@ -1,0 +1,7 @@
+{
+    "name" : "//pico/equity/rls",
+    "description" : "Round Lot Size",
+    "validationScript" : "",
+    "fieldType" : "NUMBER",
+    "fieldTypeExtra" : ""
+}

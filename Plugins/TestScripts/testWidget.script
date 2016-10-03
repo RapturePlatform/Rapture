@@ -1,0 +1,3 @@
+
+w = #widget.getWidget('//default/menu/standard');
+println(json(w));

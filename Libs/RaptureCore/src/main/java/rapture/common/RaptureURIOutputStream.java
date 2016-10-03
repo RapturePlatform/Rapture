@@ -15,6 +15,7 @@ public class RaptureURIOutputStream extends ByteArrayOutputStream {
 
     RaptureURI uri;
     MediaType mediaType = MediaType.ANY_TYPE;
+    CallingContext context = ContextFactory.getAnonymousUser();
 
     public RaptureURIOutputStream(RaptureURI uri) {
         super();
@@ -34,16 +35,21 @@ public class RaptureURIOutputStream extends ByteArrayOutputStream {
         return this;
     }
 
+    public RaptureURIOutputStream setContext(CallingContext ctxt) {
+        context = ctxt;
+        return this;
+    }
+
     @Override
     public void close() throws IOException {
         switch (uri.getScheme()) {
         default:
             throw new IllegalArgumentException(uri.getScheme() + " not supported");
         case BLOB:
-            Kernel.getBlob().putBlob(ContextFactory.getAnonymousUser(), uri.toString(), super.toByteArray(), mediaType.toString());
+            Kernel.getBlob().putBlob(context, uri.toString(), super.toByteArray(), mediaType.toString());
             break;
         case DOCUMENT:
-            Kernel.getDoc().putDoc(ContextFactory.getAnonymousUser(), uri.toString(), super.toString());
+            Kernel.getDoc().putDoc(context, uri.toString(), super.toString());
             break;
         }
         super.close();

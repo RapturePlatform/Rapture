@@ -1,0 +1,7 @@
+{
+    "name" : "//pico/equity/symbol",
+    "description" : "A symbol for an equity",
+    "validationScript" : "",
+    "fieldType" : "STRING",
+    "fieldTypeExtra" : ""
+}

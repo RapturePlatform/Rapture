@@ -1,0 +1,7 @@
+{
+    "name" : "//pico/equity/tick",
+    "description" : "Tick Value",
+    "validationScript" : "",
+    "fieldType" : "NUMBER",
+    "fieldTypeExtra" : ""
+}

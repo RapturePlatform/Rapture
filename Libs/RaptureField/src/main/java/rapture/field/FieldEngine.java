@@ -13,25 +13,25 @@ import rapture.common.impl.jackson.JacksonUtil;
 
 /**
  * This is the engine that performs transformations of data according to field definitions.
- * 
+ *
  * The idea is that if you have a set of data (perhaps a JSON document) that conforms to a schema (structure)
  * and you want to transform that into a different schema, you should be able to work out from the
  * schema and field and transformation definitions how to do this.
  */
- 
+
 public class FieldEngine extends BaseEngine {
-    
+
     public FieldEngine(StructureLoader sLoader, FieldLoader fLoader, ScriptLoader scLoader, FieldTransformLoader ftLoader) {
         super(sLoader, fLoader, scLoader, ftLoader);
     }
-    
+
     /**
      * Given a document (a json document) - check to see if it matches that structure
      * defined in the structureUri. If it doesn't, return a list of formatted error messages
      * that can be displayed to a user or written to a log. A zero size list return indicates
      * a document that validates against the structure.
      */
-     
+
     public List<String> validateDocument(String jsonDocument, String structureUri) {
         // Convert document to a map of maps
         Map<String, Object> docMap = JacksonUtil.getMapFromJson(jsonDocument);
@@ -40,7 +40,7 @@ public class FieldEngine extends BaseEngine {
         return ret;
     }
 
-    private void validateObject(Map<String, Object> docMap, String structureUri, List<String> ret) {   
+    private void validateObject(Map<String, Object> docMap, String structureUri, List<String> ret) {
         //System.out.println("Validate using " + structureUri + " with " + docMap.toString());
         RaptureStructure s = getStructure(structureUri);
         // Now we need to look at the fields of the structure and check to see if the
@@ -48,8 +48,9 @@ public class FieldEngine extends BaseEngine {
         s.getFields().forEach(sf -> {
             if (docMap.containsKey(sf.getKey())) {
                 RaptureField fd = getField(sf.getFieldUri());
-  
+
                 // Now check the type
+                //System.out.println("Checking field " + sf.getFieldUri());
                 checkValue(sf, fd, docMap.get(sf.getKey()), ret);
                 // Now for maps and arrays we need to repeat this one level down
                 // with the structure associated with that
@@ -68,7 +69,7 @@ public class FieldEngine extends BaseEngine {
             }
         });
     }
-    
+
     private void checkValue(StructureField sf, RaptureField fd, Object val, List<String> ret) {
          // First check that the type is correct
         boolean error = false;
@@ -104,6 +105,6 @@ public class FieldEngine extends BaseEngine {
             container.runValidationScript(val, scriptLoader.getScript(fd.getValidationScript()), ret);
         }
     }
-    
-    
+
+
 }

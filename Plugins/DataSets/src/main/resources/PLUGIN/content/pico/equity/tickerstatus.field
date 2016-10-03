@@ -1,0 +1,7 @@
+{
+    "name" : "//pico/equity/tickerstatus",
+    "description" : "The ticker status of this equity",
+    "validationScript" : "",
+    "fieldType" : "STRING",
+    "fieldTypeExtra" : ""
+}

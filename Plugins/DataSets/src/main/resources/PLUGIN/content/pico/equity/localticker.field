@@ -1,0 +1,7 @@
+{
+    "name" : "//pico/equity/localticker",
+    "description" : "Local Ticker Code",
+    "validationScript" : "",
+    "fieldType" : "STRING",
+    "fieldTypeExtra" : ""
+}

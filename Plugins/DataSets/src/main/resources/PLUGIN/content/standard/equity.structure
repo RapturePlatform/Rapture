@@ -1,0 +1,336 @@
+{
+    "name" : "//standard/equity",
+    "description" : "The structure of information about an equity",
+    "fields" : [
+        {
+          "key" : "symbol",
+          "fieldUri" : "//pico/equity/symbol",
+          "mandatory" : true
+        },
+        {
+          "key" : "exchange",
+          "fieldUri" : "//pico/equity/exchange",
+          "mandatory" : true
+        },
+        {
+          "key" : "status",
+          "fieldUri" : "//pico/equity/status",
+          "mandatory" : true
+        },
+        {
+          "key" : "ent",
+          "fieldUri" : "//pico/equity/ftidentitlement",
+          "mandatory" : true
+        },
+        {
+          "key" : "source",
+          "fieldUri" : "//pico/equity/source",
+          "mandatory" : true
+        },
+        {
+          "key" : "activityDate",
+          "fieldUri" : "//pico/equity/activitydate",
+          "mandatory" : true
+        },
+        {
+          "key" : "issueType",
+          "fieldUri" : "//pico/equity/issuetype",
+          "mandatory" : true
+        },
+        {
+          "key" : "issueStatus",
+          "fieldUri" : "//pico/equity/issuestatus",
+          "mandatory" : true
+        },
+        {
+          "key" : "issuer",
+          "fieldUri" : "//pico/equity/issuer",
+          "mandatory" : true
+        },
+        {
+          "key" : "issuedesc",
+          "fieldUri" : "//pico/equity/issuedesc",
+          "mandatory" : true
+        },
+        {
+          "key" : "siccode",
+          "fieldUri" : "//pico/equity/siccode",
+          "mandatory" : true
+        },
+        {
+          "key" : "beta",
+          "fieldUri" : "//pico/equity/beta",
+          "mandatory" : true
+        },
+        {
+          "key" : "volatility",
+          "fieldUri" : "//pico/equity/volatility",
+          "mandatory" : true
+        },
+        {
+          "key" : "high52week",
+          "fieldUri" : "//pico/equity/high52week",
+          "mandatory" : true
+        },
+        {
+          "key" : "low52week",
+          "fieldUri" : "//pico/equity/low52week",
+          "mandatory" : true
+        },
+        {
+          "key" : "sharesoutstanding",
+          "fieldUri" : "//pico/equity/sharesoutstanding",
+          "mandatory" : true
+        },
+        {
+          "key" : "eps",
+          "fieldUri" : "//pico/equity/eps",
+          "mandatory" : true
+        },
+        {
+          "key" : "earningsdiluted",
+          "fieldUri" : "//pico/equity/edilute",
+          "mandatory" : true
+        },
+        {
+          "key" : "regdivtype",
+          "fieldUri" : "//pico/equity/regdivtype",
+          "mandatory" : true
+        },
+        {
+          "key" : "divcalcmethod",
+          "fieldUri" : "//pico/equity/divcalcmethod",
+          "mandatory" : true
+        },
+        {
+          "key" : "regdivfreq",
+          "fieldUri" : "//pico/equity/regdivfreq",
+          "mandatory" : true
+        },
+        {
+          "key" : "regdivamt",
+          "fieldUri" : "//pico/equity/regdivamt",
+          "mandatory" : true
+        },
+        {
+          "key" : "regdivexdate",
+          "fieldUri" : "//pico/equity/regdivexdate",
+          "mandatory" : true
+        },
+        {
+          "key" : "regdivdecldate",
+          "fieldUri" : "//pico/equity/regdivdecldate",
+          "mandatory" : true
+        },
+        {
+          "key" : "regdivrecdate",
+          "fieldUri" : "//pico/equity/regdivrecdate",
+          "mandatory" : true
+        },
+        {
+          "key" : "regdivpaydate",
+          "fieldUri" : "//pico/equity/regdivpaydate",
+          "mandatory" : true
+        },
+        {
+          "key" : "regdivccy",
+          "fieldUri" : "//pico/equity/regdivccy",
+          "mandatory" : true
+        },
+        {
+          "key" : "regdivtaxstatus",
+          "fieldUri" : "//pico/equity/regdivtaxstatus",
+          "mandatory" : true
+        },
+        {
+          "key" : "regdivtaxbase",
+          "fieldUri" : "//pico/equity/regdivtaxbase",
+          "mandatory" : true
+        },
+        {
+          "key" : "regdivdtcreinv",
+          "fieldUri" : "//pico/equity/regdivdtcreinv",
+          "mandatory" : true
+        },
+        {
+          "key" : "regdivreinv",
+          "fieldUri" : "//pico/equity/regdivreinv",
+          "mandatory" : true
+        },
+        {
+          "key" : "specdivtype",
+          "fieldUri" : "//pico/equity/specdivtype",
+          "mandatory" : true
+        },
+        {
+          "key" : "specdivfreq",
+          "fieldUri" : "//pico/equity/specdivfreq",
+          "mandatory" : true
+        },
+        {
+          "key" : "specdivamt",
+          "fieldUri" : "//pico/equity/specdivamt",
+          "mandatory" : true
+        },
+        {
+          "key" : "specdivexdate",
+          "fieldUri" : "//pico/equity/specdivexdate",
+          "mandatory" : true
+        },
+        {
+          "key" : "specdivdecldate",
+          "fieldUri" : "//pico/equity/specdivdecldate",
+          "mandatory" : true
+        },
+        {
+          "key" : "specdivrecdate",
+          "fieldUri" : "//pico/equity/specdivrecdate",
+          "mandatory" : true
+        },
+        {
+          "key" : "specdivpaydate",
+          "fieldUri" : "//pico/equity/specdivpaydate",
+          "mandatory" : true
+        },
+        {
+          "key" : "specdivccy",
+          "fieldUri" : "//pico/equity/specdivccy",
+          "mandatory" : true
+        },
+        {
+          "key" : "specdivtaxstatus",
+          "fieldUri" : "//pico/equity/specdivtaxstatus",
+          "mandatory" : true
+        },
+        {
+          "key" : "specdivtaxbase",
+          "fieldUri" : "//pico/equity/specdivtaxbase",
+          "mandatory" : true
+        },
+        {
+          "key" : "specdivdtcreinv",
+          "fieldUri" : "//pico/equity/specdivdtcreinv",
+          "mandatory" : true
+        },
+        {
+          "key" : "specdivreinv",
+          "fieldUri" : "//pico/equity/specdivreinv",
+          "mandatory" : true
+        },
+        {
+          "key" : "nav",
+          "fieldUri" : "//pico/equity/nav",
+          "mandatory" : true
+        },
+        {
+          "key" : "cpu",
+          "fieldUri" : "//pico/equity/cpu",
+          "mandatory" : true
+        },
+        {
+          "key" : "ecpu",
+          "fieldUri" : "//pico/equity/ecpu",
+          "mandatory" : true
+        },
+        {
+          "key" : "vwopValue",
+          "fieldUri" : "//pico/equity/vwop",
+          "mandatory" : true
+        },
+        {
+          "key" : "rls",
+          "fieldUri" : "//pico/equity/rls",
+          "mandatory" : true
+        },
+        {
+          "key" : "vol10",
+          "fieldUri" : "//pico/equity/vol10",
+          "mandatory" : true
+        },
+        {
+          "key" : "vol30",
+          "fieldUri" : "//pico/equity/vol30",
+          "mandatory" : true
+        },
+        {
+          "key" : "shortint",
+          "fieldUri" : "//pico/equity/shortint",
+          "mandatory" : true
+        },
+        {
+          "key" : "ccy",
+          "fieldUri" : "//pico/equity/ccy",
+          "mandatory" : true
+        },
+        {
+          "key" : "coupon",
+          "fieldUri" : "//pico/equity/coupon",
+          "mandatory" : true
+        },
+        {
+          "key" : "mdate",
+          "fieldUri" : "//pico/equity/maturitydate",
+          "mandatory" : true
+        },
+        {
+          "key" : "markettier",
+          "fieldUri" : "//pico/equity/mtier",
+          "mandatory" : true
+        },
+        {
+          "key" : "tickval",
+          "fieldUri" : "//pico/equity/tick",
+          "mandatory" : true
+        },
+        {
+          "key" : "vol5",
+          "fieldUri" : "//pico/equity/vol5",
+          "mandatory" : true
+        },
+        {
+          "key" : "marketid",
+          "fieldUri" : "//pico/equity/marketid",
+          "mandatory" : true
+        },
+        {
+          "key" : "country",
+          "fieldUri" : "//pico/equity/country",
+          "mandatory" : true
+        },
+        {
+          "key" : "tickerstatus",
+          "fieldUri" : "//pico/equity/tickerstatus",
+          "mandatory" : true
+        },
+        {
+          "key" : "tickerstatusdate",
+          "fieldUri" : "//pico/equity/tickerstatusdate",
+          "mandatory" : true
+        },
+        {
+          "key" : "localticker",
+          "fieldUri" : "//pico/equity/localticker",
+          "mandatory" : true
+        },
+        {
+          "key" : "regdivqual",
+          "fieldUri" : "//pico/equity/regdivqual",
+          "mandatory" : true
+        },
+        {
+          "key" : "specdivqual",
+          "fieldUri" : "//pico/equity/specdivqual",
+          "mandatory" : true
+        },
+        {
+          "key" : "cempt",
+          "fieldUri" : "//pico/equity/cempt",
+          "mandatory" : true
+        },
+        {
+          "key" : "issuesubtype",
+          "fieldUri" : "//pico/equity/issuesubtype",
+          "mandatory" : true
+        }
+    ]
+}

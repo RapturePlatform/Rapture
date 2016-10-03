@@ -24,5 +24,18 @@
 package rapture.common.dp;
 
 public enum ContextValueType {
-    LITERAL, LINK;
+    LITERAL('#'), LINK('!'), TEMPLATE('%'), VAR('$'), NULL('\000');
+
+    public final char marker;
+
+    ContextValueType(char marker) {
+        this.marker = marker;
+    }
+
+    public static ContextValueType getContextValueType(char marker) {
+        for (ContextValueType cvt : ContextValueType.values()) {
+            if (cvt.marker == marker) return cvt;
+        }
+        return NULL;
+    }
 }

@@ -1,0 +1,7 @@
+{
+    "name" : "//pico/equity/specdivreinv",
+    "description" : "Special dividend Reinvest",
+    "validationScript" : "",
+    "fieldType" : "STRING",
+    "fieldTypeExtra" : ""
+}

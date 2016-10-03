@@ -32,6 +32,7 @@ import java.util.Map;
 
 import java.net.HttpURLConnection;
 
+import rapture.common.*;
 import rapture.common.EntitlementSet;
 <imports; separator="\n">
 <retImport>

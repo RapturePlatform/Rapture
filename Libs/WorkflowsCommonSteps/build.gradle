@@ -1,0 +1,29 @@
+version = '1.0.0'
+jar.manifest.attributes "Implementation-Title": "Rapture Workflow Common "
+jar.manifest.attributes "Implementation-Version" : version
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+configurations {
+    addToJar
+    compile.extendsFrom addToJar
+}
+
+dependencies {
+    compile project(":RaptureCore")
+    compile project(":RaptureAPI")
+    addToJar 'commons-net:commons-net:3.1'
+    addToJar 'com.jcraft:jsch:0.1.51'
+}
+
+task fatJar(type: Jar) {
+    baseName = project.name
+    from {
+        configurations.addToJar.collect {
+             it.isDirectory() ? it : zipTree(it) }
+    } with jar
+}
+
+build.dependsOn(fatJar)
+test.dependsOn(fatJar)
+install.dependsOn(build)

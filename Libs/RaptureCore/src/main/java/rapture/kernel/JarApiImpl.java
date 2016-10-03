@@ -43,7 +43,7 @@ import rapture.common.mime.MimeJarCacheUpdate;
 public class JarApiImpl extends KernelBase implements JarApi {
 
     private final static String JAR_REPO_URI = "blob://" + RaptureConstants.JAR_REPO + RaptureURI.Parser.SEPARATOR_CHAR;
-    final static String CONTENT_TYPE = "application/java-archive";
+    public final static String CONTENT_TYPE = "application/java-archive";
 
     private BlobApi blobApi;
 

@@ -1,0 +1,7 @@
+{
+    "name" : "//pico/equity/sharesoutstanding",
+    "description" : "The number of shares outstanding",
+    "validationScript" : "",
+    "fieldType" : "NUMBER",
+    "fieldTypeExtra" : ""
+}

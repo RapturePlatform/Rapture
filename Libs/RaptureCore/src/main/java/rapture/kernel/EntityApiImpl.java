@@ -196,6 +196,7 @@ public class EntityApiImpl extends KernelBase implements EntityApi {
 			// string, fund(fund) string, symbol0(legs.0.symbol) string,
 			// symbol1(legs.1.symbol) string
 			e.getIndexFields().forEach(ifield -> {
+                                System.out.println("Looking at " + ifield);
 				String x = getFieldType(ifield, s, context);
 				if (!x.isEmpty()) {
 					sb.append(", ");

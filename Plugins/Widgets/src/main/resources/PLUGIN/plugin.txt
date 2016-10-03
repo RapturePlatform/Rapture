@@ -1,0 +1,11 @@
+{
+   "depends":{},
+   "description":"Widgets",
+   "plugin":"Widgets",
+   "version":{
+   		"major":3,
+   		"minor":0,
+   		"release":4,
+   		"timestamp":99999999999999
+   }
+}

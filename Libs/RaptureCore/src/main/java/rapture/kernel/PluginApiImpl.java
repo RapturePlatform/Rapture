@@ -104,8 +104,6 @@ import rapture.kernel.plugin.StructureInstaller;
 import rapture.kernel.plugin.StructuredEncoder;
 import rapture.kernel.plugin.StructuredRepoMaker;
 import rapture.kernel.plugin.StructuredTableInstaller;
-import rapture.kernel.plugin.TransformEncoder;
-import rapture.kernel.plugin.TransformInstaller;
 import rapture.kernel.plugin.WidgetEncoder;
 import rapture.kernel.plugin.WidgetInstaller;
 import rapture.kernel.plugin.WorkflowEncoder;
@@ -144,7 +142,6 @@ public class PluginApiImpl extends KernelBase implements PluginApi {
             .put(Scheme.FIELD, new FieldEncoder())
             .put(Scheme.FIELDTRANSFORM, new FieldTransformEncoder())
             .put(Scheme.STRUCTURE, new StructureEncoder())
-            .put(Scheme.TRANSFORM, new TransformEncoder())
             .put(Scheme.ENTITY, new EntityEncoder())
             .put(Scheme.WIDGET, new WidgetEncoder())
             .put(Scheme.PROGRAM, new ProgramEncoder())
@@ -207,7 +204,6 @@ public class PluginApiImpl extends KernelBase implements PluginApi {
             .put(Scheme.STRUCTURED, new StructuredTableInstaller()).put(Scheme.JAR, new JarInstaller())
             .put(Scheme.FIELD, new FieldInstaller())
             .put(Scheme.STRUCTURE, new StructureInstaller())
-            .put(Scheme.TRANSFORM, new TransformInstaller())
             .put(Scheme.FIELDTRANSFORM, new FieldTransformInstaller())
             .put(Scheme.ENTITY, new EntityInstaller())
             .put(Scheme.WIDGET, new WidgetInstaller())

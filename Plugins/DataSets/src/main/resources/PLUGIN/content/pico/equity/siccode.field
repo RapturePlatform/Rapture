@@ -1,0 +1,7 @@
+{
+    "name" : "//pico/equity/siccode",
+    "description" : "The SIC Code of this entity",
+    "validationScript" : "",
+    "fieldType" : "STRING",
+    "fieldTypeExtra" : ""
+}

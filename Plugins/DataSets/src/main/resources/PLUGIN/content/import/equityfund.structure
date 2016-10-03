@@ -1,0 +1,336 @@
+{
+    "name" : "//import/equityFund",
+    "description" : "The structure of the CSV file containing equity information",
+    "fields" : [
+        {
+          "key" : "EquitySymbol",
+          "fieldUri" : "//pico/equity/symbol",
+          "mandatory" : true
+        },
+        {
+          "key" : "PrimaryExchange",
+          "fieldUri" : "//pico/equity/exchange",
+          "mandatory" : true
+        },
+        {
+          "key" : "EquityFundamentalStatus",
+          "fieldUri" : "//pico/equity/status",
+          "mandatory" : true
+        },
+        {
+          "key" : "Entitlement",
+          "fieldUri" : "//pico/equity/ftidentitlement",
+          "mandatory" : true
+        },
+        {
+          "key" : "SourceContent",
+          "fieldUri" : "//pico/equity/source",
+          "mandatory" : true
+        },
+        {
+          "key" : "ActivityDate",
+          "fieldUri" : "//pico/equity/activitydate",
+          "mandatory" : true
+        },
+        {
+          "key" : "IssueType",
+          "fieldUri" : "//pico/equity/issuetype",
+          "mandatory" : true
+        },
+        {
+          "key" : "IssueStatus",
+          "fieldUri" : "//pico/equity/issuestatus",
+          "mandatory" : true
+        },
+        {
+          "key" : "IssuerName",
+          "fieldUri" : "//pico/equity/issuer",
+          "mandatory" : true
+        },
+        {
+          "key" : "IssueDescription",
+          "fieldUri" : "//pico/equity/issuedesc",
+          "mandatory" : true
+        },
+        {
+          "key" : "SICCode",
+          "fieldUri" : "//pico/equity/siccode",
+          "mandatory" : true
+        },
+        {
+          "key" : "Beta",
+          "fieldUri" : "//pico/equity/beta",
+          "mandatory" : true
+        },
+        {
+          "key" : "Volatility",
+          "fieldUri" : "//pico/equity/volatility",
+          "mandatory" : true
+        },
+        {
+          "key" : "High52Week",
+          "fieldUri" : "//pico/equity/high52week",
+          "mandatory" : true
+        },
+        {
+          "key" : "Low52Week",
+          "fieldUri" : "//pico/equity/low52week",
+          "mandatory" : true
+        },
+        {
+          "key" : "SharesOutstanding",
+          "fieldUri" : "//pico/equity/sharesoutstanding",
+          "mandatory" : true
+        },
+        {
+          "key" : "EarningsPerShare",
+          "fieldUri" : "//pico/equity/eps",
+          "mandatory" : true
+        },
+        {
+          "key" : "EarningsDiluted",
+          "fieldUri" : "//pico/equity/edilute",
+          "mandatory" : true
+        },
+        {
+          "key" : "RegularDividendType",
+          "fieldUri" : "//pico/equity/regdivtype",
+          "mandatory" : true
+        },
+        {
+          "key" : "DividendCalculationMethod",
+          "fieldUri" : "//pico/equity/divcalcmethod",
+          "mandatory" : true
+        },
+        {
+          "key" : "RegularDividendFrequency",
+          "fieldUri" : "//pico/equity/regdivfreq",
+          "mandatory" : true
+        },
+        {
+          "key" : "RegularDividendAmount",
+          "fieldUri" : "//pico/equity/regdivamt",
+          "mandatory" : true
+        },
+        {
+          "key" : "RegularDividendExDate",
+          "fieldUri" : "//pico/equity/regdivexdate",
+          "mandatory" : true
+        },
+        {
+          "key" : "RegularDividendDeclareDate",
+          "fieldUri" : "//pico/equity/regdivdecldate",
+          "mandatory" : true
+        },
+        {
+          "key" : "RegularDividendRecordDate",
+          "fieldUri" : "//pico/equity/regdivrecdate",
+          "mandatory" : true
+        },
+        {
+          "key" : "RegularDividendPayDate",
+          "fieldUri" : "//pico/equity/regdivpaydate",
+          "mandatory" : true
+        },
+        {
+          "key" : "RegularDividendCurrency",
+          "fieldUri" : "//pico/equity/regdivccy",
+          "mandatory" : true
+        },
+        {
+          "key" : "RegularDividendTaxStatus",
+          "fieldUri" : "//pico/equity/regdivtaxstatus",
+          "mandatory" : true
+        },
+        {
+          "key" : "RegularDividendTaxBaseCode",
+          "fieldUri" : "//pico/equity/regdivtaxbase",
+          "mandatory" : true
+        },
+        {
+          "key" : "RegularDividendDTCReinvest",
+          "fieldUri" : "//pico/equity/regdivdtcreinv",
+          "mandatory" : true
+        },
+        {
+          "key" : "RegularDividendReinvest",
+          "fieldUri" : "//pico/equity/regdivreinv",
+          "mandatory" : true
+        },
+        {
+          "key" : "SpecialDividendType",
+          "fieldUri" : "//pico/equity/specdivtype",
+          "mandatory" : true
+        },
+        {
+          "key" : "SpecialDividendFrequency",
+          "fieldUri" : "//pico/equity/specdivfreq",
+          "mandatory" : true
+        },
+        {
+          "key" : "SpecialDividendAmount",
+          "fieldUri" : "//pico/equity/specdivamt",
+          "mandatory" : true
+        },
+        {
+          "key" : "SpecialDividendExDate",
+          "fieldUri" : "//pico/equity/specdivexdate",
+          "mandatory" : true
+        },
+        {
+          "key" : "SpecialDividendDeclareDate",
+          "fieldUri" : "//pico/equity/specdivdecldate",
+          "mandatory" : true
+        },
+        {
+          "key" : "SpecialDividendRecordDate",
+          "fieldUri" : "//pico/equity/specdivrecdate",
+          "mandatory" : true
+        },
+        {
+          "key" : "SpecialDividendPayDate",
+          "fieldUri" : "//pico/equity/specdivpaydate",
+          "mandatory" : true
+        },
+        {
+          "key" : "SpecialDividendCurrency",
+          "fieldUri" : "//pico/equity/specdivccy",
+          "mandatory" : true
+        },
+        {
+          "key" : "SpecialDividendTaxStatus",
+          "fieldUri" : "//pico/equity/specdivtaxstatus",
+          "mandatory" : true
+        },
+        {
+          "key" : "SpecialDividendTaxBaseCode",
+          "fieldUri" : "//pico/equity/specdivtaxbase",
+          "mandatory" : true
+        },
+        {
+          "key" : "SpecialDividendDTCReinvest",
+          "fieldUri" : "//pico/equity/specdivdtcreinv",
+          "mandatory" : true
+        },
+        {
+          "key" : "SpecialDividendReinvest",
+          "fieldUri" : "//pico/equity/specdivreinv",
+          "mandatory" : true
+        },
+        {
+          "key" : "NetAssetValue",
+          "fieldUri" : "//pico/equity/nav",
+          "mandatory" : true
+        },
+        {
+          "key" : "TotalCashPerUnit",
+          "fieldUri" : "//pico/equity/cpu",
+          "mandatory" : true
+        },
+        {
+          "key" : "EstimatedCashPerUnit",
+          "fieldUri" : "//pico/equity/ecpu",
+          "mandatory" : true
+        },
+        {
+          "key" : "VWOPMarketValue",
+          "fieldUri" : "//pico/equity/vwop",
+          "mandatory" : true
+        },
+        {
+          "key" : "RoundLotSize",
+          "fieldUri" : "//pico/equity/rls",
+          "mandatory" : true
+        },
+        {
+          "key" : "Average10DayVolume",
+          "fieldUri" : "//pico/equity/vol10",
+          "mandatory" : true
+        },
+        {
+          "key" : "Average30DayVolume",
+          "fieldUri" : "//pico/equity/vol30",
+          "mandatory" : true
+        },
+        {
+          "key" : "ShortInterest",
+          "fieldUri" : "//pico/equity/shortint",
+          "mandatory" : true
+        },
+        {
+          "key" : "CurrencyCode",
+          "fieldUri" : "//pico/equity/ccy",
+          "mandatory" : true
+        },
+        {
+          "key" : "CouponRate",
+          "fieldUri" : "//pico/equity/coupon",
+          "mandatory" : true
+        },
+        {
+          "key" : "MaturityDate",
+          "fieldUri" : "//pico/equity/maturitydate",
+          "mandatory" : true
+        },
+        {
+          "key" : "MarketTier",
+          "fieldUri" : "//pico/equity/mtier",
+          "mandatory" : true
+        },
+        {
+          "key" : "TickValue",
+          "fieldUri" : "//pico/equity/tick",
+          "mandatory" : true
+        },
+        {
+          "key" : "Average5DayVolume",
+          "fieldUri" : "//pico/equity/vol5",
+          "mandatory" : true
+        },
+        {
+          "key" : "MarketIdentificationCode",
+          "fieldUri" : "//pico/equity/marketid",
+          "mandatory" : true
+        },
+        {
+          "key" : "CountryCode",
+          "fieldUri" : "//pico/equity/country",
+          "mandatory" : true
+        },
+        {
+          "key" : "TickerStatusCode",
+          "fieldUri" : "//pico/equity/tickerstatus",
+          "mandatory" : true
+        },
+        {
+          "key" : "TickerStatusDate",
+          "fieldUri" : "//pico/equity/tickerstatusdate",
+          "mandatory" : true
+        },
+        {
+          "key" : "LocalTickerCode",
+          "fieldUri" : "//pico/equity/localticker",
+          "mandatory" : true
+        },
+        {
+          "key" : "RegularDividendQualifier",
+          "fieldUri" : "//pico/equity/regdivqual",
+          "mandatory" : true
+        },
+        {
+          "key" : "SpecialDividendQualifier",
+          "fieldUri" : "//pico/equity/specdivqual",
+          "mandatory" : true
+        },
+        {
+          "key" : "CaveatEmptor",
+          "fieldUri" : "//pico/equity/cempt",
+          "mandatory" : true
+        },
+        {
+          "key" : "IssueSubType",
+          "fieldUri" : "//pico/equity/issuesubtype",
+          "mandatory" : true
+        }
+    ]
+}

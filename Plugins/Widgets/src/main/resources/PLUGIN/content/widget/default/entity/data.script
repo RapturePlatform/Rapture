@@ -1,0 +1,7 @@
+// This script will/should be called with web['entity'] set to the entity we wish to show in a datatable
+// And optionally the parameters web['limit'] and web['skip'];
+
+// TBD: Perform an entity query to return the data requested. The list of columns requested should
+// be in line with the columns returned by the cols script at this level.
+
+

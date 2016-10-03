@@ -1,0 +1,7 @@
+{
+    "name" : "//pico/equity/specdivfreq",
+    "description" : "Special Dividend Frequency",
+    "validationScript" : "",
+    "fieldType" : "STRING",
+    "fieldTypeExtra" : ""
+}

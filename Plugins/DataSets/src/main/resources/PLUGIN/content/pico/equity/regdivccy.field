@@ -1,0 +1,7 @@
+{
+    "name" : "//pico/equity/regdivccy",
+    "description" : "Regular dividend currency",
+    "validationScript" : "",
+    "fieldType" : "STRING",
+    "fieldTypeExtra" : ""
+}

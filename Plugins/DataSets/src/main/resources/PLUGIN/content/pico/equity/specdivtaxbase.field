@@ -1,0 +1,7 @@
+{
+    "name" : "//pico/equity/specdivtaxbase",
+    "description" : "Special dividend tax base code",
+    "validationScript" : "",
+    "fieldType" : "STRING",
+    "fieldTypeExtra" : ""
+}

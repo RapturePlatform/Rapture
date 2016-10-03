@@ -1,0 +1,7 @@
+{
+    "name" : "//pico/equity/marketid",
+    "description" : "The market identification code",
+    "validationScript" : "",
+    "fieldType" : "STRING",
+    "fieldTypeExtra" : ""
+}

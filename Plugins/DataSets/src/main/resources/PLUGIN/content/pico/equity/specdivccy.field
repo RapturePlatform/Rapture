@@ -1,0 +1,7 @@
+{
+    "name" : "//pico/equity/specdivccy",
+    "description" : "Special dividend currency",
+    "validationScript" : "",
+    "fieldType" : "STRING",
+    "fieldTypeExtra" : ""
+}

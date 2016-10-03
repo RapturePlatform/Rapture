@@ -1,0 +1,10 @@
+{
+    "name" : "//standard/equity",
+    "description" : "Equity Information",
+    "repoUri" : "//dh.equity",
+    "prefixInRepo" : "",
+    "structureUri" : "//standard/equity",
+    "namingFields" : [ "symbol" ],
+    "indexFields" : [ "symbol", "siccode", "ccy", "issuedesc" ],
+    "primeIndexField" : "id"
+}

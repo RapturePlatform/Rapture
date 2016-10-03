@@ -1,0 +1,7 @@
+{
+    "name" : "//pico/equity/divcalcmethod",
+    "description" : "Dividend Calculation Method",
+    "validationScript" : "",
+    "fieldType" : "STRING",
+    "fieldTypeExtra" : ""
+}

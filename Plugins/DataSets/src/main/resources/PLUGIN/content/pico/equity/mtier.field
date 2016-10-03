@@ -1,0 +1,7 @@
+{
+    "name" : "//pico/equity/mtier",
+    "description" : "Market Tier",
+    "validationScript" : "",
+    "fieldType" : "STRING",
+    "fieldTypeExtra" : ""
+}

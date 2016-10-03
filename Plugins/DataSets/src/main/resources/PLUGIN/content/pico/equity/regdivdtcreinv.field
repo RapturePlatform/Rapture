@@ -1,0 +1,7 @@
+{
+    "name" : "//pico/equity/regdivdtcreinv",
+    "description" : "Regular dividend DTC Reinvest",
+    "validationScript" : "",
+    "fieldType" : "STRING",
+    "fieldTypeExtra" : ""
+}

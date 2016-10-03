@@ -1,0 +1,7 @@
+{
+    "name" : "//pico/equity/maturitydate",
+    "description" : "Maturity Date",
+    "validationScript" : "",
+    "fieldType" : "DATE",
+    "fieldTypeExtra" : ""
+}
