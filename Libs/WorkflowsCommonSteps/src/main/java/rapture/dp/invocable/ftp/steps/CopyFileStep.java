@@ -49,6 +49,8 @@ public class CopyFileStep extends AbstractInvocable {
     private static final Logger log = Logger.getLogger(CopyFileStep.class);
 
     DecisionApi decision;
+
+    private CallingContext context;
     public CopyFileStep(String workerUri, String stepName) {
         super(workerUri, stepName);
         decision = Kernel.getDecision();
@@ -73,9 +75,9 @@ public class CopyFileStep extends AbstractInvocable {
                 remoteName = remoteName.substring(6);
             }
             if (remoteName.startsWith("//")) {
-                outStream = new RaptureURIOutputStream(new RaptureURI(remoteName, Scheme.DOCUMENT));
+                outStream = new RaptureURIOutputStream(new RaptureURI(remoteName, Scheme.DOCUMENT)).setContext(context);
             } else if (remoteName.contains("://")) {
-                outStream = new RaptureURIOutputStream(new RaptureURI(remoteName));
+                outStream = new RaptureURIOutputStream(new RaptureURI(remoteName)).setContext(context);
             } else {
                 Path target = Paths.get(remoteName);
                 Files.createDirectories(target.getParent());
@@ -98,7 +100,7 @@ public class CopyFileStep extends AbstractInvocable {
 
     @Override
     public String invoke(CallingContext ctx) {
-
+        this.context = ctx;
         String ftpStatus = StringUtils.stripToNull(Kernel.getDecision().getContextValue(ctx, getWorkerURI(), "FTP_STATUS"));
         String copy = StringUtils.stripToNull(Kernel.getDecision().getContextValue(ctx, getWorkerURI(), "COPY_FILES"));
         if (copy == null) {
