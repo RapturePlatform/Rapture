@@ -1,6 +1,7 @@
 package rapture.kernel.dp;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -38,6 +39,7 @@ public class ExecutionContextUtilTest {
 
     @Test
     public void test() {
+        Map<String, String> m = new HashMap<>();
         CallingContext callingContext = ContextFactory.getKernelUser();
         String workOrderUri = RaptureURI.builder(Scheme.WORKORDER, "/test/").asString();
         Kernel.getDoc().putDoc(callingContext, "document://foo/bar",
@@ -46,17 +48,31 @@ public class ExecutionContextUtilTest {
         Kernel.getDecision().setContextLink(callingContext, workOrderUri, "BAR", "document://foo/bar#BAR");
         Kernel.getDecision().setContextLiteral(callingContext, workOrderUri, "FLIP", "FLOP");
         Kernel.getDecision().setContextLink(callingContext, workOrderUri, "WIBBLE", "document://foo/bar#WIBBLE$Undefined");
-        Assert.assertNull(ExecutionContextUtil.getValueECF(callingContext, workOrderUri, "FOO", new HashMap()));
+        Assert.assertNull(ExecutionContextUtil.getValueECF(callingContext, workOrderUri, "FOO", m));
 
         Kernel.getDecision().setContextTemplate(callingContext, workOrderUri, "Bar", "%%%%%%%%%%%%%%%%%%Foo");
         Kernel.getDecision().setContextTemplate(callingContext, workOrderUri, "Baz", "%%%%%%%%%%%%%%%%%%%%%%%Too many dereferences");
-        Assert.assertEquals("bar", ExecutionContextUtil.getValueECF(callingContext, workOrderUri, "BAR", new HashMap()));
-        Assert.assertEquals("Foo", ExecutionContextUtil.getValueECF(callingContext, workOrderUri, "Bar", new HashMap()));
-        Assert.assertNull(ExecutionContextUtil.getValueECF(callingContext, workOrderUri, "Baz", new HashMap()));
-        Assert.assertEquals("Undefined", ExecutionContextUtil.getValueECF(callingContext, workOrderUri, "WIBBLE", new HashMap()));
+        Assert.assertEquals("bar", ExecutionContextUtil.getValueECF(callingContext, workOrderUri, "BAR", m));
+        Assert.assertEquals("Foo", ExecutionContextUtil.getValueECF(callingContext, workOrderUri, "Bar", m));
+        Assert.assertNull(ExecutionContextUtil.getValueECF(callingContext, workOrderUri, "Baz", m));
+        Assert.assertEquals("Undefined", ExecutionContextUtil.getValueECF(callingContext, workOrderUri, "WIBBLE", m));
 
-        Assert.assertEquals("FLOP", ExecutionContextUtil.getValueECF(callingContext, workOrderUri, "%${FLIP}", new HashMap()));
-        Assert.assertEquals("FLIP", ExecutionContextUtil.getValueECF(callingContext, workOrderUri, "%${FLOP$FLIP}", new HashMap()));
+        Assert.assertEquals("FLOP", ExecutionContextUtil.getValueECF(callingContext, workOrderUri, "%${FLIP}", m));
+
+        // ${X$y} evaluates to $X if X is set otherwise y
+
+        Assert.assertEquals("FLIP", ExecutionContextUtil.getValueECF(callingContext, workOrderUri, "%${FLOP$FLIP}", m));
+
+        // ${$X} requires that X be defined
+        try {
+            ExecutionContextUtil.getValueECF(callingContext, workOrderUri, "%${$FOO}", m);
+            Assert.fail("Expected exception");
+        } catch (Exception e) {
+            Assert.assertEquals("Variable ${$FOO} required but missing", e.getMessage());
+        }
+
+        // So ${X$$Y} evaluates to $X if X is defined else $Y and throws an exception if $Y is not defined
+        Assert.assertEquals("FLOP", ExecutionContextUtil.getValueECF(callingContext, workOrderUri, "%${UNDEFINED$$FLIP}", m));
     }
 
 }
