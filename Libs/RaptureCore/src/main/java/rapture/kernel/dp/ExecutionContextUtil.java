@@ -59,7 +59,7 @@ public class ExecutionContextUtil {
                 /*
                  * If a variable, first retrieve the val we need to evaluate
                  */
-                String idNoMarker = realId.substring(1);
+                String idNoMarker = toEval.substring(1);
                 ExecutionContextField ecf = ExecutionContextFieldStorage.readByFields(workOrderUri, idNoMarker);
                 if (ecf != null) {
                     toEval = ecf.getValue();
@@ -152,11 +152,18 @@ public class ExecutionContextUtil {
                     if (endVar < 0) {
                         throw RaptureExceptionFactory.create("'${' has no matching '}' in " + template);
                     }
-                    String[] varName = template.substring(startVar, endVar).split("\\$");
-                    String val = getValueECF(ctx, workOrderUri, varName[0], view);
+                    String varName = template.substring(startVar, endVar);
+                    String dfault = null;
+                    int idx = varName.indexOf('$');
+                    if (idx > 1) {
+                        dfault = varName.substring(idx + 1);
+                        varName = varName.substring(0, idx);
+                    }
+
+                    String val = getValueECF(ctx, workOrderUri, varName, view);
                     if (val == null) {
-                        if (varName.length > 0) val = varName[1];
-                        else throw RaptureExceptionFactory.create("Variable ${" + varName[0] + "} required but missing");
+                        if (dfault != null) val = dfault;
+                        else throw RaptureExceptionFactory.create("Variable ${" + varName + "} required but missing");
                     }
                     sb.append(val);
                     bolt = endVar + 1;
