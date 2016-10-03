@@ -23,25 +23,20 @@
  */
 package rapture.api.document;
 
+import java.io.IOException;
+
+import org.testng.Assert;
+import org.testng.Reporter;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Optional;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
-import org.testng.Assert;
-import org.testng.Reporter;
-
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import com.github.fge.jsonpatch.JsonPatch;
-import com.github.fge.jsonpatch.diff.JsonDiff;
-
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.AfterClass;
-
-import java.io.IOException;
 
 import rapture.common.client.HttpDocApi;
 import rapture.common.client.HttpLoginApi;

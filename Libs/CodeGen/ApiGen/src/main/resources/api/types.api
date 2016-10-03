@@ -71,18 +71,9 @@ type RaptureStructure(@package=rapture.common) {
     String name;
     String description;
     List<StructureField> fields;
+    Map<String, List<String>> transformPaths = new HashMap<String, List<String>>(); // replacement for "TRANSFORM"
 }
     
-[ A RaptureTransform is a way of converting one set of fields to another]
-@Addressable(scheme = TRANSFORM(false))
-@Storable(storagePath : {name}, prefix="transform")
-type RaptureTransform(@package=rapture.common) {
-    String name;
-    String fromStructureUri;
-    String toStructureUri;
-    String description;
-    List<String> transforms;
-}      
 
 [ A RaptureTransform is a way of converting one set of fields to another]
 @Addressable(scheme = FIELDTRANSFORM(false))
@@ -148,9 +139,7 @@ type RaptureWidget(@package=rapture.common) {
     String title; // Title on window (if not provided from script for Structure)
     String paneType; // e.g. data table, list, form, chart etc.
     List<String> parameterNames; // What parameters this widget needs to run
-    List<WidgetTarget> produces; // What does this widget produce (on click etc.) -- i.e. where should these be bound to?
-    String scriptForContent; // What script should be run (with the parameters passed + mode=content) to get the data needed for this widget?
-    String scriptForStructure; // What script should be run (with the parameters passed + mode=structure) to get the structure for this widget (e.g. column names, types etc.)
+    Map<String, String> actions; // What actions can be done for this widget (keys dependent on paneType)
 }      
 
 [ A RaptureProgram is the definition of a program ]

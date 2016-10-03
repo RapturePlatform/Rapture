@@ -1,0 +1,7 @@
+{
+    "name" : "//pico/equity/shortint",
+    "description" : "Short Interest",
+    "validationScript" : "",
+    "fieldType" : "NUMBER",
+    "fieldTypeExtra" : ""
+}

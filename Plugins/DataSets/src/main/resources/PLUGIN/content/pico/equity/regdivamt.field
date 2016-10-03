@@ -1,0 +1,7 @@
+{
+    "name" : "//pico/equity/regdivamt",
+    "description" : "Regular Dividend Amount",
+    "validationScript" : "",
+    "fieldType" : "NUMBER",
+    "fieldTypeExtra" : ""
+}

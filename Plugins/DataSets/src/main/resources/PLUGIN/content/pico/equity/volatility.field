@@ -1,0 +1,7 @@
+{
+    "name" : "//pico/equity/volatility",
+    "description" : "The volatility of this entity",
+    "validationScript" : "",
+    "fieldType" : "NUMBER",
+    "fieldTypeExtra" : ""
+}

@@ -1,0 +1,7 @@
+{
+    "name" : "//pico/equity/issuer",
+    "description" : "The issuer of this equity",
+    "validationScript" : "",
+    "fieldType" : "STRING",
+    "fieldTypeExtra" : ""
+}

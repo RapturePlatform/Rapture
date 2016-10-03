@@ -1,0 +1,7 @@
+{
+    "name" : "//pico/equity/activitydate",
+    "description" : "When this was last updated",
+    "validationScript" : "",
+    "fieldType" : "DATE",
+    "fieldTypeExtra" : ""
+}

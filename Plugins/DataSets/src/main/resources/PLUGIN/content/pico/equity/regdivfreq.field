@@ -1,0 +1,7 @@
+{
+    "name" : "//pico/equity/regdivfreq",
+    "description" : "Regular Dividend Frequency",
+    "validationScript" : "",
+    "fieldType" : "STRING",
+    "fieldTypeExtra" : ""
+}

@@ -12,15 +12,10 @@
  */
 package rapture.lock.mongodb;
 
-import com.github.fakemongo.Fongo;
-import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import rapture.common.LockHandle;
-import rapture.lock.mongodb.MongoLockHandler;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -28,7 +23,15 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.Assert.*;
+import org.bson.Document;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBCollection;
+
+import rapture.common.LockHandle;
 
 public class MongoLockHandlerIntTest {
 
@@ -132,11 +135,11 @@ public class MongoLockHandlerIntTest {
     }
 
     private boolean lockExists(String lockName, String lockHolder) {
-        BasicDBObject query = m.getLockQuery(lockName);
+        Document query = m.getLockQuery(lockName);
         BasicDBObject lock = new BasicDBObject(m.getCtxKey(), lockHolder);
         BasicDBObject match = new BasicDBObject("$elemMatch", lock);
         query.put(m.getLocksKey(), match);
-        return m.getLockCollection().find(query).count() > 0;
+        return m.getLockCollection().find(query).first() != null;
     }
 
 }

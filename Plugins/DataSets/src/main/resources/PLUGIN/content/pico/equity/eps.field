@@ -1,0 +1,7 @@
+{
+    "name" : "//pico/equity/eps",
+    "description" : "Earnings per share",
+    "validationScript" : "",
+    "fieldType" : "NUMBER",
+    "fieldTypeExtra" : ""
+}

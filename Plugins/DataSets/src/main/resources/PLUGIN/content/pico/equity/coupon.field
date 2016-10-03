@@ -1,0 +1,7 @@
+{
+    "name" : "//pico/equity/coupon",
+    "description" : "Coupon Rate",
+    "validationScript" : "",
+    "fieldType" : "NUMBER",
+    "fieldTypeExtra" : ""
+}

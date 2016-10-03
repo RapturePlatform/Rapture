@@ -1,0 +1,7 @@
+{
+    "name" : "//pico/equity/country",
+    "description" : "The country of this equity",
+    "validationScript" : "",
+    "fieldType" : "STRING",
+    "fieldTypeExtra" : ""
+}
