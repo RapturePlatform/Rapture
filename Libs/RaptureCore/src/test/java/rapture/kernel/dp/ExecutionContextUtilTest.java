@@ -44,6 +44,8 @@ public class ExecutionContextUtilTest {
                 JacksonUtil.jsonFromObject(ImmutableMap.of("FOO", "!document://foo/bar#FOO", "BAR", "bar")));
         Kernel.getDecision().setContextLink(callingContext, workOrderUri, "FOO", "document://foo/bar#FOO");
         Kernel.getDecision().setContextLink(callingContext, workOrderUri, "BAR", "document://foo/bar#BAR");
+        Kernel.getDecision().setContextLiteral(callingContext, workOrderUri, "FLIP", "FLOP");
+        Kernel.getDecision().setContextLink(callingContext, workOrderUri, "WIBBLE", "document://foo/bar#WIBBLE$Undefined");
         Assert.assertNull(ExecutionContextUtil.getValueECF(callingContext, workOrderUri, "FOO", new HashMap()));
 
         Kernel.getDecision().setContextTemplate(callingContext, workOrderUri, "Bar", "%%%%%%%%%%%%%%%%%%Foo");
@@ -51,7 +53,10 @@ public class ExecutionContextUtilTest {
         Assert.assertEquals("bar", ExecutionContextUtil.getValueECF(callingContext, workOrderUri, "BAR", new HashMap()));
         Assert.assertEquals("Foo", ExecutionContextUtil.getValueECF(callingContext, workOrderUri, "Bar", new HashMap()));
         Assert.assertNull(ExecutionContextUtil.getValueECF(callingContext, workOrderUri, "Baz", new HashMap()));
+        Assert.assertEquals("Undefined", ExecutionContextUtil.getValueECF(callingContext, workOrderUri, "WIBBLE", new HashMap()));
 
+        Assert.assertEquals("FLOP", ExecutionContextUtil.getValueECF(callingContext, workOrderUri, "%${FLIP}", new HashMap()));
+        Assert.assertEquals("FLIP", ExecutionContextUtil.getValueECF(callingContext, workOrderUri, "%${FLOP$FLIP}", new HashMap()));
     }
 
 }
