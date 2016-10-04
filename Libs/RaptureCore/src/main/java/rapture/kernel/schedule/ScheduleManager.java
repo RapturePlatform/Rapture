@@ -234,7 +234,7 @@ public class ScheduleManager {
             if (jobexec.getStatus() == JobExecStatus.WAITING) {
 
                 logger.debug("Job is waiting, next run date is " + toGMTFormat(new Date(jobexec.getExecTime())));
-                if (jobexec.getExecTime() < now.getTime()) {
+                if (jobexec.getExecTime() <= now.getTime()) {
                     // Need to run this
                     // submit job
                     logger.info("Will run job " + jobexec.getJobURI());
