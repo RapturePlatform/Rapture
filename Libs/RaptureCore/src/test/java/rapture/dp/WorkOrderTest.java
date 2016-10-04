@@ -40,6 +40,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import rapture.common.CallingContext;
+import rapture.common.JobExecStatus;
 import rapture.common.JobType;
 import rapture.common.RaptureJobExec;
 import rapture.common.RaptureScriptLanguage;
@@ -47,6 +48,7 @@ import rapture.common.RaptureScriptPurpose;
 import rapture.common.dp.Step;
 import rapture.common.dp.WorkOrder;
 import rapture.common.dp.Workflow;
+import rapture.common.impl.jackson.JacksonUtil;
 import rapture.kernel.ContextFactory;
 import rapture.kernel.Kernel;
 import rapture.kernel.schedule.ScheduleManager;
@@ -147,12 +149,16 @@ public class WorkOrderTest {
         while (Kernel.getSchedule().getUpcomingJobs(ctx).isEmpty()) {
             log.info("Waiting for jobs to update...");
         }
-        ScheduleManager.manageJobExecStatus();
         List<RaptureJobExec> rje = new ArrayList<>();
-        while (rje.isEmpty()) {
+        while (true) {
             log.info("Waiting for job execs to update...");
+            ScheduleManager.manageJobExecStatus();
             rje = Kernel.getSchedule().getJobExecs(ctx, jobUri, 0, 1, false);
+            if (!rje.isEmpty() && rje.get(0).getStatus() == JobExecStatus.FINISHED) {
+                break;
+            }
         }
+        log.info("jobexec is: " + JacksonUtil.jsonFromObject(rje.get(0)));
         ret = Kernel.getDecision().getWorkOrderByJobExec(ctx, rje.get(0));
         assertNotNull(ret);
         assertEquals(workflowUri, ret.getWorkflowURI());
