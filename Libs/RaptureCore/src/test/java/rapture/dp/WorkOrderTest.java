@@ -40,7 +40,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import rapture.common.CallingContext;
-import rapture.common.JobExecStatus;
 import rapture.common.JobType;
 import rapture.common.RaptureJobExec;
 import rapture.common.RaptureScriptLanguage;
@@ -146,18 +145,8 @@ public class WorkOrderTest {
         WorkOrder ret = Kernel.getDecision().getWorkOrderByJobExec(ctx, r);
         assertNull(ret);
         Kernel.getSchedule().runJobNow(ctx, jobUri, null);
-        while (Kernel.getSchedule().getUpcomingJobs(ctx).isEmpty()) {
-            log.info("Waiting for jobs to update...");
-        }
-        List<RaptureJobExec> rje = new ArrayList<>();
-        while (true) {
-            log.info("Waiting for job execs to update...");
-            ScheduleManager.manageJobExecStatus();
-            rje = Kernel.getSchedule().getJobExecs(ctx, jobUri, 0, 1, false);
-            if (!rje.isEmpty() && rje.get(0).getStatus() == JobExecStatus.FINISHED) {
-                break;
-            }
-        }
+        ScheduleManager.manageJobExecStatus();
+        List<RaptureJobExec> rje = Kernel.getSchedule().getJobExecs(ctx, jobUri, 0, 1, false);
         log.info("jobexec is: " + JacksonUtil.jsonFromObject(rje.get(0)));
         ret = Kernel.getDecision().getWorkOrderByJobExec(ctx, rje.get(0));
         assertNotNull(ret);
@@ -169,17 +158,7 @@ public class WorkOrderTest {
         final String jobUri = "job://workorderjobz/job2";
         Kernel.getSchedule().createWorkflowJob(ctx, jobUri, null, workflowUri, "* * * * *", "America/New_York", new HashMap<>(), false, 1, null);
         Kernel.getSchedule().runJobNow(ctx, jobUri, null);
-        while (Kernel.getSchedule().getUpcomingJobs(ctx).isEmpty()) {
-            log.info("Waiting for jobs to update...");
-        }
-        while (true) {
-            log.info("Waiting for job execs to update....");
-            ScheduleManager.manageJobExecStatus();
-            List<RaptureJobExec> rje = Kernel.getSchedule().getJobExecs(ctx, jobUri, 0, 1, false);
-            if (!rje.isEmpty() && rje.get(0).getStatus() == JobExecStatus.FINISHED) {
-                break;
-            }
-        }
+        ScheduleManager.manageJobExecStatus();
         Map<RaptureJobExec, WorkOrder> ret = Kernel.getDecision().getJobExecsAndWorkOrdersByDay(ctx, System.currentTimeMillis());
         assertEquals(1, ret.size());
         Map.Entry<RaptureJobExec, WorkOrder> entry = ret.entrySet().iterator().next();
