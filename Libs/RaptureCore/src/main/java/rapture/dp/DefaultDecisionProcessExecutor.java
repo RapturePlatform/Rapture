@@ -931,7 +931,8 @@ public class DefaultDecisionProcessExecutor implements DecisionProcessExecutor {
                 if (workerAuditUri != null) {
                     rScript.setAuditLogUri(workerAuditUri);
                 }
-                Object result = rScript.runProgram(ctx, null, script, createScriptValsMap(worker, workerURI, stepRecord), limit);
+                String auditLogUri = InvocableUtils.getWorkflowAuditLog(InvocableUtils.getAppStatusName(worker), worker.getWorkOrderURI(), step.getName());
+                Object result = rScript.runProgram(ctx, null, script, createScriptValsMap(worker, workerURI, stepRecord, auditLogUri), limit);
                 return (result == null) ? "" : result.toString();
             case WORKFLOW:
                 Workflow workflow = WorkflowStorage.readByAddress(executableUri);
@@ -974,7 +975,7 @@ public class DefaultDecisionProcessExecutor implements DecisionProcessExecutor {
         }
     }
 
-    private Map<String, Object> createScriptValsMap(Worker worker, String workerUriString, StepRecord stepRecord) {
+    private Map<String, Object> createScriptValsMap(Worker worker, String workerUriString, StepRecord stepRecord, String auditLogUri) {
         Map<String, Object> extraVals = Maps.newHashMap();
 
         String workOrderUri = worker.getWorkOrderURI();
@@ -983,6 +984,7 @@ public class DefaultDecisionProcessExecutor implements DecisionProcessExecutor {
         RaptureURI workerURI = new RaptureURI(workerUriString);
         extraVals.put(ContextVariables.DP_WORKER_URI, workerURI.toString());
         extraVals.put(ContextVariables.DP_WORKER_ID, workerURI.getElement());
+        extraVals.put(ContextVariables.DP_AUDITLOG_URI, auditLogUri);
 
         extraVals.put(ContextVariables.DP_STEP_NAME, stepRecord.getName());
         extraVals.put(ContextVariables.DP_STEP_START_TIME, stepRecord.getStartTime());

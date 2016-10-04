@@ -36,6 +36,7 @@ public class ContextVariables {
     public static final String DP_WORKER_URI = "$DP_WORKER_URI";
     public static final String DP_WORK_ORDER_URI = "$DP_WORK_ORDER_URI";
     public static final String DP_WORKER_ID = "$DP_WORKER_ID";
+    public static final String DP_AUDITLOG_URI = "$DP_AUDITLOG_URI";
     public static final String DP_STEP_NAME = "$DP_STEP_NAME";
     public static final String DP_STEP_START_TIME = "$DP_STEP_START_TIME";
     public static final DateTimeFormatter FORMATTER = DateTimeFormat.forPattern("yyyyMMdd");
