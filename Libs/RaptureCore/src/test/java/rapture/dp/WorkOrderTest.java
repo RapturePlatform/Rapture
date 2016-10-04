@@ -172,7 +172,14 @@ public class WorkOrderTest {
         while (Kernel.getSchedule().getUpcomingJobs(ctx).isEmpty()) {
             log.info("Waiting for jobs to update...");
         }
-        ScheduleManager.manageJobExecStatus();
+        while (true) {
+            log.info("Waiting for job execs to update....");
+            ScheduleManager.manageJobExecStatus();
+            List<RaptureJobExec> rje = Kernel.getSchedule().getJobExecs(ctx, jobUri, 0, 1, false);
+            if (!rje.isEmpty() && rje.get(0).getStatus() == JobExecStatus.FINISHED) {
+                break;
+            }
+        }
         Map<RaptureJobExec, WorkOrder> ret = Kernel.getDecision().getJobExecsAndWorkOrdersByDay(ctx, System.currentTimeMillis());
         assertEquals(1, ret.size());
         Map.Entry<RaptureJobExec, WorkOrder> entry = ret.entrySet().iterator().next();
