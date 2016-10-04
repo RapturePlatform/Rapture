@@ -68,6 +68,7 @@ public class GetFileStep extends AbstractInvocable {
 
         String retval = getNextTransition();
         int failCount = 0;
+        StringBuilder sb = new StringBuilder();
         List<FTPRequest> requests = new ArrayList<>();
         Connection connection = new SFTPConnection(configUri);
         for (Entry<String, Object> e : map.entrySet()) {
@@ -75,16 +76,18 @@ public class GetFileStep extends AbstractInvocable {
             connection.doAction(request);
             if (!request.getStatus().equals(Status.SUCCESS)) {
                 retval = getFailTransition();
+                sb.append("Unable to retrieve ").append(e.getKey()).append(" as ").append(e.getValue().toString()).append("\n");
                 log.warn("Unable to retrieve " + e.getKey());
                 failCount++;
             }
             requests.add(request);
         }
-        if (failCount > 0) {
-            log.error("Unable to receive " + failCount + " of " + map.size() + " files)");
-        }
-        decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), "Received " + (map.size() - failCount) + " of " + map.size() + " files)");
-        decision.setContextLiteral(ctx, getWorkerURI(), getStepName() + "Result", JacksonUtil.jsonFromObject(requests));
+        if (failCount > 0) decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), "Unable to retrieve " + failCount + " files");
+        else decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), "All files retrieved");
+
+        String err = sb.toString();
+        if (!StringUtils.isEmpty(err)) log.error(err);
+        decision.setContextLiteral(ctx, getWorkerURI(), getStepName() + "Error", err);
         return retval;
     }
 
