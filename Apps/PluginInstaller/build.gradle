@@ -24,7 +24,7 @@ startScripts {
     }
 }
 
-installApp.dependsOn(install)
+installDist.dependsOn(install)
 
 artifacts {
     archives file("${buildDir}/libs/${project.name}-${version}.jar")

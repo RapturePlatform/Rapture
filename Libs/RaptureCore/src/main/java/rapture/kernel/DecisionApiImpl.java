@@ -404,10 +404,20 @@ public class DecisionApiImpl extends KernelBase implements DecisionApi {
             DecisionProcessExecutorFactory.getDefault().start(context, worker);
             Kernel.getStackContainer().popStack(context);
             Kernel.getStackContainer().popStack(context);
-
             CreateResponse ret = new CreateResponse();
+            String order = workOrderURI.toString();
             ret.setIsCreated(true);
-            ret.setUri(workOrder.getWorkOrderURI());
+            ret.setUri(order);
+
+            String docPath = workOrderURI.getDocPath();
+            int lio = docPath.lastIndexOf('/');
+
+            StringBuilder externalUrl = new StringBuilder();
+            String port = "8000"; // may want to get this from env in case it ever changes
+            externalUrl.append("http://").append(System.getenv("HOST")).append(":").append(port).append("/process/").append(docPath.substring(0, lio))
+                    .append("_._").append(docPath.substring(lio + 1));
+            this.setContextLiteral(context, order, "WORKFLOWURL", externalUrl.toString());
+
             return ret;
         }
     }

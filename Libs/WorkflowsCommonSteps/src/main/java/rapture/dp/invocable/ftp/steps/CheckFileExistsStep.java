@@ -23,6 +23,7 @@ import org.apache.log4j.Logger;
 import rapture.common.CallingContext;
 import rapture.common.api.DecisionApi;
 import rapture.common.dp.AbstractInvocable;
+import rapture.common.dp.Steps;
 import rapture.common.impl.jackson.JacksonUtil;
 import rapture.ftp.common.FTPConnection;
 import rapture.ftp.common.FTPRequest;
@@ -82,4 +83,9 @@ public class CheckFileExistsStep extends AbstractInvocable {
         decision.setContextLiteral(ctx, getWorkerURI(), getStepName() + "Result", JacksonUtil.jsonFromObject(requests));
         return retval;
     }
+
+    public static String getFailTransition() {
+        return Steps.WAIT;
+    }
+
 }

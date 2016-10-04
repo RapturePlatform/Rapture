@@ -73,6 +73,8 @@ public class ExecutionContextUtilTest {
 
         // So ${X$$Y} evaluates to $X if X is defined else $Y and throws an exception if $Y is not defined
         Assert.assertEquals("FLOP", ExecutionContextUtil.getValueECF(callingContext, workOrderUri, "%${UNDEFINED$$FLIP}", m));
+
+        String err = ExecutionContextUtil.getValueECF(callingContext, workOrderUri, "%!document://matrix/${JOBNAME$default}#${STEPNAME$Undefined}_ERROR$$Error", m);
     }
 
 }

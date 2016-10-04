@@ -121,15 +121,15 @@ public abstract class AbstractInvocable<T> implements Steps {
     }
 
     // Can be overridden
-    protected String getNextTransition() {
+    public static String getNextTransition() {
         return Steps.NEXT;
     }
 
-    protected String getErrorTransition() {
+    public static String getErrorTransition() {
         return Steps.ERROR;
     }
 
-    protected String getFailTransition() {
+    public static String getFailTransition() {
         return Steps.QUIT;
     }
 
