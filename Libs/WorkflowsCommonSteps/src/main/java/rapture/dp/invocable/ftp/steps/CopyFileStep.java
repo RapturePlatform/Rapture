@@ -101,10 +101,11 @@ public class CopyFileStep extends AbstractInvocable {
     @Override
     public String invoke(CallingContext ctx) {
         this.context = ctx;
-        String ftpStatus = StringUtils.stripToNull(Kernel.getDecision().getContextValue(ctx, getWorkerURI(), "FTP_STATUS"));
-        String copy = StringUtils.stripToNull(Kernel.getDecision().getContextValue(ctx, getWorkerURI(), "COPY_FILES"));
+        String ftpStatus = StringUtils.stripToNull(decision.getContextValue(ctx, getWorkerURI(), "FTP_STATUS"));
+        String copy = StringUtils.stripToNull(decision.getContextValue(ctx, getWorkerURI(), "COPY_FILES"));
         if (copy == null) {
-            Kernel.getDecision().setContextLiteral(ctx, getWorkerURI(), "FTP_STATUS", ftpStatus + " " + getStepName() + ":No files to copy ");
+            decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), ftpStatus + " " + getStepName() + ":No files to copy ");
+            decision.setContextLiteral(ctx, getWorkerURI(), getStepName() + "Error", "");
             return getNextTransition();
         }
 
@@ -112,6 +113,7 @@ public class CopyFileStep extends AbstractInvocable {
 
         String retval = getNextTransition();
         int failCount = 0;
+        StringBuilder sb = new StringBuilder();
         List<Entry<String, Object>> list = new ArrayList<>();
         for (Entry<String, Object> e : map.entrySet()) {
             String value = e.getValue().toString();
@@ -123,14 +125,19 @@ public class CopyFileStep extends AbstractInvocable {
             }
             for (String target : targets) {
                 if (!copy(e.getKey(), target)) {
-                    log.warn("Unable to copy " + e.getKey());
+                    sb.append("Unable to copy ").append(e.getKey()).append(" to ").append(target).append("\n");
                     retval = getFailTransition();
                     failCount++;
                     list.add(e);
                 }
             }
         }
-        if (failCount > 0) log.error("Unable to copy " + failCount + " files)");
+        if (failCount > 0) decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), "Unable to copy " + failCount + " files");
+        else decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), "All files copied");
+
+        String err = sb.toString();
+        if (!StringUtils.isEmpty(err)) log.error(err);
+        decision.setContextLiteral(ctx, getWorkerURI(), getStepName() + "Error", err);
         return retval;
     }
 
