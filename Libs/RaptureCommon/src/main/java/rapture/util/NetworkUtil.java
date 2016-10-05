@@ -77,7 +77,7 @@ public class NetworkUtil {
             while (addrs.hasMoreElements()) {
                 InetAddress addr = addrs.nextElement();
                 log.debug("IP addr is: " + addr.getHostAddress());
-                if (addr.isSiteLocalAddress() || (addr.isLoopbackAddress())) {
+                if (addr.isSiteLocalAddress()) {
                     return addr.getHostAddress();
                 }
             }
