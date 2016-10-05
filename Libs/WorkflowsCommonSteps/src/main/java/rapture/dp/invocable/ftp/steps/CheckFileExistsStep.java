@@ -50,13 +50,11 @@ public class CheckFileExistsStep extends AbstractInvocable {
      */
     @Override
     public String invoke(CallingContext ctx) {
-        decision.setContextLiteral(ctx, getWorkerURI(), "STEPNAME", getStepName());
-        decision.setContextLiteral(ctx, getWorkerURI(), "STEPRESULT", getStepName() + "Result");
-        decision.setContextLiteral(ctx, getWorkerURI(), "STEPERROR", getStepName() + "Error");
         String configUri = StringUtils.stripToNull(decision.getContextValue(ctx, getWorkerURI(), "FTP_CONFIGURATION"));
         String filename = StringUtils.stripToNull(decision.getContextValue(ctx, getWorkerURI(), "EXIST_FILENAMES"));
         if (filename == null) {
             decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), "No files to check");
+            decision.setContextLiteral(ctx, getWorkerURI(), getStepName() + "Error", "");
             return getNextTransition();
         }
 
@@ -80,7 +78,6 @@ public class CheckFileExistsStep extends AbstractInvocable {
         }
         decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), "Located " + existsCount + " of " + files.size() + " files");
         decision.setContextLiteral(ctx, getWorkerURI(), getStepName() + "Error", error.toString());
-        decision.setContextLiteral(ctx, getWorkerURI(), getStepName() + "Result", JacksonUtil.jsonFromObject(requests));
         return retval;
     }
 
