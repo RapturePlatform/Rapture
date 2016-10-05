@@ -143,7 +143,8 @@ public class WorkOrderTest {
         Kernel.getSchedule().createWorkflowJob(ctx, jobUri, null, workflowUri, "* * * * *", "America/New_York", new HashMap<>(), false, 1, null);
         WorkOrder ret = Kernel.getDecision().getWorkOrderByJobExec(ctx, r);
         assertNull(ret);
-        Kernel.getSchedule().runJobNow(ctx, jobUri, null);
+        String returnedWorkOrderUri = Kernel.getSchedule().runJobNow(ctx, jobUri, null);
+        assertNotNull(returnedWorkOrderUri);
         List<RaptureJobExec> rje = Kernel.getSchedule().getJobExecs(ctx, jobUri, 0, 1, false);
         log.info("jobexec is: " + JacksonUtil.jsonFromObject(rje.get(0)));
         ret = Kernel.getDecision().getWorkOrderByJobExec(ctx, rje.get(0));
@@ -155,7 +156,8 @@ public class WorkOrderTest {
     public void testGetJobExecsAndWorkOrdersByDay() {
         final String jobUri = "job://workorderjobz/job2";
         Kernel.getSchedule().createWorkflowJob(ctx, jobUri, null, workflowUri, "* * * * *", "America/New_York", new HashMap<>(), false, 1, null);
-        Kernel.getSchedule().runJobNow(ctx, jobUri, null);
+        String returnedWorkOrderUri = Kernel.getSchedule().runJobNow(ctx, jobUri, null);
+        assertNotNull(returnedWorkOrderUri);
         Map<RaptureJobExec, WorkOrder> ret = Kernel.getDecision().getJobExecsAndWorkOrdersByDay(ctx, System.currentTimeMillis());
         assertEquals(1, ret.size());
         Map.Entry<RaptureJobExec, WorkOrder> entry = ret.entrySet().iterator().next();
