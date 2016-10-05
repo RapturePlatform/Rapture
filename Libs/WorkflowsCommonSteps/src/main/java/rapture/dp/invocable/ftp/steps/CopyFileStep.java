@@ -116,12 +116,12 @@ public class CopyFileStep extends AbstractInvocable {
         StringBuilder sb = new StringBuilder();
         List<Entry<String, Object>> list = new ArrayList<>();
         for (Entry<String, Object> e : map.entrySet()) {
-            String value = e.getValue().toString();
+            Object value = e.getValue();
             List<String> targets;
-            try {
-                targets = JacksonUtil.objectFromJson(value, List.class);
-            } catch (Exception ex) {
-                targets = ImmutableList.of(value);
+            if (value instanceof List) {
+                targets = (List<String>) value;
+            } else {
+                targets = ImmutableList.of(value.toString());
             }
             for (String target : targets) {
                 if (!copy(e.getKey(), target)) {
