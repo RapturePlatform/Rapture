@@ -45,6 +45,8 @@ public class GetFileStep extends AbstractInvocable {
 
     @Override
     public String invoke(CallingContext ctx) {
+        decision.setContextLiteral(ctx, getWorkerURI(), "STEPNAME", getStepName());
+
         String copy = StringUtils.stripToNull(decision.getContextValue(ctx, getWorkerURI(), "FETCH_FILES"));
         if (copy == null) {
             decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), "No files to copy");

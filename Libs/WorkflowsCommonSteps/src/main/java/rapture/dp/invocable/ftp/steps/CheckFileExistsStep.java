@@ -50,6 +50,8 @@ public class CheckFileExistsStep extends AbstractInvocable {
      */
     @Override
     public String invoke(CallingContext ctx) {
+        decision.setContextLiteral(ctx, getWorkerURI(), "STEPNAME", getStepName());
+
         String configUri = StringUtils.stripToNull(decision.getContextValue(ctx, getWorkerURI(), "FTP_CONFIGURATION"));
         String filename = StringUtils.stripToNull(decision.getContextValue(ctx, getWorkerURI(), "EXIST_FILENAMES"));
         if (filename == null) {
