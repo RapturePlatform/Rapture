@@ -30,7 +30,7 @@ import rapture.common.dp.Transition;
 
 public class WorkflowFactory {
 
-    static List<Transition> createTransition(String name, String target) {
+    public static List<Transition> createTransition(String name, String target) {
         Transition t = new Transition();
         t.setName(name);
         t.setTargetStep(target);

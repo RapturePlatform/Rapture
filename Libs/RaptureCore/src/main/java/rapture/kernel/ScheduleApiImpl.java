@@ -69,6 +69,7 @@ import rapture.common.WorkOrderExecutionState;
 import rapture.common.WorkflowExecsStatus;
 import rapture.common.WorkflowJobExecDetails;
 import rapture.common.api.ScheduleApi;
+import rapture.common.dp.WorkOrder;
 import rapture.common.exception.RaptureExceptionFactory;
 import rapture.common.impl.jackson.JacksonUtil;
 import rapture.common.impl.jackson.JsonContent;
@@ -245,6 +246,22 @@ public class ScheduleApiImpl extends KernelBase implements ScheduleApi {
             return null;
         }
 
+    }
+
+    @Override
+    public List<RaptureJobExec> getRunningWorkflowJobs(CallingContext context) {
+        List<RaptureJobExec> ret = new ArrayList<>();
+        Map<RaptureJobExec, WorkOrder> je = Kernel.getDecision().getJobExecsAndWorkOrdersByDay(context, System.currentTimeMillis());
+        for (Map.Entry<RaptureJobExec, WorkOrder> entry : je.entrySet()) {
+            WorkOrder wo = entry.getValue();
+            if (wo.getStatus() == WorkOrderExecutionState.ACTIVE ||
+                    wo.getStatus() == WorkOrderExecutionState.FAILING ||
+                    wo.getStatus() == WorkOrderExecutionState.CANCELLING ||
+                    wo.getStatus() == WorkOrderExecutionState.NEW) {
+                ret.add(entry.getKey());
+            }
+        }
+        return ret;
     }
 
     @Override
