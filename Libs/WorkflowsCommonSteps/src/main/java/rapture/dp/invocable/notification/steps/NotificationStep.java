@@ -54,7 +54,7 @@ public class NotificationStep extends AbstractInvocable {
 
     @Override
     public String invoke(CallingContext ctx) {
-
+	// Don't set STEPNAME here because we want the name of the preceding step
         // Can read config from a documemnt or pass as args
         AdminApi admin = Kernel.getAdmin();
         String types = StringUtils.stripToNull(decision.getContextValue(ctx, getWorkerURI(), "NOTIFY_TYPE"));

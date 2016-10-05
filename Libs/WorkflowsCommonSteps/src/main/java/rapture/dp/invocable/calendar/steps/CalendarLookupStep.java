@@ -28,6 +28,8 @@ public class CalendarLookupStep extends AbstractInvocable {
 
     @Override
     public String invoke(CallingContext ctx) {
+        Kernel.getDecision().setContextLiteral(ctx, getWorkerURI(), "STEPNAME", getStepName());
+
         String dateStr = StringUtils.stripToNull(Kernel.getDecision().getContextValue(ctx, getWorkerURI(), "DATE"));
         String calendar = StringUtils.stripToNull(Kernel.getDecision().getContextValue(ctx, getWorkerURI(), "CALENDAR"));
         String translator = StringUtils.stripToNull(Kernel.getDecision().getContextValue(ctx, getWorkerURI(), "TRANSLATOR"));
