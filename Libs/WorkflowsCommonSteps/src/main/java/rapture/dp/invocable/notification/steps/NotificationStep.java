@@ -6,7 +6,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -24,13 +23,10 @@ import org.apache.log4j.Logger;
 import com.google.common.net.MediaType;
 
 import rapture.common.CallingContext;
-import rapture.common.RaptureFolderInfo;
 import rapture.common.RaptureURI;
 import rapture.common.api.AdminApi;
 import rapture.common.api.DecisionApi;
 import rapture.common.dp.AbstractInvocable;
-import rapture.common.dp.ExecutionContextField;
-import rapture.common.dp.ExecutionContextFieldStorage;
 import rapture.common.dp.Steps;
 import rapture.common.exception.ExceptionToString;
 import rapture.common.impl.jackson.JacksonUtil;
@@ -65,13 +61,6 @@ public class NotificationStep extends AbstractInvocable {
 
         if (types == null) {
             log.error("Cannot determine NOTIFY_TYPE value");
-
-            List<ExecutionContextField> foo1 = ExecutionContextFieldStorage.readAll();
-
-            decision.setContextLiteral(ctx, getWorkerURI(), "FOO", "BAR");
-            String bar = decision.getContextValue(ctx, getWorkerURI(), "FOO");
-            String s = getWorkerURI().replace("workorder:/", "document://sys.RaptureEphemeral/dp/execontextfield");
-            Map<String, RaptureFolderInfo> foo = Kernel.getDoc().listDocsByUriPrefix(ctx, s, 2);
             return Steps.ERROR.toString();
         }
         String retval = Steps.NEXT.toString();
