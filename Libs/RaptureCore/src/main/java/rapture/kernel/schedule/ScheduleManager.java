@@ -132,7 +132,7 @@ public class ScheduleManager {
         UpcomingJobExecStorage.add(upcoming, user, comment);
     }
 
-    public static Boolean runJobNow(RaptureJob job, Map<String, String> passedParams) {
+    public static String runJobNow(RaptureJob job, Map<String, String> passedParams) {
         logger.info("Request to run " + job.getAddressURI() + " as soon as possible");
         Calendar nextRunDate = Calendar.getInstance();
         nextRunDate.setTime(new Date());
@@ -141,7 +141,9 @@ public class ScheduleManager {
         exec.setExecTime(nextRunDate.getTime().getTime());
         exec.setStatus(JobExecStatus.WAITING);
         exec.setJobType(job.getJobType());
-        exec.setPassedParams(passedParams);
+        if (passedParams != null) {
+            exec.setPassedParams(passedParams);
+        }
         // Reset dependent job status also
         Kernel.getSchedule().getTrusted().resetJobLink(ContextFactory.getKernelUser(), job.getAddressURI().toString());
         String user = ContextFactory.getKernelUser().getUser();
@@ -150,7 +152,7 @@ public class ScheduleManager {
         RaptureJobExecStorage.add(exec, user, comment);
         // update whatever is currently marked as upcoming
         updateUpcoming(exec, user, comment);
-        return true;
+        return scheduleJobForExecutionNow(job, exec);
     }
 
     /**
@@ -242,34 +244,36 @@ public class ScheduleManager {
                     // execution can happen far too quickly
 
                     RaptureJob job = Kernel.getSchedule().retrieveJob(ContextFactory.getKernelUser(), jobexec.getJobURI());
-                    if (job != null) {
-                        jobexec.setStatus(JobExecStatus.SCHEDULED);
-
-                        String user = ContextFactory.getKernelUser().getUser();
-                        String comment = "Scheduling job";
-                        RaptureJobExecStorage.add(jobexec, user, comment);
-                        logger.debug("Job Status is: " + jobexec.getStatus());
-
-                        job.setActivated(false);
-                        RaptureJobStorage.add(new RaptureURI(job.getJobURI(), Scheme.JOB), job, user, "Job about to run");
-
-                        // Reset dependent job status also
-                        Kernel.getSchedule().getTrusted().resetJobLink(ContextFactory.getKernelUser(), jobexec.getJobURI());
-
-                        executeJob(jobexec, job);
-                    } else {
-                        logger.error(String.format("Unable to find job %s for execution %s ", jobexec.getJobURI(), jobexec.getExecTime()));
-                    }
+                    scheduleJobForExecutionNow(job, jobexec);
                 }
             }
         }
     }
 
-    private static void executeJob(RaptureJobExec jobexec, RaptureJob job) {
+    private static String scheduleJobForExecutionNow(RaptureJob job, RaptureJobExec jobexec) {
+        if (job != null) {
+            jobexec.setStatus(JobExecStatus.SCHEDULED);
+
+            String user = ContextFactory.getKernelUser().getUser();
+            String comment = "Scheduling job";
+            RaptureJobExecStorage.add(jobexec, user, comment);
+            logger.debug("Job Status is: " + jobexec.getStatus());
+
+            job.setActivated(false);
+            RaptureJobStorage.add(new RaptureURI(job.getJobURI(), Scheme.JOB), job, user, "Job about to run");
+
+            // Reset dependent job status also
+            Kernel.getSchedule().getTrusted().resetJobLink(ContextFactory.getKernelUser(), jobexec.getJobURI());
+            return executeJob(jobexec, job);
+        } else {
+            logger.error(String.format("Unable to find job %s for execution %s ", jobexec.getJobURI(), jobexec.getExecTime()));
+        }
+        return null;
+    }
+
+    private static String executeJob(RaptureJobExec jobexec, RaptureJob job) {
         if (job.getJobType() == JobType.WORKFLOW) {
-            String workflowURI = job.getScriptURI(); // we need to rename this
-            // to executableURI
-            // eventually...
+            String workflowURI = job.getScriptURI(); // we need to rename this to executableURI eventually...
             Map<String, String> contextMap = job.getParams();
             long timestamp = jobexec.getExecTime();
             contextMap.put(ContextVariables.TIMESTAMP, timestamp + "");
@@ -282,7 +286,6 @@ public class ScheduleManager {
 
             LocalDate ld = new LocalDate(timestamp, timezone);
             contextMap.put(ContextVariables.LOCAL_DATE, ContextVariables.FORMATTER.print(ld));
-
             contextMap.put(ContextVariables.PARENT_JOB_URI, job.getJobURI());
             contextMap.putAll(jobexec.getPassedParams()); // these override
             // everything
@@ -305,6 +308,7 @@ public class ScheduleManager {
                 workflowJobDetails.setWorkOrderURI(workOrderURI);
                 jobexec.setExecDetails(JacksonUtil.jsonFromObject(workflowJobDetails));
                 handleJobExecutionCompleted(jobexec);
+                return workOrderURI;
             }
         } else {
             MimeScheduleReflexScriptRef scriptRef = new MimeScheduleReflexScriptRef();
@@ -325,6 +329,7 @@ public class ScheduleManager {
                     PipelineConstants.CATEGORY_ALPHA);
             handleJobExecutionCompleted(jobexec);
         }
+        return null;
     }
 
     private static String toGMTFormat(Date d) {

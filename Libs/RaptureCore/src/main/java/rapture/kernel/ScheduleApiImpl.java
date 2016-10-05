@@ -311,13 +311,13 @@ public class ScheduleApiImpl extends KernelBase implements ScheduleApi {
     }
 
     @Override
-    public void runJobNow(CallingContext context, String jobURI, Map<String, String> extraJobParams) {
+    public String runJobNow(CallingContext context, String jobURI, Map<String, String> extraJobParams) {
         RaptureURI parsedURI = new RaptureURI(jobURI, JOB);
         RaptureJob job = RaptureJobStorage.readByAddress(parsedURI);
         if (job == null) {
             throw RaptureExceptionFactory.create("Cannot load job for URI " + parsedURI);
         }
-        ScheduleManager.runJobNow(job, extraJobParams);
+        return ScheduleManager.runJobNow(job, extraJobParams);
     }
 
     @Override
