@@ -101,45 +101,51 @@ public class CopyFileStep extends AbstractInvocable {
 
     @Override
     public String invoke(CallingContext ctx) {
-        decision.setContextLiteral(ctx, getWorkerURI(), "STEPNAME", getStepName());
-        this.context = ctx;
-        String copy = StringUtils.stripToNull(decision.getContextValue(ctx, getWorkerURI(), "COPY_FILES"));
-        if (copy == null) {
-            decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), "No files to copy ");
-            decision.setContextLiteral(ctx, getWorkerURI(), getStepName() + "Error", "");
-            return getNextTransition();
-        }
-
-        Map<String, Object> map = JacksonUtil.getMapFromJson(renderTemplate(ctx, copy));
-
-        String retval = getNextTransition();
-        int failCount = 0;
-        StringBuilder sb = new StringBuilder();
-        List<Entry<String, Object>> list = new ArrayList<>();
-        for (Entry<String, Object> e : map.entrySet()) {
-            Object value = e.getValue();
-            List<String> targets;
-            if (value instanceof List) {
-                targets = (List<String>) value;
-            } else {
-                targets = ImmutableList.of(value.toString());
+        try {
+            decision.setContextLiteral(ctx, getWorkerURI(), "STEPNAME", getStepName());
+            this.context = ctx;
+            String copy = StringUtils.stripToNull(decision.getContextValue(ctx, getWorkerURI(), "COPY_FILES"));
+            if (copy == null) {
+                decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), "No files to copy ");
+                decision.setContextLiteral(ctx, getWorkerURI(), getStepName() + "Error", "");
+                return getNextTransition();
             }
-            for (String target : targets) {
-                if (!copy(e.getKey(), target)) {
-                    sb.append("Unable to copy ").append(e.getKey()).append(" to ").append(target).append("\n");
-                    retval = getFailTransition();
-                    failCount++;
-                    list.add(e);
+
+            Map<String, Object> map = JacksonUtil.getMapFromJson(renderTemplate(ctx, copy));
+
+            String retval = getNextTransition();
+            int failCount = 0;
+            StringBuilder sb = new StringBuilder();
+            List<Entry<String, Object>> list = new ArrayList<>();
+            for (Entry<String, Object> e : map.entrySet()) {
+                Object value = e.getValue();
+                List<String> targets;
+                if (value instanceof List) {
+                    targets = (List<String>) value;
+                } else {
+                    targets = ImmutableList.of(value.toString());
+                }
+                for (String target : targets) {
+                    if (!copy(e.getKey(), target)) {
+                        sb.append("Unable to copy ").append(e.getKey()).append(" to ").append(target).append("\n");
+                        retval = getFailTransition();
+                        failCount++;
+                        list.add(e);
+                    }
                 }
             }
-        }
-        if (failCount > 0) decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), "Unable to copy " + failCount + " files");
-        else decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), "All files copied");
+            if (failCount > 0) decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), "Unable to copy " + failCount + " files");
+            else decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), "All files copied");
 
-        String err = sb.toString();
-        if (!StringUtils.isEmpty(err)) log.error(err);
-        decision.setContextLiteral(ctx, getWorkerURI(), getStepName() + "Error", err);
-        return retval;
+            String err = sb.toString();
+            if (!StringUtils.isEmpty(err)) log.error(err);
+            decision.setContextLiteral(ctx, getWorkerURI(), getStepName() + "Error", err);
+            return retval;
+        } catch (Exception e) {
+            decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), "Unable to copy files : " + e.getLocalizedMessage());
+            decision.setContextLiteral(ctx, getWorkerURI(), getStepName() + "Error", ExceptionToString.format(e));
+            return getErrorTransition();
+        }
     }
 
 }
