@@ -25,6 +25,8 @@ public class ConfigurationStep extends AbstractInvocable {
 
     @Override
     public String invoke(CallingContext ctx) {
+        Kernel.getDecision().setContextLiteral(ctx, getWorkerURI(), "STEPNAME", getStepName());
+
         String workOrderUri = new RaptureURI(getWorkerURI(), Scheme.WORKORDER).toShortString();
         String config = StringUtils.stripToNull(Kernel.getDecision().getContextValue(ctx, workOrderUri, "CONFIGURATION"));
         Map<String, String> view = new HashMap<>();

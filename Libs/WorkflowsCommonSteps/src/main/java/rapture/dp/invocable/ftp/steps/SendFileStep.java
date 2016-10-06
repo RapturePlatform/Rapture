@@ -50,6 +50,8 @@ public class SendFileStep extends AbstractInvocable {
 
     @Override
     public String invoke(CallingContext ctx) {
+        Kernel.getDecision().setContextLiteral(ctx, getWorkerURI(), "STEPNAME", getStepName());
+
         String configUri = decision.getContextValue(ctx, getWorkerURI(), "FTP_CONFIGURATION");
         if (configUri == null) {
             decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), "FTP_CONFIGURATION not set");

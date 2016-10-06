@@ -57,6 +57,7 @@ public class CopyFileStep extends AbstractInvocable {
     }
 
     public boolean copy(String localName, String remoteName) {
+
         InputStream inStream;
         try {
             if (localName.startsWith("file://")) {
@@ -100,11 +101,11 @@ public class CopyFileStep extends AbstractInvocable {
 
     @Override
     public String invoke(CallingContext ctx) {
+        decision.setContextLiteral(ctx, getWorkerURI(), "STEPNAME", getStepName());
         this.context = ctx;
-        String ftpStatus = StringUtils.stripToNull(decision.getContextValue(ctx, getWorkerURI(), "FTP_STATUS"));
         String copy = StringUtils.stripToNull(decision.getContextValue(ctx, getWorkerURI(), "COPY_FILES"));
         if (copy == null) {
-            decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), ftpStatus + " " + getStepName() + ":No files to copy ");
+            decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), "No files to copy ");
             decision.setContextLiteral(ctx, getWorkerURI(), getStepName() + "Error", "");
             return getNextTransition();
         }

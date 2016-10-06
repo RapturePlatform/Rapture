@@ -19,6 +19,8 @@ public class GetDayOfWeekStep extends AbstractInvocable {
 
     @Override
     public String invoke(CallingContext ctx) {
+        Kernel.getDecision().setContextLiteral(ctx, getWorkerURI(), "STEPNAME", getStepName());
+
         String dateStr = StringUtils.stripToNull(Kernel.getDecision().getContextValue(ctx, getWorkerURI(), "DATE"));
         String languageTag = StringUtils.stripToNull(Kernel.getDecision().getContextValue(ctx, getWorkerURI(), "LOCALE"));
         LocalDateTime date = (dateStr == null) ? LocalDateTime.now() : LocalDateTime.parse(dateStr);
