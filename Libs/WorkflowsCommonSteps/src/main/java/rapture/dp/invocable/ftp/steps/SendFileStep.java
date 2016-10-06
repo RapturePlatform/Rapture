@@ -25,6 +25,7 @@ import rapture.common.CallingContext;
 import rapture.common.RaptureURI;
 import rapture.common.api.DecisionApi;
 import rapture.common.dp.AbstractInvocable;
+import rapture.common.exception.ExceptionToString;
 import rapture.common.impl.jackson.JacksonUtil;
 import rapture.ftp.common.Connection;
 import rapture.ftp.common.FTPRequest;
@@ -50,47 +51,53 @@ public class SendFileStep extends AbstractInvocable {
 
     @Override
     public String invoke(CallingContext ctx) {
-        Kernel.getDecision().setContextLiteral(ctx, getWorkerURI(), "STEPNAME", getStepName());
+        try {
+            Kernel.getDecision().setContextLiteral(ctx, getWorkerURI(), "STEPNAME", getStepName());
 
-        String configUri = decision.getContextValue(ctx, getWorkerURI(), "FTP_CONFIGURATION");
-        if (configUri == null) {
-            decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), "FTP_CONFIGURATION not set");
-            return getErrorTransition();
-        }
-
-        if (!Kernel.getDoc().docExists(ctx, configUri)) {
-            decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), "Cannot load FTP_CONFIGURATION from " + configUri);
-            return getErrorTransition();
-        }
-
-        String copy = StringUtils.stripToNull(decision.getContextValue(ctx, getWorkerURI(), "COPY_FILES"));
-        if (copy == null) {
-            decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), "No files to copy");
-            return getNextTransition();
-        }
-
-        Map<String, Object> map = JacksonUtil.getMapFromJson(renderTemplate(ctx, copy));
-
-        String retval = getNextTransition();
-        int failCount = 0;
-        Connection connection = new SFTPConnection(configUri);
-        List<FTPRequest> requests = new ArrayList<>();
-        for (Entry<String, Object> e : map.entrySet()) {
-            FTPRequest request = new FTPRequest(Action.WRITE).setLocalName(e.getKey()).setRemoteName(e.getValue().toString());
-            connection.doAction(request);
-            if (!request.getStatus().equals(Status.SUCCESS)) {
-                retval = getFailTransition();
-                log.warn("Unable to send " + e.getKey());
-                failCount++;
+            String configUri = decision.getContextValue(ctx, getWorkerURI(), "FTP_CONFIGURATION");
+            if (configUri == null) {
+                decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), "FTP_CONFIGURATION not set");
+                return getErrorTransition();
             }
-            requests.add(request);
+
+            if (!Kernel.getDoc().docExists(ctx, configUri)) {
+                decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), "Cannot load FTP_CONFIGURATION from " + configUri);
+                return getErrorTransition();
+            }
+
+            String copy = StringUtils.stripToNull(decision.getContextValue(ctx, getWorkerURI(), "COPY_FILES"));
+            if (copy == null) {
+                decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), "No files to copy");
+                return getNextTransition();
+            }
+
+            Map<String, Object> map = JacksonUtil.getMapFromJson(renderTemplate(ctx, copy));
+
+            String retval = getNextTransition();
+            int failCount = 0;
+            Connection connection = new SFTPConnection(configUri);
+            List<FTPRequest> requests = new ArrayList<>();
+            for (Entry<String, Object> e : map.entrySet()) {
+                FTPRequest request = new FTPRequest(Action.WRITE).setLocalName(e.getKey()).setRemoteName(e.getValue().toString());
+                connection.doAction(request);
+                if (!request.getStatus().equals(Status.SUCCESS)) {
+                    retval = getFailTransition();
+                    log.warn("Unable to send " + e.getKey());
+                    failCount++;
+                }
+                requests.add(request);
+            }
+            if (failCount > 0) {
+                log.error("Unable to send " + failCount + " of " + map.size() + " files)");
+            }
+            decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), "Sent " + (map.size() - failCount) + " of " + map.size() + " files)");
+            decision.setContextLiteral(ctx, getWorkerURI(), getStepName() + "Result", JacksonUtil.jsonFromObject(requests));
+            return retval;
+        } catch (Exception e) {
+            Kernel.getDecision().setContextLiteral(ctx, getWorkerURI(), getStepName(), "Unable to send files : " + e.getLocalizedMessage());
+            Kernel.getDecision().setContextLiteral(ctx, getWorkerURI(), getStepName() + "Error", ExceptionToString.format(e));
+            return getErrorTransition();
         }
-        if (failCount > 0) {
-            log.error("Unable to send " + failCount + " of " + map.size() + " files)");
-        }
-        decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), "Sent " + (map.size() - failCount) + " of " + map.size() + " files)");
-        decision.setContextLiteral(ctx, getWorkerURI(), getStepName() + "Result", JacksonUtil.jsonFromObject(requests));
-        return retval;
     }
 
 }
