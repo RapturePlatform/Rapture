@@ -65,6 +65,12 @@ public class DateTest extends ResourceBasedTest {
     }
 
     @Test
+    public void testTimeComparison() throws RecognitionException {
+        String ret = runTestFor("/date/timecomparison.rfx");
+        assertTrue("Test case did not complete successfully", ret.endsWith("true"));
+    }
+
+    @Test
     public void testEpoch() throws RecognitionException {
         String ret = runTestFor("/date/epoch.rfx");
         assertTrue("Test case did not complete successfully", ret.endsWith("true"));
