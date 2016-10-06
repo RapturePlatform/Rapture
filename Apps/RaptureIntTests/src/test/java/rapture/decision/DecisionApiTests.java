@@ -75,7 +75,8 @@ public class DecisionApiTests {
     @BeforeClass(groups = { "decision", "nightly" })
     @Parameters({ "RaptureURL", "RaptureUser", "RapturePassword" })
     public void beforeTest(@Optional("http://localhost:8665/rapture") String url, @Optional("rapture") String user, @Optional("rapture") String password) {
-        helper = new IntegrationTestHelper(url, user, password);
+       
+    	helper = new IntegrationTestHelper(url, user, password);
         decisionApi = new HttpDecisionApi(helper.getRaptureLogin());
         scriptMap = new HashMap<String, String>();
         loadScripts(helper.getRandomAuthority(Scheme.SCRIPT));
@@ -418,7 +419,7 @@ public class DecisionApiTests {
         Reporter.log("Work order uri: " + createWorkOrder, true);
 
         int numRetries = 20;
-        long waitTimeMS = 500;
+        long waitTimeMS = 2000;
         while (IntegrationTestHelper.isWorkOrderRunning(decisionApi, createWorkOrder) && (numRetries-- > 0)) {
             Reporter.log("Checking workorder status, retry count=" + numRetries + ", waiting " + (waitTimeMS / 1000) + " seconds...", true);
             try {
@@ -1476,8 +1477,7 @@ public class DecisionApiTests {
         Assert.assertNull(decisionApi.getContextValue(workOrderUri, "LIZZ"));
         decisionApi.setContextLink( workOrderUri, "BIZZ", docPath + "#NONEXIST");
         try {
-        	value = decisionApi.getContextValue(workOrderUri, "BIZZ");
-        	Assert.fail();
+        	Assert.assertEquals(decisionApi.getContextValue(workOrderUri, "BIZZ"),"");
         } catch (Exception e) {}
         
     }
