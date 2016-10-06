@@ -69,6 +69,7 @@ import rapture.common.WorkOrderExecutionState;
 import rapture.common.WorkflowExecsStatus;
 import rapture.common.WorkflowJobExecDetails;
 import rapture.common.api.ScheduleApi;
+import rapture.common.dp.WorkOrder;
 import rapture.common.exception.RaptureExceptionFactory;
 import rapture.common.impl.jackson.JacksonUtil;
 import rapture.common.impl.jackson.JsonContent;
@@ -248,6 +249,22 @@ public class ScheduleApiImpl extends KernelBase implements ScheduleApi {
     }
 
     @Override
+    public List<RaptureJobExec> getRunningWorkflowJobs(CallingContext context) {
+        List<RaptureJobExec> ret = new ArrayList<>();
+        Map<RaptureJobExec, WorkOrder> je = Kernel.getDecision().getJobExecsAndWorkOrdersByDay(context, System.currentTimeMillis());
+        for (Map.Entry<RaptureJobExec, WorkOrder> entry : je.entrySet()) {
+            WorkOrder wo = entry.getValue();
+            if (wo.getStatus() == WorkOrderExecutionState.ACTIVE ||
+                    wo.getStatus() == WorkOrderExecutionState.FAILING ||
+                    wo.getStatus() == WorkOrderExecutionState.CANCELLING ||
+                    wo.getStatus() == WorkOrderExecutionState.NEW) {
+                ret.add(entry.getKey());
+            }
+        }
+        return ret;
+    }
+
+    @Override
     public List<RaptureJobExec> getJobExecs(CallingContext context, String jobURI, int start, int count, Boolean reversed) {
         String jobExecURI = new RaptureURI(jobURI, Scheme.JOB).getShortPath();
 
@@ -311,13 +328,13 @@ public class ScheduleApiImpl extends KernelBase implements ScheduleApi {
     }
 
     @Override
-    public void runJobNow(CallingContext context, String jobURI, Map<String, String> extraJobParams) {
+    public String runJobNow(CallingContext context, String jobURI, Map<String, String> extraJobParams) {
         RaptureURI parsedURI = new RaptureURI(jobURI, JOB);
         RaptureJob job = RaptureJobStorage.readByAddress(parsedURI);
         if (job == null) {
             throw RaptureExceptionFactory.create("Cannot load job for URI " + parsedURI);
         }
-        ScheduleManager.runJobNow(job, extraJobParams);
+        return ScheduleManager.runJobNow(job, extraJobParams);
     }
 
     @Override

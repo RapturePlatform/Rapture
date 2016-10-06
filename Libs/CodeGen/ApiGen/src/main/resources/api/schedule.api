@@ -34,9 +34,9 @@ api(Schedule) {
     @entitle=/admin/schedule
     @public List(RaptureJob) retrieveJobs(String uriPrefix);
 
-    [Try to schedule this job to run as soon as possible.]
+    [Run this job immediately.  If the job has a workflow as an executable, the workOrder URI is returned.]
     @entitle=/admin/schedule
-    @public void runJobNow(String jobURI, Map(String, String) extraParams);
+    @public String runJobNow(String jobURI, Map(String, String) extraParams);
     
     [Removes the upcoming scheduled execution of this job and schedules it to run according to the cron in the job configuration.]
     @entitle=/admin/schedule
@@ -53,6 +53,10 @@ api(Schedule) {
     [Retrieves all of the JobURI addresses of the jobs in the system.]
     @entitle=/admin/schedule
     @public List(String) getJobs();
+    
+    [Retrieves all of the workflow job execs that are currently running.]
+    @entitle=/admin/schedule
+    @public List(RaptureJobExec) getRunningWorkflowJobs();
 
     [Retrieves all of the upcoming jobs in the system.]
     @entitle=/admin/schedule
