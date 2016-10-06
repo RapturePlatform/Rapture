@@ -70,7 +70,7 @@ public class ReflexDateValue {
         setupCalendarHandler();
     }
 
-    private static final DateTimeFormatter FORMATTER = DateTimeFormat.forPattern("yyyyMMdd").withZoneUTC();
+    private DateTimeFormatter FORMATTER = DateTimeFormat.forPattern("yyyyMMdd").withZoneUTC();
 
     public ReflexDateValue(String yyyyMMdd, String calendar) {
         if (yyyyMMdd.isEmpty()) {

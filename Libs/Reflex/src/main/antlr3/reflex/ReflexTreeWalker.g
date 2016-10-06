@@ -354,7 +354,7 @@ functionCall returns [ReflexNode node]
   |  ^(FUNC_CALL B64Decompress expression) { node = new B64Decompress(line, handler, currentScope, $expression.node); }
   |  ^(FUNC_CALL Debug expression) { node = new DebugNode(line, handler, currentScope, $expression.node); }
   |  ^(FUNC_CALL Date exprList? ) { node = new DateNode(line, handler, currentScope, $exprList.e); }
-  |  ^(FUNC_CALL Time expression? ) { node = new TimeNode(line, handler, currentScope, $expression.node); }
+  |  ^(FUNC_CALL Time exprList? ) { node = new TimeNode(line, handler, currentScope, $exprList.e); }
   |  ^(FUNC_CALL Evals expression ) { node = new QuotedStringNode(line, handler, currentScope, $expression.node); }
   |  ^(FUNC_CALL Vars) { node = new VarsNode(line, handler, currentScope); }
   |  ^(FUNC_CALL ReadDir expression) { node = new ReadDirNode(line, handler, currentScope, $expression.node); }
