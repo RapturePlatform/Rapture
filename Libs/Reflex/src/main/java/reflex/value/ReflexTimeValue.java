@@ -54,7 +54,6 @@ public class ReflexTimeValue {
         timeFormat = DateTimeFormat.forPattern("HH:mm:ss").withZone(timezone);
 
         long l = dateTime.getMillis();
-        System.out.println("MILLIS = " + l);
 
     }
 
