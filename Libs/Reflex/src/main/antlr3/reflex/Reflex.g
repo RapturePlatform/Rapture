@@ -469,7 +469,7 @@ functionCall
   |  Sort '(' arg=expression ',' asc=expression ')'      -> ^(FUNC_CALL[$Sort] Sort $arg $asc)
   |  Collate '(' arg=expression ',' locale=expression ')'   -> ^(FUNC_CALL[$Collate] Collate $arg $locale)
   |  Date '(' exprList? ')'       -> ^(FUNC_CALL[$Date] Date exprList?)
-  |  Time '(' expression? ')'     -> ^(FUNC_CALL[$Time] Time expression?)
+  |  Time '(' exprList? ')'     -> ^(FUNC_CALL[$Time] Time exprList?)
   |  GetLine '(' expression? ')'  -> ^(FUNC_CALL[$GetLine] GetLine expression?)
   |  GetCh '(' expression? ')'    -> ^(FUNC_CALL[$GetCh] GetCh expression?)
   |  Capabilities '(' ')' 		  -> ^(FUNC_CALL[$Capabilities] Capabilities)

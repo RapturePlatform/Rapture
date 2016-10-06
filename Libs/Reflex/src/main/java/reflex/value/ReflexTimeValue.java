@@ -42,26 +42,46 @@ public class ReflexTimeValue {
 
     private DateTime dateTime;
     private DateTimeFormatter timeFormat = DateTimeFormat.forPattern("HH:mm:ss").withZoneUTC();
+    private DateTimeZone timezone = DateTimeZone.UTC;
 
     public ReflexTimeValue() {
-        this.dateTime = new DateTime(DateTimeZone.UTC);
+        this((Long) null, DateTimeZone.UTC);
+    }
+
+    public ReflexTimeValue(Long initial, DateTimeZone timezone) {
+        this.timezone = timezone;
+        this.dateTime = (initial == null) ? new DateTime(timezone) : new DateTime(initial, timezone);
+        timeFormat = DateTimeFormat.forPattern("HH:mm:ss").withZone(timezone);
+
+        long l = dateTime.getMillis();
+
+    }
+
+    public ReflexTimeValue(Long initial) {
+        this(initial, DateTimeZone.UTC);
+    }
+
+    public ReflexTimeValue(Date initial, DateTimeZone timezone) {
+        this((initial == null) ? null : initial.getTime(), timezone);
     }
 
     public ReflexTimeValue(Date initial) {
-        this.dateTime = new DateTime(initial.getTime(), DateTimeZone.UTC);
+        this(initial, DateTimeZone.UTC);
     }
 
-    public ReflexTimeValue(long initial) {
-        this.dateTime = new DateTime(initial, DateTimeZone.UTC);
+    public ReflexTimeValue(ReflexTimeValue other, DateTimeZone timezone) {
+        this.timezone = timezone;
+        this.dateTime = other.dateTime.toDateTime(timezone);
     }
 
-    public ReflexTimeValue(ReflexTimeValue other, DateTimeZone zone) {
-        this.dateTime = other.dateTime.toDateTime(zone);
+    public ReflexTimeValue(String value, DateTimeZone timezone) {
+        this.timezone = timezone;
+        timeFormat = DateTimeFormat.forPattern("HH:mm:ss").withZone(timezone);
+        dateTime = timeFormat.parseDateTime(value);
     }
 
-    public ReflexTimeValue(String HHmmSS) {
-        // Given a HH:mm:ss string, convert it to a local date time object
-        dateTime = timeFormat.parseDateTime(HHmmSS);
+    public ReflexTimeValue(String value) {
+        this(value, DateTimeZone.UTC);
     }
 
     @Override

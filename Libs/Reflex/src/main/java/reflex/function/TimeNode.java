@@ -23,6 +23,8 @@
  */
 package reflex.function;
 
+import java.util.List;
+
 import org.joda.time.DateTimeZone;
 
 import reflex.IReflexHandler;
@@ -40,30 +42,36 @@ import reflex.value.ReflexValue;
  * 
  */
 public class TimeNode extends BaseNode {
-    private ReflexNode initExpression;
+    private List<ReflexNode> exprList;
 
-    public TimeNode(int lineNumber, IReflexHandler handler, Scope s, ReflexNode expression) {
-        super(lineNumber, handler, s);
-        this.initExpression = expression;
+    public TimeNode(int lineNumber, IReflexHandler handler, Scope scope, List<ReflexNode> eList) {
+        super(lineNumber, handler, scope);
+        this.exprList = eList;
     }
 
     @Override
     public ReflexValue evaluate(IReflexDebugger debugger, Scope scope) {
         debugger.stepStart(this, scope);
         ReflexTimeValue val = null;
+        DateTimeZone timezone = DateTimeZone.UTC;
 
-        if (initExpression == null) {
+        if ((exprList == null) || exprList.isEmpty()) {
             val = new ReflexTimeValue();
         } else {
-            ReflexValue initVal = initExpression.evaluate(debugger, scope);
-            if (initVal.isString()) {
-                val = new ReflexTimeValue(initVal.asString());
-            } else if (initVal.isTime()) {
-                val = new ReflexTimeValue(initVal.asTime(), DateTimeZone.UTC);
-            } else if (initVal.isNumber()) {
-            	val = new ReflexTimeValue(initVal.asLong());
+            // If there is one value it will be a
+            ReflexValue initValue = exprList.get(0).evaluate(debugger, scope);
+            if (exprList.size() > 1) {
+                timezone = DateTimeZone.forID(exprList.get(1).evaluate(debugger, scope).asString());
+            }
+            if (initValue.isTime()) {
+                val = new ReflexTimeValue(initValue.asTime(), timezone);
+            } else if (initValue.isNumber()) {
+                val = new ReflexTimeValue(initValue.asLong(), timezone);
+            } else {
+                val = new ReflexTimeValue(initValue.asString(), timezone);
             }
         }
+
         ReflexValue retVal = new ReflexValue(val);
         debugger.stepEnd(this, retVal, scope);
         return retVal;
