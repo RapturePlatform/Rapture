@@ -23,7 +23,6 @@
  */
 package reflex.function;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.joda.time.DateTimeZone;
@@ -43,16 +42,11 @@ import reflex.value.ReflexValue;
  * 
  */
 public class TimeNode extends BaseNode {
-    private ReflexNode initExpression;
     private List<ReflexNode> exprList;
 
     public TimeNode(int lineNumber, IReflexHandler handler, Scope scope, List<ReflexNode> eList) {
         super(lineNumber, handler, scope);
-        if (eList == null) {
-            this.exprList = new ArrayList<>();
-        } else {
-            this.exprList = eList;
-        }
+        this.exprList = eList;
     }
 
     @Override
@@ -61,7 +55,7 @@ public class TimeNode extends BaseNode {
         ReflexTimeValue val = null;
         DateTimeZone timezone = DateTimeZone.UTC;
 
-        if (exprList.isEmpty()) {
+        if ((exprList == null) || exprList.isEmpty()) {
             val = new ReflexTimeValue();
         } else {
             // If there is one value it will be a

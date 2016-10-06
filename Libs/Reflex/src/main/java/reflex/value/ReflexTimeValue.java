@@ -42,7 +42,7 @@ public class ReflexTimeValue {
 
     private DateTime dateTime;
     private DateTimeFormatter timeFormat = DateTimeFormat.forPattern("HH:mm:ss").withZoneUTC();
-    DateTimeZone timezone = DateTimeZone.UTC;
+    private DateTimeZone timezone = DateTimeZone.UTC;
 
     public ReflexTimeValue() {
         this((Long) null, DateTimeZone.UTC);
