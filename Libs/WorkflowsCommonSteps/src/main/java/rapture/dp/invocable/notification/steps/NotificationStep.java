@@ -174,8 +174,8 @@ public class NotificationStep extends AbstractInvocable {
                 address[i] = new InternetAddress(allRecipients[i]);
 
             msg.setRecipients(Message.RecipientType.TO, address);
-            msg.setSubject(renderTemplate(ctx, renderTemplate(ctx, subject)));
-            msg.setContent(renderTemplate(ctx, renderTemplate(ctx, message)), MediaType.ANY_TEXT_TYPE.toString());
+            msg.setSubject(renderTemplate(ctx, subject));
+            msg.setContent(renderTemplate(ctx, message), MediaType.PLAIN_TEXT_UTF_8.toString());
             msg.setSentDate(new Date());
             Transport.send(msg);
         } catch (MessagingException e) {

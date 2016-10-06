@@ -59,7 +59,15 @@ public class DateFormatNode extends BaseNode {
         // could be null
         ReflexValue dateFormatValue = null;
         ReflexValue retVal = null;
-        DateTimeZone zone = (timezone == null) ? null : DateTimeZone.forID(timezone.evaluate(debugger, scope).asString());
+        DateTimeZone zone = null;
+        if (timezone != null) {
+            ReflexValue rv = timezone.evaluate(debugger, scope);
+            try {
+                if (!rv.isNull()) zone = DateTimeZone.forID(rv.asString());
+            } catch (IllegalArgumentException e) {
+                log.error("Unrecognised time zone identifier " + rv.asString());
+            }
+        }
 
         DateTimeFormatter dtf = null;
         if (format != null) {
