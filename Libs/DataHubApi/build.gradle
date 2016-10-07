@@ -1,0 +1,5 @@
+dependencies {
+  compile project(":DataHubApiGen")
+}
+
+compileJava.dependsOn(":DataHubApiGen:genAll")

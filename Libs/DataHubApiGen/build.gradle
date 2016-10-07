@@ -1,0 +1,34 @@
+import com.incapture.rapgen.GenSdkApi
+
+dependencies {
+  compile project(':RaptureAPI')
+  compile project(':RaptureCommon')
+  compile project(":CodeGen:CodeGenLib")
+}
+def taskGroup = "ApiGenerator"
+def langs = [
+  'Python',
+]
+
+langs.each { lang ->
+  project.tasks.create(name: "gen${lang}", type: GenSdkApi, group: taskGroup) {
+    language = lang
+    apiDestDir = file("$buildDir/API")
+    mainApiFile = "api/datahub.api"
+  }
+}
+
+task genJava (type: GenSdkApi, group: taskGroup) {
+    language = "Java"
+    apiDestDir = file("../DataHubApi")
+    kernelDestDir = file("../DataHubServer")
+    mainApiFile = "api/datahub.api"
+}
+langs << "Java"
+
+task genAll(description: "Generate all apis", group: taskGroup) << { println "Generating all apis for DataHub" }
+
+langs.each { lang -> genAll.dependsOn "gen${lang}" }
+
+genAll.dependsOn("genJava")
+build.dependsOn("genAll")

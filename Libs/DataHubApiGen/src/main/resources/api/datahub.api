@@ -1,0 +1,16 @@
+sdk(datahub)
+version(1.0.0)
+minVer(1.0.0)
+
+[Some data object]
+@Storable(storagePath : {id})
+type DataObject (@package=rapture.datahub.common) {
+    String id;
+}
+
+[Sample API functions]
+api(DataHub) {
+    []
+    @entitle=/datahub/read
+    @public DataObject getDataObject(String id);
+}
