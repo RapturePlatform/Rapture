@@ -24,6 +24,7 @@ import rapture.common.CallingContext;
 import rapture.common.api.DecisionApi;
 import rapture.common.dp.AbstractInvocable;
 import rapture.common.dp.Steps;
+import rapture.common.exception.ExceptionToString;
 import rapture.common.impl.jackson.JacksonUtil;
 import rapture.ftp.common.FTPConnection;
 import rapture.ftp.common.FTPRequest;
@@ -50,37 +51,43 @@ public class CheckFileExistsStep extends AbstractInvocable {
      */
     @Override
     public String invoke(CallingContext ctx) {
-        decision.setContextLiteral(ctx, getWorkerURI(), "STEPNAME", getStepName());
+        try {
+            decision.setContextLiteral(ctx, getWorkerURI(), "STEPNAME", getStepName());
 
-        String configUri = StringUtils.stripToNull(decision.getContextValue(ctx, getWorkerURI(), "FTP_CONFIGURATION"));
-        String filename = StringUtils.stripToNull(decision.getContextValue(ctx, getWorkerURI(), "EXIST_FILENAMES"));
-        if (filename == null) {
-            decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), "No files to check");
-            decision.setContextLiteral(ctx, getWorkerURI(), getStepName() + "Error", "");
-            return getNextTransition();
-        }
-
-        Map<String, Object> files = JacksonUtil.objectFromJson(filename, Map.class);
-
-        FTPConnection connection = new SFTPConnection(configUri);
-        String retval = getNextTransition();
-        List<FTPRequest> requests = new ArrayList<>();
-        int existsCount = 0;
-        int failCount = 0;
-        StringBuilder error = new StringBuilder();
-        for (Entry<String, Object> e : files.entrySet()) {
-            FTPRequest request = new FTPRequest(Action.EXISTS).setRemoteName(e.getKey());
-            boolean exists = connection.doAction(request);
-            if (!exists == ((Boolean) e.getValue())) {
-                retval = getFailTransition();
-                error.append(e.getKey()).append(wasNotWas(exists)).append("found but").append(wasNotWas((Boolean) e.getValue())).append("expected ");
-                failCount++;
+            String configUri = StringUtils.stripToNull(decision.getContextValue(ctx, getWorkerURI(), "FTP_CONFIGURATION"));
+            String filename = StringUtils.stripToNull(decision.getContextValue(ctx, getWorkerURI(), "EXIST_FILENAMES"));
+            if (filename == null) {
+                decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), "No files to check");
+                decision.setContextLiteral(ctx, getWorkerURI(), getStepName() + "Error", "");
+                return getNextTransition();
             }
-            requests.add(request);
+
+            Map<String, Object> files = JacksonUtil.objectFromJson(filename, Map.class);
+
+            FTPConnection connection = new SFTPConnection(configUri);
+            String retval = getNextTransition();
+            List<FTPRequest> requests = new ArrayList<>();
+            int existsCount = 0;
+            int failCount = 0;
+            StringBuilder error = new StringBuilder();
+            for (Entry<String, Object> e : files.entrySet()) {
+                FTPRequest request = new FTPRequest(Action.EXISTS).setRemoteName(e.getKey());
+                boolean exists = connection.doAction(request);
+                if (!exists == ((Boolean) e.getValue())) {
+                    retval = getFailTransition();
+                    error.append(e.getKey()).append(wasNotWas(exists)).append("found but").append(wasNotWas((Boolean) e.getValue())).append("expected ");
+                    failCount++;
+                }
+                requests.add(request);
+            }
+            decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), "Located " + existsCount + " of " + files.size() + " files");
+            decision.setContextLiteral(ctx, getWorkerURI(), getStepName() + "Error", error.toString());
+            return retval;
+        } catch (Exception e) {
+            decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), "Unable to determine if files exist : " + e.getLocalizedMessage());
+            decision.setContextLiteral(ctx, getWorkerURI(), getStepName() + "Error", ExceptionToString.format(e));
+            return getErrorTransition();
         }
-        decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), "Located " + existsCount + " of " + files.size() + " files");
-        decision.setContextLiteral(ctx, getWorkerURI(), getStepName() + "Error", error.toString());
-        return retval;
     }
 
     public static String getFailTransition() {

@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import rapture.common.CallingContext;
 import rapture.common.dp.AbstractInvocable;
+import rapture.common.exception.ExceptionToString;
 import rapture.kernel.Kernel;
 
 public class GetDayOfWeekStep extends AbstractInvocable {
@@ -19,13 +20,19 @@ public class GetDayOfWeekStep extends AbstractInvocable {
 
     @Override
     public String invoke(CallingContext ctx) {
-        Kernel.getDecision().setContextLiteral(ctx, getWorkerURI(), "STEPNAME", getStepName());
+        try {
+            Kernel.getDecision().setContextLiteral(ctx, getWorkerURI(), "STEPNAME", getStepName());
 
-        String dateStr = StringUtils.stripToNull(Kernel.getDecision().getContextValue(ctx, getWorkerURI(), "DATE"));
-        String languageTag = StringUtils.stripToNull(Kernel.getDecision().getContextValue(ctx, getWorkerURI(), "LOCALE"));
-        LocalDateTime date = (dateStr == null) ? LocalDateTime.now() : LocalDateTime.parse(dateStr);
-        Locale locale = (languageTag == null) ? Locale.getDefault() : Locale.forLanguageTag(languageTag);
-        return DayOfWeek.from(date).getDisplayName(TextStyle.FULL, locale);
+            String dateStr = StringUtils.stripToNull(Kernel.getDecision().getContextValue(ctx, getWorkerURI(), "DATE"));
+            String languageTag = StringUtils.stripToNull(Kernel.getDecision().getContextValue(ctx, getWorkerURI(), "LOCALE"));
+            LocalDateTime date = (dateStr == null) ? LocalDateTime.now() : LocalDateTime.parse(dateStr);
+            Locale locale = (languageTag == null) ? Locale.getDefault() : Locale.forLanguageTag(languageTag);
+            return DayOfWeek.from(date).getDisplayName(TextStyle.FULL, locale);
+        } catch (Exception e) {
+            Kernel.getDecision().setContextLiteral(ctx, getWorkerURI(), getStepName(), "Exception in workflow : " + e.getLocalizedMessage());
+            Kernel.getDecision().setContextLiteral(ctx, getWorkerURI(), getStepName() + "Error", ExceptionToString.format(e));
+            return getErrorTransition();
+        }
     }
 
 }

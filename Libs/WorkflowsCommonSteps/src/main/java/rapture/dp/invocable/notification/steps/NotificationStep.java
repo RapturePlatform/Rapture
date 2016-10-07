@@ -27,7 +27,6 @@ import rapture.common.RaptureURI;
 import rapture.common.api.AdminApi;
 import rapture.common.api.DecisionApi;
 import rapture.common.dp.AbstractInvocable;
-import rapture.common.dp.Steps;
 import rapture.common.exception.ExceptionToString;
 import rapture.common.impl.jackson.JacksonUtil;
 import rapture.kernel.Kernel;
@@ -61,12 +60,24 @@ public class NotificationStep extends AbstractInvocable {
 
         if (types == null) {
             log.error("Cannot determine NOTIFY_TYPE value");
-            return Steps.ERROR.toString();
+            return getErrorTransition();
         }
-        String retval = Steps.NEXT.toString();
+        String retval = getNextTransition();
         for (String type : types.split("[, ]+")) {
-            if (type.equalsIgnoreCase("SLACK") && !sendSlack(ctx)) retval = Steps.ERROR.toString();
-            if (type.equalsIgnoreCase("EMAIL") && !sendEmail(ctx)) retval = Steps.ERROR.toString();
+            try {
+                if (type.equalsIgnoreCase("SLACK") && !sendSlack(ctx)) retval = getErrorTransition();
+            } catch (Exception e) {
+                log.error("Slack Notification failed: " + e.getMessage());
+                log.debug(ExceptionToString.format(e));
+                retval = getErrorTransition();
+            }
+            try {
+                if (type.equalsIgnoreCase("EMAIL") && !sendEmail(ctx)) retval = getErrorTransition();
+            } catch (Exception e) {
+                log.error("Email Notification failed: " + e.getMessage());
+                log.debug(ExceptionToString.format(e));
+                retval = getErrorTransition();
+            }
         }
         return retval;
     }
@@ -163,8 +174,8 @@ public class NotificationStep extends AbstractInvocable {
                 address[i] = new InternetAddress(allRecipients[i]);
 
             msg.setRecipients(Message.RecipientType.TO, address);
-            msg.setSubject(renderTemplate(ctx, renderTemplate(ctx, subject)));
-            msg.setContent(renderTemplate(ctx, renderTemplate(ctx, message)), MediaType.ANY_TEXT_TYPE.toString());
+            msg.setSubject(renderTemplate(ctx, subject));
+            msg.setContent(renderTemplate(ctx, message), MediaType.PLAIN_TEXT_UTF_8.toString());
             msg.setSentDate(new Date());
             Transport.send(msg);
         } catch (MessagingException e) {
