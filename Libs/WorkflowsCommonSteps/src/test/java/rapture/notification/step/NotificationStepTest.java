@@ -84,7 +84,7 @@ public class NotificationStepTest {
             exchange.setExchangeType(RaptureExchangeType.FANOUT);
             exchange.setDomain("main");
 
-            List<RaptureExchangeQueue> queues = new ArrayList<RaptureExchangeQueue>();
+            List<RaptureExchangeQueue> queues = new ArrayList<>();
             RaptureExchangeQueue queue = new RaptureExchangeQueue();
             queue.setName("default");
             queue.setRouteBindings(new ArrayList<String>());
@@ -121,7 +121,7 @@ public class NotificationStepTest {
         Kernel.getSys().writeSystemConfig(context, area, Mailer.SMTP_CONFIG_URL, JacksonUtil.jsonFromObject(smtpConfig));
 
         // create dummy email template
-        String template = "{\"emailTo\":\"bmsdrama2016@gmail.com\",\"subject\":\"Ignore - generated from test\",\"msgBody\":\"This email is generated from test\"}";
+        String template = "{\"emailTo\":\"bmsdrama2016@gmail.com\",\"subject\":\"Ignore this message\",\"msgBody\":\"This email is generated from NotificationStepTest in WorkflowCommonSteps\"}";
         String url = Mailer.EMAIL_TEMPLATE_DIR + templateName;
         Kernel.getSys().writeSystemConfig(context, area, url, template);
 
