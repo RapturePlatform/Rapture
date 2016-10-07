@@ -1,0 +1,8 @@
+dependencies {
+  compile project(":RaptureCore")
+  compile project(":RaptureWebServlet")
+  compile project(":DataHubApiGen")
+  compile project(":DataHubApi")
+}
+
+compileJava.dependsOn(":DataHubApi:build")
