@@ -95,7 +95,7 @@ public class SendFileStep extends AbstractInvocable {
             return retval;
         } catch (Exception e) {
             Kernel.getDecision().setContextLiteral(ctx, getWorkerURI(), getStepName(), "Unable to send files : " + e.getLocalizedMessage());
-            Kernel.getDecision().setContextLiteral(ctx, getWorkerURI(), getStepName() + "Error", ExceptionToString.format(e));
+            Kernel.getDecision().setContextLiteral(ctx, getWorkerURI(), getStepName() + "Error", ExceptionToString.summary(e));
             return getErrorTransition();
         }
     }
