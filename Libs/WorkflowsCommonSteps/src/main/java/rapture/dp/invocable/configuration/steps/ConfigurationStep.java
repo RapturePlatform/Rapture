@@ -49,7 +49,7 @@ public class ConfigurationStep extends AbstractInvocable {
             return Steps.NEXT.toString();
         } catch (Exception e) {
             Kernel.getDecision().setContextLiteral(ctx, getWorkerURI(), getStepName(), "Exception in workflow : " + e.getLocalizedMessage());
-            Kernel.getDecision().setContextLiteral(ctx, getWorkerURI(), getStepName() + "Error", ExceptionToString.format(e));
+            Kernel.getDecision().setContextLiteral(ctx, getWorkerURI(), getStepName() + "Error", ExceptionToString.summary(e));
             return getErrorTransition();
         }
     }

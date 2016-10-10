@@ -83,4 +83,17 @@ public class ExceptionToString implements Formattable{
         }
         return sw.toString();
     }
+
+    public static final String summary(Throwable toss) {
+        StringBuilder sb = new StringBuilder();
+        for (Throwable t = toss; t != null;) {
+            String clas = t.getClass().toString();
+            if (clas.startsWith("class ")) clas = clas.substring(6);
+            sb.append(clas).append(": ");
+            sb.append(t.getMessage()).append("\n");
+            t = t.getCause();
+            if (t != null) sb.append("Caused by: ");
+        }
+        return sb.toString();
+    }
 }

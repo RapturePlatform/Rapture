@@ -30,7 +30,7 @@ public class GetDayOfWeekStep extends AbstractInvocable {
             return DayOfWeek.from(date).getDisplayName(TextStyle.FULL, locale);
         } catch (Exception e) {
             Kernel.getDecision().setContextLiteral(ctx, getWorkerURI(), getStepName(), "Exception in workflow : " + e.getLocalizedMessage());
-            Kernel.getDecision().setContextLiteral(ctx, getWorkerURI(), getStepName() + "Error", ExceptionToString.format(e));
+            Kernel.getDecision().setContextLiteral(ctx, getWorkerURI(), getStepName() + "Error", ExceptionToString.summary(e));
             return getErrorTransition();
         }
     }
