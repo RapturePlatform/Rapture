@@ -100,7 +100,7 @@ public class CalendarLookupStep extends AbstractInvocable {
             return getNextTransition();
         } catch (Exception e) {
             Kernel.getDecision().setContextLiteral(ctx, getWorkerURI(), getStepName(), "Unable to access the calendar : " + e.getLocalizedMessage());
-            Kernel.getDecision().setContextLiteral(ctx, getWorkerURI(), getStepName() + "Error", ExceptionToString.format(e));
+            Kernel.getDecision().setContextLiteral(ctx, getWorkerURI(), getStepName() + "Error", ExceptionToString.summary(e));
             return getErrorTransition();
         }
     }

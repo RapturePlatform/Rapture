@@ -23,6 +23,7 @@
  */
 package reflex.node;
 
+
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -30,6 +31,7 @@ import org.joda.time.format.DateTimeFormatter;
 import reflex.IReflexHandler;
 import reflex.Scope;
 import reflex.debug.IReflexDebugger;
+import reflex.value.ReflexTimeValue;
 import reflex.value.ReflexValue;
 
 /**
@@ -80,6 +82,9 @@ public class DateFormatNode extends BaseNode {
             retVal = new ReflexValue(dateValue.asDate().toString(dtf, zone));
         } else if (dateValue.isTime()) {
             retVal = new ReflexValue(dateValue.asTime().toString(dtf, zone));
+        } else if (dateValue.isNumber()) {
+            ReflexTimeValue rdv = new ReflexTimeValue(dateValue.asLong(), zone);
+            retVal = new ReflexValue(rdv.toString(dtf, zone));
         } else {
             throwError("Illegal argument ", dateNode, format, dateValue, dateFormatValue);
         }
