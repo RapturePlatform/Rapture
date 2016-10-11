@@ -27,11 +27,11 @@ import reflex.value.ImmutableReflexValue;
 
 public class ReflexInternalValue extends ImmutableReflexValue {
 
-    public ReflexInternalValue(int lineNumber, Object v) {
+    public ReflexInternalValue(int lineNumber, Internal v) {
         super(lineNumber, v);
     }
 
-    public ReflexInternalValue(Object v) {
+    public ReflexInternalValue(Internal v) {
         super(v);
     }
 }
