@@ -60,12 +60,19 @@ public class ExecutionContextUtil {
                  * If a variable, first retrieve the val we need to evaluate
                  */
                 String idNoMarker = toEval.substring(1);
+                String dfault = null;
+                int idx = idNoMarker.indexOf('$');
+                if (idx > 1) {
+                    dfault = idNoMarker.substring(idx + 1);
+                    idNoMarker = idNoMarker.substring(0, idx);
+                }
+
                 ExecutionContextField ecf = ExecutionContextFieldStorage.readByFields(workOrderUri, idNoMarker);
                 if (ecf != null) {
                     toEval = ecf.getValue();
                     valueType = ContextValueType.getContextValueType(toEval.charAt(0));
                 } else {
-                    toEval = null;
+                    toEval = dfault;
                     valueType = ContextValueType.NULL;
                 }
             }
