@@ -61,7 +61,8 @@ public class TimeNode extends BaseNode {
             // If there is one value it will be a
             ReflexValue initValue = exprList.get(0).evaluate(debugger, scope);
             if (exprList.size() > 1) {
-                timezone = DateTimeZone.forID(exprList.get(1).evaluate(debugger, scope).asString());
+                ReflexValue rv = exprList.get(1).evaluate(debugger, scope);
+                if (!rv.isNull()) timezone = DateTimeZone.forID(rv.asString());
             }
             if (initValue.isTime()) {
                 val = new ReflexTimeValue(initValue.asTime(), timezone);
