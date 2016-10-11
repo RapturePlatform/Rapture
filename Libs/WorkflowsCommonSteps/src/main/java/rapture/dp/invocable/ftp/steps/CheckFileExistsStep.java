@@ -51,14 +51,15 @@ public class CheckFileExistsStep extends AbstractInvocable {
      */
     @Override
     public String invoke(CallingContext ctx) {
+        String workUri = getWorkerURI();
         try {
-            decision.setContextLiteral(ctx, getWorkerURI(), "STEPNAME", getStepName());
+            decision.setContextLiteral(ctx, workUri, "STEPNAME", getStepName());
 
-            String configUri = StringUtils.stripToNull(decision.getContextValue(ctx, getWorkerURI(), "FTP_CONFIGURATION"));
-            String filename = StringUtils.stripToNull(decision.getContextValue(ctx, getWorkerURI(), "EXIST_FILENAMES"));
+            String configUri = StringUtils.stripToNull(decision.getContextValue(ctx, workUri, "FTP_CONFIGURATION"));
+            String filename = StringUtils.stripToNull(decision.getContextValue(ctx, workUri, "EXIST_FILENAMES"));
             if (filename == null) {
-                decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), "No files to check");
-                decision.setContextLiteral(ctx, getWorkerURI(), getStepName() + "Error", "");
+                decision.setContextLiteral(ctx, workUri, getStepName(), "No files to check");
+                decision.setContextLiteral(ctx, workUri, getStepName() + "Error", "");
                 return getNextTransition();
             }
 
@@ -80,12 +81,15 @@ public class CheckFileExistsStep extends AbstractInvocable {
                 }
                 requests.add(request);
             }
-            decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), "Located " + existsCount + " of " + files.size() + " files");
-            decision.setContextLiteral(ctx, getWorkerURI(), getStepName() + "Error", error.toString());
+            decision.setContextLiteral(ctx, workUri, getStepName(), "Located " + existsCount + " of " + files.size() + " files");
+            String errMsg = error.toString();
+            decision.setContextLiteral(ctx, workUri, getStepName() + "Error", errMsg);
+            decision.writeWorkflowAuditEntry(ctx, workUri, errMsg, failCount > 0);
             return retval;
         } catch (Exception e) {
-            decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), "Unable to determine if files exist : " + e.getLocalizedMessage());
-            decision.setContextLiteral(ctx, getWorkerURI(), getStepName() + "Error", ExceptionToString.summary(e));
+            decision.setContextLiteral(ctx, workUri, getStepName(), "Unable to determine if files exist : " + e.getLocalizedMessage());
+            decision.setContextLiteral(ctx, workUri, getStepName() + "Error", ExceptionToString.summary(e));
+            decision.writeWorkflowAuditEntry(ctx, workUri, ExceptionToString.summary(e), true);
             return getErrorTransition();
         }
     }
