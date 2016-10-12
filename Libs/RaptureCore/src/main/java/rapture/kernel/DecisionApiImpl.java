@@ -411,20 +411,22 @@ public class DecisionApiImpl extends KernelBase implements DecisionApi {
             ret.setIsCreated(true);
             ret.setUri(order);
 
-            String docPath = workOrderURI.getDocPath();
-            int lio = docPath.lastIndexOf('/');
-
-            StringBuilder externalUrl = new StringBuilder();
-            String host = System.getenv("HOST");
-            String port = System.getenv("PORT");
-            externalUrl.append("http://").append((host != null) ? host : "localhost").append(":").append((port != null) ? port : "8000").append("/process/").append(docPath.substring(0, lio))
-                    .append(WORKORDER_DELIMETER).append(docPath.substring(lio + 1));
-            // deprecated
-            this.setContextLiteral(context, order, "WORKFLOWURL", externalUrl.toString());
-            this.setContextLiteral(context, order, "WORKORDERURL", externalUrl.toString());
+            setWorkOrderUri(order);
 
             return ret;
         }
+    }
+
+    public void setWorkOrderUri(String workOrder) {
+        String docPath = new RaptureURI(workOrder).getDocPath();
+        int lio = docPath.lastIndexOf('/');
+
+        StringBuilder externalUrl = new StringBuilder();
+        String host = System.getenv("HOST");
+        String port = System.getenv("PORT");
+        externalUrl.append("http://").append((host != null) ? host : "localhost").append(":").append((port != null) ? port : "8000").append("/process/")
+                .append(docPath.substring(0, lio)).append(WORKORDER_DELIMETER).append(docPath.substring(lio + 1));
+        setContextLiteral(ContextFactory.getKernelUser(), workOrder, "WORKORDERURL", externalUrl.toString());
     }
 
     private static void writeWorkOrderArguments(CallingContext context, Map<String, String> argsMap, WorkOrder workOrder) {
