@@ -120,6 +120,8 @@ public class DecisionApiImpl extends KernelBase implements DecisionApi {
     private static final String FIRST_WORKER_ID = "0";
     private static final String LOCK_TIMEOUT_SECONDS = "LOCK_TIMEOUT_SECONDS";
 
+    private static final String WORKORDER_DELIMETER = "&workorder=";
+
     public DecisionApiImpl(Kernel raptureKernel) {
         super(raptureKernel);
     }
@@ -413,9 +415,10 @@ public class DecisionApiImpl extends KernelBase implements DecisionApi {
             int lio = docPath.lastIndexOf('/');
 
             StringBuilder externalUrl = new StringBuilder();
-            String port = "8000"; // may want to get this from env in case it ever changes
-            externalUrl.append("http://").append(System.getenv("HOST")).append(":").append(port).append("/process/").append(docPath.substring(0, lio))
-                    .append("_._").append(docPath.substring(lio + 1));
+            String host = System.getenv("HOST");
+            String port = System.getenv("PORT");
+            externalUrl.append("http://").append((host != null) ? host : "localhost").append(":").append((port != null) ? port : "8000").append("/process/").append(docPath.substring(0, lio))
+                    .append(WORKORDER_DELIMETER).append(docPath.substring(lio + 1));
             this.setContextLiteral(context, order, "WORKFLOWURL", externalUrl.toString());
 
             return ret;

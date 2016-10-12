@@ -96,4 +96,20 @@ public class ExceptionToString implements Formattable{
         }
         return sb.toString();
     }
+
+    /**
+     * Throw away any nested exceptions and get to the low level cause. Might not be ideal in every case
+     * 
+     * @param e
+     * @return
+     */
+    public static Throwable getRootCause(Exception e) {
+        Throwable retVal = e;
+        while (retVal != null) {
+            Throwable cause = retVal.getCause();
+            if (cause == null) break;
+            retVal = cause;
+        }
+        return retVal;
+    }
 }
