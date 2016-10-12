@@ -103,7 +103,7 @@ public class ExceptionToString implements Formattable{
      * @param e
      * @return
      */
-    public static Throwable getRootCause(Exception e) {
+    public static Throwable getRootCause(Throwable e) {
         Throwable retVal = e;
         while (retVal != null) {
             Throwable cause = retVal.getCause();
