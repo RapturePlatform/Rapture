@@ -120,15 +120,21 @@ public class FTPConnection implements Connection {
                     exists = Kernel.getBlob().blobExists(ContextFactory.getKernelUser(), uri.toString());
                 }
             } else {
-                exists = new File(name).exists();
+                File f = new File(name);
+                exists = f.exists();
                 if (!exists) {
-                    // Wildcard matching. Somewhat convoluted, but it works
+                    int depth = 0;
+                    do {
+                        depth++;
+                        f = f.getParentFile();
+                    } while (!f.exists());
+
                     try {
                         Path pathName = Paths.get(name);
-                        exists = !Files
-                                .find(pathName.getParent(), 1,
-                                        (path, basicFileAttributes) -> path.toFile().getName().matches(pathName.getFileName().toString()))
-                                .collect(Collectors.toList()).isEmpty();
+                        List<Path> lexists = Files
+                                .find(pathName.getParent(), depth, (path, basicFileAttributes) -> path.toFile().getAbsolutePath().matches(name))
+                                .collect(Collectors.toList());
+                        exists = !lexists.isEmpty();
                     } catch (IOException e) {
                     }
 

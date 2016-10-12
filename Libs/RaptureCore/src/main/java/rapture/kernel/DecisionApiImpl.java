@@ -314,7 +314,7 @@ public class DecisionApiImpl extends KernelBase implements DecisionApi {
         }
 
         if (!response.getIsAcquired()) {
-            List<String> existingWoDesc = new LinkedList<String>();
+            List<String> existingWoDesc = new LinkedList<>();
             Set<String> existingStakeholderURIs = response.getExistingStakeholderURIs();
             for (String stakeHolderURI : existingStakeholderURIs) {
                 String jobURI = getContextValue(context, stakeHolderURI, ContextVariables.PARENT_JOB_URI);
@@ -357,7 +357,7 @@ public class DecisionApiImpl extends KernelBase implements DecisionApi {
 
             // 2. The ExecutionContext
             ExecutionContext executionContext = new ExecutionContext();
-            Map<String, String> data = new HashMap<String, String>();
+            Map<String, String> data = new HashMap<>();
             for (Entry<String, String> entry : contextMap.entrySet()) {
                 data.put(entry.getKey(), ContextValueType.LITERAL.marker + entry.getValue());
             }
@@ -419,7 +419,9 @@ public class DecisionApiImpl extends KernelBase implements DecisionApi {
             String port = System.getenv("PORT");
             externalUrl.append("http://").append((host != null) ? host : "localhost").append(":").append((port != null) ? port : "8000").append("/process/").append(docPath.substring(0, lio))
                     .append(WORKORDER_DELIMETER).append(docPath.substring(lio + 1));
+            // deprecated
             this.setContextLiteral(context, order, "WORKFLOWURL", externalUrl.toString());
+            this.setContextLiteral(context, order, "WORKORDERURL", externalUrl.toString());
 
             return ret;
         }
@@ -442,7 +444,7 @@ public class DecisionApiImpl extends KernelBase implements DecisionApi {
     private Map<String, String> setupContextMap(List<ExpectedArgument> expectedArguments, Map<String, String> argsMap) {
         HashMap<String, String> contextMap;
         if (argsMap == null) {
-            contextMap = new HashMap<String, String>();
+            contextMap = new HashMap<>();
         } else {
             contextMap = Maps.newHashMap(argsMap);
         }
@@ -568,7 +570,7 @@ public class DecisionApiImpl extends KernelBase implements DecisionApi {
             throw RaptureExceptionFactory.create("Not a valid Workflow URI " + workflowStepURI);
         }
 
-        Map<String, String> contextMap = new HashMap<String, String>();
+        Map<String, String> contextMap = new HashMap<>();
         RaptureURI uri = new RaptureURI(workOrderURI, Scheme.WORKORDER);
         List<ExecutionContextField> ecfs = ExecutionContextFieldStorage.readAll(uri.getFullPath());
         for (ExecutionContextField ecf : ecfs) {
@@ -601,7 +603,7 @@ public class DecisionApiImpl extends KernelBase implements DecisionApi {
 
     public List<Worker> getWorkers(WorkOrder workOrder) {
         List<String> workerIds = workOrder.getWorkerIds();
-        List<Worker> workers = new ArrayList<Worker>(workerIds.size());
+        List<Worker> workers = new ArrayList<>(workerIds.size());
         for (String workerId : workerIds) {
             workers.add(getWorkerNotNull(workOrder.getWorkOrderURI(), workerId));
         }
@@ -717,7 +719,7 @@ public class DecisionApiImpl extends KernelBase implements DecisionApi {
         String json = getContextValue(ContextFactory.getKernelUser(), workerURI, ERROR_LIST_CONSTANT);
         List<ErrorWrapper> errorList;
         if (json == null) {
-            errorList = new LinkedList<ErrorWrapper>();
+            errorList = new LinkedList<>();
         } else {
             errorList = JacksonUtil.objectFromJson(json, new TypeReference<List<ErrorWrapper>>() {
             });
@@ -916,7 +918,7 @@ public class DecisionApiImpl extends KernelBase implements DecisionApi {
         sample.setName(prefix);
         String encodedPrefix = sample.getStoragePath();
         List<AppStatusGroup> groups = AppStatusGroupStorage.readAll(encodedPrefix);
-        List<AppStatus> ret = new LinkedList<AppStatus>();
+        List<AppStatus> ret = new LinkedList<>();
         for (AppStatusGroup group : groups) {
             ret.addAll(group.getIdToStatus().values());
         }
@@ -930,7 +932,7 @@ public class DecisionApiImpl extends KernelBase implements DecisionApi {
     @Override
     public List<AppStatusDetails> getAppStatusDetails(CallingContext context, String prefix, List<String> extraContextValues) {
         List<AppStatus> statuses = getAppStatuses(context, prefix);
-        List<AppStatusDetails> detailedList = new ArrayList<AppStatusDetails>(statuses.size());
+        List<AppStatusDetails> detailedList = new ArrayList<>(statuses.size());
         for (AppStatus status : statuses) {
             AppStatusDetails asd = new AppStatusDetails();
             asd.setAppStatus(status);
@@ -939,7 +941,7 @@ public class DecisionApiImpl extends KernelBase implements DecisionApi {
             asd.setLogURI(logURI);
             WorkOrder workOrder = WorkOrderFactory.getWorkOrderNotNull(context, workOrderURI);
             List<Worker> workers = getWorkers(workOrder);
-            Map<String, List<StepRecord>> workerIdToSteps = new HashMap<String, List<StepRecord>>();
+            Map<String, List<StepRecord>> workerIdToSteps = new HashMap<>();
             for (String varAlias : extraContextValues) {
                 String value = getContextValue(context, status.getWorkOrderURI(), varAlias);
                 asd.getExtraContextValues().put(varAlias, value);
