@@ -675,6 +675,9 @@ public abstract class AbstractTTree extends TreeParser {
         String searchRepoTypePath = getGeneratedFilePath(sdkName, "search", "search", "SearchRepoType.java");
         STAttrMap searchRepoTypeAttributes = new STAttrMap();
         searchRepoTypeAttributes.put("schemes", searchTypes);
+        if (sdkName != null) {
+            searchRepoTypeAttributes.put("sdkName", sdkName + ".");
+        }
         StringTemplate searchRepoType = getTemplateLib().getInstanceOf("searchRepoType", searchRepoTypeAttributes);
         addApiTemplate(searchRepoTypePath, "1", searchRepoType);
     }
