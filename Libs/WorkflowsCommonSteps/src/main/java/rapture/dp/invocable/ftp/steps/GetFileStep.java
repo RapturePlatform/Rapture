@@ -74,7 +74,7 @@ public class GetFileStep extends AbstractInvocable {
             int failCount = 0;
             StringBuilder sb = new StringBuilder();
             List<FTPRequest> requests = new ArrayList<>();
-            Connection connection = new SFTPConnection(configUri);
+            Connection connection = new SFTPConnection(configUri).setContext(ctx);
             for (Entry<String, Object> e : map.entrySet()) {
                 FTPRequest request = new FTPRequest(Action.READ).setRemoteName(e.getKey()).setLocalName(e.getValue().toString());
                 connection.doAction(request);

@@ -120,15 +120,21 @@ public class FTPConnection implements Connection {
                     exists = Kernel.getBlob().blobExists(ContextFactory.getKernelUser(), uri.toString());
                 }
             } else {
-                exists = new File(name).exists();
+                File f = new File(name);
+                exists = f.exists();
                 if (!exists) {
-                    // Wildcard matching. Somewhat convoluted, but it works
+                    int depth = 0;
+                    do {
+                        depth++;
+                        f = f.getParentFile();
+                    } while (!f.exists());
+
                     try {
                         Path pathName = Paths.get(name);
-                        exists = !Files
-                                .find(pathName.getParent(), 1,
-                                        (path, basicFileAttributes) -> path.toFile().getName().matches(pathName.getFileName().toString()))
-                                .collect(Collectors.toList()).isEmpty();
+                        List<Path> lexists = Files
+                                .find(pathName.getParent(), depth, (path, basicFileAttributes) -> path.toFile().getAbsolutePath().matches(name))
+                                .collect(Collectors.toList());
+                        exists = !lexists.isEmpty();
                     } catch (IOException e) {
                     }
 
@@ -297,18 +303,19 @@ public class FTPConnection implements Connection {
                 if (isLocal() || request.isLocal()) {
                     File file = new File(request.getRemoteName());
                     log.debug("Local copy from " + file.getAbsolutePath());
-                    IOUtils.copy(new FileInputStream(file), outStream);
+                    if (IOUtils.copy(new FileInputStream(file), outStream) > 0) outStream.flush();
                 } else {
                     isRetrieved = retrieveFile(request.getRemoteName(), outStream);
-                    outStream.close();
                     if (isRetrieved) {
                         log.debug("File retrieved");
                         request.setStatus(Status.SUCCESS);
+                        outStream.flush();
                     } else {
                         log.warn(String.format("Missing response from %s", request.getRemoteName()));
                         request.setStatus(Status.ERROR);
                     }
                 }
+                outStream.close();
                 return request;
             }
         });

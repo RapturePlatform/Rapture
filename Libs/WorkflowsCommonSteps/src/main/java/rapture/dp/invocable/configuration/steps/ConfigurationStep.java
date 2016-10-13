@@ -24,12 +24,25 @@ public class ConfigurationStep extends AbstractInvocable {
         super(workerUri, stepName);
     }
 
+    private static final String WORKORDER_DELIMETER = "&workorder=";
+
     @Override
     public String invoke(CallingContext ctx) {
         try {
             Kernel.getDecision().setContextLiteral(ctx, getWorkerURI(), "STEPNAME", getStepName());
 
             String workOrderUri = new RaptureURI(getWorkerURI(), Scheme.WORKORDER).toShortString();
+
+            String docPath = new RaptureURI(workOrderUri).getDocPath();
+            int lio = docPath.lastIndexOf('/');
+
+            StringBuilder externalUrl = new StringBuilder();
+            String host = System.getenv("HOST");
+            String port = System.getenv("PORT");
+            externalUrl.append("http://").append((host != null) ? host : "localhost").append(":").append((port != null) ? port : "8000").append("/process/")
+                    .append(docPath.substring(0, lio)).append(WORKORDER_DELIMETER).append(docPath.substring(lio + 1));
+            Kernel.getDecision().setContextLiteral(ctx, workOrderUri, "WORKORDERURL", externalUrl.toString());
+
             String config = StringUtils.stripToNull(Kernel.getDecision().getContextValue(ctx, workOrderUri, "CONFIGURATION"));
             Map<String, String> view = new HashMap<>();
             DocApi docApi = Kernel.getDoc();
