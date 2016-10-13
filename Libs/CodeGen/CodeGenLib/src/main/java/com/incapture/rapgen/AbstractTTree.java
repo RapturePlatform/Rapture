@@ -76,8 +76,9 @@ public abstract class AbstractTTree extends TreeParser {
      * We can add a template to a file + section
      */
 
-    private Map<String, Map<String, StringTemplate>> kernelTemplates = new HashMap<String, Map<String, StringTemplate>>();
-    private Map<String, Map<String, StringTemplate>> apiTemplates = new HashMap<String, Map<String, StringTemplate>>();
+    private Map<String, Map<String, StringTemplate>> kernelTemplates = new HashMap<>();
+    private Map<String, Map<String, StringTemplate>> apiTemplates = new HashMap<>();
+    private Map<String, Map<String, StringTemplate>> webTemplates = new HashMap<>();
 
     private List<String> purgeList = new LinkedList<>();
     private List<String> indexInfoList = new LinkedList<>();
@@ -190,9 +191,10 @@ public abstract class AbstractTTree extends TreeParser {
         }
     }
 
-    public void dumpFiles(String outputKernelFolder, String outputApiFolder) {
+    public void dumpFiles(String outputKernelFolder, String outputApiFolder, String outputWebFolder) {
         OutputWriter.writeMultiPartTemplates(outputKernelFolder, kernelTemplates);
         OutputWriter.writeMultiPartTemplates(outputApiFolder, apiTemplates);
+        OutputWriter.writeMultiPartTemplates(outputWebFolder, webTemplates);
         OutputWriter.writeList(outputKernelFolder, purgeList, "resources/rapture/storable/purgeList.txt");
         OutputWriter.writeList(outputKernelFolder, indexInfoList, "resources/rapture/storable/indexInfoList.txt");
     }
@@ -239,6 +241,14 @@ public abstract class AbstractTTree extends TreeParser {
             kernelTemplates.put(fileName, t);
         }
         kernelTemplates.get(fileName).put(section, template);
+    }
+
+    protected void addWebTemplate(String fileName, String section, StringTemplate template) {
+        if (!webTemplates.containsKey(fileName)) {
+            Map<String, StringTemplate> t = new HashMap<>();
+            webTemplates.put(fileName, t);
+        }
+        webTemplates.get(fileName).put(section, template);
     }
 
     protected void addType(String typeName, String packageName, BeanAnnotation bean, CacheableAnnotation cacheable, AddressableAnnotation addressable,
@@ -675,6 +685,9 @@ public abstract class AbstractTTree extends TreeParser {
         String searchRepoTypePath = getGeneratedFilePath(sdkName, "search", "search", "SearchRepoType.java");
         STAttrMap searchRepoTypeAttributes = new STAttrMap();
         searchRepoTypeAttributes.put("schemes", searchTypes);
+        if (sdkName != null) {
+            searchRepoTypeAttributes.put("sdkName", sdkName + ".");
+        }
         StringTemplate searchRepoType = getTemplateLib().getInstanceOf("searchRepoType", searchRepoTypeAttributes);
         addApiTemplate(searchRepoTypePath, "1", searchRepoType);
     }

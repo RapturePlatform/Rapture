@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package rapture.search;
+package rapture.<sdkName>search;
 
 import java.util.Arrays;
 import java.util.List;
