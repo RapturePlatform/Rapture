@@ -27,38 +27,35 @@ docker run -d -p 9300:9300 -p 9200:9200 --name elasticsearch incapture/elasticse
 ```
 docker run -d -p 5432:5432 --name postgres incapture/postgres
 ```
+**Start Curtis**
+```
+docker run -d -p 8080:8080 -p 8665:8665 --link mongo --link rabbit --link elasticsearch --link postgres --name curtis incapture/apiserver
+```
+**Start Rapture UI**
+```
+docker run -d -p 8000:8000 --link curtis --name rim incapture/rim
+```
 **Start RestServer**
 ```
 docker run -d -p 4567:4567 --link mongo --link rabbit --link elasticsearch --link postgres --name restserver incapture/restserver
 ```
 The RestServer REST API will be available at [https://localhost:4567](https://localhost:4567) or https://192.168.99.100:4567 or equivalent depending on your docker configuration (native or virtual).
+The Rapture UI web application will be available at [https://localhost:8000](https://localhost:8000) or https://192.168.99.100:8000 or equivalent depending on your docker configuration (native or virtual).
+
+# Obtaining an API key #
+An API key is required to access the REST API.  You can obtain an api key for this 'restserver' application by running the following in a Rapture REPL screen which can be accessed in the Rapture UI application
+```
+println(#user.addApiKey("restserver"));
+```
+All REST API calls must include the api key in a HTTP header 'x-api-key'.
+You can also obtain an api key by making a direct call to the Rapture User API using the same function in any of the supported languages.
 
 # REST API #
-* [Login](#login) 
 * [Document](#document)
 * [Blob](#blob) 
 * [Series](#series)
 * [Workflow](#workflow)
 
-<a name="login"/>
-**Login with username and password**
-```
-POST /login
-Body: {"username":"user1", "password":"somepassword"}
-```
-Response:
-```
-HTTP 200: session_id
-```
-**Login with pre-existing appKey and apiKey**
-```
-POST /login
-Body: {"appKey":"myapp", "apiKey":"98d73ac8-3e28-4d8b-97a9-298028ddd6cb"}
-```
-Response:
-```
-HTTP 200: session_id
-```
 <a name="document"/>
 **Create a document repo**
 ```
