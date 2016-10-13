@@ -10,6 +10,14 @@
         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
         version="2.5"\>
         \<servlet\>
+                \<servlet-name\>LOGIN\</servlet-name\>
+                \<servlet-class\>rapture.server.web.servlet.LoginServlet\</servlet-class\>
+        \</servlet\>
+        \<servlet-mapping\>
+                \<servlet-name\>LOGIN\</servlet-name\>
+                \<url-pattern\>/login\</url-pattern\>
+        \</servlet-mapping\>
+        \<servlet\>
                 \<servlet-name\><sdkname>\</servlet-name\>
                 \<servlet-class\>rapture.server.web.<sdkname>.servlet.<apitype>Servlet\</servlet-class\>
         \</servlet\>
