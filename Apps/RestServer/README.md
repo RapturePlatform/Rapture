@@ -40,7 +40,7 @@ docker run -d -p 8000:8000 --link curtis --name rim incapture/rim
 docker run -d -p 4567:4567 --link mongo --link rabbit --link elasticsearch --link postgres --name restserver incapture/restserver
 ```
 The RestServer REST API will be available at [https://localhost:4567](https://localhost:4567) or https://192.168.99.100:4567 or equivalent depending on your docker configuration (native or virtual).
-The Rapture UI web application will be available at [https://localhost:8000](https://localhost:8000) or https://192.168.99.100:8000 or equivalent depending on your docker configuration (native or virtual).
+The Rapture UI web application will be available at [http://localhost:8000](http://localhost:8000) or http://192.168.99.100:8000 or equivalent depending on your docker configuration (native or virtual).
 
 # Obtaining an API key #
 An API key is required to access the REST API.  You can obtain an api key for this 'restserver' application by running the following in a Rapture REPL screen which can be accessed in the Rapture UI application
