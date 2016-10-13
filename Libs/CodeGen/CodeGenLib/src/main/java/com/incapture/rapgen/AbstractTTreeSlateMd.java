@@ -23,8 +23,6 @@
  */
 package com.incapture.rapgen;
 
-import rapture.common.exception.ExceptionToString;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -50,6 +48,8 @@ import com.incapture.rapgen.parser.SampleCodeParser;
 import com.incapture.rapgen.parser.SampleCodeParserException;
 import com.incapture.slate.DocGenerator;
 
+import rapture.common.exception.ExceptionToString;
+
 public abstract class AbstractTTreeSlateMd extends AbstractTTree {
     private List<Api> apis = new LinkedList<>();
     private String version;
@@ -67,33 +67,35 @@ public abstract class AbstractTTreeSlateMd extends AbstractTTree {
     /**
      * Create a new parser instance, pre-supplying the input token stream.
      *
-     * @param input The stream of tokens that will be pulled from the lexer
+     * @param input
+     *            The stream of tokens that will be pulled from the lexer
      */
     protected AbstractTTreeSlateMd(TreeNodeStream input) {
         super(input);
     }
 
     /**
-     * Create a new parser instance, pre-supplying the input token stream and
-     * the shared state.
+     * Create a new parser instance, pre-supplying the input token stream and the shared state.
      *
-     * This is only used when a grammar is imported into another grammar, but we
-     * must supply this constructor to satisfy the super class contract.
+     * This is only used when a grammar is imported into another grammar, but we must supply this constructor to satisfy the super class contract.
      *
-     * @param input The stream of tokesn that will be pulled from the lexer
-     * @param state The shared state object created by an interconnectd grammar
+     * @param input
+     *            The stream of tokesn that will be pulled from the lexer
+     * @param state
+     *            The shared state object created by an interconnectd grammar
      */
     protected AbstractTTreeSlateMd(TreeNodeStream input, RecognizerSharedState state) {
         super(input, state);
     }
 
     /**
-     * Creates the error/warning message that we need to show users/IDEs when
-     * ANTLR has found a parsing error, has recovered from it and is now telling
-     * us that a parsing exception occurred.
+     * Creates the error/warning message that we need to show users/IDEs when ANTLR has found a parsing error, has recovered from it and is now telling us that
+     * a parsing exception occurred.
      *
-     * @param tokenNames token names as known by ANTLR (which we ignore)
-     * @param e          The exception that was thrown
+     * @param tokenNames
+     *            token names as known by ANTLR (which we ignore)
+     * @param e
+     *            The exception that was thrown
      */
     @Override
     public void displayRecognitionError(String[] tokenNames, RecognitionException e) {
@@ -168,7 +170,7 @@ public abstract class AbstractTTreeSlateMd extends AbstractTTree {
     }
 
     @Override
-    public void dumpFiles(String outputKernelFolder, String outputApiFolder) {
+    public void dumpFiles(String outputKernelFolder, String outputApiFolder, String outputWebFolder) {
         updateParameterPackages();
         ApiNodeWrapper wrapper = new Rapture2SlateGenerator().generate(version, minVersion, apis, typeDefinitions);
         File rootDir = new File(outputApiFolder);
