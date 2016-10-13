@@ -336,7 +336,6 @@ public class DefaultDecisionProcessExecutor implements DecisionProcessExecutor {
 
         String workOrderURI = worker.getWorkOrderURI();
         String workerURI = createWorkerURI(workOrderURI, worker.getId()).toString();
-        Kernel.getDecision().getTrusted().setWorkOrderUri(workOrderURI);
 
         workOrder.setStatus(WorkOrderStatusUtil.computeStatus(workOrder, false));
         WorkOrderStorage.add(new RaptureURI(workOrder.getWorkOrderURI(), Scheme.WORKORDER), workOrder, ContextFactory.getKernelUser().getUser(),
