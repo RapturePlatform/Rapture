@@ -303,18 +303,19 @@ public class FTPConnection implements Connection {
                 if (isLocal() || request.isLocal()) {
                     File file = new File(request.getRemoteName());
                     log.debug("Local copy from " + file.getAbsolutePath());
-                    IOUtils.copy(new FileInputStream(file), outStream);
+                    if (IOUtils.copy(new FileInputStream(file), outStream) > 0) outStream.flush();
                 } else {
                     isRetrieved = retrieveFile(request.getRemoteName(), outStream);
-                    outStream.close();
                     if (isRetrieved) {
                         log.debug("File retrieved");
                         request.setStatus(Status.SUCCESS);
+                        outStream.flush();
                     } else {
                         log.warn(String.format("Missing response from %s", request.getRemoteName()));
                         request.setStatus(Status.ERROR);
                     }
                 }
+                outStream.close();
                 return request;
             }
         });

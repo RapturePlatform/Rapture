@@ -40,8 +40,10 @@ public class RaptureURIOutputStream extends ByteArrayOutputStream {
         return this;
     }
 
+    boolean flushed = false;
+
     @Override
-    public void close() throws IOException {
+    public void flush() throws IOException {
         switch (uri.getScheme()) {
         default:
             throw new IllegalArgumentException(uri.getScheme() + " not supported");
@@ -51,6 +53,14 @@ public class RaptureURIOutputStream extends ByteArrayOutputStream {
         case DOCUMENT:
             Kernel.getDoc().putDoc(context, uri.toString(), super.toString());
             break;
+        }
+        flushed = true;
+    }
+
+    @Override
+    public void close() throws IOException {
+        if (!flushed && (count > 0)) {
+            flush();
         }
         super.close();
     }
