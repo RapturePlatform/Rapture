@@ -25,9 +25,5 @@ public class ExceptionToStringTest {
 
         Throwable t = ExceptionToString.getRootCause(t3);
         assertEquals(t1, t);
-
-        String s = ExceptionToString.format(ExceptionToString.getRootCause(t3));
-        assertEquals("java.lang.RuntimeException: This is where it starts", s.split("\n")[0]);
     }
-
 }

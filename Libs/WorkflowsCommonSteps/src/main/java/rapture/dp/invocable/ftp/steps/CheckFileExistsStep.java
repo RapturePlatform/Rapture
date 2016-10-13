@@ -65,7 +65,7 @@ public class CheckFileExistsStep extends AbstractInvocable {
 
             Map<String, Object> files = JacksonUtil.objectFromJson(filename, Map.class);
 
-            FTPConnection connection = new SFTPConnection(configUri);
+            FTPConnection connection = new SFTPConnection(configUri).setContext(ctx);
             String retval = getNextTransition();
             List<FTPRequest> requests = new ArrayList<>();
             int existsCount = 0;
