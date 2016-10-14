@@ -155,7 +155,7 @@ public class GenApi extends DefaultTask {
         def apiDestPath;
         kernelDestPath = kernelDestDir != null ? kernelDestDir.absolutePath : new File(apiDestDir, language).absolutePath;
         webDestPath = webDestDir != null ? webDestDir.absolutePath : new File(apiDestDir, language).absolutePath;
-        apiDestPath = apiDestDir.absolutePath;
+        apiDestPath = kernelDestDir != null ? apiDestDir.absolutePath : new File(apiDestDir, language).absolutePath;
         println(String.format("kernelDestPath=%s, apiDestPath=%s", kernelDestPath, apiDestPath))
 
         def javaArgs = [
