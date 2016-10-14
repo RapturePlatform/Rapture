@@ -31,8 +31,6 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
-
 import rapture.common.DispatchReturn;
 import rapture.common.shared.structured.DispatchStructuredFunction;
 
@@ -42,7 +40,8 @@ import rapture.common.shared.structured.DispatchStructuredFunction;
 @WebServlet(urlPatterns = "/structured")
 @MultipartConfig
 public class StructuredServlet extends BaseServlet {
-    private static Logger log = Logger.getLogger(DecisionServlet.class);
+
+    private static final long serialVersionUID = 726571197107940512L;
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

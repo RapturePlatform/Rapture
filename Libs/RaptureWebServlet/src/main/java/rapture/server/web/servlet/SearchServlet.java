@@ -27,20 +27,18 @@ import java.io.IOException;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.apache.log4j.Logger;
 
 import rapture.common.DispatchReturn;
 import rapture.common.shared.search.DispatchSearchFunction;
 
+@WebServlet("/search")
 @MultipartConfig
 public class SearchServlet extends BaseServlet {
 
     private static final long serialVersionUID = -654951209810427391L;
-    @SuppressWarnings("unused")
-	private static Logger log = Logger.getLogger(SearchServlet.class);
 
     @Override
     public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
@@ -52,7 +50,7 @@ public class SearchServlet extends BaseServlet {
         } catch (Exception e) {
             response = handleUnexpectedException(e);
         }
-       sendResponseAppropriately(response.getContext(), req, resp, response.getResponse());
+        sendResponseAppropriately(response.getContext(), req, resp, response.getResponse());
 
     }
 }

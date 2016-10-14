@@ -31,18 +31,14 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
-
 import rapture.common.DispatchReturn;
 import rapture.common.shared.doc.DispatchDocFunction;
 
-@WebServlet(urlPatterns="/doc")
+@WebServlet("/doc")
 @MultipartConfig
 public class DocServlet extends BaseServlet {
-    
+
     private static final long serialVersionUID = -654951209810427391L;
-    @SuppressWarnings("unused")
-    private static Logger log = Logger.getLogger(DocServlet.class);
 
     @Override
     public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
@@ -52,7 +48,7 @@ public class DocServlet extends BaseServlet {
         DispatchReturn response;
         try {
             response = docDispatch.executeDispatch(call.getContent(), req, resp);
-        } catch (Exception  e) {
+        } catch (Exception e) {
             response = handleUnexpectedException(e);
         }
 
