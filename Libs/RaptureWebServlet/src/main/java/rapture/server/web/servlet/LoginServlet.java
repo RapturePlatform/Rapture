@@ -28,10 +28,9 @@ import java.net.HttpURLConnection;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.apache.log4j.Logger;
 
 import rapture.common.DispatchReturn;
 import rapture.common.exception.RaptureException;
@@ -41,40 +40,31 @@ import rapture.server.BaseDispatcher;
 import rapture.server.login.LoginDispatchEnum;
 
 /**
- * The login servlet is used to issue RaptureContexts and to validate
- * RaptureContexts.
+ * The login servlet is used to issue RaptureContexts and to validate RaptureContexts.
  * 
  * The request is always posted, and contains the following fields:
  * 
- * 1. METHOD - "RequestContext", "Login", "ValidateContext" 2. CONTENT - the
- * content of the request
+ * 1. METHOD - "RequestContext", "Login", "ValidateContext" 2. CONTENT - the content of the request
  * 
- * We then call the appropriate method (doRequestContext(params) ) and the
- * response is passed back to the caller as a JSON string, which either contains
- * an exception or a valid response.
+ * We then call the appropriate method (doRequestContext(params) ) and the response is passed back to the caller as a JSON string, which either contains an
+ * exception or a valid response.
  * 
- * Login is a two-phase process. First a caller requests a context - this is a
- * random uuid, but we store that as data, but blank apart from the username the
+ * Login is a two-phase process. First a caller requests a context - this is a random uuid, but we store that as data, but blank apart from the username the
  * context is for. A set of salt is also computed.
  * 
- * Then the caller performs a login by sending a hash(hash(password), salt)
- * where password is the password for that user.
+ * Then the caller performs a login by sending a hash(hash(password), salt) where password is the password for that user.
  * 
- * The server can also compute hash(hash(password), salt) as it has
- * hash(password) and salt. If the strings are equal the user is logged in and
- * the context id is associated with that user for a certain amount of time.
+ * The server can also compute hash(hash(password), salt) as it has hash(password) and salt. If the strings are equal the user is logged in and the context id
+ * is associated with that user for a certain amount of time.
  * 
  * @author alan
  * 
  */
+@WebServlet("/login")
 @MultipartConfig
 public class LoginServlet extends BaseServlet {
-    /**
-	 * 
-	 */
+
     private static final long serialVersionUID = -4771514093502324701L;
-    @SuppressWarnings("unused")
-    private static Logger log = Logger.getLogger(LoginServlet.class);
 
     private boolean checkIPAddressValid(String remoteAddr) {
         return Kernel.getKernel().checkIPAddress(remoteAddr);
@@ -83,7 +73,7 @@ public class LoginServlet extends BaseServlet {
     @Override
     public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
         DispatchReturn response;
-       if (checkIPAddressValid(req.getRemoteAddr())) {
+        if (checkIPAddressValid(req.getRemoteAddr())) {
             StandardCallInfo call = processFunctionalRequest(req);
 
             LoginDispatchEnum loginDispatch = LoginDispatchEnum.valueOf(call.getFunctionName());
@@ -100,7 +90,6 @@ public class LoginServlet extends BaseServlet {
         // Send the response and we're done
 
         sendResponseAppropriately(response.getContext(), req, resp, response.getResponse());
-
 
     }
 }
