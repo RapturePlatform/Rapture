@@ -37,7 +37,7 @@ import rapture.common.DispatchReturn;
 
 import rapture.<sdkname>.common.shared.<apitype; format="lower">.Dispatch<apitype>Function;
 
-@WebServlet(urlPatterns="/<sdkname>/<apitype; format="lower">")
+@WebServlet("/<sdkname>/<apitype; format="lower">")
 @MultipartConfig
 public class <apitype>Servlet extends BaseServlet {
     

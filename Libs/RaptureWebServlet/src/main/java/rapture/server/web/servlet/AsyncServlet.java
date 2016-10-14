@@ -27,28 +27,24 @@ import java.io.IOException;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.apache.log4j.Logger;
 
 import rapture.common.DispatchReturn;
 import rapture.common.shared.async.DispatchAsyncFunction;
 
+@WebServlet("/async")
 @MultipartConfig
 public class AsyncServlet extends BaseServlet {
-    /**
-	 * 
-	 */
+
     private static final long serialVersionUID = -458406096677228739L;
-    @SuppressWarnings("unused")
-    private static Logger log = Logger.getLogger(AsyncServlet.class);
 
     @Override
     public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
         StandardCallInfo call = processFunctionalRequest(req);
-       DispatchAsyncFunction calcDispatch = DispatchAsyncFunction.valueOf(call.getFunctionName());
-       DispatchReturn response;
+        DispatchAsyncFunction calcDispatch = DispatchAsyncFunction.valueOf(call.getFunctionName());
+        DispatchReturn response;
         try {
             response = calcDispatch.executeDispatch(call.getContent(), req, resp);
         } catch (Exception e) {

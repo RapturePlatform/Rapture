@@ -27,22 +27,18 @@ import java.io.IOException;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.apache.log4j.Logger;
 
 import rapture.common.DispatchReturn;
 import rapture.common.shared.operation.DispatchOperationFunction;
 
+@WebServlet("/operation")
 @MultipartConfig
 public class OperationServlet extends BaseServlet {
-    /**
-	 * 
-	 */
+
     private static final long serialVersionUID = -11824123474010830L;
-    @SuppressWarnings("unused")
-    private static Logger log = Logger.getLogger(OperationServlet.class);
 
     @Override
     public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
@@ -57,7 +53,6 @@ public class OperationServlet extends BaseServlet {
 
         // Send the response and we're done
         sendResponseAppropriately(response.getContext(), req, resp, response.getResponse());
-
 
     }
 }
