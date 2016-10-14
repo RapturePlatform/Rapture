@@ -46,23 +46,28 @@ public class JavaWalkerTest {
 
     private String outputApiFolder;
     private String outputKernelFolder;
+    private String outputWebFolder;
     private File parentFolder;
 
     @Before
     public void setup() throws IOException {
-//        parentFolder = File.createTempFile(prefix, "");
+        // parentFolder = File.createTempFile(prefix, "");
         parentFolder = new File("/tmp/bardhi");
         parentFolder.delete();
         parentFolder.mkdir();
         File api = new File(parentFolder, "api");
         api.mkdir();
         outputApiFolder = api.getAbsolutePath();
-        
+
         File kernel = new File(parentFolder, "kernel");
         kernel.mkdir();
         outputKernelFolder = kernel.getAbsolutePath();
+
+        File web = new File(parentFolder, "web");
+        web.mkdir();
+        outputWebFolder = web.getAbsolutePath();
     }
-    
+
     @Test
     public void test1() throws RecognitionException {
         CharStream input = new ANTLRStringStream("version(1.1.0)\n" + "minVer(1.1.0)\n"
@@ -174,37 +179,36 @@ public class JavaWalkerTest {
             assertTrue(e.getMessage().contains("SDK Name"));
         }
     }
-    
-    
+
     @Test
     public void test6() throws RecognitionException {
-        CharStream input = new ANTLRStringStream("sdk(alan)\n" + 
-                "version(0.0.1)\n" + 
+        CharStream input = new ANTLRStringStream("sdk(alan)\n" +
+                "version(0.0.1)\n" +
                 "minVer(0.0.1)\n" +
-                "\n" + 
-                "[Information about a folder or a file in a repo.]\n" + 
-                "type RaptureFolderInfo(@package=rapture.common) {\n" + 
-                "    String name;\n" + 
-                "    Boolean isFolder;\n" + 
-                "}\n" + 
-                "\n" + 
-                "[ This is a test api of the SDK.]\n" + 
-                "api(TestSDK) {\n" + 
-                "    [Log a message to standard out]\n" + 
-                "    @entitle=/admin/main\n" + 
-                "    @public Boolean logMessage(String msg);\n" + 
-                "}\n" + 
-                "\n" + 
-                "//include \"testApi/crudSamp.api\"\n" + 
-                "\n" + 
-                "[Alan Info type]\n" + 
-                "\n" + 
-                "crud AlanInfo( region name ) { \n" + 
-                "   String region;\n" + 
-                "   String name;\n" + 
-                "   String value;\n" + 
-                "}\n" + 
-                "\n" + 
+                "\n" +
+                "[Information about a folder or a file in a repo.]\n" +
+                "type RaptureFolderInfo(@package=rapture.common) {\n" +
+                "    String name;\n" +
+                "    Boolean isFolder;\n" +
+                "}\n" +
+                "\n" +
+                "[ This is a test api of the SDK.]\n" +
+                "api(TestSDK) {\n" +
+                "    [Log a message to standard out]\n" +
+                "    @entitle=/admin/main\n" +
+                "    @public Boolean logMessage(String msg);\n" +
+                "}\n" +
+                "\n" +
+                "//include \"testApi/crudSamp.api\"\n" +
+                "\n" +
+                "[Alan Info type]\n" +
+                "\n" +
+                "crud AlanInfo( region name ) { \n" +
+                "   String region;\n" +
+                "   String name;\n" +
+                "   String value;\n" +
+                "}\n" +
+                "\n" +
                 "");
         TLexer lexer = new TLexer(input);
         TokenStream tokenInputStream = new CommonTokenStream(lexer);
@@ -218,7 +222,6 @@ public class JavaWalkerTest {
         walker.sdkGen();
     }
 
-
     @Test
     public void test7() throws RecognitionException {
         CharStream input = new ANTLRStringStream("version(1.1.0)\n" + "minVer(1.1.0)\n"
@@ -226,11 +229,11 @@ public class JavaWalkerTest {
                 + "are only used during significant setup events in a Rapture environment.]\n" + "api(Admin) {\n"
                 + "    [This method restores a user that has been deleted]\n" + "    @entitle=/admin/main\n"
                 + "    @public Boolean restoreUser(String userName);\n" + "}\n" + "[A return value from a native query]\n"
-                + "@Storable(storagePath : {\"sys\", name}, separator=\".\")\n" + 
-                "type RepoConfig (@package=rapture.common.model) {\n" + 
-                "   String name = \"test\";\n" + 
-                "   String config;\n" + 
-                "}\n" + 
+                + "@Storable(storagePath : {\"sys\", name}, separator=\".\")\n" +
+                "type RepoConfig (@package=rapture.common.model) {\n" +
+                "   String name = \"test\";\n" +
+                "   String config;\n" +
+                "}\n" +
                 "");
         TLexer lexer = new TLexer(input);
         TokenStream tokenInputStream = new CommonTokenStream(lexer);
@@ -244,22 +247,21 @@ public class JavaWalkerTest {
         apiGen_return walkerResult = walker.apiGen();
         System.out.println("Done, result=" + walkerResult.toString());
     }
-    
+
     @Test
     public void testBean() throws RecognitionException {
         CharStream input = new ANTLRStringStream("version(1.1.0)\n" + "minVer(1.1.0)\n"
                 + "[ The Admin API is used to manipulate and access the low level entities in Rapture. Typically the methods in this API\n"
                 + "are only used during significant setup events in a Rapture environment.]\n" + "api(Admin) {\n"
                 + "    [This method restores a user that has been deleted]\n" + "    @entitle=/admin/main\n"
-                + "    @public Boolean restoreUser(String userName);\n" + "}\n" + 
-                "[A Graph node]\n" + 
-                "@Bean\n" + 
-                "type Node(@package=rapture.common.dp) {\n" + 
-                "    String nodeId; //this is not a URI, just a String id\n" + 
-                "    List<XFer> xferValues;\n" + 
-                "}\n" + 
-                ""
-                );
+                + "    @public Boolean restoreUser(String userName);\n" + "}\n" +
+                "[A Graph node]\n" +
+                "@Bean\n" +
+                "type Node(@package=rapture.common.dp) {\n" +
+                "    String nodeId; //this is not a URI, just a String id\n" +
+                "    List<XFer> xferValues;\n" +
+                "}\n" +
+                "");
         TLexer lexer = new TLexer(input);
         TokenStream tokenInputStream = new CommonTokenStream(lexer);
         TParser parser = new TParser(tokenInputStream);
@@ -279,17 +281,16 @@ public class JavaWalkerTest {
                 + "[ The Admin API is used to manipulate and access the low level entities in Rapture. Typically the methods in this API\n"
                 + "are only used during significant setup events in a Rapture environment.]\n" + "api(Admin) {\n"
                 + "    [This method restores a user that has been deleted]\n" + "    @entitle=/admin/main\n"
-                + "    @public Boolean restoreUser(String userName);\n" + "}\n" + 
-                "[A Graph node]\n" + 
-                "@Bean\n" + 
-                "type Node(@package=rapture.common.dp) {\n" + 
-                "    String nodeId; //this is not a URI, just a String id\n" + 
-                "    List<String> stringValues;\n" + 
-                "    List<JobURI> jobUriValues;\n" + 
-                "    JobURI myJobURI;\n" + 
-                "}\n" + 
-                ""
-                );
+                + "    @public Boolean restoreUser(String userName);\n" + "}\n" +
+                "[A Graph node]\n" +
+                "@Bean\n" +
+                "type Node(@package=rapture.common.dp) {\n" +
+                "    String nodeId; //this is not a URI, just a String id\n" +
+                "    List<String> stringValues;\n" +
+                "    List<JobURI> jobUriValues;\n" +
+                "    JobURI myJobURI;\n" +
+                "}\n" +
+                "");
         TLexer lexer = new TLexer(input);
         TokenStream tokenInputStream = new CommonTokenStream(lexer);
         TParser parser = new TParser(tokenInputStream);
@@ -300,7 +301,7 @@ public class JavaWalkerTest {
         TTree walker = new TTree(treeInput);
         walker.setTemplateLib(TemplateRepo.getApiTemplates("Java"));
         walker.apiGen();
-        walker.dumpFiles(outputKernelFolder, outputApiFolder);
+        walker.dumpFiles(outputKernelFolder, outputApiFolder, outputWebFolder);
         System.out.println("Done, folder=" + parentFolder.getAbsolutePath());
     }
 
