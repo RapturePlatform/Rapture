@@ -42,6 +42,7 @@ public abstract class AbstractInvocable<T> implements Steps {
     private ClassLoader classLoader;
 
     public AbstractInvocable(String workerUri, String stepName) {
+        // TODO Disallow null or empty string, but that breaks several test cases
         this.workerUri = workerUri;
         this.stepName = stepName;
     }
@@ -76,7 +77,7 @@ public abstract class AbstractInvocable<T> implements Steps {
     public String abortableInvoke(final CallingContext ctx, int timeoutSeconds) {
         final T handle = prepareInterruptableInvocation(ctx);
 
-        FutureTask<String> task = new FutureTask<String>(new Callable<String>() {
+        FutureTask<String> task = new FutureTask<>(new Callable<String>() {
             @Override
             public String call() throws Exception {
                 return invokeHook(ctx, handle);
