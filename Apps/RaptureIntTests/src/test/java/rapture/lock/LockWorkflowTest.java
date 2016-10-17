@@ -348,7 +348,7 @@ public class LockWorkflowTest {
         	CreateResponse woUri = decisionApi.createWorkOrderP(flow.getWorkflowURI(), params, null);
         	
         	try {
-        		Thread.sleep(200);
+        		Thread.sleep(225);
             } catch (InterruptedException e) {
             }
         	Reporter.log("Checking work order attempt "+woCount,true);

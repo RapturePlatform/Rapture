@@ -21,6 +21,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import rapture.common.CallingContext;
+import rapture.common.RaptureURI;
 import rapture.common.api.DecisionApi;
 import rapture.common.dp.AbstractInvocable;
 import rapture.common.dp.Steps;
@@ -31,6 +32,7 @@ import rapture.ftp.common.FTPRequest;
 import rapture.ftp.common.FTPRequest.Action;
 import rapture.ftp.common.SFTPConnection;
 import rapture.kernel.Kernel;
+import rapture.kernel.dp.ExecutionContextUtil;
 
 public class CheckFileExistsStep extends AbstractInvocable {
     private static final Logger log = Logger.getLogger(CopyFileStep.class);
@@ -41,7 +43,7 @@ public class CheckFileExistsStep extends AbstractInvocable {
         decision = Kernel.getDecision();
     }
 
-    String wasNotWas(Boolean flag) {
+    static String wasNotWas(Boolean flag) {
         return (flag) ? " was " : " was not ";
     }
 
@@ -51,19 +53,20 @@ public class CheckFileExistsStep extends AbstractInvocable {
      */
     @Override
     public String invoke(CallingContext ctx) {
-        String workUri = getWorkerURI();
+        String workerUri = getWorkerURI();
+        String workOrderUri = new RaptureURI(workerUri).toShortString();
         try {
-            decision.setContextLiteral(ctx, workUri, "STEPNAME", getStepName());
+            decision.setContextLiteral(ctx, workOrderUri, "STEPNAME", getStepName());
 
-            String configUri = StringUtils.stripToNull(decision.getContextValue(ctx, workUri, "FTP_CONFIGURATION"));
-            String filename = StringUtils.stripToNull(decision.getContextValue(ctx, workUri, "EXIST_FILENAMES"));
+            String configUri = StringUtils.stripToNull(decision.getContextValue(ctx, workOrderUri, "FTP_CONFIGURATION"));
+            String filename = StringUtils.stripToNull(decision.getContextValue(ctx, workOrderUri, "EXIST_FILENAMES"));
             if (filename == null) {
-                decision.setContextLiteral(ctx, workUri, getStepName(), "No files to check");
-                decision.setContextLiteral(ctx, workUri, getStepName() + "Error", "");
+                decision.setContextLiteral(ctx, workOrderUri, getStepName(), "No files to check");
+                decision.setContextLiteral(ctx, workOrderUri, getStepName() + "Error", "");
                 return getNextTransition();
             }
 
-            Map<String, Object> files = JacksonUtil.objectFromJson(filename, Map.class);
+            Map<String, Object> files = JacksonUtil.objectFromJson(ExecutionContextUtil.evalTemplateECF(ctx, workOrderUri, filename, null), Map.class);
 
             FTPConnection connection = new SFTPConnection(configUri).setContext(ctx);
             String retval = getNextTransition();
@@ -81,15 +84,15 @@ public class CheckFileExistsStep extends AbstractInvocable {
                 }
                 requests.add(request);
             }
-            decision.setContextLiteral(ctx, workUri, getStepName(), "Located " + existsCount + " of " + files.size() + " files");
+            decision.setContextLiteral(ctx, workOrderUri, getStepName(), "Located " + existsCount + " of " + files.size() + " files");
             String errMsg = error.toString();
-            decision.setContextLiteral(ctx, workUri, getStepName() + "Error", errMsg);
-            decision.writeWorkflowAuditEntry(ctx, workUri, errMsg, failCount > 0);
+            decision.setContextLiteral(ctx, workOrderUri, getStepName() + "Error", errMsg);
+            decision.writeWorkflowAuditEntry(ctx, workerUri, errMsg, failCount > 0);
             return retval;
         } catch (Exception e) {
-            decision.setContextLiteral(ctx, workUri, getStepName(), "Unable to determine if files exist : " + e.getLocalizedMessage());
-            decision.setContextLiteral(ctx, workUri, getStepName() + "Error", ExceptionToString.summary(e));
-            decision.writeWorkflowAuditEntry(ctx, workUri, ExceptionToString.summary(e), true);
+            decision.setContextLiteral(ctx, workOrderUri, getStepName(), "Unable to determine if files exist : " + e.getLocalizedMessage());
+            decision.setContextLiteral(ctx, workOrderUri, getStepName() + "Error", ExceptionToString.summary(e));
+            decision.writeWorkflowAuditEntry(ctx, workerUri, ExceptionToString.summary(e), true);
             return getErrorTransition();
         }
     }

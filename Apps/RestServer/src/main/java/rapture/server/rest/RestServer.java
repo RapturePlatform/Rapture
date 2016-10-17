@@ -56,8 +56,8 @@ import spark.Request;
 public class RestServer {
 
     private static final Logger log = Logger.getLogger(RestServer.class);
-
     private Map<String, CallingContext> ctxs = new HashMap<>();
+    private static final String APP_KEY = "restserver";
 
     public static void main(String[] args) {
         try {
@@ -74,9 +74,7 @@ public class RestServer {
         setupHttps();
         setupWebSocket();
         setupRoutes();
-        exception(Exception.class, (e, req, res) -> {
-            log.error(String.format("Exception for request: %s [%s]%n[%s]", req.requestMethod(), req.pathInfo(), req.body()), e);
-        });
+        setupExceptionHandling();
     }
 
     private void setupHttps() {
@@ -94,42 +92,24 @@ public class RestServer {
 
         before((req, res) -> {
             log.info("Path is: " + req.pathInfo());
-            if (!req.pathInfo().startsWith("/login")) {
-                CallingContext ctx = ctxs.get(req.session().id());
-                if (ctx == null) {
-                    log.warn("CallingContext not found, rejecting...");
-                    halt(401, "Please login first to /login");
+            CallingContext ctx = ctxs.get(req.session().id());
+            if (ctx == null) {
+                // check x-api-key header
+                String apiKey = req.headers("x-api-key");
+                if (StringUtils.isNotBlank(apiKey)) {
+                    ctx = Kernel.INSTANCE.loadContext(APP_KEY, apiKey);
+                    if (ctx == null) {
+                        String msg = String.format("Invalid apiKey [%s] for app [%s]", apiKey, APP_KEY);
+                        log.warn(msg);
+                        halt(401, msg);
+                    }
+                    String id = req.session(true).id();
+                    ctxs.put(id, ctx);
+                } else {
+                    log.warn("x-api-key header not found, rejecting...");
+                    halt(401, "Please provide 'x-api-key' header to access this API");
                 }
             }
-        });
-
-        post("/login", (req, res) -> {
-            log.info("Logging in...");
-            CallingContext ctx = null;
-            Map<String, Object> data = JacksonUtil.getMapFromJson(req.body());
-            String apiKey = (String) data.get("apiKey");
-            if (StringUtils.isNotBlank(apiKey)) {
-                String appKey = (String) data.get("appKey");
-                ctx = Kernel.INSTANCE.loadContext(appKey, apiKey);
-                if (ctx == null) {
-                    String msg = String.format("Invalid apiKey [%s] and appKey [%s]", apiKey, appKey);
-                    log.warn(msg);
-                    halt(401, msg);
-                }
-            } else {
-                String username = (String) data.get("username");
-                String password = (String) data.get("password");
-                try {
-                    ctx = Kernel.getLogin().login(username, password, null);
-                } catch (RaptureException re) {
-                    String msg = "Invalid login: " + re.getMessage();
-                    log.warn(msg);
-                    halt(401, msg);
-                }
-            }
-            String id = req.session(true).id();
-            ctxs.put(id, ctx);
-            return id;
         });
 
         post("/doc/:authority", (req, res) -> {
@@ -282,6 +262,12 @@ public class RestServer {
             ret = ret.substring(0, index);
         }
         return ret;
+    }
+
+    private void setupExceptionHandling() {
+        exception(Exception.class, (e, req, res) -> {
+            log.error(String.format("Exception for request: %s [%s]%n[%s]", req.requestMethod(), req.pathInfo(), req.body()), e);
+        });
     }
 
     private CallingContext getContext(Request req) {

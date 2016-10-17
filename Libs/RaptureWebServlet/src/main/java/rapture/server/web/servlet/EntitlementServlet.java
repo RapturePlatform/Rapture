@@ -27,22 +27,18 @@ import java.io.IOException;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.apache.log4j.Logger;
 
 import rapture.common.DispatchReturn;
 import rapture.common.shared.entitlement.DispatchEntitlementFunction;
 
+@WebServlet("/entitlement")
 @MultipartConfig
 public class EntitlementServlet extends BaseServlet {
-    /**
-	 * 
-	 */
+
     private static final long serialVersionUID = 1143077064588884451L;
-    @SuppressWarnings("unused")
-    private static Logger log = Logger.getLogger(EntitlementServlet.class);
 
     @Override
     public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
@@ -52,14 +48,13 @@ public class EntitlementServlet extends BaseServlet {
         DispatchReturn response;
         try {
             response = entDispatch.executeDispatch(call.getContent(), req, resp);
-        } catch (Exception  e) {
+        } catch (Exception e) {
             response = handleUnexpectedException(e);
         }
 
         // Send the response and we're done
 
         sendResponseAppropriately(response.getContext(), req, resp, response.getResponse());
-
 
     }
 }
