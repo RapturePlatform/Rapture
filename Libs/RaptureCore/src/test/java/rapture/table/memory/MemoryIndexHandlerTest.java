@@ -29,6 +29,7 @@ import static org.junit.Assert.fail;
 
 import java.util.List;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -45,10 +46,10 @@ import rapture.kernel.Kernel;
 
 public class MemoryIndexHandlerTest {
 
-    private static final String U1 = "workorder://memTableTest/1";
-    private static final String U2 = "workorder://memTableTest/2";
-    private static final String U3 = "workorder://memTableTest/3";
-    private static final String U4 = "workorder://memTableTest/4";
+    private static final String U1 = "workorder://MemoryIndexHandlerTest/1";
+    private static final String U2 = "workorder://MemoryIndexHandlerTest/2";
+    private static final String U3 = "workorder://MemoryIndexHandlerTest/3";
+    private static final String U4 = "workorder://MemoryIndexHandlerTest/4";
 
     private static final Integer P1 = 0;
     private static final Integer P2 = 0;
@@ -76,30 +77,37 @@ public class MemoryIndexHandlerTest {
             System.err.println("This test needs modification to work on Shippable.");
             doNotRun = doNotRunOnShippable;
         }
-    }
 
-    @Before
-    public void before() {
+        WorkOrderStorage.add(new RaptureURI("workorder://1476662400/workflow/metrics/testNoArgs/wo.00000002"),
+                create("workorder://1476662400/workflow/metrics/testNoArgs/wo.00000002", P1, S1, E1), "test", "unit test");
+        WorkOrderStorage.add(new RaptureURI(U2), create(U2, P2, S2, E2), "test", "unit test");
+        WorkOrderStorage.add(new RaptureURI(U3), create(U3, P3, S3, E3), "test", "unit test");
+        WorkOrderStorage.add(new RaptureURI(U4), create(U4, P4, S4, E4), "test", "unit test");
+
         // Clean up anything left behind by previous tests. Necessary only when running in Docker
-        String query = String.format("SELECT workOrderURI ", P4);
-        TableQueryResult results = new TableQueryResult();
+        String query = String.format("SELECT workOrderURI ");
         TableQueryResult o = WorkOrderStorage.queryIndex(query);
 
         if (o.getRows() != null) {
             for (List row : o.getRows()) {
                 for (Object ob : row) {
-                    WorkOrderStorage.removeFolder(ob.toString());
+                    WorkOrderStorage.deleteByFields(ob.toString(), "test", "test");
+                    RaptureURI uri = new RaptureURI(ob.toString());
+                    WorkOrderStorage.removeFolder(uri.toAuthString());
                 }
             }
         }
+    }
 
+    @Before
+    public void before() {
         WorkOrderStorage.add(new RaptureURI(U1), create(U1, P1, S1, E1), "test", "unit test");
         WorkOrderStorage.add(new RaptureURI(U2), create(U2, P2, S2, E2), "test", "unit test");
         WorkOrderStorage.add(new RaptureURI(U3), create(U3, P3, S3, E3), "test", "unit test");
         WorkOrderStorage.add(new RaptureURI(U4), create(U4, P4, S4, E4), "test", "unit test");
     }
 
-    private WorkOrder create(String workOrderURI, Integer priority, Long startTime, Long endTime) {
+    static private WorkOrder create(String workOrderURI, Integer priority, Long startTime, Long endTime) {
         WorkOrder workorder = new WorkOrder();
         workorder.setWorkOrderURI(workOrderURI);
         workorder.setPriority(priority);
@@ -108,6 +116,7 @@ public class MemoryIndexHandlerTest {
         return workorder;
     }
 
+    @After
     public void after() {
         WorkOrderStorage.deleteByFields(U1, "test", "test");
         WorkOrderStorage.deleteByFields(U2, "test", "test");
