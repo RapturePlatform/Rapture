@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import rapture.common.CallingContext;
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
+import rapture.common.api.DecisionApi;
 import rapture.common.api.DocApi;
 import rapture.common.dp.AbstractInvocable;
 import rapture.common.dp.ContextValueType;
@@ -31,10 +32,13 @@ public class ConfigurationStep extends AbstractInvocable {
 
     @Override
     public String invoke(CallingContext ctx) {
-        try {
-            Kernel.getDecision().setContextLiteral(ctx, getWorkerURI(), "STEPNAME", getStepName());
+        DecisionApi decision = Kernel.getDecision();
+        String workOrderUri = new RaptureURI(getWorkerURI(), Scheme.WORKORDER).toShortString();
+        String config = StringUtils.stripToNull(decision.getContextValue(ctx, workOrderUri, "CONFIGURATION"));
 
-            String workOrderUri = new RaptureURI(getWorkerURI(), Scheme.WORKORDER).toShortString();
+        try {
+            decision.setContextLiteral(ctx, getWorkerURI(), "STEPNAME", getStepName());
+
 
             String docPath = new RaptureURI(workOrderUri).getDocPath();
             int lio = docPath.lastIndexOf('/');
@@ -45,9 +49,8 @@ public class ConfigurationStep extends AbstractInvocable {
             externalUrl.append("http://").append((host != null) ? host : LOCALHOST).append(":").append((port != null) ? port : DEFAULT_RIM_PORT)
                     .append("/process/")
                     .append(docPath.substring(0, lio)).append(WORKORDER_DELIMETER).append(docPath.substring(lio + 1));
-            Kernel.getDecision().setContextLiteral(ctx, workOrderUri, EXTERNAL_RIM_WORKORDER_URL, externalUrl.toString());
+            decision.setContextLiteral(ctx, workOrderUri, EXTERNAL_RIM_WORKORDER_URL, externalUrl.toString());
 
-            String config = StringUtils.stripToNull(Kernel.getDecision().getContextValue(ctx, workOrderUri, "CONFIGURATION"));
             Map<String, String> view = new HashMap<>();
             DocApi docApi = Kernel.getDoc();
             if (docApi.docExists(ctx, config)) {
@@ -65,8 +68,12 @@ public class ConfigurationStep extends AbstractInvocable {
             }
             return Steps.NEXT.toString();
         } catch (Exception e) {
-            Kernel.getDecision().setContextLiteral(ctx, getWorkerURI(), getStepName(), "Exception in workflow : " + e.getLocalizedMessage());
-            Kernel.getDecision().setContextLiteral(ctx, getWorkerURI(), getStepName() + "Error", ExceptionToString.summary(e));
+            decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), "Exception in workflow : " + e.getLocalizedMessage());
+            decision.setContextLiteral(ctx, getWorkerURI(), getStepName() + "Error", ExceptionToString.summary(e));
+            decision.writeWorkflowAuditEntry(ctx, getWorkerURI(),
+                    "Problem in ConfigurationStep " + getStepName() + " - unable to read the configuration document " + config, true);
+            decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), "Error is : " + ExceptionToString.getRootCause(e).getLocalizedMessage(), true);
+
             return getErrorTransition();
         }
     }
