@@ -62,11 +62,15 @@ public class GetFileStep extends AbstractInvocable {
             String configUri = decision.getContextValue(ctx, getWorkerURI(), "FTP_CONFIGURATION");
             if (configUri == null) {
                 decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), "FTP_CONFIGURATION not set");
+                decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), "Problem in GetFileStep " + getStepName() + " - parameter FTP_CONFIGURATION is not set",
+                        true);
                 return getErrorTransition();
             }
 
             if (!Kernel.getDoc().docExists(ctx, configUri)) {
                 decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), "Cannot load FTP_CONFIGURATION from " + configUri);
+                decision.writeWorkflowAuditEntry(ctx, getWorkerURI(),
+                        "Problem in GetFileStep " + getStepName() + " - Cannot load FTP_CONFIGURATION from " + configUri, true);
                 return getErrorTransition();
             }
 
@@ -96,6 +100,8 @@ public class GetFileStep extends AbstractInvocable {
         } catch (Exception e) {
             decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), "Unable to retrieve files : " + e.getLocalizedMessage());
             decision.setContextLiteral(ctx, getWorkerURI(), getStepName() + "Error", ExceptionToString.summary(e));
+            decision.writeWorkflowAuditEntry(ctx, getWorkerURI(),
+                    "Problem in GetFileStep " + getStepName() + " - error is " + ExceptionToString.getRootCause(e).getLocalizedMessage(), true);
             return getErrorTransition();
         }
     }
