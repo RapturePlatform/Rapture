@@ -80,6 +80,19 @@ public class MemoryIndexHandlerTest {
 
     @Before
     public void before() {
+        // Clean up anything left behind by previous tests. Necessary only when running in Docker
+        String query = String.format("SELECT workOrderURI ", P4);
+        TableQueryResult results = new TableQueryResult();
+        TableQueryResult o = WorkOrderStorage.queryIndex(query);
+
+        if (o.getRows() != null) {
+            for (List row : o.getRows()) {
+                for (Object ob : row) {
+                    WorkOrderStorage.removeFolder(ob.toString());
+                }
+            }
+        }
+
         WorkOrderStorage.add(new RaptureURI(U1), create(U1, P1, S1, E1), "test", "unit test");
         WorkOrderStorage.add(new RaptureURI(U2), create(U2, P2, S2, E2), "test", "unit test");
         WorkOrderStorage.add(new RaptureURI(U3), create(U3, P3, S3, E3), "test", "unit test");
