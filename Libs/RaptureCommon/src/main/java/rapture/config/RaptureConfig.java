@@ -61,7 +61,7 @@ public class RaptureConfig {
     public String DefaultCommentary = "COMMENTARY {} USING MEMORY {}";
     public String DefaultNotification = "NOTIFICATION USING MEMORY {}";
     public String DefaultStatus = "STATUS {} USING MEMORY {}";
-    public String DefaultPipelineTaskStatus = "INDEX {} USING MEMORY {}";
+    public String DefaultPipelineTaskStatus = "TABLE {} USING MEMORY {}";
     public String Categories = "alpha";
     public Boolean WorkflowOnPipeline = false;
     public Boolean InitConfig = false;

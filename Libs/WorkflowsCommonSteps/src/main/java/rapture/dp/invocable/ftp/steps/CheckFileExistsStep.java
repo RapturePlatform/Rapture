@@ -92,7 +92,8 @@ public class CheckFileExistsStep extends AbstractInvocable {
         } catch (Exception e) {
             decision.setContextLiteral(ctx, workOrderUri, getStepName(), "Unable to determine if files exist : " + e.getLocalizedMessage());
             decision.setContextLiteral(ctx, workOrderUri, getStepName() + "Error", ExceptionToString.summary(e));
-            decision.writeWorkflowAuditEntry(ctx, workerUri, ExceptionToString.summary(e), true);
+            decision.writeWorkflowAuditEntry(ctx, getWorkerURI(),
+                    "Problem in CheckFileExistsStep " + getStepName() + " - error is " + ExceptionToString.getRootCause(e).getLocalizedMessage(), true);
             return getErrorTransition();
         }
     }
