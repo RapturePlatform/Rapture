@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
 import rapture.common.CallingContext;
 import rapture.common.RaptureURI;
@@ -29,6 +30,7 @@ public class ConfigurationStep extends AbstractInvocable {
     private static final String DEFAULT_RIM_PORT = "8000";
     private static final String WORKORDER_DELIMETER = "&workorder=";
     public static final String EXTERNAL_RIM_WORKORDER_URL = "EXTERNALRIMWORKORDERURL";
+    private static final Logger log = Logger.getLogger(ConfigurationStep.class);
 
     @Override
     public String invoke(CallingContext ctx) {
@@ -69,7 +71,8 @@ public class ConfigurationStep extends AbstractInvocable {
             return Steps.NEXT.toString();
         } catch (Exception e) {
             decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), "Exception in workflow : " + e.getLocalizedMessage());
-            decision.setContextLiteral(ctx, getWorkerURI(), getStepName() + "Error", ExceptionToString.summary(e));
+            decision.setContextLiteral(ctx, getWorkerURI(), getErrName(), ExceptionToString.summary(e));
+            log.error(ExceptionToString.format(ExceptionToString.getRootCause(e)));
             decision.writeWorkflowAuditEntry(ctx, getWorkerURI(),
                     "Problem in ConfigurationStep " + getStepName() + " - unable to read the configuration document " + config, true);
             decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), "Error is : " + ExceptionToString.getRootCause(e).getLocalizedMessage(), true);
