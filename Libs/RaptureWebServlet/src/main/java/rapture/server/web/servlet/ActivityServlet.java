@@ -23,15 +23,18 @@
  */
 package rapture.server.web.servlet;
 
-import rapture.common.DispatchReturn;
-import rapture.common.shared.activity.DispatchActivityFunction;
+import java.io.IOException;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 
+import rapture.common.DispatchReturn;
+import rapture.common.shared.activity.DispatchActivityFunction;
+
+@WebServlet("/activity")
 @MultipartConfig
 public class ActivityServlet extends BaseServlet {
     private static final long serialVersionUID = -6272153515232325695L;

@@ -24,7 +24,10 @@ public class ConfigurationStep extends AbstractInvocable {
         super(workerUri, stepName);
     }
 
+    private static final String LOCALHOST = "localhost";
+    private static final String DEFAULT_RIM_PORT = "8000";
     private static final String WORKORDER_DELIMETER = "&workorder=";
+    public static final String EXTERNAL_RIM_WORKORDER_URL = "EXTERNALRIMWORKORDERURL";
 
     @Override
     public String invoke(CallingContext ctx) {
@@ -39,9 +42,10 @@ public class ConfigurationStep extends AbstractInvocable {
             StringBuilder externalUrl = new StringBuilder();
             String host = System.getenv("HOST");
             String port = System.getenv("PORT");
-            externalUrl.append("http://").append((host != null) ? host : "localhost").append(":").append((port != null) ? port : "8000").append("/process/")
+            externalUrl.append("http://").append((host != null) ? host : LOCALHOST).append(":").append((port != null) ? port : DEFAULT_RIM_PORT)
+                    .append("/process/")
                     .append(docPath.substring(0, lio)).append(WORKORDER_DELIMETER).append(docPath.substring(lio + 1));
-            Kernel.getDecision().setContextLiteral(ctx, workOrderUri, "WORKORDERURL", externalUrl.toString());
+            Kernel.getDecision().setContextLiteral(ctx, workOrderUri, EXTERNAL_RIM_WORKORDER_URL, externalUrl.toString());
 
             String config = StringUtils.stripToNull(Kernel.getDecision().getContextValue(ctx, workOrderUri, "CONFIGURATION"));
             Map<String, String> view = new HashMap<>();

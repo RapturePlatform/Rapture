@@ -67,7 +67,7 @@ public class ExecutionContextUtil {
                     idNoMarker = idNoMarker.substring(0, idx);
                 }
 
-                ExecutionContextField ecf = ExecutionContextFieldStorage.readByFields(workOrderUri, idNoMarker);
+                ExecutionContextField ecf = ExecutionContextFieldStorage.readByFields(new RaptureURI(workOrderUri).toShortString(), idNoMarker);
                 if (ecf != null) {
                     toEval = ecf.getValue();
                     valueType = ContextValueType.getContextValueType(toEval.charAt(0));
