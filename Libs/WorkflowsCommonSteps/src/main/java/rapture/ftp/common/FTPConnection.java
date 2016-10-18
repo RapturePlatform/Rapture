@@ -102,53 +102,60 @@ public class FTPConnection implements Connection {
     }
 
     public Boolean fileExists(final FTPRequest request) {
-        if (this.isLocal() || request.isLocal()) {
-            boolean exists = false;
-            File f = null;
-            String name = request.getRemoteName();
-            if (name.startsWith("file://")) {
-                f = new File(name.substring(6));
-                exists = f.exists();
-            } else if (name.startsWith("//")) {
-                RaptureURI uri = new RaptureURI(name, Scheme.DOCUMENT);
-                exists = Kernel.getDoc().docExists(ContextFactory.getKernelUser(), uri.toString());
-            } else if (!name.startsWith("/")) {
-                RaptureURI uri = new RaptureURI(name);
-                if (uri.getScheme() == Scheme.DOCUMENT) {
+        try {
+            if (this.isLocal() || request.isLocal()) {
+                boolean exists = false;
+                File f = null;
+                String name = request.getRemoteName();
+                if (name.startsWith("file://")) {
+                    name = name.substring(6);
+                    f = new File(name);
+                    exists = f.exists();
+                } else if (name.startsWith("//")) {
+                    RaptureURI uri = new RaptureURI(name, Scheme.DOCUMENT);
                     exists = Kernel.getDoc().docExists(ContextFactory.getKernelUser(), uri.toString());
-                } else if (uri.getScheme() == Scheme.BLOB) {
-                    exists = Kernel.getBlob().blobExists(ContextFactory.getKernelUser(), uri.toString());
+                } else if (!name.startsWith("/")) {
+                    RaptureURI uri = new RaptureURI(name);
+                    if (uri.getScheme() == Scheme.DOCUMENT) {
+                        exists = Kernel.getDoc().docExists(ContextFactory.getKernelUser(), uri.toString());
+                    } else if (uri.getScheme() == Scheme.BLOB) {
+                        exists = Kernel.getBlob().blobExists(ContextFactory.getKernelUser(), uri.toString());
+                    }
+                } else {
+                    f = new File(name);
+                    exists = f.exists();
                 }
-            } else {
-                f = new File(name);
-                exists = f.exists();
-            }
-            if (!exists && (f != null)) {
-                int depth = 0;
-                do {
-                    depth++;
-                    f = f.getParentFile();
-                } while (!f.exists());
+                List<Path> lexists = null;
+                if (!exists && (f != null)) {
+                    int depth = 0;
+                    do {
+                        depth++;
+                        f = f.getParentFile();
+                    } while (!f.exists());
 
-                try {
-                    Path pathName = Paths.get(name);
-                    List<Path> lexists = Files.find(pathName.getParent(), depth, (path, basicFileAttributes) -> path.toFile().getAbsolutePath().matches(name))
-                            .collect(Collectors.toList());
-                    exists = !lexists.isEmpty();
-                } catch (IOException e) {
+                    try {
+                        final String nam = name;
+                        lexists = Files.find(f.toPath(), depth, (path, basicFileAttributes) -> path.toFile().getAbsolutePath().matches(nam))
+                                .collect(Collectors.toList());
+                        exists = !lexists.isEmpty();
+                    } catch (IOException e) {
+                    }
                 }
+                request.setLocal(true);
+                return exists;
+            } else {
+                return FTPService.runWithRetry("Error checking whether file exists: " + request.getRemoteName(), this, false, new FTPAction<Boolean>() {
+                    @Override
+                    public Boolean run(int attemptNum) throws IOException {
+                        List<String> result = listFiles(request.getRemoteName());
+                        request.setStatus((result.size() > 0) ? Status.SUCCESS : Status.ERROR);
+                        return (result.size() > 0);
+                    }
+                });
             }
-            request.setLocal(true);
-            return exists;
-        } else {
-            return FTPService.runWithRetry("Error checking whether file exists: " + request.getRemoteName(), this, false, new FTPAction<Boolean>() {
-                @Override
-                public Boolean run(int attemptNum) throws IOException {
-                    List<String> result = listFiles(request.getRemoteName());
-                    request.setStatus((result.size() > 0) ? Status.SUCCESS : Status.ERROR);
-                    return (result.size() > 0);
-                }
-            });
+        } catch (Exception e) {
+            log.debug(ExceptionToString.format(ExceptionToString.getRootCause(e)));
+            return false;
         }
     }
 

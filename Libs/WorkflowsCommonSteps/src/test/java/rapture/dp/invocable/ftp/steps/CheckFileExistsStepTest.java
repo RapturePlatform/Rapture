@@ -67,7 +67,7 @@ public class CheckFileExistsStepTest {
         String filename = "/etc/aliase.";
         String expand = ExecutionContextUtil.evalTemplateECF(ctx, workerUri, filename, null);
         Kernel.getDecision().setContextLiteral(ctx, workerUri, "EXIST_FILENAMES", JacksonUtil.jsonFromObject(ImmutableMap.of("/bin/c.", Boolean.TRUE,
-                "file://bin/m[a-z]{4}", Boolean.TRUE, "file://.{3}/zsh", Boolean.TRUE, "file://x.*/y.*/z.*", Boolean.FALSE, "/b{7}/w.*/f?/c", Boolean.FALSE)));
+                "file://bin/m[a-z]{4}", Boolean.TRUE, "file://bin/y.*/z.*", Boolean.FALSE, "/b/w.*/f?/c", Boolean.FALSE)));
         assertEquals(cfes.getNextTransition(), cfes.invoke(ctx));
     }
 }
