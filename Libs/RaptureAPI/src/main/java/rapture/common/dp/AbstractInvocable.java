@@ -40,8 +40,8 @@ public abstract class AbstractInvocable<T> implements Steps {
     private Long stepStartTime;
     private ClassLoader classLoader;
 
-    String stepName;
-    String errName;
+    private String stepName;
+    private String errName;
 
     public AbstractInvocable(String workerUri, String stepName) {
         // TODO Disallow null or empty string, but that breaks several test cases
