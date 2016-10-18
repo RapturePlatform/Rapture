@@ -22,6 +22,7 @@ import java.net.HttpURLConnection;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -125,7 +126,6 @@ public class FTPConnection implements Connection {
                     f = new File(name);
                     exists = f.exists();
                 }
-                List<Path> lexists = null;
                 if (!exists && (f != null)) {
                     int depth = 0;
                     do {
@@ -135,9 +135,14 @@ public class FTPConnection implements Connection {
 
                     try {
                         final String nam = name;
-                        lexists = Files.find(f.toPath(), depth, (path, basicFileAttributes) -> path.toFile().getAbsolutePath().matches(nam))
+                        List<Path> matches = Files.find(f.toPath(), depth, (path, basicFileAttributes) -> path.toFile().getAbsolutePath().matches(nam))
                                 .collect(Collectors.toList());
-                        exists = !lexists.isEmpty();
+                        exists = !matches.isEmpty();
+                        List<String> result = new ArrayList<>(matches.size());
+                        for (Path path : matches) {
+                            result.add(path.toString());
+                        }
+                        request.setResult(result);
                     } catch (IOException e) {
                     }
                 }
