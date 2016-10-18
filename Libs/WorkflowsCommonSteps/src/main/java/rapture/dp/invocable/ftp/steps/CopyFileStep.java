@@ -108,7 +108,7 @@ public class CopyFileStep extends AbstractInvocable {
             String copy = StringUtils.stripToNull(decision.getContextValue(ctx, getWorkerURI(), "COPY_FILES"));
             if (copy == null) {
                 decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), "No files to copy");
-                decision.setContextLiteral(ctx, getWorkerURI(), getStepName() + "Error", "No files to copy");
+                decision.setContextLiteral(ctx, getWorkerURI(), getErrName(), "No files to copy");
                 decision.writeWorkflowAuditEntry(context, getWorkerURI(), "No files to copy", true);
                 return getNextTransition();
             }
@@ -144,12 +144,14 @@ public class CopyFileStep extends AbstractInvocable {
                 log.error(err);
                 decision.writeWorkflowAuditEntry(context, getWorkerURI(), err, true);
             }
-            decision.setContextLiteral(ctx, getWorkerURI(), getStepName() + "Error", err);
+            decision.setContextLiteral(ctx, getWorkerURI(), getErrName(), err);
             return retval;
         } catch (Exception e) {
             decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), "Unable to copy files : " + e.getLocalizedMessage());
-            decision.setContextLiteral(ctx, getWorkerURI(), getStepName() + "Error", ExceptionToString.summary(e));
-            decision.writeWorkflowAuditEntry(context, getWorkerURI(), ExceptionToString.summary(e), true);
+            decision.setContextLiteral(ctx, getWorkerURI(), getErrName(), ExceptionToString.summary(e));
+            log.error(ExceptionToString.format(ExceptionToString.getRootCause(e)));
+            decision.writeWorkflowAuditEntry(ctx, getWorkerURI(),
+                    "Problem in CopyFileStep " + getStepName() + " - error is " + ExceptionToString.getRootCause(e).getLocalizedMessage(), true);
             return getErrorTransition();
         }
     }
