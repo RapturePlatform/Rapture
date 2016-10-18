@@ -102,13 +102,13 @@ public class FTPConnection implements Connection {
     }
 
     public Boolean fileExists(final FTPRequest request) {
-
         if (this.isLocal() || request.isLocal()) {
-
             boolean exists = false;
+            File f = null;
             String name = request.getRemoteName();
             if (name.startsWith("file://")) {
-                exists = new File(name.substring(6)).exists();
+                f = new File(name.substring(6));
+                exists = f.exists();
             } else if (name.startsWith("//")) {
                 RaptureURI uri = new RaptureURI(name, Scheme.DOCUMENT);
                 exists = Kernel.getDoc().docExists(ContextFactory.getKernelUser(), uri.toString());
@@ -120,24 +120,22 @@ public class FTPConnection implements Connection {
                     exists = Kernel.getBlob().blobExists(ContextFactory.getKernelUser(), uri.toString());
                 }
             } else {
-                File f = new File(name);
+                f = new File(name);
                 exists = f.exists();
-                if (!exists) {
-                    int depth = 0;
-                    do {
-                        depth++;
-                        f = f.getParentFile();
-                    } while (!f.exists());
+            }
+            if (!exists && (f != null)) {
+                int depth = 0;
+                do {
+                    depth++;
+                    f = f.getParentFile();
+                } while (!f.exists());
 
-                    try {
-                        Path pathName = Paths.get(name);
-                        List<Path> lexists = Files
-                                .find(pathName.getParent(), depth, (path, basicFileAttributes) -> path.toFile().getAbsolutePath().matches(name))
-                                .collect(Collectors.toList());
-                        exists = !lexists.isEmpty();
-                    } catch (IOException e) {
-                    }
-
+                try {
+                    Path pathName = Paths.get(name);
+                    List<Path> lexists = Files.find(pathName.getParent(), depth, (path, basicFileAttributes) -> path.toFile().getAbsolutePath().matches(name))
+                            .collect(Collectors.toList());
+                    exists = !lexists.isEmpty();
+                } catch (IOException e) {
                 }
             }
             request.setLocal(true);

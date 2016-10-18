@@ -51,8 +51,9 @@ public class SendFileStep extends AbstractInvocable {
 
     @Override
     public String invoke(CallingContext ctx) {
+        DecisionApi decieion = Kernel.getDecision();
         try {
-            Kernel.getDecision().setContextLiteral(ctx, getWorkerURI(), "STEPNAME", getStepName());
+            decision.setContextLiteral(ctx, getWorkerURI(), "STEPNAME", getStepName());
 
             String configUri = decision.getContextValue(ctx, getWorkerURI(), "FTP_CONFIGURATION");
             if (configUri == null) {
@@ -95,13 +96,12 @@ public class SendFileStep extends AbstractInvocable {
                 decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), "Unable to send " + failCount + " of " + map.size() + " files)", true);
             }
             decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), "Sent " + (map.size() - failCount) + " of " + map.size() + " files)");
-            decision.setContextLiteral(ctx, getWorkerURI(), getStepName() + "Result", JacksonUtil.jsonFromObject(requests));
             return retval;
         } catch (Exception e) {
-            Kernel.getDecision().setContextLiteral(ctx, getWorkerURI(), getStepName(), "Unable to send files : " + e.getLocalizedMessage());
-            Kernel.getDecision().setContextLiteral(ctx, getWorkerURI(), getStepName() + "Error", ExceptionToString.summary(e));
+            decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), "Unable to send files : " + e.getLocalizedMessage());
+            decision.setContextLiteral(ctx, getWorkerURI(), getErrName(), ExceptionToString.summary(e));
             decision.writeWorkflowAuditEntry(ctx, getWorkerURI(),
-                    "Problem in GetFileStep " + getStepName() + " - error is " + ExceptionToString.getRootCause(e).getLocalizedMessage(), true);
+                    "Problem in SendFileStep " + getStepName() + " - error is " + ExceptionToString.getRootCause(e).getLocalizedMessage(), true);
             return getErrorTransition();
         }
     }
