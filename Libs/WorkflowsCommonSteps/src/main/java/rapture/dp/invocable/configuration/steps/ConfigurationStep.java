@@ -41,13 +41,6 @@ public class ConfigurationStep extends AbstractInvocable {
         DecisionApi decision = Kernel.getDecision();
         String workOrderUri = new RaptureURI(getWorkerURI(), Scheme.WORKORDER).toShortString();
         String config = StringUtils.stripToNull(decision.getContextValue(ctx, workOrderUri, "CONFIGURATION"));
-        if (config == null) return this.getNextTransition();
-        List<String> configs;
-        try {
-            configs = JacksonUtil.objectFromJson(config, ArrayList.class);
-        } catch (Exception e) {
-            configs = ImmutableList.of(config);
-        }
 
         try {
             decision.setContextLiteral(ctx, getWorkerURI(), "STEPNAME", getStepName());
@@ -65,6 +58,18 @@ public class ConfigurationStep extends AbstractInvocable {
 
             Map<String, String> view = new HashMap<>();
             DocApi docApi = Kernel.getDoc();
+
+            if (config == null) {
+                decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), "No configuration document specified", false);
+                return this.getNextTransition();
+            }
+            List<String> configs;
+            try {
+                configs = JacksonUtil.objectFromJson(config, ArrayList.class);
+            } catch (Exception e) {
+                configs = ImmutableList.of(config);
+            }
+
             for (String conf : configs) {
                 if (docApi.docExists(ctx, conf)) {
                     String doc = docApi.getDoc(ctx, conf);
@@ -78,6 +83,8 @@ public class ConfigurationStep extends AbstractInvocable {
                         } else value = value.substring(1);
                         ExecutionContextUtil.setValueECF(ctx, workOrderUri, view, key, type, value);
                     }
+                } else {
+                    decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), "Cannot locate configuration document " + conf, false);
                 }
             }
             return Steps.NEXT.toString();
