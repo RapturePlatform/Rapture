@@ -63,6 +63,7 @@ public class NotificationStep extends AbstractInvocable {
             decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), "Problem in NotificationStep " + getStepName() + " - parameter NOTIFY_TYPE is not set", true);
             return getErrorTransition();
         }
+        StringBuffer error = new StringBuffer();
         String retval = getNextTransition();
         for (String type : types.split("[, ]+")) {
             try {
@@ -71,8 +72,10 @@ public class NotificationStep extends AbstractInvocable {
                     retval = getErrorTransition();
                 }
             } catch (Exception e) {
+                Throwable cause = ExceptionToString.getRootCause(e);
+                error.append("Cannot send email notification : ").append(cause.getLocalizedMessage()).append("\n");
                 decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), "Problem in NotificationStep " + getStepName() + " - slack notification failed", true);
-                decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), ExceptionToString.summary(ExceptionToString.getRootCause(e)), true);
+                decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), ExceptionToString.summary(cause), true);
                 retval = getErrorTransition();
             }
             try {
@@ -81,10 +84,20 @@ public class NotificationStep extends AbstractInvocable {
                     retval = getErrorTransition();
                 }
             } catch (Exception e) {
+                Throwable cause = ExceptionToString.getRootCause(e);
+                error.append("Cannot send slack notification : ").append(cause.getLocalizedMessage()).append("\n");
                 decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), "Problem in NotificationStep " + getStepName() + " - email notification failed", true);
-                decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), ExceptionToString.summary(ExceptionToString.getRootCause(e)), true);
+                decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), ExceptionToString.summary(cause), true);
+                log.error(ExceptionToString.format(ExceptionToString.getRootCause(e)));
                 retval = getErrorTransition();
             }
+        }
+
+        String errMsg = error.toString();
+        if (!StringUtils.isEmpty(errMsg)) {
+            log.error(errMsg);
+            decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), "Notification failure");
+            decision.setContextLiteral(ctx, getWorkerURI(), getErrName(), errMsg);
         }
         return retval;
     }

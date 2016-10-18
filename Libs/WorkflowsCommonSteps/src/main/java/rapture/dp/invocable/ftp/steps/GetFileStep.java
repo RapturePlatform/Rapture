@@ -94,12 +94,16 @@ public class GetFileStep extends AbstractInvocable {
             else decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), "All files retrieved");
 
             String err = sb.toString();
-            if (!StringUtils.isEmpty(err)) log.error(err);
-            decision.setContextLiteral(ctx, getWorkerURI(), getStepName() + "Error", err);
+            if (!StringUtils.isEmpty(err)) {
+                log.error(err);
+                decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), err, true);
+            }
+            decision.setContextLiteral(ctx, getWorkerURI(), getErrName(), err);
             return retval;
         } catch (Exception e) {
             decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), "Unable to retrieve files : " + e.getLocalizedMessage());
-            decision.setContextLiteral(ctx, getWorkerURI(), getStepName() + "Error", ExceptionToString.summary(e));
+            decision.setContextLiteral(ctx, getWorkerURI(), getErrName(), ExceptionToString.summary(e));
+            log.error(ExceptionToString.format(ExceptionToString.getRootCause(e)));
             decision.writeWorkflowAuditEntry(ctx, getWorkerURI(),
                     "Problem in GetFileStep " + getStepName() + " - error is " + ExceptionToString.getRootCause(e).getLocalizedMessage(), true);
             return getErrorTransition();

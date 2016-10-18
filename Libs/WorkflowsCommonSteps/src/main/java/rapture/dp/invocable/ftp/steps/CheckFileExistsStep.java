@@ -62,7 +62,7 @@ public class CheckFileExistsStep extends AbstractInvocable {
             String filename = StringUtils.stripToNull(decision.getContextValue(ctx, workOrderUri, "EXIST_FILENAMES"));
             if (filename == null) {
                 decision.setContextLiteral(ctx, workOrderUri, getStepName(), "No files to check");
-                decision.setContextLiteral(ctx, workOrderUri, getStepName() + "Error", "");
+                decision.setContextLiteral(ctx, workOrderUri, getErrName(), "");
                 return getNextTransition();
             }
 
@@ -86,12 +86,17 @@ public class CheckFileExistsStep extends AbstractInvocable {
             }
             decision.setContextLiteral(ctx, workOrderUri, getStepName(), "Located " + existsCount + " of " + files.size() + " files");
             String errMsg = error.toString();
-            decision.setContextLiteral(ctx, workOrderUri, getStepName() + "Error", errMsg);
+            if (!StringUtils.isEmpty(errMsg)) {
+                log.error(errMsg);
+                decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), errMsg, true);
+            }
+            decision.setContextLiteral(ctx, workOrderUri, getErrName(), errMsg);
             decision.writeWorkflowAuditEntry(ctx, workerUri, errMsg, failCount > 0);
             return retval;
         } catch (Exception e) {
             decision.setContextLiteral(ctx, workOrderUri, getStepName(), "Unable to determine if files exist : " + e.getLocalizedMessage());
-            decision.setContextLiteral(ctx, workOrderUri, getStepName() + "Error", ExceptionToString.summary(e));
+            decision.setContextLiteral(ctx, workOrderUri, getErrName(), ExceptionToString.summary(e));
+            log.error(ExceptionToString.format(ExceptionToString.getRootCause(e)));
             decision.writeWorkflowAuditEntry(ctx, getWorkerURI(),
                     "Problem in CheckFileExistsStep " + getStepName() + " - error is " + ExceptionToString.getRootCause(e).getLocalizedMessage(), true);
             return getErrorTransition();
