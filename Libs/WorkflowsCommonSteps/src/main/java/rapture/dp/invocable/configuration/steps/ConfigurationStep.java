@@ -1,11 +1,15 @@
 package rapture.dp.invocable.configuration.steps;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+
+import com.google.common.collect.ImmutableList;
 
 import rapture.common.CallingContext;
 import rapture.common.RaptureURI;
@@ -37,10 +41,16 @@ public class ConfigurationStep extends AbstractInvocable {
         DecisionApi decision = Kernel.getDecision();
         String workOrderUri = new RaptureURI(getWorkerURI(), Scheme.WORKORDER).toShortString();
         String config = StringUtils.stripToNull(decision.getContextValue(ctx, workOrderUri, "CONFIGURATION"));
+        if (config == null) return this.getNextTransition();
+        List<String> configs;
+        try {
+            configs = JacksonUtil.objectFromJson(config, ArrayList.class);
+        } catch (Exception e) {
+            configs = ImmutableList.of(config);
+        }
 
         try {
             decision.setContextLiteral(ctx, getWorkerURI(), "STEPNAME", getStepName());
-
 
             String docPath = new RaptureURI(workOrderUri).getDocPath();
             int lio = docPath.lastIndexOf('/');
@@ -55,17 +65,19 @@ public class ConfigurationStep extends AbstractInvocable {
 
             Map<String, String> view = new HashMap<>();
             DocApi docApi = Kernel.getDoc();
-            if (docApi.docExists(ctx, config)) {
-                String doc = docApi.getDoc(ctx, config);
-                Map<String, Object> map = JacksonUtil.getMapFromJson(doc);
-                for (Entry<String, Object> entry : map.entrySet()) {
-                    String key = entry.getKey();
-                    String value = StringUtils.stripToNull(entry.getValue().toString());
-                    ContextValueType type = ContextValueType.getContextValueType(value.charAt(0));
-                    if (type == ContextValueType.NULL) {
-                        type = ContextValueType.LITERAL;
-                    } else value = value.substring(1);
-                    ExecutionContextUtil.setValueECF(ctx, workOrderUri, view, key, type, value);
+            for (String conf : configs) {
+                if (docApi.docExists(ctx, conf)) {
+                    String doc = docApi.getDoc(ctx, conf);
+                    Map<String, Object> map = JacksonUtil.getMapFromJson(doc);
+                    for (Entry<String, Object> entry : map.entrySet()) {
+                        String key = entry.getKey();
+                        String value = StringUtils.stripToNull(entry.getValue().toString());
+                        ContextValueType type = ContextValueType.getContextValueType(value.charAt(0));
+                        if (type == ContextValueType.NULL) {
+                            type = ContextValueType.LITERAL;
+                        } else value = value.substring(1);
+                        ExecutionContextUtil.setValueECF(ctx, workOrderUri, view, key, type, value);
+                    }
                 }
             }
             return Steps.NEXT.toString();
