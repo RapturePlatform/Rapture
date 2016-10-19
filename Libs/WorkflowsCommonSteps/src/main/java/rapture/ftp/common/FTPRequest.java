@@ -44,6 +44,8 @@ public class FTPRequest {
     private boolean isEmpty = true;
     private boolean isLocal = false;
     final private Action action;
+    private Object result = null;
+
     private Status status = Status.READY;
 
     public FTPRequest(Action action) {
@@ -57,6 +59,14 @@ public class FTPRequest {
     public FTPRequest setLocalName(String localName) {
         this.localName = localName;
         return this;
+    }
+
+    public Object getResult() {
+        return result;
+    }
+
+    public void setResult(Object result) {
+        this.result = result;
     }
 
     public InputStream getSource() {
