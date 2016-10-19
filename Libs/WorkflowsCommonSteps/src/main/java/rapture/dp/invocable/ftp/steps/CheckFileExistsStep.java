@@ -79,7 +79,16 @@ public class CheckFileExistsStep extends AbstractInvocable {
                 boolean exists = connection.doAction(request);
                 if (!exists == ((Boolean) e.getValue())) {
                     retval = getFailTransition();
-                    error.append(e.getKey()).append(wasNotWas(exists)).append("found but").append(wasNotWas((Boolean) e.getValue())).append("expected ");
+                    String target = e.getKey();
+                    if (exists) {
+                        List l = (List) request.getResult();
+                        if (l.size() > 1) {
+                            target = l.size() + " files matching " + e.getKey();
+                        } else {
+                            target = l.get(0).toString();
+                        }
+                    }
+                    error.append(target).append(wasNotWas(exists)).append("found but").append(wasNotWas((Boolean) e.getValue())).append("expected ");
                     failCount++;
                 }
                 requests.add(request);
