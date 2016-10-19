@@ -82,10 +82,12 @@ public class CheckFileExistsStep extends AbstractInvocable {
                     String target = e.getKey();
                     if (exists) {
                         List l = (List) request.getResult();
-                        if (l.size() > 1) {
-                            target = l.size() + " files matching " + e.getKey();
-                        } else {
-                            target = l.get(0).toString();
+                        if (l != null) {
+                            if (l.size() > 1) {
+                                target = l.size() + " files matching " + e.getKey();
+                            } else {
+                                target = l.get(0).toString();
+                            }
                         }
                     }
                     error.append(target).append(wasNotWas(exists)).append("found but").append(wasNotWas((Boolean) e.getValue())).append("expected ");
