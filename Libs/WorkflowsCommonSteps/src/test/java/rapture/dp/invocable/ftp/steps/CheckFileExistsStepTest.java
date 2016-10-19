@@ -59,15 +59,85 @@ public class CheckFileExistsStepTest {
     }
 
     @Test
-    public void checkWildcardTest() {
+    public void checkWildcardTest1() {
         CallingContext ctx = ContextFactory.getAnonymousUser();
         String workerUri = "workorder://x/y#0";
         String workOrderUri = workerUri.substring(0, workerUri.length() - 2);
-        CheckFileExistsStep cfes = new CheckFileExistsStep(workerUri, "foo");
+        CheckFileExistsStep cfes = new CheckFileExistsStep(workerUri, "foo1");
         String filename = "/etc/aliase.";
         String expand = ExecutionContextUtil.evalTemplateECF(ctx, workerUri, filename, null);
-        Kernel.getDecision().setContextLiteral(ctx, workerUri, "EXIST_FILENAMES", JacksonUtil.jsonFromObject(ImmutableMap.of("/bin/c.", Boolean.TRUE,
-                "file://bin/m[a-z]{4}", Boolean.TRUE, "file://bin/y.*/z.*", Boolean.FALSE, "/b/w.*/f?/c", Boolean.FALSE)));
+        Kernel.getDecision().setContextLiteral(ctx, workerUri, "EXIST_FILENAMES", JacksonUtil.jsonFromObject(ImmutableMap.of("/bin/c.", Boolean.TRUE)));
         assertEquals(cfes.getNextTransition(), cfes.invoke(ctx));
+        assertEquals("", Kernel.getDecision().getContextValue(ctx, workerUri, "foo1Error"));
     }
+
+    @Test
+    public void checkWildcardTest2() {
+        CallingContext ctx = ContextFactory.getAnonymousUser();
+        String workerUri = "workorder://x/y#0";
+        String workOrderUri = workerUri.substring(0, workerUri.length() - 2);
+        CheckFileExistsStep cfes = new CheckFileExistsStep(workerUri, "foo2");
+        String filename = "/etc/aliase.";
+        String expand = ExecutionContextUtil.evalTemplateECF(ctx, workerUri, filename, null);
+        Kernel.getDecision().setContextLiteral(ctx, workerUri, "EXIST_FILENAMES", JacksonUtil.jsonFromObject(ImmutableMap.of("/bin/c.", Boolean.FALSE)));
+        assertEquals(cfes.getFailTransition(), cfes.invoke(ctx));
+        assertEquals("/bin/cp was found but was not expected ", Kernel.getDecision().getContextValue(ctx, workerUri, "foo2Error"));
+    }
+
+    @Test
+    public void checkWildcardTest3() {
+        CallingContext ctx = ContextFactory.getAnonymousUser();
+        String workerUri = "workorder://x/y#0";
+        String workOrderUri = workerUri.substring(0, workerUri.length() - 2);
+        CheckFileExistsStep cfes = new CheckFileExistsStep(workerUri, "foo3");
+        String filename = "/etc/aliase.";
+        String expand = ExecutionContextUtil.evalTemplateECF(ctx, workerUri, filename, null);
+        Kernel.getDecision().setContextLiteral(ctx, workerUri, "EXIST_FILENAMES", JacksonUtil.jsonFromObject(ImmutableMap.of("/bin/c.*", Boolean.TRUE)));
+        assertEquals(cfes.getNextTransition(), cfes.invoke(ctx));
+        assertEquals("", Kernel.getDecision().getContextValue(ctx, workerUri, "foo3Error"));
+    }
+
+    @Test
+    public void checkWildcardTest4() {
+        CallingContext ctx = ContextFactory.getAnonymousUser();
+        String workerUri = "workorder://x/y#0";
+        String workOrderUri = workerUri.substring(0, workerUri.length() - 2);
+        CheckFileExistsStep cfes = new CheckFileExistsStep(workerUri, "foo4");
+        String filename = "/etc/aliase.";
+        String expand = ExecutionContextUtil.evalTemplateECF(ctx, workerUri, filename, null);
+        Kernel.getDecision().setContextLiteral(ctx, workerUri, "EXIST_FILENAMES", JacksonUtil.jsonFromObject(ImmutableMap.of("/bin/c.*", Boolean.FALSE)));
+        assertEquals(cfes.getFailTransition(), cfes.invoke(ctx));
+        assertEquals("4 files matching /bin/c.* was found but was not expected ", Kernel.getDecision().getContextValue(ctx, workerUri, "foo4Error"));
+    }
+
+    @Test
+    public void checkWildcardTest5() {
+        CallingContext ctx = ContextFactory.getAnonymousUser();
+        String workerUri = "workorder://x/y#0";
+        String workOrderUri = workerUri.substring(0, workerUri.length() - 2);
+        CheckFileExistsStep cfes = new CheckFileExistsStep(workerUri, "foo5");
+        String filename = "/etc/aliase.";
+        String expand = ExecutionContextUtil.evalTemplateECF(ctx, workerUri, filename, null);
+        Kernel.getDecision().setContextLiteral(ctx, workerUri, "EXIST_FILENAMES",
+                JacksonUtil.jsonFromObject(ImmutableMap.of("/usr/sh.re/.{8}/I[a-z]+/Cocos", Boolean.TRUE)));
+        String trans = cfes.invoke(ctx);
+        assertEquals("", Kernel.getDecision().getContextValue(ctx, workerUri, "foo5Error"));
+        assertEquals(cfes.getNextTransition(), trans);
+    }
+
+    @Test
+    public void checkWildcardTest6() {
+        CallingContext ctx = ContextFactory.getAnonymousUser();
+        String workerUri = "workorder://x/y#0";
+        String workOrderUri = workerUri.substring(0, workerUri.length() - 2);
+        CheckFileExistsStep cfes = new CheckFileExistsStep(workerUri, "foo6");
+        String filename = "/etc/aliase.";
+        String expand = ExecutionContextUtil.evalTemplateECF(ctx, workerUri, filename, null);
+        Kernel.getDecision().setContextLiteral(ctx, workerUri, "EXIST_FILENAMES",
+                JacksonUtil.jsonFromObject(ImmutableMap.of("/usr/sh.re/.{8}/I[a-z]+/Cocos", Boolean.FALSE)));
+        String trans = cfes.invoke(ctx);
+        assertEquals("/usr/share/zoneinfo/Indian/Cocos was found but was not expected ", Kernel.getDecision().getContextValue(ctx, workerUri, "foo6Error"));
+        assertEquals(cfes.getFailTransition(), trans);
+    }
+
 }
