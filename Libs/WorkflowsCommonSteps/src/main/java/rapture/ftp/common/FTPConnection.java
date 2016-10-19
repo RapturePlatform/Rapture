@@ -54,7 +54,6 @@ public class FTPConnection implements Connection {
     FTPConnectionConfig config = null;
     boolean isLoggedIn = false;
     CallingContext context = ContextFactory.getAnonymousUser();
-    boolean error = false;
 
     public FTPConnection(FTPConnectionConfig config) {
         ftpClient = new FTPClient();
