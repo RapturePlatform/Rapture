@@ -22,10 +22,8 @@ import java.net.HttpURLConnection;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -127,24 +125,15 @@ public class FTPConnection implements Connection {
                     exists = f.exists();
                 }
                 if (!exists && (f != null)) {
-                    int depth = 0;
                     do {
-                        depth++;
                         f = f.getParentFile();
                     } while (!f.exists());
 
-                    try {
-                        final String nam = name;
-                        List<Path> matches = Files.find(f.toPath(), depth, (path, basicFileAttributes) -> path.toFile().getAbsolutePath().matches(nam))
-                                .collect(Collectors.toList());
-                        exists = !matches.isEmpty();
-                        List<String> result = new ArrayList<>(matches.size());
-                        for (Path path : matches) {
-                            result.add(path.toString());
-                        }
-                        request.setResult(result);
-                    } catch (IOException e) {
-                    }
+                    PathMatcher matcher = new PathMatcher(name);
+                    Files.walkFileTree(f.toPath(), matcher);
+                    List<String> matches = matcher.getResults();
+                    request.setResult(matches);
+                    exists = !matches.isEmpty();
                 }
                 request.setLocal(true);
                 return exists;
@@ -159,7 +148,7 @@ public class FTPConnection implements Connection {
                 });
             }
         } catch (Exception e) {
-            log.debug(ExceptionToString.format(ExceptionToString.getRootCause(e)));
+            log.error(ExceptionToString.format(ExceptionToString.getRootCause(e)));
             return false;
         }
     }
