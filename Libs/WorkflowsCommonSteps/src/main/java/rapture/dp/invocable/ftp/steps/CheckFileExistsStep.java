@@ -47,6 +47,10 @@ public class CheckFileExistsStep extends AbstractInvocable {
         return (flag) ? " was " : " was not ";
     }
 
+    static String wereNotWere(Boolean flag) {
+        return (flag) ? " were " : " were not ";
+    }
+
     /**
      * FTP_CONFIGURATION is optional. If not set the arguments are assumed to be local EXIST_FILENAMES is a map of file names to Booleans, indicating whether
      * the file is expected or not
@@ -80,17 +84,21 @@ public class CheckFileExistsStep extends AbstractInvocable {
                 if (!exists == ((Boolean) e.getValue())) {
                     retval = getFailTransition();
                     String target = e.getKey();
+                    boolean plural = false;
                     if (exists) {
                         List l = (List) request.getResult();
                         if (l != null) {
                             if (l.size() > 1) {
-                                target = l.size() + " files matching " + e.getKey();
+                                target = l.size() + " files or directories matching " + e.getKey();
+                                plural = true;
                             } else {
                                 target = l.get(0).toString();
                             }
                         }
                     }
-                    error.append(target).append(wasNotWas(exists)).append("found but").append(wasNotWas((Boolean) e.getValue())).append("expected ");
+                    if (error.length() > 0) error.append("\n");
+                    error.append(target).append((plural) ? wereNotWere(exists) : wasNotWas(exists)).append("found but")
+                            .append(plural ? wereNotWere((Boolean) e.getValue()) : wasNotWas((Boolean) e.getValue())).append("expected");
                     failCount++;
                 }
                 requests.add(request);
