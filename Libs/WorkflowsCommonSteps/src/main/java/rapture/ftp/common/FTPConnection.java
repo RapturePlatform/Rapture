@@ -125,13 +125,7 @@ public class FTPConnection implements Connection {
                     exists = f.exists();
                 }
                 if (!exists && (f != null)) {
-                    do {
-                        f = f.getParentFile();
-                    } while (!f.exists());
-
-                    PathMatcher matcher = new PathMatcher(name);
-                    Files.walkFileTree(f.toPath(), matcher);
-                    List<String> matches = matcher.getResults();
+                    List<String> matches = new PathMatcher(name).getResults();
                     request.setResult(matches);
                     exists = !matches.isEmpty();
                 }
