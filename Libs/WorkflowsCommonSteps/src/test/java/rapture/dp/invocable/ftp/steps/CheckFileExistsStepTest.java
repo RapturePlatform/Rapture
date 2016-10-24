@@ -97,8 +97,9 @@ public class CheckFileExistsStepTest {
         CheckFileExistsStep cfes = new CheckFileExistsStep(workerUri, "foo4");
         Kernel.getDecision().setContextLiteral(ctx, workerUri, "EXIST_FILENAMES", JacksonUtil.jsonFromObject(ImmutableMap.of("/bin/c.*", Boolean.FALSE)));
         assertEquals(cfes.getFailTransition(), cfes.invoke(ctx));
-        assertEquals("4 files or directories matching /bin/c.* were found but were not expected",
-                Kernel.getDecision().getContextValue(ctx, workerUri, "foo4Error"));
+        String foo4Error = Kernel.getDecision().getContextValue(ctx, workerUri, "foo4Error");
+        foo4Error = foo4Error.substring(foo4Error.indexOf(' '));
+        assertEquals(" files or directories matching /bin/c.* were found but were not expected", foo4Error);
     }
 
     @Test
@@ -165,8 +166,10 @@ public class CheckFileExistsStepTest {
         Kernel.getDecision().setContextLiteral(ctx, workerUri, "EXIST_FILENAMES",
                 JacksonUtil.jsonFromObject(ImmutableMap.of("file://etc/alia.*", Boolean.FALSE)));
         String trans = cfes.invoke(ctx);
-        assertEquals("2 files or directories matching file://etc/alia.* were found but were not expected",
-                Kernel.getDecision().getContextValue(ctx, workerUri, "foo9Error"));
+        String foo9Error = Kernel.getDecision().getContextValue(ctx, workerUri, "foo9Error");
+        foo9Error = foo9Error.substring(foo9Error.indexOf(' '));
+
+        assertEquals(" files or directories matching file://etc/alia.* were found but were not expected", foo9Error);
         assertEquals(cfes.getFailTransition(), trans);
     }
 
@@ -177,11 +180,14 @@ public class CheckFileExistsStepTest {
         CheckFileExistsStep cfes = new CheckFileExistsStep(workerUri, "foo10");
         Kernel.getDecision().setContextLiteral(ctx, workerUri, "EXIST_FILENAMES",
                 JacksonUtil.jsonFromObject(
-                        ImmutableMap.of("/foo", Boolean.TRUE, "file://bar", Boolean.TRUE, "/etc/.osts", Boolean.FALSE, "/etc/a.*", Boolean.FALSE)));
+                        ImmutableMap.of("/etc/a.*", Boolean.FALSE, "/foo", Boolean.TRUE, "file://bar", Boolean.TRUE, "/etc/.osts", Boolean.FALSE)));
         String trans = cfes.invoke(ctx);
+        String foo10Error = Kernel.getDecision().getContextValue(ctx, workerUri, "foo10Error");
+        foo10Error = foo10Error.substring(foo10Error.indexOf(' '));
         assertEquals(
-                "/foo was not found but was expected\nfile://bar was not found but was expected\n/etc/hosts was found but was not expected\n11 files or directories matching /etc/a.* were found but were not expected",
-                Kernel.getDecision().getContextValue(ctx, workerUri, "foo10Error"));
+                " files or directories matching /etc/a.* were found but were not expected\n" + "/foo was not found but was expected\n"
+                        + "file://bar was not found but was expected\n" + "/etc/hosts was found but was not expected",
+                foo10Error);
         assertEquals(cfes.getFailTransition(), trans);
     }
 }
