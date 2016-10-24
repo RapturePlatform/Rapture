@@ -57,7 +57,12 @@ public class DivNode extends BaseNode {
             try {
                 BigDecimal bigA = a.asBigDecimal();
                 BigDecimal bigB = b.asBigDecimal();
+                int aScale = bigA.scale();
+                int bScale = bigB.scale();
+                int scale = Math.max(aScale, bScale);
                 BigDecimal result = bigA.divide(bigB);
+                if (result.scale() < scale) result = result.setScale(scale, BigDecimal.ROUND_UNNECESSARY);
+
                 try {
                     if (a.isInteger() && b.isInteger()) {
                         retVal = new ReflexValue(result.intValueExact());
