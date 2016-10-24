@@ -23,15 +23,33 @@
  */
 package rapture.kernel.plugin;
 
+import org.apache.log4j.Logger;
+
 import rapture.common.CallingContext;
+import rapture.common.PluginTransportItem;
 import rapture.common.RaptureURI;
-import rapture.common.Scheme;
+import rapture.common.exception.RaptureException;
+import rapture.common.impl.jackson.JacksonUtil;
+import rapture.common.model.RaptureUser;
 import rapture.kernel.Kernel;
 
-public class EntitlementEncoder extends ReflectionEncoder {
+public class UserInstaller implements RaptureInstaller {
+
+    private static final Logger log = Logger.getLogger(UserInstaller.class);
 
     @Override
-    public Object getReflectionObject(CallingContext ctx, String uri) {
-        return Kernel.getEntitlement().getEntitlement(ctx, new RaptureURI(uri, Scheme.ENTITLEMENT).getShortPath());
+    public void install(CallingContext context, RaptureURI uri, PluginTransportItem item) {
+        try {
+            remove(context, uri, item);
+        } catch (RaptureException e) {
+            log.debug(String.format("Warning (not serious), could not remove user with uri [%s].   Message is [%s]", uri.toString(), e.getMessage()));
+        }
+        RaptureUser user = JacksonUtil.objectFromJson(item.getContent(), RaptureUser.class);
+        Kernel.getAdmin().addUser(context, user.getUsername(), user.getDescription(), user.getHashPassword(), user.getEmailAddress());
+    }
+
+    @Override
+    public void remove(CallingContext context, RaptureURI uri, PluginTransportItem item) {
+        Kernel.getAdmin().destroyUser(context, uri.hasDocPath() ? uri.getShortPath() : uri.getAuthority());
     }
 }
