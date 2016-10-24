@@ -1,14 +1,20 @@
 package rapture.dp.invocable.configuration.steps;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
+
+import com.google.common.collect.ImmutableList;
 
 import rapture.common.CallingContext;
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
+import rapture.common.api.DecisionApi;
 import rapture.common.api.DocApi;
 import rapture.common.dp.AbstractInvocable;
 import rapture.common.dp.ContextValueType;
@@ -24,14 +30,20 @@ public class ConfigurationStep extends AbstractInvocable {
         super(workerUri, stepName);
     }
 
+    private static final String LOCALHOST = "localhost";
+    private static final String DEFAULT_RIM_PORT = "8000";
     private static final String WORKORDER_DELIMETER = "&workorder=";
+    public static final String EXTERNAL_RIM_WORKORDER_URL = "EXTERNALRIMWORKORDERURL";
+    private static final Logger log = Logger.getLogger(ConfigurationStep.class);
 
     @Override
     public String invoke(CallingContext ctx) {
-        try {
-            Kernel.getDecision().setContextLiteral(ctx, getWorkerURI(), "STEPNAME", getStepName());
+        DecisionApi decision = Kernel.getDecision();
+        String workOrderUri = new RaptureURI(getWorkerURI(), Scheme.WORKORDER).toShortString();
+        String config = StringUtils.stripToNull(decision.getContextValue(ctx, workOrderUri, "CONFIGURATION"));
 
-            String workOrderUri = new RaptureURI(getWorkerURI(), Scheme.WORKORDER).toShortString();
+        try {
+            decision.setContextLiteral(ctx, getWorkerURI(), "STEPNAME", getStepName());
 
             String docPath = new RaptureURI(workOrderUri).getDocPath();
             int lio = docPath.lastIndexOf('/');
@@ -39,30 +51,51 @@ public class ConfigurationStep extends AbstractInvocable {
             StringBuilder externalUrl = new StringBuilder();
             String host = System.getenv("HOST");
             String port = System.getenv("PORT");
-            externalUrl.append("http://").append((host != null) ? host : "localhost").append(":").append((port != null) ? port : "8000").append("/process/")
+            externalUrl.append("http://").append((host != null) ? host : LOCALHOST).append(":").append((port != null) ? port : DEFAULT_RIM_PORT)
+                    .append("/process/")
                     .append(docPath.substring(0, lio)).append(WORKORDER_DELIMETER).append(docPath.substring(lio + 1));
-            Kernel.getDecision().setContextLiteral(ctx, workOrderUri, "WORKORDERURL", externalUrl.toString());
+            decision.setContextLiteral(ctx, workOrderUri, EXTERNAL_RIM_WORKORDER_URL, externalUrl.toString());
 
-            String config = StringUtils.stripToNull(Kernel.getDecision().getContextValue(ctx, workOrderUri, "CONFIGURATION"));
             Map<String, String> view = new HashMap<>();
             DocApi docApi = Kernel.getDoc();
-            if (docApi.docExists(ctx, config)) {
-                String doc = docApi.getDoc(ctx, config);
-                Map<String, Object> map = JacksonUtil.getMapFromJson(doc);
-                for (Entry<String, Object> entry : map.entrySet()) {
-                    String key = entry.getKey();
-                    String value = StringUtils.stripToNull(entry.getValue().toString());
-                    ContextValueType type = ContextValueType.getContextValueType(value.charAt(0));
-                    if (type == ContextValueType.NULL) {
-                        type = ContextValueType.LITERAL;
-                    } else value = value.substring(1);
-                    ExecutionContextUtil.setValueECF(ctx, workOrderUri, view, key, type, value);
+
+            if (config == null) {
+                decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), "No configuration document specified", false);
+                return this.getNextTransition();
+            }
+            List<String> configs;
+            try {
+                configs = JacksonUtil.objectFromJson(config, ArrayList.class);
+            } catch (Exception e) {
+                configs = ImmutableList.of(config);
+            }
+
+            for (String conf : configs) {
+                if (docApi.docExists(ctx, conf)) {
+                    String doc = docApi.getDoc(ctx, conf);
+                    Map<String, Object> map = JacksonUtil.getMapFromJson(doc);
+                    for (Entry<String, Object> entry : map.entrySet()) {
+                        String key = entry.getKey();
+                        String value = StringUtils.stripToNull(entry.getValue().toString());
+                        ContextValueType type = ContextValueType.getContextValueType(value.charAt(0));
+                        if (type == ContextValueType.NULL) {
+                            type = ContextValueType.LITERAL;
+                        } else value = value.substring(1);
+                        ExecutionContextUtil.setValueECF(ctx, workOrderUri, view, key, type, value);
+                    }
+                } else {
+                    decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), "Cannot locate configuration document " + conf, false);
                 }
             }
             return Steps.NEXT.toString();
         } catch (Exception e) {
-            Kernel.getDecision().setContextLiteral(ctx, getWorkerURI(), getStepName(), "Exception in workflow : " + e.getLocalizedMessage());
-            Kernel.getDecision().setContextLiteral(ctx, getWorkerURI(), getStepName() + "Error", ExceptionToString.summary(e));
+            decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), "Exception in workflow : " + e.getLocalizedMessage());
+            decision.setContextLiteral(ctx, getWorkerURI(), getErrName(), ExceptionToString.summary(e));
+            log.error(ExceptionToString.format(ExceptionToString.getRootCause(e)));
+            decision.writeWorkflowAuditEntry(ctx, getWorkerURI(),
+                    "Problem in ConfigurationStep " + getStepName() + " - unable to read the configuration document " + config, true);
+            decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), "Error is : " + ExceptionToString.getRootCause(e).getLocalizedMessage(), true);
+
             return getErrorTransition();
         }
     }

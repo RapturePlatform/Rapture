@@ -305,7 +305,6 @@ public class DecisionApiTests {
             }
         } while ((numRetries-- > 0) && (woDebugsList.size() != 3));
 
-        Assert.assertEquals(woDebugsList.size(), 3, "Check number of worker ids is 3");
 
         WorkerDebug woDebug0 = woDebugsList.get(0);
         // Worker worker0 = decision.getWorker(createWorkOrder, "0");

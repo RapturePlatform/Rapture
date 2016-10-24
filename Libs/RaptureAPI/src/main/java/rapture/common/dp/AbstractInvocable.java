@@ -38,12 +38,16 @@ public abstract class AbstractInvocable<T> implements Steps {
     public static final String TIMEOUT = "__reserved__TIMEOUT";
     private String workerUri;
     private Long stepStartTime;
-    private String stepName;
     private ClassLoader classLoader;
 
+    private String stepName;
+    private String errName;
+
     public AbstractInvocable(String workerUri, String stepName) {
+        // TODO Disallow null or empty string, but that breaks several test cases
         this.workerUri = workerUri;
         this.stepName = stepName;
+        errName = stepName + "Error";
     }
 
     public Long getStepStartTime() {
@@ -58,8 +62,13 @@ public abstract class AbstractInvocable<T> implements Steps {
         return stepName;
     }
 
+    public String getErrName() {
+        return errName;
+    }
+
     public void setStepName(String stepName) {
         this.stepName = stepName;
+        this.errName = stepName + "Error";
     }
 
     public String getWorkerURI() {
@@ -76,7 +85,7 @@ public abstract class AbstractInvocable<T> implements Steps {
     public String abortableInvoke(final CallingContext ctx, int timeoutSeconds) {
         final T handle = prepareInterruptableInvocation(ctx);
 
-        FutureTask<String> task = new FutureTask<String>(new Callable<String>() {
+        FutureTask<String> task = new FutureTask<>(new Callable<String>() {
             @Override
             public String call() throws Exception {
                 return invokeHook(ctx, handle);

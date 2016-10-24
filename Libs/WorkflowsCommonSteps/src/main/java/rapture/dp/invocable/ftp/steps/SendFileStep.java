@@ -51,17 +51,22 @@ public class SendFileStep extends AbstractInvocable {
 
     @Override
     public String invoke(CallingContext ctx) {
+        DecisionApi decieion = Kernel.getDecision();
         try {
-            Kernel.getDecision().setContextLiteral(ctx, getWorkerURI(), "STEPNAME", getStepName());
+            decision.setContextLiteral(ctx, getWorkerURI(), "STEPNAME", getStepName());
 
             String configUri = decision.getContextValue(ctx, getWorkerURI(), "FTP_CONFIGURATION");
             if (configUri == null) {
+                decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), "Problem in SendFileStep " + getStepName() + " - parameter FTP_CONFIGURATION is not set",
+                        true);
                 decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), "FTP_CONFIGURATION not set");
                 return getErrorTransition();
             }
 
             if (!Kernel.getDoc().docExists(ctx, configUri)) {
                 decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), "Cannot load FTP_CONFIGURATION from " + configUri);
+                decision.writeWorkflowAuditEntry(ctx, getWorkerURI(),
+                        "Problem in SendFileStep " + getStepName() + " - Cannot load FTP_CONFIGURATION from " + configUri, true);
                 return getErrorTransition();
             }
 
@@ -82,20 +87,21 @@ public class SendFileStep extends AbstractInvocable {
                 connection.doAction(request);
                 if (!request.getStatus().equals(Status.SUCCESS)) {
                     retval = getFailTransition();
-                    log.warn("Unable to send " + e.getKey());
+                    decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), "Unable to send " + e.getKey(), true);
                     failCount++;
                 }
                 requests.add(request);
             }
             if (failCount > 0) {
-                log.error("Unable to send " + failCount + " of " + map.size() + " files)");
+                decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), "Unable to send " + failCount + " of " + map.size() + " files)", true);
             }
             decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), "Sent " + (map.size() - failCount) + " of " + map.size() + " files)");
-            decision.setContextLiteral(ctx, getWorkerURI(), getStepName() + "Result", JacksonUtil.jsonFromObject(requests));
             return retval;
         } catch (Exception e) {
-            Kernel.getDecision().setContextLiteral(ctx, getWorkerURI(), getStepName(), "Unable to send files : " + e.getLocalizedMessage());
-            Kernel.getDecision().setContextLiteral(ctx, getWorkerURI(), getStepName() + "Error", ExceptionToString.summary(e));
+            decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), "Unable to send files : " + e.getLocalizedMessage());
+            decision.setContextLiteral(ctx, getWorkerURI(), getErrName(), ExceptionToString.summary(e));
+            decision.writeWorkflowAuditEntry(ctx, getWorkerURI(),
+                    "Problem in SendFileStep " + getStepName() + " - error is " + ExceptionToString.getRootCause(e).getLocalizedMessage(), true);
             return getErrorTransition();
         }
     }
