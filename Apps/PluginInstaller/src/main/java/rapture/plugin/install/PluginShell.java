@@ -48,6 +48,11 @@ import org.apache.log4j.Appender;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+
 import rapture.common.PluginConfig;
 import rapture.common.PluginManifest;
 import rapture.common.PluginManifestItem;
@@ -84,11 +89,6 @@ import rapture.plugin.validators.SnippetValidator;
 import rapture.plugin.validators.StructureValidator;
 import rapture.plugin.validators.WidgetValidator;
 import rapture.plugin.validators.WorkflowValidator;
-
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 
 /**
  * This class implements a simple DSL for defining, uploading, downloading, installing, uninstalling, and upgrading collections of user content called "plugins"
@@ -288,7 +288,7 @@ public class PluginShell {
                     isLocal = true;
                     featureName = args[++i];
                     i++;
-                    zipFile = (i >= args.length) ? featureName+".zip" : args[i];
+                    zipFile = (i >= args.length) ? featureName + ".zip" : args[i];
                 } else {
                     showProgramUsage();
                     System.exit(1);
@@ -393,57 +393,57 @@ public class PluginShell {
             return;
         }
         switch (uri.getScheme()) {
-            case BLOB:
-                BlobValidator.getValidator().validate(content, uri, errors);
-                break;
-            case DOCUMENT:
-                DocumentValidator.getValidator().validate(content, uri, errors);
-                break;
-            case EVENT:
-                EventValidator.getValidator().validate(content, uri, errors);
-                break;
-            case FIELD:
-                FieldValidator.getValidator().validate(content, uri, errors);
-                break;
-            case IDGEN:
-                IdGenValidator.getValidator().validate(content, uri, errors);
-                break;
-            case JOB:
-                JobValidator.getValidator().validate(content, uri, errors);
-                break;
-            case LOCK:
-                LockValidator.getValidator().validate(content, uri, errors);
-                break;
-            case SCRIPT:
-                ScriptValidator.getValidator().validate(content, uri, errors);
-                break;
-            case SERIES:
-                SeriesValidator.getValidator().validate(content, uri, errors);
-                break;
-            case SNIPPET:
-                SnippetValidator.getValidator().validate(content, uri, errors);
-                break;
-            case TABLE:
-                errors.add(new Note(Note.Level.ERROR, "No Installer available for TABLE scheme"));
-                break;
-            case FIELDTRANSFORM:
-            	FieldTransformValidator.getValidator().validate(content, uri, errors);
-            	break;
-            case STRUCTURE:
-            	StructureValidator.getValidator().validate(content, uri, errors);
-            	break;            	
-            case WORKFLOW:
-                WorkflowValidator.getValidator().validate(content, uri, errors);
-                break;
-            case WIDGET:
-            	WidgetValidator.getValidator().validate(content, uri, errors);
-            	break;
-            case PROGRAM:
-            	ProgramValidator.getValidator().validate(content, uri, errors);
-            	break;
-            default:
-                errors.add(new Note(Note.Level.WARNING, "No validator registered for type " + uri.getScheme()));
-                break;
+        case BLOB:
+            BlobValidator.getValidator().validate(content, uri, errors);
+            break;
+        case DOCUMENT:
+            DocumentValidator.getValidator().validate(content, uri, errors);
+            break;
+        case EVENT:
+            EventValidator.getValidator().validate(content, uri, errors);
+            break;
+        case FIELD:
+            FieldValidator.getValidator().validate(content, uri, errors);
+            break;
+        case IDGEN:
+            IdGenValidator.getValidator().validate(content, uri, errors);
+            break;
+        case JOB:
+            JobValidator.getValidator().validate(content, uri, errors);
+            break;
+        case LOCK:
+            LockValidator.getValidator().validate(content, uri, errors);
+            break;
+        case SCRIPT:
+            ScriptValidator.getValidator().validate(content, uri, errors);
+            break;
+        case SERIES:
+            SeriesValidator.getValidator().validate(content, uri, errors);
+            break;
+        case SNIPPET:
+            SnippetValidator.getValidator().validate(content, uri, errors);
+            break;
+        case TABLE:
+            errors.add(new Note(Note.Level.ERROR, "No Installer available for TABLE scheme"));
+            break;
+        case FIELDTRANSFORM:
+            FieldTransformValidator.getValidator().validate(content, uri, errors);
+            break;
+        case STRUCTURE:
+            StructureValidator.getValidator().validate(content, uri, errors);
+            break;
+        case WORKFLOW:
+            WorkflowValidator.getValidator().validate(content, uri, errors);
+            break;
+        case WIDGET:
+            WidgetValidator.getValidator().validate(content, uri, errors);
+            break;
+        case PROGRAM:
+            ProgramValidator.getValidator().validate(content, uri, errors);
+            break;
+        default:
+            errors.add(new Note(Note.Level.WARNING, "No validator registered for type " + uri.getScheme()));
+            break;
         }
     }
 
@@ -506,18 +506,18 @@ public class PluginShell {
             String addVariant = nextToken(args);
             RaptureURI uri = new RaptureURI(root, null);
             switch (uri.getScheme()) {
-                case BLOB:
-                    addBlobTree(addVariant, sandbox, uri);
-                    break;
-                case DOCUMENT:
-                    addDocTree(addVariant, sandbox, uri);
-                    break;
-                case SERIES:
-                    addSeriesTree(addVariant, sandbox, uri);
-                    break;
-                default:
-                    error("Unsupported type for recursive addition");
-                    return;
+            case BLOB:
+                addBlobTree(addVariant, sandbox, uri);
+                break;
+            case DOCUMENT:
+                addDocTree(addVariant, sandbox, uri);
+                break;
+            case SERIES:
+                addSeriesTree(addVariant, sandbox, uri);
+                break;
+            default:
+                error("Unsupported type for recursive addition");
+                return;
             }
             System.out.println("Done");
         }
