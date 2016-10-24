@@ -28,4 +28,9 @@ println("€" + (b - 100));
 println("¥" + (b - 100.00));
 println("$" + (120 - 100.00));
 println(120.25 - 100.00);
+
+println(1.25 * 1.25 * 100);
+println(100 * 1.25 * 1.25);
+println(round(1.25 * 1.25 * 100, 2));
+println(round(1.25 * 1.25, 2));
 return true;

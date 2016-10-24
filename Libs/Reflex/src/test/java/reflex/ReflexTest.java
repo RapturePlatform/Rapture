@@ -109,7 +109,9 @@ public class ReflexTest extends ResourceBasedTest {
         String ret = runTestFor("/precision.rfx");
         assertTrue("Test case did not complete successfully", ret.endsWith("true"));
         assertEquals(
-                "£1.20\n€1.20\n¥1.20\n$1.20\n1.2025\n\n£12000.00\n€12000.00\n¥12000.00\n$12000.00\n12055.0625\n\n£220.00\n€220.00\n¥220.00\n$220.00\n220.25\n\n£20.00\n€20.00\n¥20.00\n$20.00\n20.25\n--RETURNS--true",
+                "£1.20\n€1.20\n¥1.20\n$1.20\n1.2025\n\n" + "£12000.00\n€12000.00\n¥12000.00\n$12000.00\n12055.0625\n\n"
+                        + "£220.00\n€220.00\n¥220.00\n$220.00\n220.25\n\n" + "£20.00\n€20.00\n¥20.00\n$20.00\n20.25\n" + "156.2500\n156.25\n156.25\n1.56\n"
+                        + "--RETURNS--true",
                 ret);
     }
 
