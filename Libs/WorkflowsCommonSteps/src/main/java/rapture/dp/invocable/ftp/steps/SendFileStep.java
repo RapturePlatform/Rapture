@@ -66,13 +66,14 @@ public class SendFileStep extends AbstractInvocable {
             if (!Kernel.getDoc().docExists(ctx, configUri)) {
                 decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), "Cannot load FTP_CONFIGURATION from " + configUri);
                 decision.writeWorkflowAuditEntry(ctx, getWorkerURI(),
-                        "Problem in SendFileStep " + getStepName() + " - Cannot load FTP_CONFIGURATION from " + configUri, true);
+                        "Problem in " + getStepName() + ": Cannot load FTP_CONFIGURATION from " + configUri, true);
                 return getErrorTransition();
             }
 
             String copy = StringUtils.stripToNull(decision.getContextValue(ctx, getWorkerURI(), "COPY_FILES"));
             if (copy == null) {
                 decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), "No files to copy");
+                decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), getStepName() + ": No files to copy", false);
                 return getNextTransition();
             }
 
@@ -94,6 +95,8 @@ public class SendFileStep extends AbstractInvocable {
             }
             if (failCount > 0) {
                 decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), "Unable to send " + failCount + " of " + map.size() + " files)", true);
+            } else {
+                decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), getStepName() + ": All files sent", false);
             }
             decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), "Sent " + (map.size() - failCount) + " of " + map.size() + " files)");
             return retval;
@@ -101,7 +104,7 @@ public class SendFileStep extends AbstractInvocable {
             decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), "Unable to send files : " + e.getLocalizedMessage());
             decision.setContextLiteral(ctx, getWorkerURI(), getErrName(), ExceptionToString.summary(e));
             decision.writeWorkflowAuditEntry(ctx, getWorkerURI(),
-                    "Problem in SendFileStep " + getStepName() + " - error is " + ExceptionToString.getRootCause(e).getLocalizedMessage(), true);
+                    "Problem in " + getStepName() + ": " + ExceptionToString.getRootCause(e).getLocalizedMessage(), true);
             return getErrorTransition();
         }
     }

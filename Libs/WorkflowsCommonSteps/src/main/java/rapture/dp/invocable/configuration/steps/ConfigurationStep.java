@@ -65,6 +65,7 @@ public class ConfigurationStep extends AbstractInvocable {
             }
             List<String> configs;
             try {
+                // Could be a list or a single entry.
                 configs = JacksonUtil.objectFromJson(config, ArrayList.class);
             } catch (Exception e) {
                 configs = ImmutableList.of(config);
@@ -82,9 +83,10 @@ public class ConfigurationStep extends AbstractInvocable {
                             type = ContextValueType.LITERAL;
                         } else value = value.substring(1);
                         ExecutionContextUtil.setValueECF(ctx, workOrderUri, view, key, type, value);
+                        decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), getStepName() + ": Read configuration data from " + conf, false);
                     }
                 } else {
-                    decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), "Cannot locate configuration document " + conf, false);
+                    decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), getStepName() + ": Cannot locate configuration document " + conf, true);
                 }
             }
             return Steps.NEXT.toString();
@@ -93,8 +95,8 @@ public class ConfigurationStep extends AbstractInvocable {
             decision.setContextLiteral(ctx, getWorkerURI(), getErrName(), ExceptionToString.summary(e));
             log.error(ExceptionToString.format(ExceptionToString.getRootCause(e)));
             decision.writeWorkflowAuditEntry(ctx, getWorkerURI(),
-                    "Problem in ConfigurationStep " + getStepName() + " - unable to read the configuration document " + config, true);
-            decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), "Error is : " + ExceptionToString.getRootCause(e).getLocalizedMessage(), true);
+                    "Problem in " + getStepName() + ": unable to read the configuration document " + config, true);
+            decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), ": " + ExceptionToString.getRootCause(e).getLocalizedMessage(), true);
 
             return getErrorTransition();
         }

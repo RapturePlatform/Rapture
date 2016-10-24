@@ -24,17 +24,18 @@ public class GetDayOfWeekStep extends AbstractInvocable {
         DecisionApi decision = Kernel.getDecision();
         try {
             decision.setContextLiteral(ctx, getWorkerURI(), "STEPNAME", getStepName());
-
             String dateStr = StringUtils.stripToNull(decision.getContextValue(ctx, getWorkerURI(), "DATE"));
             String languageTag = StringUtils.stripToNull(decision.getContextValue(ctx, getWorkerURI(), "LOCALE"));
             LocalDateTime date = (dateStr == null) ? LocalDateTime.now() : LocalDateTime.parse(dateStr);
             Locale locale = (languageTag == null) ? Locale.getDefault() : Locale.forLanguageTag(languageTag);
-            return DayOfWeek.from(date).getDisplayName(TextStyle.FULL, locale);
+            String day = DayOfWeek.from(date).getDisplayName(TextStyle.FULL, locale);
+            decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), "Day of week is " + day, false);
+            return day;
         } catch (Exception e) {
             decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), "Exception in workflow : " + e.getLocalizedMessage());
             decision.setContextLiteral(ctx, getWorkerURI(), getErrName(), ExceptionToString.summary(e));
             decision.writeWorkflowAuditEntry(ctx, getWorkerURI(),
-                    "Problem in GetDayOfWeekStep " + getStepName() + " - error is " + ExceptionToString.getRootCause(e).getLocalizedMessage(), true);
+                    "Problem in " + getStepName() + ": " + ExceptionToString.getRootCause(e).getLocalizedMessage(), true);
             return getErrorTransition();
         }
     }
