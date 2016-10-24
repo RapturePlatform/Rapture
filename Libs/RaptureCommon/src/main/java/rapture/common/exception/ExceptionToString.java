@@ -104,6 +104,7 @@ public class ExceptionToString implements Formattable{
      * @return
      */
     public static Throwable getRootCause(Throwable e) {
-        return org.apache.commons.lang3.exception.ExceptionUtils.getRootCause(e);
+        Throwable t = org.apache.commons.lang3.exception.ExceptionUtils.getRootCause(e);
+        return (t == null) ? e : t;
     }
 }

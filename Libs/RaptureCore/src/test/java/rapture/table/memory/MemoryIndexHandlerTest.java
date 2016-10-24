@@ -29,6 +29,7 @@ import static org.junit.Assert.fail;
 
 import java.util.List;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -39,15 +40,16 @@ import rapture.common.dp.WorkOrder;
 import rapture.common.dp.WorkOrderStorage;
 import rapture.common.exception.ExceptionToString;
 import rapture.common.exception.RaptureException;
+import rapture.common.impl.jackson.JacksonUtil;
 import rapture.dsl.iqry.InvalidQueryException;
 import rapture.kernel.Kernel;
 
 public class MemoryIndexHandlerTest {
 
-    private static final String U1 = "workorder://memTableTest/1";
-    private static final String U2 = "workorder://memTableTest/2";
-    private static final String U3 = "workorder://memTableTest/3";
-    private static final String U4 = "workorder://memTableTest/4";
+    private static final String U1 = "workorder://MemoryIndexHandlerTest/1";
+    private static final String U2 = "workorder://MemoryIndexHandlerTest/2";
+    private static final String U3 = "workorder://MemoryIndexHandlerTest/3";
+    private static final String U4 = "workorder://MemoryIndexHandlerTest/4";
 
     private static final Integer P1 = 0;
     private static final Integer P2 = 0;
@@ -75,6 +77,26 @@ public class MemoryIndexHandlerTest {
             System.err.println("This test needs modification to work on Shippable.");
             doNotRun = doNotRunOnShippable;
         }
+
+        WorkOrderStorage.add(new RaptureURI("workorder://1476662400/workflow/metrics/testNoArgs/wo.00000002"),
+                create("workorder://1476662400/workflow/metrics/testNoArgs/wo.00000002", P1, S1, E1), "test", "unit test");
+        WorkOrderStorage.add(new RaptureURI(U2), create(U2, P2, S2, E2), "test", "unit test");
+        WorkOrderStorage.add(new RaptureURI(U3), create(U3, P3, S3, E3), "test", "unit test");
+        WorkOrderStorage.add(new RaptureURI(U4), create(U4, P4, S4, E4), "test", "unit test");
+
+        // Clean up anything left behind by previous tests. Necessary only when running in Docker
+        String query = String.format("SELECT workOrderURI ");
+        TableQueryResult o = WorkOrderStorage.queryIndex(query);
+
+        if (o.getRows() != null) {
+            for (List row : o.getRows()) {
+                for (Object ob : row) {
+                    WorkOrderStorage.deleteByFields(ob.toString(), "test", "test");
+                    RaptureURI uri = new RaptureURI(ob.toString());
+                    WorkOrderStorage.removeFolder(uri.toAuthString());
+                }
+            }
+        }
     }
 
     @Before
@@ -85,7 +107,7 @@ public class MemoryIndexHandlerTest {
         WorkOrderStorage.add(new RaptureURI(U4), create(U4, P4, S4, E4), "test", "unit test");
     }
 
-    private WorkOrder create(String workOrderURI, Integer priority, Long startTime, Long endTime) {
+    static private WorkOrder create(String workOrderURI, Integer priority, Long startTime, Long endTime) {
         WorkOrder workorder = new WorkOrder();
         workorder.setWorkOrderURI(workOrderURI);
         workorder.setPriority(priority);
@@ -94,6 +116,7 @@ public class MemoryIndexHandlerTest {
         return workorder;
     }
 
+    @After
     public void after() {
         WorkOrderStorage.deleteByFields(U1, "test", "test");
         WorkOrderStorage.deleteByFields(U2, "test", "test");
@@ -190,6 +213,9 @@ public class MemoryIndexHandlerTest {
         if (doNotRun) return;
         String query = String.format("SELECT endTime, startTime, priority, workOrderURI WHERE priority > \"%s\" AND priority < \"%s\"", P2, P4);
         TableQueryResult results = WorkOrderStorage.queryIndex(query);
+        if (results.getRows().size() > 1) {
+            fail("Looks like some clean up is needed: Expected 1 URI but got " + results.getRows().size() + "\n" + JacksonUtil.jsonFromObject(results));
+        }
         assertEquals(1, results.getRows().size());
 
         List<Object> row = results.getRows().get(0);
@@ -204,14 +230,23 @@ public class MemoryIndexHandlerTest {
         if (doNotRun) return;
         String query = String.format("SELECT endTime, workOrderURI WHERE priority < \"%s\" LIMIT 1", P3);
         TableQueryResult results = WorkOrderStorage.queryIndex(query);
+        if (results.getRows().size() > 1) {
+            fail("Looks like some clean up is needed: Expected 1 URI but got " + results.getRows().size() + "\n" + JacksonUtil.jsonFromObject(results));
+        }
         assertEquals(1, results.getRows().size());
 
         query = String.format("SELECT endTime, workOrderURI WHERE priority < \"%s\" LIMIT 2", P4);
         results = WorkOrderStorage.queryIndex(query);
+        if (results.getRows().size() > 2) {
+            fail("Looks like some clean up is needed: Expected 2 URIs but got " + results.getRows().size() + "\n" + JacksonUtil.jsonFromObject(results));
+        }
         assertEquals(2, results.getRows().size());
 
         query = String.format("SELECT endTime, workOrderURI WHERE priority < \"%s\" LIMIT 1", P4);
         results = WorkOrderStorage.queryIndex(query);
+        if (results.getRows().size() > 1) {
+            fail("Looks like some clean up is needed: Expected 1 URI but got " + results.getRows().size() + "\n" + JacksonUtil.jsonFromObject(results));
+        }
         assertEquals(1, results.getRows().size());
     }
 
@@ -230,6 +265,9 @@ public class MemoryIndexHandlerTest {
         String query = String.format("SELECT workOrderURI, startTime, priority WHERE priority < \"%s\" ORDER BY startTime ASC", P4);
         TableQueryResult results = WorkOrderStorage.queryIndex(query);
         List<List<Object>> rows = results.getRows();
+        if (rows.size() > 3) {
+            fail("Looks like some clean up is needed: Expected 3 URIs but got " + rows.size() + "\n" + JacksonUtil.jsonFromObject(rows));
+        }
         assertEquals(3, rows.size());
 
         assertEquals(U3, rows.get(0).get(0).toString());
@@ -248,8 +286,11 @@ public class MemoryIndexHandlerTest {
 
         /* TableQueryResult */ results = WorkOrderStorage.queryIndex(query);
         List<List<Object>> rows = results.getRows();
-        assertEquals(3, rows.size());
+        if (rows.size() > 3) {
+            fail("Looks like some clean up is needed: Expected 3 URIs but got " + rows.size() + "\n" + JacksonUtil.jsonFromObject(rows));
+        }
 
+        assertEquals(3, rows.size());
         assertEquals(U1, rows.get(0).get(0).toString());
         assertEquals(U2, rows.get(1).get(0).toString());
 
@@ -261,6 +302,9 @@ public class MemoryIndexHandlerTest {
         String query = String.format("SELECT workOrderURI, startTime, priority WHERE priority < \"%s\" ORDER BY priority, startTime DESC", P4);
         TableQueryResult results = WorkOrderStorage.queryIndex(query);
         List<List<Object>> rows = results.getRows();
+        if (rows.size() > 3) {
+            fail("Looks like some clean up is needed: Expected 3 URIs but got " + rows.size() + "\n" + JacksonUtil.jsonFromObject(rows));
+        }
         assertEquals(3, rows.size());
 
         assertEquals(U3, rows.get(0).get(0).toString());

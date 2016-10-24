@@ -66,7 +66,19 @@ public class MulNode extends BaseNode {
         } else if (a.isNumber() && b.isNumber()) {
         	BigDecimal bigA = a.asBigDecimal();
         	BigDecimal bigB = b.asBigDecimal();
-            retVal = new ReflexValue(bigA.multiply(bigB));
+            int aScale = bigA.scale();
+            int bScale = bigB.scale();
+            int scale = Math.max(aScale, bScale);
+            BigDecimal result = bigA.multiply(bigB);
+            if (result.scale() > scale) {
+                try {
+                    result = result.setScale(scale, BigDecimal.ROUND_UNNECESSARY);
+                } catch (ArithmeticException e) {
+                    // If rounding was necessary then leave it as-is
+                }
+            }
+            retVal = new ReflexValue(result);
+
         } else if (a.isString() && b.isNumber()) {
             StringBuilder str = new StringBuilder();
             int stop = b.asDouble().intValue();
@@ -76,7 +88,7 @@ public class MulNode extends BaseNode {
             retVal = new ReflexValue(lineNumber, str.toString());
         } else if (a.isList() && b.isNumber()) {
             int stop = b.asDouble().intValue();
-            List<ReflexValue> total = new ArrayList<ReflexValue>(stop);
+            List<ReflexValue> total = new ArrayList<>(stop);
             for (int i = 0; i < stop; i++) {
                 total.addAll(a.asList());
             }
