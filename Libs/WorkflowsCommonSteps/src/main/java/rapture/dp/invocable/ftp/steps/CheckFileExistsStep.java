@@ -107,7 +107,9 @@ public class CheckFileExistsStep extends AbstractInvocable {
             String errMsg = error.toString();
             if (!StringUtils.isEmpty(errMsg)) {
                 log.error(errMsg);
-                decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), errMsg, true);
+                decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), getStepName() + ": " + errMsg, true);
+            } else {
+                decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), getStepName() + ": all files successfully matched", false);
             }
             decision.setContextLiteral(ctx, workOrderUri, getErrName(), errMsg);
             decision.writeWorkflowAuditEntry(ctx, workerUri, errMsg, failCount > 0);
@@ -117,7 +119,7 @@ public class CheckFileExistsStep extends AbstractInvocable {
             decision.setContextLiteral(ctx, workOrderUri, getErrName(), ExceptionToString.summary(e));
             log.error(ExceptionToString.format(ExceptionToString.getRootCause(e)));
             decision.writeWorkflowAuditEntry(ctx, getWorkerURI(),
-                    "Problem in CheckFileExistsStep " + getStepName() + " - error is " + ExceptionToString.getRootCause(e).getLocalizedMessage(), true);
+                    "Problem in " + getStepName() + ": " + ExceptionToString.getRootCause(e).getLocalizedMessage(), true);
             return getErrorTransition();
         }
     }
