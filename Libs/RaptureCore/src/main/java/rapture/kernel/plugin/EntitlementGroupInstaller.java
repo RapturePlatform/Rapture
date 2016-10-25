@@ -28,18 +28,21 @@ import rapture.common.PluginTransportItem;
 import rapture.common.RaptureURI;
 import rapture.common.impl.jackson.JacksonUtil;
 import rapture.common.model.RaptureEntitlementGroup;
-import rapture.common.model.RaptureEntitlementGroupStorage;
-import rapture.kernel.ContextFactory;
+import rapture.kernel.Kernel;
 
 public class EntitlementGroupInstaller implements RaptureInstaller {
+
     @Override
     public void install(CallingContext context, RaptureURI uri, PluginTransportItem item) {
         RaptureEntitlementGroup group = JacksonUtil.objectFromJson(item.getContent(), RaptureEntitlementGroup.class);
-        RaptureEntitlementGroupStorage.add(group, ContextFactory.getKernelUser().getUser(), "Adding from PluginInstaller");
+        Kernel.getEntitlement().addEntitlementGroup(context, group.getName());
+        for (String user : group.getUsers()) {
+            Kernel.getEntitlement().addUserToEntitlementGroup(context, group.getName(), user);
+        }
     }
 
     @Override
     public void remove(CallingContext context, RaptureURI uri, PluginTransportItem item) {
-        RaptureEntitlementGroupStorage.deleteByAddress(uri, context.getUser(), "Removed by PluginInstaller");
+        Kernel.getEntitlement().deleteEntitlementGroup(context, uri.hasDocPath() ? uri.getShortPath() : uri.getAuthority());
     }
 }
