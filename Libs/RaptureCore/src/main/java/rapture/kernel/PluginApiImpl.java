@@ -42,6 +42,13 @@ import java.util.zip.ZipOutputStream;
 import org.apache.http.HttpStatus;
 import org.apache.log4j.Logger;
 
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+import com.google.common.net.MediaType;
+
 import rapture.common.CallingContext;
 import rapture.common.PluginConfig;
 import rapture.common.PluginConfigStorage;
@@ -104,19 +111,14 @@ import rapture.kernel.plugin.StructureInstaller;
 import rapture.kernel.plugin.StructuredEncoder;
 import rapture.kernel.plugin.StructuredRepoMaker;
 import rapture.kernel.plugin.StructuredTableInstaller;
+import rapture.kernel.plugin.UserEncoder;
+import rapture.kernel.plugin.UserInstaller;
 import rapture.kernel.plugin.WidgetEncoder;
 import rapture.kernel.plugin.WidgetInstaller;
 import rapture.kernel.plugin.WorkflowEncoder;
 import rapture.kernel.plugin.WorkflowInstaller;
 import rapture.plugin.install.PluginSandboxItem;
 import rapture.util.IDGenerator;
-
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-import com.google.common.net.MediaType;
 
 public class PluginApiImpl extends KernelBase implements PluginApi {
 
@@ -145,6 +147,7 @@ public class PluginApiImpl extends KernelBase implements PluginApi {
             .put(Scheme.ENTITY, new EntityEncoder())
             .put(Scheme.WIDGET, new WidgetEncoder())
             .put(Scheme.PROGRAM, new ProgramEncoder())
+            .put(Scheme.USER, new UserEncoder())
             .build();
 
     public PluginApiImpl(Kernel raptureKernel) {
@@ -208,6 +211,7 @@ public class PluginApiImpl extends KernelBase implements PluginApi {
             .put(Scheme.ENTITY, new EntityInstaller())
             .put(Scheme.WIDGET, new WidgetInstaller())
             .put(Scheme.PROGRAM, new ProgramInstaller())
+            .put(Scheme.USER, new UserInstaller())
             .build();
 
     private Map<Scheme, RaptureInstaller> scheme2repoMaker = ImmutableMap.<Scheme, RaptureInstaller> builder()
