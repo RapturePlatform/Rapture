@@ -23,12 +23,26 @@
  */
 package rapture.kernel.plugin;
 
+import java.net.HttpURLConnection;
+
 import rapture.common.CallingContext;
+import rapture.common.RaptureURI;
+import rapture.common.Scheme;
+import rapture.common.exception.RaptureExceptionFactory;
+import rapture.common.model.RaptureEntitlementGroup;
 import rapture.kernel.Kernel;
 
 public class EntitlementGroupEncoder extends ReflectionEncoder {
+
     @Override
     public Object getReflectionObject(CallingContext ctx, String uri) {
-        return Kernel.getEntitlement().getEntitlementGroupByAddress(ctx, uri);
+        // we dont use *Storage.readByAddress so that we preserve entitlement checking
+        RaptureURI ruri = new RaptureURI(uri, Scheme.ENTITLEMENTGROUP);
+        String groupname = ruri.hasDocPath() ? ruri.getShortPath() : ruri.getAuthority();
+        RaptureEntitlementGroup group = Kernel.getEntitlement().getEntitlementGroup(ctx, groupname);
+        if (group == null) {
+            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, String.format("Group [%s] not found", groupname));
+        }
+        return group;
     }
 }

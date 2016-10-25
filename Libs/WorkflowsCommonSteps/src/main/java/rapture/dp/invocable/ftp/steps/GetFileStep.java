@@ -62,7 +62,7 @@ public class GetFileStep extends AbstractInvocable {
             String configUri = decision.getContextValue(ctx, getWorkerURI(), "FTP_CONFIGURATION");
             if (configUri == null) {
                 decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), "FTP_CONFIGURATION not set");
-                decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), "Problem in GetFileStep " + getStepName() + " - parameter FTP_CONFIGURATION is not set",
+                decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), "Problem in " + getStepName() + " - parameter FTP_CONFIGURATION is not set",
                         true);
                 return getErrorTransition();
             }
@@ -70,7 +70,7 @@ public class GetFileStep extends AbstractInvocable {
             if (!Kernel.getDoc().docExists(ctx, configUri)) {
                 decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), "Cannot load FTP_CONFIGURATION from " + configUri);
                 decision.writeWorkflowAuditEntry(ctx, getWorkerURI(),
-                        "Problem in GetFileStep " + getStepName() + " - Cannot load FTP_CONFIGURATION from " + configUri, true);
+                        "Problem in " + getStepName() + " - Cannot load FTP_CONFIGURATION from " + configUri, true);
                 return getErrorTransition();
             }
 
@@ -96,7 +96,9 @@ public class GetFileStep extends AbstractInvocable {
             String err = sb.toString();
             if (!StringUtils.isEmpty(err)) {
                 log.error(err);
-                decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), err, true);
+                decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), getStepName() + ": " + err, true);
+            } else {
+                decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), getStepName() + ": All files retrieved", false);
             }
             decision.setContextLiteral(ctx, getWorkerURI(), getErrName(), err);
             return retval;
@@ -105,7 +107,7 @@ public class GetFileStep extends AbstractInvocable {
             decision.setContextLiteral(ctx, getWorkerURI(), getErrName(), ExceptionToString.summary(e));
             log.error(ExceptionToString.format(ExceptionToString.getRootCause(e)));
             decision.writeWorkflowAuditEntry(ctx, getWorkerURI(),
-                    "Problem in GetFileStep " + getStepName() + " - error is " + ExceptionToString.getRootCause(e).getLocalizedMessage(), true);
+                    "Problem in " + getStepName() + ": " + ExceptionToString.getRootCause(e).getLocalizedMessage(), true);
             return getErrorTransition();
         }
     }

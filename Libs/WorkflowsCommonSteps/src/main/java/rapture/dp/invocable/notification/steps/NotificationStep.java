@@ -60,7 +60,7 @@ public class NotificationStep extends AbstractInvocable {
         String types = StringUtils.stripToNull(decision.getContextValue(ctx, getWorkerURI(), "NOTIFY_TYPE"));
 
         if (types == null) {
-            decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), "Problem in NotificationStep " + getStepName() + " - parameter NOTIFY_TYPE is not set", true);
+            decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), "Problem in " + getStepName() + ": parameter NOTIFY_TYPE is not set", true);
             return getErrorTransition();
         }
         StringBuffer error = new StringBuffer();
@@ -74,7 +74,7 @@ public class NotificationStep extends AbstractInvocable {
             } catch (Exception e) {
                 Throwable cause = ExceptionToString.getRootCause(e);
                 error.append("Cannot send email notification : ").append(cause.getLocalizedMessage()).append("\n");
-                decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), "Problem in NotificationStep " + getStepName() + " - slack notification failed", true);
+                decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), "Problem in " + getStepName() + ": slack notification failed", true);
                 decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), ExceptionToString.summary(cause), true);
                 retval = getErrorTransition();
             }
@@ -86,7 +86,7 @@ public class NotificationStep extends AbstractInvocable {
             } catch (Exception e) {
                 Throwable cause = ExceptionToString.getRootCause(e);
                 error.append("Cannot send slack notification : ").append(cause.getLocalizedMessage()).append("\n");
-                decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), "Problem in NotificationStep " + getStepName() + " - email notification failed", true);
+                decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), "Problem in NotificationStep " + getStepName() + ": email notification failed", true);
                 decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), ExceptionToString.summary(cause), true);
                 log.error(ExceptionToString.format(ExceptionToString.getRootCause(e)));
                 retval = getErrorTransition();
@@ -128,13 +128,13 @@ public class NotificationStep extends AbstractInvocable {
         String templateName = StringUtils.stripToNull(decision.getContextValue(ctx, getWorkerURI(), "MESSAGE_TEMPLATE"));
         String webhook = StringUtils.stripToNull(decision.getContextValue(ctx, getWorkerURI(), "SLACK_WEBHOOK"));
         if (webhook == null) {
-            decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), "Problem in NotificationStep " + getStepName() + " - No webhook specified", true);
+            decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), "Problem in " + getStepName() + ": No webhook specified", true);
             return false;
         }
 
         if (message == null) {
             if (templateName == null) {
-                decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), "Problem in NotificationStep " + getStepName() + " - No message specified", true);
+                decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), "Problem in " + getStepName() + ": No message specified", true);
                 return false;
             }
             EmailTemplate template = Mailer.getEmailTemplate(ctx, templateName);
@@ -144,9 +144,14 @@ public class NotificationStep extends AbstractInvocable {
         Map<String, String> slackNotification = new HashMap<>();
         slackNotification.put("text", renderTemplate(ctx, message));
         int response = doPost(url, JacksonUtil.bytesJsonFromObject(slackNotification));
-        if (response == 200) return true;
-        decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), "Problem in NotificationStep " + getStepName() + " - HTTPPost returned code " + response, true);
-        return false;
+        if (response == 200) {
+            decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), getStepName() + ": slack notification sent successfully", false);
+            return true;
+        } else {
+            decision.writeWorkflowAuditEntry(ctx, getWorkerURI(),
+                    "Problem in " + getStepName() + ": slack notification failed with HTTP error code " + response, true);
+            return false;
+        }
     }
 
     // Provided as an alternative to using admin.emailUser
@@ -169,12 +174,12 @@ public class NotificationStep extends AbstractInvocable {
         }
 
         if (message == null) {
-            decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), "Problem in NotificationStep " + getStepName() + " - No message specified", true);
+            decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), "Problem in " + getStepName() + ": No message specified", true);
             return false;
         }
 
         if (recipientList == null) {
-            decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), "Problem in NotificationStep " + getStepName() + " - No recipient specified", true);
+            decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), "Problem in " + getStepName() + ": No recipient specified", true);
             return false;
         }
 
@@ -204,6 +209,7 @@ public class NotificationStep extends AbstractInvocable {
         msg.setContent(renderTemplate(ctx, message), MediaType.PLAIN_TEXT_UTF_8.toString());
         msg.setSentDate(new Date());
         Transport.send(msg);
+        decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), getStepName() + ": email notification sent successfully", false);
         return true;
     }
 }

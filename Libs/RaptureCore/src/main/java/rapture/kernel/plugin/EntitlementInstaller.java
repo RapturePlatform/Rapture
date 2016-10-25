@@ -23,23 +23,35 @@
  */
 package rapture.kernel.plugin;
 
+import java.util.Iterator;
+
+import org.apache.commons.collections.CollectionUtils;
+
 import rapture.common.CallingContext;
 import rapture.common.PluginTransportItem;
 import rapture.common.RaptureURI;
 import rapture.common.impl.jackson.JacksonUtil;
 import rapture.common.model.RaptureEntitlement;
-import rapture.common.model.RaptureEntitlementStorage;
-import rapture.kernel.ContextFactory;
+import rapture.kernel.Kernel;
 
 public class EntitlementInstaller implements RaptureInstaller {
+
     @Override
     public void install(CallingContext context, RaptureURI uri, PluginTransportItem item) {
         RaptureEntitlement entitlement = JacksonUtil.objectFromJson(item.getContent(), RaptureEntitlement.class);
-        RaptureEntitlementStorage.add(entitlement, ContextFactory.getKernelUser().getUser(), "Adding from PluginInstaller");
+        if (CollectionUtils.isEmpty(entitlement.getGroups())) {
+            Kernel.getEntitlement().addEntitlement(context, entitlement.getName(), null);
+        } else {
+            Iterator<String> iterator = entitlement.getGroups().iterator();
+            Kernel.getEntitlement().addEntitlement(context, entitlement.getName(), iterator.next());
+            while (iterator.hasNext()) {
+                Kernel.getEntitlement().addGroupToEntitlement(context, entitlement.getName(), iterator.next());
+            }
+        }
     }
 
     @Override
     public void remove(CallingContext context, RaptureURI uri, PluginTransportItem item) {
-        RaptureEntitlementStorage.deleteByAddress(uri, context.getUser(), "Removed by PluginInstaller");  
+        Kernel.getEntitlement().deleteEntitlement(context, uri.getShortPath());
     }
 }
