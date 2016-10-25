@@ -811,8 +811,33 @@ public class DecisionApiImpl extends KernelBase implements DecisionApi {
     }
 
     @Override
+    public Map<String, List<String>> getWorkOrderStatusesByWorkflow(CallingContext context, Long startTimeInstant, String workflowUri) {
+        Map<String, List<String>> ret = new HashMap<>();
+        List<WorkOrder> wos = getWorkOrderObjectsByWorkflow(context, startTimeInstant, workflowUri);
+        for (WorkOrder wo : wos) {
+            String status = wo.getStatus().toString();
+            List<String> workorders = ret.get(status);
+            if (workorders == null) {
+                ret.put(status, new ArrayList<>(Arrays.asList(wo.getWorkOrderURI())));
+            } else {
+                workorders.add(wo.getWorkOrderURI());
+            }
+        }
+        return ret;
+    }
+
+    @Override
     public List<String> getWorkOrdersByWorkflow(CallingContext context, Long startTimeInstant, String workflowUri) {
         List<String> ret = new ArrayList<>();
+        List<WorkOrder> wos = getWorkOrderObjectsByWorkflow(context, startTimeInstant, workflowUri);
+        for (WorkOrder wo : wos) {
+            ret.add(wo.getWorkOrderURI());
+        }
+        return ret;
+    }
+
+    private List<WorkOrder> getWorkOrderObjectsByWorkflow(CallingContext context, Long startTimeInstant, String workflowUri) {
+        List<WorkOrder> ret = new ArrayList<>();
         // if the document://WorkOrder repo doesn't exist, aka no workflows have been run yet, just return empty
         if (!Kernel.getDoc().docRepoExists(context, WorkOrderPathBuilder.getRepoName())) {
             return ret;
@@ -834,10 +859,7 @@ public class DecisionApiImpl extends KernelBase implements DecisionApi {
             // check if the timestamp is within range and also if there is an matching workflow authority
             if (!startDate.isAfter(potentialTimestamp) && existingTimesWithAuthority.containsKey(String.format("%s%s/", entry.getKey(), uri.getAuthority()))) {
                 String prefix = String.format("%s/%s/%s", entry.getValue().getName(), uri.getAuthority(), uri.getDocPath());
-                List<WorkOrder> workOrders = WorkOrderStorage.readAll(prefix);
-                for (WorkOrder workOrder : workOrders) {
-                    ret.add(workOrder.getWorkOrderURI());
-                }
+                ret.addAll(WorkOrderStorage.readAll(prefix));
             }
         }
         return ret;
