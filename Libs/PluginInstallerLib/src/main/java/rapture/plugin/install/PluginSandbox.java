@@ -70,17 +70,17 @@ import rapture.common.impl.jackson.JacksonUtil;
 import rapture.plugin.PluginUtil;
 
 /**
- * The Plugin Sandbox is a client-side representation of a plugin. The plugin
- * is a three-way binding between a zip archive representing a plugin, a
- * directory representing the plugin (the same as the zip file but expanded),
- * and the resources in the server. Any of the three binding points can be left
- * unbound when only a one-way or two-way use is required. The sandbox tracks
- * which changes have been propagated to what bindings. Refreshing for changes
- * from other clients is done only on request.
+ * The Plugin Sandbox is a client-side representation of a plugin. The plugin is a three-way binding between a zip archive representing a plugin, a directory
+ * representing the plugin (the same as the zip file but expanded), and the resources in the server. Any of the three binding points can be left unbound when
+ * only a one-way or two-way use is required. The sandbox tracks which changes have been propagated to what bindings. Refreshing for changes from other clients
+ * is done only on request.
  *
  * @author mel
  */
 public class PluginSandbox {
+
+    private static final Logger log = Logger.getLogger(PluginSandbox.class);
+
     private boolean strict = false;
     private String pluginName;
     private String description;
@@ -199,7 +199,7 @@ public class PluginSandbox {
     }
 
     private Collection<PluginSandboxItem> getVariantItems(String thisVariant) {
-        if (thisVariant == null) return ImmutableSet.<PluginSandboxItem>of();
+        if (thisVariant == null) return ImmutableSet.<PluginSandboxItem> of();
         List<String> matches = Lists.newArrayList();
         for (String name : variant2map.keySet()) {
             if (name.equalsIgnoreCase(thisVariant)) {
@@ -380,8 +380,6 @@ public class PluginSandbox {
         return manifest;
     }
 
-    private static Logger logger = Logger.getLogger(PluginSandbox.class.getName());
-
     public PluginSandboxItem makeItemFromInternalEntry(RaptureURI uri, InputStream is, String variant) throws NoSuchAlgorithmException, IOException {
         MessageDigest md = MessageDigest.getInstance("MD5");
         byte[] content = PluginContentReader.readFromStreamWithDigest(is, md);
@@ -394,14 +392,15 @@ public class PluginSandbox {
         return result;
     }
 
-    public PluginSandboxItem makeItemFromInternalEntry(RaptureURI uri, InputStream is, String fullPath, String variant) throws NoSuchAlgorithmException, IOException {
+    public PluginSandboxItem makeItemFromInternalEntry(RaptureURI uri, InputStream is, String fullPath, String variant)
+            throws NoSuchAlgorithmException, IOException {
         PluginSandboxItem result = makeItemFromInternalEntry(uri, is, null);
-        if(!StringUtils.isBlank(fullPath)) {
+        if (!StringUtils.isBlank(fullPath)) {
             result.setFullFilePath(fullPath);
         }
         return result;
     }
-    
+
     public void makeItemFromZipEntry(ZipFile zip, ZipEntry entry) throws IOException, NoSuchAlgorithmException {
         if ("plugin.txt".equals(entry.getName())) return;
         MessageDigest md = MessageDigest.getInstance("MD5");
@@ -414,10 +413,10 @@ public class PluginSandbox {
             }
             byte[] content = PluginContentReader.readFromZip(zip, entry, md);
 
-            if (logger.isDebugEnabled()) {
-                logger.debug(String.format("name=%s, size=%s", entry.getName(), entry.getSize()));
-                logger.debug(String.format("content size=%s", content.length));
-                logger.debug("********* SAME??? " + (content.length == entry.getSize()));
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("name=%s, size=%s", entry.getName(), entry.getSize()));
+                log.debug(String.format("content size=%s", content.length));
+                log.debug("********* SAME??? " + (content.length == entry.getSize()));
             }
             String hash = Hex.encodeHexString(md.digest());
 
@@ -459,19 +458,19 @@ public class PluginSandbox {
                     String line = br.readLine();
                     // NULL means we are done reading
                     if (line == null) break;
-                    
+
                     // Ignore blank lines or lines starting with #
                     line = line.trim();
                     if (line.isEmpty() || line.startsWith("#")) continue;
-                    
+
                     // Here we could import definitions from other files or Other Magic
-                    
+
                     // Assume that the string is a regular expression pattern
                     ignores.add(Pattern.compile(line));
                 }
                 return ignores;
             } catch (IOException e) {
-                System.out.println("Unable to read "+ignoreFile.getAbsolutePath()+" : "+e.getMessage());
+                System.out.println("Unable to read " + ignoreFile.getAbsolutePath() + " : " + e.getMessage());
             }
         }
         return null;
@@ -489,17 +488,17 @@ public class PluginSandbox {
             }
         }
     }
-    
+
     private void loadDir(File dir, Set<Pattern> ignore) {
         if (debug) System.out.println("Loading from " + dir.getAbsolutePath());
-        
+
         Set<Pattern> localIgnores = parseIgnoreFile(dir);
         if (localIgnores != null) {
             if (ignore != null) {
                 localIgnores.addAll(ignore);
             }
             ignore = localIgnores;
-        }                
+        }
 
         File file[] = dir.listFiles();
         for (File f : file) {
@@ -520,7 +519,7 @@ public class PluginSandbox {
                 if (IGNORE.equals(f.getName())) return;
                 for (Pattern pattern : ignore) {
                     if (pattern.matcher(f.getAbsolutePath()).matches()) {
-                        warn("Ignoring "+f.getAbsolutePath()+" because it matches pattern "+pattern.pattern());
+                        warn("Ignoring " + f.getAbsolutePath() + " because it matches pattern " + pattern.pattern());
                         return;
                     }
                 }

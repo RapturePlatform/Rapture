@@ -95,16 +95,18 @@ public class CalendarLookupStep extends AbstractInvocable {
             for (Entry<String, Object> calEntry : calendarTable.entrySet()) {
                 if (lookup.contains(calEntry.getKey())) {
                     decision.setContextLiteral(ctx, getWorkerURI(), "CALENDAR_LOOKUP_ENTRY", JacksonUtil.jsonFromObject(calEntry));
+                    decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), calEntry.getKey() + " matched as " + calEntry.getValue().toString(), false);
                     return calEntry.getValue().toString();
                 }
             }
-
+            decision.writeWorkflowAuditEntry(ctx, getWorkerURI(),
+                    getStepName() + ": No matches for " + DateTimeFormatter.ISO_LOCAL_DATE.format(date) + " found in calendar", false);
             return getNextTransition();
         } catch (Exception e) {
             decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), "Unable to access the calendar : " + e.getLocalizedMessage());
             decision.setContextLiteral(ctx, getWorkerURI(), getStepName() + "Error", ExceptionToString.summary(e));
             decision.writeWorkflowAuditEntry(ctx, getWorkerURI(),
-                    "Problem in CalendarLookupStep " + getStepName() + "Error is : " + ExceptionToString.getRootCause(e).getLocalizedMessage(), true);
+                    "Problem in " + getStepName() + ": " + ExceptionToString.getRootCause(e).getLocalizedMessage(), true);
             return getErrorTransition();
         }
     }
