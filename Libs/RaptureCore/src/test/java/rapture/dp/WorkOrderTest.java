@@ -44,6 +44,7 @@ import rapture.common.JobType;
 import rapture.common.RaptureJobExec;
 import rapture.common.RaptureScriptLanguage;
 import rapture.common.RaptureScriptPurpose;
+import rapture.common.WorkOrderExecutionState;
 import rapture.common.dp.Step;
 import rapture.common.dp.WorkOrder;
 import rapture.common.dp.Workflow;
@@ -130,6 +131,16 @@ public class WorkOrderTest {
         ret = Kernel.getDecision().getWorkOrdersByWorkflow(ctx, null, workflowUri);
         assertEquals(1, ret.size());
         assertEquals(workOrderUri, ret.get(0));
+
+    }
+
+    @Test
+    public void testGetWorkOrderStatusesByWorkflow() {
+        final String workOrderUri = Kernel.getDecision().createWorkOrder(ctx, workflowUri, null);
+        Map<String, List<String>> statuses = Kernel.getDecision().getWorkOrderStatusesByWorkflow(ctx, System.currentTimeMillis(), workflowUri);
+        assertEquals(1, statuses.size());
+        assertEquals(WorkOrderExecutionState.NEW.toString(), statuses.entrySet().iterator().next().getKey());
+        assertEquals(workOrderUri, statuses.entrySet().iterator().next().getValue().get(0));
     }
 
     @Test

@@ -27,7 +27,6 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static rapture.common.Scheme.BLOB;
 import static rapture.common.Scheme.DOCUMENT;
 import static rapture.common.Scheme.EVENT;
-import static rapture.common.Scheme.FIELD;
 import static rapture.common.Scheme.IDGEN;
 import static rapture.common.Scheme.INDEX;
 import static rapture.common.Scheme.JAR;
@@ -58,6 +57,7 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
+import org.apache.log4j.Logger;
 
 import com.google.common.base.Objects;
 import com.google.common.collect.BiMap;
@@ -80,13 +80,17 @@ import rapture.util.MimeTypeResolver;
  * @author mel
  */
 public class PluginSandboxItem {
+
+    private static final Logger log = Logger.getLogger(PluginSandboxItem.class);
+
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
     @Override
     public String toString() {
         return "PluginSandboxItem [uri=" + uri + ", variant=" + variant + ", file=" + file + ", fullFilePath=" + fullFilePath + ", fileHash=" + fileHash
-                + ", remoteHash=" + remoteHash + ", content=" + Arrays.toString(getContent()) + ", fileCurrent=" + fileCurrent + ", remoteCurrent=" + remoteCurrent
+                + ", remoteHash=" + remoteHash + ", content=" + Arrays.toString(getContent()) + ", fileCurrent=" + fileCurrent + ", remoteCurrent="
+                + remoteCurrent
                 + "]";
     }
 
@@ -171,20 +175,31 @@ public class PluginSandboxItem {
     }
 
     public static String calculatePath(RaptureURI uri, String variant) {
+        // allow users to specify uris without docpaths for objects that dont require it e.g. user://rapture
+        switch (uri.getScheme()) {
+        case USER:
+        case ENTITLEMENTGROUP:
+            if (!uri.hasDocPath()) {
+                return topDir(variant) + scrub(uri.getAuthority()) + getExtFromUri(uri);
+            }
+            break;
+        default:
+            break;
+        }
         return topDir(variant) + scrub(uri.getShortPath()) + getExtFromUri(uri);
     }
 
     private static String getExtFromUri(RaptureURI uri) {
-        if(!uri.hasAttribute()) {
+        if (!uri.hasAttribute()) {
             return ext2scheme.inverse().get(uri.getScheme());
         }
         switch (uri.getScheme()) {
-            case BLOB:
-                return ".bits";
-            case SCRIPT:
-                return "jjs".equals(uri.getAttribute()) ? ".jjs" : ".rfx";
-            default:
-                return "";
+        case BLOB:
+            return ".bits";
+        case SCRIPT:
+            return "jjs".equals(uri.getAttribute()) ? ".jjs" : ".rfx";
+        default:
+            return "";
         }
     }
 
@@ -205,7 +220,20 @@ public class PluginSandboxItem {
         String variant = (leafTail.startsWith(CONTENTDIR)) ? null : extractVariant(leafTail);
         Triple<String, String, Scheme> trip = extractScheme(leafTail.substring(variantLength(variant)));
         checkArgument(trip != null, "extraneuous file");
-        RaptureURI uri = RaptureURI.createFromFullPathWithAttribute(trip.getLeft(), trip.getMiddle(), trip.getRight());
+        RaptureURI uri = null;
+        switch (trip.getRight()) {
+        case USER:
+        case ENTITLEMENTGROUP:
+            if (trip.getLeft().indexOf("/") == -1) {
+                uri = new RaptureURI(trip.getLeft(), trip.getRight());
+            }
+            break;
+        default:
+            break;
+        }
+        if (uri == null) {
+            uri = RaptureURI.createFromFullPathWithAttribute(trip.getLeft(), trip.getMiddle(), trip.getRight());
+        }
         return new ImmutablePair<RaptureURI, String>(uri, variant);
     }
 
@@ -246,14 +274,14 @@ public class PluginSandboxItem {
                 path = path.substring(0, chop);
             }
             switch (scheme) {
-                case BLOB:
-                    attr = getResolver().getMimeTypeFromPath(path);
-                    break;
-                case SCRIPT:
-                    attr = schemeName.equals(".jjs") ? "jjs" : "raw";
-                    break;
-                default:
-                    throw new Error("Severe: Unhandled scheme in raw2scheme map"); // can only happen if a bad checkin is made
+            case BLOB:
+                attr = getResolver().getMimeTypeFromPath(path);
+                break;
+            case SCRIPT:
+                attr = schemeName.equals(".jjs") ? "jjs" : "raw";
+                break;
+            default:
+                throw new Error("Severe: Unhandled scheme in raw2scheme map"); // can only happen if a bad checkin is made
             }
         } else {
             path = path.substring(0, chop);
@@ -370,6 +398,9 @@ public class PluginSandboxItem {
             .put(".ftransform", Scheme.FIELDTRANSFORM)
             .put(".entity", Scheme.ENTITY)
             .put(".widget", Scheme.WIDGET)
+            .put(".user", Scheme.USER)
+            .put(".group", Scheme.ENTITLEMENTGROUP)
+            .put(".entitlement", Scheme.ENTITLEMENT)
             .build();
 
     // do not edit this without making matching edits to extractScheme and getExtFromURI
@@ -422,8 +453,9 @@ public class PluginSandboxItem {
         } else {
             download(client, false);
         }
-        if ((getContent() != null) && (getContent().length > 0))
+        if ((getContent() != null) && (getContent().length > 0)) {
             out.write(getContent());
+        }
     }
 
     public String getHash() {
@@ -454,7 +486,6 @@ public class PluginSandboxItem {
         result.setContent(getContent());
         result.setUri(uri.toString());
         result.setHash(getHash());
-
         return result;
     }
 
