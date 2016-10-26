@@ -1,7 +1,33 @@
+/**
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package rapture.dp.invocable.ftp.steps;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+
+import java.io.File;
+import java.io.IOException;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -21,10 +47,22 @@ import rapture.kernel.dp.ExecutionContextUtil;
 public class CheckFileExistsStepTest {
 
     AuditApiImpl audit;
+    File tempDir = new File("/tmp/etc/foo/");
 
     @Before
     public void doBefore() {
         System.setProperty("LOGSTASH-ISENABLED", "false");
+
+        try {
+            tempDir.mkdirs();
+            tempDir.deleteOnExit();
+            File.createTempFile("alias", "foo", tempDir);
+            File.createTempFile("alias", "bar", tempDir);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
         audit = Kernel.getAudit().getTrusted();
         CallingContext context = ContextFactory.getKernelUser();
         if (audit.doesAuditLogExist(context, RaptureConstants.DEFAULT_AUDIT_URI)) {
@@ -152,7 +190,7 @@ public class CheckFileExistsStepTest {
         String workerUri = "workorder://x/y#0";
         CheckFileExistsStep cfes = new CheckFileExistsStep(workerUri, "foo8");
         Kernel.getDecision().setContextLiteral(ctx, workerUri, "EXIST_FILENAMES",
-                JacksonUtil.jsonFromObject(ImmutableMap.of("file://etc/alia.*", Boolean.TRUE)));
+                JacksonUtil.jsonFromObject(ImmutableMap.of("file://tmp/etc/foo/alia.*", Boolean.TRUE)));
         String trans = cfes.invoke(ctx);
         assertEquals("", Kernel.getDecision().getContextValue(ctx, workerUri, "foo8Error"));
         assertEquals(cfes.getNextTransition(), trans);
@@ -164,12 +202,12 @@ public class CheckFileExistsStepTest {
         String workerUri = "workorder://x/y#0";
         CheckFileExistsStep cfes = new CheckFileExistsStep(workerUri, "foo9");
         Kernel.getDecision().setContextLiteral(ctx, workerUri, "EXIST_FILENAMES",
-                JacksonUtil.jsonFromObject(ImmutableMap.of("file://etc/alia.*", Boolean.FALSE)));
+                JacksonUtil.jsonFromObject(ImmutableMap.of("file://tmp/etc/foo/alia.*", Boolean.FALSE)));
         String trans = cfes.invoke(ctx);
         String foo9Error = Kernel.getDecision().getContextValue(ctx, workerUri, "foo9Error");
         foo9Error = foo9Error.substring(foo9Error.indexOf(' '));
 
-        assertEquals(" files or directories matching file://etc/alia.* were found but were not expected", foo9Error);
+        assertEquals(" files or directories matching file://tmp/etc/foo/alia.* were found but were not expected", foo9Error);
         assertEquals(cfes.getFailTransition(), trans);
     }
 
@@ -180,12 +218,12 @@ public class CheckFileExistsStepTest {
         CheckFileExistsStep cfes = new CheckFileExistsStep(workerUri, "foo10");
         Kernel.getDecision().setContextLiteral(ctx, workerUri, "EXIST_FILENAMES",
                 JacksonUtil.jsonFromObject(
-                        ImmutableMap.of("/etc/a.*", Boolean.FALSE, "/foo", Boolean.TRUE, "file://bar", Boolean.TRUE, "/etc/.osts", Boolean.FALSE)));
+                        ImmutableMap.of("/tmp/etc/foo/a.*", Boolean.FALSE, "/foo", Boolean.TRUE, "file://bar", Boolean.TRUE, "/etc/.osts", Boolean.FALSE)));
         String trans = cfes.invoke(ctx);
         String foo10Error = Kernel.getDecision().getContextValue(ctx, workerUri, "foo10Error");
         foo10Error = foo10Error.substring(foo10Error.indexOf(' '));
         assertEquals(
-                " files or directories matching /etc/a.* were found but were not expected\n" + "/foo was not found but was expected\n"
+                " files or directories matching /tmp/etc/foo/a.* were found but were not expected\n" + "/foo was not found but was expected\n"
                         + "file://bar was not found but was expected\n" + "/etc/hosts was found but was not expected",
                 foo10Error);
         assertEquals(cfes.getFailTransition(), trans);
