@@ -25,3 +25,5 @@ task fatJar(type: Jar) {
 }
 
 build.dependsOn(fatJar)
+test.dependsOn(fatJar)
+install.dependsOn(build)
