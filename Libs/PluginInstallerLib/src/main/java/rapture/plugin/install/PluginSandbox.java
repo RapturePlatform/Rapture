@@ -474,9 +474,9 @@ public class PluginSandbox {
             if (StringUtils.isBlank(line)) {
                 continue;
             }
-            // Ignore blank lines or lines starting with #
+            // Ignore lines starting with #
             line = line.trim();
-            if (line.isEmpty() || line.startsWith("#")) {
+            if (line.startsWith("#")) {
                 continue;
             }
             // Assume that the string is a regular expression pattern
