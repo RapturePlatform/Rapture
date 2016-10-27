@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+
 import com.google.common.collect.Maps;
 
 import rapture.common.PluginConfig;
@@ -150,9 +151,8 @@ public class SelfInstaller {
         SandboxLoader loader;
         String rootPath = resourcePath + "/" + PluginSandbox.CONTENT;
         URL dirURL = SelfInstaller.class.getClass().getResource(rootPath);
-        // Can happen if content directory is missing - only overlays in the plugin
-        if (dirURL == null) return;
-        if ("jar".equals(dirURL.getProtocol())) {
+
+        if ((dirURL != null) && "jar".equals(dirURL.getProtocol())) {
             loader = new JarBasedSandboxLoader();
         } else {
             isFileBased = true;
