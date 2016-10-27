@@ -24,10 +24,8 @@
 package rapture.plugin.install;
 
 import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -36,13 +34,14 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Scanner;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.TreeSet;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -53,11 +52,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Logger;
 
+import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.google.common.io.Files;
 
 import rapture.common.PluginConfig;
 import rapture.common.PluginManifest;
@@ -87,6 +88,11 @@ public class PluginSandbox {
     private PluginVersion version;
     private File rootDir;
     private static final boolean debug = true;
+
+    /*
+     * set of regexes (in insertion order) that determine which files to not process
+     */
+    private Set<Pattern> ignorePatterns = new LinkedHashSet<>();
 
     public static final String CONTENT = PluginSandboxItem.CONTENTDIR;
     public static final String PLUGIN_TXT = "plugin.txt";
@@ -286,6 +292,9 @@ public class PluginSandbox {
     }
 
     private void updateIndex(RaptureURI uri, String variant, PluginSandboxItem item) {
+        if (!shouldInclude(uri)) {
+            return;
+        }
         if (variant == null) uri2item.put(uri.toString(), item);
         else putVariantItem(uri, variant, item);
     }
@@ -444,85 +453,69 @@ public class PluginSandbox {
         readContent("*");
     }
 
-    // Define the filename
-    private static final String IGNORE = "plugin.ignore";
+    // Define the filename of the ignore file used to ignore entries
+    public static final String IGNORE = "plugin.ignore";
 
-    // If we want to follow a different syntax then we just need to implement a different form of Pattern matcher.
-
-    private static Set<Pattern> parseIgnoreFile(File dir) {
+    private void parseIgnoreFile(File dir) {
         File ignoreFile = new File(dir, IGNORE);
         if (ignoreFile.exists()) {
-            try (BufferedReader br = new BufferedReader(new FileReader(ignoreFile))) {
-                Set<Pattern> ignores = new TreeSet<>();
-                while (br.ready()) {
-                    String line = br.readLine();
-                    // NULL means we are done reading
-                    if (line == null) break;
-
-                    // Ignore blank lines or lines starting with #
-                    line = line.trim();
-                    if (line.isEmpty() || line.startsWith("#")) continue;
-
-                    // Here we could import definitions from other files or Other Magic
-
-                    // Assume that the string is a regular expression pattern
-                    ignores.add(Pattern.compile(line));
-                }
-                return ignores;
+            try {
+                processIgnoreFile(Files.toString(ignoreFile, Charsets.UTF_8));
             } catch (IOException e) {
-                System.out.println("Unable to read " + ignoreFile.getAbsolutePath() + " : " + e.getMessage());
+                log.error(String.format("Failed to process ignore file [%s]", ignoreFile.getAbsolutePath()), e);
             }
         }
-        return null;
+    }
+
+    public void processIgnoreFile(String ignoreFile) {
+        Scanner scanner = new Scanner(ignoreFile);
+        while (scanner.hasNextLine()) {
+            String line = scanner.nextLine();
+            if (StringUtils.isBlank(line)) {
+                continue;
+            }
+            // Ignore lines starting with #
+            line = line.trim();
+            if (line.startsWith("#")) {
+                continue;
+            }
+            // Assume that the string is a regular expression pattern
+            ignorePatterns.add(Pattern.compile(line));
+        }
+        scanner.close();
     }
 
     public void readContent(String variant) {
-        Set<Pattern> ignore = parseIgnoreFile(rootDir);
+        parseIgnoreFile(rootDir);
         File[] files = rootDir.listFiles();
         if (files != null) for (File f : files) {
             if ((f != null) && f.isDirectory()) {
                 String name = f.getName();
                 if (variant == null || "*".equals(variant) || "content".equals(name) || name.equalsIgnoreCase(variant)) {
-                    loadDir(f, ignore);
+                    loadDir(f);
                 }
             }
         }
     }
 
-    private void loadDir(File dir, Set<Pattern> ignore) {
+    private void loadDir(File dir) {
         if (debug) System.out.println("Loading from " + dir.getAbsolutePath());
-
-        Set<Pattern> localIgnores = parseIgnoreFile(dir);
-        if (localIgnores != null) {
-            if (ignore != null) {
-                localIgnores.addAll(ignore);
-            }
-            ignore = localIgnores;
-        }
-
+        parseIgnoreFile(dir);
         File file[] = dir.listFiles();
         for (File f : file) {
             if (f.isDirectory()) {
-                loadDir(f, ignore);
+                loadDir(f);
             } else {
-                loadSandboxItem(f, ignore);
+                loadSandboxItem(f);
             }
         }
     }
 
-    private void loadSandboxItem(File f, Set<Pattern> ignore) {
+    private void loadSandboxItem(File f) {
         Pair<RaptureURI, String> pair = null;
         try {
-            if (debug) System.out.println("Examining " + f.getAbsolutePath());
-            if (ignore != null) {
-                // Don't include the feature.ignore in the feature
-                if (IGNORE.equals(f.getName())) return;
-                for (Pattern pattern : ignore) {
-                    if (pattern.matcher(f.getAbsolutePath()).matches()) {
-                        warn("Ignoring " + f.getAbsolutePath() + " because it matches pattern " + pattern.pattern());
-                        return;
-                    }
-                }
+            if (debug) {
+                System.out.println("Examining " + f.getAbsolutePath());
             }
             pair = PluginSandboxItem.calculateURI(f, rootDir);
         } catch (Exception ex) {
@@ -534,8 +527,19 @@ public class PluginSandbox {
         String variant = pair.getRight();
         PluginSandboxItem item = new PluginSandboxItem(uri, rootDir, variant);
         item.setFullFilePath(f.getAbsolutePath());
-        if (variant == null) uri2item.put(uri.toString(), item);
-        else putVariantItem(uri, variant, item);
+        updateIndex(uri, variant, item);
+    }
+
+    private boolean shouldInclude(RaptureURI uri) {
+        if (!ignorePatterns.isEmpty()) {
+            for (Pattern pattern : ignorePatterns) {
+                if (pattern.matcher(uri.toString()).matches()) {
+                    warn("Ignoring " + uri.toString() + " because it matches pattern " + pattern.pattern());
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     public void setVersion(PluginVersion version) {
