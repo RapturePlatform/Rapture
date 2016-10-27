@@ -27,6 +27,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import com.google.common.collect.Maps;
 
 import rapture.common.PluginConfig;
@@ -142,6 +143,10 @@ public class SelfInstaller {
         PluginConfig fConfig = JacksonUtil.objectFromJson(pluginContent, PluginConfig.class);
         sandbox.setConfig(fConfig);
 
+        String pluginIgnoreFile = ResourceLoader.getResourceAsString(SelfInstaller.class, resourcePath + "/" + PluginSandbox.IGNORE);
+        if (!StringUtils.isBlank(pluginIgnoreFile)) {
+            sandbox.processIgnoreFile(pluginIgnoreFile);
+        }
         SandboxLoader loader;
         String rootPath = resourcePath + "/" + PluginSandbox.CONTENT;
         URL dirURL = SelfInstaller.class.getClass().getResource(rootPath);
