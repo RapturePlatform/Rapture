@@ -27,6 +27,8 @@ import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
+import com.google.common.collect.Maps;
+
 import rapture.common.PluginConfig;
 import rapture.common.PluginTransportItem;
 import rapture.common.RaptureURI;
@@ -38,8 +40,6 @@ import rapture.kernel.ContextFactory;
 import rapture.plugin.install.PluginSandbox;
 import rapture.plugin.install.PluginSandboxItem;
 import rapture.util.ResourceLoader;
-
-import com.google.common.collect.Maps;
 
 /**
  * Self install the plugin(s) defined in the resources of the built application. This entry point is linked from a secondary build that depends on this library
@@ -145,6 +145,8 @@ public class SelfInstaller {
         SandboxLoader loader;
         String rootPath = resourcePath + "/" + PluginSandbox.CONTENT;
         URL dirURL = SelfInstaller.class.getClass().getResource(rootPath);
+        // Can happen if content directory is missing - only overlays in the plugin
+        if (dirURL == null) return;
         if ("jar".equals(dirURL.getProtocol())) {
             loader = new JarBasedSandboxLoader();
         } else {
