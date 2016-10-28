@@ -152,7 +152,15 @@ public class SelfInstaller {
         String rootPath = resourcePath + "/" + PluginSandbox.CONTENT;
         URL dirURL = SelfInstaller.class.getClass().getResource(rootPath);
 
-        if ((dirURL != null) && "jar".equals(dirURL.getProtocol())) {
+        if (dirURL == null) {
+            rootPath = resourcePath + "/" + overlay;
+            dirURL = SelfInstaller.class.getClass().getResource(rootPath);
+            if (dirURL == null) {
+                System.err.println("Cannot install: The plugin must contain a " + PluginSandbox.CONTENT + " or " + overlay + " directory");
+                return;
+            }
+        }
+        if ("jar".equals(dirURL.getProtocol())) {
             loader = new JarBasedSandboxLoader();
         } else {
             isFileBased = true;
