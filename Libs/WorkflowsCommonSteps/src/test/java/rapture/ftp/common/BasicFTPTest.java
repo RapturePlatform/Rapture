@@ -37,6 +37,7 @@ import java.util.List;
 
 import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
@@ -282,4 +283,32 @@ public class BasicFTPTest {
         connection.doAction(read);
         connection.logoffAndDisconnect();
     }
+
+    /**
+     * Check for sensible error messages
+     */
+    @Test
+    public void errorMessage1() {
+        FTPConnectionConfig ftpConfig = new FTPConnectionConfig().setAddress("non.ext.iste.nt").setPort(23).setLoginId("ftp").setPassword("foo@bar")
+                .setUseSFTP(false);
+        Connection connection = new SFTPConnection(ftpConfig);
+        try {
+            connection.connectAndLogin();
+        } catch (Exception e) {
+            Assert.assertEquals("Unknown host non.ext.iste.nt", e.getMessage());
+        }
+    }
+
+    @Test
+    public void errorMessage2() {
+        FTPConnectionConfig ftpConfig = new FTPConnectionConfig().setAddress("localhost").setPort(23).setLoginId("ftp").setPassword("foo@bar")
+                .setUseSFTP(false);
+        Connection connection = new SFTPConnection(ftpConfig);
+        try {
+            connection.connectAndLogin();
+        } catch (Exception e) {
+            Assert.assertEquals("Could not login to localhost as ftp", e.getMessage());
+        }
+    }
+
 }

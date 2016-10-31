@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -169,7 +170,11 @@ public class FTPConnection implements Connection {
             public Boolean run(int attemptNum) throws IOException {
                 FTPClient ftpClient = getFtpClient();
                 log.debug(String.format("Connecting to %s. Attempt %s of %s", config.getAddress(), 1 + attemptNum, config.getRetryCount()));
-                ftpClient.connect(config.getAddress());
+                try {
+                    ftpClient.connect(config.getAddress());
+                } catch (UnknownHostException e) {
+                    throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, "Unknown host " + config.getAddress());
+                }
                 int reply = ftpClient.getReplyCode();
                 if (!FTPReply.isPositiveCompletion(reply)) {
                     log.debug("Got non-positive reply of " + reply);
@@ -178,9 +183,10 @@ public class FTPConnection implements Connection {
                 }
                 log.debug("Logging in user: " + config.getLoginId());
                 if (!ftpClient.login(config.getLoginId(), config.getPassword())) {
-                    log.info("Could not login user");
+                    log.info("Could not login to " + config.getAddress() + " as " + config.getLoginId());
                     ftpClient.logout();
-                    throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, "Could not login");
+                    throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR,
+                            "Could not login to " + config.getAddress() + " as " + config.getLoginId());
                 }
                 isLoggedIn = true;
                 log.debug("Entering local passive mode");
