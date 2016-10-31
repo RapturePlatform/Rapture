@@ -73,7 +73,7 @@ public class SFTPConnection extends FTPConnection {
             return super.connectAndLogin();
         } else {
             if (!isConnected()) {
-                return FTPService.runWithRetry("Error connecting", this, false, new FTPAction<Boolean>() {
+                return FTPService.runWithRetry("Error connecting to " + config.getAddress(), this, false, new FTPAction<Boolean>() {
                     @Override
                     public Boolean run(int attemptNum) throws IOException {
                         try {
