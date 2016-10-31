@@ -116,14 +116,14 @@ public class CheckFileExistsStep extends AbstractInvocable {
             }
             decision.setContextLiteral(ctx, workOrderUri, getStepName(), "Located " + existsCount + " of " + files.size() + " files");
             String errMsg = error.toString();
+            String audit_quiet = decision.getContextValue(ctx, workOrderUri, "AUDIT_QUIET");
             if (!StringUtils.isEmpty(errMsg)) {
                 log.error(errMsg);
-                decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), getStepName() + ": " + errMsg, true);
+                if (audit_quiet == null) decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), getStepName() + ": " + errMsg, true);
             } else {
-                decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), getStepName() + ": all files successfully matched", false);
+                if (audit_quiet == null) decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), getStepName() + ": all files successfully matched", false);
             }
             decision.setContextLiteral(ctx, workOrderUri, getErrName(), errMsg);
-            decision.writeWorkflowAuditEntry(ctx, workerUri, errMsg, failCount > 0);
             return retval;
         } catch (Exception e) {
             decision.setContextLiteral(ctx, workOrderUri, getStepName(), "Unable to determine if files exist : " + e.getLocalizedMessage());

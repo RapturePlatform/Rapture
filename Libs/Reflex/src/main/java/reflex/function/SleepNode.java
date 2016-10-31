@@ -23,6 +23,8 @@
  */
 package reflex.function;
 
+import org.apache.log4j.Logger;
+
 import reflex.IReflexHandler;
 import reflex.Scope;
 import reflex.debug.IReflexDebugger;
@@ -40,6 +42,7 @@ import reflex.value.internal.ReflexVoidValue;
 public class SleepNode extends BaseNode {
 
     private ReflexNode expression;
+    private static Logger logger = Logger.getLogger(SleepNode.class);
 
     public SleepNode(int lineNumber, IReflexHandler handler, Scope scope, ReflexNode e) {
         super(lineNumber, handler, scope);
@@ -51,12 +54,21 @@ public class SleepNode extends BaseNode {
         debugger.stepStart(this, scope);
         ReflexValue value = expression.evaluate(debugger, scope);
         debugger.recordMessage("Sleeping ");
-        if (value.isNumber()) {
+        Long time = 0L;
+
+        if (value.isString()) {
+            time = value.asLong();
+        } else if (value.isNumber()) {
+            time = value.asLong();
+        }
+        if (time > 0) {
             try {
                 Thread.sleep(value.asLong());
             } catch (InterruptedException e) {
-
+                log.debug("+++ MATCH " + value + " ");
             }
+        } else {
+            logger.warn("Sleep called with no timeout");
         }
         debugger.stepEnd(this, new ReflexVoidValue(lineNumber), scope);
         return new ReflexVoidValue(lineNumber);

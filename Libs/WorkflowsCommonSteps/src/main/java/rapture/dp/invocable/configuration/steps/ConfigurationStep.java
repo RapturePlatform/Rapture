@@ -70,6 +70,7 @@ public class ConfigurationStep extends AbstractInvocable {
 
             String docPath = new RaptureURI(workOrderUri).getDocPath();
             int lio = docPath.lastIndexOf('/');
+            if (lio < 0) lio = 0;
 
             StringBuilder externalUrl = new StringBuilder();
             String host = System.getenv("HOST");
