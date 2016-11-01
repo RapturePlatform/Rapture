@@ -29,6 +29,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.UnknownHostException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Vector;
@@ -43,6 +45,7 @@ import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpException;
 
 import rapture.common.exception.ExceptionToString;
+import rapture.common.exception.RaptureExceptionFactory;
 
 public class SFTPConnection extends FTPConnection {
 
@@ -93,8 +96,12 @@ public class SFTPConnection extends FTPConnection {
                             channel.connect();
                             return true;
                         } catch (Exception e) {
+                            if (e.getCause() instanceof UnknownHostException) {
+                                throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, "Unknown host " + config.getAddress());
+                            }
                             log.error("Unable to establish secure FTP connection " + config.getLoginId() + "@" + config.getAddress() + ":" + config.getPort());
-                            throw new IOException("Unable to establish secure FTP connection to " + config.getAddress(), e);
+                            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR,
+                                    "Unable to establish secure FTP connection to " + config.getAddress(), e);
                         }
                     }
                 });
