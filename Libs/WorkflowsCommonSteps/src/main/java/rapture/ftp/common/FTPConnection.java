@@ -165,7 +165,7 @@ public class FTPConnection implements Connection {
             log.info("In local mode - not connecting");
             return true;
         }
-        return FTPService.runWithRetry("Error connecting to " + config.getAddress(), this, false, new FTPAction<Boolean>() {
+        return FTPService.runWithRetry("Could not login to " + config.getAddress() + " as " + config.getLoginId(), this, false, new FTPAction<Boolean>() {
             @Override
             public Boolean run(int attemptNum) throws IOException {
                 FTPClient ftpClient = getFtpClient();
@@ -173,6 +173,7 @@ public class FTPConnection implements Connection {
                 try {
                     ftpClient.connect(config.getAddress());
                 } catch (UnknownHostException e) {
+                    log.info(ExceptionToString.summary(e));
                     throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, "Unknown host " + config.getAddress());
                 }
                 int reply = ftpClient.getReplyCode();
