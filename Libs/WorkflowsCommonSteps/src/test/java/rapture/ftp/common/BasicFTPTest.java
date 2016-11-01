@@ -102,7 +102,7 @@ public class BasicFTPTest {
      */
     @Test
     public void testSingleFTPReadWithConfigUri() {
-        FTPConnectionConfig ftpConfig = new FTPConnectionConfig().setAddress("speedtest.tele2.net").setPort(23).setLoginId("ftp").setPassword("foo@bar")
+        FTPConnectionConfig ftpConfig = new FTPConnectionConfig().setAddress("speedtest.tele2.net").setLoginId("ftp").setPassword("foo@bar")
                 .setUseSFTP(false);
 
         CallingContext context = ContextFactory.getKernelUser();
@@ -128,7 +128,7 @@ public class BasicFTPTest {
      */
     @Test
     public void testSingleFTPRead() {
-        FTPConnectionConfig ftpConfig = new FTPConnectionConfig().setAddress("speedtest.tele2.net").setPort(23).setLoginId("ftp").setPassword("foo@bar")
+        FTPConnectionConfig ftpConfig = new FTPConnectionConfig().setAddress("speedtest.tele2.net").setLoginId("ftp").setPassword("foo@bar")
                 .setUseSFTP(false);
         Connection connection = new SFTPConnection(ftpConfig);
         connection.connectAndLogin();
@@ -165,7 +165,7 @@ public class BasicFTPTest {
      */
     @Test
     public void testFTPExists() {
-        FTPConnectionConfig ftpConfig = new FTPConnectionConfig().setAddress("speedtest.tele2.net").setPort(23).setLoginId("ftp").setPassword("foo@bar")
+        FTPConnectionConfig ftpConfig = new FTPConnectionConfig().setAddress("speedtest.tele2.net").setLoginId("ftp").setPassword("foo@bar")
                 .setUseSFTP(false);
         Connection connection = new SFTPConnection(ftpConfig);
         connection.connectAndLogin();
@@ -202,7 +202,7 @@ public class BasicFTPTest {
     @Test
     public void testMultiFTPRead() throws IOException {
         FTPConnectionConfig ftpConfig = new FTPConnectionConfig();
-        ftpConfig.setAddress("speedtest.tele2.net").setPort(23).setLoginId("ftp").setPassword("foo@bar").setUseSFTP(false);
+        ftpConfig.setAddress("speedtest.tele2.net").setLoginId("ftp").setPassword("foo@bar").setUseSFTP(false);
         Connection connection = new SFTPConnection(ftpConfig);
         connection.connectAndLogin();
 
@@ -259,7 +259,7 @@ public class BasicFTPTest {
     @Test
     public void testSingleFTPWrite() {
         FTPConnectionConfig ftpConfig = new FTPConnectionConfig();
-        ftpConfig.setAddress("speedtest.tele2.net").setPort(23).setLoginId("ftp").setPassword("foo@bar").setUseSFTP(false);
+        ftpConfig.setAddress("speedtest.tele2.net").setLoginId("ftp").setPassword("foo@bar").setUseSFTP(false);
         Connection connection = new SFTPConnection(ftpConfig);
         connection.connectAndLogin();
         ByteArrayInputStream stream = new ByteArrayInputStream("Get loose, get loose!".getBytes());
@@ -289,8 +289,7 @@ public class BasicFTPTest {
      */
     @Test
     public void errorMessage1() {
-        FTPConnectionConfig ftpConfig = new FTPConnectionConfig().setAddress("non.ext.iste.nt").setPort(23).setLoginId("ftp").setPassword("foo@bar")
-                .setUseSFTP(false);
+        FTPConnectionConfig ftpConfig = new FTPConnectionConfig().setAddress("non.ext.iste.nt").setLoginId("ftp").setPassword("foo@bar").setUseSFTP(true);
         Connection connection = new SFTPConnection(ftpConfig);
         try {
             connection.connectAndLogin();
@@ -301,8 +300,29 @@ public class BasicFTPTest {
 
     @Test
     public void errorMessage2() {
-        FTPConnectionConfig ftpConfig = new FTPConnectionConfig().setAddress("localhost").setPort(23).setLoginId("ftp").setPassword("foo@bar")
-                .setUseSFTP(false);
+        FTPConnectionConfig ftpConfig = new FTPConnectionConfig().setAddress("localhost").setLoginId("ftp").setPassword("foo@bar").setUseSFTP(true);
+        Connection connection = new SFTPConnection(ftpConfig);
+        try {
+            connection.connectAndLogin();
+        } catch (Exception e) {
+            Assert.assertEquals("Unable to establish secure FTP connection to localhost", e.getMessage());
+        }
+    }
+
+    @Test
+    public void errorMessage3() {
+        FTPConnectionConfig ftpConfig = new FTPConnectionConfig().setAddress("non.ext.iste.nt").setLoginId("ftp").setPassword("foo@bar").setUseSFTP(false);
+        Connection connection = new SFTPConnection(ftpConfig);
+        try {
+            connection.connectAndLogin();
+        } catch (Exception e) {
+            Assert.assertEquals("Unknown host non.ext.iste.nt", e.getMessage());
+        }
+    }
+
+    @Test
+    public void errorMessage4() {
+        FTPConnectionConfig ftpConfig = new FTPConnectionConfig().setAddress("localhost").setLoginId("ftp").setPassword("foo@bar").setUseSFTP(false);
         Connection connection = new SFTPConnection(ftpConfig);
         try {
             connection.connectAndLogin();
