@@ -165,7 +165,7 @@ public class FTPConnection implements Connection {
             log.info("In local mode - not connecting");
             return true;
         }
-        return FTPService.runWithRetry("Error connecting", this, false, new FTPAction<Boolean>() {
+        return FTPService.runWithRetry("Error connecting to " + config.getAddress(), this, false, new FTPAction<Boolean>() {
             @Override
             public Boolean run(int attemptNum) throws IOException {
                 FTPClient ftpClient = getFtpClient();

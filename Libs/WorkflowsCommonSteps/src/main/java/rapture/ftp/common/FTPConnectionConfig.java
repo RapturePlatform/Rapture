@@ -34,9 +34,9 @@ public class FTPConnectionConfig implements Serializable, Debugable {
     private static final Logger log = Logger.getLogger(FTPConnectionConfig.class);
 
     private static final long serialVersionUID = 1L;
-    public static final int DEFAULT_TIMEOUT = 60;
+    public static final int DEFAULT_TIMEOUT = 60; // seconds
     public static final int MAX_RETRIES = 5;
-    public static final int RETRY_WAIT = 15000;
+    public static final int RETRY_WAIT = 15; // seconds
 
     private String loginId;
     private String password;
