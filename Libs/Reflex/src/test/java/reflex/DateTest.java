@@ -26,9 +26,9 @@ package reflex;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 
 import org.antlr.runtime.RecognitionException;
 import org.junit.Test;
@@ -77,17 +77,17 @@ public class DateTest extends ResourceBasedTest {
     @Test
     public void yesterday() throws RecognitionException {
         String[] ret = runTestFor("/date/yesterday.rfx").split("\n");
-        Calendar cal = Calendar.getInstance();
-        Date today = cal.getTime();
-        cal.add(Calendar.DATE, -1);
-        Date yesterday = cal.getTime();
 
-        SimpleDateFormat sdf1 = new SimpleDateFormat("yyyyMMdd");
-        SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd");
-        assertEquals(ret[3], "TODAY2 " + sdf2.format(today));
-        assertEquals(ret[2], "TODAY " + sdf1.format(today));
-        assertEquals(ret[1], "YESTERDAY2 " + sdf2.format(yesterday));
-        assertEquals(ret[0], "YESTERDAY " + sdf1.format(yesterday));
+        ZonedDateTime today = ZonedDateTime.now(ZoneId.of("America/Los_Angeles"));
+        ZonedDateTime yesterday = today.minusDays(1);
+
+        DateTimeFormatter df1 = DateTimeFormatter.ofPattern("yyyyMMdd");
+        DateTimeFormatter df2 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        assertEquals(ret[3], "TODAY2 " + today.format(df2));
+        assertEquals(ret[2], "TODAY " + today.format(df1));
+        assertEquals(ret[1], "YESTERDAY2 " + yesterday.format(df2));
+        assertEquals(ret[0], "YESTERDAY " + yesterday.format(df1));
         assertTrue("Test case did not complete successfully", ret[ret.length - 1].endsWith("true"));
     }
 
