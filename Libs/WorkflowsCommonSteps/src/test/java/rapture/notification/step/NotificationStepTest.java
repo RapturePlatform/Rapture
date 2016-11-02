@@ -36,6 +36,7 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import rapture.common.CallingContext;
@@ -139,8 +140,7 @@ public class NotificationStepTest {
         // create smtp config
         String area = "CONFIG";
         CallingContext anon = ContextFactory.getAnonymousUser();
-        SMTPConfig smtpConfig = new SMTPConfig().setFrom("bmsdrama2016@gmail.com").setUsername("bmsdrama2016@gmail.com").setPassword("gM3xpat/")
-                .setHost("smtp.gmail.com").setPort(587);
+        SMTPConfig smtpConfig = new SMTPConfig().setFrom("TO BE SET").setUsername("TO BE SET").setPassword("TO BE SET").setHost("TO BE SET").setPort(587);
         Kernel.getSys().writeSystemConfig(context, area, Mailer.SMTP_CONFIG_URL, JacksonUtil.jsonFromObject(smtpConfig));
 
         // create dummy email template
@@ -156,8 +156,10 @@ public class NotificationStepTest {
     public void tearDown() throws Exception {
     }
 
+    // Enable this when we have a SMTP config that Google doesn't keep blocking
+    @Ignore
     @Test
-    public void testNotificationStep() {
+    public void testNotificationEmailStep() {
 
         String workflowUri = "workflow://foo/bar/baz";
         Workflow w = new Workflow();
@@ -190,22 +192,41 @@ public class NotificationStepTest {
         StepRecord sr = debug.getWorkerDebugs().get(0).getStepRecordDebugs().get(0).getStepRecord();
         assertEquals(sr.toString(), Steps.NEXT.toString(), sr.getRetVal());
         assertEquals(WorkOrderExecutionState.FINISHED, debug.getOrder().getStatus());
+    }
 
+    @Test
+    public void testNotificationSlackStep() {
+
+        String workflowUri = "workflow://foo/bar/baz";
+        Workflow w = new Workflow();
+        w.setStartStep("step1");
+        List<Step> steps = new LinkedList<>();
+        Step step = new Step();
+        step.setExecutable("dp_java_invocable://notification.steps.NotificationStep");
+        step.setName("step1");
+        step.setDescription("description");
+        steps.add(step);
+        Map<String, String> viewMap = new HashMap<>();
+        viewMap.put("MESSAGE_TEMPLATE", "#" + templateName);
+        viewMap.put("RECIPIENT", "#" + "dave.tong@incapturetechnologies.com");
+        w.setSteps(steps);
+        w.setWorkflowURI(workflowUri);
         viewMap.put("RECIPIENT", "#" + "https://hooks.slack.com/services/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");
         viewMap.put("NOTIFY_TYPE", "#" + "SLACK");
         w.setView(viewMap);
         Kernel.getDecision().putWorkflow(context, w);
 
-        response = Kernel.getDecision().createWorkOrderP(context, workflowUri, null, null);
+        CreateResponse response = Kernel.getDecision().createWorkOrderP(context, workflowUri, null, null);
         assertTrue(response.getIsCreated());
-        state = WorkOrderExecutionState.NEW;
-        timeout = System.currentTimeMillis() + 60000;
+        WorkOrderExecutionState state = WorkOrderExecutionState.NEW;
+        long timeout = System.currentTimeMillis() + 60000;
+        WorkOrderDebug debug;
         do {
             debug = Kernel.getDecision().getWorkOrderDebug(context, response.getUri());
             state = debug.getOrder().getStatus();
         } while (((state == WorkOrderExecutionState.NEW) || (state == WorkOrderExecutionState.ACTIVE)) && (System.currentTimeMillis() < timeout));
 
-        sr = debug.getWorkerDebugs().get(0).getStepRecordDebugs().get(0).getStepRecord();
+        StepRecord sr = debug.getWorkerDebugs().get(0).getStepRecordDebugs().get(0).getStepRecord();
         // TODO
         // assertEquals(Steps.NEXT.toString(), sr.getRetVal());
         assertEquals(WorkOrderExecutionState.FINISHED, debug.getOrder().getStatus());
