@@ -268,6 +268,7 @@ public class FTPConnection implements Connection {
 
     /* SFTP is different */
     public boolean retrieveFile(String fileName, OutputStream stream) throws IOException {
+        getFtpClient().completePendingCommand();
         return getFtpClient().retrieveFile(fileName, stream);
     }
 
@@ -383,5 +384,14 @@ public class FTPConnection implements Connection {
 
     public boolean isLocal() {
         return (StringUtils.isEmpty(config.getAddress()));
+    }
+
+    public FTPConnectionConfig getConfig() {
+        return config;
+    }
+
+    public FTPConnection setConfig(FTPConnectionConfig config) {
+        this.config = config;
+        return this;
     }
 }

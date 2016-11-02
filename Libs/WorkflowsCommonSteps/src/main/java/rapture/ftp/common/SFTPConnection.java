@@ -57,12 +57,20 @@ public class SFTPConnection extends FTPConnection {
 
     public SFTPConnection(FTPConnectionConfig config) {
         super(config);
-        jsch = new JSch();
+        if (config.isUseSFTP()) jsch = new JSch();
+        else {
+            log.info("useSFTP is false - using FTP");
+            jsch = null;
+        }
     }
 
     public SFTPConnection(String configUri) {
         super(configUri);
-        jsch = new JSch();
+        if (getConfig().isUseSFTP()) jsch = new JSch();
+        else {
+            log.info("useSFTP is false - using FTP");
+            jsch = null;
+        }
     }
 
     @Override
@@ -113,6 +121,7 @@ public class SFTPConnection extends FTPConnection {
 
     @Override
     public boolean isConnected() {
+        if (!getConfig().isUseSFTP()) return super.isConnected();
         return isLocal() || (session != null && channel != null && session.isConnected() && channel.isConnected());
     }
 
@@ -187,7 +196,6 @@ public class SFTPConnection extends FTPConnection {
         }
     }
 
-
     @Override
     public boolean retrieveFile(String fileName, OutputStream stream) throws IOException {
         if (!config.isUseSFTP()) return super.retrieveFile(fileName, stream);
@@ -196,8 +204,21 @@ public class SFTPConnection extends FTPConnection {
     }
 
     @Override
+    // fileName must be the name of a file, not a directory
     public boolean sendFile(InputStream stream, String fileName) throws IOException {
         if (!config.isUseSFTP()) return super.sendFile(stream, fileName);
-        throw new UnsupportedOperationException("SFTP Write not yet supported");
+        if (fileName.endsWith("/")) {
+            log.error("fileName must be the name of a file, not a directory");
+        } else try {
+            int lio = fileName.lastIndexOf('/');
+            if (lio > 0) {
+                channel.cd(fileName.substring(0, lio));
+                channel.put(stream, fileName.substring(lio + 1));
+                return true;
+            }
+        } catch (SftpException e) {
+            throw new IOException("Cannot copy data to " + fileName, e);
+        }
+        return false;
     }
 }
