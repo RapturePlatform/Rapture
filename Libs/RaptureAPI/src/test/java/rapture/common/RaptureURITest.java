@@ -62,7 +62,7 @@ public class RaptureURITest {
         assertEquals("foo", docURI.getAuthority());
         assertEquals("bar", docURI.getDocPath());
     }
-    
+
     @Test(expected = RaptureException.class)
     public void testBadAuthority() {
         new RaptureURI("document://authority$5/type/folder/document", Scheme.DOCUMENT);
@@ -72,7 +72,7 @@ public class RaptureURITest {
     public void testNullAuthority() {
         RaptureURI.builder(Scheme.DOCUMENT, null).build();
     }
-    
+
     @Test
     public void testDoesNotExist() {
         new RaptureURI("job://DOESNOTEXIST", Scheme.WORKFLOW);
@@ -315,35 +315,35 @@ public class RaptureURITest {
             char c = (char) i;
             String uri = "//authority/folder/docu" + c + "ment/path/foo";
             switch (c) {
-                case '&':
-                case '?':
-                case ' ':
-                case '`':
-                case '\'':
-                case '+':
-                case ',':
-                case '}':
-                case '[':
-                case '<':
-                case ';':
-                case '^':
-                case '{':
-                case '>':
-                case ']':
-                case '=':
-                case '\\':
-                    try {
-                        new RaptureURI(uri, Scheme.DOCUMENT);
-                        fail("Character " + c + " is not legal in DocPath");
-                    } catch (rapture.common.exception.RaptureException e1) {
-                        // expected
-                    } catch (Throwable e2) {
-                        fail("Expected rapture.common.exception.RaptureException (wrapping java.net.URISyntaxException) not " + e2);
-                    }
-                    break;
-                default:
-                    RaptureURI docURI = new RaptureURI(uri, Scheme.DOCUMENT);
-                    assertNotNull(docURI);
+            case '&':
+            case '?':
+            case ' ':
+            case '`':
+            case '\'':
+            case '+':
+            case ',':
+            case '}':
+            case '[':
+            case '<':
+            case ';':
+            case '^':
+            case '{':
+            case '>':
+            case ']':
+            case '=':
+            case '\\':
+                try {
+                    new RaptureURI(uri, Scheme.DOCUMENT);
+                    fail("Character " + c + " is not legal in DocPath");
+                } catch (rapture.common.exception.RaptureException e1) {
+                    // expected
+                } catch (Throwable e2) {
+                    fail("Expected rapture.common.exception.RaptureException (wrapping java.net.URISyntaxException) not " + e2);
+                }
+                break;
+            default:
+                RaptureURI docURI = new RaptureURI(uri, Scheme.DOCUMENT);
+                assertNotNull(docURI);
             }
         }
     }
@@ -354,60 +354,73 @@ public class RaptureURITest {
             char c = (char) i;
             String uri = "//auth" + c + "ority/folder/document/path/foo";
             switch (c) {
-                case '+': // We currently do not allow + as a substitute for space
-                    // see below for ':'
-                case '&':
-                case '?':
-                case ' ':
-                case '`':
-                case '\'':
-                case ',':
-                case '}':
-                case '[':
-                case '<':
-                case ';':
-                case '^':
-                case '{':
-                case '>':
-                case ']':
-                case '=':
-                case '\\':
-                    
-                case '#':   // Different from Doc Path
-                case '$':   // Different from Doc Path
-                    try {
-                        new RaptureURI(uri, Scheme.DOCUMENT);
-                        fail("Character " + c + " should not be legal in Authority");
-                    } catch (Exception e1) {
-                        System.out.println("Character " + c + " is not legal in Authority");
-                    }
-                    break;
+            case '+': // We currently do not allow + as a substitute for space
+                // see below for ':'
+            case '&':
+            case '?':
+            case ' ':
+            case '`':
+            case '\'':
+            case ',':
+            case '}':
+            case '[':
+            case '<':
+            case ';':
+            case '^':
+            case '{':
+            case '>':
+            case ']':
+            case '=':
+            case '\\':
 
-                case '"': // Is part of the whitelist but in practice it causes a problem with antlr. (Bug?)
-                case '/': // considered legal but doesn't work - because ://
-                case ':': // considered legal but doesn't work - because ://
-                case '@': // legal and works
-                default:
-                    RaptureURI docURI = new RaptureURI(uri, Scheme.DOCUMENT);
-                    assertNotNull(docURI);
+            case '#': // Different from Doc Path
+            case '$': // Different from Doc Path
+                try {
+                    new RaptureURI(uri, Scheme.DOCUMENT);
+                    fail("Character " + c + " should not be legal in Authority");
+                } catch (Exception e1) {
+                    System.out.println("Character " + c + " is not legal in Authority");
+                }
+                break;
+
+            case '"': // Is part of the whitelist but in practice it causes a problem with antlr. (Bug?)
+            case '/': // considered legal but doesn't work - because ://
+            case ':': // considered legal but doesn't work - because ://
+            case '@': // legal and works
+            default:
+                RaptureURI docURI = new RaptureURI(uri, Scheme.DOCUMENT);
+                assertNotNull(docURI);
             }
         }
     }
-    
+
     @Test
     public void testGetLeafName() {
-    	assertEquals("c", RaptureURI.builder(Scheme.BLOB, "foo").docPath("a/b/c").build().getLeafName());
-    	assertEquals("d", RaptureURI.builder(Scheme.BLOB, "foo").docPath("d").build().getLeafName());
-    	assertEquals(null, RaptureURI.builder(Scheme.BLOB, "foo").docPath("/").build().getLeafName());
-    	assertEquals(null, RaptureURI.builder(Scheme.BLOB, "foo").docPath("").build().getLeafName());
-    	assertEquals(null, RaptureURI.builder(Scheme.BLOB, "foo").docPath(null).build().getLeafName());
+        assertEquals("c", RaptureURI.builder(Scheme.BLOB, "foo").docPath("a/b/c").build().getLeafName());
+        assertEquals("d", RaptureURI.builder(Scheme.BLOB, "foo").docPath("d").build().getLeafName());
+        assertEquals(null, RaptureURI.builder(Scheme.BLOB, "foo").docPath("/").build().getLeafName());
+        assertEquals(null, RaptureURI.builder(Scheme.BLOB, "foo").docPath("").build().getLeafName());
+        assertEquals(null, RaptureURI.builder(Scheme.BLOB, "foo").docPath(null).build().getLeafName());
     }
-    
+
     @Test
     public void testGetParentURI() {
-    	assertEquals(RaptureURI.builder(Scheme.BLOB, "foo").docPath("a/b").build(), RaptureURI.builder(Scheme.BLOB, "foo").docPath("a/b/c").build().getParentURI());
-    	assertEquals(RaptureURI.builder(Scheme.BLOB, "foo").docPath("").build(), RaptureURI.builder(Scheme.BLOB, "foo").docPath("d").build().getParentURI());
-    	assertEquals(null, RaptureURI.builder(Scheme.BLOB, "foo").docPath("").build().getParentURI());
-    	assertEquals(null, RaptureURI.builder(Scheme.BLOB, "foo").docPath(null).build().getParentURI());
+        assertEquals(RaptureURI.builder(Scheme.BLOB, "foo").docPath("a/b").build(),
+                RaptureURI.builder(Scheme.BLOB, "foo").docPath("a/b/c").build().getParentURI());
+        assertEquals(RaptureURI.builder(Scheme.BLOB, "foo").docPath("").build(), RaptureURI.builder(Scheme.BLOB, "foo").docPath("d").build().getParentURI());
+        assertEquals(null, RaptureURI.builder(Scheme.BLOB, "foo").docPath("").build().getParentURI());
+        assertEquals(null, RaptureURI.builder(Scheme.BLOB, "foo").docPath(null).build().getParentURI());
+    }
+
+    @Test
+    public void testCreateFromFullPathWithAttribute() {
+        RaptureURI result = RaptureURI.createFromFullPathWithAttribute("test/me", null, Scheme.DOCUMENT);
+        assertEquals("document://test/me", result.toString());
+        result = RaptureURI.createFromFullPathWithAttribute("test", null, Scheme.DOCUMENT);
+        assertEquals("document://test/", result.toString());
+        result = RaptureURI.createFromFullPathWithAttribute("test/x/y", null, Scheme.DOCUMENT);
+        assertEquals("document://test/x/y", result.toString());
+        result = RaptureURI.createFromFullPathWithAttribute("/test/x/y", null, Scheme.DOCUMENT);
+        assertEquals("document://test/x/y", result.toString());
     }
 }
