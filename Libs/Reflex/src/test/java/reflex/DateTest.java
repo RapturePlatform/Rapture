@@ -99,4 +99,11 @@ public class DateTest extends ResourceBasedTest {
         assertTrue("Test case did not complete successfully", ret.endsWith("true"));
     }
 
+    @Test
+    public void testCalendar() throws RecognitionException {
+        String ret = runTestFor("/date/calendar.rfx");
+        System.out.println(ret);
+        assertTrue("Test case did not complete successfully", ret.endsWith("TODAY"));
+    }
+
 }

@@ -67,15 +67,15 @@ api(Entitlement) {
     
     [Convenience method to get all the entitlements for a user]
     @entitle=/admin/ent
-    @public List(RaptureEntitlement) findEntitlementsByUser(String username);
+    @public List(RaptureEntitlement) getEntitlementsForUser(String username);
     
     [Convenience method to get all the entitlements for a group]
     @entitle=/admin/ent
-    @public List(RaptureEntitlement) findEntitlementsByGroup(String groupname);
+    @public List(RaptureEntitlement) getEntitlementsForGroup(String groupname);
     
     [Convenience method to get all entitlements for the current user]
     @entitle=/everyone
-    @public List(RaptureEntitlement) findEntitlementsBySelf();
+    @public List(RaptureEntitlement) getEntitlementsForSelf();
 }
 
 
