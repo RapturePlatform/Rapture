@@ -46,18 +46,19 @@ while loop do
 
     for d in dateform do
 	println(d);
- 	transList = transList + d;
  	trans = transMap[d];
  	if (trans != null) do
 	    println(d +" = "+trans);
  	    transList = transList + trans;
  	end
     end
+    transList = transList + dateform;
  
     for tran in transList do
 	println(tran);
 	calent = calMap[tran];
         if (calent != null) do
+	    println(tran+" maps to "+calent);
             return calent;
         end
 //	if (calent == "HOLIDAY") do
