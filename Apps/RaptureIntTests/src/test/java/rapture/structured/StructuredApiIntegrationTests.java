@@ -87,7 +87,7 @@ public class StructuredApiIntegrationTests {
      */
     @BeforeClass(groups = { "nightly", "search" })
     @Parameters({ "RaptureURL", "RaptureUser", "RapturePassword" })
-    public void setUp(@Optional("http://192.168.99.100:8665/rapture") String url, @Optional("rapture") String username, @Optional("rapture") String password) {
+    public void setUp(@Optional("http://localhost:8665/rapture") String url, @Optional("rapture") String username, @Optional("rapture") String password) {
 
         // If running from eclipse set env var -Penv=docker or use the following
         // url variable settings:
