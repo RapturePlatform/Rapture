@@ -23,6 +23,15 @@
  */
 package rapture.kernel;
 
+import java.net.HttpURLConnection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import org.apache.log4j.Logger;
+
+import com.google.common.collect.Sets;
+
 import rapture.common.CallingContext;
 import rapture.common.Messages;
 import rapture.common.RaptureURI;
@@ -35,15 +44,6 @@ import rapture.common.model.RaptureEntitlementGroup;
 import rapture.common.model.RaptureEntitlementGroupStorage;
 import rapture.common.model.RaptureEntitlementStorage;
 import rapture.object.storage.ObjectFilter;
-
-import java.net.HttpURLConnection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import org.apache.log4j.Logger;
-
-import com.google.common.collect.Sets;
 
 public class EntitlementApiImpl extends KernelBase implements EntitlementApi {
 
@@ -200,19 +200,19 @@ public class EntitlementApiImpl extends KernelBase implements EntitlementApi {
     }
 
     @Override
-    public List<RaptureEntitlement> findEntitlementsByUser(CallingContext context, String username) {
+    public List<RaptureEntitlement> getEntitlementsForUser(CallingContext context, String username) {
         UserEntitlementFilter filter = new UserEntitlementFilter(context, username);
         return RaptureEntitlementStorage.filterAll(filter);
     }
 
     @Override
-    public List<RaptureEntitlement> findEntitlementsByGroup(CallingContext context, String groupname) {
+    public List<RaptureEntitlement> getEntitlementsForGroup(CallingContext context, String groupname) {
         GroupEntitlementFilter filter = new GroupEntitlementFilter(groupname);
         return RaptureEntitlementStorage.filterAll(filter);
     }
 
     @Override
-    public List<RaptureEntitlement> findEntitlementsBySelf(CallingContext context) {
+    public List<RaptureEntitlement> getEntitlementsForSelf(CallingContext context) {
         UserEntitlementFilter filter = new UserEntitlementFilter(context, context.getUser());
         return RaptureEntitlementStorage.filterAll(filter);
     }
