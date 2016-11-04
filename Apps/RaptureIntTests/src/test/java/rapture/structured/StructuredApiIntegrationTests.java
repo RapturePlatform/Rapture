@@ -49,6 +49,7 @@ import rapture.common.client.HttpSearchApi;
 import rapture.common.client.HttpSeriesApi;
 import rapture.common.client.HttpStructuredApi;
 import rapture.common.client.HttpUserApi;
+import rapture.common.impl.jackson.JacksonUtil;
 import rapture.common.impl.jackson.MD5Utils;
 import rapture.helper.IntegrationTestHelper;
 
@@ -86,7 +87,7 @@ public class StructuredApiIntegrationTests {
      */
     @BeforeClass(groups = { "nightly", "search" })
     @Parameters({ "RaptureURL", "RaptureUser", "RapturePassword" })
-    public void setUp(@Optional("http://localhost:8665/rapture") String url, @Optional("rapture") String username, @Optional("rapture") String password) {
+    public void setUp(@Optional("http://192.168.99.100:8665/rapture") String url, @Optional("rapture") String username, @Optional("rapture") String password) {
 
         // If running from eclipse set env var -Penv=docker or use the following
         // url variable settings:
@@ -136,7 +137,7 @@ public class StructuredApiIntegrationTests {
         String table = "//" + repo.getAuthority() + "/table";
         structApi.createTable(table, ImmutableMap.of("id", "int", "name", "varchar(255), PRIMARY KEY (id)"));
 
-        Map<String, Object> row = new HashMap<String, Object>();
+        Map<String, Object> row = new HashMap<>();
         row.put("id", 42);
         row.put("name", "Don't Panic");
         structApi.insertRow(table, row);
@@ -146,7 +147,7 @@ public class StructuredApiIntegrationTests {
         Assert.assertEquals(contents.get(0), row);
 
         // Batch insert
-        List<Map<String, Object>> batch = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> batch = new ArrayList<>();
         for (String s : ImmutableList.of("Ford Prefect", "Zaphod Beeblebrox", "Arthur Dent", "Slartibartfast", "Trillian")) {
             int cha = s.charAt(0);
             batch.add(ImmutableMap.<String, Object> of("id", cha, "name", s));
@@ -170,6 +171,11 @@ public class StructuredApiIntegrationTests {
         Assert.assertTrue(contents.contains(ImmutableMap.<String, Object> of("id", new Integer('Z'), "name", "Zarniwoop")));
         Assert.assertFalse(contents.contains(ImmutableMap.<String, Object> of("id", new Integer('Z'), "name", "Zaphod Beeblebrox")));
 
+        System.out.println(JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(contents)));
+        structApi.deleteRows(table, "name like 'Zarniwoop'");
+        contents = structApi.selectRows(table, null, null, null, null, -1);
+        Assert.assertFalse(contents.contains(ImmutableMap.<String, Object> of("id", new Integer('Z'), "name", "Zarniwoop")));
+
         structApi.dropTable(table);
         try {
             contents = structApi.selectRows(table, null, null, null, null, -1);
@@ -184,4 +190,77 @@ public class StructuredApiIntegrationTests {
         Assert.assertFalse(repoExists, "Repo does not exist any more");
     }
 
+    // Verify that ascending/descending works for strings and integers
+    @Test(groups = { "structured" })
+    public void testAscending() {
+        RaptureURI repo = helper.getRandomAuthority(Scheme.STRUCTURED);
+        String repoStr = repo.toString();
+        String config = "STRUCTURED { } USING POSTGRES { planet=\"magrathea\" }";
+
+        if (!structApi.structuredRepoExists(repoStr)) structApi.createStructuredRepo(repoStr, config);
+
+        // Create a table. Add and remove data
+        String table = "//" + repo.getAuthority() + "/table";
+        structApi.createTable(table, ImmutableMap.of("id", "int", "name", "varchar(255), PRIMARY KEY (id)"));
+
+        Map<String, Object> row = new HashMap<>();
+        row.put("id", 42);
+        row.put("name", "Don't Panic");
+        structApi.insertRow(table, row);
+
+        List<Map<String, Object>> contents = structApi.selectRows(table, null, null, null, null, -1);
+        Assert.assertEquals(contents.size(), 1);
+        Assert.assertEquals(contents.get(0), row);
+
+        // Batch insert
+        List<Map<String, Object>> batch = new ArrayList<>();
+        for (String s : ImmutableList.of("Roosta", "Hotblack Desiato", "Ford Prefect", "Zaphod Beeblebrox", "Arthur Dent", "Slartibartfast", "Trillian")) {
+            int cha = s.hashCode() % 131;
+            batch.add(ImmutableMap.<String, Object> of("id", cha, "name", s));
+        }
+        structApi.insertRows(table, batch);
+
+        contents = structApi.selectRows(table, null, "id != 42", ImmutableList.of("name"), true, -1);
+        System.out.println(JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(contents)));
+        Assert.assertEquals(contents.size(), batch.size());
+        String last = "AAAA";
+        for (Map<String, Object> map : contents) {
+            String next = map.get("name").toString();
+            Assert.assertTrue(next.compareTo(last) > 0);
+            last = next;
+        }
+
+        contents = structApi.selectRows(table, null, "id != 42", ImmutableList.of("name"), false, -1);
+        System.out.println(JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(contents)));
+        Assert.assertEquals(contents.size(), batch.size());
+        last = "Zz";
+        for (Map<String, Object> map : contents) {
+            String next = map.get("name").toString();
+            Assert.assertTrue(last.compareTo(next) > 0, last + " > " + next);
+            last = next;
+        }
+
+        contents = structApi.selectRows(table, null, "id != 42", ImmutableList.of("id"), true, -1);
+        Assert.assertEquals(contents.size(), batch.size());
+        Integer lasti = Integer.MIN_VALUE;
+        for (Map<String, Object> map : contents) {
+            Integer nexti = (Integer) map.get("id");
+            Assert.assertTrue(nexti.compareTo(lasti) > 0);
+            lasti = nexti;
+        }
+
+        contents = structApi.selectRows(table, null, "id != 42", ImmutableList.of("id"), false, -1);
+        System.out.println(JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(contents)));
+        Assert.assertEquals(contents.size(), batch.size());
+        lasti = Integer.MAX_VALUE;
+        for (Map<String, Object> map : contents) {
+            Integer nexti = (Integer) map.get("id");
+            Assert.assertTrue(lasti.compareTo(nexti) > 0, lasti + " > " + nexti);
+            lasti = nexti;
+        }
+
+        // Good enough. Delete the repo.
+        structApi.deleteStructuredRepo(repoStr);
+        Assert.assertFalse(structApi.structuredRepoExists(repoStr), "Repo does not exist any more");
+    }
 }

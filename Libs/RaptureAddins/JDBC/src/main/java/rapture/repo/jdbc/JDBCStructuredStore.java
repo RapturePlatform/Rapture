@@ -26,6 +26,23 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.TreeMap;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.BadSqlGrammarException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.ResultSetExtractor;
+import org.springframework.jdbc.core.SqlInOutParameter;
+import org.springframework.jdbc.core.SqlOutParameter;
+import org.springframework.jdbc.core.SqlParameter;
+import org.springframework.jdbc.core.SqlTypeValue;
+import org.springframework.jdbc.core.StatementCreatorUtils;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcCall;
+
+import com.google.common.collect.ImmutableMap;
+
 import net.sf.jsqlparser.JSQLParserException;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;
@@ -35,23 +52,14 @@ import net.sf.jsqlparser.statement.delete.Delete;
 import net.sf.jsqlparser.statement.insert.Insert;
 import net.sf.jsqlparser.statement.select.Select;
 import net.sf.jsqlparser.statement.update.Update;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.BadSqlGrammarException;
-import org.springframework.jdbc.core.SqlInOutParameter;
-import org.springframework.jdbc.core.SqlParameter;
-import org.springframework.jdbc.core.SqlOutParameter;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.ResultSetExtractor;
-import org.springframework.jdbc.core.SqlTypeValue;
-import org.springframework.jdbc.core.StatementCreatorUtils;
-
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.simple.SimpleJdbcCall;
-import rapture.common.*;
+import rapture.common.CallingContext;
+import rapture.common.EntitlementSet;
+import rapture.common.ForeignKey;
+import rapture.common.IEntitlementsContext;
+import rapture.common.StoredProcedureParams;
+import rapture.common.StoredProcedureResponse;
+import rapture.common.TableIndex;
+import rapture.common.TableMeta;
 import rapture.common.exception.ExceptionToString;
 import rapture.common.exception.RaptureExceptionFactory;
 import rapture.kernel.Kernel;
@@ -63,8 +71,6 @@ import rapture.structured.InMemoryCache;
 import rapture.structured.SqlGenerator;
 import rapture.structured.StructuredStore;
 import rapture.util.IDGenerator;
-
-import com.google.common.collect.ImmutableMap;
 
 /**
  * Created by yanwang on 4/8/15.
@@ -241,7 +247,7 @@ public abstract class JDBCStructuredStore implements StructuredStore {
 
     @Override
     public Boolean insertRow(String table, Map<String, ?> values) {
-        List<String> columnNames = new ArrayList<String>(values.keySet());
+        List<String> columnNames = new ArrayList<>(values.keySet());
         int res = jdbc.update(sqlGenerator.constructInsertPreparedStatement(schema, table, Arrays.asList(columnNames)), values.values().toArray(),
                 getTypes(table, columnNames, true));
         return res > 0;
@@ -249,7 +255,7 @@ public abstract class JDBCStructuredStore implements StructuredStore {
 
     @Override
     public Boolean insertRows(String table, List<? extends Map<String, ?>> values) {
-        List<String> columnNames = new ArrayList<String>(values.get(0).keySet());
+        List<String> columnNames = new ArrayList<>(values.get(0).keySet());
         List<List<String>> allCols = new ArrayList<>();
         List<Object> allVals = new ArrayList<>();
         for (Map<String, ?> row : values) {
@@ -289,6 +295,7 @@ public abstract class JDBCStructuredStore implements StructuredStore {
         return selectConverter;
     }
 
+    @Override
     public List<Map<String, Object>> selectJoinedRows(List<String> tables, List<String> columnNames, String from, String where,
                                                       List<String> order, Boolean ascending, int limit) {
         List<? super Object> args = new ArrayList<>();
@@ -377,11 +384,11 @@ public abstract class JDBCStructuredStore implements StructuredStore {
         return new ResultSetExtractor<List<Map<String, Object>>>() {
             @Override
             public List<Map<String, Object>> extractData(ResultSet rs) throws SQLException, DataAccessException {
-                List<Map<String, Object>> ret = new ArrayList<Map<String, Object>>();
+                List<Map<String, Object>> ret = new ArrayList<>();
                 ResultSetMetaData rsmd = rs.getMetaData();
                 int numColumns = rsmd.getColumnCount();
                 while (rs.next()) {
-                    Map<String, Object> m = new TreeMap<String, Object>(String.CASE_INSENSITIVE_ORDER);
+                    Map<String, Object> m = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
                     for (int i = 1; i <= numColumns; i++) {
                         m.put(rsmd.getColumnLabel(i), rs.getObject(i));
                     }
@@ -417,7 +424,7 @@ public abstract class JDBCStructuredStore implements StructuredStore {
 
     @Override
     public Boolean updateRows(String tableName, Map<String, ?> values, String where) {
-        List<String> columnNames = new ArrayList<String>(values.keySet());
+        List<String> columnNames = new ArrayList<>(values.keySet());
         int res = jdbc.update(sqlGenerator.constructUpdatePreparedStatement(schema, tableName, columnNames, where), values.values().toArray(),
                 getTypes(tableName, columnNames, true));
         return res > 0;
@@ -453,6 +460,7 @@ public abstract class JDBCStructuredStore implements StructuredStore {
         return res > 0;
     }
 
+    @Override
     public Boolean createIndex(String tableName, String indexName, List<String> columnNames) {
         jdbc.execute(sqlGenerator.constructCreateIndex(schema, tableName, indexName, columnNames));
         return true;
@@ -618,9 +626,9 @@ public abstract class JDBCStructuredStore implements StructuredStore {
             int currentCount = 0;
             ResultSetMetaData rsmd = rs.getMetaData();
             int numColumns = rsmd.getColumnCount();
-            List<Map<String, Object>> ret = new ArrayList<Map<String, Object>>();
+            List<Map<String, Object>> ret = new ArrayList<>();
             while (currentCount++ < count && !rs.isClosed() && (isForward ? rs.next() : rs.previous())) {
-                Map<String, Object> row = new TreeMap<String, Object>(String.CASE_INSENSITIVE_ORDER);
+                Map<String, Object> row = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
                 for (int i = 1; i <= numColumns; i++) {
                     row.put(rsmd.getColumnLabel(i), rs.getObject(i));
                 }
@@ -662,6 +670,7 @@ public abstract class JDBCStructuredStore implements StructuredStore {
             }
         }
         scanner.close();
+
         if (alter) {
             jdbc.update(StringUtils.join(alterStatements, "\n"));
         } else {
@@ -687,6 +696,7 @@ public abstract class JDBCStructuredStore implements StructuredStore {
         });
     }
 
+    @Override
     public Boolean createProcedureCallUsingSql(CallingContext context, String rawSql) {
 
         try {
@@ -701,6 +711,7 @@ public abstract class JDBCStructuredStore implements StructuredStore {
         }
     }
 
+    @Override
     public StoredProcedureResponse callProcedure(CallingContext context, String procName, StoredProcedureParams params) {
 
         // TODO RAP-3548 Need to check entitlements
@@ -754,6 +765,7 @@ public abstract class JDBCStructuredStore implements StructuredStore {
 
     }
 
+    @Override
     public Boolean dropProcedureUsingSql(CallingContext context, String rawSql) {
 
         try {
@@ -769,7 +781,7 @@ public abstract class JDBCStructuredStore implements StructuredStore {
     }
 
     protected Map<String, Integer> getInputParamTypes(Map<String, Object> inParams) {
-        Map<String, Integer> retMap = new HashMap<String, Integer>();
+        Map<String, Integer> retMap = new HashMap<>();
         for (Map.Entry<String, Object> entry : inParams.entrySet()) {
             String clazz = entry.getValue().getClass().getSimpleName();
             switch (clazz) {
