@@ -263,4 +263,88 @@ public class StructuredApiIntegrationTests {
         structApi.deleteStructuredRepo(repoStr);
         Assert.assertFalse(structApi.structuredRepoExists(repoStr), "Repo does not exist any more");
     }
+
+    @Test(groups = { "structured" })
+    public void testSqlGeneration() {
+
+        String foo = "Don\'t Panic";
+        String bar = foo.replace("\'", "''");
+        Assert.assertEquals("Don''t Panic", bar);
+
+        RaptureURI repo = new RaptureURI("structured://hhgg");
+        String repoStr = repo.toString();
+        String config = "STRUCTURED { } USING POSTGRES { planet=\"magrathea\" }";
+        try {
+            if (!structApi.structuredRepoExists(repoStr)) structApi.createStructuredRepo(repoStr, config);
+
+            // Create a table. Add and remove data
+            String table = "//" + repo.getAuthority() + "/table";
+            structApi.createTable(table, ImmutableMap.of("id", "int", "name", "varchar(255), PRIMARY KEY (id)"));
+            Map<String, Object> row = new HashMap<>();
+            row.put("id", 42);
+            row.put("name", "Don't Panic");
+            structApi.insertRow(table, row);
+
+            boolean pass = false;
+            String sql = structApi.getDdl(table, true);
+            for (String s : sql.split("\n")) {
+                if (s.contains("INSERT")) {
+                    Assert.assertEquals("INSERT INTO hhgg.table (id, name) VALUES ('42', 'Don''t Panic')", s);
+                    pass = true;
+                }
+            }
+            Assert.assertTrue(pass);
+        } finally {
+            if (structApi.structuredRepoExists(repoStr)) structApi.deleteStructuredRepo(repoStr);
+        }
+    }
+
+    @Test(groups = { "structured" })
+    public void manualTestPlugin() {
+        RaptureURI repo = new RaptureURI("structured://hhgg");
+        String repoStr = repo.toString();
+        String config = "STRUCTURED { } USING POSTGRES { planet=\"magrathea\" }";
+
+        if (!structApi.structuredRepoExists(repoStr)) structApi.createStructuredRepo(repoStr, config);
+
+        // Create a table. Add and remove data
+        String table = "//" + repo.getAuthority() + "/table";
+        structApi.createTable(table, ImmutableMap.of("id", "int", "name", "varchar(255), PRIMARY KEY (id)"));
+
+        Map<String, Object> row = new HashMap<>();
+        row.put("id", 42);
+        row.put("name", "Don't Panic");
+        structApi.insertRow(table, row);
+
+        List<Map<String, Object>> contents = structApi.selectRows(table, null, null, null, null, -1);
+        Assert.assertEquals(contents.size(), 1);
+        Assert.assertEquals(contents.get(0), row);
+
+        // Batch insert
+        List<Map<String, Object>> batch = new ArrayList<>();
+        for (String s : ImmutableList.of("Roosta", "Hotblack Desiato", "Ford Prefect", "Zaphod Beeblebrox", "Arthur Dent", "Slartibartfast", "Trillian")) {
+            int cha = s.hashCode() % 131;
+            batch.add(ImmutableMap.<String, Object> of("id", cha, "name", s));
+        }
+        structApi.insertRows(table, batch);
+
+        // Now export the plug-in
+        // Put a breakpoint here
+
+        // Delete the repo
+        structApi.deleteStructuredRepo(repoStr);
+        Assert.assertFalse(structApi.structuredRepoExists(repoStr), "Repo does not exist any more");
+
+        // Now install the plug-in
+        // Put a breakpoint here
+
+        Assert.assertTrue(structApi.structuredRepoExists(repoStr), "Repo created");
+        contents = structApi.selectRows(table, null, "id = 42", ImmutableList.of("id"), true, -1);
+        Assert.assertEquals(1, contents.size());
+
+        // Good enough. Delete the repo.
+        structApi.deleteStructuredRepo(repoStr);
+        Assert.assertFalse(structApi.structuredRepoExists(repoStr), "Repo does not exist any more");
+    }
+
 }
