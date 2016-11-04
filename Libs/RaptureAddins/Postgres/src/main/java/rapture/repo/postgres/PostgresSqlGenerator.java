@@ -53,6 +53,13 @@ public class PostgresSqlGenerator extends StandardSqlGenerator {
                 return getSafeFullName(schema, super.getTableName(table));
             }
 
+            // By default it escapes single quotes as \' but it should be ''
+            @Override
+            public String getInsertSql(Table arg0, Map arg1, boolean arg2) {
+                this.addEscapedCharSequence("'", "''");
+                return super.getInsertSql(arg0, arg1, arg2);
+            }
+
             @Override
             public void dropTable(Table table) throws IOException {
                 print("DROP TABLE IF EXISTS ");
