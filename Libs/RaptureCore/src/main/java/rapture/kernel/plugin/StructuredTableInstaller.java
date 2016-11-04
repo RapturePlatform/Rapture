@@ -25,12 +25,12 @@ package rapture.kernel.plugin;
 
 import org.apache.log4j.Logger;
 
+import com.google.common.base.Charsets;
+
 import rapture.common.CallingContext;
 import rapture.common.PluginTransportItem;
 import rapture.common.RaptureURI;
 import rapture.kernel.Kernel;
-
-import com.google.common.base.Charsets;
 
 /**
  * Used to load plugins that represent structured store tables
@@ -48,6 +48,7 @@ public class StructuredTableInstaller implements RaptureInstaller {
             log.info(String.format("Table [%s] already exists, skipping installation.", uri.toString()));
             return;
         }
+
         String content = new String(item.getContent(), Charsets.UTF_8);
         Kernel.getStructured().getTrusted().executeDdl(uri.toString(), content);
     }
