@@ -702,9 +702,15 @@ public class DefaultDecisionProcessExecutor implements DecisionProcessExecutor {
                 String nextStepURI = changeStepUri(stepURI, targetName);
                 log.trace("Target transition: " + nextStepURI);
                 stack.add(0, nextStepURI);
-                String stepCategory = Kernel.getDecision().getStepCategory(ContextFactory.getKernelUser(), nextStepURI);
-                saveWorker(worker);
-                publishStep(worker, stepCategory);
+                try {
+                    String stepCategory = Kernel.getDecision().getStepCategory(ContextFactory.getKernelUser(), nextStepURI);
+                    saveWorker(worker);
+                    publishStep(worker, stepCategory);
+                } catch (RaptureException e) {
+                    // For debugging it helps if we log the step name. getStepCategory doesn't know what the name is.
+                    log.error("Error in step " + step.getName() + ": " + e.getMessage());
+                    throw e;
+                }
                 return;
             }
         }

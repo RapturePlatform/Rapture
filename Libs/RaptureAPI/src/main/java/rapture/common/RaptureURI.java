@@ -68,7 +68,7 @@ public class RaptureURI implements Cloneable {
     public RaptureURI(String documentURI, Scheme defaultScheme) {
         if ("//".equals(documentURI) || "/".equals(documentURI) || "".equals(documentURI) || documentURI == null) {
             this.scheme = defaultScheme;
-            this.authority="";
+            this.authority = "";
         } else try {
             Parser parser = new Parser(documentURI, defaultScheme);
             parser.parse();
@@ -128,20 +128,20 @@ public class RaptureURI implements Cloneable {
         }
         return sb.toString();
     }
-    
+
     public RaptureURI getParentURI() {
         if (this.hasDocPath() == false) return null;
         RaptureURI ret = null;
         try {
             ret = (RaptureURI) clone();
         } catch (CloneNotSupportedException e) {
-        	// it is.
+            // it is.
         }
-        if (ret.docPath.charAt(ret.docPath.length()-1) == Parser.SEPARATOR_CHAR) {
-            ret.docPath.substring(0, ret.docPath.length()-1);
+        if (ret.docPath.charAt(ret.docPath.length() - 1) == Parser.SEPARATOR_CHAR) {
+            ret.docPath.substring(0, ret.docPath.length() - 1);
         }
         int lastIndex = ret.docPath.lastIndexOf(Parser.SEPARATOR_CHAR);
-        ret.docPath = (lastIndex > 0) ? ret.docPath.substring(0,lastIndex) : "";
+        ret.docPath = (lastIndex > 0) ? ret.docPath.substring(0, lastIndex) : "";
         return ret;
     }
 
@@ -149,7 +149,7 @@ public class RaptureURI implements Cloneable {
     public String getLeafName() {
         if (hasDocPath() == false) return null;
         int lastIndex = docPath.lastIndexOf(Parser.SEPARATOR_CHAR);
-        return (lastIndex > 0) ? docPath.substring(lastIndex+1) : docPath;
+        return (lastIndex > 0) ? docPath.substring(lastIndex + 1) : docPath;
     }
 
     public Scheme getScheme() {
@@ -282,10 +282,12 @@ public class RaptureURI implements Cloneable {
         }
 
         public Builder docPath(String docPath) {
-        	if (!StringUtils.isEmpty(docPath)) {
-        		while (docPath.endsWith("/")) docPath = docPath.substring(0, docPath.length()-1);
-        	}
-        	result.docPath = docPath;
+            if (!StringUtils.isEmpty(docPath)) {
+                while (docPath.endsWith("/")) {
+                    docPath = docPath.substring(0, docPath.length() - 1);
+                }
+            }
+            result.docPath = docPath;
             return this;
         }
 
@@ -328,7 +330,10 @@ public class RaptureURI implements Cloneable {
     public static RaptureURI createFromFullPathWithAttribute(String fullPath, String attribute, Scheme scheme) {
         int sliceCount = 2;
         String[] parts = fullPath.split(Parser.SEPARATOR_CHAR.toString(), sliceCount);
-        Preconditions.checkArgument(parts.length == sliceCount, "Not a valid path: " + fullPath);
+        if (parts.length == 1) {
+            // only the authority was specified
+            return RaptureURI.builder(scheme, parts[0]).attribute(attribute).build();
+        }
         String docPath = parts[1];
         // do not allow the empty string
         if (StringUtils.isBlank(docPath)) {
@@ -548,9 +553,11 @@ public class RaptureURI implements Cloneable {
                 }
             }
 
-            // You can't have a null authority and a doc path: foo:////bar/baz --> foo://bar/baz 
-            while ((i < inputLength) && (chars[i] == '/')) i++; // skip over slashes
-            
+            // You can't have a null authority and a doc path: foo:////bar/baz --> foo://bar/baz
+            while ((i < inputLength) && (chars[i] == '/')) {
+                i++; // skip over slashes
+            }
+
             // parse authority
             boolean isInvalidAuthority = false;
             int authorityStartIndex = i;
@@ -579,7 +586,7 @@ public class RaptureURI implements Cloneable {
                     return;
                 }
             } while (chars[i] == '/');
-            
+
             int docPathStartIndex = i;
             while (i < inputLength && !OPTIONAL_CONTROL_CHARS.contains(chars[i])) {
                 if (OPTIONAL_CONTROL_CHARS.contains(chars[i])) {
@@ -645,8 +652,7 @@ public class RaptureURI implements Cloneable {
                     if (controlChar == VERSION) {
                         if (text.matches("\\d+")) {
                             version = text;
-                        }
-                        else {
+                        } else {
                             asOfTime = text;
                         }
                     } else if (controlChar == ELEMENT) {
@@ -705,21 +711,21 @@ public class RaptureURI implements Cloneable {
     public RaptureURI withoutElement() {
         return builder(this).element(null).build();
     }
-    
+
     public static RaptureURI newScheme(String uri, Scheme newScheme) {
         RaptureURI retVal = new RaptureURI(uri);
         retVal.scheme = newScheme;
         return retVal;
     }
-    
+
     public static RaptureURI newScheme(RaptureURI uri, Scheme newScheme) {
         RaptureURI retVal = null;
-		try {
-			retVal = (RaptureURI) uri.clone();
-	        retVal.scheme = newScheme;
-		} catch (CloneNotSupportedException e) {
-			log.info("This can't happen", e);
-		}
+        try {
+            retVal = (RaptureURI) uri.clone();
+            retVal.scheme = newScheme;
+        } catch (CloneNotSupportedException e) {
+            log.info("This can't happen", e);
+        }
         return retVal;
     }
 }

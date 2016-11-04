@@ -23,14 +23,15 @@
  */
 package rapture.kernel;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.apache.log4j.Logger;
+
 import rapture.common.CallingContext;
 import rapture.common.api.EntitlementApi;
 import rapture.common.model.RaptureEntitlement;
 import rapture.common.model.RaptureEntitlementGroup;
-
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Created by zanniealvarez on 8/28/15.
@@ -113,7 +114,7 @@ class EntitlementUtilLockoutChecker
             return true;
         }
 
-        for (RaptureEntitlement entitlement: api.findEntitlementsByGroup(ContextFactory.getKernelUser(), groupName)) {
+        for (RaptureEntitlement entitlement : api.getEntitlementsForGroup(ContextFactory.getKernelUser(), groupName)) {
             if (isEntitlementSensitive(entitlement.getName()) &&
                     !isOnlyGroupForEntitlement(groupName, entitlement) &&
                     !userHasAlternateAccess(context.getUser(), groupName, entitlement)) {
@@ -130,7 +131,7 @@ class EntitlementUtilLockoutChecker
             return true;
         }
 
-        for (RaptureEntitlement entitlement: api.findEntitlementsByGroup(ContextFactory.getKernelUser(), groupName)) {
+        for (RaptureEntitlement entitlement : api.getEntitlementsForGroup(ContextFactory.getKernelUser(), groupName)) {
             if (isEntitlementSensitive(entitlement.getName()) && !userHasAlternateAccess(userName, groupName, entitlement)) {
                 // Logged from userHasAlternateAccess
                 return false;

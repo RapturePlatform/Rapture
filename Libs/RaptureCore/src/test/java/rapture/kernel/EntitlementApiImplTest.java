@@ -38,6 +38,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.google.common.collect.ImmutableList;
+
 import rapture.common.CallingContext;
 import rapture.common.EntitlementSet;
 import rapture.common.RaptureConstants;
@@ -46,13 +48,12 @@ import rapture.common.Scheme;
 import rapture.common.api.DocApi;
 import rapture.common.api.EntitlementApi;
 import rapture.common.api.UserApi;
+import rapture.common.impl.jackson.JacksonUtil;
 import rapture.common.impl.jackson.MD5Utils;
 import rapture.common.model.RaptureEntitlement;
 import rapture.common.model.RaptureEntitlementGroup;
 import rapture.config.ConfigLoader;
 import rapture.config.RaptureConfig;
-
-import com.google.common.collect.ImmutableList;
 
 public class EntitlementApiImplTest {
 
@@ -459,5 +460,48 @@ public class EntitlementApiImplTest {
             // expected
         }
 
+    }
+
+    @Test
+    public void getEntitlementsForGroup() {
+        String vocals = "Vocalist";
+        String guitars = "Guitar";
+        String drums = "Drums";
+        String album = "Album";
+
+        entApi.addEntitlementGroup(rootContext, vocals);
+        entApi.addEntitlementGroup(rootContext, guitars);
+        entApi.addEntitlementGroup(rootContext, drums);
+
+        entApi.addEntitlement(rootContext, "/data/write/BlackSabbath/Paranoid", album);
+        entApi.addEntitlement(rootContext, "/data/write/BlackSabbath/Sabotage", album);
+        entApi.addEntitlement(rootContext, "/data/write/BlackSabbath/MasterOfReality", album);
+        entApi.addEntitlement(rootContext, "/data/write/BlackSabbath/Volume4", album);
+
+        entApi.addGroupToEntitlement(rootContext, "/data/write/BlackSabbath/Paranoid", vocals);
+        entApi.addGroupToEntitlement(rootContext, "/data/write/BlackSabbath/Sabotage", vocals);
+        entApi.addGroupToEntitlement(rootContext, "/data/write/BlackSabbath/Volume4", vocals);
+
+        entApi.addGroupToEntitlement(rootContext, "/data/write/BlackSabbath/MasterOfReality", drums);
+
+        entApi.addGroupToEntitlement(rootContext, "/data/write/BlackSabbath/Sabotage", guitars);
+
+        entApi.addUserToEntitlementGroup(rootContext, vocals, "OzzyOsbourne");
+        entApi.addUserToEntitlementGroup(rootContext, vocals, "RonnieJamesDio");
+        entApi.addUserToEntitlementGroup(rootContext, vocals, "IanGillan");
+
+        entApi.addUserToEntitlementGroup(rootContext, guitars, "TonyIommi");
+        entApi.addUserToEntitlementGroup(rootContext, guitars, "GeezerButler");
+
+        entApi.addUserToEntitlementGroup(rootContext, drums, "BillWard");
+
+        List<RaptureEntitlement> ents = entApi.getEntitlementsForGroup(rootContext, vocals);
+
+        System.out.println(JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(ents)));
+
+        assertEquals(3, ents.size());
+        for (RaptureEntitlement re : ents) {
+            assertTrue(re.getGroups().contains(vocals));
+        }
     }
 }

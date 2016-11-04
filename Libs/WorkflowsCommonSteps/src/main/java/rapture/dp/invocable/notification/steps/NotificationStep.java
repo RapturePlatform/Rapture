@@ -96,11 +96,12 @@ public class NotificationStep extends AbstractInvocable {
                 }
             } catch (Exception e) {
                 Throwable cause = ExceptionToString.getRootCause(e);
-                error.append("Cannot send email notification : ").append(cause.getLocalizedMessage()).append("\n");
+                error.append("Cannot send slack notification : ").append(cause.getLocalizedMessage()).append("\n");
                 decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), "Problem in " + getStepName() + ": slack notification failed", true);
                 decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), ExceptionToString.summary(cause), true);
                 retval = getErrorTransition();
             }
+
             try {
                 if (type.equalsIgnoreCase("EMAIL") && !sendEmail(ctx)) {
                     decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), "Email notification failed", true);
@@ -108,7 +109,7 @@ public class NotificationStep extends AbstractInvocable {
                 }
             } catch (Exception e) {
                 Throwable cause = ExceptionToString.getRootCause(e);
-                error.append("Cannot send slack notification : ").append(cause.getLocalizedMessage()).append("\n");
+                error.append("Cannot send email notification : ").append(cause.getLocalizedMessage()).append("\n");
                 decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), "Problem in NotificationStep " + getStepName() + ": email notification failed", true);
                 decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), ExceptionToString.summary(cause), true);
                 log.error(ExceptionToString.format(ExceptionToString.getRootCause(e)));
