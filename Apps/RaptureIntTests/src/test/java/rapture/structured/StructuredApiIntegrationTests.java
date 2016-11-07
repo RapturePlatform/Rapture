@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Ignore;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Optional;
@@ -299,6 +300,11 @@ public class StructuredApiIntegrationTests {
         }
     }
 
+    // Test used in conjunction with manually running plugin installer to verify that it works.
+    // Could possibly be expanded to invoke the PI but more hassle than it's worth.
+    // The preceding test verifies the code in question, though it doesn't exercise the executeDdl method
+    // as that's a trusted method on the server
+    @Ignore
     @Test(groups = { "structured", "postgres","nightly"  }, enabled=false)
     public void manualTestPlugin() {
         RaptureURI repo = new RaptureURI("structured://hhgg");
@@ -369,17 +375,17 @@ public class StructuredApiIntegrationTests {
         String table = "//" + repo.getAuthority() + "/table";
         structApi.createTable(table, ImmutableMap.of("id", "int", "name", "varchar(255), PRIMARY KEY (id)"));
 
-        Map<String, Object> row = new HashMap<String, Object>();
+        Map<String, Object> row = new HashMap<>();
         row.put("id", 42);
         row.put("name", "Don't Panic");
         structApi.insertRow(table, row);
         
-        row = new HashMap<String, Object>();
+        row = new HashMap<>();
         row.put("id", 43);
         row.put("name", "Don't Panic More");
         structApi.insertRow(table, row);
         
-        row = new HashMap<String, Object>();
+        row = new HashMap<>();
         row.put("id", 44);
         row.put("name", "Don't Panic Even More");
         structApi.insertRow(table, row);
