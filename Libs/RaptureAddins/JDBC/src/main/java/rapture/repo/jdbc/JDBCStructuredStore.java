@@ -642,16 +642,7 @@ public abstract class JDBCStructuredStore implements StructuredStore {
     }
 
     @Override
-    public void executeDdl(String ddl) {
-    	executeDdl(ddl, false);
-    }
-
-    //@Override
-    public void executeAlterDdl(String ddl) {
-    	executeDdl(ddl, true);
-    }
-
-    private void executeDdl(String ddl, boolean alter) {
+    public void executeDdl(String ddl, boolean alter) {
         List<String> createStatements = new ArrayList<>();
         List<String> alterStatements = new ArrayList<>();
         List<String> updateStatements = new ArrayList<>();

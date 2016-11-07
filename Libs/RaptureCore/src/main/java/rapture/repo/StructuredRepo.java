@@ -23,6 +23,9 @@
  */
 package rapture.repo;
 
+import java.util.List;
+import java.util.Map;
+
 import rapture.common.CallingContext;
 import rapture.common.ForeignKey;
 import rapture.common.StoredProcedureParams;
@@ -30,9 +33,6 @@ import rapture.common.StoredProcedureResponse;
 import rapture.common.TableIndex;
 import rapture.common.TableMeta;
 import rapture.structured.StructuredStore;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * Created by seanchen on 7/1/15.
@@ -167,8 +167,8 @@ public class StructuredRepo {
         return store.getDdl(tableName, includeTableData);
     }
 
-    public void executeDdl(String ddl){
-        store.executeDdl(ddl);
+    public void executeDdl(String ddl, boolean alter) {
+        store.executeDdl(ddl, alter);
     }
 
     public String getCursorUsingSql(CallingContext context, String rawSql){
