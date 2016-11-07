@@ -85,7 +85,7 @@ public class StructuredApiIntegrationTests {
      *            Passed in from <env>_testng.xml suite file
      * @return none
      */
-    @BeforeClass(groups = { "nightly", "search" })
+    @BeforeClass(groups = { "structured", "postgres","nightly"  })
     @Parameters({ "RaptureURL", "RaptureUser", "RapturePassword" })
     public void setUp(@Optional("http://localhost:8665/rapture") String url, @Optional("rapture") String username, @Optional("rapture") String password) {
 
@@ -115,7 +115,7 @@ public class StructuredApiIntegrationTests {
         helper.configureTestRepo(repoUri, "MONGODB"); // TODO Make this configurable
     }
 
-    @Test(groups = { "structured" })
+    @Test(groups = { "structured", "postgres","nightly"  })
     public void testBasicStructuredRepo() {
         RaptureURI repo = helper.getRandomAuthority(Scheme.STRUCTURED);
         String repoStr = repo.toString();
@@ -191,7 +191,7 @@ public class StructuredApiIntegrationTests {
     }
 
     // Verify that ascending/descending works for strings and integers
-    @Test(groups = { "structured" })
+    @Test(groups = { "structured", "postgres","nightly" })
     public void testAscending() {
         RaptureURI repo = helper.getRandomAuthority(Scheme.STRUCTURED);
         String repoStr = repo.toString();
@@ -264,7 +264,7 @@ public class StructuredApiIntegrationTests {
         Assert.assertFalse(structApi.structuredRepoExists(repoStr), "Repo does not exist any more");
     }
 
-    @Test(groups = { "structured" })
+    @Test(groups = { "structured", "postgres","nightly" })
     public void testSqlGeneration() {
 
         String foo = "Don\'t Panic";
@@ -299,7 +299,7 @@ public class StructuredApiIntegrationTests {
         }
     }
 
-    @Test(groups = { "structured" })
+    @Test(groups = { "structured", "postgres","nightly"  }, enabled=false)
     public void manualTestPlugin() {
         RaptureURI repo = new RaptureURI("structured://hhgg");
         String repoStr = repo.toString();
@@ -346,5 +346,51 @@ public class StructuredApiIntegrationTests {
         structApi.deleteStructuredRepo(repoStr);
         Assert.assertFalse(structApi.structuredRepoExists(repoStr), "Repo does not exist any more");
     }
+    
+    @Test(groups = { "structured", "postgres","nightly" })
+    public void testInsertExistingRow() {
+        RaptureURI repo = helper.getRandomAuthority(Scheme.STRUCTURED);
+        String repoStr = repo.toString();
+        String config = "STRUCTURED { } USING POSTGRES { douglas=\"adams\" }";
+
+        // Create a repo
+        Boolean repoExists = structApi.structuredRepoExists(repoStr);
+        Assert.assertFalse(repoExists, "Repo does not exist yet");
+
+        structApi.createStructuredRepo(repoStr, config);
+        repoExists = structApi.structuredRepoExists(repoStr);
+        Assert.assertTrue(repoExists, "Repo should exist now");
+
+        // Verify the config
+        StructuredRepoConfig rc = structApi.getStructuredRepoConfig(repoStr);
+        Assert.assertEquals(rc.getConfig(), config);
+
+        // Create a table. Add and remove data
+        String table = "//" + repo.getAuthority() + "/table";
+        structApi.createTable(table, ImmutableMap.of("id", "int", "name", "varchar(255), PRIMARY KEY (id)"));
+
+        Map<String, Object> row = new HashMap<String, Object>();
+        row.put("id", 42);
+        row.put("name", "Don't Panic");
+        structApi.insertRow(table, row);
+        
+        row = new HashMap<String, Object>();
+        row.put("id", 43);
+        row.put("name", "Don't Panic More");
+        structApi.insertRow(table, row);
+        
+        row = new HashMap<String, Object>();
+        row.put("id", 44);
+        row.put("name", "Don't Panic Even More");
+        structApi.insertRow(table, row);
+
+        try {
+                structApi.insertRow(table, row);
+                Assert.fail();
+        } catch (Exception e) {
+                Assert.assertTrue(e.getMessage().contains("duplicate key value violates"));
+        }
+    }
+    
 
 }
