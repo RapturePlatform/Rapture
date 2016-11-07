@@ -30,14 +30,14 @@ import java.security.NoSuchAlgorithmException;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang.StringUtils;
 
+import com.google.common.base.Charsets;
+
 import rapture.common.CallingContext;
 import rapture.common.PluginTransportItem;
 import rapture.common.RaptureURI;
 import rapture.common.exception.RaptureExceptionFactory;
 import rapture.common.impl.jackson.JacksonUtil;
 import rapture.kernel.Kernel;
-
-import com.google.common.base.Charsets;
 
 /**
  * Encoder for structured store schemas and tables
@@ -53,10 +53,11 @@ public class StructuredEncoder implements RaptureEncoder {
         item.setUri(uriStr);
         StringBuilder contents = new StringBuilder();
         if (isRepository(uriStr)) {
-            contents.append(JacksonUtil.jsonFromObject(Kernel.getStructured().getStructuredRepoConfig(ctx, uriStr)));
+            contents.append(JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(Kernel.getStructured().getStructuredRepoConfig(ctx, uriStr))));
             contents.append("\n");
+        } else {
+            contents.append(Kernel.getStructured().getDdl(ctx, uriStr, true));
         }
-        contents.append(Kernel.getStructured().getDdl(ctx, uriStr, true));
         item.setContent(contents.toString().getBytes(Charsets.UTF_8));
         try {
             MessageDigest md = MessageDigest.getInstance("MD5");
