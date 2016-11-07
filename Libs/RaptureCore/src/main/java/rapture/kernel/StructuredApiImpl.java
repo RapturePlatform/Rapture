@@ -29,19 +29,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Lists;
+import javax.annotation.Nullable;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
+import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 
-import rapture.common.ForeignKey;
-import rapture.common.StoredProcedureParams;
-import rapture.common.StoredProcedureResponse;
 import rapture.common.CallingContext;
+import rapture.common.ForeignKey;
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
+import rapture.common.StoredProcedureParams;
+import rapture.common.StoredProcedureResponse;
 import rapture.common.StructuredRepoConfig;
 import rapture.common.StructuredRepoConfigStorage;
 import rapture.common.TableIndex;
@@ -50,8 +52,6 @@ import rapture.common.exception.RaptureExceptionFactory;
 import rapture.repo.StructuredRepo;
 import rapture.structured.DefaultValidator;
 import rapture.structured.Validator;
-
-import javax.annotation.Nullable;
 
 public class StructuredApiImpl extends KernelBase implements StructuredApi {
 
@@ -185,7 +185,11 @@ public class StructuredApiImpl extends KernelBase implements StructuredApi {
     @Override
     public Boolean tableExists(CallingContext context, String tableUri) {
         RaptureURI uri = new RaptureURI(tableUri, Scheme.STRUCTURED);
-        return getRepoOrFail(uri.getAuthority()).tableExists(uri.getDocPath());
+        try {
+            return getRepoOrFail(uri.getAuthority()).tableExists(uri.getDocPath());
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     @Override
