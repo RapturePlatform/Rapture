@@ -116,7 +116,7 @@ public interface StructuredStore {
 
     Boolean closeCursor(String tableName, String cursorId);
 
-    void executeDdl(String ddl);
+    void executeDdl(String ddl, boolean alter);
 
     Boolean createProcedureCallUsingSql(CallingContext context, String sql);
 

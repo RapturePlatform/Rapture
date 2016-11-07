@@ -31,6 +31,7 @@ import rapture.common.CallingContext;
 import rapture.common.PluginTransportItem;
 import rapture.common.RaptureURI;
 import rapture.kernel.Kernel;
+import rapture.kernel.StructuredApiImpl;
 
 /**
  * Used to load plugins that represent structured store tables
@@ -44,13 +45,9 @@ public class StructuredTableInstaller implements RaptureInstaller {
 
     @Override
     public void install(CallingContext context, RaptureURI uri, PluginTransportItem item) {
-        if (Kernel.getStructured().tableExists(context, uri.toString())) {
-            log.info(String.format("Table [%s] already exists, skipping installation.", uri.toString()));
-            return;
-        }
-
         String content = new String(item.getContent(), Charsets.UTF_8);
-        Kernel.getStructured().getTrusted().executeDdl(uri.toString(), content);
+        StructuredApiImpl struc = Kernel.getStructured().getTrusted();
+        struc.executeDdl(uri.toString(), content, struc.tableExists(context, uri.toString()));
     }
 
     @Override
