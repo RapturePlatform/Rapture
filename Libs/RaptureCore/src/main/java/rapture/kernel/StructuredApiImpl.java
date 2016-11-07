@@ -584,8 +584,8 @@ public class StructuredApiImpl extends KernelBase implements StructuredApi {
      * @param uriStr - uri representing the structured repo
      * @param ddl    - full SQL string with CREATE and INSERT statements
      */
-    public void executeDdl(String uriStr, String ddl) {
-        getRepoOrFail(new RaptureURI(uriStr, Scheme.STRUCTURED).getAuthority()).executeDdl(ddl);
+    public void executeDdl(String uriStr, String ddl, boolean alter) {
+        getRepoOrFail(new RaptureURI(uriStr, Scheme.STRUCTURED).getAuthority()).executeDdl(ddl, alter);
     }
 
     /**
