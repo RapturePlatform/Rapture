@@ -57,7 +57,7 @@ You can also obtain an api key by making a direct call to the Rapture User API u
 * [Workflow](#workflow)
 * [StructuredStore](#sstore)
 
-<a name="document""/>
+<a name="document"/>
 **Create a document repo**
 ```
 POST /doc/:authority

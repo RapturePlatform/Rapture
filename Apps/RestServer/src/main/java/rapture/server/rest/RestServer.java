@@ -38,7 +38,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -53,7 +52,6 @@ import rapture.common.exception.RaptureException;
 import rapture.common.impl.jackson.JacksonUtil;
 import rapture.config.ConfigLoader;
 import rapture.kernel.Kernel;
-import spark.QueryParamsMap;
 import spark.Request;
 
 public class RestServer {
@@ -114,7 +112,7 @@ public class RestServer {
                 }
             }
         });
-        
+
         post("/doc/:authority", (req, res) -> {
             log.info(req.body());
             Map<String, Object> data = JacksonUtil.getMapFromJson(req.body());
@@ -127,7 +125,7 @@ public class RestServer {
             Kernel.getDoc().createDocRepo(ctx, authority, config);
             return new RaptureURI(authority, Scheme.DOCUMENT).toString();
         });
-        
+
         get("/doc/*", (req, res) -> {
             String meta = req.queryParams("meta");
             if (StringUtils.isNotBlank(meta)) {
@@ -239,9 +237,9 @@ public class RestServer {
             }
             return Kernel.getDecision().createWorkOrder(getContext(req), getWorkorderUriParam(req), params);
         });
-        
+
         post("/sstore/:authority", (req, res) -> {
-        	log.info(req.body());
+            log.info(req.body());
             Map<String, Object> data = JacksonUtil.getMapFromJson(req.body());
             String authority = req.params(":authority");
             String config = (String) data.get("config");
@@ -252,112 +250,113 @@ public class RestServer {
             Kernel.getStructured().createStructuredRepo(ctx, authority, config);
             return new RaptureURI(authority, Scheme.STRUCTURED).toString();
         });
-        
+
         post("/sstore/:authority/:table", (req, res) -> {
-        	log.info(req.body());
-        	Map<String, Object> data = JacksonUtil.getMapFromJson(req.body());
+            log.info(req.body());
+            Map<String, Object> data = JacksonUtil.getMapFromJson(req.body());
             String authority = req.params(":authority");
             String table = req.params(":table");
             String tableUri = RaptureURI.builder(Scheme.STRUCTURED, authority).docPath(table).build().toString();
             CallingContext ctx = getContext(req);
-            if(!Kernel.getStructured().structuredRepoExists(ctx, authority)){
-            	halt(404, String.format("Repo [%s] doesn't exist", authority));
+            if (!Kernel.getStructured().structuredRepoExists(ctx, authority)) {
+                halt(404, String.format("Repo [%s] doesn't exist", authority));
             } else if (Kernel.getStructured().tableExists(ctx, tableUri)) {
                 halt(409, String.format("Table [%s] already exists", tableUri));
             }
-        	Kernel.getStructured().createTable(ctx, tableUri, (Map)data);
+            Kernel.getStructured().createTable(ctx, tableUri, (Map) data);
             return tableUri;
         });
-        
+
         put("/sstore/*", (req, res) -> {
-        	log.info(req.body());
-        	Map<String, Object> data = JacksonUtil.getMapFromJson(req.body());
-        	String tableUri = getStructuredUriParam(req);
-        	CallingContext ctx = getContext(req);
-        	if(!Kernel.getStructured().tableExists(ctx, tableUri)){
-        		halt(404, String.format("Table [%s] doesn't exist", tableUri));
-        	}
-        	Kernel.getStructured().insertRow(ctx, tableUri, (Map)data);
-        	return tableUri;
+            log.info(req.body());
+            Map<String, Object> data = JacksonUtil.getMapFromJson(req.body());
+            String tableUri = getStructuredUriParam(req);
+            CallingContext ctx = getContext(req);
+            if (!Kernel.getStructured().tableExists(ctx, tableUri)) {
+                halt(404, String.format("Table [%s] doesn't exist", tableUri));
+            }
+            Kernel.getStructured().insertRow(ctx, tableUri, (Map) data);
+            return tableUri;
         });
-        
+
         get("/sstore/*", (req, res) -> {
-        	List<String> columns = new ArrayList<String>();
-        	int limit = 10;
-        	String where = "";
-        	List<String> order = null;
-        	Boolean ascending = false;
-        	
-        	log.info("Params are: " + req.queryString());
-        	String tableUri = getStructuredUriParam(req);
-        	if (req.queryParams("columns") != null) {
-        		columns.add(req.queryParams("columns"));
-        	} else { 
-        		columns.add("*"); //return all columns
-        	}
-        	if (req.queryParams("where") != null) {
-        		where = req.queryParams("where");
-        	}
-        	if (req.queryParams("order") != null) {
-        		order = new ArrayList<String>();
-        		order.add(req.queryParams("order"));
-        	}
-        	if (req.queryParams("ascending") != null) {
-        		ascending = Boolean.valueOf(req.queryParams("ascending"));
-        	}
-        	if (req.queryParams("limit") != null) {
-        		limit = Integer.valueOf(req.queryParams("limit")).intValue();
-        	}
-        	CallingContext ctx = getContext(req);
-        	List<Map<String, Object>> selectRows = Kernel.getStructured().selectRows(ctx, tableUri, columns, where, order, ascending, limit);
-        	return selectRows;
+            List<String> columns = new ArrayList<String>();
+            int limit = 10;
+            String where = "";
+            List<String> order = null;
+            Boolean ascending = false;
+
+            log.info("Params are: " + req.queryString());
+            String tableUri = getStructuredUriParam(req);
+            if (req.queryParams("columns") != null) {
+                columns.add(req.queryParams("columns"));
+            } else {
+                columns.add("*"); // return all columns
+            }
+            if (req.queryParams("where") != null) {
+                where = req.queryParams("where");
+            }
+            if (req.queryParams("order") != null) {
+                order = new ArrayList<String>();
+                order.add(req.queryParams("order"));
+            }
+            if (req.queryParams("ascending") != null) {
+                ascending = Boolean.valueOf(req.queryParams("ascending"));
+            }
+            if (req.queryParams("limit") != null) {
+                limit = Integer.valueOf(req.queryParams("limit")).intValue();
+            }
+            CallingContext ctx = getContext(req);
+            List<Map<String, Object>> selectRows = Kernel.getStructured().selectRows(ctx, tableUri, columns, where, order, ascending, limit);
+            return selectRows;
         });
-       
+
         delete("/sstore/:authority", (req, res) -> {
-        	String repoUri = getStructuredUriParam(req);
-        	CallingContext ctx = getContext(req);
-        	log.info("deleting repo: " + repoUri);
-        	Kernel.getStructured().deleteStructuredRepo(ctx, repoUri);
-        	return true;
-        });
-        
-        delete("/sstore/:authority/:table/:pkid", (req, res) -> {
-        	String pkId = req.params(":pkid");
-        	String tableUri = getStructuredUriParam(req,pkId);
-        	CallingContext ctx = getContext(req);
-        	String pkWhere = pkId + "=" + req.queryParams("pkvalue");
-        	log.info("Delete from " + tableUri + " using pk " + pkWhere);
-        	Kernel.getStructured().deleteRows(ctx, tableUri, pkWhere);
-        	return true;
-        });
-        
-        delete("/sstore/:authority/:table", (req, res) -> {
-        	String tableUri = getStructuredUriParam(req);
-        	CallingContext ctx = getContext(req);
-        	
-        	if (req.body().isEmpty()) { //drop the table if request body is empty
-        		log.info("Dropping table: " + tableUri);
-        		Kernel.getStructured().dropTable(ctx, tableUri);
-        	} else { //delete rows from table
-        		Map<String, Object> data = JacksonUtil.getMapFromJson(req.body());
-	        	String where = (String) data.get("where");
-	        	log.info("Delete where clause: " + where + " from " + tableUri);
-	            Kernel.getStructured().deleteRows(ctx, tableUri, where);
-        	}
-        	
+            String repoUri = getStructuredUriParam(req);
+            CallingContext ctx = getContext(req);
+            log.info("deleting repo: " + repoUri);
+            Kernel.getStructured().deleteStructuredRepo(ctx, repoUri);
             return true;
         });
-        
+
+        delete("/sstore/:authority/:table/:pkid", (req, res) -> {
+            String pkId = req.params(":pkid");
+            String tableUri = getStructuredUriParam(req, pkId);
+            CallingContext ctx = getContext(req);
+            String pkWhere = pkId + "=" + req.queryParams("pkvalue");
+            log.info("Delete from " + tableUri + " using pk " + pkWhere);
+            Kernel.getStructured().deleteRows(ctx, tableUri, pkWhere);
+            return true;
+        });
+
+        delete("/sstore/:authority/:table", (req, res) -> {
+            String tableUri = getStructuredUriParam(req);
+            CallingContext ctx = getContext(req);
+
+            if (req.body().isEmpty()) { // drop the table if request body is
+                                        // empty.
+                log.info("Dropping table: " + tableUri);
+                Kernel.getStructured().dropTable(ctx, tableUri);
+            } else { // delete rows from table
+                Map<String, Object> data = JacksonUtil.getMapFromJson(req.body());
+                String where = (String) data.get("where");
+                log.info("Delete where clause: " + where + " from " + tableUri);
+                Kernel.getStructured().deleteRows(ctx, tableUri, where);
+            }
+
+            return true;
+        });
+
     }
-    
+
     private String getStructuredUriParam(Request req) {
         return getUriParam(req, "/sstore/");
     }
-    
+
     private String getStructuredUriParam(Request req, String postfix) {
         return getUriSection(req, "/sstore/", postfix);
     }
-    
+
     private String getDocUriParam(Request req) {
         return getUriParam(req, "/doc/");
     }
@@ -375,10 +374,10 @@ public class RestServer {
     }
 
     private String getUriSection(Request req, String prefix, String postfix) {
-    	String ret = (String) req.pathInfo().subSequence(prefix.length(), req.pathInfo().indexOf(postfix));
-    	return ret;
+        String ret = (String) req.pathInfo().subSequence(prefix.length(), req.pathInfo().indexOf(postfix));
+        return ret;
     }
-    
+
     private String getUriParam(Request req, String prefix) {
         String ret = req.pathInfo().substring(prefix.length());
         int index = ret.indexOf("?");
