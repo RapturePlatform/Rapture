@@ -129,7 +129,8 @@ public class PluginApiTest {
             try {
             	sandbox.makeItemFromZipEntry(orgZipFile, entry);
             } catch (Exception e) {
-            	Reporter.log("Error making sandbox item",true);
+            	Reporter.log("Error making sandbox item " +e.getMessage(),true);
+            	Assert.fail();
             }
         }
         
@@ -143,10 +144,10 @@ public class PluginApiTest {
             try {
                 PluginTransportItem payloadItem = item.makeTransportItem();
                 payload.put(item.getURI().toString(), payloadItem);
-                
                 itemSet.add(item.getURI().toString());
             } catch (Exception ex) {
                 Reporter.log("Exception creating plugin " +ex.getMessage(),true);
+                Assert.fail();
             }
         }
         //install the plugin using the http api 
@@ -204,7 +205,8 @@ public class PluginApiTest {
             try {
             	sandbox.makeItemFromZipEntry(orgZipFile, entry);
             } catch (Exception e) {
-            	Reporter.log("Error making sandbox item",true);
+            	Reporter.log("Error making sandbox item " +e.getMessage(),true);
+            	Assert.fail();
             }
         }
         
@@ -218,10 +220,10 @@ public class PluginApiTest {
             try {
                 PluginTransportItem payloadItem = item.makeTransportItem();
                 payload.put(item.getURI().toString(), payloadItem);
-                
                 itemSet.add(item.getURI().toString());
             } catch (Exception ex) {
                 Reporter.log("Exception creating plugin " +ex.getMessage(),true);
+                Assert.fail();
             }
         }
         //install the plugin using the http api 
