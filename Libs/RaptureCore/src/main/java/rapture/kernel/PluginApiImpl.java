@@ -284,14 +284,19 @@ public class PluginApiImpl extends KernelBase implements PluginApi {
         PluginManifest manifest = getPluginManifest(context, manifestURIstring);
         byte[] placeHolder = new byte[1];
         // uninstall plugin items
+        List<PluginTransportItem> repos = new ArrayList<>();
         for (PluginManifestItem item : manifest.getContents()) {
             log.info("Uninstalling " + item.getURI());
             PluginTransportItem transport = new PluginTransportItem();
             transport.setUri(item.getURI());
             transport.setHash(item.getHash());
             transport.setContent(placeHolder);
-            uninstallPluginItem(context, transport);
+            if (isRepository(new RaptureURI(item.getURI(), null))) repos.add(transport);
+            else uninstallPluginItem(context, transport);
         }
+        for (PluginTransportItem item : repos)
+            uninstallPluginItem(context, item);
+
         // remove plugin manifest
         deletePluginManifest(context, manifestURIstring);
         unrecordFeature(context, name);
