@@ -64,7 +64,7 @@ public class LockApiTest {
 
     @BeforeClass(groups =  { "nightly", "lock" })
     @Parameters({ "RaptureURL", "RaptureUser", "RapturePassword" })
-    public void setUp(@Optional("http://192.168.99.100:8665/rapture") String url, @Optional("rapture") String username, @Optional("rapture") String password) {
+    public void setUp(@Optional("http://localhost:8665/rapture") String url, @Optional("rapture") String username, @Optional("rapture") String password) {
         helper = new IntegrationTestHelper(url, username, password);
         lockApi = helper.getLockApi();
         admin = helper.getAdminApi();
