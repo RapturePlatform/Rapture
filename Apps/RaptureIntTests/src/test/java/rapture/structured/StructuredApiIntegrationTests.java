@@ -23,10 +23,14 @@
  */
 package rapture.structured;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import org.junit.Ignore;
 import org.testng.Assert;
@@ -37,14 +41,19 @@ import org.testng.annotations.Test;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 
+import rapture.common.PluginConfig;
+import rapture.common.PluginTransportItem;
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
+import rapture.common.StoredProcedureParams;
 import rapture.common.StructuredRepoConfig;
 import rapture.common.client.HttpAdminApi;
 import rapture.common.client.HttpBlobApi;
 import rapture.common.client.HttpDocApi;
 import rapture.common.client.HttpLoginApi;
+import rapture.common.client.HttpPluginApi;
 import rapture.common.client.HttpScriptApi;
 import rapture.common.client.HttpSearchApi;
 import rapture.common.client.HttpSeriesApi;
@@ -53,6 +62,9 @@ import rapture.common.client.HttpUserApi;
 import rapture.common.impl.jackson.JacksonUtil;
 import rapture.common.impl.jackson.MD5Utils;
 import rapture.helper.IntegrationTestHelper;
+import rapture.plugin.install.PluginSandbox;
+import rapture.plugin.install.PluginSandboxItem;
+import rapture.plugin.util.PluginUtils;
 
 public class StructuredApiIntegrationTests {
 
@@ -71,6 +83,7 @@ public class StructuredApiIntegrationTests {
     private HttpDocApi docApi2 = null;
     private HttpLoginApi raptureLogin2 = null;
     private HttpAdminApi admin = null;
+    private HttpPluginApi pluginApi = null;
     private RaptureURI repoUri = null;
 
     private static final String user = "User";
@@ -88,7 +101,7 @@ public class StructuredApiIntegrationTests {
      */
     @BeforeClass(groups = { "structured", "postgres","nightly"  })
     @Parameters({ "RaptureURL", "RaptureUser", "RapturePassword" })
-    public void setUp(@Optional("http://localhost:8665/rapture") String url, @Optional("rapture") String username, @Optional("rapture") String password) {
+    public void setUp(@Optional("http://192.168.99.100:8665/rapture") String url, @Optional("rapture") String username, @Optional("rapture") String password) {
 
         // If running from eclipse set env var -Penv=docker or use the following
         // url variable settings:
@@ -105,6 +118,7 @@ public class StructuredApiIntegrationTests {
         blobApi = helper.getBlobApi();
         searchApi = helper.getSearchApi();
         admin = helper.getAdminApi();
+        pluginApi = helper.getPluginApi();
         if (!admin.doesUserExist(user)) {
             admin.addUser(user, "Another User", MD5Utils.hash16(user), "user@incapture.net");
         }
@@ -300,6 +314,40 @@ public class StructuredApiIntegrationTests {
         }
     }
 
+    @Test(groups = { "structured", "postgres", "nightly" })
+    public void testSqlSequenceGeneration() {
+        RaptureURI repo = new RaptureURI("structured://hhgg");
+        String repoStr = repo.toString();
+        String table = "hhgg/ford";
+        String config = "STRUCTURED { } USING POSTGRES { planet=\"magrathea\" }";
+        try {
+            if (!structApi.structuredRepoExists(repoStr)) structApi.createStructuredRepo(repoStr, config);
+
+            // It would appear to be a restriction that the sequence name be
+            structApi.createProcedureCallUsingSql(repoStr + "/fordseq", "DROP SEQUENCE ford_ident_seq;");
+            StoredProcedureParams params = new StoredProcedureParams();
+            structApi.callProcedure(repoStr + "/fordseq", params);
+            structApi.createProcedureCallUsingSql(repoStr + "/fordseq", "CREATE SEQUENCE ford_ident_seq;");
+            structApi.callProcedure(repoStr + "/fordseq", params);
+            String sql = "CREATE TABLE hhgg.ford ( ident INTEGER NOT NULL UNIQUE DEFAULT nextval('ford_ident_seq'), name TEXT);";
+            structApi.createTableUsingSql(repoStr, sql);
+
+            structApi.insertRow(table, ImmutableMap.of("name", "Dentarthurdent"));
+            structApi.insertRow(table, ImmutableMap.of("name", "Tricia McMillan"));
+
+            boolean pass = false;
+            String ddl = structApi.getDdl(table, true);
+            ddl = ddl.substring(0, ddl.indexOf('/'));
+
+            Assert.assertEquals(ddl,
+                    "CREATE SEQUENCE ford_ident_seq;\n\nCREATE TABLE hhgg.ford\n(\n    ident INTEGER NOT NULL UNIQUE DEFAULT nextval('ford_ident_seq'),\n    name TEXT\n);\n\n"
+                            + "INSERT INTO hhgg.ford (ident, name) VALUES ('1', 'Dentarthurdent')\nINSERT INTO hhgg.ford (ident, name) VALUES ('2', 'Tricia McMillan')\n");
+
+        } finally {
+            if (structApi.structuredRepoExists(repoStr)) structApi.deleteStructuredRepo(repoStr);
+        }
+    }
+
     // Test used in conjunction with manually running plugin installer to verify that it works.
     // Could possibly be expanded to invoke the PI but more hassle than it's worth.
     // The preceding test verifies the code in question, though it doesn't exercise the executeDdl method
@@ -398,5 +446,57 @@ public class StructuredApiIntegrationTests {
         }
     }
     
+    @Test(groups = { "plugin", "nightly" })
+    public void testInstallStructuredPlugin() throws Exception {
 
+        String zipFilename = "resources/teststructcreate.zip";
+        File f = new File(zipFilename);
+        if (!f.exists()) {
+            Assert.fail(f.getAbsolutePath());
+        }
+        String pluginName;
+        PluginSandbox sandbox;
+        ZipFile in = null;
+        try {
+            in = new ZipFile(zipFilename);
+            PluginConfig plugin = new PluginUtils().getPluginConfigFromZip(zipFilename);
+            if (plugin == null) {
+                Assert.fail("CAnnot read " + f.getAbsolutePath());
+            }
+
+            sandbox = new PluginSandbox();
+            sandbox.setConfig(plugin);
+            sandbox.setStrict(true);
+            pluginName = plugin.getPlugin();
+            sandbox.setRootDir(new File(f.getParent(), pluginName));
+            Enumeration<? extends ZipEntry> entries = in.entries();
+            while (entries.hasMoreElements()) {
+                ZipEntry entry = entries.nextElement();
+                if (entry.isDirectory()) {
+                    continue;
+                }
+
+                sandbox.makeItemFromZipEntry(in, entry);
+            }
+        } finally {
+            in.close();
+        }
+
+        Map<String, PluginTransportItem> payload = Maps.newLinkedHashMap();
+        for (PluginSandboxItem item : sandbox.getItems(null)) {
+            PluginTransportItem payloadItem = item.makeTransportItem();
+            payload.put(item.getURI().toString(), payloadItem);
+        }
+        pluginApi.installPlugin(sandbox.makeManifest(null), payload);
+
+        System.out.println("db=" + helper.getStructApi().structuredRepoExists("structured://structtest"));
+        pluginApi.uninstallPlugin(pluginName);
+
+        boolean installed = false;
+        for (PluginConfig c : pluginApi.getInstalledPlugins())
+            if (c.getPlugin().compareTo(pluginName) == 0) installed = true;
+
+        Assert.assertFalse(installed, "Plugin did not uninstall");
+
+    }
 }
