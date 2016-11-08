@@ -712,9 +712,9 @@ public abstract class JDBCStructuredStore implements StructuredStore {
                 .withoutProcedureColumnMetaDataAccess();
         MapSqlParameterSource paramSource = new MapSqlParameterSource();
 
-        Map<String, Object> inParams = params.getInParams();
-        Map<String, Integer> outParams = params.getOutParams();
-        Map<String, Object> inOutParams = params.getInOutParams();
+        Map<String, Object> inParams = (params == null) ? null : params.getInParams();
+        Map<String, Integer> outParams = (params == null) ? null : params.getOutParams();
+        Map<String, Object> inOutParams = (params == null) ? null : params.getInOutParams();
 
         if (inParams != null) {
             // Declare Parameters
