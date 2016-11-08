@@ -55,6 +55,7 @@ You can also obtain an api key by making a direct call to the Rapture User API u
 * [Blob](#blob) 
 * [Series](#series)
 * [Workflow](#workflow)
+* [StructuredStore](#sstore)
 
 <a name="document"/>
 **Create a document repo**
@@ -240,6 +241,119 @@ Body: {"params":{"key1":"value1","key2":"value2"}}
 Response:
 ```
 HTTP 200: workorder://1471910400/workflows/myworkflow/WO00000009
+```
+
+<a name="sstore"/>
+
+**Create a structured store repository**
+```
+POST /sstore/:authority
+Example: /sstore/mysstore
+Body: {"config":"STRUCTURED {} USING POSTGRES {}"}
+```
+Response:
+```
+HTTP 200: structured://mysstore
+```
+**Create a structured store table with a defined schema**
+```
+POST /sstore/:authority/:table
+Example: /sstore/mysstore/mytable
+Body: {"id":"int","firstname":"varchar(30)","lastname":"varchar(30)","age":"int"}
+```
+Response:
+```
+HTTP 200: /mysstore/mytable
+```
+**Add a row to a structured store table**
+```
+PUT /sstore/:authority/:table
+Example: /mysstore/mytable
+Body: {"id":3,"firstname":"jim","lastname":"brown","age":41}
+```
+Response:
+```
+HTTP 200: mysstore/mytable
+```
+**Get all rows from a structured store table**
+```
+GET /sstore/:authority/:table
+Example: 
+Body:  _empty_
+```
+Response: [{row1,row2,row3,row4}]
+```
+HTTP 200: 
+```
+**Get all rows from a structured store table with a limit**
+```
+GET /sstore/:authority/:table?limit=
+Example: /sstore/order2/table1?limit=2
+Body:  _empty_
+```
+Response:
+```
+HTTP 200:[{row1,row2}]
+```
+**Get specific rows from a structured store table with a limit and a where clause**
+```
+GET /sstore/:authority/:table?columns=?limit=?&where=?
+Example: /sstore/order2/table1?columns=age,firstname&limit=10&where=age=41
+Body:  _empty_
+```
+Response:
+```
+HTTP 200: [{row1}]
+```
+**Get rows from a structured store table with a limit and a where clause**
+```
+GET /sstore/:authority/:table?limit=?&where=?
+Example: /sstore/order2/table1?limit=10&where=age=41
+Body:  _empty_
+```
+Response:
+```
+HTTP 200: [{row1}]
+```
+**Delete rows from a structured store table using where clause**
+```
+DELETE /sstore/:authority/:table 
+Example: /mysstore/mytable
+Body: {"where":"age>50"}
+```
+Response:
+```
+HTTP 200: 
+```
+**Delete rows from a structured store table using primary key**
+```
+DELETE /sstore/:authority/:table/:pkid 
+Example: /sstore/order2/table1/age?pkvalue=39
+Body: _empty_
+```
+Response:
+```
+HTTP 200:
+```
+**Delete a structured store table**
+```
+DELETE /sstore/:authority/:table 
+Example: /mysstore/mytable
+Body: _empty_
+```
+Response:
+```
+HTTP 200: 
+```
+**Delete a structured store repository**
+```
+DELETE /sstore/:authority
+Example: /sstore/mysstore
+Body: _empty_
+```
+Response:
+```
+HTTP 200:
 ```
 # REST API Examples #
 Refer to the integration test [here](src/integrationTest/java/rapture/server/rest)
