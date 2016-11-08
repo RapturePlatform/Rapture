@@ -24,7 +24,10 @@
 package rapture.structured;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
@@ -99,7 +102,7 @@ public class StructuredApiIntegrationTests {
      *            Passed in from <env>_testng.xml suite file
      * @return none
      */
-    @BeforeClass(groups = { "structured", "postgres","nightly"  })
+    @BeforeClass(groups = { "structured", "postgres", "nightly" })
     @Parameters({ "RaptureURL", "RaptureUser", "RapturePassword" })
     public void setUp(@Optional("http://localhost:8665/rapture") String url, @Optional("rapture") String username, @Optional("rapture") String password) {
 
@@ -130,7 +133,7 @@ public class StructuredApiIntegrationTests {
         helper.configureTestRepo(repoUri, "MONGODB"); // TODO Make this configurable
     }
 
-    @Test(groups = { "structured", "postgres","nightly"  })
+    @Test(groups = { "structured", "postgres", "nightly" })
     public void testBasicStructuredRepo() {
         RaptureURI repo = helper.getRandomAuthority(Scheme.STRUCTURED);
         String repoStr = repo.toString();
@@ -206,7 +209,7 @@ public class StructuredApiIntegrationTests {
     }
 
     // Verify that ascending/descending works for strings and integers
-    @Test(groups = { "structured", "postgres","nightly" })
+    @Test(groups = { "structured", "postgres", "nightly" })
     public void testAscending() {
         RaptureURI repo = helper.getRandomAuthority(Scheme.STRUCTURED);
         String repoStr = repo.toString();
@@ -279,7 +282,7 @@ public class StructuredApiIntegrationTests {
         Assert.assertFalse(structApi.structuredRepoExists(repoStr), "Repo does not exist any more");
     }
 
-    @Test(groups = { "structured", "postgres","nightly" })
+    @Test(groups = { "structured", "postgres", "nightly" })
     public void testSqlGeneration() {
 
         String foo = "Don\'t Panic";
@@ -353,7 +356,7 @@ public class StructuredApiIntegrationTests {
     // The preceding test verifies the code in question, though it doesn't exercise the executeDdl method
     // as that's a trusted method on the server
     @Ignore
-    @Test(groups = { "structured", "postgres","nightly"  }, enabled=false)
+    @Test(groups = { "structured", "postgres", "nightly" }, enabled = false)
     public void manualTestPlugin() {
         RaptureURI repo = new RaptureURI("structured://hhgg");
         String repoStr = repo.toString();
@@ -400,8 +403,8 @@ public class StructuredApiIntegrationTests {
         structApi.deleteStructuredRepo(repoStr);
         Assert.assertFalse(structApi.structuredRepoExists(repoStr), "Repo does not exist any more");
     }
-    
-    @Test(groups = { "structured", "postgres","nightly" })
+
+    @Test(groups = { "structured", "postgres", "nightly" })
     public void testInsertExistingRow() {
         RaptureURI repo = helper.getRandomAuthority(Scheme.STRUCTURED);
         String repoStr = repo.toString();
@@ -427,48 +430,60 @@ public class StructuredApiIntegrationTests {
         row.put("id", 42);
         row.put("name", "Don't Panic");
         structApi.insertRow(table, row);
-        
+
         row = new HashMap<>();
         row.put("id", 43);
         row.put("name", "Don't Panic More");
         structApi.insertRow(table, row);
-        
+
         row = new HashMap<>();
         row.put("id", 44);
         row.put("name", "Don't Panic Even More");
         structApi.insertRow(table, row);
 
         try {
-                structApi.insertRow(table, row);
-                Assert.fail();
+            structApi.insertRow(table, row);
+            Assert.fail();
         } catch (Exception e) {
-                Assert.assertTrue(e.getMessage().contains("duplicate key value violates"));
+            Assert.assertTrue(e.getMessage().contains("duplicate key value violates"));
         }
     }
-    
+
     @Test(groups = { "plugin", "nightly" })
     public void testInstallStructuredPlugin() throws Exception {
 
-        String zipFilename = "resources/teststructcreate.zip";
-        File f = new File(zipFilename);
-        if (!f.exists()) {
-            Assert.fail(f.getAbsolutePath());
-        }
+        // include test plugin inline
+        String zipData = "UEsDBAoAAAAAAOhV+kgAAAAAAAAAAAAAAAAIABwAY29udGVudC9VVAkAAySil1fHB6VXdXgLAAEE9QEAAAQUAAAAUEsDBAoAAAAAAA5f/Ug"
+                + "AAAAAAAAAAAAAAAATABwAY29udGVudC9zdHJ1Y3R0ZXN0L1VUCQAD26abV8cHpVd1eAsAAQT1AQAABBQAAABQSwMECgAAAAAA4lb6SEwICghGAAAAR"
+                + "gAAAB4AHABjb250ZW50L3N0cnVjdHRlc3QvLnN0cnVjdHVyZWRVVAkAA/ijl1fipptXdXgLAAEE9QEAAAQUAAAAeyJjb25maWciOiJTVFJVQ1RVUkV"
+                + "EIHt9IFVTSU5HIFBPU1RHUkVTIHt9IiwiYXV0aG9yaXR5Ijoic3RydWN0dGVzdCJ9ClBLAwQUAAAACAAOX/1IHJdDgbUAAAA/AQAAJwAcAGNvbnRlb"
+                + "nQvc3RydWN0dGVzdC90ZXN0dGFibGUuc3RydWN0dXJlZFVUCQAD26abV+Kmm1d1eAsAAQT1AQAABBQAAACFj8EKwjAQRO/5ir3ZgvgDPbV1lUJIUVP"
+                + "Uk8RmhUCbahKL/r1VoSAKXhbeMjs7k68xlQgbXFUocgQf3LUOgXyYPcfB6IOnS8Lyt06mGf8SBXVsiEUMwGgohMQlrkGUEkTFOVSiGLxhjou04hIs3"
+                + "UKvmmjy+9Mkng4+VrUEEnfyCUprR96PXHftWdn7yNQq04x09eQ+znty5mRqFUxnX0sWJyzlcsj4pzWUW4FzyPY/C8+MTtgDUEsDBBQAAAAIAPh0BUk"
+                + "/v9imQgAAAEwAAAAKABwAcGx1Z2luLnR4dFVUCQADpAelV6QHpVd1eAsAAQT1AQAABBQAAACrVkpJLUjNSylWsqqu1QFyipOLMgtKMvPzlKyUQlKLS"
+                + "xSKS4pKk0tKi1JTFApyStMz85R0lKAMK6USoAqIAqVaLgBQSwECHgMKAAAAAADoVfpIAAAAAAAAAAAAAAAACAAYAAAAAAAAABAA7UEAAAAAY29udGV"
+                + "udC9VVAUAAySil1d1eAsAAQT1AQAABBQAAABQSwECHgMKAAAAAAAOX/1IAAAAAAAAAAAAAAAAEwAYAAAAAAAAABAA7UFCAAAAY29udGVudC9zdHJ1Y"
+                + "3R0ZXN0L1VUBQAD26abV3V4CwABBPUBAAAEFAAAAFBLAQIeAwoAAAAAAOJW+khMCAoIRgAAAEYAAAAeABgAAAAAAAEAAACkgY8AAABjb250ZW50L3N"
+                + "0cnVjdHRlc3QvLnN0cnVjdHVyZWRVVAUAA/ijl1d1eAsAAQT1AQAABBQAAABQSwECHgMUAAAACAAOX/1IHJdDgbUAAAA/AQAAJwAYAAAAAAABAAAAp"
+                + "IEtAQAAY29udGVudC9zdHJ1Y3R0ZXN0L3Rlc3R0YWJsZS5zdHJ1Y3R1cmVkVVQFAAPbpptXdXgLAAEE9QEAAAQUAAAAUEsBAh4DFAAAAAgA+HQFST+"
+                + "/2KZCAAAATAAAAAoAGAAAAAAAAQAAAKSBQwIAAHBsdWdpbi50eHRVVAUAA6QHpVd1eAsAAQT1AQAABBQAAABQSwUGAAAAAAUABQDIAQAAyQIAAAAA";
+
+        File temp = File.createTempFile("plugin", ".zip");
+        Files.write(temp.toPath(), Base64.getDecoder().decode(zipData), StandardOpenOption.SYNC);
+
         String pluginName;
         PluginSandbox sandbox;
-        ZipFile in = null;
-        try {
-            in = new ZipFile(zipFilename);
-            PluginConfig plugin = new PluginUtils().getPluginConfigFromZip(zipFilename);
+        try (ZipFile in = new ZipFile(temp)) {
+            PluginConfig plugin = new PluginUtils().getPluginConfigFromZip(temp.getAbsolutePath());
             if (plugin == null) {
-                Assert.fail("CAnnot read " + f.getAbsolutePath());
+                Assert.fail("Cannot read " + temp.getAbsolutePath());
             }
 
             sandbox = new PluginSandbox();
             sandbox.setConfig(plugin);
             sandbox.setStrict(true);
             pluginName = plugin.getPlugin();
-            sandbox.setRootDir(new File(f.getParent(), pluginName));
+            sandbox.setRootDir(new File(temp.getParent(), pluginName));
             Enumeration<? extends ZipEntry> entries = in.entries();
             while (entries.hasMoreElements()) {
                 ZipEntry entry = entries.nextElement();
@@ -478,8 +493,6 @@ public class StructuredApiIntegrationTests {
 
                 sandbox.makeItemFromZipEntry(in, entry);
             }
-        } finally {
-            in.close();
         }
 
         Map<String, PluginTransportItem> payload = Maps.newLinkedHashMap();
