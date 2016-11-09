@@ -288,7 +288,7 @@ HTTP 200:
 **Get all rows from a structured store table with a limit**
 ```
 GET /sstore/:authority/:table?limit=
-Example: /sstore/order2/table1?limit=2
+Example: /sstore/order2/table1?limit=10
 Body:  _empty_
 ```
 Response:
@@ -298,22 +298,33 @@ HTTP 200:[{row1,row2}]
 **Get specific rows from a structured store table with a limit and a where clause**
 ```
 GET /sstore/:authority/:table?columns=?limit=?&where=?
-Example: /sstore/order2/table1?columns=age,firstname&limit=10&where=age=41
+Example: /sstore/order2/table1?columns=age,firstname&limit=10&where=age>10
 Body:  _empty_
 ```
 Response:
 ```
-HTTP 200: [{row1}]
+HTTP 200: [{row1},{row2}]
 ```
-**Get rows from a structured store table with a limit and a where clause**
+**Get rows from a structured store table with a limit, where clause and order by descending age**
 ```
 GET /sstore/:authority/:table?limit=?&where=?
-Example: /sstore/order2/table1?limit=10&where=age=41
+Example: /sstore/order2/table1?limit=10&where=age>10&order=age&ascending=false
+Body:  _empty_
+Note: ascending by default = false i.e. results are in descending order 
+```
+Response:
+```
+HTTP 200: [{row2},{row1}]
+```
+**Get rows from a structured store table with raw sql**
+```
+GET /sstore/:authority/:table?sql=?
+Example: /sstore/order2/table1?sql=select * from order2.table1 where age > 1
 Body:  _empty_
 ```
 Response:
 ```
-HTTP 200: [{row1}]
+HTTP 200: [{row1,row2}]
 ```
 **Delete rows from a structured store table using where clause**
 ```
