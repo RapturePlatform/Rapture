@@ -285,29 +285,39 @@ public class RestServer {
             String where = "";
             List<String> order = null;
             Boolean ascending = false;
+            List<Map<String, Object>> selectRows = new ArrayList<Map<String, Object>>();
 
             log.info("Params are: " + req.queryString());
             String tableUri = getStructuredUriParam(req);
-            if (req.queryParams("columns") != null) {
-                columns.add(req.queryParams("columns"));
-            } else {
-                columns.add("*"); // return all columns
-            }
-            if (req.queryParams("where") != null) {
-                where = req.queryParams("where");
-            }
-            if (req.queryParams("order") != null) {
-                order = new ArrayList<String>();
-                order.add(req.queryParams("order"));
-            }
-            if (req.queryParams("ascending") != null) {
-                ascending = Boolean.valueOf(req.queryParams("ascending"));
-            }
-            if (req.queryParams("limit") != null) {
-                limit = Integer.valueOf(req.queryParams("limit")).intValue();
-            }
             CallingContext ctx = getContext(req);
-            List<Map<String, Object>> selectRows = Kernel.getStructured().selectRows(ctx, tableUri, columns, where, order, ascending, limit);
+
+            if (req.queryParams("sql") != null) {
+                String schema = new RaptureURI(tableUri, Scheme.STRUCTURED).getAuthority();
+                String updatedRawSql = req.queryParams("sql");
+                log.info("Running raw sql: " + updatedRawSql);
+                selectRows = Kernel.getStructured().selectUsingSql(ctx, schema, updatedRawSql);
+            } else {
+                if (req.queryParams("columns") != null) {
+                    columns.add(req.queryParams("columns"));
+                } else {
+                    columns.add("*"); // return all columns
+                }
+                if (req.queryParams("where") != null) {
+                    where = req.queryParams("where");
+                }
+                if (req.queryParams("order") != null) {
+                    order = new ArrayList<String>();
+                    order.add(req.queryParams("order"));
+                }
+                if (req.queryParams("ascending") != null) {
+                    ascending = Boolean.valueOf(req.queryParams("ascending"));
+                }
+                if (req.queryParams("limit") != null) {
+                    limit = Integer.valueOf(req.queryParams("limit")).intValue();
+                }
+                selectRows = Kernel.getStructured().selectRows(ctx, tableUri, columns, where, order, ascending, limit);
+            }
+
             return selectRows;
         });
 
