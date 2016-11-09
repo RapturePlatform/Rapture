@@ -131,6 +131,46 @@ public class StructuredApiIntegrationTests {
     }
 
     @Test(groups = { "structured", "postgres","nightly"  })
+    public void testDeleteNonExistingRow() {
+        RaptureURI repo = helper.getRandomAuthority(Scheme.STRUCTURED);
+        String repoStr = repo.toString();
+        String config = "STRUCTURED { } USING POSTGRES { marvin=\"paranoid\" }";
+
+        // Create a repo
+        Boolean repoExists = structApi.structuredRepoExists(repoStr);
+        Assert.assertFalse(repoExists, "Repo does not exist yet");
+
+        structApi.createStructuredRepo(repoStr, config);
+        repoExists = structApi.structuredRepoExists(repoStr);
+        Assert.assertTrue(repoExists, "Repo should exist now");
+
+        // Verify the config
+        StructuredRepoConfig rc = structApi.getStructuredRepoConfig(repoStr);
+        Assert.assertEquals(rc.getConfig(), config);
+
+        // Create a table. Add and remove data
+        String table = "//" + repo.getAuthority() + "/table";
+        structApi.createTable(table, ImmutableMap.of("id", "int", "name", "varchar(255), PRIMARY KEY (id)"));
+
+        Map<String, Object> row = new HashMap<>();
+        row.put("id", 42);
+        row.put("name", "Don't Panic");
+        structApi.insertRow(table, row);
+        
+        row.put("id", 43);
+        row.put("name", "Don't Panic Now");
+        structApi.insertRow(table, row);
+        
+        row.put("id", 44);
+        row.put("name", "Don't Panic Now Again");
+        structApi.insertRow(table, row);
+        structApi.deleteRows(table, "id=45");
+        
+        List<Map<String, Object>> contents = structApi.selectRows(table, null, null, null, null, -1);
+        Assert.assertEquals(contents.size(), 3);   
+    }
+    
+    @Test(groups = { "structured", "postgres","nightly"  })
     public void testBasicStructuredRepo() {
         RaptureURI repo = helper.getRandomAuthority(Scheme.STRUCTURED);
         String repoStr = repo.toString();
@@ -444,6 +484,266 @@ public class StructuredApiIntegrationTests {
         } catch (Exception e) {
                 Assert.assertTrue(e.getMessage().contains("duplicate key value violates"));
         }
+    }
+    
+    @Test(groups = { "structured", "postgres","nightly" })
+    public void testUpdateNonExistingRow() {
+        RaptureURI repo = helper.getRandomAuthority(Scheme.STRUCTURED);
+        String repoStr = repo.toString();
+        String config = "STRUCTURED { } USING POSTGRES { douglas=\"adams\" }";
+
+        // Create a repo
+        Boolean repoExists = structApi.structuredRepoExists(repoStr);
+        Assert.assertFalse(repoExists, "Repo does not exist yet");
+
+        structApi.createStructuredRepo(repoStr, config);
+        repoExists = structApi.structuredRepoExists(repoStr);
+        Assert.assertTrue(repoExists, "Repo should exist now");
+
+        // Verify the config
+        StructuredRepoConfig rc = structApi.getStructuredRepoConfig(repoStr);
+        Assert.assertEquals(rc.getConfig(), config);
+
+        // Create a table. Add and remove data
+        String table = "//" + repo.getAuthority() + "/table";
+        structApi.createTable(table, ImmutableMap.of("id", "int", "name", "varchar(255), PRIMARY KEY (id)"));
+
+        Map<String, Object> row = new HashMap<>();
+        row.put("id", 42);
+        row.put("name", "Don't Panic");
+        structApi.insertRow(table, row);
+        
+        row = new HashMap<>();
+        row.put("id", 43);
+        row.put("name", "Don't Panic More");
+        structApi.insertRow(table, row);
+        
+        row = new HashMap<>();
+        row.put("id", 44);
+        row.put("name", "Don't Panic Even More");
+        structApi.insertRow(table, row);
+        structApi.updateRows(table, ImmutableMap.of("name", "bob"), "id=400");
+        List<Map<String, Object>> contents = structApi.selectRows(table, null, null, null, null, -1);
+        Assert.assertEquals(contents.get(0), ImmutableMap.of("id", new Integer(42),"name","Don't Panic"));
+        Assert.assertEquals(contents.get(1), ImmutableMap.of("id", new Integer(43),"name","Don't Panic More"));
+        Assert.assertEquals(contents.get(2), ImmutableMap.of("id", new Integer(44),"name","Don't Panic Even More"));
+        
+    }
+    
+    @Test(groups = { "structured", "postgres","nightly" })
+    public void testSelectWithWhereClause() {
+        RaptureURI repo = helper.getRandomAuthority(Scheme.STRUCTURED);
+        String repoStr = repo.toString();
+        String config = "STRUCTURED { } USING POSTGRES { douglas=\"adams\" }";
+
+        // Create a repo
+        Boolean repoExists = structApi.structuredRepoExists(repoStr);
+        Assert.assertFalse(repoExists, "Repo does not exist yet");
+
+        structApi.createStructuredRepo(repoStr, config);
+        repoExists = structApi.structuredRepoExists(repoStr);
+        Assert.assertTrue(repoExists, "Repo should exist now");
+
+        // Verify the config
+        StructuredRepoConfig rc = structApi.getStructuredRepoConfig(repoStr);
+        Assert.assertEquals(rc.getConfig(), config);
+
+        // Create a table. Add and remove data
+        String table = "//" + repo.getAuthority() + "/table";
+        structApi.createTable(table, ImmutableMap.of("id", "int", "name", "varchar(255), PRIMARY KEY (id)"));
+
+        Map<String, Object> row = new HashMap<>();
+        row.put("id", 42);
+        row.put("name", "Don't Panic");
+        structApi.insertRow(table, row);
+        
+        row = new HashMap<>();
+        row.put("id", 43);
+        row.put("name", "Don't Panic More");
+        structApi.insertRow(table, row);
+        
+        row = new HashMap<>();
+        row.put("id", 44);
+        row.put("name", "Don't Panic Even More");
+        structApi.insertRow(table, row);
+
+        List<Map<String, Object>> contents = structApi.selectRows(table, null, "id<43", null, null, -1);
+        Assert.assertEquals(contents.size(), 1);
+        Assert.assertEquals(contents.get(0), ImmutableMap.of("id", new Integer(42),"name","Don't Panic"));
+
+    }
+    
+    @Test(groups = { "structured", "postgres","nightly" })
+    public void testSelectWithInvalidWhereClause() {
+        RaptureURI repo = helper.getRandomAuthority(Scheme.STRUCTURED);
+        String repoStr = repo.toString();
+        String config = "STRUCTURED { } USING POSTGRES { douglas=\"adams\" }";
+
+        // Create a repo
+        Boolean repoExists = structApi.structuredRepoExists(repoStr);
+        Assert.assertFalse(repoExists, "Repo does not exist yet");
+
+        structApi.createStructuredRepo(repoStr, config);
+        repoExists = structApi.structuredRepoExists(repoStr);
+        Assert.assertTrue(repoExists, "Repo should exist now");
+
+        // Verify the config
+        StructuredRepoConfig rc = structApi.getStructuredRepoConfig(repoStr);
+        Assert.assertEquals(rc.getConfig(), config);
+
+        // Create a table. Add and remove data
+        String table = "//" + repo.getAuthority() + "/table";
+        structApi.createTable(table, ImmutableMap.of("id", "int", "name", "varchar(255), PRIMARY KEY (id)"));
+
+
+        try {
+        	structApi.selectRows(table, null, "id*43", null, null, -1);
+        	Assert.fail("Select statement should have failed from invalid where clause");
+        } catch (Exception e) {
+        	Assert.assertTrue(e.getMessage().contains("Failed to parse where clause"));
+        }
+
+
+    }
+    
+    @Test(groups = { "structured", "postgres","nightly" })
+    public void testSelectColumns() {
+        RaptureURI repo = helper.getRandomAuthority(Scheme.STRUCTURED);
+        String repoStr = repo.toString();
+        String config = "STRUCTURED { } USING POSTGRES { douglas=\"adams\" }";
+
+        // Create a repo
+        Boolean repoExists = structApi.structuredRepoExists(repoStr);
+        Assert.assertFalse(repoExists, "Repo does not exist yet");
+
+        structApi.createStructuredRepo(repoStr, config);
+        repoExists = structApi.structuredRepoExists(repoStr);
+        Assert.assertTrue(repoExists, "Repo should exist now");
+
+        // Verify the config
+        StructuredRepoConfig rc = structApi.getStructuredRepoConfig(repoStr);
+        Assert.assertEquals(rc.getConfig(), config);
+
+        // Create a table. Add and remove data
+        String table = "//" + repo.getAuthority() + "/table";
+        structApi.createTable(table, ImmutableMap.of("id", "int", "name", "varchar(255), PRIMARY KEY (id)"));
+
+        Map<String, Object> row = new HashMap<>();
+        row.put("id", 42);
+        row.put("name", "Don't Panic");
+        structApi.insertRow(table, row);
+        
+        row = new HashMap<>();
+        row.put("id", 43);
+        row.put("name", "Don't Panic More");
+        structApi.insertRow(table, row);
+        
+        row = new HashMap<>();
+        row.put("id", 44);
+        row.put("name", "Don't Panic Even More");
+        structApi.insertRow(table, row);
+
+        List<Map<String, Object>> contents = structApi.selectRows(table, ImmutableList.of("id"), null, null, null, -1);
+        Assert.assertEquals(contents.get(0), ImmutableMap.of("id", new Integer(42)));
+        Assert.assertEquals(contents.get(1), ImmutableMap.of("id", new Integer(43)));
+        Assert.assertEquals(contents.get(2), ImmutableMap.of("id", new Integer(44)));
+
+    }
+
+    @Test(groups = { "structured", "postgres","nightly" })
+    public void testSelectColumnsDecending() {
+        RaptureURI repo = helper.getRandomAuthority(Scheme.STRUCTURED);
+        String repoStr = repo.toString();
+        String config = "STRUCTURED { } USING POSTGRES { douglas=\"adams\" }";
+
+        // Create a repo
+        Boolean repoExists = structApi.structuredRepoExists(repoStr);
+        Assert.assertFalse(repoExists, "Repo does not exist yet");
+
+        structApi.createStructuredRepo(repoStr, config);
+        repoExists = structApi.structuredRepoExists(repoStr);
+        Assert.assertTrue(repoExists, "Repo should exist now");
+
+        // Verify the config
+        StructuredRepoConfig rc = structApi.getStructuredRepoConfig(repoStr);
+        Assert.assertEquals(rc.getConfig(), config);
+
+        // Create a table. Add and remove data
+        String table = "//" + repo.getAuthority() + "/table";
+        structApi.createTable(table, ImmutableMap.of("id", "int", "name", "varchar(255), PRIMARY KEY (id)"));
+
+        Map<String, Object> row = new HashMap<>();
+        row.put("id", 42);
+        row.put("name", "Don't Panic");
+        structApi.insertRow(table, row);
+        
+        row = new HashMap<>();
+        row.put("id", 43);
+        row.put("name", "Don't Panic More");
+        structApi.insertRow(table, row);
+        
+        row = new HashMap<>();
+        row.put("id", 44);
+        row.put("name", "Don't Panic Even More");
+        structApi.insertRow(table, row);
+
+        List<Map<String, Object>> contents = structApi.selectRows(table, ImmutableList.of("id"), null, ImmutableList.of("id"), Boolean.FALSE, -1);
+        Assert.assertEquals(contents.get(0), ImmutableMap.of("id", new Integer(44)));
+        Assert.assertEquals(contents.get(1), ImmutableMap.of("id", new Integer(43)));
+        Assert.assertEquals(contents.get(2), ImmutableMap.of("id", new Integer(42)));
+
+    }
+    
+    @Test(groups = { "structured", "postgres","nightly" })
+    public void testSelectColumnsOrdering() {
+        RaptureURI repo = helper.getRandomAuthority(Scheme.STRUCTURED);
+        String repoStr = repo.toString();
+        String config = "STRUCTURED { } USING POSTGRES { douglas=\"adams\" }";
+
+        // Create a repo
+        Boolean repoExists = structApi.structuredRepoExists(repoStr);
+        Assert.assertFalse(repoExists, "Repo does not exist yet");
+
+        structApi.createStructuredRepo(repoStr, config);
+        repoExists = structApi.structuredRepoExists(repoStr);
+        Assert.assertTrue(repoExists, "Repo should exist now");
+
+        // Verify the config
+        StructuredRepoConfig rc = structApi.getStructuredRepoConfig(repoStr);
+        Assert.assertEquals(rc.getConfig(), config);
+
+        // Create a table. Add and remove data
+        String table = "//" + repo.getAuthority() + "/table";
+        structApi.createTable(table, ImmutableMap.of("id", "int", "name", "varchar(255), PRIMARY KEY (id)"));
+
+        Map<String, Object> row = new HashMap<>();
+        row.put("id", 42);
+        row.put("name", "Evan");
+        structApi.insertRow(table, row);
+        
+        row = new HashMap<>();
+        row.put("id", 43);
+        row.put("name", "Aaron");
+        structApi.insertRow(table, row);
+        
+        row = new HashMap<>();
+        row.put("id", 44);
+        row.put("name", "Carl");
+        structApi.insertRow(table, row);
+        
+        row = new HashMap<>();
+        row.put("id", 45);
+        row.put("name", "Bob");
+        structApi.insertRow(table, row);
+
+        List<Map<String, Object>> contents = structApi.selectRows(table, null, null, ImmutableList.of("name"), null, -1);
+
+        Assert.assertEquals(contents.get(0), ImmutableMap.of("id", new Integer(43),"name","Aaron"));
+        Assert.assertEquals(contents.get(1), ImmutableMap.of("id", new Integer(45),"name","Bob"));
+        Assert.assertEquals(contents.get(2), ImmutableMap.of("id", new Integer(44),"name","Carl"));
+        Assert.assertEquals(contents.get(3), ImmutableMap.of("id", new Integer(42),"name","Evan"));
+
+
     }
     
     @Test(groups = { "plugin", "nightly" })
