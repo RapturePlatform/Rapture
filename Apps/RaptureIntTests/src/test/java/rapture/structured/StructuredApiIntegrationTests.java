@@ -171,6 +171,65 @@ public class StructuredApiIntegrationTests {
     }
     
     @Test(groups = { "structured", "postgres","nightly"  })
+    public void testDeleteByTextColumn() {
+        RaptureURI repo = helper.getRandomAuthority(Scheme.STRUCTURED);
+        String repoStr = repo.toString();
+        String config = "STRUCTURED { } USING POSTGRES { marvin=\"paranoid\" }";
+
+        // Create a repo
+        Boolean repoExists = structApi.structuredRepoExists(repoStr);
+        Assert.assertFalse(repoExists, "Repo does not exist yet");
+
+        structApi.createStructuredRepo(repoStr, config);
+        repoExists = structApi.structuredRepoExists(repoStr);
+        Assert.assertTrue(repoExists, "Repo should exist now");
+
+        // Verify the config
+        StructuredRepoConfig rc = structApi.getStructuredRepoConfig(repoStr);
+        Assert.assertEquals(rc.getConfig(), config);
+
+        // Create a table. Add and remove data
+        String table = "//" + repo.getAuthority() + "/table";
+        structApi.createTable(table, ImmutableMap.of("id", "int", "name", "varchar(255), PRIMARY KEY (id)"));
+
+        Map<String, Object> row = new HashMap<>();
+        row.put("id", 42);
+        row.put("name", "AAA");
+        structApi.insertRow(table, row);
+        
+        row.put("id", 43);
+        row.put("name", "AAB");
+        structApi.insertRow(table, row);
+        
+        row.put("id", 44);
+        row.put("name", "BAA");
+        structApi.insertRow(table, row);
+        
+        row.put("id", 45);
+        row.put("name", "BAAB");
+        structApi.insertRow(table, row);
+        
+        row.put("id", 46);
+        row.put("name", "AACCA");
+        structApi.insertRow(table, row);
+        
+        row.put("id", 47);
+        row.put("name", "AAC");
+        structApi.insertRow(table, row);
+        
+        structApi.deleteRows(table, "name LIKE 'AA%'");
+        List<Map<String, Object>> contents = structApi.selectRows(table, null, null, null, null, -1);
+        Assert.assertEquals(contents.get(0), ImmutableMap.of("id", new Integer(44),"name","BAA"));
+        Assert.assertEquals(contents.get(1), ImmutableMap.of("id", new Integer(45),"name","BAAB")); 
+        
+        structApi.deleteRows(table, "name LIKE '%AA'");
+        contents = structApi.selectRows(table, null, null, null, null, -1);
+        Assert.assertEquals(contents.get(0), ImmutableMap.of("id", new Integer(45),"name","BAAB")); 
+        
+        
+    }
+    
+    @Test(groups = { "structured", "postgres","nightly"  })
     public void testBasicStructuredRepo() {
         RaptureURI repo = helper.getRandomAuthority(Scheme.STRUCTURED);
         String repoStr = repo.toString();
