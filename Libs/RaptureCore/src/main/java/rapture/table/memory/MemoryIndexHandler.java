@@ -23,6 +23,17 @@
  */
 package rapture.table.memory;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.log4j.Logger;
+
+import com.google.common.base.Predicate;
+
 import rapture.common.TableQuery;
 import rapture.common.TableQueryResult;
 import rapture.common.TableRecord;
@@ -36,17 +47,6 @@ import rapture.dsl.iqry.WhereStatement;
 import rapture.index.IndexHandler;
 import rapture.index.IndexProducer;
 import rapture.index.IndexRecord;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.log4j.Logger;
-
-import com.google.common.base.Predicate;
 
 /*
  * An in memory table, primarily for testing
@@ -104,7 +104,7 @@ public class MemoryIndexHandler implements IndexHandler {
 
     @Override
     public List<TableRecord> queryTable(TableQuery query) {
-        return new ArrayList<TableRecord>();
+        return new ArrayList<>();
     }
 
     @Override
@@ -136,6 +136,7 @@ public class MemoryIndexHandler implements IndexHandler {
                 for (String columnName : columnNames) {
                     row.add(body.get(columnName));
                 }
+                if (indexQuery.isDistinct() && rows.contains(row)) continue;
                 rows.add(row);
             }
         }

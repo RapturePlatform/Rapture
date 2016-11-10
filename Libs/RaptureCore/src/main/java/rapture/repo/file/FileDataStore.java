@@ -30,8 +30,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -179,7 +177,7 @@ public class FileDataStore extends AbstractKeyStore implements KeyStore {
 
 	@Override
 	public KeyStore createRelatedKeyStore(String relation) {
-		Map<String, String> config = new HashMap<String, String>();
+		Map<String, String> config = new HashMap<>();
 		config.put(FileRepoUtils.PREFIX, folderPrefix + "_" + relation);
 		KeyStore related = new FileDataStore();
 		related.setConfig(config);
@@ -304,6 +302,7 @@ public class FileDataStore extends AbstractKeyStore implements KeyStore {
 		if (!dir.exists()) {
 			return;
 		}
+        int authLen = dir.getPath().toString().length();
 		boolean canStart = startPoint == null;
 		Iterator<File> fIterator = FileUtils.iterateFiles(dir, null, true);
 		while (fIterator.hasNext()) {
@@ -315,7 +314,11 @@ public class FileDataStore extends AbstractKeyStore implements KeyStore {
 							canStart = true; // On the next loop
 						}
 					} else {
-						if (!iStoreKeyVisitor.visit(f.getName(), FileUtils.readFileToString(f)))
+                        // Skip the prefix and authority
+                        String fileName = f.getPath().toString();
+                        String docPath = fileName.substring(authLen + 1);
+                        if (docPath.endsWith(".txt")) docPath = docPath.substring(0, docPath.length() - 4);
+                        if (!iStoreKeyVisitor.visit(docPath, FileUtils.readFileToString(f)))
 							break;
 					}
 				} catch (IOException e) {
@@ -337,7 +340,7 @@ public class FileDataStore extends AbstractKeyStore implements KeyStore {
 	@Override
 	public List<RaptureFolderInfo> getSubKeys(String prefix) {
 		File dir = FileRepoUtils.makeGenericFile(parentDir, convertKeyToPath(prefix));
-		List<RaptureFolderInfo> ret = new ArrayList<RaptureFolderInfo>();
+		List<RaptureFolderInfo> ret = new ArrayList<>();
 		if (dir.isDirectory()) {
 			File[] files = dir.listFiles();
 			if (files != null) {
@@ -355,7 +358,7 @@ public class FileDataStore extends AbstractKeyStore implements KeyStore {
 	@Override
 	public List<RaptureFolderInfo> removeSubKeys(String folder, Boolean force) {
 		int parentlen = parentDir.getAbsolutePath().length();
-		List<RaptureFolderInfo> ret = new ArrayList<RaptureFolderInfo>();
+		List<RaptureFolderInfo> ret = new ArrayList<>();
 		File dir = FileRepoUtils.makeGenericFile(parentDir, convertKeyToPath(folder));
 		if (!dir.isDirectory())
 			return null;
@@ -389,7 +392,7 @@ public class FileDataStore extends AbstractKeyStore implements KeyStore {
 
 	private List<String> getSub(String prefix, File path, boolean first) {
 		File[] files = path.listFiles();
-		List<String> ret = new ArrayList<String>(files.length);
+		List<String> ret = new ArrayList<>(files.length);
 		for (File f : files) {
 			StringBuilder name = new StringBuilder();
 			if (!prefix.isEmpty()) {
