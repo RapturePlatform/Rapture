@@ -23,6 +23,16 @@
  */
 package rapture.repo.meta;
 
+import java.net.HttpURLConnection;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.log4j.Logger;
+
+import com.google.common.base.Optional;
+
 import rapture.common.LockHandle;
 import rapture.common.RaptureDNCursor;
 import rapture.common.RaptureFolderInfo;
@@ -36,7 +46,6 @@ import rapture.common.impl.jackson.JsonContent;
 import rapture.common.model.DocumentAttribute;
 import rapture.common.model.DocumentMetadata;
 import rapture.common.model.DocumentWithMeta;
-import rapture.dsl.dparse.AbsoluteVersion;
 import rapture.dsl.dparse.BaseDirective;
 import rapture.dsl.dparse.VersionDirective;
 import rapture.index.IndexHandler;
@@ -53,16 +62,6 @@ import rapture.repo.RepoVisitor;
 import rapture.repo.Repository;
 import rapture.repo.StoreKeyVisitor;
 import rapture.repo.meta.handler.AbstractMetaHandler;
-
-import java.net.HttpURLConnection;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.log4j.Logger;
-
-import com.google.common.base.Optional;
 
 /**
  * @author bardhi
@@ -88,16 +87,17 @@ public abstract class AbstractMetaBasedRepo<MH extends AbstractMetaHandler> exte
         return metaHandler;
     }
 
+    @Override
     public void setIndexProducer(IndexProducer producer) {
         if (this.producer != null && log.isDebugEnabled()) {
             // THIS APPEARS TO BE BENIGN AS WE ARE PRETTY MUCH SETTING THE SAME
-            // THING UP
-            // SO NOT FIXING FOR NOW
+            // THING UP SO NOT FIXING FOR NOW
             log.debug("Producer is already set to " + this.producer + " am overwriting!!!");
             log.debug("New is " + producer.toString() + ", Old is " + this.producer.toString());
         }
         this.producer = producer;
         metaHandler.setIndexProducer(producer);
+        rebuild();
     }
 
     @Override
@@ -254,7 +254,7 @@ public abstract class AbstractMetaBasedRepo<MH extends AbstractMetaHandler> exte
             throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, Messages.getString("MetaBasedRepo.finishCursor")); //$NON-NLS-1$
         }
         String startPoint = cursor.getContinueContext();
-        final List<String> docPaths = new ArrayList<String>();
+        final List<String> docPaths = new ArrayList<>();
         cursor.setFinished(true);
 
         metaHandler.visitKeysFromStart(startPoint, new StoreKeyVisitor() {
@@ -331,7 +331,7 @@ public abstract class AbstractMetaBasedRepo<MH extends AbstractMetaHandler> exte
 
         log.info(String.format(Messages.getString("NVersionedRepo.visitRep"), folder)); //$NON-NLS-1$
 
-        final Map<String, JsonContent> values = new HashMap<String, JsonContent>();
+        final Map<String, JsonContent> values = new HashMap<>();
 
         metaHandler.visitKeys(folder, new StoreKeyVisitor() {
 
