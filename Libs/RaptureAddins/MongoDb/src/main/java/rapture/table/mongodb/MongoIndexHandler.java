@@ -65,9 +65,10 @@ import rapture.index.IndexHandler;
 import rapture.index.IndexProducer;
 import rapture.index.IndexRecord;
 import rapture.mongodb.EpochManager;
-import rapture.mongodb.MongoRetryWrapper;
 import rapture.mongodb.MongoDBFactory;
+import rapture.mongodb.MongoRetryWrapper;
 import rapture.repo.meta.handler.AbstractMetaHandler;
+import rapture.table.memory.RowComparatorFactory;
 
 /**
  * @author amkimian
@@ -224,6 +225,7 @@ public class MongoIndexHandler implements IndexHandler {
     public List<TableRecord> queryTable(final TableQuery querySpec) {
 
         MongoRetryWrapper<List<TableRecord>> wrapper = new MongoRetryWrapper<List<TableRecord>>() {
+            @Override
             public FindIterable<Document> makeCursor() {
                 FindIterable<Document> ret;
                 MongoCollection<Document> collection = MongoDBFactory.getCollection(instanceName, tableName);
@@ -283,8 +285,9 @@ public class MongoIndexHandler implements IndexHandler {
                 return ret;
             }
 
+            @Override
             public List<TableRecord> action(FindIterable<Document> cursor) {
-                List<TableRecord> records = new ArrayList<TableRecord>();
+                List<TableRecord> records = new ArrayList<>();
                 if (cursor != null) {
                     for (Document obj : cursor) {
                         if (obj != null) {
@@ -334,6 +337,7 @@ public class MongoIndexHandler implements IndexHandler {
 
             MongoRetryWrapper<List<List<Object>>> wrapper = new MongoRetryWrapper<List<List<Object>>>() {
 
+                @Override
                 public FindIterable<Document> makeCursor() {
 
                     // Now we need to do the query, with a limit and skip
@@ -369,10 +373,11 @@ public class MongoIndexHandler implements IndexHandler {
                     return ret;
                 }
 
+                @Override
                 public List<List<Object>> action(FindIterable<Document> cursor) {
-                    List<List<Object>> rows = new ArrayList<List<Object>>();
+                    List<List<Object>> rows = new ArrayList<>();
                     for (Document obj : cursor) {
-                        List<Object> row = new ArrayList<Object>();
+                        List<Object> row = new ArrayList<>();
                         for (String field : indexQuery.getSelect().getFieldList()) {
                             row.add(obj.get(field));
                         }
@@ -385,15 +390,27 @@ public class MongoIndexHandler implements IndexHandler {
 
         } else {
             String key = indexQuery.getSelect().getFieldList().get(0);
-            List<List<Object>> rows = new ArrayList<List<Object>>();
+            List<List<Object>> rows = new ArrayList<>();
             DistinctIterable<String> values = collection.distinct(key, mongoQuery, String.class);
             for (String v : values) {
-                List<Object> row = new ArrayList<Object>();
+                List<Object> row = new ArrayList<>();
                 row.add(v);
                 rows.add(row);
             }
-            res.setRows(rows);
-            List<String> columnNames = new ArrayList<String>();
+
+            if (indexQuery.getOrderBy().getFieldList().size() > 0) {
+                List<String> columnNames = indexQuery.getSelect().getFieldList();
+                Collections.sort(rows, RowComparatorFactory.createComparator(indexQuery.getOrderBy().getFieldList(), columnNames, indexQuery.getDirection()));
+                if (indexQuery.getDirection() == OrderDirection.DESC) {
+                    Collections.reverse(rows);
+                }
+            }
+            int limit = indexQuery.getLimit();
+            if ((limit > 0) && (rows.size() > limit)) {
+                res.setRows(rows.subList(0, limit - 1));
+            } else res.setRows(rows);
+
+            List<String> columnNames = new ArrayList<>();
             columnNames.add(key);
             res.setColumnNames(columnNames);
         }
