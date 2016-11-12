@@ -85,9 +85,9 @@ public class IndexApiImplTest extends AbstractFileTest {
         document.putDoc(planetURI + "/Mercury/None",
                 JacksonUtil.jsonFromObject(ImmutableMap.of("one", "A", "two", new Double(1.5), "three", "constant", "inner", ImmutableMap.of("alpha", "Z"))));
         document.putDoc(planetURI + "/Venus/None",
-                JacksonUtil.jsonFromObject(ImmutableMap.of("one", "B", "two", new Integer(2), "three", "constant", "inner", ImmutableMap.of("alpha", "Y"))));
+                JacksonUtil.jsonFromObject(ImmutableMap.of("one", "B", "two", new Double(2.4), "three", "constant", "inner", ImmutableMap.of("alpha", "Y"))));
         document.putDoc(planetURI + "/Earth/Moon",
-                JacksonUtil.jsonFromObject(ImmutableMap.of("one", "C", "two", new Double(3.7), "three", "constant", "inner", ImmutableMap.of("alpha", "X"))));
+                JacksonUtil.jsonFromObject(ImmutableMap.of("one", "C", "two", new Double(2.6), "three", "constant", "inner", ImmutableMap.of("alpha", "X"))));
         document.putDoc(planetURI + "/Mars/Phobos",
                 JacksonUtil.jsonFromObject(ImmutableMap.of("one", "D", "two", new Integer(4), "three", "constant", "inner", ImmutableMap.of("alpha", "W"))));
         document.putDoc(planetURI + "/Mars/Deimos",
