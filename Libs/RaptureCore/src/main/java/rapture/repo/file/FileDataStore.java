@@ -74,7 +74,6 @@ public class FileDataStore extends AbstractKeyStore implements KeyStore {
 	 */
 	@Override
 	public void setRepoLockHandler(RepoLockHandler repoLockHandler) {
-		// TODO Auto-generated method stub
 		super.setRepoLockHandler(repoLockHandler);
 	}
 
@@ -85,7 +84,6 @@ public class FileDataStore extends AbstractKeyStore implements KeyStore {
 	 */
 	@Override
 	public boolean delete(List<String> keys) {
-		// TODO Auto-generated method stub
 		return super.delete(keys);
 	}
 
@@ -96,7 +94,7 @@ public class FileDataStore extends AbstractKeyStore implements KeyStore {
 	 */
 	@Override
 	public boolean dropKeyStore() {
-		// TODO Auto-generated method stub
+
 		return super.dropKeyStore();
 	}
 
@@ -107,7 +105,7 @@ public class FileDataStore extends AbstractKeyStore implements KeyStore {
 	 */
 	@Override
 	public List<String> getBatch(List<String> keys) {
-		// TODO Auto-generated method stub
+
 		return super.getBatch(keys);
 	}
 
@@ -121,7 +119,6 @@ public class FileDataStore extends AbstractKeyStore implements KeyStore {
 	@Override
 	public RaptureNativeQueryResult runNativeQueryWithLimitAndBounds(String repoType, List<String> queryParams,
 			int limit, int offset) {
-		// TODO Auto-generated method stub
 		return super.runNativeQueryWithLimitAndBounds(repoType, queryParams, limit, offset);
 	}
 
@@ -133,7 +130,6 @@ public class FileDataStore extends AbstractKeyStore implements KeyStore {
 	 */
 	@Override
 	public void visit(String folderPrefix, RepoVisitor iRepoVisitor) {
-		// TODO Auto-generated method stub
 		super.visit(folderPrefix, iRepoVisitor);
 	}
 
@@ -145,7 +141,6 @@ public class FileDataStore extends AbstractKeyStore implements KeyStore {
 	 */
 	@Override
 	public boolean matches(String key, String value) {
-		// TODO Auto-generated method stub
 		return super.matches(key, value);
 	}
 
