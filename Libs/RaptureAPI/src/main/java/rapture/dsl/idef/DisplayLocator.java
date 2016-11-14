@@ -40,12 +40,8 @@ public class DisplayLocator extends FieldLocator {
 	}
 
 	@Override
-	public Object value(String key, Map<String, Object> mappedContent,
-			DocumentMetadata meta) {
-		try {
-            return key.split("/")[fieldNum];
-        } catch (ArrayIndexOutOfBoundsException e) {
-            return null;
-        }
+    public Object value(String key, Map<String, Object> mappedContent, DocumentMetadata meta) {
+        String[] keys = key.split("/");
+        return (fieldNum < keys.length) ? keys[fieldNum] : null;
 	}
 }
