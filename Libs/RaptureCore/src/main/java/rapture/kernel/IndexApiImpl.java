@@ -25,6 +25,7 @@ package rapture.kernel;
 
 import static rapture.common.Scheme.DOCUMENT;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -40,7 +41,10 @@ import rapture.common.TableRecord;
 import rapture.common.api.IndexApi;
 import rapture.common.model.IndexConfig;
 import rapture.common.model.IndexConfigStorage;
+import rapture.dsl.idef.IndexDefinition;
+import rapture.dsl.idef.IndexDefinitionFactory;
 import rapture.index.IndexHandler;
+import rapture.index.IndexProducer;
 import rapture.repo.Repository;
 
 public class IndexApiImpl extends KernelBase implements IndexApi {
@@ -57,11 +61,16 @@ public class IndexApiImpl extends KernelBase implements IndexApi {
         RaptureURI internalUri = new RaptureURI(indexUri, Scheme.INDEX);
         if (internalUri.hasDocPath()) log.warn(indexUri + " has unexpected docPath " + internalUri.getDocPath() + " - ignored");
 
-        IndexConfig newP = new IndexConfig();
-        newP.setName(internalUri.getAuthority());
-        newP.setConfig(config);
-        IndexConfigStorage.add(newP, context.getUser(), "Created index config");
-        return newP;
+        IndexConfig indexConfig = new IndexConfig();
+        indexConfig.setName(internalUri.getAuthority());
+        indexConfig.setConfig(config);
+        IndexConfigStorage.add(indexConfig, context.getUser(), "Created index config");
+        Repository repository = getKernel().getRepo(internalUri.getAuthority());
+
+        IndexDefinition definition = IndexDefinitionFactory.getDefinition(indexConfig.getConfig());
+        IndexProducer producer = new IndexProducer(Collections.singletonList(definition));
+        repository.setIndexProducer(producer);
+        return indexConfig;
     }
 
     @Override
