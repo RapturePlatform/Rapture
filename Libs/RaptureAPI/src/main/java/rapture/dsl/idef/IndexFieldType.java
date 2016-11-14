@@ -29,4 +29,5 @@ public enum IndexFieldType {
 	LONG,
 	INTEGER,
 	DOUBLE,
+    NUMBER
 }

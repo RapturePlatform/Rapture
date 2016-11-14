@@ -26,16 +26,16 @@ package rapture.kernel.cache;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import rapture.common.CallingContext;
-import rapture.kernel.ContextFactory;
-import rapture.kernel.Kernel;
-import rapture.repo.Repository;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import com.google.common.base.Optional;
+
+import rapture.common.CallingContext;
+import rapture.kernel.ContextFactory;
+import rapture.kernel.Kernel;
+import rapture.repo.Repository;
 
 /**
  * @author bardhi
@@ -68,8 +68,8 @@ public class StorableRepoCacheTest {
 
     @Test
     public void testNoIndex() throws Exception {
-        Optional<Repository> repo = Kernel.INSTANCE.getStorableRepo(URI, null);
+        Kernel.getDoc().createDocRepo(CONTEXT, URI + "foo", "NREP {} USING MEMORY {}");
+        Optional<Repository> repo = Kernel.INSTANCE.getStorableRepo(URI + "foo", null);
         assertFalse(repo.get().hasIndexProducer());
-
     }
 }

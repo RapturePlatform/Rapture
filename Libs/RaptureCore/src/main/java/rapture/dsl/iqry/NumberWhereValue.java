@@ -25,6 +25,6 @@ package rapture.dsl.iqry;
 
 public class NumberWhereValue extends WhereValue {
 	public NumberWhereValue(String passed) {
-		super(Integer.valueOf(passed));
+        super(Double.valueOf(passed));
 	}
 }
