@@ -148,12 +148,12 @@ public class MemoryIndexHandler implements IndexHandler {
             }
         }
 
-        if (indexQuery.getLimit() != 0) {
-            rows = rows.subList(0, indexQuery.getLimit());
+        int limit = indexQuery.getLimit();
+        if ((limit != 0) && (limit < rows.size())) {
+            result.setRows(rows.subList(0, limit));
+        } else {
+            result.setRows(rows);
         }
-
-        result.setRows(rows);
-
         return result;
     }
 

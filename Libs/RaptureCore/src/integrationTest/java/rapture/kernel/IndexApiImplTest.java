@@ -229,6 +229,7 @@ public class IndexApiImplTest extends AbstractFileTest {
 
     @Test
     public void orderDescTest() {
+
         for (String implementation : ImmutableList.of("FILE", "MEMORY", "MONGODB")) {
             String authorityName = "docplanetdata1." + System.nanoTime();
             planetURI = RaptureURI.builder(Scheme.DOCUMENT, authorityName).build().toString();
@@ -282,6 +283,32 @@ public class IndexApiImplTest extends AbstractFileTest {
             Assert.assertNotNull(implementation, orderList);
             Reporter.log(JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(orderList)));
             Assert.assertEquals(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(orderList)), 3, orderList.size());
+        }
+    }
+
+    @Test
+    public void orderBadLimitTest() {
+        for (String implementation : ImmutableList.of("FILE", "MEMORY", "MONGODB")) {
+            String authorityName = "docplanetdata1." + System.nanoTime();
+            planetURI = RaptureURI.builder(Scheme.DOCUMENT, authorityName).build().toString();
+
+            String ver_config = "NREP {} USING " + implementation + " {prefix=\"planet.%s\"}"; // versioned repository
+            document.createDocRepo(planetURI, String.format(ver_config, System.nanoTime()));
+
+            // setup planet test data
+            INDEXCFG = "planet($0) string, moon($1) string, fieldOne(one) string, fieldTwo(two) integer, fieldInner(inner.alpha) string";
+            planetIndex = index.createIndex(planetURI, INDEXCFG);
+
+            data1();
+            data2();
+
+            // RAP-3685
+            TableQueryResult orderQuery = index.findIndex(planetURI, "SELECT DISTINCT planet ORDER BY planet DESC LIMIT 999");
+            Reporter.log("Query: " + orderQuery, true);
+            List<List<Object>> orderList = orderQuery.getRows();
+            Assert.assertNotNull(implementation, orderList);
+            Reporter.log(JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(orderList)));
+            Assert.assertEquals(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(orderList)), 5, orderList.size());
         }
     }
 
