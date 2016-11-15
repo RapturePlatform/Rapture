@@ -407,7 +407,7 @@ public class MongoIndexHandler implements IndexHandler {
             }
             int limit = indexQuery.getLimit();
             if ((limit > 0) && (rows.size() > limit)) {
-                res.setRows(rows.subList(0, limit - 1));
+                res.setRows(rows.subList(0, limit));
             } else res.setRows(rows);
 
             List<String> columnNames = new ArrayList<>();
