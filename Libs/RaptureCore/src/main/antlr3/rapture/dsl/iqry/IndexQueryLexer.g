@@ -35,11 +35,23 @@ LIMIT : 'LIMIT';
 SKIP  : 'SKIP';
 LIKE  : 'LIKE';
 
-NUMBER : ('0' ..'9')+;
 ID : ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')*;
 STRING : '"' (~'"')* '"'
        | '\'' (~'\'')* '\'';
 
 WS : (' ') {$channel=HIDDEN;} ;
 
+NUMBER
+  :  Int '.' Digit (Digit)* ( 'E' ('+' | '-')? Digit (Digit)* )?
+  |  Int 'E' ('+' | '-')? Digit (Digit)*
+  |  Int
+  ;
 
+fragment Int
+  :  '1'..'9' Digit*
+  |  '0'
+  ;
+
+fragment Digit
+  :  '0'..'9'
+  ;
