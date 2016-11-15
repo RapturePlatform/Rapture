@@ -64,6 +64,7 @@ public class BlobEncoder extends ReflectionEncoder {
 
     protected PluginTransportItem encodeRaw(CallingContext context, RaptureURI uri) {
         BlobContainer blob = getBlob(context, uri);
+        if (blob == null) return null;
         String mimeType = getMimeType(blob);
         RaptureURI revisedUri = RaptureURI.builder(uri).attribute(mimeType).build();
         PluginTransportItem result = new PluginTransportItem();
