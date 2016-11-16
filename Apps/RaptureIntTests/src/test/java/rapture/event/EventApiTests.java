@@ -35,7 +35,7 @@ public class EventApiTests {
 	IntegrationTestHelper helper = null;
 	RaptureURI eventRepoUri = null;
 
-	@BeforeClass(groups = { "document", "mongo", "nightly" })
+	@BeforeClass(groups = { "event", "mongo", "nightly" })
 	@Parameters({ "RaptureURL", "RaptureUser", "RapturePassword" })
 	public void beforeTest(@Optional("http://localhost:8665/rapture") String url, @Optional("raptureApi") String user,
 			@Optional("raptivating") String password) {
