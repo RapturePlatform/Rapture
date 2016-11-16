@@ -148,11 +148,16 @@ public class MemoryIndexHandler implements IndexHandler {
             }
         }
 
-        int limit = indexQuery.getLimit();
-        if ((limit != 0) && (limit < rows.size())) {
-            result.setRows(rows.subList(0, limit));
-        } else {
-            result.setRows(rows);
+        int skip = indexQuery.getSkip();
+        if (skip < 0) skip = 0;
+        if (skip < rows.size()) {
+            int limit = indexQuery.getLimit();
+
+            if ((limit > 0) && (rows.size() - skip > limit)) {
+                result.setRows(rows.subList(skip, skip + limit));
+            } else {
+                result.setRows(rows);
+            }
         }
         return result;
     }
@@ -178,7 +183,7 @@ public class MemoryIndexHandler implements IndexHandler {
                 String fieldName = statement.getField();
                 Object queryValue = statement.getValue().getValue();
                 Object actualValue = input.get(fieldName);
-                if (queryValue != null && actualValue != null && statement.getClass().equals(actualValue.getClass())) {
+                if (queryValue != null && actualValue != null && queryValue.getClass().equals(actualValue.getClass())) {
                     return compare((Comparable) actualValue, (Comparable) queryValue);
                 } else {
                     String actualValueString;
