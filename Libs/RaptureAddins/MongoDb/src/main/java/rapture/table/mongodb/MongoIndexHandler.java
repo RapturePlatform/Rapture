@@ -34,6 +34,7 @@ import org.bson.BsonDocument;
 import org.bson.BsonInt32;
 import org.bson.Document;
 
+import com.google.common.collect.ImmutableList;
 import com.mongodb.client.DistinctIterable;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.ListIndexesIterable;
@@ -324,6 +325,10 @@ public class MongoIndexHandler implements IndexHandler {
         TableQueryResult res = new TableQueryResult();
         final Document mongoQuery = getClause(indexQuery.getWhere());
         final MongoCollection<Document> collection = MongoDBFactory.getCollection(instanceName, tableName);
+        List<List<Object>> rows = new ArrayList<>();
+
+        List<String> fieldList = indexQuery.getSelect().getFieldList();
+        // Mongo can't do distinct based on multiple fields for some reason
 
         if (!indexQuery.isDistinct()) {
             // What fields to return
@@ -340,17 +345,6 @@ public class MongoIndexHandler implements IndexHandler {
                 @Override
                 public FindIterable<Document> makeCursor() {
 
-                    // Now we need to do the query, with a limit and skip
-                    // applied if
-                    // necessary
-                    Document sort = new Document();
-                    if (indexQuery.getOrderBy().getFieldList().size() > 0) {
-                        for (String field : indexQuery.getOrderBy().getFieldList()) {
-                            sort.put(field, indexQuery.getDirection() == OrderDirection.ASC ? 1 : -1);
-
-                        }
-                    }
-
                     FindIterable<Document> ret;
                     if (fields.isEmpty()) {
                         ret = collection.find(mongoQuery);
@@ -358,16 +352,25 @@ public class MongoIndexHandler implements IndexHandler {
                         fields.put(KEY, 1);
                         ret = collection.find(mongoQuery).projection(fields);
                     }
-                    if (!sort.isEmpty()) {
+
+                    if (indexQuery.getOrderBy().getFieldList().size() > 0) {
+                        Document sort = new Document();
+                        for (String field : indexQuery.getOrderBy().getFieldList()) {
+                            sort.put(field, indexQuery.getDirection() != OrderDirection.DESC ? 1 : -1);
+
+                        }
                         ret = ret.sort(sort);
                     }
 
-                    if (indexQuery.getLimit() != 0) {
-                        ret = ret.limit(indexQuery.getLimit());
-                    }
-                    
-                    if (indexQuery.getSkip() != 0) {
-                    	ret = ret.skip(indexQuery.getSkip());
+                    int skip = indexQuery.getSkip();
+                    if (skip > 0) {
+                        ret = ret.skip(skip);
+                    } else skip = 0;
+
+                    int limit = indexQuery.getLimit();
+                    if (limit > 0) {
+                        // By specifying a negative limit we tell Mongo that it can close the cursor after returning a single batch.
+                        ret = ret.limit(-(limit + skip));
                     }
 
                     return ret;
@@ -386,18 +389,79 @@ public class MongoIndexHandler implements IndexHandler {
                     return rows;
                 }
             };
+
             res.setRows(wrapper.doAction());
+            return res;
+            // We are done.
+
+        } else if (fieldList.size() > 1) {
+            // What fields to return
+            final Document fields = new Document();
+            for (String fieldName : indexQuery.getSelect().getFieldList()) {
+                log.debug("Adding return field " + fieldName);
+                fields.put(fieldName, 1);
+            }
+            res.setColumnNames(indexQuery.getSelect().getFieldList());
+            fields.put(KEY, 1);
+
+            MongoRetryWrapper<List<List<Object>>> wrapper = new MongoRetryWrapper<List<List<Object>>>() {
+
+                @Override
+                public FindIterable<Document> makeCursor() {
+
+                    FindIterable<Document> ret;
+                    if (fields.isEmpty()) {
+                        ret = collection.find(mongoQuery);
+                    } else {
+                        fields.put(KEY, 1);
+                        ret = collection.find(mongoQuery).projection(fields);
+                    }
+
+                    if (indexQuery.getOrderBy().getFieldList().size() > 0) {
+                        Document sort = new Document();
+                        for (String field : indexQuery.getOrderBy().getFieldList()) {
+                            sort.put(field, indexQuery.getDirection() != OrderDirection.DESC ? 1 : -1);
+
+                        }
+                        ret = ret.sort(sort);
+                    }
+
+                    // We can't apply SKIP and LIMIT here because we must drop the fields that aren't distinct;
+                    // Mongo doesn't appear to support distinct on multiple keys
+                    return ret;
+                }
+
+                @Override
+                public List<List<Object>> action(FindIterable<Document> cursor) {
+
+                    int limit = Math.abs(indexQuery.getSkip()) + Math.abs(indexQuery.getLimit());
+                    if (limit == 0) limit = Integer.MAX_VALUE;
+
+                    List<List<Object>> rows = new ArrayList<>();
+                    for (Document obj : cursor) {
+                        List<Object> row = new ArrayList<>();
+                        for (String field : indexQuery.getSelect().getFieldList()) {
+                            row.add(obj.get(field));
+                        }
+                        if (indexQuery.isDistinct() && rows.contains(row)) continue;
+                        rows.add(row);
+                        if (rows.size() > limit) break;
+                    }
+                    return rows;
+                }
+            };
+
+            rows = wrapper.doAction();
+            // We are not done - still need to apply skip and limit
 
         } else {
-            String key = indexQuery.getSelect().getFieldList().get(0);
-            List<List<Object>> rows = new ArrayList<>();
+            String key = fieldList.get(0);
             DistinctIterable<String> values = collection.distinct(key, mongoQuery, String.class);
             for (String v : values) {
-                List<Object> row = new ArrayList<>();
-                row.add(v);
-                rows.add(row);
+                rows.add(ImmutableList.of(v));
             }
 
+            res.setColumnNames(ImmutableList.of(key));
             if (indexQuery.getOrderBy().getFieldList().size() > 0) {
                 List<String> columnNames = indexQuery.getSelect().getFieldList();
                 Collections.sort(rows, RowComparatorFactory.createComparator(indexQuery.getOrderBy().getFieldList(), columnNames, indexQuery.getDirection()));
@@ -405,15 +469,15 @@ public class MongoIndexHandler implements IndexHandler {
                     Collections.reverse(rows);
                 }
             }
-            int limit = indexQuery.getLimit();
-            if ((limit > 0) && (rows.size() > limit)) {
-                res.setRows(rows.subList(0, limit));
-            } else res.setRows(rows);
-
-            List<String> columnNames = new ArrayList<>();
-            columnNames.add(key);
-            res.setColumnNames(columnNames);
         }
+
+        int skip = Math.abs(indexQuery.getSkip());
+        if (skip < rows.size()) {
+            int limit = Math.abs(indexQuery.getLimit());
+            if ((limit > 0) && (rows.size() - skip > limit)) {
+                res.setRows(rows.subList(skip, skip + limit));
+            } else res.setRows(rows);
+        } // else all rows are skipped
         return res;
     }
 

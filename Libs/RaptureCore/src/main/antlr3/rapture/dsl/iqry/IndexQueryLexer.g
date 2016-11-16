@@ -15,25 +15,26 @@ options {
 // SELECT fielda,fieldb,fieldc WHERE (field='string' AND z>5) ORDER BY fieldd ASC
 
 
-DISTINCT : 'DISTINCT';
-SELECT : 'SELECT';
-WHERE  : 'WHERE';
-ORDER  : 'ORDER';
-BY     : 'BY';
-ASC    : 'ASC';
-DESC   : 'DESC';
+DISTINCT : 'DISTINCT' | 'distinct' | 'Distinct';
+SELECT : 'SELECT' | 'select' | 'Select';
+WHERE  : 'WHERE' | 'where' | 'Where';
+ORDER  : 'ORDER' | 'order' | 'Order';
+BY     : 'BY' | 'b' | 'By';
+ASC    : 'ASC' | 'asc' | 'Asc';
+DESC    : 'DESC' | 'desc' | 'Desc';
 EQUAL  : '=';
+MINUS  : '-';
 GT     : '>';
 LT     : '<';
 NOTEQUAL : '!=';
 COMMA  : ',';
 OBRAC : '(';
 CBRAC : ')';
-AND   : 'AND';
-OR    : 'OR';
-LIMIT : 'LIMIT';
-SKIP  : 'SKIP';
-LIKE  : 'LIKE';
+AND   : 'AND' | 'and' | 'And';
+OR    : 'OR' | 'or' | 'Or';
+LIMIT : 'LIMIT' | 'limit' | 'Limit';
+SKIP  : 'SKIP' | 'skip' | 'Skip';
+LIKE  : 'LIKE' | 'like' | 'Like';
 
 ID : ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')*;
 STRING : '"' (~'"')* '"'
@@ -41,10 +42,10 @@ STRING : '"' (~'"')* '"'
 
 WS : (' ') {$channel=HIDDEN;} ;
 
-NUMBER
-  :  Int '.' Digit (Digit)* ( 'E' ('+' | '-')? Digit (Digit)* )?
-  |  Int 'E' ('+' | '-')? Digit (Digit)*
-  |  Int
+NUMBER 
+  :  (MINUS)? Int '.' Digit (Digit)* ( 'E' ('+' | '-')? Digit (Digit)* )?
+  |  (MINUS)? Int 'E' ('+' | '-')? Digit (Digit)*
+  |  (MINUS)? Int
   ;
 
 fragment Int
