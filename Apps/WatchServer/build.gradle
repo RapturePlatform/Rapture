@@ -1,0 +1,34 @@
+version = '3.0.4'
+
+apply plugin: 'application'
+
+jar.manifest.attributes "Implementation-Title" : "Rapture WatchServer application"
+jar.manifest.attributes "Implementation-Version" : version
+
+dependencies {
+     compile "net.rapture:MongoDb:$project.platformVersion"
+     compile "net.rapture:RabbitMQ:$project.platformVersion"
+	 compile "net.rapture:RaptureCore:$project.platformVersion"
+	 compile "net.rapture:RaptureAddinCore:$project.platformVersion"
+     compile 'jline:jline:2.7'
+}
+
+mainClassName = "rapture.server.WatchServer"
+
+// Config files
+//
+
+import groovy.text.*
+import java.io.*
+
+
+compileJava {
+    dependsOn copyConfigFiles
+}
+
+startScripts {
+       doLast {
+             unixScript.text = unixScript.text.replace('DEFAULT_JVM_OPTS=""',
+             'DEFAULT_JVM_OPTS="-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=9013 -Dcom.sun.management.jmxremote.local.only=false -Dcom.sun.management.jmxremote.authenticate=false"')
+            }
+        }
