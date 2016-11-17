@@ -96,7 +96,6 @@ public enum MongoDBFactory {
         log.info("Host is " + uri.getHosts().toString());
         log.info("DBName is " + uri.getDatabase());
         log.info("Collection is " + uri.getCollection());
-
         try {
             MongoClient mongo = new MongoClient(uri);
             mongoDBs.put(instanceName, mongo.getDB(uri.getDatabase()));
@@ -116,7 +115,7 @@ public enum MongoDBFactory {
         ConnectionInfo info = map.get(instanceName);
         log.info("Connection info = " + info);
         try {
-            MongoClient mongo = new MongoClient(info.getHost(), info.getPort());
+            MongoClient mongo = new MongoClient(new MongoClientURI(info.getUrl()));
             mongoDBs.put(instanceName, mongo.getDB(info.getDbName()));
             mongoDatabases.put(instanceName, mongo.getDatabase(info.getDbName()));
             mongoInstances.put(instanceName, mongo);
@@ -131,9 +130,8 @@ public enum MongoDBFactory {
     }
 
     /**
-     * @deprecated Use getMongoDatabase
-     * This is still needed because GridFS constructor requires a DB not a MongoDatabase.
-     * Once GridFS is updated (Mongo 3.1) this can be eliminated. 
+     * @deprecated Use getMongoDatabase This is still needed because GridFS constructor requires a DB not a MongoDatabase. Once GridFS is updated (Mongo 3.1)
+     *             this can be eliminated.
      */
     @Deprecated
     public static DB getDB(String instanceName) {
