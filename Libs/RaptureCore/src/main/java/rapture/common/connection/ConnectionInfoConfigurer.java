@@ -51,23 +51,25 @@ public abstract class ConnectionInfoConfigurer {
     protected static String SYS_PATH_PREFIX = "connection/";
 
     public abstract ConnectionType getType();
+
     public abstract int getDefaultPort();
 
     private static final Logger log = Logger.getLogger(ConnectionInfoConfigurer.class);
-    protected TypeReference<Map<String, ConnectionInfo>> typeReference = new TypeReference<Map<String, ConnectionInfo>>(){};
+    protected TypeReference<Map<String, ConnectionInfo>> typeReference = new TypeReference<Map<String, ConnectionInfo>>() {
+    };
 
     public Map<String, ConnectionInfo> getConnectionInfo(CallingContext context) {
         // first, try to get from sys.config
         Map<String, ConnectionInfo> map = getConnectionInfoFromSysConfig(context);
-        if(map != null && !map.isEmpty()) {
+        if (map != null && !map.isEmpty()) {
             return map;
         }
         // otherwise, get from local config file
         map = new HashMap<>();
-        for(String instanceName : getInstancesFromLocal()) {
+        for (String instanceName : getInstancesFromLocal()) {
             map.put(instanceName, getConnectionInfoFromLocal(instanceName));
         }
-        if(!map.isEmpty()) {
+        if (!map.isEmpty()) {
             writeConnectionInfoToSysConfig(context, map);
         }
         return map;
@@ -103,7 +105,7 @@ public abstract class ConnectionInfoConfigurer {
     protected Map<String, ConnectionInfo> getConnectionInfoFromSysConfig(CallingContext context) {
         String config = Kernel.getSys().retrieveSystemConfig(context, SysArea.CONFIG.toString(),
                 getSysConfigPath());
-        if(!StringUtils.isBlank(config)) {
+        if (!StringUtils.isBlank(config)) {
             return JacksonUtil.objectFromJson(config, typeReference);
         }
         return null;
@@ -130,14 +132,15 @@ public abstract class ConnectionInfoConfigurer {
             int port = uri.getPort() < 0 ? getDefaultPort() : uri.getPort();
             String username = "";
             String password = "";
-            if(!StringUtils.isBlank(uri.getUserInfo())) {
+            if (!StringUtils.isBlank(uri.getUserInfo())) {
                 String[] userInfo = uri.getUserInfo().split(":");
                 username = userInfo[0];
                 password = userInfo[1];
             }
             String dbName = uri.getPath().substring(1);
-            return new ConnectionInfo(host, port,
-                    username, password, dbName, instanceName);
+            ConnectionInfo c = new ConnectionInfo(host, port, username, password, dbName, instanceName);
+            c.setUrl(url);
+            return c;
         } catch (URISyntaxException e) {
             throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, "Invalid URI", e);
         }
@@ -170,14 +173,14 @@ public abstract class ConnectionInfoConfigurer {
     }
 
     protected void checkFieldPresent(String fieldName, String fieldValue) {
-        if(StringUtils.isBlank(fieldValue)) {
+        if (StringUtils.isBlank(fieldValue)) {
             throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR,
                     fieldName + " can not be empty");
         }
     }
 
     protected void checkPort(ConnectionInfo info) {
-        if(info.getPort() <= 0) {
+        if (info.getPort() <= 0) {
             info.setPort(getDefaultPort());
         }
     }
