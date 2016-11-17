@@ -81,7 +81,6 @@ public class IndexTests {
         Reporter.log("Testing query: " + query, true);
         res = index.findIndex(planetURI, query);
         resList = res.getRows();
-        Reporter.log(JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(resList)),true);
         Assert.assertEquals(resList.size(),2);
 	}
 
