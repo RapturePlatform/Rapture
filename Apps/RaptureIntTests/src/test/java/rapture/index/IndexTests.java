@@ -37,6 +37,9 @@ public class IndexTests {
 
 	}
 
+
+	
+	
 	@Test(groups = { "index", "mongo", "nightly" }, dataProvider="implTypes")
 	public void testUpdateIndex(String implType) {
 
@@ -54,9 +57,11 @@ public class IndexTests {
 		String query = "SELECT planet, moon, fieldOne, fieldTwo WHERE fieldTwo > 2.5";
 		TableQueryResult res = index.findIndex(planetURI, query);
 		List<List<Object>> resList = res.getRows();
-		Assert.assertEquals(resList.size(), 0);
+		if (resList !=null)
+			Assert.assertEquals(resList.size(), 0);
 
 		createData1(planetURI);
+		createData3(planetURI);
 
 		planetIndex = index.createIndex(planetURI, INDEXCFG);
 		Reporter.log("Updated index: " + planetIndex.getName(), true);
@@ -64,12 +69,20 @@ public class IndexTests {
 		res = index.findIndex(planetURI, query);
 		resList = res.getRows();
 		Assert.assertEquals(resList.size(), 3);
+		
 		createData2(planetURI);
 
         Reporter.log("Testing query: " + query, true);
         res = index.findIndex(planetURI, query);
         resList = res.getRows();
         Assert.assertEquals(resList.size(), 7);
+        
+        query = "SELECT planet, moon, fieldOne, fieldTwo WHERE fieldTwo < -1.5";
+        Reporter.log("Testing query: " + query, true);
+        res = index.findIndex(planetURI, query);
+        resList = res.getRows();
+        Reporter.log(JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(resList)),true);
+        Assert.assertEquals(resList.size(),2);
 	}
 
 	
@@ -86,6 +99,8 @@ public class IndexTests {
 		Reporter.log("Created index: " + planetIndex.getName(), true);
 		createData1(planetURI);
 		createData2(planetURI);
+		createData3(planetURI);
+
 
         String limitQuery = "SELECT planet, moon LIMIT 4";
         Reporter.log("Testing query: " + limitQuery, true);
@@ -93,6 +108,29 @@ public class IndexTests {
         List<List<Object>> limitList = res.getRows();
         Assert.assertNotNull(limitList);
         Assert.assertEquals(limitList.size(),4);
+        
+        limitQuery = "SELECT DISTINCT planet, moon ORDER BY planet, moon ASC LIMIT 2";
+        Reporter.log("Testing query: " + limitQuery, true);
+        res = index.findIndex(planetURI, limitQuery);
+        limitList = res.getRows();
+       
+        Assert.assertEquals(limitList.size(),2);
+
+        limitQuery = "SELECT DISTINCT distinct planet, moon ORDER BY planet, moon Asc Limit 2 Skip 2";
+
+        Reporter.log("Testing query: " + limitQuery, true);
+        res = index.findIndex(planetURI, limitQuery);
+        List<List<Object>> limitList2 = res.getRows();
+        Assert.assertEquals(limitList.size(),2);
+
+        Assert.assertEquals(limitList.get(0).get(0).toString(),"Earth");
+        Assert.assertEquals(limitList.get(1).get(0).toString(),"Jupiter");
+        Assert.assertEquals(limitList.get(1).get(1).toString(),"Europa");
+
+        Assert.assertEquals(limitList2.get(0).get(0).toString(),"Jupiter");
+        Assert.assertEquals(limitList2.get(0).get(1).toString(),"Ganymede");
+        Assert.assertEquals(limitList2.get(1).get(0).toString(),"Jupiter");
+        Assert.assertEquals(limitList2.get(1).get(1).toString(),"Io");        
 	}
 	
 	@Test(groups = { "index", "mongo", "nightly" }, dataProvider="implTypes")
@@ -129,19 +167,60 @@ public class IndexTests {
 		Reporter.log("Created index: " + planetIndex.getName(), true);
 		createData1(planetURI);
 		createData2(planetURI);
-		String orderQuery="SELECT DISTINCT planet ORDER BY planet ASC";
+		
+		String orderQuery="SELECT DISTINCT planet";
 		TableQueryResult orderResult = index.findIndex(planetURI, orderQuery);
+        Reporter.log("Testing query: " + orderQuery, true);
+        List<List<Object>> orderList =orderResult.getRows();
+        Assert.assertEquals(orderList.size(),5);
+
+        orderQuery="SELECT DISTINCT moon";
+        orderResult = index.findIndex(planetURI, orderQuery);
+        Reporter.log("Testing query: " + orderQuery, true);
+        orderList = orderResult.getRows();
+
+        Assert.assertEquals(orderList.size(),8);
+		
+		createData3(planetURI);
+		orderQuery="SELECT DISTINCT planet, moon ORDER BY moon, planet ASC";
+		orderResult = index.findIndex(planetURI, orderQuery);
 		Reporter.log("Testing query: " + orderQuery, true);
-		List<List<Object>> orderList = orderResult.getRows();
+		orderList = orderResult.getRows();
 		Assert.assertNotNull(orderList);
-		Assert.assertEquals(orderList.size(), 5);
+		Assert.assertEquals(orderList.size(), 9);
 		Reporter.log("Verifying order of results", true);
 		String last = "Aaaa";   
 		for (List<Object> next : orderList) {
-            String nextStr = next.get(0).toString();
-            Assert.assertTrue(nextStr.compareTo(last) > 0);
+            String nextStr = next.get(1).toString();
+            Assert.assertTrue(nextStr.compareTo(last) >= 0);
             last = nextStr;
 		}
+		
+		orderQuery ="SELECT planet, moon Order By moon, planet ASC";
+		orderResult = index.findIndex(planetURI, orderQuery);
+		Reporter.log("Testing query: " + orderQuery, true);
+        orderList = orderResult.getRows();
+        Assert.assertEquals(orderList.size(),12);
+        last = "Aaaa";
+        for (List<Object> next : orderList) {
+            String nextStr = next.get(1).toString();
+            Assert.assertTrue(nextStr.compareTo(last) >= 0);
+            last = nextStr;
+        }
+		
+		orderQuery ="SELECT planet, moon ORDER BY moon, planet ASC";
+		orderResult = index.findIndex(planetURI, orderQuery);
+		Reporter.log("Testing query: " + orderQuery, true);
+        orderList = orderResult.getRows();
+        Assert.assertEquals(orderList.size(),12);
+        last = "Aaaa";
+        for (List<Object> next : orderList) {
+            String nextStr = next.get(1).toString();
+            Assert.assertTrue(nextStr.compareTo(last) >= 0);
+            last = nextStr;
+        }
+		
+		
 	}
 	
 	@Test(groups = { "index", "mongo", "nightly" }, dataProvider="implTypes")
@@ -236,6 +315,15 @@ public class IndexTests {
 				new Integer(8), "three", "constant", "inner", ImmutableMap.of("alpha", "S"))));
 		docApi.putDoc(planetURI + "/Jupiter/Io", JacksonUtil.jsonFromObject(ImmutableMap.of("one", "I", "two",
 				new Integer(9), "three", "constant", "inner", ImmutableMap.of("alpha", "R"))));
+	}
+	
+	private void createData3(String planetURI) {
+		docApi.putDoc(planetURI + "/Earth/Moon/Foo",
+		JacksonUtil.jsonFromObject(ImmutableMap.of("one", "Q", "two", new Double(-1), "three", "constant", "inner", ImmutableMap.of("alpha", "X"))));
+		docApi.putDoc(planetURI + "/Earth/Moon/Bar",
+		JacksonUtil.jsonFromObject(ImmutableMap.of("one", "W", "two", new Double(-2), "three", "constant", "inner", ImmutableMap.of("alpha", "X"))));
+		docApi.putDoc(planetURI + "/Earth/Moon/Baz",
+		JacksonUtil.jsonFromObject(ImmutableMap.of("one", "E", "two", new Double(-3), "three", "constant", "inner", ImmutableMap.of("alpha", "X"))));
 	}
 
 }
