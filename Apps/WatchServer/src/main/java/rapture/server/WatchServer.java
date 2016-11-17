@@ -23,6 +23,7 @@
  */
 package rapture.server;
 
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -74,6 +75,9 @@ public final class WatchServer {
             for (String key : watchConfig.keySet()) {
                 List<Map> list = (List<Map>) watchConfig.get(key);
                 if (Files.isDirectory(Paths.get(key))) {
+                    if (key.charAt(key.length() - 1) != File.separatorChar) {
+                        key += File.separator;
+                    }
                     config.put(key, list);
                     log.info("Path=" + key + ":Config=" + list.toString());
                 } else {
@@ -83,13 +87,15 @@ public final class WatchServer {
 
         } catch (Exception e2) {
             log.error("Failed to load configuration from " + CONFIG_URI + ". Exception:" + ExceptionToString.format(e2));
-            System.exit(-2);
+            System.exit(-1);
         }
 
         for (String path : config.keySet()) {
             log.info("Setting up " + path);
             new WatchRunner(path, config.get(path)).startThread();
         }
+
+        log.info("WatchServer started and ready.");
     }
 
 }

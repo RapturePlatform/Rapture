@@ -41,6 +41,8 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
+import com.google.common.collect.ImmutableMap;
+
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
 import rapture.kernel.ContextFactory;
@@ -106,10 +108,10 @@ public class WatchRunner implements Runnable {
                         // TODO: Check filepath is correct
                         String actionUri = getActionForEvent(this.dirPath, watchEvent.kind().name());
                         if (!actionUri.isEmpty()) {
-                            String filepath = this.dirPath + watchEvent.context();
                             String scheme = new RaptureURI(actionUri).getScheme().name();
-                            Map<String, String> params = new HashMap<String, String>();
-                            params.put("filetoupload", filepath);
+                            log.debug("event created for path: " + this.dirPath);
+                            ImmutableMap<String, String> params = ImmutableMap.of("filetoupload", this.dirPath + watchEvent.context());
+
                             if (scheme.equals(Scheme.SCRIPT.name())) {
                                 String runScript = Kernel.getScript().runScript(ContextFactory.getKernelUser(), actionUri, params);
                                 log.info("Started script: " + runScript + " with params: " + params.toString());
@@ -126,7 +128,7 @@ public class WatchRunner implements Runnable {
                     watchKey.reset();
                 }
             } catch (InterruptedException e) {
-                e = null;
+                log.error("Thread ID: " + Thread.currentThread().getId() + " interrupted!", e);
             }
         }
     }
@@ -139,6 +141,7 @@ public class WatchRunner implements Runnable {
         for (int i = 0; i < config.size(); i++) {
             if (config.get(i).get("event").equals(event)) {
                 actionUri = (String) config.get(i).get("action");
+                break;
             }
         }
         return actionUri;

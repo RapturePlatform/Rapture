@@ -23,6 +23,7 @@ The server expects that configuration in a well known place, namely: document://
 ![System Diagram](/Apps/WatchServer/images/watchservertopology.png)
 
 # Installation and Running #
+Kåre
 
 ## Using Docker ##
 The entire setup can be run using all docker containers.  This is the easiest way to run the stack without doing builds or compiling.  Here are the relevant commands.
@@ -43,13 +44,13 @@ docker run -d -p 8080:8080 -p 8665:8665 --link mongo --link rabbit --name curtis
 ```
 docker run -d -p 8000:8000 --link curtis --name rim incapture/rim
 ```
-**Start WatchServer**
-```
-docker run -d -p 4567:4567 --link mongo --link rabbit --link elasticsearch --link postgres --name restserver incapture/watchserver
-```
 **Start WatchServer Sample Configuration Plugin**
 ```
 complete when implemented
+```
+**Start WatchServer**
+```
+docker run -d --link mongo --link rabbit --name watchserver incapture/watchserver
 ```
 # Configuration #
 
