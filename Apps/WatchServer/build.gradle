@@ -1,0 +1,51 @@
+version = '3.0.4'
+
+apply plugin: 'application'
+
+jar.manifest.attributes "Implementation-Title" : "Rapture WatchServer application"
+jar.manifest.attributes "Implementation-Version" : version
+
+
+applicationDistribution.from(targetConfig) { into "etc" }
+
+startScripts {
+    // add etc folder to the classpath to pick up cfg files
+    if (System.getProperty("os.name").toLowerCase().contains("windows")) {
+        classpath = files(['%APP_HOME%\\etc'])
+    } else {
+        classpath = files(['$APP_HOME/lib/*', '$APP_HOME/etc'])
+    }
+    doLast {
+        // gradle always puts extra classpaths relative to the lib folder, so we have to replace
+        windowsScript.text = windowsScript.text.replace('%APP_HOME%\\lib\\etc', '%APP_HOME%\\lib\\*;%APP_HOME%\\etc')
+        unixScript.text = unixScript.text.replace('$APP_HOME/lib/etc', '$APP_HOME/etc')
+    }
+}
+
+dependencies {
+     compile "net.rapture:MongoDb:$project.platformVersion"
+     compile "net.rapture:RabbitMQ:$project.platformVersion"
+	 compile "net.rapture:RaptureCore:$project.platformVersion"
+	 compile "net.rapture:RaptureAddinCore:$project.platformVersion"
+     compile 'jline:jline:2.7'
+}
+
+mainClassName = "rapture.server.WatchServer"
+
+// Config files
+//
+
+import groovy.text.*
+import java.io.*
+
+
+compileJava {
+    dependsOn copyConfigFiles
+}
+
+startScripts {
+       doLast {
+             unixScript.text = unixScript.text.replace('DEFAULT_JVM_OPTS=""',
+             'DEFAULT_JVM_OPTS="-Xmx2G"')
+            }
+        }
