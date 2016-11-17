@@ -23,10 +23,10 @@
  */
 package rapture.common;
 
-import org.apache.commons.lang.StringUtils;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import org.apache.commons.lang.StringUtils;
 
 /**
  * Created by yanwang on 11/30/15.
@@ -38,14 +38,16 @@ public class ConnectionInfo implements RaptureTransferObject {
     private String password;
     private String dbName;
     private String instanceName;
+    private String url;
+
     private Map<String, Object> options = new HashMap<>();
 
     public ConnectionInfo() {
     }
 
     public ConnectionInfo(String host, int port,
-                          String username, String password,
-                          String dbName, String instanceName) {
+            String username, String password,
+            String dbName, String instanceName) {
         this.host = host;
         this.port = port;
         this.username = username;
@@ -57,14 +59,14 @@ public class ConnectionInfo implements RaptureTransferObject {
     @Override
     public String toString() {
         return String.format("{instanceName=%s, host=%s, port=%d, dbName=%s, " +
-                        "username=%s, password=%s, options=%s}",
+                "username=%s, password=%s, options=%s}",
                 instanceName, host, port, dbName,
                 username, password, options);
     }
 
     @Override
     public boolean equals(Object object) {
-        if(object instanceof ConnectionInfo) {
+        if (object instanceof ConnectionInfo) {
             ConnectionInfo info = (ConnectionInfo) object;
             return StringUtils.equals(host, info.getHost())
                     && port == info.getPort()
@@ -135,5 +137,13 @@ public class ConnectionInfo implements RaptureTransferObject {
 
     public void setOption(String key, Object value) {
         options.put(key, value);
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 }
