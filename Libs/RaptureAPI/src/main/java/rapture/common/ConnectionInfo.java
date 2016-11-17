@@ -39,7 +39,6 @@ public class ConnectionInfo implements RaptureTransferObject {
     private String dbName;
     private String instanceName;
     private String url;
-
     private Map<String, Object> options = new HashMap<>();
 
     public ConnectionInfo() {
@@ -59,9 +58,9 @@ public class ConnectionInfo implements RaptureTransferObject {
     @Override
     public String toString() {
         return String.format("{instanceName=%s, host=%s, port=%d, dbName=%s, " +
-                "username=%s, password=%s, options=%s}",
+                "username=%s, password=%s, options=%s, url=%s}",
                 instanceName, host, port, dbName,
-                username, password, options);
+                username, password, options, url);
     }
 
     @Override
