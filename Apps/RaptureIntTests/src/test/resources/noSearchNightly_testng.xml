@@ -20,6 +20,8 @@
 			<package name="rapture.admin" />
 			<package name="rapture.jar" />
 			<package name="rapture.lock" />
+			<package name="rapture.event" />
+			<package name="rapture.index" />
                 </packages>
 	</test>
 </suite> <!-- Suite -->
