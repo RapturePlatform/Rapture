@@ -63,7 +63,6 @@ public class IndexTests {
 		createData1(planetURI);
 		createData3(planetURI);
 
-		planetIndex = index.createIndex(planetURI, INDEXCFG);
 		Reporter.log("Updated index: " + planetIndex.getName(), true);
 		Reporter.log("Testing query: " + query, true);
 		res = index.findIndex(planetURI, query);
@@ -84,6 +83,49 @@ public class IndexTests {
         Assert.assertEquals(resList.size(),2);
 	}
 
+	
+	@Test(groups = { "index", "mongo", "nightly" }, dataProvider="implTypes")
+	public void testUpdateIndexAfterDelete(String implType) {
+
+		String INDEXCFG = "planet($0) string, moon($1) string, fieldOne(one) string, fieldTwo(two) integer, fieldInner(inner.alpha) string";
+		IndexConfig planetIndex = null;
+
+		RaptureURI repo = helper.getRandomAuthority(Scheme.DOCUMENT);
+		helper.configureTestRepo(repo, implType);
+		String planetURI = repo.getAuthority();
+		Reporter.log("Document URI: document://" + planetURI, true);
+
+		planetIndex = index.createIndex(planetURI, INDEXCFG);
+		Reporter.log("Created index: " + planetIndex.getName(), true);
+
+		String query = "SELECT planet, moon, fieldOne, fieldTwo WHERE fieldTwo > 2.5";
+		TableQueryResult res = index.findIndex(planetURI, query);
+		List<List<Object>> resList = res.getRows();
+		if (resList !=null)
+			Assert.assertEquals(resList.size(), 0);
+
+		createData1(planetURI);
+		createData2(planetURI);
+		Reporter.log("Updated index: " + planetIndex.getName(), true);
+		Reporter.log("Testing query: " + query, true);
+		res = index.findIndex(planetURI, query);
+		resList = res.getRows();
+		Assert.assertEquals(resList.size(), 7);
+		
+		
+		deleteData2(planetURI);
+        Reporter.log("Testing query: " + query, true);
+        res = index.findIndex(planetURI, query);
+        resList = res.getRows();
+        Assert.assertEquals(resList.size(), 3);
+        
+        query = "SELECT planet, moon, fieldOne, fieldTwo WHERE fieldTwo < -1.5";
+        Reporter.log("Testing query: " + query, true);
+        res = index.findIndex(planetURI, query);
+        resList = res.getRows();
+        if (resList != null)
+        	Assert.assertEquals(resList.size(),0);
+	}
 	
 	@Test(groups = { "index", "mongo", "nightly" }, dataProvider="implTypes")
 	public void testLimitQuery(String implType) {
@@ -314,6 +356,14 @@ public class IndexTests {
 				new Integer(8), "three", "constant", "inner", ImmutableMap.of("alpha", "S"))));
 		docApi.putDoc(planetURI + "/Jupiter/Io", JacksonUtil.jsonFromObject(ImmutableMap.of("one", "I", "two",
 				new Integer(9), "three", "constant", "inner", ImmutableMap.of("alpha", "R"))));
+	}
+	
+	private void deleteData2(String planetURI) {
+		docApi.deleteDoc(planetURI + "/Jupiter/Ganymede");
+		docApi.deleteDoc(planetURI + "/Jupiter/Europa");
+		docApi.deleteDoc(planetURI + "/Jupiter/Titan");
+		docApi.deleteDoc(planetURI + "/Jupiter/Io");
+		
 	}
 	
 	private void createData3(String planetURI) {
