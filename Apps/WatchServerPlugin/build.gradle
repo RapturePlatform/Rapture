@@ -6,7 +6,6 @@ ext {
 
 dependencies {
   compile "net.rapture:SelfPluginInstallerLib:$project.version"
-  compile 'net.sourceforge.htmlunit:htmlunit:2.23'
   compile 'commons-net:commons-net:3.5'
 }
 
