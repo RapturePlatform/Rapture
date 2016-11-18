@@ -46,6 +46,8 @@ import org.testng.annotations.Optional;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 
 import rapture.common.BlobContainer;
@@ -54,9 +56,11 @@ import rapture.common.PluginTransportItem;
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
 import rapture.common.WorkOrderExecutionState;
+import rapture.common.client.HttpAdminApi;
 import rapture.common.client.HttpBlobApi;
 import rapture.common.client.HttpDecisionApi;
 import rapture.common.client.HttpDocApi;
+import rapture.common.client.HttpEntitlementApi;
 import rapture.common.client.HttpIndexApi;
 import rapture.common.client.HttpPluginApi;
 import rapture.common.exception.ExceptionToString;
@@ -72,6 +76,7 @@ public class PluginApiTest {
     HttpPluginApi pluginApi = null;
     Set<String> installedSet = null;
     IntegrationTestHelper helper = null;
+    String pluginResourcePath="";
 
     @BeforeClass(groups = { "plugin", "nightly" })
     @Parameters({ "RaptureURL", "RaptureUser", "RapturePassword" })
@@ -80,15 +85,183 @@ public class PluginApiTest {
         helper = new IntegrationTestHelper(url, username, password);
         pluginApi = helper.getPluginApi();
         installedSet = new HashSet<String>();
+        pluginResourcePath=System.getProperty("user.dir")+ File.separator+"build"+File.separator+"resources"+File.separator+"test"+File.separator+"plugin"+File.separator+"nightly";
     }
+    
+    @Test(groups={"plugin","nightly"})
+    public void testInstallStructuredPlugin () {
+    	String pluginName="teststruct";
+    	String description="Test structured plugin";
+    	String zipFileName="teststructcreate.zip";
+        Reporter.log("Testing plugin: " + pluginName,true);
+        //import the zip configuration
+        String zipAbsFilePath = pluginResourcePath+File.separator+zipFileName;
+        
+        Reporter.log("Reading in file from "+zipAbsFilePath,true);
+        
+        ZipFile orgZipFile = null;
+        try {
+        	orgZipFile=	new ZipFile(zipAbsFilePath);
+            Assert.assertNotNull(orgZipFile, pluginName);
+        } catch (Exception e) {
+            Reporter.log("Got error reading zip file " + zipAbsFilePath, true);
+            Reporter.log(ExceptionToString.format(e), true);
+            Assert.fail("Got error reading zip file " + zipAbsFilePath);
+        }
+        
+        PluginConfig pluginConfig = getPluginConfigFromZip(zipAbsFilePath);
+        Assert.assertNotNull(pluginConfig, pluginName);
 
+        //check plugin zip configuration
+        Assert.assertEquals(pluginConfig.getPlugin(),pluginName);
+        Assert.assertEquals(pluginConfig.getDescription(),description);
+
+        //import (to memory) using plugin sandbox
+        PluginSandbox sandbox = new PluginSandbox();
+        sandbox.setConfig(pluginConfig);
+        sandbox.setStrict(false);
+        
+        String rootDir = File.separator + "tmp" + File.separator+ "plugin1_" + System.currentTimeMillis();
+        Reporter.log("Test for " + zipFileName + ". Dir is " + rootDir,true);
+        //add the individual items to sandbox
+        sandbox.setRootDir(new File(rootDir, pluginConfig.getPlugin()));
+        Enumeration<? extends ZipEntry> entries = orgZipFile.entries();
+        while (entries.hasMoreElements()) {
+            ZipEntry entry = entries.nextElement();
+            if (entry.isDirectory()) {
+                continue;
+            }
+            try {
+            	sandbox.makeItemFromZipEntry(orgZipFile, entry);
+            } catch (Exception e) {
+            	Reporter.log("Error making sandbox item " +e.getMessage(),true);
+            	Assert.fail();
+            }
+        }
+        
+        Assert.assertEquals(sandbox.getPluginName(),pluginName);
+        Assert.assertEquals(sandbox.getDescription(),pluginConfig.getDescription());
+       
+        //get ready to install plugin
+        Map<String, PluginTransportItem> payload = Maps.newHashMap();
+        Set <String> itemSet=new HashSet<String>();
+        for (PluginSandboxItem item : sandbox.getItems(null)) {
+            try {
+                PluginTransportItem payloadItem = item.makeTransportItem();
+                payload.put(item.getURI().toString(), payloadItem);
+                itemSet.add(item.getURI().toString());
+            } catch (Exception ex) {
+                Reporter.log("Exception creating plugin " +ex.getMessage(),true);
+                Assert.fail();
+            }
+        }
+        //install the plugin using the http api 
+        pluginApi.installPlugin(sandbox.makeManifest(null), payload);
+        installedSet.add(pluginName);
+        Assert.assertEquals(helper.getStructApi().describeTable("structured://structtest/testtable"),ImmutableMap.<String, String>builder()
+        	    .put("address","text")
+        	    .put("name", "text")
+        	    .put("company", "text")
+        	    .put("id", "integer")
+        	    .put("email", "text")
+        	    .put("verification", "text")
+        	    .put("username", "text")
+        	    .build());
+        
+
+    	zipFileName="teststructalter.zip";
+        Reporter.log("Testing plugin: " + pluginName,true);
+        //import the zip configuration
+        zipAbsFilePath = pluginResourcePath+File.separator+zipFileName;
+        
+        Reporter.log("Reading in file from "+zipAbsFilePath,true);
+
+        try {
+        	orgZipFile=	new ZipFile(zipAbsFilePath);
+            Assert.assertNotNull(orgZipFile, pluginName);
+        } catch (Exception e) {
+            Reporter.log("Got error reading zip file " + zipAbsFilePath, true);
+            Reporter.log(ExceptionToString.format(e), true);
+            Assert.fail("Got error reading zip file " + zipAbsFilePath);
+        }
+        
+        pluginConfig = getPluginConfigFromZip(zipAbsFilePath);
+        Assert.assertNotNull(pluginConfig, pluginName);
+
+        //check plugin zip configuration
+        Assert.assertEquals(pluginConfig.getPlugin(),pluginName);
+        Assert.assertEquals(pluginConfig.getDescription(),description);
+
+        //import (to memory) using plugin sandbox
+        sandbox = new PluginSandbox();
+        sandbox.setConfig(pluginConfig);
+        sandbox.setStrict(false);
+        
+        rootDir = File.separator + "tmp" + File.separator+ "plugin1_" + System.currentTimeMillis();
+        Reporter.log("Test for " + zipFileName + ". Dir is " + rootDir,true);
+        //add the individual items to sandbox
+        sandbox.setRootDir(new File(rootDir, pluginConfig.getPlugin()));
+        entries = orgZipFile.entries();
+        while (entries.hasMoreElements()) {
+            ZipEntry entry = entries.nextElement();
+            if (entry.isDirectory()) {
+                continue;
+            }
+            try {
+            	sandbox.makeItemFromZipEntry(orgZipFile, entry);
+            } catch (Exception e) {
+            	Reporter.log("Error making sandbox item " +e.getMessage(),true);
+            	Assert.fail();
+            }
+        }
+        
+        Assert.assertEquals(sandbox.getPluginName(),pluginName);
+        Assert.assertEquals(sandbox.getDescription(),pluginConfig.getDescription());
+       
+        //get ready to install plugin
+        payload = Maps.newHashMap();
+        itemSet=new HashSet<String>();
+        for (PluginSandboxItem item : sandbox.getItems(null)) {
+            try {
+                PluginTransportItem payloadItem = item.makeTransportItem();
+                payload.put(item.getURI().toString(), payloadItem);
+                itemSet.add(item.getURI().toString());
+            } catch (Exception ex) {
+                Reporter.log("Exception creating plugin " +ex.getMessage(),true);
+                Assert.fail();
+            }
+        }
+        //install the plugin using the http api 
+        pluginApi.installPlugin(sandbox.makeManifest(null), payload);
+        Assert.assertEquals(helper.getStructApi().describeTable("structured://structtest/testtable"),ImmutableMap.<String, String>builder()
+        	    .put("address","text")
+        	    .put("name", "text")
+        	    .put("company", "text")
+        	    .put("id", "integer")
+        	    .put("email", "text")
+        	    .put("verification", "text")
+        	    .put("username", "text")
+        	    .put("bar", "text")
+        	    .put("foo", "text")
+        	    .build());
+    
+        pluginApi.uninstallPlugin(pluginName);
+        boolean installed=false;
+        for (PluginConfig c :pluginApi.getInstalledPlugins())
+        	if (c.getPlugin().compareTo(pluginName) ==0)
+        		installed=true;
+
+        Assert.assertFalse(installed,"Plugin did not uninstall");
+        installedSet.remove(pluginName);
+
+    }
+    
     @Test(groups = { "plugin", "nightly" }, dataProvider = "pluginZips")
     public void testInstallAndUninstallPlugin(String pluginName, String zipFileName, String description) {
 
         Reporter.log("Testing plugin: " + pluginName, true);
         // import the zip configuration
-        String zipAbsFilePath = System.getProperty("user.dir") + File.separator + "build" + File.separator + "resources" + File.separator + "test"
-                + File.separator + "plugin" + File.separator + "nightly" + File.separator + zipFileName;
+        String zipAbsFilePath = pluginResourcePath + File.separator + zipFileName;
 
         Reporter.log("Reading in file from " + zipAbsFilePath, true);
 
@@ -168,13 +341,111 @@ public class PluginApiTest {
         installedSet.remove(pluginName);
     }
 
+    @Test(groups = { "plugin", "nightly" })
+    public void testEntitlementPlugin() {
+    	String pluginName="testentitlement";
+    	String zipFileName = "testentitlement.zip";
+    	String description="Test entitlement plugin";
+        Reporter.log("Testing plugin: " + pluginName, true);
+        // import the zip configuration
+        String zipAbsFilePath = pluginResourcePath + File.separator + zipFileName;
+
+        Reporter.log("Reading in file from " + zipAbsFilePath, true);
+
+        ZipFile orgZipFile = null;
+        try {
+            orgZipFile = new ZipFile(zipAbsFilePath);
+            Assert.assertNotNull(orgZipFile, pluginName);
+        } catch (Exception e) {
+            Reporter.log("Got error reading zip file " + zipAbsFilePath, true);
+            Reporter.log(ExceptionToString.format(e), true);
+            Assert.fail("Got error reading zip file " + zipAbsFilePath);
+        }
+
+        PluginConfig pluginConfig = getPluginConfigFromZip(zipAbsFilePath);
+        Assert.assertNotNull(pluginConfig, pluginName);
+
+        // check plugin zip configuration
+        Assert.assertEquals(pluginConfig.getPlugin(), pluginName);
+        Assert.assertEquals(pluginConfig.getDescription(), description);
+
+        // import (to memory) using plugin sandbox
+        PluginSandbox sandbox = new PluginSandbox();
+        sandbox.setConfig(pluginConfig);
+        sandbox.setStrict(false);
+
+        String rootDir = File.separator + "tmp" + File.separator + "plugin1_" + System.currentTimeMillis();
+        Reporter.log("Test for " + zipFileName + ". Dir is " + rootDir, true);
+        // add the individual items to sandbox
+        sandbox.setRootDir(new File(rootDir, pluginConfig.getPlugin()));
+        Enumeration<? extends ZipEntry> entries = orgZipFile.entries();
+        while (entries.hasMoreElements()) {
+            ZipEntry entry = entries.nextElement();
+            if (entry.isDirectory()) {
+                continue;
+            }
+            try {
+                sandbox.makeItemFromZipEntry(orgZipFile, entry);
+            } catch (Exception e) {
+                Reporter.log("Error making sandbox item", true);
+            }
+        }
+
+        Assert.assertEquals(sandbox.getPluginName(), pluginName);
+        Assert.assertEquals(sandbox.getDescription(), pluginConfig.getDescription());
+
+        // get ready to install plugin
+        Map<String, PluginTransportItem> payload = Maps.newHashMap();
+        Set<String> itemSet = new HashSet<String>();
+        for (PluginSandboxItem item : sandbox.getItems(null)) {
+            try {
+                PluginTransportItem payloadItem = item.makeTransportItem();
+                payload.put(item.getURI().toString(), payloadItem);
+
+                itemSet.add(item.getURI().toString().contains("$") ? item.getURI().toString().substring(0, item.getURI().toString().indexOf("$") - 1)
+                        : item.getURI().toString());
+            } catch (Exception ex) {
+                Reporter.log("Exception creating plugin " + ex.getMessage(), true);
+            }
+        }
+        // install the plugin using the http api
+        pluginApi.installPlugin(sandbox.makeManifest(null), payload);
+        installedSet.add(pluginName);
+        PluginConfig thePlugin = null;
+        for (PluginConfig c : pluginApi.getInstalledPlugins())
+            if (c.getPlugin().compareTo(pluginName) == 0) thePlugin = c;
+        Assert.assertEquals(thePlugin.getPlugin(), pluginName, "Plugin " + pluginName + " has unexpected name.");
+        Assert.assertEquals(thePlugin.getDescription(), description, "Plugin " + pluginName + " has unexpected description.");
+        Assert.assertEquals(pluginApi.verifyPlugin(pluginName).keySet(), itemSet, "Problem with installed items");
+
+        HttpEntitlementApi entApi = helper.getEntApi();
+        HttpAdminApi adminApi = helper.getAdminApi();
+        String groupName="testUsers";
+        Assert.assertEquals(entApi.getEntitlementGroup(groupName).getUsers(),ImmutableSet.of("testUser1", "testUser2"));
+        Assert.assertEquals(entApi.getEntitlementGroup(groupName).getName(),groupName);
+        Assert.assertEquals(adminApi.getUser("testUser1").getDescription(),"test user 1");
+        Assert.assertEquals(adminApi.getUser("testUser2").getDescription(),"test user 2");
+        Assert.assertEquals(adminApi.getUser("testUser1").getEmailAddress(),"testUser1@incapturetechnologies.com");
+        Assert.assertEquals(adminApi.getUser("testUser2").getEmailAddress(),"testUser2@incapturetechnologies.com");
+        Assert.assertEquals(adminApi.getUser("testUser1").getUsername(),"testUser1");
+        Assert.assertEquals(adminApi.getUser("testUser2").getUsername(),"testUser2");
+                
+        pluginApi.uninstallPlugin(pluginName);
+
+        boolean installed = false;
+        for (PluginConfig c : pluginApi.getInstalledPlugins())
+            if (c.getPlugin().compareTo(pluginName) == 0) installed = true;
+
+        Assert.assertFalse(installed, "Plugin " + pluginName + " expected to be uninstalled");
+        installedSet.remove(pluginName);
+    }
+    
     @Test(groups = { "plugin", "nightly" }, dataProvider = "workflowPluginZips", description = "install a plugin and run work order")
     public void testPluginWithWorkorder(String zipFileName, String pluginName, String expectedDescription, String workflowUri, String ctxString)
             throws IOException, NoSuchAlgorithmException, InterruptedException, SecurityException, NoSuchMethodException {
         Reporter.log("Testing plugin: " + pluginName, true);
         // import the zip configuration
-        String zipAbsFilePath = System.getProperty("user.dir") + File.separator + "build" + File.separator + "resources" + File.separator + "test"
-                + File.separator + "plugin" + File.separator + "nightly" + File.separator + zipFileName;
+        String zipAbsFilePath =pluginResourcePath + File.separator + zipFileName;
 
         Reporter.log("Reading in file from " + zipAbsFilePath, true);
 
@@ -377,6 +648,7 @@ public class PluginApiTest {
 
     @AfterClass(groups = { "plugin", "nightly" })
     public void AfterTest() {
+    	helper.cleanAllAssets();
         // delete all plugins installed during test
         for (String p : installedSet)
             pluginApi.uninstallPlugin(p);

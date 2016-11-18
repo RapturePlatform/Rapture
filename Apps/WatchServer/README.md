@@ -15,7 +15,7 @@ Supported actions are:
 * Run a script using the [event api](http://repo.incapturesolutions.com/apidoc/#_event-api)
 * Run a workflow
 
-The absolute path (full directory and filename) is passed to the Rapture endpoint via a parameter to allow
+The absolute path (full directory and filename) is passed to the Rapture endpoint via a parameter to allow that program to process or enrich the file.
 
 The server expects that configuration in a well known place, namely: document://sys.config/watchserver/config. Configuration is covered below.
 
@@ -23,7 +23,6 @@ The server expects that configuration in a well known place, namely: document://
 ![System Diagram](/Apps/WatchServer/images/watchservertopology.png)
 
 # Installation and Running #
-Kåre
 
 ## Using Docker ##
 The entire setup can be run using all docker containers.  This is the easiest way to run the stack without doing builds or compiling.  Here are the relevant commands.

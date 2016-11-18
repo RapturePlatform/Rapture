@@ -23,6 +23,17 @@
  */
 package rapture.table.memory;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.log4j.Logger;
+
+import com.google.common.base.Predicate;
+
 import rapture.common.TableQuery;
 import rapture.common.TableQueryResult;
 import rapture.common.TableRecord;
@@ -36,17 +47,6 @@ import rapture.dsl.iqry.WhereStatement;
 import rapture.index.IndexHandler;
 import rapture.index.IndexProducer;
 import rapture.index.IndexRecord;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.log4j.Logger;
-
-import com.google.common.base.Predicate;
 
 /*
  * An in memory table, primarily for testing
@@ -104,7 +104,7 @@ public class MemoryIndexHandler implements IndexHandler {
 
     @Override
     public List<TableRecord> queryTable(TableQuery query) {
-        return new ArrayList<TableRecord>();
+        return new ArrayList<>();
     }
 
     @Override
@@ -136,6 +136,7 @@ public class MemoryIndexHandler implements IndexHandler {
                 for (String columnName : columnNames) {
                     row.add(body.get(columnName));
                 }
+                if (indexQuery.isDistinct() && rows.contains(row)) continue;
                 rows.add(row);
             }
         }
@@ -147,12 +148,17 @@ public class MemoryIndexHandler implements IndexHandler {
             }
         }
 
-        if (indexQuery.getLimit() != 0) {
-            rows = rows.subList(0, indexQuery.getLimit());
+        int skip = indexQuery.getSkip();
+        if (skip < 0) skip = 0;
+        if (skip < rows.size()) {
+            int limit = indexQuery.getLimit();
+
+            if ((limit > 0) && (rows.size() - skip > limit)) {
+                result.setRows(rows.subList(skip, skip + limit));
+            } else {
+                result.setRows(rows);
+            }
         }
-
-        result.setRows(rows);
-
         return result;
     }
 
@@ -177,7 +183,7 @@ public class MemoryIndexHandler implements IndexHandler {
                 String fieldName = statement.getField();
                 Object queryValue = statement.getValue().getValue();
                 Object actualValue = input.get(fieldName);
-                if (queryValue != null && actualValue != null && statement.getClass().equals(actualValue.getClass())) {
+                if (queryValue != null && actualValue != null && queryValue.getClass().equals(actualValue.getClass())) {
                     return compare((Comparable) actualValue, (Comparable) queryValue);
                 } else {
                     String actualValueString;
