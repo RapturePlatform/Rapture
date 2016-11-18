@@ -1,0 +1,16 @@
+{
+  "/Users/jonathanmajor/temp" : [ {
+    "event" : "ENTRY_CREATE",
+    "action" : "script://watcher/test1"
+  }, {
+    "event" : "ENTRY_MODIFY",
+    "action" : "script://watcher/test1"
+  }, {
+    "event" : "ENTRY_DELETE",
+    "action" : "script://watcher/test2"
+  } ],
+  "/Users/jonathanmajor/temp1" : [ {
+    "event" : "ENTRY_CREATE",
+    "action" : "workflow://decisionWorkflow.httpTests/concurrent/test1"
+  } ]
+}
