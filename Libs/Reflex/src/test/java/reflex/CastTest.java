@@ -24,6 +24,7 @@
 package reflex;
 
 import org.antlr.runtime.RecognitionException;
+import org.junit.Assert;
 import org.junit.Test;
 
 public class CastTest extends ResourceBasedTest {
@@ -31,5 +32,14 @@ public class CastTest extends ResourceBasedTest {
     @Test
     public void testCast() throws RecognitionException {
         runTestFor("/cast.rfx");
+    }
+
+    @Test
+    public void testCast1() throws RecognitionException {
+        String result = runTestFor("/cast1.rfx");
+        Assert.assertEquals("number = 1.0\nnumber = 1.0\nnumber = 1\ninteger = 1\nstring = 1\n---\n"
+                + "number = 1.0\nnumber = 1.0\nnumber = 1.0\ninteger = 1\nstring = 1.0\n---\n"
+                + "number = 1.0\nnumber = 1.0\nnumber = 1\ninteger = 1\nstring = 1\n---\n"
+                + "number = 1.0\nnumber = 1.0\nnumber = 1.0\ninteger = 1\nstring = 1.0\n--RETURNS--true", result);
     }
 }
