@@ -45,7 +45,7 @@
     ],
     "startStep": "setup",
     "jarUriDependencies": [
-        "jar://workflows/incapture/wsload/*"
+        "jar://workflows/incapture/watchserver/*"
     ],
     "category": "alpha"
 }
