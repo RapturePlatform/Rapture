@@ -21,6 +21,29 @@ import rapture.common.impl.jackson.JacksonUtil;
 import rapture.common.model.IndexConfig;
 import rapture.helper.IntegrationTestHelper;
 
+/**
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2011-2016 Incapture Technologies LLC
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 public class IndexTests {
 
 	HttpDocApi docApi = null;
@@ -63,7 +86,6 @@ public class IndexTests {
 		createData1(planetURI);
 		createData3(planetURI);
 
-		planetIndex = index.createIndex(planetURI, INDEXCFG);
 		Reporter.log("Updated index: " + planetIndex.getName(), true);
 		Reporter.log("Testing query: " + query, true);
 		res = index.findIndex(planetURI, query);
@@ -86,6 +108,49 @@ public class IndexTests {
 
 	
 	@Test(groups = { "index", "mongo", "nightly" }, dataProvider="implTypes")
+	public void testUpdateIndexAfterDelete(String implType) {
+
+		String INDEXCFG = "planet($0) string, moon($1) string, fieldOne(one) string, fieldTwo(two) integer, fieldInner(inner.alpha) string";
+		IndexConfig planetIndex = null;
+
+		RaptureURI repo = helper.getRandomAuthority(Scheme.DOCUMENT);
+		helper.configureTestRepo(repo, implType);
+		String planetURI = repo.getAuthority();
+		Reporter.log("Document URI: document://" + planetURI, true);
+
+		planetIndex = index.createIndex(planetURI, INDEXCFG);
+		Reporter.log("Created index: " + planetIndex.getName(), true);
+
+		String query = "SELECT planet, moon, fieldOne, fieldTwo WHERE fieldTwo > 2.5";
+		TableQueryResult res = index.findIndex(planetURI, query);
+		List<List<Object>> resList = res.getRows();
+		if (resList !=null)
+			Assert.assertEquals(resList.size(), 0);
+
+		createData1(planetURI);
+		createData2(planetURI);
+		Reporter.log("Updated index: " + planetIndex.getName(), true);
+		Reporter.log("Testing query: " + query, true);
+		res = index.findIndex(planetURI, query);
+		resList = res.getRows();
+		Assert.assertEquals(resList.size(), 7);
+		
+		
+		deleteData2(planetURI);
+        Reporter.log("Testing query: " + query, true);
+        res = index.findIndex(planetURI, query);
+        resList = res.getRows();
+        Assert.assertEquals(resList.size(), 3);
+        
+        query = "SELECT planet, moon, fieldOne, fieldTwo WHERE fieldTwo < -1.5";
+        Reporter.log("Testing query: " + query, true);
+        res = index.findIndex(planetURI, query);
+        resList = res.getRows();
+        if (resList != null)
+        	Assert.assertEquals(resList.size(),0);
+	}
+	
+	@Test(groups = { "index", "mongo", "nightly" }, dataProvider="implTypes")
 	public void testLimitQuery(String implType) {
 		String INDEXCFG = "planet($0) string, moon($1) string, fieldOne(one) string, fieldTwo(two) integer, fieldInner(inner.alpha) string";
 		IndexConfig planetIndex = null;
@@ -99,7 +164,6 @@ public class IndexTests {
 		createData1(planetURI);
 		createData2(planetURI);
 		createData3(planetURI);
-
 
         String limitQuery = "SELECT planet, moon LIMIT 4";
         Reporter.log("Testing query: " + limitQuery, true);
@@ -314,6 +378,14 @@ public class IndexTests {
 				new Integer(8), "three", "constant", "inner", ImmutableMap.of("alpha", "S"))));
 		docApi.putDoc(planetURI + "/Jupiter/Io", JacksonUtil.jsonFromObject(ImmutableMap.of("one", "I", "two",
 				new Integer(9), "three", "constant", "inner", ImmutableMap.of("alpha", "R"))));
+	}
+	
+	private void deleteData2(String planetURI) {
+		docApi.deleteDoc(planetURI + "/Jupiter/Ganymede");
+		docApi.deleteDoc(planetURI + "/Jupiter/Europa");
+		docApi.deleteDoc(planetURI + "/Jupiter/Titan");
+		docApi.deleteDoc(planetURI + "/Jupiter/Io");
+		
 	}
 	
 	private void createData3(String planetURI) {
