@@ -1,0 +1,13 @@
+// initial step where you can override any params for testing purposes
+
+// workerURI = _params['$DP_WORKER_URI'];
+// #decision.setContextLiteral(workerURI, 'trader', 'trader1');
+// #decision.setContextLiteral(workerURI, 'startDate', '20161101');
+// #decision.setContextLiteral(workerURI, 'endDate', '20161102');
+// rates = {};
+// rates["TRI"] = 0.50;
+// rates["TRIA"] = 0.51;
+// rates["TRIG"] = 0.52;
+// rates["TRIM"] = 0.53;
+// #decision.setContextLiteral(workerURI, 'rates', json(rates));
+return "ok";

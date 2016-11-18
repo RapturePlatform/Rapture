@@ -1,0 +1,30 @@
+version = '3.0.4'
+
+ext {
+  workflowJarName = 'WatchServerWorkflow'
+}
+
+dependencies {
+  compile "net.rapture:SelfPluginInstallerLib:$project.version"
+  compile 'net.sourceforge.htmlunit:htmlunit:2.23'
+  compile 'commons-net:commons-net:3.5'
+}
+
+mainClassName = "rapture.plugin.app.SelfInstaller"
+
+task javaCodeJar(type: Jar) {
+  baseName = workflowJarName
+  destinationDir = file("$buildDir/libs")
+  from sourceSets.main.output
+  exclude 'PLUGIN'
+}
+
+jar {
+  dependsOn javaCodeJar
+  include 'PLUGIN/**'
+  into ('PLUGIN/content/workflows/incapture/watchserver') {
+    from ("$buildDir/libs") {
+      include "$workflowJarName-${version}.jar"
+    }
+  }
+}
