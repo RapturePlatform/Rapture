@@ -50,6 +50,8 @@ public class CastNode extends BaseNode {
     private static final String STRING = "string";
     private static final String NUMBER = "number";
     private static final String INTEGER = "integer";
+    private static final String FLOAT = "float";
+    private static final String DOUBLE = "double";
     private ReflexNode source;
     private ReflexNode targetType;
     private LanguageRegistry registry;
@@ -73,9 +75,42 @@ public class CastNode extends BaseNode {
             
             // Currently we support casting to a number or a string
             String targ = targType.asString();
-            if (targ.equalsIgnoreCase(NUMBER)) {
+            if (targ.equalsIgnoreCase(FLOAT)) {
                 if (src.isNumber()) {
-                    retVal = new ReflexValue(src);
+                    retVal = new ReflexValue(src.asFloat());
+                } else {
+                    String strVal = src.toString();
+                    if (strVal.equals("NULL")) {
+                        retVal = new ReflexValue(0.0);
+                    } else {
+                        retVal = new ReflexValue(new BigDecimal((strVal.startsWith("'") ? strVal.substring(1) : strVal)).floatValue());
+                    }
+                }
+            } else if (targ.equalsIgnoreCase(DOUBLE)) {
+                if (src.isNumber()) {
+                    retVal = new ReflexValue(src.asDouble());
+                } else {
+                    String strVal = src.toString();
+                    if (strVal.equals("NULL")) {
+                        retVal = new ReflexValue(0.0D);
+                    } else {
+                        retVal = new ReflexValue(new BigDecimal((strVal.startsWith("'") ? strVal.substring(1) : strVal)).doubleValue());
+                    }
+                }
+            } else if (targ.equalsIgnoreCase(INTEGER)) {
+                if (src.isNumber()) {
+                    retVal = new ReflexValue(src.asInt());
+                } else {
+                    String strVal = src.toString();
+                    if (strVal.equals("NULL")) {
+                        retVal = new ReflexValue(0);
+                    } else {
+                        retVal = new ReflexValue(new BigDecimal((strVal.startsWith("'") ? strVal.substring(1) : strVal)).intValue());
+                    }
+                }
+            } else if (targ.equalsIgnoreCase(NUMBER)) {
+                if (src.isNumber()) {
+                    retVal = new ReflexValue(src.asBigDecimal());
                 } else if (src.isDate()) {
                     retVal = new ReflexValue(src.asDate().getEpoch());
                 } else if (src.isTime()) {
@@ -86,17 +121,6 @@ public class CastNode extends BaseNode {
                         retVal = new ReflexValue(0.0);
                     } else {
                         retVal = new ReflexValue(new BigDecimal((strVal.startsWith("'") ? strVal.substring(1) : strVal)));
-                    }
-                }
-            } else if (targ.equalsIgnoreCase(INTEGER)) {
-            	if (src.isNumber()) {
-            		retVal = new ReflexValue(src.asInt());
-                } else {
-                    String strVal = src.toString();
-                    if (strVal.equals("NULL")) {
-                        retVal = new ReflexValue(0);
-                    } else {
-                        retVal = new ReflexValue(Integer.valueOf((strVal.startsWith("'") ? strVal.substring(1) : strVal)));
                     }
                 }
             } else if (targ.equalsIgnoreCase(STRING)) {
