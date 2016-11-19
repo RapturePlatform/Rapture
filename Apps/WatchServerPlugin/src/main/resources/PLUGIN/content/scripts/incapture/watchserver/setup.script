@@ -1,13 +1,9 @@
-// initial step where you can override any params for testing purposes
+//Get the absolute file path from WatchServer event and set it in the workorders context.
 
-// workerURI = _params['$DP_WORKER_URI'];
-// #decision.setContextLiteral(workerURI, 'trader', 'trader1');
-// #decision.setContextLiteral(workerURI, 'startDate', '20161101');
-// #decision.setContextLiteral(workerURI, 'endDate', '20161102');
-// rates = {};
-// rates["TRI"] = 0.50;
-// rates["TRIA"] = 0.51;
-// rates["TRIG"] = 0.52;
-// rates["TRIM"] = 0.53;
-// #decision.setContextLiteral(workerURI, 'rates', json(rates));
+workerURI = _params['$DP_WORKER_URI'];
+
+filename = #decision.getContextValue(workerURI, 'filetoupload');
+
+println('Uploading filename: ' + filename);
+
 return "ok";
