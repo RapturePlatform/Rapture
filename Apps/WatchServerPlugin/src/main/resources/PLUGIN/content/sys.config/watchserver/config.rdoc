@@ -1,16 +1,13 @@
 {
-  "/Users/jonathanmajor/temp" : [ {
+  "/opt/test/subfolder" : [ {
     "event" : "ENTRY_CREATE",
-    "action" : "script://watcher/test1"
+    "action" : "script://scripts/incapture/watchserver/createaction"
   }, {
     "event" : "ENTRY_MODIFY",
-    "action" : "script://watcher/test1"
-  }, {
-    "event" : "ENTRY_DELETE",
-    "action" : "script://watcher/test2"
+    "action" : "script://scripts/incapture/watchserver/modifyaction"
   } ],
-  "/Users/jonathanmajor/temp1" : [ {
+  "/opt/test" : [ {
     "event" : "ENTRY_CREATE",
-    "action" : "workflow://decisionWorkflow.httpTests/concurrent/test1"
+    "action" : "workflow://workflows/incapture/watchserver/wsload"
   } ]
 }

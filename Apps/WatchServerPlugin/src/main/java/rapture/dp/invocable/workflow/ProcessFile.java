@@ -23,33 +23,29 @@
  */
 package rapture.dp.invocable.workflow;
 
-import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import org.apache.commons.lang3.StringUtils;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.google.common.base.Charsets;
-
-
-import rapture.common.BlobContainer;
 import rapture.common.CallingContext;
-import rapture.common.impl.jackson.JacksonUtil;
-import rapture.kernel.Kernel;
 
-public class StepA extends AbstractStep {
+public class ProcessFile extends AbstractStep {
 
-    public StepA(String workerUri, String stepName) {
+    public ProcessFile(String workerUri, String stepName) {
         super(workerUri, stepName);
     }
 
     @Override
     public String invoke(CallingContext ctx) {
-        log.info("Running StepA...");
+        log.info("Running ProcessFile step...");
 
         return "ok";
+    }
+
+    private boolean validParams(String... params) {
+        for (String param : params) {
+            if (StringUtils.isBlank(param)) {
+                return false;
+            }
+        }
+        return true;
     }
 }

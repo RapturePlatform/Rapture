@@ -4,22 +4,22 @@
         {
             "name": "setup",
             "description": "Sets up variables for execution",
-            "executable": "script://scripts/incapture/wsload/setup",
+            "executable": "script://scripts/incapture/watchserver/setup",
             "transitions": [
                 {
                     "name": "ok",
-                    "targetStep": "stepA"
+                    "targetStep": "loadFile"
                 }
             ]
         },
         {
-            "name": "stepA",
-            "description": "Step A Description",
-            "executable": "dp_java_invocable://workflow.StepA",
+            "name": "loadFile",
+            "description": "Load a file",
+            "executable": "dp_java_invocable://workflow.LoadFile",
             "transitions": [
                 {
                     "name": "ok",
-                    "targetStep": "stepB"
+                    "targetStep": "processFile"
                 },
                 {
                     "name": "error",
@@ -28,9 +28,9 @@
             ]
         },
         {
-            "name": "stepB",
-            "description": "Step B Description",
-            "executable": "dp_java_invocable://workflow.StepB",
+            "name": "processFile",
+            "description": "Process a file",
+            "executable": "dp_java_invocable://workflow.ProcessFile",
             "transitions": [
                 {
                     "name": "ok",

@@ -23,39 +23,23 @@
  */
 package rapture.dp.invocable.workflow;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-
-import com.google.common.base.Charsets;
-
 import rapture.common.CallingContext;
-import rapture.common.RaptureURI;
-import rapture.common.Scheme;
-import rapture.common.impl.jackson.JacksonUtil;
 import rapture.kernel.Kernel;
 
-public class StepB extends AbstractStep {
+public class LoadFile extends AbstractStep {
 
-    public StepB(String workerUri, String stepName) {
+    public LoadFile(String workerUri, String stepName) {
         super(workerUri, stepName);
     }
 
     @Override
     public String invoke(CallingContext ctx) {
-        log.info("Running StepB...");
+        log.info("Running LoadFile Step...");
+        // get the context variable passed into workflow
+        String absFilePath = Kernel.getDecision().getContextValue(ctx, getWorkerURI(), "filetoupload");
+
+        log.info("Loading File:" + absFilePath);
 
         return "ok";
-    }
-
-    private boolean validParams(String... params) {
-        for (String param : params) {
-            if (StringUtils.isBlank(param)) {
-                return false;
-            }
-        }
-        return true;
     }
 }
