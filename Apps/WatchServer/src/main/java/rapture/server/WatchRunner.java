@@ -35,7 +35,6 @@ import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -117,8 +116,7 @@ public class WatchRunner implements Runnable {
                                 log.info("Started script: " + runScript + " with params: " + params.toString());
                             }
                             if (scheme.equals(Scheme.WORKFLOW.name())) {
-                                String createWorkOrder = Kernel.getDecision().createWorkOrder(ContextFactory.getKernelUser(), actionUri,
-                                        new HashMap<String, String>());
+                                String createWorkOrder = Kernel.getDecision().createWorkOrder(ContextFactory.getKernelUser(), actionUri, params);
                                 log.info("Started workorder: " + createWorkOrder + " with params: " + params.toString());
                             }
                         } else {
