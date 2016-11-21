@@ -1,0 +1,9 @@
+//Get the absolute file path from WatchServer event and set it in the workorders context.
+
+workerURI = _params['$DP_WORKER_URI'];
+
+filename = #decision.getContextValue(workerURI, 'filetoupload');
+
+println('Uploading filename: ' + filename);
+
+return "ok";

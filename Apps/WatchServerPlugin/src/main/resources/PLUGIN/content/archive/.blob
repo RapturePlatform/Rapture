@@ -1,0 +1,6 @@
+{
+  "authority" : "archive",
+  "description" : "Stores inputs and associated outputs",
+  "config" : "BLOB {} USING MONGODB { prefix=\"watchserverarchive\" }",
+  "metaConfig" : "REP {} USING MONGODB { prefix=\"watchserverarchive\"}"
+}
