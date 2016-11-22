@@ -42,7 +42,6 @@ import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.CommonTreeNodeStream;
-import org.apache.http.conn.scheme.Scheme;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -54,6 +53,7 @@ import rapture.common.RaptureScriptLanguage;
 import rapture.common.RaptureScriptPurpose;
 import rapture.common.RaptureSnippet;
 import rapture.common.RaptureURI;
+import rapture.common.Scheme;
 import rapture.common.ScriptResult;
 import rapture.common.api.ScriptingApi;
 import rapture.config.ConfigLoader;
