@@ -1,0 +1,13 @@
+{
+  "/opt/test/subfolder" : [ {
+    "event" : "ENTRY_CREATE",
+    "action" : "script://scripts/incapture/watchserver/createaction"
+  }, {
+    "event" : "ENTRY_MODIFY",
+    "action" : "script://scripts/incapture/watchserver/modifyaction"
+  } ],
+  "/opt/test" : [ {
+    "event" : "ENTRY_CREATE",
+    "action" : "workflow://workflows/incapture/watchserver/wsload"
+  } ]
+}

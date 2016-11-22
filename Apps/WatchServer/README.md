@@ -24,6 +24,16 @@ The server expects that configuration in a well known place, namely: document://
 
 # Installation and Running #
 
+This example will illustrate the configuration and usage of WatchServer.
+
+Any files created in /opt/test will cause WatchServer to call the following workflow: workflow://workflows/incapture/watchserver/wsload
+
+This workflow will do the following:
+1. Load the file, in /opt/test/, specified by the parameter passed to it from WatchServer
+2. Store the unprocessed file to a blob://archive/<filename>_<date> repository
+3. Using blob created in step 2 process the file and write to a new blob://processed/<newfile>_<date>
+
+
 ## Using Docker ##
 The entire setup can be run using all docker containers.  This is the easiest way to run the stack without doing builds or compiling.  Here are the relevant commands.
 
@@ -35,22 +45,36 @@ docker run -d -p 5672:5672 -p 15672:15672 --name rabbit incapture/rabbit
 ```
 docker run -d -p 27017:27017 --name mongo incapture/mongo
 ```
+**Start ElasticSearch**
+```
+docker run -d -p 9300:9300 -p 9200:9200 --name elasticsearch incapture/elasticsearch
+```
+**Create a Local Data Volume**
+```
+docker volume create --name fileDropVolume
+docker run -v fileDropVolume:/opt/test alpine mkdir /opt/test/subfolder
+```
 **Start Curtis**
 ```
-docker run -d -p 8080:8080 -p 8665:8665 --link mongo --link rabbit --name curtis incapture/apiserver
+docker run -d -p 8080:8080 -p 8665:8665 --link mongo --link rabbit  --link elasticsearch -v fileDropVolume:/opt/test  --name curtis incapture/apiserver
 ```
 **Start Rapture UI**
 ```
 docker run -d -p 8000:8000 --link curtis --name rim incapture/rim
 ```
+Checkpoint: To ensure environment is up login to your local environment on http://localhost:8000/browser
+
 **Start WatchServer Sample Configuration Plugin**
 ```
-complete when implemented
+docker run --link curtis incapture/watchserverplugin
 ```
 **Start WatchServer**
 ```
-docker run -d --link mongo --link rabbit --name watchserver incapture/watchserver
+docker run -d --link mongo --link rabbit -v fileDropVolume:/opt/test --name watchserver incapture/watchserver
 ```
+
+Checkpoint: To ensure WatchServer has started log should have "20:00:11,899  INFO [main] (WatchServer.java:98) <> [] - WatchServer started and ready."
+
 # Configuration #
 
 Configuration is captured in a Rapture document here document://sys.config/watchserver/config.
@@ -59,23 +83,26 @@ This allows you to specify:
 * Directory to monitor
 * What action to take for a create, modify or delete event in that specified directory
 
-A sample (json) document is given as an example:
+A sample (json) document is given as an example and is installed to your local environment:
 ```
 {
-  "/Users/jonathanmajor/temp" : [ {
+  "/opt/test/subfolder" : [ {
     "event" : "ENTRY_CREATE",
-    "action" : "script://watcher/test1"
+    "action" : "script://scripts/incapture/watchserver/createaction"
   }, {
     "event" : "ENTRY_MODIFY",
-    "action" : "script://watcher/test1"
-  }, {
-    "event" : "ENTRY_DELETE",
-    "action" : "script://watcher/test2"
+    "action" : "script://scripts/incapture/watchserver/modifyaction"
   } ],
-  "/Users/jonathanmajor/temp1" : [ {
+  "/opt/test" : [ {
     "event" : "ENTRY_CREATE",
-    "action" : "workflow://decisionWorkflow.httpTests/concurrent/test1"
+    "action" : "workflow://workflows/incapture/watchserver/wsload"
   } ]
 }
 ```
+
+Expected Behavior:
+1. A file dropped into /opt/test/subfolder will run script script://scripts/incapture/watchserver/createaction
+2. if that file (in step 1) changes this script will be run script://scripts/incapture/watchserver/modifyaction
+3. A file dropped into /opt/test will run the following workflow workflow://workflows/incapture/watchserver/wsload
+
 You do not need to specify an event -> action mapping for each event type.
