@@ -45,18 +45,14 @@ docker run -d -p 5672:5672 -p 15672:15672 --name rabbit incapture/rabbit
 ```
 docker run -d -p 27017:27017 --name mongo incapture/mongo
 ```
-**Start ElasticSearch**
-```
-docker run -d -p 9300:9300 -p 9200:9200 --name elasticsearch incapture/elasticsearch
-```
 **Create a Local Data Volume**
 ```
 docker volume create --name fileDropVolume
 docker run -v fileDropVolume:/opt/test alpine mkdir /opt/test/subfolder
 ```
-**Start Curtis**
+**Start API Server**
 ```
-docker run -d -p 8080:8080 -p 8665:8665 --link mongo --link rabbit  --link elasticsearch -v fileDropVolume:/opt/test  --name curtis incapture/apiserver
+docker run -d -p 8080:8080 -p 8665:8665 --link mongo --link rabbit -v fileDropVolume:/opt/test  --name curtis incapture/apiserver:xESlatest
 ```
 **Start Rapture UI**
 ```

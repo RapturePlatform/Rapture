@@ -1,0 +1,1 @@
+{"ftsIndex":true,"authority":"data","idGenUri":"idgen://documentRepo/data","strictCheck":true,"indexes":[],"fullTextIndexes":[],"documentRepo":{"authority":"data","config":"REP {} USING MONGODB {prefix=\"repo.data\"}"},"deleted":false,"_raptureVersion":{"minor":0,"major":2,"micro":0}}
