@@ -1,0 +1,11 @@
+{
+    "name"      :    "//default/list/workflow",
+    "menuPath"  :   [],
+    "title"     :   "Workflows",
+    "paneType"  :   "list",
+    "parameterNames" :  [ ],
+    "actions" : {
+        "struct" : "/widget/default/entity/workflow/list/struct",
+        "data" : "/widget/default/entity/workflow/list/data"
+    }
+}

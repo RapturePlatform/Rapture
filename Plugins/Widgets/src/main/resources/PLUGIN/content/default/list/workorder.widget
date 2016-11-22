@@ -1,0 +1,11 @@
+{
+    "name"      :    "//default/list/workorder",
+    "menuPath"  :   [],
+    "title"     :   "Workorders",
+    "paneType"  :   "list",
+    "parameterNames" :  [ "prefix" ],
+    "actions" : {
+        "struct" : "/widget/default/entity/workorder/list/struct",
+        "data" : "/widget/default/entity/workorder/list/data"
+    }
+}
