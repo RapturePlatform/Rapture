@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package rapture.common.logging;
+package rapture.dp;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.AppenderSkeleton;
@@ -33,7 +33,10 @@ import rapture.kernel.ContextFactory;
 import rapture.kernel.Kernel;
 
 /**
- * Custom appender to also write to the Rapture Audit system
+ * Custom appender to also write to the Rapture Audit system from a workflow step
+ * 
+ * @author dukenguyen
+ *
  */
 public class AuditAppender extends AppenderSkeleton {
 
