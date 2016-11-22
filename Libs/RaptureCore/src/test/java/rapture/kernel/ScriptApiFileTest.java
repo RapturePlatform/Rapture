@@ -42,6 +42,7 @@ import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.CommonTreeNodeStream;
+import org.apache.http.conn.scheme.Scheme;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -53,7 +54,6 @@ import rapture.common.RaptureScriptLanguage;
 import rapture.common.RaptureScriptPurpose;
 import rapture.common.RaptureSnippet;
 import rapture.common.RaptureURI;
-import rapture.common.Scheme;
 import rapture.common.ScriptResult;
 import rapture.common.api.ScriptingApi;
 import rapture.config.ConfigLoader;
@@ -72,7 +72,6 @@ public class ScriptApiFileTest extends AbstractFileTest {
 
     private static final String auth = "test" + System.currentTimeMillis();
     private static final String REPO_USING_FILE = "REP {} USING FILE {prefix=\"/tmp/" + auth + "\"}";
-    private static final String REPO_USING_MONGO = "REP {} USING MONGODB {prefix=\"/tmp/" + auth + "\"}";
     private static final File temp = new File("/tmp/" + auth);
     private static final String scriptAuthorityURI = "script://" + auth;
     private static final String scriptURI = scriptAuthorityURI + "/For/A/Jesters/Tear";
@@ -87,7 +86,6 @@ public class ScriptApiFileTest extends AbstractFileTest {
         AbstractFileTest.setUp();
         config.RaptureRepo = REPO_USING_FILE;
         config.InitSysConfig = "NREP {} USING FILE { prefix=\"/tmp/" + auth + "/sys.config\"}";
-        // config.InitSysConfig = "NREP {} USING MONGODB { prefix=\"/tmp/" + auth + "/sys.config\"}";
 
         Kernel.initBootstrap();
         callingContext = ContextFactory.getKernelUser();
@@ -526,29 +524,4 @@ public class ScriptApiFileTest extends AbstractFileTest {
 
         scriptImpl.deleteScript(ctx, script.getAddressURI().toString());
     }
-
-    @Test
-    public void testScriptUserPrefs() {
-        RaptureScript script = new RaptureScript();
-        CallingContext ctx = ContextFactory.getKernelUser();
-        script.setAuthority(auth);
-        script.setLanguage(RaptureScriptLanguage.REFLEX);
-        script.setName("Candy");
-        script.setPurpose(RaptureScriptPurpose.PROGRAM);
-        String scriptWrite = "println(#user.storePreference('holidays', 'christmas', 'december'));\n"
-                + "println(#user.storePreference('books', 'lotr', 'frodo'));\n" + "println(#user.getPreferenceCategories());\n"
-                + "println(#user.removePreference('books', 'lotr'));\n" + "println(#user.getPreference('books', 'lotr'));\n"
-                + "println(#user.getPreferenceCategories());" + "return(#user.getPreferenceCategories());";
-        script.setScript(scriptWrite);
-        scriptImpl.putScript(ctx, script.getAddressURI().toString(), script);
-        RaptureScript scriptRead = scriptImpl.getScript(ctx, script.getAddressURI().toString());
-        assertEquals(scriptWrite, scriptRead.getScript());
-
-        Map<String, String> parameters = new HashMap<>();
-        ScriptResult ret = Kernel.getScript().runScriptExtended(ctx, script.getAddressURI().toString(), parameters);
-        assertEquals("[holidays]", ret.getReturnValue().toString());
-
-        scriptImpl.deleteScript(ctx, script.getAddressURI().toString());
-    }
-
 }
