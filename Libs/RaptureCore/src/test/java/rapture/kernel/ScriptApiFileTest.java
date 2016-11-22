@@ -85,9 +85,9 @@ public class ScriptApiFileTest extends AbstractFileTest {
     @BeforeClass
     static public void setUp() {
         AbstractFileTest.setUp();
-        config.RaptureRepo = REPO_USING_MONGO;
-        // config.InitSysConfig = "NREP {} USING FILE { prefix=\"/tmp/" + auth + "/sys.config\"}";
-        config.InitSysConfig = "NREP {} USING MONGODB { prefix=\"/tmp/" + auth + "/sys.config\"}";
+        config.RaptureRepo = REPO_USING_FILE;
+        config.InitSysConfig = "NREP {} USING FILE { prefix=\"/tmp/" + auth + "/sys.config\"}";
+        // config.InitSysConfig = "NREP {} USING MONGODB { prefix=\"/tmp/" + auth + "/sys.config\"}";
 
         Kernel.initBootstrap();
         callingContext = ContextFactory.getKernelUser();
