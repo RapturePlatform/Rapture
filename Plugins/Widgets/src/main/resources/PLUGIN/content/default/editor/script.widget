@@ -1,0 +1,11 @@
+{
+    "name"      :    "//default/editor/script",
+    "menuPath"  :   [],
+    "title"     :   "Script content editor",
+    "paneType"  :   "editor",
+    "parameterNames" :  [ ],
+    "actions" : {
+        "struct" : "/widget/default/entity/script/editor/struct",
+        "data" : "/widget/default/entity/script/editor/data"
+    }
+}

@@ -1,0 +1,11 @@
+{
+    "name"      :    "//default/textarea/script_output",
+    "menuPath"  :   [],
+    "title"     :   "Script Output",
+    "paneType"  :   "textarea",
+    "parameterNames" :  [ ],
+    "actions" : {
+        "struct" : "/widget/default/entity/script/textarea/struct",
+        "data" : "/widget/default/entity/script/textarea/data"
+    }
+}
