@@ -24,6 +24,7 @@
 package rapture.dp.invocable.workflow;
 
 import rapture.common.CallingContext;
+import rapture.dp.AbstractStep;
 import rapture.kernel.Kernel;
 
 public class LoadFile extends AbstractStep {
