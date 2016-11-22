@@ -1,0 +1,11 @@
+{
+    "name"      :    "//default/form/currency",
+    "menuPath"  :   [],
+    "title"     :   "Form demonstration",
+    "paneType"  :   "form",
+    "parameterNames" :  [ "entity" ],
+    "actions" : {
+        "struct" : "/widget/default/entity/currency/form/struct",
+        "data" : "/widget/default/entity/currency/form/data"
+    }
+}
