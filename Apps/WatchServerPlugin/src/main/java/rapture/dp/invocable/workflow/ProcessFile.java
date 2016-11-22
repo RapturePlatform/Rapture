@@ -26,6 +26,7 @@ package rapture.dp.invocable.workflow;
 import org.apache.commons.lang3.StringUtils;
 
 import rapture.common.CallingContext;
+import rapture.dp.AbstractStep;
 
 public class ProcessFile extends AbstractStep {
 
