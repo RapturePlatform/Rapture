@@ -80,7 +80,7 @@ public class ScriptApiFileTest extends AbstractFileTest {
 
     String saveRaptureRepo;
     String saveInitSysConfig;
-    
+
     @BeforeClass
     static public void setUp() {
         AbstractFileTest.setUp();
@@ -524,4 +524,5 @@ public class ScriptApiFileTest extends AbstractFileTest {
 
         scriptImpl.deleteScript(ctx, script.getAddressURI().toString());
     }
+
 }
