@@ -24,24 +24,30 @@
 package rapture.dp.invocable.workflow;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.json.simple.JSONObject;
+
+import com.google.common.collect.ImmutableMap;
 
 import rapture.common.CallingContext;
 import rapture.common.RaptureFolderInfo;
 import rapture.common.exception.RaptureException;
+import rapture.common.impl.jackson.JacksonUtil;
+import rapture.common.util.InsertData;
 import rapture.kernel.Kernel;
 
 public class ProcessFile extends AbstractStep {
@@ -50,27 +56,31 @@ public class ProcessFile extends AbstractStep {
         super(workerUri, stepName);
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked", "resource" })
     @Override
     public String invoke(CallingContext ctx) {
-        final int BATCH_LOAD_SIZE = 25; // TODO: move to config
+        final int BATCH_LOAD_SIZE = 200; // TODO: move to config
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss");
         OPCPackage pkg;
         XSSFWorkbook wb;
-        FileInputStream fis = null;
-        List<String> uris = new ArrayList<String>(); // lists for doc.putDocs()
-        List<String> docs = new ArrayList<String>();
-        HashMap<Object, Object> data = new HashMap<Object, Object>();
-        JSONObject obj = new JSONObject();
+        FileInputStream fis;
+        List uris = new ArrayList<>();
+        // stores all documents for insertion
+        List<List<String>> allDocs = new ArrayList<List<String>>();
 
-        SimpleDateFormat ft = new SimpleDateFormat("yyyyMMdd_hhmmss");
-        String repo = "document://data/" + ft.format(new Date());
+        String repo = "document://data/" + LocalDateTime.now().format(formatter);
         String docUri = repo + "#id";
 
+        // TODO: move this to loadFile step and get from blob
+        String file = Kernel.getDecision().getContextValue(ctx, getWorkerURI(), "filetoupload");
         try {
-            // TODO: move this to loadFile step and get from blob
-            String file = Kernel.getDecision().getContextValue(ctx, getWorkerURI(), "filetoupload");
             fis = new FileInputStream(file);
+        } catch (FileNotFoundException fnf) {
+            log.error(fnf.getMessage() + " " + fnf.getStackTrace());
+            return "error";
+        }
 
-            // pkg = OPCPackage.open(new File(file));
+        try {
             pkg = OPCPackage.open(fis);
             wb = new XSSFWorkbook(pkg);
             XSSFSheet sheet = wb.getSheetAt(0);
@@ -81,7 +91,7 @@ public class ProcessFile extends AbstractStep {
             int remainder = physicalNumberOfRows % BATCH_LOAD_SIZE;
             int div = physicalNumberOfRows / BATCH_LOAD_SIZE;
 
-            // preload the uri list as they are all end with "#id"
+            // this only needs to be done once as the uris dont change
             for (int g = 1; g <= BATCH_LOAD_SIZE; g++) {
                 uris.add(docUri);
             }
@@ -89,38 +99,55 @@ public class ProcessFile extends AbstractStep {
 
             int j = 0;
             int count = 0;
-            long start = System.currentTimeMillis();
+            long startLoadTime = System.currentTimeMillis();
             for (int i = 1; i <= div; i++) {
+                List docs = new ArrayList<>();
+                // Create a list of documents with size of BATCH_LOAD_SIZE
                 for (j = count; j < (BATCH_LOAD_SIZE * i); j++) {
                     Row row = sheet.getRow(j);
-                    data.put("Row", row.getRowNum());
-                    data.put("DataPeriod", row.getCell(0).toString());
-                    data.put("Industry", row.getCell(3).toString());
-                    data.put("Price", row.getCell(7).toString());
-                    obj.putAll(data);
-                    docs.add(obj.toJSONString());
-                    obj.clear();
-                    data.clear();
+                    Map<String, Object> map = ImmutableMap.of("Row", row.getRowNum(), "DataPeriod", row.getCell(0).toString(), "Industry",
+                            row.getCell(3).toString(), "Price", row.getCell(7).toString());
+                    docs.add(JacksonUtil.jsonFromObject(map));
                 }
-                Kernel.getDoc().putDocs(ctx, uris, docs);
+                allDocs.add(docs);
                 count = j;
-                docs.clear();
             }
-            // get the remaining rows
+            long endLoadTime = System.currentTimeMillis();
+
+            ExecutorService executorService = Executors.newCachedThreadPool();
+            long startWriteTime = System.currentTimeMillis();
+            for (List<String> docList : allDocs) {
+                executorService.execute(new InsertData(ctx, docList, uris));
+            }
+            executorService.shutdown();
+
+            try {
+                // TODO: hardcoded timeout.ComparableFutures?
+                // Helpful:
+                // http://stackoverflow.com/questions/1250643/how-to-wait-for-all-threads-to-finish-using-executorservice
+                executorService.awaitTermination(60000L, TimeUnit.MILLISECONDS);
+            } catch (InterruptedException e) {
+                log.error(e.getStackTrace().toString(), e);
+                return "error";
+            }
+            long endWriteTime = System.currentTimeMillis();
+            log.info("Completed parallel load.");
+
+            // handle the remaining rows
             if (remainder > 0) {
+                long remStartTime = System.currentTimeMillis();
                 for (int k = (count); k < (count + remainder); k++) {
                     Row row = sheet.getRow(k);
-                    data.put("Row", row.getRowNum());
-                    data.put("DataPeriod", row.getCell(0).toString());
-                    data.put("Industry", row.getCell(3).toString());
-                    data.put("Price", row.getCell(7).toString());
-                    obj.putAll(data);
-                    Kernel.getDoc().putDoc(ctx, docUri, obj.toJSONString());
+                    Map<String, Object> map = ImmutableMap.of("Row", row.getRowNum(), "DataPeriod", row.getCell(0).toString(), "Industry",
+                            row.getCell(3).toString(), "Price", row.getCell(7).toString());
+                    Kernel.getDoc().putDoc(ctx, docUri, JacksonUtil.jsonFromObject(map));
                 }
+                long remEndTime = System.currentTimeMillis();
+                log.info("Remainders took " + (remEndTime - remStartTime) + "ms");
             }
 
-            long end = System.currentTimeMillis();
-            log.info("Populated uri " + repo + ". Took " + (end - start) + "ms.");
+            log.info("Populated uri " + repo + ". Took " + (endLoadTime - startLoadTime) + "ms. to load data. Took " + (endWriteTime - startWriteTime)
+                    + "ms. to write data.");
             pkg.close();
 
             Map<String, RaptureFolderInfo> listDocsByUriPrefix = Kernel.getDoc().listDocsByUriPrefix(ctx, repo, 1);
@@ -131,8 +158,10 @@ public class ProcessFile extends AbstractStep {
             } else {
                 return "error"; // TODO: add error step
             }
-        } catch (InvalidFormatException | IOException | RaptureException e) {
-            log.error(e.getMessage() + " " + e.getStackTrace());
+        } catch (InvalidFormatException | IOException |
+
+                RaptureException e) {
+            log.error(e.getStackTrace().toString() + e.getMessage().toString() + e.toString());
             return "error";
         }
     }
