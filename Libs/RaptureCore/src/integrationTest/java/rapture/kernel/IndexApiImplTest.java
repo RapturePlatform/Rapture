@@ -1,6 +1,10 @@
 package rapture.kernel;
 
+import static org.junit.Assert.assertEquals;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.junit.Assert;
@@ -13,15 +17,21 @@ import com.google.common.collect.ImmutableMap;
 
 import rapture.common.CallingContext;
 import rapture.common.RaptureConstants;
+import rapture.common.RaptureScript;
+import rapture.common.RaptureScriptLanguage;
+import rapture.common.RaptureScriptPurpose;
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
+import rapture.common.ScriptResult;
 import rapture.common.TableQueryResult;
+import rapture.common.api.UserApi;
 import rapture.common.client.HttpDocApi;
 import rapture.common.client.HttpEventApi;
 import rapture.common.client.HttpIdGenApi;
 import rapture.common.client.HttpIndexApi;
 import rapture.common.client.HttpLoginApi;
 import rapture.common.client.HttpScriptApi;
+import rapture.common.client.HttpUserApi;
 import rapture.common.client.SimpleCredentialsProvider;
 import rapture.common.impl.jackson.JacksonUtil;
 import rapture.common.model.IndexConfig;
@@ -45,7 +55,7 @@ public class IndexApiImplTest extends AbstractFileTest {
     static HttpEventApi event = null;
     static HttpIdGenApi fountain = null;
 
-    private static final String url = "http://192.168.99.100:8665/rapture";
+    private static final String url = "http://192.168.99.101:8665/rapture";
     // private static final String url = "http://54.67.82.29:8665/rapture";
     private static final String username = "rapture";
     private static final String password = "rapture";
@@ -379,4 +389,55 @@ public class IndexApiImplTest extends AbstractFileTest {
             Assert.assertEquals(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(orderList)), 3, orderList.size());
         }
     }
+
+    @Test
+    public void testScriptUserPrefs() {
+        RaptureScript rapscript = new RaptureScript();
+        rapscript.setAuthority(auth);
+        rapscript.setLanguage(RaptureScriptLanguage.REFLEX);
+        rapscript.setName("Candy");
+        rapscript.setPurpose(RaptureScriptPurpose.PROGRAM);
+        String scriptWrite = "println(#user.storePreference('holidays', 'christmas', 'december'));\n"
+                + "println(#user.storePreference('books', 'lotr', 'frodo'));\n" + "println(#user.getPreferenceCategories());\n"
+                + "println(#user.removePreference('books', 'lotr'));\n" + "println(#user.getPreference('books', 'lotr'));\n"
+                + "println(#user.getPreferenceCategories());"
+                + "return(#user.getPreferenceCategories());";
+        rapscript.setScript(scriptWrite);
+        script.putScript(rapscript.getAddressURI().toString(), rapscript);
+        RaptureScript scriptRead = script.getScript(rapscript.getAddressURI().toString());
+        assertEquals(scriptWrite, scriptRead.getScript());
+
+        Map<String, String> parameters = new HashMap<>();
+        ScriptResult ret = script.runScriptExtended(rapscript.getAddressURI().toString(), parameters);
+        System.out.println(ret);
+        assertEquals("[holidays]", ret.getReturnValue().toString());
+
+        script.deleteScript(rapscript.getAddressURI().toString());
+    }
+
+    @Test
+    public void testHttpUserPrefs() {
+        UserApi userApi = new HttpUserApi(raptureLogin);
+        userApi.storePreference(callingContext, "holidays", "christmas", "december");
+        userApi.storePreference(callingContext, "books", "lotr", "frodo");
+        String gp = userApi.getPreference(callingContext, "books", "lotr");
+        System.out.println(gp);
+        List<String> pc = userApi.getPreferenceCategories(callingContext);
+        System.out.println(JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(pc)));
+        userApi.removePreference(callingContext, "books", "lotr");
+        gp = userApi.getPreference(callingContext, "books", "lotr");
+        System.out.println(gp);
+        int i = 0;
+        while (pc.size() > 1) {
+            pc = userApi.getPreferenceCategories(callingContext);
+            System.out.println(JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(pc)));
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+            }
+            i++;
+        }
+        System.out.println(i);
+    }
+
 }

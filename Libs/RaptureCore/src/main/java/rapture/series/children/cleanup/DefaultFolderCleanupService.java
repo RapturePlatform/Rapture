@@ -23,16 +23,9 @@
  */
 package rapture.series.children.cleanup;
 
-import rapture.common.LockHandle;
-import rapture.common.exception.ExceptionToString;
-import rapture.repo.RepoLockHandler;
-import rapture.series.children.PathConstants;
-
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -44,7 +37,11 @@ import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
+import rapture.common.LockHandle;
+import rapture.common.exception.ExceptionToString;
 import rapture.config.ConfigLoader;
+import rapture.repo.RepoLockHandler;
+import rapture.series.children.PathConstants;
 
 /**
  * @author bardhi
@@ -80,7 +77,7 @@ public class DefaultFolderCleanupService extends FolderCleanupService {
         executor.submit(new Runnable() {
             @Override
             public void run() {
-                repoIdToInfo.put(cleanupInfo.uniqueId, cleanupInfo);
+                repoIdToInfo.put(cleanupInfo.getUniqueId(), cleanupInfo);
 
             }
         });
@@ -97,11 +94,7 @@ public class DefaultFolderCleanupService extends FolderCleanupService {
                 public void run() {
                     final CleanupInfo cleanupInfo = repoIdToInfo.get(uniqueId);
                     if (cleanupInfo != null) {
-                        Set<String> foldersToReview = cleanupInfo.foldersForReview;
-                        if (foldersToReview == null) {
-                            foldersToReview = new HashSet<String>();
-                        }
-                        foldersToReview.add(folderPath);
+                        cleanupInfo.addFolderForReview(folderPath);
                     } else {
                         if (log.isDebugEnabled()) {
                             log.debug(String.format("Trying to clean up folder [%s] in unregistered repo [%s]", folderPath, uniqueId));
@@ -127,21 +120,16 @@ public class DefaultFolderCleanupService extends FolderCleanupService {
             log.info(String.format("repos are %s", repoIdToInfo.keySet()));
         }
         for (CleanupInfo cleanupInfo : repoIdToInfo.values()) {
-            runCleanup(cleanupInfo.repoDescription, cleanupInfo.cleanupFunction, cleanupInfo.isEmptyPredicate, cleanupInfo.repoLockHandler,
-                    cleanupInfo.foldersForReview);
-        }
-    }
-
-    private void runCleanup(String repoDescription, Function<String, Boolean> cleanupFunction, Predicate<String> isEmptyPredicate,
-            RepoLockHandler repoLockHandler, Set<String> foldersForReview) {
-        Iterator<String> iterator = foldersForReview.iterator();
-        while (iterator.hasNext()) {
-            String folderPath = iterator.next();
-            iterator.remove();
-            if (isEmptyPredicate.apply(folderPath)) {
-                deleteFolderIfEmpty(repoDescription, cleanupFunction, isEmptyPredicate, repoLockHandler, folderPath);
-            } else {
-                ignoreFolder(repoDescription, folderPath);
+            Iterator<String> iterator = cleanupInfo.getFoldersForReview().iterator();
+            while (iterator.hasNext()) {
+                String folderPath = iterator.next();
+                iterator.remove();
+                if (cleanupInfo.getIsEmptyPredicate().apply(folderPath)) {
+                    deleteFolderIfEmpty(cleanupInfo.getRepoDescription(), cleanupInfo.getCleanupFunction(), cleanupInfo.getIsEmptyPredicate(),
+                            cleanupInfo.getRepoLockHandler(), folderPath);
+                } else {
+                    ignoreFolder(cleanupInfo.getRepoDescription(), folderPath);
+                }
             }
         }
     }
