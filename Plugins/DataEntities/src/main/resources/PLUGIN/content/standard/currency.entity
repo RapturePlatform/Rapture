@@ -4,5 +4,8 @@
     "repoUri" : "//dh.currency",
     "prefixInRepo" : "",
     "structureUri" : "//standard/currency",
-    "namingFields" : [ "id" ]
+    "namingFields" : [ "id" ],
+    "indexFields" : [ "id", "code", "name" ],
+    "primeIndexField" : "id",
+    "viewFields" : [ "id", "code", "name", "minor"]
 }
