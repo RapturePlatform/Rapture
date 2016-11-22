@@ -23,15 +23,14 @@
  */
 package rapture.series.children.cleanup;
 
-import rapture.common.RaptureFolderInfo;
-import rapture.common.SeriesValue;
-import rapture.repo.RepoLockHandler;
-import rapture.series.children.ChildrenRepo;
-
 import java.util.List;
 
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
+
+import rapture.common.RaptureFolderInfo;
+import rapture.repo.RepoLockHandler;
+import rapture.series.children.ChildrenRepo;
 
 /**
  * @author bardhi
@@ -40,11 +39,11 @@ import com.google.common.base.Predicate;
 public class FolderCleanupFactory {
     public static CleanupInfo createCleanupInfo(String repoDescription, RepoLockHandler repoLockHandler, ChildrenRepo childrenRepo) {
         CleanupInfo cleanupInfo = new CleanupInfo();
-        cleanupInfo.repoDescription = repoDescription;
-        cleanupInfo.uniqueId = childrenRepo.toString();
-        cleanupInfo.cleanupFunction = createCleanupFunction(childrenRepo);
-        cleanupInfo.isEmptyPredicate = createIsEmptyPredicate(childrenRepo);
-        cleanupInfo.repoLockHandler = repoLockHandler;
+        cleanupInfo.setRepoDescription(repoDescription);
+        cleanupInfo.setUniqueId(childrenRepo.toString());
+        cleanupInfo.setCleanupFunction(createCleanupFunction(childrenRepo));
+        cleanupInfo.setIsEmptyPredicate(createIsEmptyPredicate(childrenRepo));
+        cleanupInfo.setRepoLockHandler(repoLockHandler);
         return cleanupInfo;
     }
 
