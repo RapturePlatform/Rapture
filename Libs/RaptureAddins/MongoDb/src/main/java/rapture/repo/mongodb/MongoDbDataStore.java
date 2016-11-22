@@ -58,8 +58,8 @@ import rapture.common.impl.jackson.JsonContent;
 import rapture.index.IndexHandler;
 import rapture.index.IndexProducer;
 import rapture.kernel.Kernel;
-import rapture.mongodb.MongoRetryWrapper;
 import rapture.mongodb.MongoDBFactory;
+import rapture.mongodb.MongoRetryWrapper;
 import rapture.notification.NotificationMessage;
 import rapture.notification.RaptureMessageListener;
 import rapture.repo.AbstractKeyStore;
@@ -132,7 +132,7 @@ public class MongoDbDataStore extends AbstractKeyStore implements KeyStore, Rapt
      */
     @Override
     public KeyStore createRelatedKeyStore(String relation) {
-        Map<String, String> config = new HashMap<String, String>();
+        Map<String, String> config = new HashMap<>();
         config.put(PREFIX, tableName + "_" + relation);
         MongoDbDataStore related = new MongoDbDataStore();
         related.resetNeedsFolderHandling();
@@ -203,12 +203,15 @@ public class MongoDbDataStore extends AbstractKeyStore implements KeyStore, Rapt
     @Override
     public boolean matches(String key, String value) {
         String val = get(key);
-        if (val != null) {
-            String tester = StringUtils.deleteWhitespace(JacksonUtil.jsonFromObject(JacksonUtil.getMapFromJson(val)));
-            return tester.equals(StringUtils.deleteWhitespace(value));
-        } else {
-            return false;
+        if (val == null) return false;
+        String valspc = StringUtils.deleteWhitespace(value);
+
+        try {
+            return StringUtils.deleteWhitespace(JacksonUtil.jsonFromObject(JacksonUtil.getMapFromJson(val))).equals(valspc);
+        } catch (Exception e) {
         }
+
+        return (StringUtils.deleteWhitespace(val).equals(valspc));
     }
 
     @Override
@@ -216,6 +219,7 @@ public class MongoDbDataStore extends AbstractKeyStore implements KeyStore, Rapt
 
         MongoRetryWrapper<List<String>> wrapper = new MongoRetryWrapper<List<String>>() {
 
+            @Override
             public FindIterable<Document> makeCursor() {
                 MongoCollection<Document> collection = MongoDBFactory.getCollection(instanceName, tableName);
                 Document inClause = new Document($IN, keys);
@@ -223,10 +227,11 @@ public class MongoDbDataStore extends AbstractKeyStore implements KeyStore, Rapt
                 return collection.find(query);
             }
 
+            @Override
             public List<String> action(FindIterable<Document> cursor) {
-                List<String> ret = new ArrayList<String>();
+                List<String> ret = new ArrayList<>();
                 // We may not get them all, we need to match those that work
-                Map<String, String> retMap = new HashMap<String, String>();
+                Map<String, String> retMap = new HashMap<>();
 
                 for (Document obj : cursor) {
                     if (obj != null) {
@@ -278,6 +283,7 @@ public class MongoDbDataStore extends AbstractKeyStore implements KeyStore, Rapt
 
             MongoRetryWrapper<RaptureQueryResult> wrapper = new MongoRetryWrapper<RaptureQueryResult>() {
 
+                @Override
                 public FindIterable<Document> makeCursor() {
                     // Here we go, the queryParams are basically
                     // (1) the searchCriteria
@@ -304,6 +310,7 @@ public class MongoDbDataStore extends AbstractKeyStore implements KeyStore, Rapt
                     return find;
                 }
 
+                @Override
                 public RaptureQueryResult action(FindIterable<Document> iterable) {
                     RaptureQueryResult res = new RaptureQueryResult();
                     for (Document d : iterable) {
@@ -325,6 +332,7 @@ public class MongoDbDataStore extends AbstractKeyStore implements KeyStore, Rapt
 
             MongoRetryWrapper<RaptureNativeQueryResult> wrapper = new MongoRetryWrapper<RaptureNativeQueryResult>() {
 
+                @Override
                 public FindIterable<Document> makeCursor() {
                     // This is like a native query, except that we need to (a)
                     // add in
@@ -345,6 +353,7 @@ public class MongoDbDataStore extends AbstractKeyStore implements KeyStore, Rapt
                     return cursor;
                 }
 
+                @Override
                 public RaptureNativeQueryResult action(FindIterable<Document> iterable) {
                     RaptureNativeQueryResult res = new RaptureNativeQueryResult();
                     for (Document d : iterable) {
@@ -393,6 +402,7 @@ public class MongoDbDataStore extends AbstractKeyStore implements KeyStore, Rapt
 
         MongoRetryWrapper<Object> wrapper = new MongoRetryWrapper<Object>() {
 
+            @Override
             public FindIterable<Document> makeCursor() {
                 MongoCollection<Document> collection = getCollection();
                 Document query = new Document(KEY, Pattern.compile(folderPrefix));
@@ -400,10 +410,11 @@ public class MongoDbDataStore extends AbstractKeyStore implements KeyStore, Rapt
                 return collection.find(query);
             }
 
+            @Override
             public Object action(FindIterable<Document> iterable) {
                 Iterator<Document> cursor = iterable.iterator();
                 while (cursor.hasNext()) {
-                    Document d = (Document) cursor.next();
+                    Document d = cursor.next();
                     if (!d.getString(KEY).startsWith("$")) {
                         if (!iRepoVisitor.visit(d.getString(KEY), new JsonContent(d.getString(VALUE)), false)) {
                             break;
@@ -421,6 +432,7 @@ public class MongoDbDataStore extends AbstractKeyStore implements KeyStore, Rapt
     public void visitKeys(final String prefix, final StoreKeyVisitor iStoreKeyVisitor) {
         MongoRetryWrapper<Object> wrapper = new MongoRetryWrapper<Object>() {
 
+            @Override
             public FindIterable<Document> makeCursor() {
                 MongoCollection<Document> collection = getCollection();
                 // REGEX on key name, surrounding prefix with \Q and \E means
@@ -430,10 +442,11 @@ public class MongoDbDataStore extends AbstractKeyStore implements KeyStore, Rapt
                 return collection.find(query);
             }
 
+            @Override
             public Object action(FindIterable<Document> iterable) {
                 Iterator<Document> cursor = iterable.iterator();
                 while (cursor.hasNext()) {
-                    Document d = (Document) cursor.next();
+                    Document d = cursor.next();
                     if (!iStoreKeyVisitor.visit(d.getString(KEY), d.getString(VALUE))) {
                         break;
                     }
@@ -449,6 +462,7 @@ public class MongoDbDataStore extends AbstractKeyStore implements KeyStore, Rapt
     public void visitKeysFromStart(final String startPoint, final StoreKeyVisitor iStoreKeyVisitor) {
         MongoRetryWrapper<Object> wrapper = new MongoRetryWrapper<Object>() {
 
+            @Override
             public FindIterable<Document> makeCursor() {
                 MongoCollection<Document> collection = getCollection();
                 // REGEX on key name?
@@ -457,11 +471,12 @@ public class MongoDbDataStore extends AbstractKeyStore implements KeyStore, Rapt
                 return collection.find(query);
             }
 
+            @Override
             public Object action(FindIterable<Document> iterable) {
                 Iterator<Document> cursor = iterable.iterator();
                 boolean canStart = startPoint == null;
                 while (cursor.hasNext()) {
-                    Document d = (Document) cursor.next();
+                    Document d = cursor.next();
                     if (canStart) {
                         if (!iStoreKeyVisitor.visit(d.getString(KEY), d.getString(VALUE))) {
                             break;
@@ -511,7 +526,7 @@ public class MongoDbDataStore extends AbstractKeyStore implements KeyStore, Rapt
 
     @Override
     public List<RaptureFolderInfo> removeSubKeys(String folder, Boolean force) {
-        List<RaptureFolderInfo> ret = new ArrayList<RaptureFolderInfo>();
+        List<RaptureFolderInfo> ret = new ArrayList<>();
         removeEntries(ret, folder);
         return ret;
     }
@@ -535,7 +550,7 @@ public class MongoDbDataStore extends AbstractKeyStore implements KeyStore, Rapt
 
     @Override
     public IndexHandler createIndexHandler(IndexProducer indexProducer) {
-        Map<String, String> config = new HashMap<String, String>();
+        Map<String, String> config = new HashMap<>();
         config.put(PREFIX, tableName + "_index_index");
         MongoIndexHandler mongoIndexHandler = new MongoIndexHandler();
 

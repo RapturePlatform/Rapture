@@ -23,23 +23,71 @@
  */
 package rapture.series.children.cleanup;
 
-import rapture.repo.RepoLockHandler;
-
 import java.util.HashSet;
 import java.util.Set;
 
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 
+import rapture.repo.RepoLockHandler;
+
 /**
  * @author bardhi
  * @since 5/11/15.
  */
 class CleanupInfo {
-    String uniqueId;
-    Set<String> foldersForReview = new HashSet<>();
-    String repoDescription;
-    RepoLockHandler repoLockHandler;
-    Function<String, Boolean> cleanupFunction;
-    Predicate<String> isEmptyPredicate;
+    public String getUniqueId() {
+        return uniqueId;
+    }
+
+    public void setUniqueId(String uniqueId) {
+        this.uniqueId = uniqueId;
+    }
+
+    public Set<String> getFoldersForReview() {
+        return foldersForReview;
+    }
+
+    public void addFolderForReview(String folderForReview) {
+        this.foldersForReview.add(folderForReview);
+    }
+
+    public String getRepoDescription() {
+        return repoDescription;
+    }
+
+    public void setRepoDescription(String repoDescription) {
+        this.repoDescription = repoDescription;
+    }
+
+    public RepoLockHandler getRepoLockHandler() {
+        return repoLockHandler;
+    }
+
+    public void setRepoLockHandler(RepoLockHandler repoLockHandler) {
+        this.repoLockHandler = repoLockHandler;
+    }
+
+    public Function<String, Boolean> getCleanupFunction() {
+        return cleanupFunction;
+    }
+
+    public void setCleanupFunction(Function<String, Boolean> cleanupFunction) {
+        this.cleanupFunction = cleanupFunction;
+    }
+
+    public Predicate<String> getIsEmptyPredicate() {
+        return isEmptyPredicate;
+    }
+
+    public void setIsEmptyPredicate(Predicate<String> isEmptyPredicate) {
+        this.isEmptyPredicate = isEmptyPredicate;
+    }
+
+    private String uniqueId;
+    private Set<String> foldersForReview = new HashSet<>();
+    private String repoDescription;
+    private RepoLockHandler repoLockHandler;
+    private Function<String, Boolean> cleanupFunction;
+    private Predicate<String> isEmptyPredicate;
 }

@@ -132,7 +132,10 @@ public abstract class ChildrenRepo {
         try {
             ret = dropPoints(ChildKeyUtil.createRowKey(parent), ImmutableList.of(child));
             if (ret) {
-                FolderCleanupService.getInstance().addForReview(getUniqueId(), SeriesPathParser.getParent(filePath));
+                if (getChildren(parent).size() == 0) {
+                    dropFolderEntry(parent);
+                }
+                FolderCleanupService.getInstance().addForReview(getUniqueId(), parent);
             }
         } catch (Exception e) {
             throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST,
