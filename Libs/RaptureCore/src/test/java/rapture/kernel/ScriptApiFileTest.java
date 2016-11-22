@@ -72,6 +72,7 @@ public class ScriptApiFileTest extends AbstractFileTest {
 
     private static final String auth = "test" + System.currentTimeMillis();
     private static final String REPO_USING_FILE = "REP {} USING FILE {prefix=\"/tmp/" + auth + "\"}";
+    private static final String REPO_USING_MONGO = "REP {} USING MONGODB {prefix=\"/tmp/" + auth + "\"}";
     private static final File temp = new File("/tmp/" + auth);
     private static final String scriptAuthorityURI = "script://" + auth;
     private static final String scriptURI = scriptAuthorityURI + "/For/A/Jesters/Tear";
@@ -80,12 +81,13 @@ public class ScriptApiFileTest extends AbstractFileTest {
 
     String saveRaptureRepo;
     String saveInitSysConfig;
-
+    
     @BeforeClass
     static public void setUp() {
         AbstractFileTest.setUp();
-        config.RaptureRepo = REPO_USING_FILE;
-        config.InitSysConfig = "NREP {} USING FILE { prefix=\"/tmp/" + auth + "/sys.config\"}";
+        config.RaptureRepo = REPO_USING_MONGO;
+        // config.InitSysConfig = "NREP {} USING FILE { prefix=\"/tmp/" + auth + "/sys.config\"}";
+        config.InitSysConfig = "NREP {} USING MONGODB { prefix=\"/tmp/" + auth + "/sys.config\"}";
 
         Kernel.initBootstrap();
         callingContext = ContextFactory.getKernelUser();
@@ -521,6 +523,30 @@ public class ScriptApiFileTest extends AbstractFileTest {
         parameters.put("b", "Rush");
         ScriptResult ret = Kernel.getScript().runScriptExtended(ctx, script.getAddressURI().toString(), parameters);
         assertEquals("1984 Van Halen", ret.getReturnValue().toString());
+
+        scriptImpl.deleteScript(ctx, script.getAddressURI().toString());
+    }
+
+    @Test
+    public void testScriptUserPrefs() {
+        RaptureScript script = new RaptureScript();
+        CallingContext ctx = ContextFactory.getKernelUser();
+        script.setAuthority(auth);
+        script.setLanguage(RaptureScriptLanguage.REFLEX);
+        script.setName("Candy");
+        script.setPurpose(RaptureScriptPurpose.PROGRAM);
+        String scriptWrite = "println(#user.storePreference('holidays', 'christmas', 'december'));\n"
+                + "println(#user.storePreference('books', 'lotr', 'frodo'));\n" + "println(#user.getPreferenceCategories());\n"
+                + "println(#user.removePreference('books', 'lotr'));\n" + "println(#user.getPreference('books', 'lotr'));\n"
+                + "println(#user.getPreferenceCategories());" + "return(#user.getPreferenceCategories());";
+        script.setScript(scriptWrite);
+        scriptImpl.putScript(ctx, script.getAddressURI().toString(), script);
+        RaptureScript scriptRead = scriptImpl.getScript(ctx, script.getAddressURI().toString());
+        assertEquals(scriptWrite, scriptRead.getScript());
+
+        Map<String, String> parameters = new HashMap<>();
+        ScriptResult ret = Kernel.getScript().runScriptExtended(ctx, script.getAddressURI().toString(), parameters);
+        assertEquals("[holidays]", ret.getReturnValue().toString());
 
         scriptImpl.deleteScript(ctx, script.getAddressURI().toString());
     }
