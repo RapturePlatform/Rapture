@@ -40,15 +40,14 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.google.common.collect.ImmutableList;
 
 import rapture.common.CallingContext;
-import rapture.common.Scheme;
 import rapture.common.RaptureConstants;
 import rapture.common.RaptureURI;
+import rapture.common.Scheme;
 import rapture.common.api.DocApi;
 import rapture.common.impl.jackson.JacksonUtil;
 import rapture.config.ConfigLoader;
@@ -111,7 +110,7 @@ public class BasicFTPTest {
      * Read single file via FTP
      */
     @Test
-    @Ignore
+
     public void testSingleFTPReadWithConfigUri() {
         CallingContext context = ContextFactory.getKernelUser();
         DocApi dapi = Kernel.getDoc();
@@ -135,7 +134,7 @@ public class BasicFTPTest {
      * Read single file via FTP
      */
     @Test
-    @Ignore
+
     public void testSingleFTPRead() {
         Connection connection = new SFTPConnection(ftpConfig);
         connection.connectAndLogin();
@@ -153,7 +152,7 @@ public class BasicFTPTest {
      * Read single file via SFTP
      */
     @Test
-    @Ignore
+
     public void testSingleSFTPRead() {
         Connection connection = new SFTPConnection(rebexSftpConfig);
         connection.connectAndLogin();
@@ -170,7 +169,7 @@ public class BasicFTPTest {
      * Check existence of file via FTP
      */
     @Test
-    @Ignore
+
     public void testFTPExists() {
         Connection connection = new SFTPConnection(ftpConfig);
         connection.connectAndLogin();
@@ -187,7 +186,7 @@ public class BasicFTPTest {
      * Check existence of file via SFTP
      */
     @Test
-    @Ignore
+
     public void testSFTPExists() {
         Connection connection = new SFTPConnection(rebexSftpConfig);
         connection.connectAndLogin();
@@ -204,12 +203,12 @@ public class BasicFTPTest {
      * Read multiple files via FTP
      */
     @Test
-    @Ignore
+
     public void testMultiFTPRead() throws IOException {
         Connection connection = new SFTPConnection(ftpConfig);
         connection.connectAndLogin();
 
-        List<String> files = ImmutableList.of("1KB.zip", "1KB.zip2");
+        List<String> files = ImmutableList.of("1KB.zip", "100KB.zip");
         assertEquals(2, files.size());
         List<FTPRequest> reads = new ArrayList<>();
         Path tmpDir = Files.createTempDirectory("test");
@@ -233,7 +232,7 @@ public class BasicFTPTest {
      * Read multiple files via SFTP
      */
     @Test
-    @Ignore
+
     public void testMultiSFTPRead() throws IOException {
         Connection connection = new SFTPConnection(rebexSftpConfig);
         connection.connectAndLogin();
@@ -259,7 +258,7 @@ public class BasicFTPTest {
      * write single file via FTP -
      */
     @Test
-    @Ignore
+
     public void testSingleFTPWrite() {
         Connection connection = new FTPConnection(ftpConfig);
         connection.connectAndLogin();
@@ -273,7 +272,7 @@ public class BasicFTPTest {
      * write single file via SFTP - need a SFTP serverw ith write access to test
      */
     @Test
-    @Ignore
+
     public void testSingleSFTPWrite() {
         Connection connection = new SFTPConnection(rebexSftpConfig);
         connection.connectAndLogin();
@@ -287,7 +286,7 @@ public class BasicFTPTest {
      * Check for sensible error messages
      */
     @Test
-    @Ignore
+
     public void errorMessage1() {
         FTPConnectionConfig ftpConfig = new FTPConnectionConfig().setAddress("non.ext.iste.nt").setLoginId("ftp").setPassword("foo@bar").setUseSFTP(true);
         Connection connection = new SFTPConnection(ftpConfig);
@@ -299,7 +298,7 @@ public class BasicFTPTest {
     }
 
     @Test
-    @Ignore
+
     public void errorMessage2() {
         FTPConnectionConfig ftpConfig = new FTPConnectionConfig().setAddress("localhost").setLoginId("ftp").setPassword("foo@bar").setUseSFTP(true);
         Connection connection = new SFTPConnection(ftpConfig);
@@ -311,7 +310,7 @@ public class BasicFTPTest {
     }
 
     @Test
-    @Ignore
+
     public void errorMessage3() {
         FTPConnectionConfig ftpConfig = new FTPConnectionConfig().setAddress("non.ext.iste.nt").setLoginId("ftp").setPassword("foo@bar").setUseSFTP(false);
         Connection connection = new FTPConnection(ftpConfig);
@@ -323,7 +322,7 @@ public class BasicFTPTest {
     }
 
     @Test
-    @Ignore
+
     public void errorMessage4() {
         FTPConnectionConfig ftpConfig = new FTPConnectionConfig().setAddress("localhost").setLoginId("ftp").setPassword("foo@bar").setUseSFTP(false);
         Connection connection = new FTPConnection(ftpConfig);
