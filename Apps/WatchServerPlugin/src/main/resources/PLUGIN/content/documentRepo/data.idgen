@@ -1,0 +1,1 @@
+{"name":"data","config":"IDGEN { base=\"10\",length=\"10\", prefix=\"ROW\"} USING MONGODB {prefix=\"idgen.data\"}","authority":"documentRepo"}

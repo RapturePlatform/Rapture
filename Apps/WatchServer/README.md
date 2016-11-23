@@ -1,3 +1,4 @@
+
 # WatchServer
 
 ### Overview ###
@@ -24,15 +25,14 @@ The server expects that configuration in a well known place, namely: document://
 
 # Installation and Running #
 
-This example will illustrate the configuration and usage of WatchServer.
+This example will illustrate the configuration and usage of WatchServer by detecting when a file (xlsx) is dropped into /opt/test.
 
 Any files created in /opt/test will cause WatchServer to call the following workflow: workflow://workflows/incapture/watchserver/wsload
 
 This workflow will do the following:
 1. Load the file, in /opt/test/, specified by the parameter passed to it from WatchServer
-2. Store the unprocessed file to a blob://archive/<filename>_<date> repository
-3. Using blob created in step 2 process the file and write to a new blob://processed/<newfile>_<date>
-
+2. Store the unprocessed file to a blob://archive/<date><time>/filename repository
+3. Using blob created in step 2 process the file and write each xls row to a document to a new repo document://data/<date><time>
 
 ## Using Docker ##
 The entire setup can be run using all docker containers.  This is the easiest way to run the stack without doing builds or compiling.  Here are the relevant commands.
@@ -45,25 +45,27 @@ docker run -d -p 5672:5672 -p 15672:15672 --name rabbit incapture/rabbit
 ```
 docker run -d -p 27017:27017 --name mongo incapture/mongo
 ```
-**Start ElasticSearch**
-```
-docker run -d -p 9300:9300 -p 9200:9200 --name elasticsearch incapture/elasticsearch
-```
 **Create a Local Data Volume**
 ```
-docker volume create --name fileDropVolume
-docker run -v fileDropVolume:/opt/test alpine mkdir /opt/test/subfolder
+1. docker volume create --name fileDropVolume
+2. docker run -v fileDropVolume:/opt/test alpine mkdir /opt/test/subfolder
+3. Download test file from ![here](/Apps/WatchServerPlugin/docker/SamplePriceData.xlsx)
+
+You will copy it the volume later.
 ```
-**Start Curtis**
+**Start API Server**
 ```
-docker run -d -p 8080:8080 -p 8665:8665 --link mongo --link rabbit  --link elasticsearch -v fileDropVolume:/opt/test  --name curtis incapture/apiserver
+docker run -d -p 8080:8080 -p 8665:8665 --link mongo --link rabbit -v fileDropVolume:/opt/test  --name curtis incapture/apiserver:xESlatest
 ```
 **Start Rapture UI**
 ```
 docker run -d -p 8000:8000 --link curtis --name rim incapture/rim
 ```
 Checkpoint: To ensure environment is up login to your local environment on http://localhost:8000/browser
-
+**Create a Local Data Volume**
+```
+docker cp SamplePriceData.xlsx curtis:/opt/test/testdata
+```
 **Start WatchServer Sample Configuration Plugin**
 ```
 docker run --link curtis incapture/watchserverplugin
@@ -72,8 +74,15 @@ docker run --link curtis incapture/watchserverplugin
 ```
 docker run -d --link mongo --link rabbit -v fileDropVolume:/opt/test --name watchserver incapture/watchserver
 ```
+**Checkpoint**
+To ensure WatchServer has started log should have "20:00:11,899  INFO [main] (WatchServer.java:98) <> [] - WatchServer started and ready."
 
-Checkpoint: To ensure WatchServer has started log should have "20:00:11,899  INFO [main] (WatchServer.java:98) <> [] - WatchServer started and ready."
+**Kick off a workflow**
+1. docker exec -it curtis bash
+2. cd /opt/test
+3. cp ./testdata/SamplePriceData.xlsx .
+
+The workflow will start and can be viewed on the UI here http://localhost:8000/process/workflows/incapture/watchserver/wsload
 
 # Configuration #
 

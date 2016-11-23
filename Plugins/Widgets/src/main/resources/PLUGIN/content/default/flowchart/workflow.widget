@@ -1,0 +1,11 @@
+{
+    "name"      :    "//default/flowchart/workflow",
+    "menuPath"  :   [],
+    "title"     :   "Workflow",
+    "paneType"  :   "flowchart",
+    "parameterNames" :  [ "prefix" ],
+    "actions" : {
+        "struct" : "/widget/default/entity/workflow/flowchart/struct",
+        "data" : "/widget/default/entity/workflow/flowchart/data"
+    }
+}

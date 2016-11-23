@@ -1,0 +1,11 @@
+{
+    "name"      :    "//default/tree/script",
+    "menuPath"  :   [],
+    "title"     :   "Scripts",
+    "paneType"  :   "tree",
+    "parameterNames" :  [ "prefix" ],
+    "actions" : {
+        "struct" : "/widget/default/entity/script/tree/struct",
+        "data" : "/widget/default/entity/script/tree/data"
+    }
+}

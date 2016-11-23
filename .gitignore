@@ -40,5 +40,4 @@ Doc/slate/source/includes
 **/CMakeFiles/**
 Libs/API/Slate*
 Libs/APILang/cpp/api/generated/**
-
-
+.gitignore
