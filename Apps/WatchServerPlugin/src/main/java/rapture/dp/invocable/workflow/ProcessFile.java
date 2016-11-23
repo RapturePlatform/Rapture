@@ -23,11 +23,9 @@
  */
 package rapture.dp.invocable.workflow;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -56,32 +54,26 @@ public class ProcessFile extends AbstractStep {
         super(workerUri, stepName);
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked", "resource" })
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
     public String invoke(CallingContext ctx) {
-        final int BATCH_LOAD_SIZE = 200; // TODO: move to config
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss");
+        final int BATCH_LOAD_SIZE = 50; // TODO: move to config
         OPCPackage pkg;
         XSSFWorkbook wb;
-        FileInputStream fis;
         List uris = new ArrayList<>();
         // stores all documents for insertion
         List<List<String>> allDocs = new ArrayList<List<String>>();
 
-        String repo = "document://data/" + LocalDateTime.now().format(formatter);
+        String file = Kernel.getDecision().getContextValue(ctx, getWorkerURI(), "filetoupload");
+        String blobUri = Kernel.getDecision().getContextValue(ctx, getWorkerURI(), "blobUri");
+        String folderName = Kernel.getDecision().getContextValue(ctx, getWorkerURI(), "folderName");
+
+        String repo = "document://data/" + folderName;
         String docUri = repo + "#id";
 
-        // TODO: move this to loadFile step and get from blob
-        String file = Kernel.getDecision().getContextValue(ctx, getWorkerURI(), "filetoupload");
         try {
-            fis = new FileInputStream(file);
-        } catch (FileNotFoundException fnf) {
-            log.error(fnf.getMessage() + " " + fnf.getStackTrace());
-            return "error";
-        }
-
-        try {
-            pkg = OPCPackage.open(fis);
+            InputStream is = new ByteArrayInputStream(Kernel.getBlob().getBlob(ctx, blobUri).getContent());
+            pkg = OPCPackage.open(is);
             wb = new XSSFWorkbook(pkg);
             XSSFSheet sheet = wb.getSheetAt(0);
 
