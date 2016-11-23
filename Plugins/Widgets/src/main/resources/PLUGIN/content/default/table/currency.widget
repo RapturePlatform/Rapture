@@ -1,0 +1,11 @@
+{
+    "name"      :    "//default/table/currency",
+    "menuPath"  :   [],
+    "title"     :   "Currencies",
+    "paneType"  :   "datatable",
+    "parameterNames" :  [ "entity" ],
+    "actions" : {
+        "struct" : "/widget/default/entity/currency/table/struct",
+        "data" : "/widget/default/entity/currency/table/data"
+    }
+}

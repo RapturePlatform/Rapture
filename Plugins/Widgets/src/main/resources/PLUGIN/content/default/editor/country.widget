@@ -1,0 +1,11 @@
+{
+    "name"      :    "//default/editor/country",
+    "menuPath"  :   [],
+    "title"     :   "JSON editor",
+    "paneType"  :   "editor",
+    "parameterNames" :  [ ],
+    "actions" : {
+        "struct" : "/widget/default/entity/country/editor/struct",
+        "data" : "/widget/default/entity/country/editor/data"
+    }
+}
