@@ -5,6 +5,7 @@ ext {
 }
 
 dependencies {
+  compile "net.rapture:RaptureCore:$project.platformVersion"
   compile "net.rapture:SelfPluginInstallerLib:$project.platformVersion"
   compile 'commons-net:commons-net:3.5'
   compile 'org.apache.poi:poi:3.15'
