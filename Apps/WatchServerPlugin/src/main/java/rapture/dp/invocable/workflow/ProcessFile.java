@@ -42,7 +42,12 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import com.google.common.collect.ImmutableMap;
 
 import rapture.common.CallingContext;
+import rapture.common.RaptureFolderInfo;
+import rapture.common.exception.RaptureException;
+import rapture.common.impl.jackson.JacksonUtil;
+import rapture.common.util.InsertData;
 import rapture.dp.AbstractStep;
+import rapture.kernel.Kernel;
 
 public class ProcessFile extends AbstractStep {
 
@@ -146,10 +151,8 @@ public class ProcessFile extends AbstractStep {
             } else {
                 return "error"; // TODO: add error step
             }
-        } catch (InvalidFormatException | IOException |
-
-                RaptureException e) {
-            log.error(e.getStackTrace().toString() + e.getMessage().toString() + e.toString());
+        } catch (InvalidFormatException | IOException | RaptureException e) {
+            log.error("ProcessFile error", e);
             return "error";
         }
     }
