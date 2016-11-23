@@ -15,8 +15,8 @@ import rapture.common.CallingContext;
 import rapture.common.RaptureJobExec;
 import rapture.common.RaptureScriptLanguage;
 import rapture.common.RaptureScriptPurpose;
-import rapture.common.dp.Step;
 import rapture.common.dp.Workflow;
+import rapture.common.impl.jackson.JacksonUtil;
 import rapture.dp.WorkflowFactory;
 import rapture.kernel.ContextFactory;
 import rapture.kernel.Kernel;
@@ -65,7 +65,7 @@ public class ScheduleTest {
         Kernel.getSchedule().runJobNow(ctx, jobUri, null);
         Thread.sleep(1000);
         res = Kernel.getSchedule().getRunningWorkflowJobs(ctx);
-        assertTrue(res.isEmpty());
+        assertTrue("Expected no running jobs but got " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(res)), res.isEmpty());
         Workflow wf = Kernel.getDecision().getWorkflow(ctx, workflowUri);
         wf.getSteps().get(0).setExecutable("script://" + scriptWithSleep);
         Kernel.getDecision().putWorkflow(ctx, wf);

@@ -39,7 +39,6 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.google.common.collect.ImmutableMap;
@@ -193,7 +192,6 @@ public class GetFileStepTest {
     }
 
     @Test
-    @Ignore
     public void testGetFileStep() {
         CallingContext context = ContextFactory.getKernelUser();
         Map<String, String> args = new HashMap<>();
@@ -236,7 +234,6 @@ public class GetFileStepTest {
     }
 
     @Test
-    @Ignore
     public void testGetBlobStep() {
         CallingContext context = ContextFactory.getKernelUser();
         Map<String, String> args = new HashMap<>();
