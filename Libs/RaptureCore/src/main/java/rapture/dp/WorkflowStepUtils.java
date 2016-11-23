@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package rapture.common.util;
+package rapture.dp;
 
 import java.nio.charset.StandardCharsets;
 
@@ -29,19 +29,19 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Appender;
 import org.apache.log4j.Logger;
 
-import rapture.common.logging.AuditAppender;
-
 import rapture.common.BlobContainer;
 import rapture.common.CallingContext;
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
 import rapture.common.dp.Worker;
 import rapture.common.dp.WorkerStorage;
-import rapture.dp.InvocableUtils;
 import rapture.kernel.Kernel;
 
 /**
  * Utility class for use in workflow steps to automatically log to the audit log. Also assists with passing values around between steps
+ * 
+ * @author dukenguyen
+ *
  */
 public class WorkflowStepUtils {
 
@@ -67,16 +67,20 @@ public class WorkflowStepUtils {
         return log;
     }
 
-    public String getInput(CallingContext ctx) {
+    public String getInputRef(CallingContext ctx) {
         return getBlobRef(ctx, INPUT_REF_KEY);
     }
 
-    public void setInput(CallingContext ctx, String uri) {
-        Kernel.getDecision().setContextLiteral(ctx, workerUri, INPUT_REF_KEY, uri);
+    public void setInputRef(CallingContext ctx, String inputRef) {
+        Kernel.getDecision().setContextLiteral(ctx, workerUri, INPUT_REF_KEY, inputRef);
     }
 
     public String getUriPrefix(CallingContext ctx) {
         return Kernel.getDecision().getContextValue(ctx, workerUri, URI_PREFIX_KEY);
+    }
+
+    public void setUriPrefix(CallingContext ctx, String uriPrefix) {
+        Kernel.getDecision().setContextLiteral(ctx, workerUri, URI_PREFIX_KEY, uriPrefix);
     }
 
     public void putBlob(CallingContext ctx, String uri, String content, String contentType) {

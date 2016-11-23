@@ -42,4 +42,10 @@ public class CastTest extends ResourceBasedTest {
                 + "number = 1.0\nnumber = 1.0\nnumber = 1\ninteger = 1\nstring = 1\n---\n"
                 + "number = 1.0\nnumber = 1.0\nnumber = 1.0\ninteger = 1\nstring = 1.0\n--RETURNS--true", result);
     }
+
+    @Test
+    public void testCast2() throws RecognitionException {
+        String result = runTestFor("/cast2.rfx");
+        Assert.assertEquals("{\n  \"J\" : 1.0\n}\n--RETURNS--true", result);
+    }
 }

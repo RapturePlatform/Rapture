@@ -33,6 +33,7 @@ import org.apache.commons.io.FileUtils;
 import com.google.common.net.MediaType;
 
 import rapture.common.CallingContext;
+import rapture.dp.AbstractStep;
 import rapture.kernel.Kernel;
 
 public class LoadFile extends AbstractStep {

@@ -41,12 +41,12 @@ public class ReflexValue implements Comparable<ReflexValue> {
 
     private Object value;
     private ReflexValueType valueType;
-    
+
     String NOTNULL = "Argument to ReflexValue cannot be null. Use ReflexNullValue";
 
     public enum Internal {
         NULL, VOID, BREAK, CONTINUE, SUSPEND, UNDEFINED;
-        
+
         @Override
         public String toString() {
             return "__reserved__" + this.name();
@@ -112,7 +112,7 @@ public class ReflexValue implements Comparable<ReflexValue> {
     }
 
     private Object ensureReflexValueList(List<?> value) {
-        List<ReflexValue> ret = new ArrayList<ReflexValue>(value.size());
+        List<ReflexValue> ret = new ArrayList<>(value.size());
         for (Object x : value) {
             if (x instanceof ReflexValue) {
                 ret.add((ReflexValue) x);
@@ -169,7 +169,7 @@ public class ReflexValue implements Comparable<ReflexValue> {
         } else if (value instanceof Object[]) {
             // maybe we should have an Array type?
             Object[] array = (Object[]) value;
-            List<ReflexValue> list = new ArrayList<ReflexValue>();
+            List<ReflexValue> list = new ArrayList<>();
             for (Object obj : array)
                 list.add(new ReflexValue(obj));
             value = list;
@@ -225,34 +225,34 @@ public class ReflexValue implements Comparable<ReflexValue> {
 
     public Boolean asBoolean() {
         switch (valueType) {
-            case BOOLEAN:
-                return (Boolean) value;
-            default:
-                standardThrow(ReflexValueType.BOOLEAN);
+        case BOOLEAN:
+            return (Boolean) value;
+        default:
+            standardThrow(ReflexValueType.BOOLEAN);
         }
         return null;
     }
 
     public byte[] asByteArray() {
         switch (valueType) {
-            case BYTEARRAY:
-                return ((ReflexByteArrayValue) value).getBytes();
-            case STRING:
-                return value.toString().getBytes();
-            case MIME:
-                return ((ReflexMimeValue) value).getData();
-            default:
-                standardThrow(ReflexValueType.BYTEARRAY);
+        case BYTEARRAY:
+            return ((ReflexByteArrayValue) value).getBytes();
+        case STRING:
+            return value.toString().getBytes();
+        case MIME:
+            return ((ReflexMimeValue) value).getData();
+        default:
+            standardThrow(ReflexValueType.BYTEARRAY);
         }
         return null;
     }
 
     public ReflexDateValue asDate() {
         switch (valueType) {
-            case DATE:
-                return (ReflexDateValue) value;
-            default:
-                standardThrow(ReflexValueType.DATE);
+        case DATE:
+            return (ReflexDateValue) value;
+        default:
+            standardThrow(ReflexValueType.DATE);
         }
         return null;
     }
@@ -261,107 +261,107 @@ public class ReflexValue implements Comparable<ReflexValue> {
         switch (valueType) {
         case INTEGER:
         case NUMBER:
-                return ((Number) value).doubleValue();
-            case STRING:
-                return Double.valueOf(value.toString());
-            default:
-                standardThrow(ReflexValueType.NUMBER);
+            return ((Number) value).doubleValue();
+        case STRING:
+            return Double.valueOf(value.toString());
+        default:
+            standardThrow(ReflexValueType.NUMBER);
         }
         return null;
     }
 
     public BigDecimal asBigDecimal() {
-    	if (value instanceof BigDecimal) return (BigDecimal) value;
+        if (value instanceof BigDecimal) return (BigDecimal) value;
         switch (valueType) {
-	        case INTEGER:
-	            return new BigDecimal(((Number) value).longValue());
-	        case NUMBER:
-	            return new BigDecimal(((Number) value).doubleValue(), MathContext.DECIMAL64);
-            case STRING:
-                return new BigDecimal(value.toString());
-            default:
-                standardThrow(ReflexValueType.NUMBER);
+        case INTEGER:
+            return new BigDecimal(((Number) value).longValue());
+        case NUMBER:
+            return new BigDecimal(((Number) value).doubleValue(), MathContext.DECIMAL64);
+        case STRING:
+            return new BigDecimal(value.toString());
+        default:
+            standardThrow(ReflexValueType.NUMBER);
         }
         return null;
     }
 
     public Float asFloat() {
         switch (valueType) {
-            case NUMBER:
-            case INTEGER:
-                return ((Number) value).floatValue();
-            default:
-                standardThrow(ReflexValueType.NUMBER);
+        case NUMBER:
+        case INTEGER:
+            return ((Number) value).floatValue();
+        default:
+            standardThrow(ReflexValueType.NUMBER);
         }
         return null;
     }
 
     public ReflexStreamValue asStream() {
         switch (valueType) {
-            case STREAM:
-                return (ReflexStreamValue) value;
-            case FILE:
-                return (ReflexFileValue) value;
-            case STRINGSTREAM:
-                return (ReflexStringStreamValue) value;
-            default:
-                return null;
+        case STREAM:
+            return (ReflexStreamValue) value;
+        case FILE:
+            return (ReflexFileValue) value;
+        case STRINGSTREAM:
+            return (ReflexStringStreamValue) value;
+        default:
+            return null;
         }
     }
 
     public ReflexSparseMatrixValue asMatrix() {
         switch (valueType) {
-            case SPARSEMATRIX:
-                return (ReflexSparseMatrixValue) value;
-            default:
-                standardThrow(ReflexValueType.SPARSEMATRIX);
+        case SPARSEMATRIX:
+            return (ReflexSparseMatrixValue) value;
+        default:
+            standardThrow(ReflexValueType.SPARSEMATRIX);
         }
         return null;
     }
 
     public ReflexFileValue asFile() {
         switch (valueType) {
-            case FILE:
-                return (ReflexFileValue) value;
-            default:
-                return null;
+        case FILE:
+            return (ReflexFileValue) value;
+        default:
+            return null;
         }
     }
 
     public ReflexArchiveFileValue asArchive() {
         switch (valueType) {
-            case ARCHIVE:
-                return (ReflexArchiveFileValue) value;
-            default:
-                return null;
+        case ARCHIVE:
+            return (ReflexArchiveFileValue) value;
+        default:
+            return null;
         }
     }
 
     public Integer asInt() {
         switch (valueType) {
-        	case INTEGER:
-            case NUMBER:
-                return ((Number) value).intValue();
-            case STRING:
-                return Integer.valueOf(value.toString());
-            default:
-                return 0;
+        case INTEGER:
+        case NUMBER:
+            return ((Number) value).intValue();
+        case STRING:
+            return Integer.valueOf(value.toString());
+        default:
+            return 0;
         }
     }
 
     public ReflexLibValue asLib() {
         switch (valueType) {
-            case LIB:
-                return (ReflexLibValue) value;
-            default:
-                return null;
+        case LIB:
+            return (ReflexLibValue) value;
+        default:
+            return null;
         }
     }
 
     @SuppressWarnings("unchecked")
     public List<ReflexValue> asList() {
         if (valueType != ReflexValueType.LIST) return null;
-    
+
         // It's possible for objects other than ReflexValues to get into the list.
         List<ReflexValue> retList = (List<ReflexValue>) value;
 
@@ -385,116 +385,102 @@ public class ReflexValue implements Comparable<ReflexValue> {
 
     public Long asLong() {
         switch (valueType) {
-        	case INTEGER:
-            case NUMBER:
-                return ((Number) value).longValue();
-            case STRING:
-                return Long.valueOf(value.toString());
-            default:
-                return 0L;
+        case INTEGER:
+        case NUMBER:
+            return ((Number) value).longValue();
+        case STRING:
+            return Long.valueOf(value.toString());
+        default:
+            return 0L;
         }
     }
 
     @SuppressWarnings("unchecked")
     public Map<String, Object> asMap() {
         switch (valueType) {
-            case MAP:
-                return (Map<String, Object>) value;
-            default:
-                return null;
+        case MAP:
+            return (Map<String, Object>) value;
+        default:
+            return null;
         }
     }
 
     public ReflexStructValue asStruct() {
         switch (valueType) {
-            case STRUCT:
-                return (ReflexStructValue) value;
-            default:
-                return null;
+        case STRUCT:
+            return (ReflexStructValue) value;
+        default:
+            return null;
         }
     }
 
     public Object asObject() {
         switch (valueType) {
-            case NUMBER:
-                if (value instanceof Double) {
-                    Double v = (Double) value;
-                    int iv = v.intValue();
-                    Double bv = new Double(iv);
-                    double diff = Math.abs(v - bv);
-                    if (diff < 0.000000001) {
-                        return Integer.valueOf(iv);
-                    }
-                }
-                break;
-            case INTERNAL:
-                if (this.getValue() == ReflexValue.Internal.VOID) {
-                    return "void";
-                } else if (this.getValue() == ReflexValue.Internal.NULL) {
-                    return "null";
-                }
-                break;
-            default:
-                break;
+        case INTERNAL:
+            if (this.getValue() == ReflexValue.Internal.VOID) {
+                return "void";
+            } else if (this.getValue() == ReflexValue.Internal.NULL) {
+                return "null";
+            }
         }
         return value;
     }
 
     public ReflexPortValue asPort() {
         switch (valueType) {
-            case PORT:
-                return (ReflexPortValue) value;
-            default:
-                standardThrow(ReflexValueType.PORT);
+        case PORT:
+            return (ReflexPortValue) value;
+        default:
+            standardThrow(ReflexValueType.PORT);
         }
         return null;
     }
 
     public ReflexProcessValue asProcess() {
         switch (valueType) {
-            case PROCESS:
-                return (ReflexProcessValue) value;
-            default:
-                standardThrow(ReflexValueType.PROCESS);
+        case PROCESS:
+            return (ReflexProcessValue) value;
+        default:
+            standardThrow(ReflexValueType.PROCESS);
         }
         return null;
     }
 
     public String asString() {
         switch (valueType) {
-            case STRING:
-                return (String) value;
-            default:
-                return value.toString();
+        case STRING:
+            return (String) value;
+        default:
+            return value.toString();
         }
     }
 
     public ReflexTimeValue asTime() {
         switch (valueType) {
-            case TIME:
-                return (ReflexTimeValue) value;
-            default:
-                standardThrow(ReflexValueType.TIME);
+        case TIME:
+            return (ReflexTimeValue) value;
+        default:
+            standardThrow(ReflexValueType.TIME);
         }
         return null;
     }
 
     public ReflexTimerValue asTimer() {
         switch (valueType) {
-            case TIMER:
-                return (ReflexTimerValue) value;
-            default:
-                standardThrow(ReflexValueType.TIMER);
+        case TIMER:
+            return (ReflexTimerValue) value;
+        default:
+            standardThrow(ReflexValueType.TIMER);
         }
         return null;
     }
 
     public ReflexMimeValue asMime() {
         switch (valueType) {
-            case MIME:
-                return (ReflexMimeValue) value;
-            default:
-                standardThrow(ReflexValueType.MIME);
+        case MIME:
+            return (ReflexMimeValue) value;
+        default:
+            standardThrow(ReflexValueType.MIME);
 
         }
         return null;
@@ -564,9 +550,9 @@ public class ReflexValue implements Comparable<ReflexValue> {
             return false;
         }
         for (int i = 0; i < a.size(); i++) {
-        	ReflexValue one = a.get(i);
-        	ReflexValue two = b.get(i);
-        	// Must be of like types otherwise 2 == '2'
+            ReflexValue one = a.get(i);
+            ReflexValue two = b.get(i);
+            // Must be of like types otherwise 2 == '2'
             if (one.isNumber() != two.isNumber()) return false;
             if (one.compareTo(two) != 0) return false;
         }
@@ -581,16 +567,16 @@ public class ReflexValue implements Comparable<ReflexValue> {
     @JsonIgnore
     public String getTypeAsString() {
         switch (valueType) {
-            case INTERNAL:
-                if (isVoid()) {
-                    return "void";
-                } else if (isNull()) {
-                    return "null";
-                } else {
-                    return "object";
-                }
-            default:
-                return valueType.name().toLowerCase();
+        case INTERNAL:
+            if (isVoid()) {
+                return "void";
+            } else if (isNull()) {
+                return "null";
+            } else {
+                return "object";
+            }
+        default:
+            return valueType.name().toLowerCase();
         }
     }
 
@@ -676,6 +662,7 @@ public class ReflexValue implements Comparable<ReflexValue> {
     @JsonIgnore
     /**
      * Integers are Numbers
+     * 
      * @return
      */
     public boolean isNumber() {
@@ -736,7 +723,7 @@ public class ReflexValue implements Comparable<ReflexValue> {
         // TODO: Find a more efficient way to do this.
         if (isMap()) {
             if (asMap().containsKey("CLASS")) {
-                Map<String, Object> mapCopy = new HashMap<String, Object>(asMap());
+                Map<String, Object> mapCopy = new HashMap<>(asMap());
                 mapCopy.remove("CLASS");
                 return JacksonUtil.objectFromJson(JacksonUtil.jsonFromObject(mapCopy), klass);
             }
