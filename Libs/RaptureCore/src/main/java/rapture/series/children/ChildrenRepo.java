@@ -132,6 +132,7 @@ public abstract class ChildrenRepo {
         try {
             ret = dropPoints(ChildKeyUtil.createRowKey(parent), ImmutableList.of(child));
             if (ret) {
+                // If we call dropFolderEntry here it will cause an endless loop for Cassandra
                 FolderCleanupService.getInstance().addForReview(getUniqueId(), parent);
             }
         } catch (Exception e) {

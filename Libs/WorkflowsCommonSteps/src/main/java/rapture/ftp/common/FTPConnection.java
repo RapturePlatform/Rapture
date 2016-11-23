@@ -268,7 +268,6 @@ public class FTPConnection implements Connection {
 
     /* SFTP is different */
     public boolean retrieveFile(String fileName, OutputStream stream) throws IOException {
-        getFtpClient().completePendingCommand();
         return getFtpClient().retrieveFile(fileName, stream);
     }
 
