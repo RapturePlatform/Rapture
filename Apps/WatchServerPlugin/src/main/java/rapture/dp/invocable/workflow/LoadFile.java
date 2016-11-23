@@ -23,6 +23,15 @@
  */
 package rapture.dp.invocable.workflow;
 
+import java.io.File;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
+import org.apache.commons.io.FileUtils;
+
+import com.google.common.net.MediaType;
+
 import rapture.common.CallingContext;
 import rapture.kernel.Kernel;
 
@@ -34,11 +43,31 @@ public class LoadFile extends AbstractStep {
 
     @Override
     public String invoke(CallingContext ctx) {
-        log.info("Running LoadFile Step...");
+        String archiveUriPrefix = "blob://archive/";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss");
+        String dateTime = LocalDateTime.now().format(formatter);
+        // create a unique uri path to store file in and for other steps use
+        Kernel.getDecision().setContextLiteral(ctx, getWorkerURI(), "folderName", dateTime);
         // get the context variable passed into workflow
         String absFilePath = Kernel.getDecision().getContextValue(ctx, getWorkerURI(), "filetoupload");
-
         log.info("Loading File:" + absFilePath);
+
+        try {
+            File f = new File(absFilePath);
+            byte[] data = FileUtils.readFileToByteArray(f);
+            String uri = archiveUriPrefix + dateTime + "/" + f.getName();
+            Kernel.getBlob().putBlob(ctx, uri, data, MediaType.MICROSOFT_EXCEL.toString());
+            if (Kernel.getBlob().getBlob(ctx, uri) != null) {
+                log.info("File written to " + uri + " with size " + Kernel.getBlob().getBlobSize(ctx, uri));
+                Kernel.getDecision().setContextLiteral(ctx, getWorkerURI(), "blobUri", uri);
+            } else {
+                log.error("Problem writing file to " + uri);
+                return "error";
+            }
+        } catch (IOException e) {
+            log.error("Exception " + e.getMessage(), e);
+            return "error";
+        }
 
         return "ok";
     }
