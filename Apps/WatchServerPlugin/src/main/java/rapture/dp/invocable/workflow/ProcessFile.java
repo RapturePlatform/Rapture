@@ -23,7 +23,23 @@
  */
 package rapture.dp.invocable.workflow;
 
-import org.apache.commons.lang3.StringUtils;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.openxml4j.opc.OPCPackage;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+import com.google.common.collect.ImmutableMap;
 
 import rapture.common.CallingContext;
 import rapture.dp.AbstractStep;
@@ -34,19 +50,107 @@ public class ProcessFile extends AbstractStep {
         super(workerUri, stepName);
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
     public String invoke(CallingContext ctx) {
-        log.info("Running ProcessFile step...");
+        final int BATCH_LOAD_SIZE = 50; // TODO: move to config
+        OPCPackage pkg;
+        XSSFWorkbook wb;
+        List uris = new ArrayList<>();
+        // stores all documents for insertion
+        List<List<String>> allDocs = new ArrayList<List<String>>();
 
-        return "ok";
-    }
+        String file = Kernel.getDecision().getContextValue(ctx, getWorkerURI(), "filetoupload");
+        String blobUri = Kernel.getDecision().getContextValue(ctx, getWorkerURI(), "blobUri");
+        String folderName = Kernel.getDecision().getContextValue(ctx, getWorkerURI(), "folderName");
 
-    private boolean validParams(String... params) {
-        for (String param : params) {
-            if (StringUtils.isBlank(param)) {
-                return false;
+        String repo = "document://data/" + folderName;
+        String docUri = repo + "#id";
+
+        try {
+            InputStream is = new ByteArrayInputStream(Kernel.getBlob().getBlob(ctx, blobUri).getContent());
+            pkg = OPCPackage.open(is);
+            wb = new XSSFWorkbook(pkg);
+            XSSFSheet sheet = wb.getSheetAt(0);
+
+            log.info("Loading " + sheet.getPhysicalNumberOfRows() + " rows from " + file + ". Batch size is " + BATCH_LOAD_SIZE);
+
+            int physicalNumberOfRows = sheet.getPhysicalNumberOfRows();
+            int remainder = physicalNumberOfRows % BATCH_LOAD_SIZE;
+            int div = physicalNumberOfRows / BATCH_LOAD_SIZE;
+
+            // this only needs to be done once as the uris dont change
+            for (int g = 1; g <= BATCH_LOAD_SIZE; g++) {
+                uris.add(docUri);
             }
+            log.info("created uris list " + uris.size());
+
+            int j = 0;
+            int count = 0;
+            long startLoadTime = System.currentTimeMillis();
+            for (int i = 1; i <= div; i++) {
+                List docs = new ArrayList<>();
+                // Create a list of documents with size of BATCH_LOAD_SIZE
+                for (j = count; j < (BATCH_LOAD_SIZE * i); j++) {
+                    Row row = sheet.getRow(j);
+                    Map<String, Object> map = ImmutableMap.of("Row", row.getRowNum(), "DataPeriod", row.getCell(0).toString(), "Industry",
+                            row.getCell(3).toString(), "Price", row.getCell(7).toString());
+                    docs.add(JacksonUtil.jsonFromObject(map));
+                }
+                allDocs.add(docs);
+                count = j;
+            }
+            long endLoadTime = System.currentTimeMillis();
+
+            ExecutorService executorService = Executors.newCachedThreadPool();
+            long startWriteTime = System.currentTimeMillis();
+            for (List<String> docList : allDocs) {
+                executorService.execute(new InsertData(ctx, docList, uris));
+            }
+            executorService.shutdown();
+
+            try {
+                // TODO: hardcoded timeout.ComparableFutures?
+                // Helpful:
+                // http://stackoverflow.com/questions/1250643/how-to-wait-for-all-threads-to-finish-using-executorservice
+                executorService.awaitTermination(60000L, TimeUnit.MILLISECONDS);
+            } catch (InterruptedException e) {
+                log.error(e.getStackTrace().toString(), e);
+                return "error";
+            }
+            long endWriteTime = System.currentTimeMillis();
+            log.info("Completed parallel load.");
+
+            // handle the remaining rows
+            if (remainder > 0) {
+                long remStartTime = System.currentTimeMillis();
+                for (int k = (count); k < (count + remainder); k++) {
+                    Row row = sheet.getRow(k);
+                    Map<String, Object> map = ImmutableMap.of("Row", row.getRowNum(), "DataPeriod", row.getCell(0).toString(), "Industry",
+                            row.getCell(3).toString(), "Price", row.getCell(7).toString());
+                    Kernel.getDoc().putDoc(ctx, docUri, JacksonUtil.jsonFromObject(map));
+                }
+                long remEndTime = System.currentTimeMillis();
+                log.info("Remainders took " + (remEndTime - remStartTime) + "ms");
+            }
+
+            log.info("Populated uri " + repo + ". Took " + (endLoadTime - startLoadTime) + "ms. to load data. Took " + (endWriteTime - startWriteTime)
+                    + "ms. to write data.");
+            pkg.close();
+
+            Map<String, RaptureFolderInfo> listDocsByUriPrefix = Kernel.getDoc().listDocsByUriPrefix(ctx, repo, 1);
+            log.info("Count from repo is " + listDocsByUriPrefix.size());
+
+            if (listDocsByUriPrefix.size() == sheet.getPhysicalNumberOfRows()) {
+                return "ok";
+            } else {
+                return "error"; // TODO: add error step
+            }
+        } catch (InvalidFormatException | IOException |
+
+                RaptureException e) {
+            log.error(e.getStackTrace().toString() + e.getMessage().toString() + e.toString());
+            return "error";
         }
-        return true;
     }
 }
