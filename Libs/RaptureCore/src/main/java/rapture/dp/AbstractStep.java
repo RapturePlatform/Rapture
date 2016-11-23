@@ -21,14 +21,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package rapture.dp.invocable.workflow;
+package rapture.dp;
 
 import org.apache.log4j.Logger;
 
 import rapture.common.dp.AbstractInvocable;
-import rapture.common.util.WorkflowStepUtils;
+
 /**
- * Common code for all steps goes in this class
+ * Basic implementation of a step that adds logging to the Rapture audit system and provides some useful utilities for getting/setting uris
+ * 
+ * @author dukenguyen
+ *
  */
 public abstract class AbstractStep extends AbstractInvocable<Object> {
 

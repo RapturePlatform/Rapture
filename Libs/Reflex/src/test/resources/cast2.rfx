@@ -1,0 +1,5 @@
+i = 1;
+k = {};
+k['J'] = cast(i, 'double');
+println(json(k));
+return true;

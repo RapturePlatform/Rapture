@@ -28,6 +28,7 @@ import java.util.Map;
 
 import rapture.common.SeriesValue;
 import rapture.series.children.ChildrenRepo;
+import rapture.series.children.SeriesPathParser;
 import rapture.series.mongo.MongoSeriesStore;
 
 public class MongoChildrenRepo extends ChildrenRepo {
@@ -64,6 +65,18 @@ public class MongoChildrenRepo extends ChildrenRepo {
     @Override
     public boolean dropRow(String key) {
         return seriesStore.deletePointsFromSeries(key);
+    }
+
+    @Override
+    public boolean dropFileEntry(String filePath) {
+        boolean ret = super.dropFileEntry(filePath);
+        if (ret) {
+            String parent = SeriesPathParser.getParent(filePath);
+            if (getChildren(parent).size() == 0) {
+                dropFolderEntry(parent);
+            }
+        }
+        return ret;
     }
 
     @Override
