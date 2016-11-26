@@ -32,8 +32,8 @@ Any files created in /opt/test will cause WatchServer to call the following work
 This workflow will do the following:
 
 1. Load the file, in /opt/test/, specified by the parameter passed to it from WatchServer
-2. Store the unprocessed file to a blob://archive/<date><time>/filename repository
-3. Using blob created in step 2 process the file and write each xls row to a document to a new repo document://data/<date><time>
+2. Store the file to a blob://archive/yyyyMMdd_HHmmss/filename repository. Step code is [here](https://github.com/RapturePlatform/Rapture/blob/master/Apps/WatchServerPlugin/src/main/java/rapture/dp/invocable/workflow/LoadFile.java)
+3. Using blob created in step 2 process the file and write each xls row to a document to a new repo document://data/yyyyMMdd_HHmmss/ROW000001..N Step code is [here](https://github.com/RapturePlatform/Rapture/blob/master/Apps/WatchServerPlugin/src/main/java/rapture/dp/invocable/workflow/ProcessFile.java)
 
 ## Using Docker ##
 
