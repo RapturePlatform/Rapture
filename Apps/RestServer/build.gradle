@@ -12,7 +12,7 @@ dependencies {
   compile "net.rapture:ElasticSearch:$project.platformVersion"
   compile "net.rapture:Postgres:$project.platformVersion"
   compile "net.rapture:Cassandra:$project.platformVersion"
-  compile "com.sparkjava:spark-core:2.5"
+  compile "com.sparkjava:spark-core:2.5.3"
   compile 'com.mashape.unirest:unirest-java:1.4.9'
 }
 
