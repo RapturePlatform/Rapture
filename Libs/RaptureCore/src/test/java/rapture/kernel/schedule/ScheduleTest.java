@@ -15,6 +15,7 @@ import rapture.common.CallingContext;
 import rapture.common.RaptureJobExec;
 import rapture.common.RaptureScriptLanguage;
 import rapture.common.RaptureScriptPurpose;
+import rapture.common.dp.Step;
 import rapture.common.dp.Workflow;
 import rapture.common.impl.jackson.JacksonUtil;
 import rapture.dp.WorkflowFactory;
@@ -42,7 +43,7 @@ public class ScheduleTest {
         Kernel.getScript().deleteScript(ctx, scriptWithSleep);
         Kernel.getScript().createScript(ctx, scriptWithSleep, RaptureScriptLanguage.REFLEX, RaptureScriptPurpose.PROGRAM,
                 "println(\"Hello there\"); sleep(5000); return \"ok\";");
-        List<Step> steps = new ArrayList<Step>();
+        List<Step> steps = new ArrayList<>();
         Step s1 = new Step();
         s1.setName("start");
         s1.setExecutable("script://" + scriptWithoutSleep);

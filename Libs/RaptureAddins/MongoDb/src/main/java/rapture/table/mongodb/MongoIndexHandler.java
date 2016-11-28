@@ -370,7 +370,7 @@ public class MongoIndexHandler implements IndexHandler {
                     int limit = indexQuery.getLimit();
                     if (limit > 0) {
                         // By specifying a negative limit we tell Mongo that it can close the cursor after returning a single batch.
-                        ret = ret.limit(-(limit + skip));
+                        ret = ret.limit(-(Math.abs(limit)));
                     }
 
                     return ret;
