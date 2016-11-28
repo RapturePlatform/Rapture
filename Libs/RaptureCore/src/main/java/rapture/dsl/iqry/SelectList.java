@@ -28,7 +28,12 @@ import java.util.Collection;
 import java.util.List;
 
 public class SelectList {
-	private List<String> fieldList = new ArrayList<String>();
+    @Override
+    public String toString() {
+        return fieldList.toString();
+    }
+
+    private List<String> fieldList = new ArrayList<>();
 	
 	public SelectList() {
 	}

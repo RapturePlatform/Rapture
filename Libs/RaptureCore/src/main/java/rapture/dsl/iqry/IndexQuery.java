@@ -26,6 +26,12 @@ package rapture.dsl.iqry;
 import java.util.Collection;
 
 public class IndexQuery {
+    @Override
+    public String toString() {
+        return "[select " + ((distinct) ? "distinct" : "") + select + ((where == null) ? "" : " where " + where) + " order by "
+                + ((direction != OrderDirection.NONE) ? orderBy.toString() : "") + " limit " + limit + " skip " + skip + "]";
+    }
+
     private SelectList select;
     private boolean distinct = false;
     private WhereClause where;
@@ -104,11 +110,11 @@ public class IndexQuery {
     }
 
     public void setLimit(int limit) {
-        this.limit = limit;
+        this.limit = Math.abs(limit);
     }
     
     public void setSkip(int skip) {
-    	this.skip = skip;
+        this.skip = Math.abs(skip);
     }
     
     public int getSkip() {

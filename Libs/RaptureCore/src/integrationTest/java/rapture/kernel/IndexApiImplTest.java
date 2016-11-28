@@ -176,7 +176,7 @@ public class IndexApiImplTest extends AbstractFileTest {
 
     @Test
     public void limitTest() {
-        for (String implementation : ImmutableList.of("MEMORY", "MONGODB", "FILE", "MEMORY")) {
+        for (String implementation : ImmutableList.of("MONGODB", "FILE", "MEMORY")) {
             String authorityName = "docplanetdata1." + System.nanoTime();
             planetURI = RaptureURI.builder(Scheme.DOCUMENT, authorityName).build().toString();
             String ver_config = "NREP {} USING " + implementation + " {prefix=\"planet.%s\"}"; // versioned repository
@@ -204,7 +204,7 @@ public class IndexApiImplTest extends AbstractFileTest {
                 TableQueryResult res = index.findIndex(planetURI, limitQuery);
                 List<List<Object>> limitList = res.getRows();
                 Reporter.log(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)));
-                Assert.assertEquals(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)), 12, limitList.size());
+                Assert.assertEquals(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)), 1, limitList.size());
             }
             {
                 String limitQuery = "SELECT DISTINCT planet, moon ORDER BY planet, moon ASC LIMIT 2";
@@ -232,7 +232,7 @@ public class IndexApiImplTest extends AbstractFileTest {
                 Assert.assertEquals("Io", limitList.get(1).get(1).toString());
             }
             {
-                String limitQuery = "select distinct planet, moon ORDER BY planet, moon Asc Limit 3 Skip 4";
+                String limitQuery = "select distinct planet, moon skip 4 limit 3 ORDER BY planet, moon Asc";
                 Reporter.log("Query: " + limitQuery, true);
                 TableQueryResult res = index.findIndex(planetURI, limitQuery);
                 List<List<Object>> limitList = res.getRows();
@@ -246,6 +246,120 @@ public class IndexApiImplTest extends AbstractFileTest {
                 Assert.assertEquals("Mars", limitList.get(2).get(0).toString());
                 Assert.assertEquals("Phobos", limitList.get(2).get(1).toString());
             }
+            {
+                String limitQuery = "select distinct moon ORDER BY moon Asc Limit 2 Skip 3";
+                Reporter.log("Query: " + limitQuery, true);
+                TableQueryResult res = index.findIndex(planetURI, limitQuery);
+                List<List<Object>> limitList = res.getRows();
+                Reporter.log(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)));
+                Assert.assertEquals(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)), 2, limitList.size());
+                System.out.println(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)));
+                Assert.assertEquals("Io", limitList.get(0).get(0).toString());
+                Assert.assertEquals("Moon", limitList.get(1).get(0).toString());
+            }
+            {
+                String limitQuery = "SELECT moon ORDER BY moon";
+                Reporter.log("Query: " + limitQuery, true);
+                TableQueryResult res = index.findIndex(planetURI, limitQuery);
+                List<List<Object>> limitList = res.getRows();
+                Reporter.log(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)));
+                System.out.println(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)));
+                Assert.assertEquals(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)), 12, limitList.size());
+                Assert.assertEquals("Deimos", limitList.get(0).get(0).toString());
+            }
+            {
+                String limitQuery = "SELECT moon order by moon";
+                Reporter.log("Query: " + limitQuery, true);
+                TableQueryResult res = index.findIndex(planetURI, limitQuery);
+                List<List<Object>> limitList = res.getRows();
+                Reporter.log(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)));
+                System.out.println(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)));
+                Assert.assertEquals(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)), 12, limitList.size());
+                Assert.assertEquals("Deimos", limitList.get(0).get(0).toString());
+            }
+            {
+                String limitQuery = "SELECT moon LIMIT 1 skip 4 order by moon";
+                Reporter.log("Query: " + limitQuery, true);
+                TableQueryResult res = index.findIndex(planetURI, limitQuery);
+                List<List<Object>> limitList = res.getRows();
+                Reporter.log(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)));
+                System.out.println(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)));
+                Assert.assertEquals(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)), 1, limitList.size());
+                Assert.assertEquals("Ganymede", limitList.get(0).get(0).toString());
+            }
+            {
+                String limitQuery = "SELECT moon LIMIT -1 skip 4 order by moon";
+                Reporter.log("Query: " + limitQuery, true);
+                TableQueryResult res = index.findIndex(planetURI, limitQuery);
+                List<List<Object>> limitList = res.getRows();
+                Reporter.log(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)));
+                System.out.println(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)));
+                Assert.assertEquals(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)), 1, limitList.size());
+                Assert.assertEquals("Ganymede", limitList.get(0).get(0).toString());
+            }
+            {
+                String limitQuery = "SELECT Distinct moon LIMIT -1 skip 4 order by moon";
+                Reporter.log("Query: " + limitQuery, true);
+                TableQueryResult res = index.findIndex(planetURI, limitQuery);
+                List<List<Object>> limitList = res.getRows();
+                Reporter.log(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)));
+                System.out.println(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)));
+                Assert.assertEquals(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)), 1, limitList.size());
+                Assert.assertEquals("Ganymede", limitList.get(0).get(0).toString());
+            }
+            {
+                String limitQuery = "SELECT planet, moon LIMIT -1 skip 4 order by moon";
+                Reporter.log("Query: " + limitQuery, true);
+                TableQueryResult res = index.findIndex(planetURI, limitQuery);
+                List<List<Object>> limitList = res.getRows();
+                Reporter.log(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)));
+                System.out.println(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)));
+                Assert.assertEquals(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)), 1, limitList.size());
+                Assert.assertEquals("Jupiter", limitList.get(0).get(0).toString());
+                Assert.assertEquals("Ganymede", limitList.get(0).get(1).toString());
+            }
+            {
+                String limitQuery = "SELECT moon LIMIT 1 skip 4";
+                Reporter.log("Query: " + limitQuery, true);
+                TableQueryResult res = index.findIndex(planetURI, limitQuery);
+                List<List<Object>> limitList = res.getRows();
+                Reporter.log(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)));
+                System.out.println(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)));
+                Assert.assertEquals(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)), 1, limitList.size());
+                // Assert.assertEquals("Deimos", limitList.get(0).get(0).toString());
+            }
+            {
+                String limitQuery = "SELECT moon LIMIT -1 skip 4";
+                Reporter.log("Query: " + limitQuery, true);
+                TableQueryResult res = index.findIndex(planetURI, limitQuery);
+                List<List<Object>> limitList = res.getRows();
+                Reporter.log(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)));
+                System.out.println(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)));
+                Assert.assertEquals(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)), 1, limitList.size());
+                // Assert.assertEquals("Deimos", limitList.get(0).get(0).toString());
+            }
+            {
+                String limitQuery = "SELECT Distinct moon LIMIT -1 skip 4";
+                Reporter.log("Query: " + limitQuery, true);
+                TableQueryResult res = index.findIndex(planetURI, limitQuery);
+                List<List<Object>> limitList = res.getRows();
+                Reporter.log(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)));
+                System.out.println(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)));
+                Assert.assertEquals(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)), 1, limitList.size());
+                // Assert.assertEquals("Ganymede", limitList.get(0).get(0).toString());
+            }
+            {
+                String limitQuery = "SELECT planet, moon LIMIT -1 skip 4";
+                Reporter.log("Query: " + limitQuery, true);
+                TableQueryResult res = index.findIndex(planetURI, limitQuery);
+                List<List<Object>> limitList = res.getRows();
+                Reporter.log(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)));
+                System.out.println(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)));
+                Assert.assertEquals(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)), 1, limitList.size());
+                // Assert.assertEquals("Mars", limitList.get(0).get(0).toString());
+                // Assert.assertEquals("Deimos", limitList.get(0).get(1).toString());
+            }
+
         }
     }
 
