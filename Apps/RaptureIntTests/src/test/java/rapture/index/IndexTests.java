@@ -33,6 +33,7 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Optional;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
+
 import com.google.common.collect.ImmutableMap;
 
 import rapture.common.RaptureURI;
@@ -52,7 +53,7 @@ public class IndexTests {
 
     @BeforeClass(groups = { "index", "mongo", "nightly" })
     @Parameters({ "RaptureURL", "RaptureUser", "RapturePassword" })
-    public void setUp(@Optional("http://localhost:8665/rapture") String url, @Optional("rapture") String username, @Optional("rapture") String password) {
+    public void setUp(@Optional("http://192.168.99.101:8665/rapture") String url, @Optional("rapture") String username, @Optional("rapture") String password) {
         helper = new IntegrationTestHelper(url, username, password);
         docApi = helper.getDocApi();
         index = helper.getIndexApi();
