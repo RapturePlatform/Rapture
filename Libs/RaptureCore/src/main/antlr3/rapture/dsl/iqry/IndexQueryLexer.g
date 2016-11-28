@@ -19,7 +19,7 @@ DISTINCT : 'DISTINCT' | 'distinct' | 'Distinct';
 SELECT : 'SELECT' | 'select' | 'Select';
 WHERE  : 'WHERE' | 'where' | 'Where';
 ORDER  : 'ORDER' | 'order' | 'Order';
-BY     : 'BY' | 'b' | 'By';
+BY     : 'BY' | 'by' | 'By';
 ASC    : 'ASC' | 'asc' | 'Asc';
 DESC    : 'DESC' | 'desc' | 'Desc';
 EQUAL  : '=';

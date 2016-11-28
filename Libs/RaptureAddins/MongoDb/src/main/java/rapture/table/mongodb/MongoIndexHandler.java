@@ -365,12 +365,12 @@ public class MongoIndexHandler implements IndexHandler {
                     int skip = indexQuery.getSkip();
                     if (skip > 0) {
                         ret = ret.skip(skip);
-                    } else skip = 0;
+                    }
 
                     int limit = indexQuery.getLimit();
                     if (limit > 0) {
                         // By specifying a negative limit we tell Mongo that it can close the cursor after returning a single batch.
-                        ret = ret.limit(-(Math.abs(limit)));
+                        ret = ret.limit(-(limit));
                     }
 
                     return ret;
@@ -434,7 +434,7 @@ public class MongoIndexHandler implements IndexHandler {
                 @Override
                 public List<List<Object>> action(FindIterable<Document> cursor) {
 
-                    int limit = Math.abs(indexQuery.getSkip()) + Math.abs(indexQuery.getLimit());
+                    int limit = (indexQuery.getSkip()) + (indexQuery.getLimit());
                     if (limit == 0) limit = Integer.MAX_VALUE;
 
                     List<List<Object>> rows = new ArrayList<>();
@@ -471,9 +471,9 @@ public class MongoIndexHandler implements IndexHandler {
             }
         }
 
-        int skip = Math.abs(indexQuery.getSkip());
+        int skip = (indexQuery.getSkip());
         if (skip < rows.size()) {
-            int limit = Math.abs(indexQuery.getLimit());
+            int limit = indexQuery.getLimit();
             if ((limit > 0) && (rows.size() - skip > limit)) {
                 res.setRows(rows.subList(skip, skip + limit));
             } else res.setRows(rows);

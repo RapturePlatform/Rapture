@@ -182,7 +182,7 @@ public class IndexApiITest extends AbstractFileTest {
             res = index.findIndex(context, planetURI, limitQuery);
             limitList = res.getRows();
             Reporter.log(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)));
-            Assert.assertEquals(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)), 12, limitList.size());
+            Assert.assertEquals(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)), 1, limitList.size());
 
             limitQuery = "SELECT DISTINCT planet, moon ORDER BY planet, moon ASC LIMIT 2";
             Reporter.log("Query: " + limitQuery, true);
