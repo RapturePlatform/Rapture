@@ -2,7 +2,7 @@
 # WatchServer
 
 ### Overview ###
-WatchServer is a Rapture based application that detects changes in a file directory and then elicits actions in a Rapture system.
+WatchServer is an application that detects changes in a file directory and then elicits configured actions in a Rapture system.
 
 Under the hood it uses Java [WatchService](https://docs.oracle.com/javase/8/docs/api/java/nio/file/WatchService.html) and was introduced in Java 1.7.
 The WatchService allows you to:
@@ -16,26 +16,32 @@ Supported actions are:
 * Run a script using the [event api](http://repo.incapturesolutions.com/apidoc/#_event-api)
 * Run a workflow
 
-The absolute path (full directory and filename) is passed to the Rapture endpoint via a parameter to allow that program to process or enrich the file.
+The absolute path (full directory and filename) is passed to the Rapture endpoint via a parameter to allow that program to complete its task.
 
-The server expects that configuration in a well known place, namely: document://sys.config/watchserver/config. Configuration is covered below.
+The WatchServer expects that configuration in a well known place, namely: document://sys.config/watchserver/config. Configuration is covered below.
 
 ### System Diagram ###
 ![System Diagram](/Apps/WatchServer/images/watchservertopology.png)
 
 # Installation and Running #
 
-This example will illustrate the configuration and usage of WatchServer by detecting when a file (xlsx) is dropped into /opt/test.
+This example will illustrate the configuration and usage of WatchServer by detecting when a file (xlsx) is dropped into /opt/test. 
 
 Any files created in /opt/test will cause WatchServer to call the following workflow: workflow://workflows/incapture/watchserver/wsload
 
 This workflow will do the following:
+
 1. Load the file, in /opt/test/, specified by the parameter passed to it from WatchServer
-2. Store the unprocessed file to a blob://archive/<date><time>/filename repository
-3. Using blob created in step 2 process the file and write each xls row to a document to a new repo document://data/<date><time>
+2. Store the file to a blob://archive/yyyyMMdd_HHmmss/filename repository. Step code is [here](https://github.com/RapturePlatform/Rapture/blob/master/Apps/WatchServerPlugin/src/main/java/rapture/dp/invocable/workflow/LoadFile.java)
+3. Using blob created in step 2 process the file and write each xls row to a document to a new repo document://data/yyyyMMdd_HHmmss/ROW000001..N Step code is [here](https://github.com/RapturePlatform/Rapture/blob/master/Apps/WatchServerPlugin/src/main/java/rapture/dp/invocable/workflow/ProcessFile.java)
 
 ## Using Docker ##
-The entire setup can be run using all docker containers.  This is the easiest way to run the stack without doing builds or compiling.  Here are the relevant commands.
+
+The entire setup can be run using all docker containers.  This is the easiest way to run the stack without doing builds or compiling.  
+
+All images are available on Incapture's public [dockerhub](https://hub.docker.com/u/incapture/dashboard/)
+
+Here are the relevant commands.
 
 **Start RabbitMQ**
 ```
@@ -49,11 +55,11 @@ docker run -d -p 27017:27017 --name mongo incapture/mongo
 ```
 1. docker volume create --name fileDropVolume
 2. docker run -v fileDropVolume:/opt/test alpine mkdir /opt/test/subfolder
-3. Download test file from ![here](/Apps/WatchServerPlugin/docker/SamplePriceData.xlsx)
+3. Download test file from [here](/Apps/WatchServerPlugin/docker/SamplePriceData.xlsx)
 
-You will copy it the volume later.
+(You will copy the sample file to the docker volume in a later step)
 ```
-**Start API Server**
+**Start Rapture API Server**
 ```
 docker run -d -p 8080:8080 -p 8665:8665 --link mongo --link rabbit -v fileDropVolume:/opt/test  --name curtis incapture/apiserver:xESlatest
 ```
@@ -61,8 +67,9 @@ docker run -d -p 8080:8080 -p 8665:8665 --link mongo --link rabbit -v fileDropVo
 ```
 docker run -d -p 8000:8000 --link curtis --name rim incapture/rim
 ```
-Checkpoint: To ensure environment is up login to your local environment on http://localhost:8000/browser
-**Create a Local Data Volume**
+Checkpoint: To ensure environment is up login to your local environment on [http://localhost:8000/browser](http://localhost:8000/browser)
+
+**Populate Local Data Volume**
 ```
 docker cp SamplePriceData.xlsx curtis:/opt/test/testdata
 ```
@@ -75,14 +82,19 @@ docker run --link curtis incapture/watchserverplugin
 docker run -d --link mongo --link rabbit -v fileDropVolume:/opt/test --name watchserver incapture/watchserver
 ```
 **Checkpoint**
-To ensure WatchServer has started log should have "20:00:11,899  INFO [main] (WatchServer.java:98) <> [] - WatchServer started and ready."
+
+To ensure WatchServer has started successfully the log should state: _"20:00:11,899  INFO [main] (WatchServer.java:98) <> [] - WatchServer started and ready."_
 
 **Kick off a workflow**
+
+Copying the sample xlsx file to /opt/test will cause a CREATE_EVENT to be fired. This will be picked up by WatchServer and cause a workflow to run. The workflow contains (java) code to load and extract data from the sample xlsx file.
+
+```
 1. docker exec -it curtis bash
 2. cd /opt/test
 3. cp ./testdata/SamplePriceData.xlsx .
-
-The workflow will start and can be viewed on the UI here http://localhost:8000/process/workflows/incapture/watchserver/wsload
+```
+The workflow will start and can be viewed on the UI here [http://localhost:8000/process/workflows/incapture/watchserver/wsload](http://localhost:8000/process/workflows/incapture/watchserver/wsload)
 
 # Configuration #
 
@@ -110,6 +122,7 @@ A sample (json) document is given as an example and is installed to your local e
 ```
 
 Expected Behavior:
+
 1. A file dropped into /opt/test/subfolder will run script script://scripts/incapture/watchserver/createaction
 2. if that file (in step 1) changes this script will be run script://scripts/incapture/watchserver/modifyaction
 3. A file dropped into /opt/test will run the following workflow workflow://workflows/incapture/watchserver/wsload
