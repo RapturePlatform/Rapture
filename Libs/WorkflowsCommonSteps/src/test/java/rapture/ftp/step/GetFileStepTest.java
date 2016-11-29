@@ -39,12 +39,10 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.google.common.collect.ImmutableMap;
 
-import rapture.common.Scheme;
 import rapture.common.Activity;
 import rapture.common.ActivityStatus;
 import rapture.common.BlobContainer;
@@ -52,15 +50,16 @@ import rapture.common.CallingContext;
 import rapture.common.CreateResponse;
 import rapture.common.RaptureConstants;
 import rapture.common.RaptureURI;
+import rapture.common.Scheme;
 import rapture.common.WorkOrderExecutionState;
 import rapture.common.api.DocApi;
+import rapture.common.dp.Step;
 import rapture.common.dp.StepRecord;
 import rapture.common.dp.StepRecordDebug;
+import rapture.common.dp.Transition;
 import rapture.common.dp.WorkOrderDebug;
 import rapture.common.dp.WorkerDebug;
 import rapture.common.dp.Workflow;
-import rapture.common.dp.Step;
-import rapture.common.dp.Transition;
 import rapture.common.exception.RaptureException;
 import rapture.common.impl.jackson.JacksonUtil;
 import rapture.common.model.RaptureExchange;
@@ -193,7 +192,6 @@ public class GetFileStepTest {
     }
 
     @Test
-    @Ignore
     public void testGetFileStep() {
         CallingContext context = ContextFactory.getKernelUser();
         Map<String, String> args = new HashMap<>();
@@ -236,7 +234,6 @@ public class GetFileStepTest {
     }
 
     @Test
-    @Ignore
     public void testGetBlobStep() {
         CallingContext context = ContextFactory.getKernelUser();
         Map<String, String> args = new HashMap<>();

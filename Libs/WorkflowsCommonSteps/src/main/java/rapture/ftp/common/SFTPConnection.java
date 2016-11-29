@@ -86,34 +86,36 @@ public class SFTPConnection extends FTPConnection {
             if (!isConnected()) {
                 return FTPService.runWithRetry("Could not login to " + config.getAddress() + " as " + config.getLoginId(), this, false,
                         new FTPAction<Boolean>() {
-                    @Override
-                    public Boolean run(int attemptNum) throws IOException {
-                        try {
-                            session = jsch.getSession(config.getLoginId(), config.getAddress(), config.getPort());
-                            java.util.Properties properties = new java.util.Properties();
-                            properties.put("StrictHostKeyChecking", "no");
-                            session.setConfig(properties);
-                            if (!StringUtils.isEmpty(config.getPassword())) {
-                                session.setPassword(config.getPassword());
-                            } else {
-                                jsch.addIdentity(config.getAddress(), config.getPrivateKey().getBytes(), null, null);
+                            @SuppressWarnings("synthetic-access")
+                            @Override
+                            public Boolean run(int attemptNum) throws IOException {
+                                try {
+                                    java.util.Properties properties = new java.util.Properties();
+                                    session = jsch.getSession(config.getLoginId(), config.getAddress(), config.getPort());
+                                    properties.put("StrictHostKeyChecking", "no");
+                                    session.setConfig(properties);
+                                    if (!StringUtils.isEmpty(config.getPassword())) {
+                                        session.setPassword(config.getPassword());
+                                    } else {
+                                        jsch.addIdentity(config.getAddress(), config.getPrivateKey().getBytes(), null, null);
+                                    }
+                                    session.connect();
+                                    channel = (ChannelSftp) session.openChannel("sftp");
+                                    channel.setInputStream(System.in);
+                                    channel.setOutputStream(System.out);
+                                    channel.connect();
+                                    return true;
+                                } catch (Exception e) {
+                                    if (e.getCause() instanceof UnknownHostException) {
+                                        throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, "Unknown host " + config.getAddress());
+                                    }
+                                    log.error("Unable to establish secure FTP connection " + config.getLoginId() + "@" + config.getAddress() + ":"
+                                            + config.getPort());
+                                    throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR,
+                                            "Unable to establish secure FTP connection to " + config.getAddress(), e);
+                                }
                             }
-                            session.connect();
-                            channel = (ChannelSftp) session.openChannel("sftp");
-                            channel.setInputStream(System.in);
-                            channel.setOutputStream(System.out);
-                            channel.connect();
-                            return true;
-                        } catch (Exception e) {
-                            if (e.getCause() instanceof UnknownHostException) {
-                                throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, "Unknown host " + config.getAddress());
-                            }
-                            log.error("Unable to establish secure FTP connection " + config.getLoginId() + "@" + config.getAddress() + ":" + config.getPort());
-                            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR,
-                                    "Unable to establish secure FTP connection to " + config.getAddress(), e);
-                        }
-                    }
-                });
+                        });
             }
         }
         return false;
