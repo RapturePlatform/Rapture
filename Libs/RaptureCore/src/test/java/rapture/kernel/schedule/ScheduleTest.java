@@ -17,6 +17,7 @@ import rapture.common.RaptureScriptLanguage;
 import rapture.common.RaptureScriptPurpose;
 import rapture.common.dp.Step;
 import rapture.common.dp.Workflow;
+import rapture.common.impl.jackson.JacksonUtil;
 import rapture.dp.WorkflowFactory;
 import rapture.kernel.ContextFactory;
 import rapture.kernel.Kernel;
@@ -42,7 +43,7 @@ public class ScheduleTest {
         Kernel.getScript().deleteScript(ctx, scriptWithSleep);
         Kernel.getScript().createScript(ctx, scriptWithSleep, RaptureScriptLanguage.REFLEX, RaptureScriptPurpose.PROGRAM,
                 "println(\"Hello there\"); sleep(5000); return \"ok\";");
-        List<Step> steps = new ArrayList<Step>();
+        List<Step> steps = new ArrayList<>();
         Step s1 = new Step();
         s1.setName("start");
         s1.setExecutable("script://" + scriptWithoutSleep);
@@ -65,7 +66,7 @@ public class ScheduleTest {
         Kernel.getSchedule().runJobNow(ctx, jobUri, null);
         Thread.sleep(1000);
         res = Kernel.getSchedule().getRunningWorkflowJobs(ctx);
-        assertTrue(res.isEmpty());
+        assertTrue("Expected no running jobs but got " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(res)), res.isEmpty());
         Workflow wf = Kernel.getDecision().getWorkflow(ctx, workflowUri);
         wf.getSteps().get(0).setExecutable("script://" + scriptWithSleep);
         Kernel.getDecision().putWorkflow(ctx, wf);
