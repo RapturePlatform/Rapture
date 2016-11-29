@@ -285,7 +285,7 @@ public class IndexApiImplTest extends AbstractFileTest {
                 Reporter.log(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)));
                 System.out.println(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)));
                 Assert.assertEquals(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)), 1, limitList.size());
-                Assert.assertEquals("Ganymede", limitList.get(0).get(0).toString());
+                Assert.assertEquals("Moon", limitList.get(0).get(0).toString());
             }
             {
                 String limitQuery = "SELECT moon LIMIT -1 skip 4 order by moon";
@@ -295,7 +295,7 @@ public class IndexApiImplTest extends AbstractFileTest {
                 Reporter.log(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)));
                 System.out.println(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)));
                 Assert.assertEquals(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)), 1, limitList.size());
-                Assert.assertEquals("Ganymede", limitList.get(0).get(0).toString());
+                Assert.assertEquals("Moon", limitList.get(0).get(0).toString());
             }
             {
                 String limitQuery = "SELECT Distinct moon LIMIT -1 skip 4 order by moon";
@@ -305,7 +305,7 @@ public class IndexApiImplTest extends AbstractFileTest {
                 Reporter.log(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)));
                 System.out.println(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)));
                 Assert.assertEquals(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)), 1, limitList.size());
-                Assert.assertEquals("Ganymede", limitList.get(0).get(0).toString());
+                Assert.assertEquals("Moon", limitList.get(0).get(0).toString());
             }
             {
                 String limitQuery = "SELECT planet, moon LIMIT -1 skip 4 order by moon";
@@ -315,8 +315,8 @@ public class IndexApiImplTest extends AbstractFileTest {
                 Reporter.log(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)));
                 System.out.println(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)));
                 Assert.assertEquals(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)), 1, limitList.size());
-                Assert.assertEquals("Jupiter", limitList.get(0).get(0).toString());
-                Assert.assertEquals("Ganymede", limitList.get(0).get(1).toString());
+                Assert.assertEquals("Earth", limitList.get(0).get(0).toString());
+                Assert.assertEquals("Moon", limitList.get(0).get(1).toString());
             }
             {
                 String limitQuery = "SELECT moon LIMIT 1 skip 4";
