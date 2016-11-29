@@ -66,4 +66,21 @@ public class IndexQueryFactoryTest {
         Assert.assertEquals("Order", "x", iq.getOrderBy().getFieldList().get(0));
     }
 
+    @Test
+    public void testParser8() {
+        IndexQuery iq;
+        try {
+            iq = IndexQueryFactory.parseQuery("Select x order by x \"should\" cause an error");
+            Assert.fail("Didn't spot the garbage");
+        } catch (Exception e) {
+            Assert.assertEquals("Unexpected token \"should\" found in Select x order by x \"should\" cause an error", e.getMessage());
+        }
+        try {
+            iq = IndexQueryFactory.parseQuery("Select x order by x should cause an error");
+            Assert.fail("Didn't spot the garbage");
+        } catch (Exception e) {
+            Assert.assertEquals("Unexpected token should found in Select x order by x should cause an error", e.getMessage());
+        }
+    }
+
 }
