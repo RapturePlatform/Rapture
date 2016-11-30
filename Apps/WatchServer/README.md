@@ -25,7 +25,7 @@ The WatchServer expects that configuration in a well known place, namely: docume
 
 # Installation and Running #
 
-This example will illustrate the configuration and usage of WatchServer by detecting when a file (xlsx) is dropped into /opt/test. 
+This example will illustrate the configuration and usage of WatchServer by detecting when a file (xlsx) is dropped into /opt/test.
 
 Any files created in /opt/test will cause WatchServer to call the following workflow: workflow://workflows/incapture/watchserver/wsload
 
@@ -53,33 +53,36 @@ docker run -d -p 27017:27017 --name mongo incapture/mongo
 ```
 **Create a Local Data Volume**
 ```
-1. docker volume create --name fileDropVolume
-2. docker run -v fileDropVolume:/opt/test alpine mkdir /opt/test/subfolder
-3. Download test file from [here](/Apps/WatchServerPlugin/docker/SamplePriceData.xlsx)
+1. docker volume create --name fileDropTest
+```
+Download test file from ![here](/Apps/WatchServerPlugin/docker/SamplePriceData.xlsx). You will ftp this later in the process.
 
-(You will copy the sample file to the docker volume in a later step)
+**Create a FTP Server**
+Create a ftp server, login to server and create a ftp user for later use
+```
+1. Create FTP server: docker run -d -v fileDropTest:/home/ftpusers --name ftpd_server -p 21:21 -p 30000-30009:30000-30009 -e "PUBLICHOST=localhost" stilliard/pure-ftpd
+2. Login into server: docker exec -it ftpd_server bash
+3. Add an FTP user  : pure-pw useradd filedrop -f /etc/pure-ftpd/passwd/pureftpd.passwd -m -u ftpuser -d /home/ftpusers/filedrop
+4. Supply password twice
+5. Logout of server : exit
+6. Bounce FTP server: docker restart ftpd_server
 ```
 **Start Rapture API Server**
 ```
-docker run -d -p 8080:8080 -p 8665:8665 --link mongo --link rabbit -v fileDropVolume:/opt/test  --name curtis incapture/apiserver:xESlatest
+docker run -d -p 8080:8080 -p 8665:8665 --link mongo --link rabbit -v fileDropTest:/home/ftpusers  --name curtis incapture/apiserver:xESlatest
 ```
 **Start Rapture UI**
 ```
 docker run -d -p 8000:8000 --link curtis --name rim incapture/rim
 ```
 Checkpoint: To ensure environment is up login to your local environment on [http://localhost:8000/browser](http://localhost:8000/browser)
-
-**Populate Local Data Volume**
-```
-docker cp SamplePriceData.xlsx curtis:/opt/test/testdata
-```
 **Start WatchServer Sample Configuration Plugin**
 ```
 docker run --link curtis incapture/watchserverplugin
 ```
 **Start WatchServer**
 ```
-docker run -d --link mongo --link rabbit -v fileDropVolume:/opt/test --name watchserver incapture/watchserver
+docker run -d --link mongo --link rabbit -v fileDropTest:/home/ftpusers --name watchserver incapture/watchserver
 ```
 **Checkpoint**
 
@@ -87,12 +90,11 @@ To ensure WatchServer has started successfully the log should state: _"20:00:11,
 
 **Kick off a workflow**
 
-Copying the sample xlsx file to /opt/test will cause a CREATE_EVENT to be fired. This will be picked up by WatchServer and cause a workflow to run. The workflow contains (java) code to load and extract data from the sample xlsx file.
-
+FTP'ing the sample xlsx file to /opt/test will cause a CREATE_EVENT to be fired. This will be picked up by WatchServer and cause a workflow to run. The workflow contains (java) code to load and extract data from the sample xlsx file.
 ```
-1. docker exec -it curtis bash
-2. cd /opt/test
-3. cp ./testdata/SamplePriceData.xlsx .
+1. ftp -p localhost 21
+2. Supply username and password (filedrop/<password>)
+3. put SmallSamplePriceData.xlsx
 ```
 The workflow will start and can be viewed on the UI here [http://localhost:8000/process/workflows/incapture/watchserver/wsload](http://localhost:8000/process/workflows/incapture/watchserver/wsload)
 
@@ -114,7 +116,7 @@ A sample (json) document is given as an example and is installed to your local e
     "event" : "ENTRY_MODIFY",
     "action" : "script://scripts/incapture/watchserver/modifyaction"
   } ],
-  "/opt/test" : [ {
+  "/opt/home/filedrop" : [ {
     "event" : "ENTRY_CREATE",
     "action" : "workflow://workflows/incapture/watchserver/wsload"
   } ]
