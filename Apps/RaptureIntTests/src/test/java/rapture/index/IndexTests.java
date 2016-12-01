@@ -164,28 +164,111 @@ public class IndexTests {
         Assert.assertNotNull(limitList);
         Assert.assertEquals(limitList.size(), 4);
 
+        limitQuery = "SELECT DISTINCT planet, moon LIMIT -1";
+        Reporter.log("Testing query: " + limitQuery, true);
+        res = index.findIndex(planetURI, limitQuery);
+        limitList = res.getRows();
+        Assert.assertEquals(limitList.size(), 1);
+        
         limitQuery = "SELECT DISTINCT planet, moon ORDER BY planet, moon ASC LIMIT 2";
         Reporter.log("Testing query: " + limitQuery, true);
         res = index.findIndex(planetURI, limitQuery);
         limitList = res.getRows();
-
         Assert.assertEquals(limitList.size(), 2);
-
-        limitQuery = "SELECT DISTINCT distinct planet, moon ORDER BY planet, moon Asc Limit 2 Skip 2";
-
-        Reporter.log("Testing query: " + limitQuery, true);
-        res = index.findIndex(planetURI, limitQuery);
-        List<List<Object>> limitList2 = res.getRows();
-        Assert.assertEquals(limitList.size(), 2);
-
         Assert.assertEquals(limitList.get(0).get(0).toString(), "Earth");
         Assert.assertEquals(limitList.get(1).get(0).toString(), "Jupiter");
         Assert.assertEquals(limitList.get(1).get(1).toString(), "Europa");
 
-        Assert.assertEquals(limitList2.get(0).get(0).toString(), "Jupiter");
-        Assert.assertEquals(limitList2.get(0).get(1).toString(), "Ganymede");
-        Assert.assertEquals(limitList2.get(1).get(0).toString(), "Jupiter");
-        Assert.assertEquals(limitList2.get(1).get(1).toString(), "Io");
+        limitQuery = "SELECT DISTINCT distinct planet, moon ORDER BY planet, moon Asc Limit 2 Skip 2";
+        Reporter.log("Testing query: " + limitQuery, true);
+        res = index.findIndex(planetURI, limitQuery);
+        limitList = res.getRows();
+        Assert.assertEquals(limitList.size(), 2);
+        Assert.assertEquals("Jupiter", limitList.get(0).get(0).toString());
+        Assert.assertEquals("Ganymede", limitList.get(0).get(1).toString());
+        Assert.assertEquals("Jupiter", limitList.get(1).get(0).toString());
+        Assert.assertEquals("Io", limitList.get(1).get(1).toString());
+        
+        limitQuery = "SELECT DISTINCT planet, moon skip 4 limit 3 ORDER BY planet, moon Asc";
+        Reporter.log("Testing query: " + limitQuery, true);
+        res = index.findIndex(planetURI, limitQuery);
+        limitList = res.getRows();
+        Assert.assertEquals(limitList.size(), 3);
+        Assert.assertEquals("Jupiter", limitList.get(0).get(0).toString());
+        Assert.assertEquals("Titan", limitList.get(0).get(1).toString());
+        Assert.assertEquals("Mars", limitList.get(1).get(0).toString());
+        Assert.assertEquals("Deimos", limitList.get(1).get(1).toString());
+        Assert.assertEquals("Mars", limitList.get(2).get(0).toString());
+        Assert.assertEquals("Phobos", limitList.get(2).get(1).toString());
+        
+        limitQuery = "SELECT DISTINCT moon ORDER BY moon Asc Limit 2 Skip 3";
+        Reporter.log("Testing query: " + limitQuery, true);
+        res = index.findIndex(planetURI, limitQuery);
+        limitList = res.getRows();
+        Assert.assertEquals(limitList.size(), 2);
+        Assert.assertEquals("Io", limitList.get(0).get(0).toString());
+        Assert.assertEquals("Moon", limitList.get(1).get(0).toString());
+        
+        limitQuery = "SELECT moon ORDER BY moon";
+        Reporter.log("Testing query: " + limitQuery, true);
+        res = index.findIndex(planetURI, limitQuery);
+        limitList = res.getRows();
+        Assert.assertEquals(limitList.size(), 12);
+        Assert.assertEquals("Deimos", limitList.get(0).get(0).toString());
+        
+        limitQuery = "SELECT moon LIMIT 1 skip 4 order by moon";
+        Reporter.log("Testing query: " + limitQuery, true);
+        res = index.findIndex(planetURI, limitQuery);
+        limitList = res.getRows();
+        Assert.assertEquals(limitList.size(), 1);
+        Assert.assertEquals("Moon", limitList.get(0).get(0).toString());
+        
+        limitQuery = "SELECT moon LIMIT -1 skip 4 order by moon";
+        Reporter.log("Testing query: " + limitQuery, true);
+        res = index.findIndex(planetURI, limitQuery);
+        limitList = res.getRows();
+        Assert.assertEquals(limitList.size(), 1);
+        Assert.assertEquals("Moon", limitList.get(0).get(0).toString());
+        
+        limitQuery = "SELECT DISTINCT moon LIMIT -1 skip 4 order by moon";
+        Reporter.log("Testing query: " + limitQuery, true);
+        res = index.findIndex(planetURI, limitQuery);
+        limitList = res.getRows();
+        Assert.assertEquals(limitList.size(), 1);
+        Assert.assertEquals("Moon", limitList.get(0).get(0).toString());
+        
+        limitQuery = "SELECT planet, moon LIMIT -1 skip 4 order by moon";
+        Reporter.log("Testing query: " + limitQuery, true);
+        res = index.findIndex(planetURI, limitQuery);
+        limitList = res.getRows();
+        Assert.assertEquals(limitList.size(), 1);
+        Assert.assertEquals("Earth", limitList.get(0).get(0).toString());
+        Assert.assertEquals("Moon", limitList.get(0).get(1).toString());
+        
+        limitQuery = "SELECT moon LIMIT 1 skip 4";
+        Reporter.log("Testing query: " + limitQuery, true);
+        res = index.findIndex(planetURI, limitQuery);
+        limitList = res.getRows();
+        Assert.assertEquals(limitList.size(), 1);
+
+        limitQuery = "SELECT moon LIMIT -1 skip 4";
+        Reporter.log("Testing query: " + limitQuery, true);
+        res = index.findIndex(planetURI, limitQuery);
+        limitList = res.getRows();
+        Assert.assertEquals(limitList.size(), 1);
+        
+        limitQuery = "SELECT DISTINCT moon LIMIT -1 skip 4";
+        Reporter.log("Testing query: " + limitQuery, true);
+        res = index.findIndex(planetURI, limitQuery);
+        limitList = res.getRows();
+        Assert.assertEquals(limitList.size(), 1);
+        
+        limitQuery = "SELECT planet, moon LIMIT -1 skip 4";
+        Reporter.log("Testing query: " + limitQuery, true);
+        res = index.findIndex(planetURI, limitQuery);
+        limitList = res.getRows();
+        Assert.assertEquals(limitList.size(), 1);
+        
     }
 
     @Test(groups = { "index", "mongo", "nightly" }, dataProvider = "implTypes")
