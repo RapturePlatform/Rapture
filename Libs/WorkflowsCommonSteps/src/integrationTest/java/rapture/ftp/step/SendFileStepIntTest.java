@@ -27,17 +27,22 @@ package rapture.ftp.step;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.testng.Assert;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -45,13 +50,16 @@ import com.google.common.net.MediaType;
 
 import rapture.common.Activity;
 import rapture.common.ActivityStatus;
-import rapture.common.CallingContext;
 import rapture.common.CreateResponse;
-import rapture.common.RaptureConstants;
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
 import rapture.common.WorkOrderExecutionState;
-import rapture.common.api.DocApi;
+import rapture.common.client.HttpBlobApi;
+import rapture.common.client.HttpDecisionApi;
+import rapture.common.client.HttpDocApi;
+import rapture.common.client.HttpJarApi;
+import rapture.common.client.HttpLoginApi;
+import rapture.common.client.SimpleCredentialsProvider;
 import rapture.common.dp.Step;
 import rapture.common.dp.StepRecord;
 import rapture.common.dp.StepRecordDebug;
@@ -59,97 +67,89 @@ import rapture.common.dp.Transition;
 import rapture.common.dp.WorkOrderDebug;
 import rapture.common.dp.WorkerDebug;
 import rapture.common.dp.Workflow;
-import rapture.common.exception.RaptureException;
 import rapture.common.impl.jackson.JacksonUtil;
-import rapture.common.model.RaptureExchange;
-import rapture.common.model.RaptureExchangeQueue;
-import rapture.common.model.RaptureExchangeType;
-import rapture.config.ConfigLoader;
-import rapture.config.RaptureConfig;
 import rapture.ftp.common.FTPConnectionConfig;
-import rapture.kernel.ContextFactory;
-import rapture.kernel.Kernel;
-import rapture.kernel.script.KernelScript;
 
-public class SendFileStepTest {
+public class SendFileStepIntTest {
 
-    static String saveInitSysConfig;
-    static String saveRaptureRepo;
     private static final String auth = "test" + System.currentTimeMillis();
-    private static final String BLOB_USING_MEMORY = "BLOB {} USING MEMORY {prefix=\"/tmp/B" + auth + "\"}";
-    private static final String REPO_USING_MEMORY = "REP {} USING MEMORY {prefix=\"/tmp/" + auth + "\"}";
-    private static final String META_USING_MEMORY = "REP {} USING MEMORY {prefix=\"/tmp/M" + auth + "\"}";
+    private static final String BLOB_USING_MONGODB = "BLOB {} USING MONGODB {prefix=\"/tmp/B" + auth + "\"}";
+    private static final String META_USING_MONGODB = "REP {} USING MONGODB {prefix=\"/tmp/M" + auth + "\"}";
+
+    private static HttpLoginApi raptureLogin = null;
+    private static HttpDocApi docApi = null;
+    private static HttpBlobApi blobApi = null;
+    private static HttpDecisionApi decisionApi = null;
+    private static final String testPrefix = "__RESERVED__";
+    private static RaptureURI repoUri = null;
+
+    public static void configureTestRepo(RaptureURI repo, String storage) {
+        Assert.assertFalse(repo.hasDocPath(), "Doc path not allowed");
+        String authString = repo.toAuthString();
+        boolean versioned = false;
+
+        switch (repo.getScheme()) {
+        case BLOB:
+            if (blobApi.blobRepoExists(repo.toAuthString())) blobApi.deleteBlobRepo(authString);
+            blobApi.createBlobRepo(authString, "BLOB {} USING " + storage + " {prefix=\"B_" + repo.getAuthority() + "\"}",
+                    "NREP {} USING " + storage + " {prefix=\"M_" + repo.getAuthority() + "\"}");
+            Assert.assertTrue(blobApi.blobRepoExists(authString), authString + " Create failed");
+            break;
+
+        case DOCUMENT:
+            if (docApi.docRepoExists(repo.toAuthString())) docApi.deleteDocRepo(authString);
+            docApi.createDocRepo(authString,
+                    "NREP {} USING " + storage + " {prefix=\"D_" + repo.getAuthority() + (versioned ? "\", separateVersion=\"true" : "") + "\"}");
+            Assert.assertTrue(docApi.docRepoExists(authString), authString + " Create failed");
+            break;
+
+        default:
+            Assert.fail(repo.toString() + " not supported");
+        }
+    }
 
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
-        CallingContext context = ContextFactory.getKernelUser();
-        RaptureConfig.setLoadYaml(false);
-        RaptureConfig config = ConfigLoader.getConf();
-        saveRaptureRepo = config.RaptureRepo;
-        saveInitSysConfig = config.InitSysConfig;
+        String url = "http://localhost:8664/rapture";
+        // String url = "http://165.193.214.92:8664/rapture";
+        // String url = "http://192.168.99.100:8665/rapture";
 
-        config.RaptureRepo = REPO_USING_MEMORY;
-        config.InitSysConfig = "NREP {} USING MEMORY { prefix=\"/tmp/" + auth + "/sys.config\"}";
+        raptureLogin = new HttpLoginApi(url, new SimpleCredentialsProvider("rapture", "rapture"));
+        raptureLogin.login();
+        docApi = new HttpDocApi(raptureLogin);
+        blobApi = new HttpBlobApi(raptureLogin);
+        HttpJarApi jarApi = new HttpJarApi(raptureLogin);
+        decisionApi = new HttpDecisionApi(raptureLogin);
 
-        System.setProperty("LOGSTASH-ISENABLED", "false");
-        Kernel.initBootstrap();
+        repoUri = new RaptureURI.Builder(Scheme.DOCUMENT, testPrefix + UUID.randomUUID().toString().replaceAll("-", "")).build();
+        configureTestRepo(repoUri, "MONGODB");
 
-        Kernel.INSTANCE.clearRepoCache(false);
-        Kernel.getAudit().createAuditLog(ContextFactory.getKernelUser(), new RaptureURI(RaptureConstants.DEFAULT_AUDIT_URI, Scheme.LOG).getAuthority(),
-                "LOG {} using MEMORY {prefix=\"/tmp/" + auth + "\"}");
-        Kernel.getLock().createLockManager(ContextFactory.getKernelUser(), "lock://kernel", "LOCKING USING DUMMY {}", "");
-        Kernel.getIdGen().createIdGen(context, "idgen://sys/dp/workOrder", "IDGEN {} USING MEMORY {}");
-        Kernel.getIdGen().createIdGen(context, "idgen://sys/activity/id", "IDGEN {} USING MEMORY {}");
-
-        try {
-            Kernel.INSTANCE.restart();
-            Kernel.initBootstrap(null, null, true);
-
-            Kernel.getPipeline().getTrusted().registerServerCategory(context, "alpha", "Primary servers");
-            Kernel.getPipeline().getTrusted().registerServerCategory(context, "beta", "Secondary servers");
-
-            Kernel.getPipeline().registerExchangeDomain(context, "//main", "EXCHANGE {} USING MEMORY {}");
-
-            RaptureExchange exchange = new RaptureExchange();
-            exchange.setName("kernel");
-            exchange.setName("kernel");
-            exchange.setExchangeType(RaptureExchangeType.FANOUT);
-            exchange.setDomain("main");
-
-            List<RaptureExchangeQueue> queues = new ArrayList<>();
-            RaptureExchangeQueue queue = new RaptureExchangeQueue();
-            queue.setName("default");
-            queue.setRouteBindings(new ArrayList<String>());
-            queues.add(queue);
-
-            exchange.setQueueBindings(queues);
-
-            Kernel.getPipeline().getTrusted().registerPipelineExchange(context, "kernel", exchange);
-            Kernel.getPipeline().getTrusted().bindPipeline(context, "alpha", "kernel", "default");
-
-            // Now that the binding is setup, register our server as being part
-            // of
-            // "alpha"
-
-            Kernel.setCategoryMembership("alpha");
-
-            KernelScript ks = new KernelScript();
-            ks.setCallingContext(context);
-
-        } catch (RaptureException e) {
-            e.printStackTrace();
-        }
-        Kernel.getBlob().createBlobRepo(context, "blob://tmp", BLOB_USING_MEMORY, META_USING_MEMORY);
-        Kernel.getBlob().putBlob(context, "blob://tmp/blobby", "And did those feet in ancient time walk upon England's crowded hills?".getBytes(),
+        if (!blobApi.blobRepoExists("blob://tmp")) blobApi.createBlobRepo("blob://tmp", BLOB_USING_MONGODB, META_USING_MONGODB);
+        blobApi.putBlob("blob://tmp/blobby", "And did those feet in ancient time walk upon England's crowded hills?".getBytes(),
                 MediaType.ANY_TEXT_TYPE.toString());
-        Kernel.getDoc().putDoc(context, "document://tmp/elp",
+        docApi.putDoc("document://tmp/elp",
                 "{ \"Band\" : \"Emerson, Lake and Palmer\", \"Album\" : \"Brain Salad Surgery\", \"Track\" : \"Jerusalem\" }");
 
+        if (jarApi.jarExists("jar://workflows/dynamic/WorkflowsCommonSteps.jar")) jarApi.deleteJar("jar://workflows/dynamic/WorkflowsCommonSteps.jar");
+
+        try {
+            Path WorkflowsCommonSteps = Paths.get("../../../Rapture/Libs/WorkflowsCommonSteps/build/libs/WorkflowsCommonSteps-1.0.0.jar");
+            if (!WorkflowsCommonSteps.toFile().exists()) {
+                System.err.println("Cannot access " + WorkflowsCommonSteps.normalize().toString());
+            } else {
+                jarApi.putJar("jar://workflows/dynamic/WorkflowsCommonSteps.jar", Files.readAllBytes(WorkflowsCommonSteps));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         defineWorkflow();
     }
 
     @AfterClass
     public static void tearDownAfterClass() throws Exception {
+        blobApi.deleteBlobRepo("blob://tmp");
+        docApi.deleteDoc("document://tmp/elp");
+        // decisionApi.deleteWorkflow(workflowUri);
     }
 
     @Before
@@ -160,21 +160,23 @@ public class SendFileStepTest {
     public void tearDown() throws Exception {
     }
 
-    static String workflowUri = "workflow://foo/bar/baz";
+    static String workflowUri = "workflow://workflows/core/testing";
 
     static private void defineWorkflow() {
-        FTPConnectionConfig ftpConfig = new FTPConnectionConfig().setAddress("localhost").setPort(22).setLoginId("rapture").setPassword("rapture")
+        FTPConnectionConfig ftpConfig = new FTPConnectionConfig().setAddress("64.124.8.105").setPort(22).setLoginId("ftpsssnyqa").setPassword("Fuj!n5kewrux")
                 .setUseSFTP(true);
+        // FTPConnectionConfig ftpConfig = new FTPConnectionConfig().setAddress("192.168.42.82").setPort(22).setLoginId("rapture").setPassword("rapture")
+        // .setUseSFTP(true);
 
-        CallingContext context = ContextFactory.getKernelUser();
-        DocApi dapi = Kernel.getDoc();
+
         String configRepo = "document://test" + System.currentTimeMillis();
         String configUri = configRepo + "/Config";
 
-        dapi.createDocRepo(context, configRepo, "NREP {} USING MEMORY {}");
-        dapi.putDoc(context, configUri, JacksonUtil.jsonFromObject(ftpConfig));
+        docApi.createDocRepo(configRepo, "NREP {} USING MONGODB {}");
+        docApi.putDoc(configUri, JacksonUtil.jsonFromObject(ftpConfig));
 
         Workflow w = new Workflow();
+        w.setJarUriDependencies(ImmutableList.of("jar://workflows/dynamic/*"));
         w.setStartStep("step1");
         List<Step> steps = new LinkedList<>();
         Step step = new Step();
@@ -195,24 +197,22 @@ public class SendFileStepTest {
         w.setSteps(steps);
         w.setView(viewMap);
         w.setWorkflowURI(workflowUri);
-        Kernel.getDecision().putWorkflow(context, w);
+        decisionApi.putWorkflow(w);
     }
 
     @Test
     public void testSendFileStep() {
 
-        CallingContext context = ContextFactory.getKernelUser();
-
         Map<String, String> args = new HashMap<>();
-        args.put("COPY_FILES", JacksonUtil.jsonFromObject(ImmutableMap.of("/bin/ls", "upload/ls.dummyfile")));
+        args.put("COPY_FILES", JacksonUtil.jsonFromObject(ImmutableMap.of("/bin/ls", "incapture.test.dummyfile1")));
 
-        CreateResponse response = Kernel.getDecision().createWorkOrderP(context, workflowUri, args, null);
+        CreateResponse response = decisionApi.createWorkOrderP(workflowUri, args, null);
         assertTrue(response.getIsCreated());
         WorkOrderDebug debug;
         WorkOrderExecutionState state = WorkOrderExecutionState.NEW;
         long timeout = System.currentTimeMillis() + 60000;
         do {
-            debug = Kernel.getDecision().getWorkOrderDebug(context, response.getUri());
+            debug = decisionApi.getWorkOrderDebug(response.getUri());
             state = debug.getOrder().getStatus();
         } while (((state == WorkOrderExecutionState.NEW) || (state == WorkOrderExecutionState.ACTIVE)) && (System.currentTimeMillis() < timeout));
 
@@ -227,13 +227,11 @@ public class SendFileStepTest {
 
         WorkerDebug worker = debug.getWorkerDebugs().get(0);
         List<StepRecordDebug> dbgs = worker.getStepRecordDebugs();
-        int i = 0;
         for (StepRecordDebug dbg : dbgs) {
             Activity activity = dbg.getActivity();
             if (activity != null) {
                 assertEquals(10, activity.getMax().longValue());
                 assertEquals(ActivityStatus.FINISHED, activity.getStatus());
-                i++;
             }
         }
         assertEquals(WorkOrderExecutionState.FINISHED, debug.getOrder().getStatus());
@@ -241,18 +239,18 @@ public class SendFileStepTest {
 
     @Test
     public void testSendBlobStep() {
-        CallingContext context = ContextFactory.getKernelUser();
-
         Map<String, String> args = new HashMap<>();
-        args.put("COPY_FILES", JacksonUtil.jsonFromObject(ImmutableMap.of("blob://tmp/blobby", "upload/blobby.dummyfile")));
+        args.put("COPY_FILES", JacksonUtil.jsonFromObject(ImmutableMap.of("blob://tmp/blobby", "incapture.test.dummyfile2")));
 
-        CreateResponse response = Kernel.getDecision().createWorkOrderP(context, workflowUri, args, null);
+        Workflow wf = decisionApi.getWorkflow(workflowUri);
+
+        CreateResponse response = decisionApi.createWorkOrderP(workflowUri, args, "Test");
         assertTrue(response.getIsCreated());
         WorkOrderDebug debug;
         WorkOrderExecutionState state = WorkOrderExecutionState.NEW;
         long timeout = System.currentTimeMillis() + 60000;
         do {
-            debug = Kernel.getDecision().getWorkOrderDebug(context, response.getUri());
+            debug = decisionApi.getWorkOrderDebug(response.getUri());
             state = debug.getOrder().getStatus();
         } while (((state == WorkOrderExecutionState.NEW) || (state == WorkOrderExecutionState.ACTIVE)) && (System.currentTimeMillis() < timeout));
 
@@ -267,13 +265,11 @@ public class SendFileStepTest {
 
         WorkerDebug worker = debug.getWorkerDebugs().get(0);
         List<StepRecordDebug> dbgs = worker.getStepRecordDebugs();
-        int i = 0;
         for (StepRecordDebug dbg : dbgs) {
             Activity activity = dbg.getActivity();
             if (activity != null) {
                 assertEquals(10, activity.getMax().longValue());
                 assertEquals(ActivityStatus.FINISHED, activity.getStatus());
-                i++;
             }
         }
         assertEquals(WorkOrderExecutionState.FINISHED, debug.getOrder().getStatus());
@@ -281,18 +277,16 @@ public class SendFileStepTest {
 
     @Test
     public void testSendDocStep() {
-        CallingContext context = ContextFactory.getKernelUser();
-
         Map<String, String> args = new HashMap<>();
-        args.put("COPY_FILES", JacksonUtil.jsonFromObject(ImmutableMap.of("document://tmp/elp", "upload/elp.dummyfile")));
+        args.put("COPY_FILES", JacksonUtil.jsonFromObject(ImmutableMap.of("document://tmp/elp", "incapture.test.dummyfile3")));
 
-        CreateResponse response = Kernel.getDecision().createWorkOrderP(context, workflowUri, args, null);
+        CreateResponse response = decisionApi.createWorkOrderP(workflowUri, args, null);
         assertTrue(response.getIsCreated());
         WorkOrderDebug debug;
         WorkOrderExecutionState state = WorkOrderExecutionState.NEW;
         long timeout = System.currentTimeMillis() + 60000;
         do {
-            debug = Kernel.getDecision().getWorkOrderDebug(context, response.getUri());
+            debug = decisionApi.getWorkOrderDebug(response.getUri());
             state = debug.getOrder().getStatus();
         } while (((state == WorkOrderExecutionState.NEW) || (state == WorkOrderExecutionState.ACTIVE)) && (System.currentTimeMillis() < timeout));
 
@@ -307,13 +301,11 @@ public class SendFileStepTest {
 
         WorkerDebug worker = debug.getWorkerDebugs().get(0);
         List<StepRecordDebug> dbgs = worker.getStepRecordDebugs();
-        int i = 0;
         for (StepRecordDebug dbg : dbgs) {
             Activity activity = dbg.getActivity();
             if (activity != null) {
                 assertEquals(10, activity.getMax().longValue());
                 assertEquals(ActivityStatus.FINISHED, activity.getStatus());
-                i++;
             }
         }
         assertEquals(WorkOrderExecutionState.FINISHED, debug.getOrder().getStatus());
