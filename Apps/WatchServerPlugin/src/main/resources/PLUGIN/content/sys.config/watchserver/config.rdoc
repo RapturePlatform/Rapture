@@ -6,7 +6,7 @@
     "event" : "ENTRY_MODIFY",
     "action" : "script://scripts/incapture/watchserver/modifyaction"
   } ],
-  "/opt/test" : [ {
+  "/home/ftpusers/filedrop" : [ {
     "event" : "ENTRY_CREATE",
     "action" : "workflow://workflows/incapture/watchserver/wsload"
   } ]
