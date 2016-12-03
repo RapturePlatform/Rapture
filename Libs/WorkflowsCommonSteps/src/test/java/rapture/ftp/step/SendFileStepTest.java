@@ -163,8 +163,8 @@ public class SendFileStepTest {
     static String workflowUri = "workflow://foo/bar/baz";
 
     static private void defineWorkflow() {
-        FTPConnectionConfig ftpConfig = new FTPConnectionConfig().setAddress("localhost").setPort(22).setLoginId("rapture").setPassword("rapture")
-                .setUseSFTP(true);
+        FTPConnectionConfig ftpConfig = new FTPConnectionConfig().setAddress("speedtest.tele2.net").setPort(23).setLoginId("ftp").setPassword("foo@bar")
+                .setUseSFTP(false);
 
         CallingContext context = ContextFactory.getKernelUser();
         DocApi dapi = Kernel.getDoc();
