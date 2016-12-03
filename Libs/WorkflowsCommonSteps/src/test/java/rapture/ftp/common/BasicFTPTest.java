@@ -40,6 +40,7 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.google.common.collect.ImmutableList;
@@ -258,7 +259,7 @@ public class BasicFTPTest {
      * write single file via FTP -
      */
     @Test
-
+    @Ignore
     public void testSingleFTPWrite() {
         Connection connection = new FTPConnection(ftpConfig);
         connection.connectAndLogin();
@@ -272,7 +273,7 @@ public class BasicFTPTest {
      * write single file via SFTP - need a SFTP serverw ith write access to test
      */
     @Test
-
+    @Ignore
     public void testSingleSFTPWrite() {
         Connection connection = new SFTPConnection(rebexSftpConfig);
         connection.connectAndLogin();

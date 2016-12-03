@@ -34,6 +34,7 @@ import org.apache.log4j.Logger;
 
 import rapture.common.CallingContext;
 import rapture.common.RaptureURI;
+import rapture.common.Scheme;
 import rapture.common.api.DecisionApi;
 import rapture.common.dp.AbstractInvocable;
 import rapture.common.exception.ExceptionToString;
@@ -95,7 +96,10 @@ public class SendFileStep extends AbstractInvocable {
             Connection connection = new SFTPConnection(configUri).setContext(ctx);
             List<FTPRequest> requests = new ArrayList<>();
             for (Entry<String, Object> e : map.entrySet()) {
-                FTPRequest request = new FTPRequest(Action.WRITE).setLocalName(e.getKey()).setRemoteName(e.getValue().toString());
+                String remote = e.getValue().toString();
+                // If the target is a URI then just use the leaf name. Eg blob://foo/bar/baz -> baz
+                if (remote.contains("://")) remote = new RaptureURI(remote, Scheme.DOCUMENT).getLeafName();
+                FTPRequest request = new FTPRequest(Action.WRITE).setLocalName(e.getKey()).setRemoteName(remote);
                 connection.doAction(request);
                 if (!request.getStatus().equals(Status.SUCCESS)) {
                     retval = getFailTransition();
