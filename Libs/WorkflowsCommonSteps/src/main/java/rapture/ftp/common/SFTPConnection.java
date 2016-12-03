@@ -57,8 +57,9 @@ public class SFTPConnection extends FTPConnection {
 
     public SFTPConnection(FTPConnectionConfig config) {
         super(config);
-        if (config.isUseSFTP()) jsch = new JSch();
-        else {
+        if (config.isUseSFTP()) {
+            jsch = new JSch();
+        } else {
             log.info("useSFTP is false - using FTP");
             jsch = null;
         }
@@ -93,6 +94,8 @@ public class SFTPConnection extends FTPConnection {
                                     java.util.Properties properties = new java.util.Properties();
                                     session = jsch.getSession(config.getLoginId(), config.getAddress(), config.getPort());
                                     properties.put("StrictHostKeyChecking", "no");
+                                    properties.put("kex",
+                                            "diffie-hellman-group1-sha1,diffie-hellman-group14-sha1,diffie-hellman-group-exchange-sha1,diffie-hellman-group-exchange-sha256");
                                     session.setConfig(properties);
                                     if (!StringUtils.isEmpty(config.getPassword())) {
                                         session.setPassword(config.getPassword());
@@ -213,11 +216,9 @@ public class SFTPConnection extends FTPConnection {
             log.error("fileName must be the name of a file, not a directory");
         } else try {
             int lio = fileName.lastIndexOf('/');
-            if (lio > 0) {
-                channel.cd(fileName.substring(0, lio));
-                channel.put(stream, fileName.substring(lio + 1));
-                return true;
-            }
+            if (lio > 0) channel.cd(fileName.substring(0, lio));
+            channel.put(stream, (lio > 0) ? fileName.substring(lio + 1) : fileName);
+            return true;
         } catch (SftpException e) {
             throw new IOException("Cannot copy data to " + fileName, e);
         }
