@@ -23,10 +23,7 @@ import rapture.common.CallingContext;
 import rapture.common.EntitlementSet;
 import rapture.common.exception.RaptureException;
 import rapture.common.impl.jackson.MD5Utils;
-import rapture.common.model.RaptureEntitlement;
 import rapture.common.model.RaptureEntitlementGroup;
-import rapture.common.model.RaptureEntitlementGroupStorage;
-import rapture.common.model.RaptureEntitlementStorage;
 import rapture.common.model.RaptureUser;
 
 public class EntitlementTest {

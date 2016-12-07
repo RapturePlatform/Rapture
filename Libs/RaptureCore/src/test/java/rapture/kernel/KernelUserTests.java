@@ -23,6 +23,13 @@
  */
 package rapture.kernel;
 
+import static junit.framework.TestCase.fail;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -31,13 +38,6 @@ import rapture.common.exception.RaptureException;
 import rapture.common.impl.jackson.MD5Utils;
 import rapture.common.model.RaptureUser;
 import rapture.mail.Mailer;
-
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static junit.framework.TestCase.fail;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Tests related to bad (incorrect) action on the user api
