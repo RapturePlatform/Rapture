@@ -27,11 +27,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import rapture.common.CallingContext;
-import rapture.common.EntitlementSet;
 import rapture.common.api.DocApi;
 import rapture.common.api.EntitlementApi;
 import rapture.common.api.UserApi;

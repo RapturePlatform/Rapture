@@ -30,6 +30,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -47,7 +48,7 @@ import rapture.common.LockHandle;
 public class MongoLockHandlerTest {
 
     private MongoCollection<Document> collection;
-    private MongoLockHandler m;
+    MongoLockHandler m;
 
     @Before
     public void setup() {
@@ -85,11 +86,12 @@ public class MongoLockHandlerTest {
         final int secondsToWait = 10;
         final int secondsToHold = 30;
 
-        final Set<LockHandle> handlesAcquired = new HashSet<LockHandle>();
+        final Set<LockHandle> handlesAcquired = new HashSet<>();
         ExecutorService taskExecutor = Executors.newFixedThreadPool(10);
         for (int i = 0; i < 10; i++) {
             final int counter = i;
             taskExecutor.execute(new Runnable() {
+                @Override
                 public void run() {
                     LockHandle lockHandle = m.acquireLock(lockHolder + String.valueOf(counter), lockName, secondsToWait, secondsToHold);
                     assertNotNull(lockHandle);
@@ -109,46 +111,70 @@ public class MongoLockHandlerTest {
         assertEquals(10, handlesAcquired.size());
     }
 
-    @Test
-    public void testAcquireLockShutout() throws InterruptedException {
+    static final Set<LockHandle> handlesAcquired = new HashSet<>();
+    static final Set<String> handlesDenied = new HashSet<>();
+
+    class LockWorker implements Runnable {
+        private final CountDownLatch startSignal;
+        private final CountDownLatch doneSignal;
+        final int counter;
+
         final String lockHolder = "me";
         final String lockName = "//anotherRepo/Locked";
         final int secondsToWait = 1;
         final int secondsToHold = 30;
 
-        final Set<LockHandle> handlesAcquired = new HashSet<LockHandle>();
-        final Set<String> handlesDenied = new HashSet<String>();
-        ExecutorService taskExecutor = Executors.newFixedThreadPool(10);
-        for (int i = 0; i < 10; i++) {
-            final int counter = i;
-            taskExecutor.execute(new Runnable() {
-                public void run() {
-                    LockHandle lockHandle = m.acquireLock(lockHolder + String.valueOf(counter), lockName, secondsToWait, secondsToHold);
-                    if (lockHandle != null) {
-                        handlesAcquired.add(lockHandle);
-                        assertTrue(lockExists(lockName, lockHolder + String.valueOf(counter)));
-                    } else {
-                        handlesDenied.add(lockHolder + String.valueOf(counter));
-                        // could not get lock, make sure our entry is still not in there
-                        assertFalse(lockExists(lockName, lockHolder + String.valueOf(counter)));
-                        return;
-                    }
-                    try {
-                        Thread.sleep(3000);
-                    } catch (InterruptedException e) {
-                    }
-                    assertTrue(m.releaseLock(lockHolder + String.valueOf(counter), lockName, lockHandle));
-                    assertFalse(lockExists(lockName, lockHolder + String.valueOf(counter)));
-                }
-            });
+        LockWorker(CountDownLatch startSignal, CountDownLatch doneSignal, int thread) {
+            this.startSignal = startSignal;
+            this.doneSignal = doneSignal;
+            counter = thread;
+
         }
-        taskExecutor.shutdown();
-        taskExecutor.awaitTermination(5, TimeUnit.SECONDS);
-        assertEquals(1, handlesAcquired.size());
-        assertEquals(9, handlesDenied.size());
+
+        @Override
+        public void run() {
+            try {
+                startSignal.await();
+                LockHandle lockHandle = m.acquireLock(lockHolder + String.valueOf(counter), lockName, secondsToWait, secondsToHold);
+                if (lockHandle != null) {
+                    handlesAcquired.add(lockHandle);
+                    assertTrue(lockExists(lockName, lockHolder + String.valueOf(counter)));
+                } else {
+                    handlesDenied.add(lockHolder + String.valueOf(counter));
+                    // could not get lock, make sure our entry is still not in there
+                    assertFalse(lockExists(lockName, lockHolder + String.valueOf(counter)));
+                    return;
+                }
+                try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException e) {
+                }
+                assertTrue(m.releaseLock(lockHolder + String.valueOf(counter), lockName, lockHandle));
+                assertFalse(lockExists(lockName, lockHolder + String.valueOf(counter)));
+                doneSignal.countDown();
+            } catch (InterruptedException ex) {
+            } // return;
+        }
+
     }
 
-    private boolean lockExists(String lockName, String lockHolder) {
+    @Test
+    public void testAcquireLockShutout() throws InterruptedException {
+        int threads = 10;
+
+        CountDownLatch startLatch = new CountDownLatch(1);
+        CountDownLatch endLatch = new CountDownLatch(threads);
+
+        for (int i = 0; i < threads; ++i)
+            new Thread(new LockWorker(startLatch, endLatch, i)).start();
+        startLatch.countDown();
+        endLatch.await();
+
+        assertEquals(1, handlesAcquired.size());
+        assertEquals(threads - 1, handlesDenied.size());
+    }
+
+    boolean lockExists(String lockName, String lockHolder) {
         Document query = m.getLockQuery(lockName);
         Document lock = new Document(m.getCtxKey(), lockHolder);
         Document match = new Document("$elemMatch", lock);

@@ -26,17 +26,18 @@ package rapture.kernel;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.List;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
 import rapture.common.CallingContext;
 import rapture.common.api.EntitlementApi;
 import rapture.common.api.UserApi;
 import rapture.common.impl.jackson.MD5Utils;
 import rapture.common.model.RaptureEntitlement;
 import rapture.common.model.RaptureEntitlementGroup;
-
-import java.util.List;
 
 public class EntitlementUtilLockoutCheckerTest {
     EntitlementApi entApi = null;
