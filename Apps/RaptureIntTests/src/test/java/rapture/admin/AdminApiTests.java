@@ -56,7 +56,7 @@ public class AdminApiTests {
 
     @BeforeClass(groups = { "admin", "nightly" })
     @Parameters({ "RaptureURL", "RaptureUser", "RapturePassword" })
-    public void beforeTest(@Optional("http://localhost:8665/rapture") String url, @Optional("rapture") String user, @Optional("rapture") String password) {
+    public void beforeTest(@Optional("http://192.168.99.100:8665/rapture") String url, @Optional("rapture") String user, @Optional("rapture") String password) {
         helper = new IntegrationTestHelper(url, user, password);
         adminApi = helper.getAdminApi();
         raptureUrl = url;
@@ -65,18 +65,18 @@ public class AdminApiTests {
     @Test(groups = { "admin", "nightly" })
     public void testGetUsers() {
         int MAX_USERS = 10;
-        Set<String> userSet = new HashSet<String>();
+        Set<String> userSet = new HashSet<>();
         Reporter.log("Adding " + MAX_USERS + " users", true);
         for (int i = 0; i < MAX_USERS; i++) {
             String userName = "testuser" + System.nanoTime();
             String description = "This is Test User";
-            String pwd = "testpassword";
+            String pwd = "";
             String email = userName + "@test.com";
 
-            adminApi.addUser(userName, description, MD5Utils.hash16(pwd), email);
+            adminApi.addUser(userName, description, MD5Utils.hash16(pwd), email, "ignored");
             userSet.add(userName);
         }
-        Set<String> raptureUserSet = new HashSet<String>();
+        Set<String> raptureUserSet = new HashSet<>();
         for (RaptureUser ru : adminApi.getAllUsers())
             raptureUserSet.add(ru.getUsername());
         Reporter.log("Checking users exist", true);
@@ -90,7 +90,7 @@ public class AdminApiTests {
         String pwd = "testpassword";
         String email = userName + "@test.com";
         Reporter.log("Adding user " + userName, true);
-        adminApi.addUser(userName, description, MD5Utils.hash16(pwd), email);
+        adminApi.addUser(userName, description, MD5Utils.hash16(pwd), email, "ignored");
 
         RaptureUser user = adminApi.getUser(userName);
         Reporter.log("Checking user " + userName + " exists", true);
@@ -104,7 +104,7 @@ public class AdminApiTests {
         String pwd = "testpassword";
         String email = userName + "@test.com";
         Reporter.log("Adding user " + userName, true);
-        adminApi.addUser(userName, description, MD5Utils.hash16(pwd), email);
+        adminApi.addUser(userName, description, MD5Utils.hash16(pwd), email, "ignored");
 
         RaptureUser user = adminApi.getUser(userName);
         Reporter.log("Checking user " + userName + " exists", true);
@@ -123,7 +123,7 @@ public class AdminApiTests {
         String pwd = "testpassword";
         String email = userName + "@test.com";
         Reporter.log("Adding user " + userName, true);
-        adminApi.addUser(userName, description, MD5Utils.hash16(pwd), email);
+        adminApi.addUser(userName, description, MD5Utils.hash16(pwd), email, "ignored");
 
         RaptureUser user = adminApi.getUser(userName);
         Reporter.log("Checking user " + userName + " exists", true);
@@ -143,7 +143,7 @@ public class AdminApiTests {
         String pwd = "testpassword";
         String email = userName + "@test.com";
         Reporter.log("Adding user " + userName, true);
-        adminApi.addUser(userName, description, MD5Utils.hash16(pwd), email);
+        adminApi.addUser(userName, description, MD5Utils.hash16(pwd), email, "ignored");
         Assert.assertNotNull(adminApi.createPasswordResetToken(userName));
         adminApi.cancelPasswordResetToken(userName);
     }
@@ -155,7 +155,7 @@ public class AdminApiTests {
         String pwd = "testpassword";
         String email = userName + "@test.com";
         Reporter.log("Adding user " + userName, true);
-        adminApi.addUser(userName, description, MD5Utils.hash16(pwd), email);
+        adminApi.addUser(userName, description, MD5Utils.hash16(pwd), email, "ignored");
         String newEmail = userName + "@testnew.com";
         adminApi.updateUserEmail(userName, newEmail);
         Assert.assertEquals(adminApi.getUser(userName).getEmailAddress(), newEmail);
@@ -176,8 +176,8 @@ public class AdminApiTests {
 
         Reporter.log("Copying " + srcRepo.getAuthority() + " to " + targetRepo.getAuthority(), true);
         adminApi.copyDocumentRepo(srcRepo.getAuthority(), targetRepo.getAuthority(), false);
-        Map<String, String> srcMap = new HashMap<String, String>();
-        Map<String, String> targetMap = new HashMap<String, String>();
+        Map<String, String> srcMap = new HashMap<>();
+        Map<String, String> targetMap = new HashMap<>();
         for (String uri : helper.getDocApi().listDocsByUriPrefix(RaptureURI.builder(DOCUMENT, srcRepo.getAuthority()).asString(), 2).keySet()) {
             srcMap.put(uri.replace(RaptureURI.builder(DOCUMENT, srcRepo.getAuthority()).asString(),
                     RaptureURI.builder(DOCUMENT, targetRepo.getAuthority()).asString()), helper.getDocApi().getDoc(uri));
@@ -191,7 +191,7 @@ public class AdminApiTests {
 
     @Test(groups = { "admin", "nightly" })
     public void testGetSystemProperties() {
-        List<String> keys = new ArrayList<String>();
+        List<String> keys = new ArrayList<>();
         keys.add("PATH");
         keys.add("HOME");
 
@@ -208,7 +208,7 @@ public class AdminApiTests {
     public void testGetRepoConfig() {
         Reporter.log("Checking default repo names", true);
         List<RepoConfig> repoConfigs = adminApi.getRepoConfig();
-        Set<String> repoNameSet = new HashSet<String>();
+        Set<String> repoNameSet = new HashSet<>();
         for (RepoConfig repoConfig : repoConfigs) {
             repoNameSet.add(repoConfig.getName());
 
