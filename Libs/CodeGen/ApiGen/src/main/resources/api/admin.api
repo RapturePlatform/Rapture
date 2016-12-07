@@ -46,7 +46,13 @@ api(Admin) {
     field passed is actually the MD5 hash of the password - or at least the same hash function that will be applied when
     logging in to the system (the password is hashed, and then hashed again with the salt returned during the login protocol).]
     @entitle=/admin/main
-    @public void addUser(String userName, String description, String hashPassword, String email, String realName);
+    @public void addUser(String userName, String description, String hashPassword, String email);
+
+    [This method adds a user to the Rapture environment. The user will be in no entitlement groups by default. The password
+    field passed is actually the MD5 hash of the password - or at least the same hash function that will be applied when
+    logging in to the system (the password is hashed, and then hashed again with the salt returned during the login protocol).]
+    @entitle=/admin/main
+    @public void addNamedUser(String userName, String description, String hashPassword, String email, String realName);
 
     [Verify user by providing a secret token]
     @entitle=/admin/main

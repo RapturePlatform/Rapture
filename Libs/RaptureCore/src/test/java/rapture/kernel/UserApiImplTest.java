@@ -55,7 +55,7 @@ public class UserApiImplTest {
         rootContext = ContextFactory.getKernelUser();
         api = Kernel.getUser();
         if (!Kernel.getAdmin().doesUserExist(rootContext, user)) {
-            Kernel.getAdmin().addUser(rootContext, user, "Ozzy", MD5Utils.hash16("ozzy"), "ozzy@sabbath.com", "ignored");
+            Kernel.getAdmin().addUser(rootContext, user, "Ozzy", MD5Utils.hash16("ozzy"), "ozzy@sabbath.com");
         }
         if (!Kernel.getDoc().docRepoExists(rootContext, "//privateAuthority")) {
             Kernel.getDoc().createDocRepo(rootContext, "//privateAuthority", "NREP {} USING MEMORY {}");

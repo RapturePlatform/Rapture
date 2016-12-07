@@ -70,10 +70,10 @@ public class EntitlementUtilLockoutCheckerTest {
 
         rootContext = ContextFactory.getKernelUser();
         if (!Kernel.getAdmin().doesUserExist(rootContext, alice)) {
-            Kernel.getAdmin().addUser(rootContext, alice, "Alice Aardvark", MD5Utils.hash16(alice), "alice@aardvark.com", "ignored");
+            Kernel.getAdmin().addUser(rootContext, alice, "Alice Aardvark", MD5Utils.hash16(alice), "alice@aardvark.com");
         }
         if (!Kernel.getAdmin().doesUserExist(rootContext, bob)) {
-            Kernel.getAdmin().addUser(rootContext, bob, "Bob Bubble", MD5Utils.hash16(bob), "bob@bubble.com", "ignored");
+            Kernel.getAdmin().addUser(rootContext, bob, "Bob Bubble", MD5Utils.hash16(bob), "bob@bubble.com");
         }
 
         aliceContext = Kernel.getLogin().login(alice, alice, null);

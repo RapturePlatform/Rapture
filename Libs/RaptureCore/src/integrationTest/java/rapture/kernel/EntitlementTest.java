@@ -39,7 +39,7 @@ public class EntitlementTest {
     public void setup() {
         Kernel.initBootstrap();
         if (!Kernel.getAdmin().doesUserExist(ctx, user)) {
-            Kernel.getAdmin().addUser(ctx, user, "A new user", MD5Utils.hash16("bluesky"), "heisenberg@mail.com", "ignored");
+            Kernel.getAdmin().addUser(ctx, user, "A new user", MD5Utils.hash16("bluesky"), "heisenberg@mail.com");
         }
         if (!Kernel.getDoc().docRepoExists(ctx, "//privateAuthority")) {
             Kernel.getDoc().createDocRepo(ctx, "//privateAuthority", "NREP {} USING MEMORY {}");

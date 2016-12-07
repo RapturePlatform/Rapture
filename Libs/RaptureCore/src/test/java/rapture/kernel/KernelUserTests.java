@@ -129,7 +129,7 @@ public class KernelUserTests {
 
         }
 
-        Kernel.getAdmin().addUser(ctx, "fred", "A new test user", MD5Utils.hash16("testpassword"), "test@mail.com", "ignored");
+        Kernel.getAdmin().addUser(ctx, "fred", "A new test user", MD5Utils.hash16("testpassword"), "test@mail.com");
 
         Kernel.getLogin().login("fred", "testpassword", null);
 
