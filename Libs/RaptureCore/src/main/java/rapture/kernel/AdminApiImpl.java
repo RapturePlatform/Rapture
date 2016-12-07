@@ -87,7 +87,7 @@ public class AdminApiImpl extends KernelBase implements AdminApi {
     private static final String TEMPLATE = "TEMPLATE"; //$NON-NLS-1$
     private static Logger log = Logger.getLogger(AdminApiImpl.class);
 
-    private Map<String, String> templates = new HashMap<String, String>();
+    private Map<String, String> templates = new HashMap<>();
     Messages adminMessageCatalog;
 
     public AdminApiImpl(Kernel raptureKernel) {
@@ -133,7 +133,7 @@ public class AdminApiImpl extends KernelBase implements AdminApi {
     }
 
     @Override
-    public void addUser(CallingContext context, String userName, String description, String hashPassword, String email) {
+    public void addUser(CallingContext context, String userName, String description, String hashPassword, String email, String realName) {
         checkParameter("User", userName); //$NON-NLS-1$
         // Does the user already exist?
         RaptureUser usr = getUser(context, userName);
@@ -143,6 +143,7 @@ public class AdminApiImpl extends KernelBase implements AdminApi {
             Kernel.getAudit().writeAuditEntry(context, RaptureConstants.DEFAULT_AUDIT_URI, "admin", 2, "New user " + userName + " added by " + iAm);
             usr = new RaptureUser();
             usr.setUsername(userName);
+            usr.setUserId(realName);
             usr.setDescription(description);
             usr.setHashPassword(hashPassword);
             usr.setEmailAddress(email);
@@ -264,7 +265,7 @@ public class AdminApiImpl extends KernelBase implements AdminApi {
         // Get the sessions for this user. Visit and test the content before
         // adding it
         checkParameter("User", user); //$NON-NLS-1$
-        final List<CallingContext> ret = new ArrayList<CallingContext>();
+        final List<CallingContext> ret = new ArrayList<>();
         getEphemeralRepo().visitAll("session", //$NON-NLS-1$
                 null, new RepoVisitor() {
 
@@ -290,7 +291,7 @@ public class AdminApiImpl extends KernelBase implements AdminApi {
 
     @Override
     public Map<String, String> getSystemProperties(CallingContext context, List<String> keys) {
-        Map<String, String> ret = new TreeMap<String, String>();
+        Map<String, String> ret = new TreeMap<>();
         if (keys.isEmpty()) {
             ret.putAll(System.getenv());
             Properties p = System.getProperties();
@@ -511,7 +512,7 @@ public class AdminApiImpl extends KernelBase implements AdminApi {
         if ((values == null) || values.isEmpty()) return;
 
         Map<String, String> metadata = context.getMetadata();
-        if (metadata == null) metadata = new HashMap<String, String>();
+        if (metadata == null) metadata = new HashMap<>();
         for (String key : values.keySet()) {
             if (!overwrite && metadata.containsKey(key)) {
                 throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, key + " exists and overwrite was disallowed");
