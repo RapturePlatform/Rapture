@@ -101,7 +101,7 @@ public class EntitlementIntegrationTest {
         searchApi = helper.getSearchApi();
         admin = helper.getAdminApi();
         if (!admin.doesUserExist(user)) {
-            admin.addUser(user, "Another User", MD5Utils.hash16(user), "user@incapture.net");
+            admin.addUser(user, "Another User", MD5Utils.hash16(user), "user@incapture.net", "ignored");
         }
         helper2 = new IntegrationTestHelper(url, user, user);
         userApi2 = helper2.getUserApi();

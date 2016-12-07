@@ -47,7 +47,6 @@ import rapture.common.PluginConfig;
 import rapture.common.PluginTransportItem;
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
-import rapture.common.StoredProcedureParams;
 import rapture.common.StructuredRepoConfig;
 import rapture.common.client.HttpAdminApi;
 import rapture.common.client.HttpBlobApi;
@@ -105,7 +104,7 @@ public class StructuredApiIntegrationTests {
 
         // If running from eclipse set env var -Penv=docker or use the following
         // url variable settings:
-        // url="http://192.168.99.101:8665/rapture"; //docker
+        // url = "http://192.168.99.101:8665/rapture"; // docker
         // url="http://localhost:8665/rapture";
 
         helper = new IntegrationTestHelper(url, username, password);
@@ -120,7 +119,7 @@ public class StructuredApiIntegrationTests {
         admin = helper.getAdminApi();
         pluginApi = helper.getPluginApi();
         if (!admin.doesUserExist(user)) {
-            admin.addUser(user, "Another User", MD5Utils.hash16(user), "user@incapture.net");
+            admin.addUser(user, "Another User", MD5Utils.hash16(user), "user@incapture.net", "ignored");
         }
         helper2 = new IntegrationTestHelper(url, user, user);
         userApi2 = helper2.getUserApi();
@@ -415,20 +414,17 @@ public class StructuredApiIntegrationTests {
 
     @Test(groups = { "structured", "postgres", "nightly" })
     public void testSqlSequenceGeneration() {
-        RaptureURI repo = new RaptureURI("structured://hhgg");
-        String repoStr = repo.toString();
-        String table = "hhgg/ford";
+        RaptureURI tableUri = new RaptureURI("structured://hhgg/ford");
+        String repoStr = tableUri.toAuthString();
+        String table = tableUri.getShortPath();
         String config = "STRUCTURED { } USING POSTGRES { planet=\"magrathea\" }";
         try {
             if (!structApi.structuredRepoExists(repoStr)) structApi.createStructuredRepo(repoStr, config);
 
-            // It would appear to be a restriction that the sequence name be
-            structApi.createProcedureCallUsingSql(repoStr + "/fordseq", "DROP SEQUENCE ford_ident_seq;");
-            StoredProcedureParams params = new StoredProcedureParams();
-            structApi.callProcedure(repoStr + "/fordseq", params);
-            structApi.createProcedureCallUsingSql(repoStr + "/fordseq", "CREATE SEQUENCE ford_ident_seq;");
-            structApi.callProcedure(repoStr + "/fordseq", params);
-            String sql = "CREATE TABLE hhgg.ford ( ident INTEGER NOT NULL UNIQUE DEFAULT nextval('ford_ident_seq'), name TEXT);";
+            structApi.dropSequence(tableUri.toString(), "ident", true);
+            String seq = structApi.createSequence(tableUri.toString(), "ident", null);
+
+            String sql = "CREATE TABLE hhgg.ford ( ident INTEGER NOT NULL UNIQUE DEFAULT nextval('" + seq + "'), name TEXT);";
             structApi.createTableUsingSql(repoStr, sql);
 
             structApi.insertRow(table, ImmutableMap.of("name", "Dentarthurdent"));
@@ -438,9 +434,11 @@ public class StructuredApiIntegrationTests {
             String ddl = structApi.getDdl(table, true);
             ddl = ddl.substring(0, ddl.indexOf('/'));
 
-            Assert.assertEquals(ddl,
-                    "CREATE SEQUENCE ford_ident_seq;\n\nCREATE TABLE hhgg.ford\n(\n    ident INTEGER NOT NULL UNIQUE DEFAULT nextval('ford_ident_seq'),\n    name TEXT\n);\n\n"
-                            + "INSERT INTO hhgg.ford (ident, name) VALUES ('1', 'Dentarthurdent')\nINSERT INTO hhgg.ford (ident, name) VALUES ('2', 'Tricia McMillan')\n");
+            Assert.assertEquals(
+                    "CREATE SEQUENCE " + seq + ";\n\nCREATE TABLE hhgg.ford\n(\n" + "    ident INTEGER NOT NULL UNIQUE DEFAULT nextval('" + seq
+                            + "'),\n    name TEXT\n);\n\n" + "INSERT INTO hhgg.ford (ident, name) VALUES ('1', 'Dentarthurdent')\n"
+                            + "INSERT INTO hhgg.ford (ident, name) VALUES ('2', 'Tricia McMillan')\n",
+                    ddl);
 
         } finally {
             if (structApi.structuredRepoExists(repoStr)) structApi.deleteStructuredRepo(repoStr);
