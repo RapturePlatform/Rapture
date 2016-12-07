@@ -62,7 +62,7 @@ public class UserApiTest {
         String pwd = "testpassword";
         String email = userName + "@test.com";
 
-        adminApi.addUser(userName, description, MD5Utils.hash16(pwd), email);
+        adminApi.addUser(userName, description, MD5Utils.hash16(pwd), email, "ignored");
         HttpLoginApi userRaptureLogin = new HttpLoginApi(raptureUrl, new SimpleCredentialsProvider(userName, pwd));
         userRaptureLogin.login();
         HttpUserApi user = new HttpUserApi(userRaptureLogin);
@@ -78,7 +78,7 @@ public class UserApiTest {
         String pwd = "testpassword";
         String email = userName + "@test.com";
 
-        adminApi.addUser(userName, description, MD5Utils.hash16(pwd), email);
+        adminApi.addUser(userName, description, MD5Utils.hash16(pwd), email, "ignored");
 
         HttpLoginApi userRaptureLogin = new HttpLoginApi(raptureUrl, new SimpleCredentialsProvider(userName, pwd));
         userRaptureLogin.login();
@@ -97,7 +97,7 @@ public class UserApiTest {
 
         String newUserName = userName + System.nanoTime();
 
-        adminApi.addUser(newUserName, description, MD5Utils.hash16(pwd), email);
+        adminApi.addUser(newUserName, description, MD5Utils.hash16(pwd), email, "ignored");
 
         HttpLoginApi userRaptureLogin = new HttpLoginApi(raptureUrl, new SimpleCredentialsProvider(newUserName, pwd));
         userRaptureLogin.login();
@@ -119,7 +119,7 @@ public class UserApiTest {
 
         String newUserName = userName + System.nanoTime();
 
-        adminApi.addUser(newUserName, description, MD5Utils.hash16(pwd), email);
+        adminApi.addUser(newUserName, description, MD5Utils.hash16(pwd), email, "ignored");
         Assert.assertTrue(adminApi.doesUserExist(newUserName), newUserName + " not created.");
         HttpLoginApi userRaptureLogin = new HttpLoginApi(raptureUrl, new SimpleCredentialsProvider(newUserName, pwd));
         userRaptureLogin.login();
@@ -144,7 +144,7 @@ public class UserApiTest {
         String pwd = "testpassword";
         String email = userName + "@test.com";
 
-        adminApi.addUser(userName, description, MD5Utils.hash16(pwd), email);
+        adminApi.addUser(userName, description, MD5Utils.hash16(pwd), email, "ignored");
 
         HttpLoginApi userRaptureLogin = new HttpLoginApi(raptureUrl, new SimpleCredentialsProvider(userName, pwd));
         userRaptureLogin.login();
@@ -161,7 +161,7 @@ public class UserApiTest {
         String pwd = "testpassword";
         String email = userName + "@test.com";
 
-        adminApi.addUser(userName, description, MD5Utils.hash16(pwd), email);
+        adminApi.addUser(userName, description, MD5Utils.hash16(pwd), email, "ignored");
 
         HttpLoginApi userRaptureLogin = new HttpLoginApi(raptureUrl, new SimpleCredentialsProvider(userName, pwd));
         userRaptureLogin.login();
@@ -182,20 +182,20 @@ public class UserApiTest {
         String email = userName + "@test.com";
         int KEY_COUNT = 5;
 
-        adminApi.addUser(userName, description, MD5Utils.hash16(pwd), email);
+        adminApi.addUser(userName, description, MD5Utils.hash16(pwd), email, "ignored");
 
         HttpLoginApi userRaptureLogin = new HttpLoginApi(raptureUrl, new SimpleCredentialsProvider(userName, pwd));
         userRaptureLogin.login();
 
         HttpUserApi userApiLocal = new HttpUserApi(userRaptureLogin);
-        Set<String> userKeySet = new HashSet<String>();
+        Set<String> userKeySet = new HashSet<>();
         for (int i = 0; i < KEY_COUNT; i++)
             userKeySet.add("testkey" + System.nanoTime());
 
         for (String currKey : userKeySet)
             userApiLocal.addApiKey(currKey);
 
-        Set<String> allUserKeys = new HashSet<String>();
+        Set<String> allUserKeys = new HashSet<>();
         for (String currKey : userApiLocal.getApiKeyPairs())
             allUserKeys.add(currKey.split("/")[0]);
         Assert.assertEquals(allUserKeys, userKeySet);
@@ -208,13 +208,13 @@ public class UserApiTest {
         String pwd = "testpassword";
         String email = userName + "@test.com";
 
-        adminApi.addUser(userName, description, MD5Utils.hash16(pwd), email);
+        adminApi.addUser(userName, description, MD5Utils.hash16(pwd), email, "ignored");
 
         HttpLoginApi userRaptureLogin = new HttpLoginApi(raptureUrl, new SimpleCredentialsProvider(userName, pwd));
         userRaptureLogin.login();
 
         HttpUserApi userApiLocal = new HttpUserApi(userRaptureLogin);
-        Set<String> userKeySet = new HashSet<String>();
+        Set<String> userKeySet = new HashSet<>();
         int KEY_COUNT = 5;
         for (int i = 0; i < KEY_COUNT; i++)
             userKeySet.add("testkey" + System.nanoTime());
@@ -230,7 +230,7 @@ public class UserApiTest {
             userKeySet.remove(currPair[0]);
         }
 
-        Set<String> allUserKeys = new HashSet<String>();
+        Set<String> allUserKeys = new HashSet<>();
 
         for (String currKey : userApiLocal.getApiKeyPairs()) {
             allUserKeys.add(currKey.split("/")[0]);
