@@ -26,17 +26,18 @@ package rapture.kernel;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.List;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
 import rapture.common.CallingContext;
 import rapture.common.api.EntitlementApi;
 import rapture.common.api.UserApi;
 import rapture.common.impl.jackson.MD5Utils;
 import rapture.common.model.RaptureEntitlement;
 import rapture.common.model.RaptureEntitlementGroup;
-
-import java.util.List;
 
 public class EntitlementUtilLockoutCheckerTest {
     EntitlementApi entApi = null;
@@ -69,10 +70,10 @@ public class EntitlementUtilLockoutCheckerTest {
 
         rootContext = ContextFactory.getKernelUser();
         if (!Kernel.getAdmin().doesUserExist(rootContext, alice)) {
-            Kernel.getAdmin().addUser(rootContext, alice, "Alice Aardvark", MD5Utils.hash16(alice), "alice@aardvark.com");
+            Kernel.getAdmin().addUser(rootContext, alice, "Alice Aardvark", MD5Utils.hash16(alice), "alice@aardvark.com", "ignored");
         }
         if (!Kernel.getAdmin().doesUserExist(rootContext, bob)) {
-            Kernel.getAdmin().addUser(rootContext, bob, "Bob Bubble", MD5Utils.hash16(bob), "bob@bubble.com");
+            Kernel.getAdmin().addUser(rootContext, bob, "Bob Bubble", MD5Utils.hash16(bob), "bob@bubble.com", "ignored");
         }
 
         aliceContext = Kernel.getLogin().login(alice, alice, null);
