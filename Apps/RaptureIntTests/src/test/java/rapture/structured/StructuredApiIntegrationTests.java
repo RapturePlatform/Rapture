@@ -104,7 +104,7 @@ public class StructuredApiIntegrationTests {
 
         // If running from eclipse set env var -Penv=docker or use the following
         // url variable settings:
-        url = "http://192.168.99.101:8665/rapture"; // docker
+        // url = "http://192.168.99.101:8665/rapture"; // docker
         // url="http://localhost:8665/rapture";
 
         helper = new IntegrationTestHelper(url, username, password);
