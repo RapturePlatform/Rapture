@@ -45,7 +45,7 @@ public class UserInstaller implements RaptureInstaller {
             log.debug(String.format("Warning (not serious), could not remove user with uri [%s].   Message is [%s]", uri.toString(), e.getMessage()));
         }
         RaptureUser user = JacksonUtil.objectFromJson(item.getContent(), RaptureUser.class);
-        Kernel.getAdmin().addUser(context, user.getUsername(), user.getDescription(), user.getHashPassword(), user.getEmailAddress());
+        Kernel.getAdmin().addUser(context, user.getUsername(), user.getDescription(), user.getHashPassword(), user.getEmailAddress(), user.getUserId());
     }
 
     @Override
