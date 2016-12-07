@@ -109,6 +109,7 @@ public class MongoLockHandlerTest {
         assertEquals(10, handlesAcquired.size());
     }
 
+    @Ignore
     @Test
     public void testAcquireLockShutout() throws InterruptedException {
         final String lockHolder = "me";
