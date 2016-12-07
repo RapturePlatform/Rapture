@@ -133,7 +133,12 @@ public class AdminApiImpl extends KernelBase implements AdminApi {
     }
 
     @Override
-    public void addUser(CallingContext context, String userName, String description, String hashPassword, String email, String realName) {
+    public void addUser(CallingContext context, String userName, String description, String hashPassword, String email) {
+        addNamedUser(context, userName, description, hashPassword, email, "");
+    }
+
+    @Override
+    public void addNamedUser(CallingContext context, String userName, String description, String hashPassword, String email, String realName) {
         checkParameter("User", userName); //$NON-NLS-1$
         // Does the user already exist?
         RaptureUser usr = getUser(context, userName);

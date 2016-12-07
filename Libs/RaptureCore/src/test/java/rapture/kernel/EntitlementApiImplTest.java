@@ -105,16 +105,16 @@ public class EntitlementApiImplTest {
 
         api = Kernel.getUser();
         if (!Kernel.getAdmin().doesUserExist(rootContext, ozzy)) {
-            Kernel.getAdmin().addUser(rootContext, ozzy, "Ozzy Osbourne", MD5Utils.hash16(ozzy), "ozzy@sabbath.com", "ignored");
+            Kernel.getAdmin().addUser(rootContext, ozzy, "Ozzy Osbourne", MD5Utils.hash16(ozzy), "ozzy@sabbath.com");
         }
         if (!Kernel.getAdmin().doesUserExist(rootContext, geezer)) {
-            Kernel.getAdmin().addUser(rootContext, geezer, "Geezer Butler", MD5Utils.hash16(geezer), "geezer@sabbath.com", "ignored");
+            Kernel.getAdmin().addUser(rootContext, geezer, "Geezer Butler", MD5Utils.hash16(geezer), "geezer@sabbath.com");
         }
         if (!Kernel.getAdmin().doesUserExist(rootContext, bill)) {
-            Kernel.getAdmin().addUser(rootContext, bill, "Bill Ward", MD5Utils.hash16(bill), "bill@sabbath.com", "ignored");
+            Kernel.getAdmin().addUser(rootContext, bill, "Bill Ward", MD5Utils.hash16(bill), "bill@sabbath.com");
         }
         if (!Kernel.getAdmin().doesUserExist(rootContext, tony)) {
-            Kernel.getAdmin().addUser(rootContext, tony, "Tony Iommi", MD5Utils.hash16(tony), "tony@sabbath.com", "ignored");
+            Kernel.getAdmin().addUser(rootContext, tony, "Tony Iommi", MD5Utils.hash16(tony), "tony@sabbath.com");
         }
 
         if (!Kernel.getDoc().docRepoExists(rootContext, "//Black")) {
