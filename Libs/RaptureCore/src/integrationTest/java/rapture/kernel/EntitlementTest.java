@@ -23,10 +23,7 @@ import rapture.common.CallingContext;
 import rapture.common.EntitlementSet;
 import rapture.common.exception.RaptureException;
 import rapture.common.impl.jackson.MD5Utils;
-import rapture.common.model.RaptureEntitlement;
 import rapture.common.model.RaptureEntitlementGroup;
-import rapture.common.model.RaptureEntitlementGroupStorage;
-import rapture.common.model.RaptureEntitlementStorage;
 import rapture.common.model.RaptureUser;
 
 public class EntitlementTest {
@@ -42,7 +39,7 @@ public class EntitlementTest {
     public void setup() {
         Kernel.initBootstrap();
         if (!Kernel.getAdmin().doesUserExist(ctx, user)) {
-            Kernel.getAdmin().addUser(ctx, user, "A new user", MD5Utils.hash16("bluesky"), "heisenberg@mail.com");
+            Kernel.getAdmin().addUser(ctx, user, "A new user", MD5Utils.hash16("bluesky"), "heisenberg@mail.com", "ignored");
         }
         if (!Kernel.getDoc().docRepoExists(ctx, "//privateAuthority")) {
             Kernel.getDoc().createDocRepo(ctx, "//privateAuthority", "NREP {} USING MEMORY {}");

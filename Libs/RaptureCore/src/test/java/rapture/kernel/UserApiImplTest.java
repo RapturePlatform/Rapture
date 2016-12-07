@@ -27,11 +27,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import rapture.common.CallingContext;
-import rapture.common.EntitlementSet;
 import rapture.common.api.DocApi;
 import rapture.common.api.EntitlementApi;
 import rapture.common.api.UserApi;
@@ -57,7 +55,7 @@ public class UserApiImplTest {
         rootContext = ContextFactory.getKernelUser();
         api = Kernel.getUser();
         if (!Kernel.getAdmin().doesUserExist(rootContext, user)) {
-            Kernel.getAdmin().addUser(rootContext, user, "Ozzy", MD5Utils.hash16("ozzy"), "ozzy@sabbath.com");
+            Kernel.getAdmin().addUser(rootContext, user, "Ozzy", MD5Utils.hash16("ozzy"), "ozzy@sabbath.com", "ignored");
         }
         if (!Kernel.getDoc().docRepoExists(rootContext, "//privateAuthority")) {
             Kernel.getDoc().createDocRepo(rootContext, "//privateAuthority", "NREP {} USING MEMORY {}");
