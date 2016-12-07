@@ -38,6 +38,7 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import rapture.common.CallingContext;
@@ -138,7 +139,7 @@ public class NotificationStepTest {
     public static void tearDownAfterClass() throws Exception {
     }
 
-    // Fill in for testing
+    // Fill in for testing and enable testNotificationEmailStep
 	String username = "";
 	String password = "";
 	String host = "";
@@ -165,6 +166,7 @@ public class NotificationStepTest {
     }
 
     // Enable this when we have a SMTP config that Google doesn't keep blocking
+    @Ignore
     @Test
     public void testNotificationEmailStep() {
 
