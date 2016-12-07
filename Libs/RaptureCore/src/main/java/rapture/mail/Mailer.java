@@ -23,21 +23,29 @@
  */
 package rapture.mail;
 
+import java.util.Date;
+import java.util.Map;
+import java.util.Properties;
+
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.stringtemplate.v4.ST;
+
+import com.google.common.net.MediaType;
+
 import rapture.common.CallingContext;
 import rapture.common.exception.RaptureExceptionFactory;
 import rapture.common.impl.jackson.JacksonUtil;
 import rapture.kernel.ContextFactory;
 import rapture.kernel.Kernel;
-
-import javax.mail.*;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
-import java.util.Date;
-import java.util.Map;
-import java.util.Properties;
 
 /**
  * Created by yanwang on 11/18/15.
@@ -72,15 +80,31 @@ public class Mailer {
         }
     }
 
+    public static void email(String[] recipients, String subject, String message) throws MessagingException {
+        final SMTPConfig config = getSMTPConfig();
+        Session session = getSession(config);
+        Message msg = new MimeMessage(session);
+        msg.setFrom(new InternetAddress(config.getFrom()));
+        InternetAddress[] address = new InternetAddress[recipients.length];
+        for (int i = 0; i < recipients.length; i++)
+            address[i] = new InternetAddress(recipients[i]);
+        msg.setRecipients(Message.RecipientType.TO, address);
+        msg.setSubject(subject);
+        msg.setContent(message, MediaType.PLAIN_TEXT_UTF_8.toString());
+        msg.setSentDate(new Date());
+        Transport.send(msg);
+    }
+
     public static Session getSession(final SMTPConfig config) {
         // Create some properties and get the default Session.
         Properties props = System.getProperties();
-        props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.starttls.enable", "true");
-        props.put("mail.smtp.starttls.required", "true");
+        props.put("mail.smtp.auth", config.isAuthentication());
+        props.put("mail.smtp.starttls.enable", config.isTlsenable());
+        props.put("mail.smtp.starttls.required", config.isTlsrequired());
         props.put("mail.smtp.host", config.getHost());
         props.put("mail.smtp.port", config.getPort());
         Session session = Session.getInstance(props, new javax.mail.Authenticator() {
+            @Override
             protected PasswordAuthentication getPasswordAuthentication() {
                 return new PasswordAuthentication(config.getUsername(), config.getPassword());
             }
