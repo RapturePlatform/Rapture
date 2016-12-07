@@ -24,6 +24,7 @@
 package rapture.notification.step;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -32,6 +33,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -47,8 +49,10 @@ import rapture.common.Scheme;
 import rapture.common.WorkOrderExecutionState;
 import rapture.common.dp.Step;
 import rapture.common.dp.StepRecord;
+import rapture.common.dp.StepRecordDebug;
 import rapture.common.dp.Steps;
 import rapture.common.dp.WorkOrderDebug;
+import rapture.common.dp.WorkerDebug;
 import rapture.common.dp.Workflow;
 import rapture.common.exception.RaptureException;
 import rapture.common.impl.jackson.JacksonUtil;
@@ -135,21 +139,26 @@ public class NotificationStepTest {
     public static void tearDownAfterClass() throws Exception {
     }
 
+    // Fill in for testing and enable testNotificationEmailStep
+	String username = "";
+	String password = "";
+	String host = "";
+    int port = 587;
+
     @Before
     public void setUp() throws Exception {
         // create smtp config
         String area = "CONFIG";
         CallingContext anon = ContextFactory.getAnonymousUser();
-        SMTPConfig smtpConfig = new SMTPConfig().setFrom("TO BE SET").setUsername("TO BE SET").setPassword("TO BE SET").setHost("TO BE SET").setPort(587);
+        SMTPConfig smtpConfig = new SMTPConfig().setFrom("support@incapturetechnologies.com").setUsername(username).setPassword(password).setHost(host)
+                .setPort(port).setAuthentication(!StringUtils.isEmpty(password)).setTlsenable(!StringUtils.isEmpty(password))
+                .setTlsrequired(!StringUtils.isEmpty(password));
         Kernel.getSys().writeSystemConfig(context, area, Mailer.SMTP_CONFIG_URL, JacksonUtil.jsonFromObject(smtpConfig));
 
         // create dummy email template
-        String template = "{\"emailTo\":\"bmsdrama2016@gmail.com\",\"subject\":\"Ignore this message\",\"msgBody\":\"This email is generated from NotificationStepTest in WorkflowCommonSteps\"}";
+        String template = "{\"emailTo\":\"support@incapturetechnologies.com\",\"subject\":\"Ignore this message\",\"msgBody\":\"This email is generated from NotificationStepTest in WorkflowCommonSteps\"}";
         String url = Mailer.EMAIL_TEMPLATE_DIR + templateName;
         Kernel.getSys().writeSystemConfig(context, area, url, template);
-
-        // update user email
-        Kernel.getAdmin().updateUserEmail(context, "rapture", "support@incapturetechnologies.com");
     }
 
     @After
@@ -189,7 +198,14 @@ public class NotificationStepTest {
             state = debug.getOrder().getStatus();
         } while (((state == WorkOrderExecutionState.NEW) || (state == WorkOrderExecutionState.ACTIVE)) && (System.currentTimeMillis() < timeout));
 
-        StepRecord sr = debug.getWorkerDebugs().get(0).getStepRecordDebugs().get(0).getStepRecord();
+        StepRecord sr = null;
+        for (WorkerDebug wd : debug.getWorkerDebugs()) {
+            for (StepRecordDebug srd : wd.getStepRecordDebugs()) {
+                sr = srd.getStepRecord();
+                System.out.println(JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(sr)));
+            }
+        }
+        assertNotNull(sr);
         assertEquals(sr.toString(), Steps.NEXT.toString(), sr.getRetVal());
         assertEquals(WorkOrderExecutionState.FINISHED, debug.getOrder().getStatus());
     }

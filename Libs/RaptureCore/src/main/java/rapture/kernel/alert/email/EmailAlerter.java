@@ -23,27 +23,23 @@
  */
 package rapture.kernel.alert.email;
 
+import javax.mail.MessagingException;
+
 import org.apache.log4j.Logger;
+
 import rapture.common.impl.jackson.JacksonUtil;
 import rapture.event.RaptureAlertEvent;
 import rapture.kernel.ContextFactory;
 import rapture.kernel.Kernel;
 import rapture.kernel.alert.EventAlerter;
 import rapture.mail.EmailTemplate;
-import rapture.mail.SMTPConfig;
-
-import javax.mail.*;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
-import java.util.Properties;
+import rapture.mail.Mailer;
 
 public class EmailAlerter implements EventAlerter {
     public static final String TYPE = "EMAIL";
 
     private static final Logger logger = Logger.getLogger(EmailAlerter.class);
-    private static final String CONFIG_URI = "dp/alert/config/email";
     private static final String TEMPLATE_URI = "dp/alert/template/email/";
-    private static final SMTPConfig EMAIL_CONFIG = getEmailConfig();
 
     private EmailTemplate emailTemplate;
 
@@ -60,39 +56,15 @@ public class EmailAlerter implements EventAlerter {
 
     @Override
     public void alert(RaptureAlertEvent event) {
-        String from = EMAIL_CONFIG.getFrom();
-        String to = emailTemplate.getEmailTo();
+        String[] to = new String[1];
+        to[0] = emailTemplate.getEmailTo();
         String subject = event.parseTemplate(emailTemplate.getSubject());
         String msgBody = event.parseTemplate(emailTemplate.getMsgBody());
         try {
-            Message message = new MimeMessage(getSession());
-            message.setFrom(new InternetAddress(from));
-            message.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
-            message.setSubject(subject);
-            message.setText(msgBody);
-            Transport.send(message);
+            Mailer.email(to, subject, msgBody);
         } catch (MessagingException e) {
-            logger.error("Failed to send email", e);
+            logger.warn("Unable to send email", e);
         }
     }
 
-    private Session getSession() {
-        Properties props = new Properties();
-        props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.starttls.enable", "true");
-        props.put("mail.smtp.host", EMAIL_CONFIG.getHost());
-        props.put("mail.smtp.port", EMAIL_CONFIG.getPort());
-
-        return Session.getDefaultInstance(props, new Authenticator() {
-            @Override
-            protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(EMAIL_CONFIG.getUsername(), EMAIL_CONFIG.getPassword());
-            }
-        });
-    }
-
-    private static SMTPConfig getEmailConfig() {
-        String configString = Kernel.getSys().retrieveSystemConfig(ContextFactory.getKernelUser(), "CONFIG", CONFIG_URI);
-        return JacksonUtil.objectFromJson(configString, SMTPConfig.class);
-    }
 }
