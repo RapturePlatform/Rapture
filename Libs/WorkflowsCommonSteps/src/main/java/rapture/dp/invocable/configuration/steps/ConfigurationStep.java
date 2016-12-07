@@ -63,6 +63,7 @@ public class ConfigurationStep extends AbstractInvocable {
     public String invoke(CallingContext ctx) {
         DecisionApi decision = Kernel.getDecision();
         String workOrderUri = new RaptureURI(getWorkerURI(), Scheme.WORKORDER).toShortString();
+        decision.setContextLiteral(ctx, workOrderUri, "WORKORDER", new RaptureURI(workOrderUri).getLeafName());
         String config = StringUtils.stripToNull(decision.getContextValue(ctx, workOrderUri, "CONFIGURATION"));
 
         try {

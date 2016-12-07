@@ -63,7 +63,7 @@ public class SendFileStep extends AbstractInvocable {
 
     @Override
     public String invoke(CallingContext ctx) {
-        DecisionApi decieion = Kernel.getDecision();
+        decision = Kernel.getDecision();
         try {
             decision.setContextLiteral(ctx, getWorkerURI(), "STEPNAME", getStepName());
 
@@ -84,8 +84,8 @@ public class SendFileStep extends AbstractInvocable {
 
             String copy = StringUtils.stripToNull(decision.getContextValue(ctx, getWorkerURI(), "COPY_FILES"));
             if (copy == null) {
-                decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), "No files to copy");
-                decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), getStepName() + ": No files to copy", false);
+                decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), "COPY_FILES context variable is not set");
+                decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), getStepName() + ": No files to copy - COPY_FILES context variable is not set", false);
                 return getNextTransition();
             }
 

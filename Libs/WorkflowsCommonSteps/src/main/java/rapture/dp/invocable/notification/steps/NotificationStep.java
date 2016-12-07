@@ -27,19 +27,11 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
-import javax.mail.Message;
 import javax.mail.MessagingException;
-import javax.mail.PasswordAuthentication;
-import javax.mail.Session;
-import javax.mail.Transport;
 import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -57,7 +49,6 @@ import rapture.kernel.Kernel;
 import rapture.kernel.dp.ExecutionContextUtil;
 import rapture.mail.EmailTemplate;
 import rapture.mail.Mailer;
-import rapture.mail.SMTPConfig;
 
 // Should maybe subclass NotificationStep to provide other notification mechanisms?
 
@@ -178,10 +169,7 @@ public class NotificationStep extends AbstractInvocable {
         }
     }
 
-    // Provided as an alternative to using admin.emailUser
     private boolean sendEmail(CallingContext ctx) throws AddressException, MessagingException {
-
-        final SMTPConfig config = Mailer.getSMTPConfig();
         String message = StringUtils.stripToNull(decision.getContextValue(ctx, getWorkerURI(), "MESSAGE_BODY"));
         String subject = StringUtils.stripToNull(decision.getContextValue(ctx, getWorkerURI(), "MESSAGE_SUBJECT"));
         String recipientList = StringUtils.stripToNull(decision.getContextValue(ctx, getWorkerURI(), "EMAIL_RECIPIENTS"));
@@ -207,33 +195,13 @@ public class NotificationStep extends AbstractInvocable {
             return false;
         }
 
-        Properties props = System.getProperties();
-        props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.starttls.enable", "true");
-        props.put("mail.smtp.starttls.required", "true");
-        props.put("mail.smtp.host", config.getHost());
-        props.put("mail.smtp.port", config.getPort());
-        Session session = Session.getInstance(props, new javax.mail.Authenticator() {
-            @Override
-            protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(config.getFrom(), config.getPassword());
-            }
-        });
-
-        Message msg = new MimeMessage(session);
-        msg.setFrom(new InternetAddress(config.getFrom()));
-        String[] allRecipients = renderTemplate(ctx, recipientList).split("[, ]+");
-
-        InternetAddress[] address = new InternetAddress[allRecipients.length];
-        for (int i = 0; i < allRecipients.length; i++)
-            address[i] = new InternetAddress(allRecipients[i]);
-
-        msg.setRecipients(Message.RecipientType.TO, address);
-        msg.setSubject(renderTemplate(ctx, subject));
-        msg.setContent(renderTemplate(ctx, message), MediaType.PLAIN_TEXT_UTF_8.toString());
-        msg.setSentDate(new Date());
-        Transport.send(msg);
-        decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), getStepName() + ": email notification sent successfully", false);
-        return true;
+        try {
+            Mailer.email(renderTemplate(ctx, recipientList).split("[, ]+"), renderTemplate(ctx, subject), renderTemplate(ctx, message));
+            decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), getStepName() + ": email notification sent successfully", false);
+            return true;
+        } catch (MessagingException e) {
+            log.warn("Unable to send email", e);
+            return false;
+        }
     }
 }
