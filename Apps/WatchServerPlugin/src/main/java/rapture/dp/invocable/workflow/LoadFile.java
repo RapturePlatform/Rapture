@@ -45,12 +45,11 @@ public class LoadFile extends AbstractStep {
     @Override
     public String invoke(CallingContext ctx) {
         String archiveUriPrefix = "blob://archive/";
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss");
-        String dateTime = LocalDateTime.now().format(formatter);
+        String dateTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
         // create a unique uri path to store file in and for other steps use
         Kernel.getDecision().setContextLiteral(ctx, getWorkerURI(), "folderName", dateTime);
         // get the context variable passed into workflow
-        String absFilePath = Kernel.getDecision().getContextValue(ctx, getWorkerURI(), "filetoupload");
+        String absFilePath = Kernel.getDecision().getContextValue(ctx, getWorkerURI(), "filetoprocess");
         log.info("Loading File:" + absFilePath);
 
         try {

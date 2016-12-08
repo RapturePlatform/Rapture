@@ -1,4 +1,0 @@
-#To build WatchServer docker image:
-1. rm -r WatchServer/
-2. cp -R ../build/install/WatchServer/ WatchServer/
-3. docker build -t incapture/watchserver .
