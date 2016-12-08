@@ -119,7 +119,7 @@ public class StructuredApiIntegrationTests {
         admin = helper.getAdminApi();
         pluginApi = helper.getPluginApi();
         if (!admin.doesUserExist(user)) {
-            admin.addUser(user, "Another User", MD5Utils.hash16(user), "user@incapture.net", "ignored");
+            admin.addUser(user, "Another User", MD5Utils.hash16(user), "user@incapture.net");
         }
         helper2 = new IntegrationTestHelper(url, user, user);
         userApi2 = helper2.getUserApi();

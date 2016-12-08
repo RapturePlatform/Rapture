@@ -73,7 +73,7 @@ public class AdminApiTests {
             String pwd = "";
             String email = userName + "@test.com";
 
-            adminApi.addUser(userName, description, MD5Utils.hash16(pwd), email, "ignored");
+            adminApi.addUser(userName, description, MD5Utils.hash16(pwd), email);
             userSet.add(userName);
         }
         Set<String> raptureUserSet = new HashSet<>();
@@ -90,7 +90,7 @@ public class AdminApiTests {
         String pwd = "testpassword";
         String email = userName + "@test.com";
         Reporter.log("Adding user " + userName, true);
-        adminApi.addUser(userName, description, MD5Utils.hash16(pwd), email, "ignored");
+        adminApi.addUser(userName, description, MD5Utils.hash16(pwd), email);
 
         RaptureUser user = adminApi.getUser(userName);
         Reporter.log("Checking user " + userName + " exists", true);
@@ -104,7 +104,7 @@ public class AdminApiTests {
         String pwd = "testpassword";
         String email = userName + "@test.com";
         Reporter.log("Adding user " + userName, true);
-        adminApi.addUser(userName, description, MD5Utils.hash16(pwd), email, "ignored");
+        adminApi.addUser(userName, description, MD5Utils.hash16(pwd), email);
 
         RaptureUser user = adminApi.getUser(userName);
         Reporter.log("Checking user " + userName + " exists", true);
@@ -123,7 +123,7 @@ public class AdminApiTests {
         String pwd = "testpassword";
         String email = userName + "@test.com";
         Reporter.log("Adding user " + userName, true);
-        adminApi.addUser(userName, description, MD5Utils.hash16(pwd), email, "ignored");
+        adminApi.addUser(userName, description, MD5Utils.hash16(pwd), email);
 
         RaptureUser user = adminApi.getUser(userName);
         Reporter.log("Checking user " + userName + " exists", true);
@@ -143,7 +143,7 @@ public class AdminApiTests {
         String pwd = "testpassword";
         String email = userName + "@test.com";
         Reporter.log("Adding user " + userName, true);
-        adminApi.addUser(userName, description, MD5Utils.hash16(pwd), email, "ignored");
+        adminApi.addUser(userName, description, MD5Utils.hash16(pwd), email);
         Assert.assertNotNull(adminApi.createPasswordResetToken(userName));
         adminApi.cancelPasswordResetToken(userName);
     }
@@ -155,7 +155,7 @@ public class AdminApiTests {
         String pwd = "testpassword";
         String email = userName + "@test.com";
         Reporter.log("Adding user " + userName, true);
-        adminApi.addUser(userName, description, MD5Utils.hash16(pwd), email, "ignored");
+        adminApi.addUser(userName, description, MD5Utils.hash16(pwd), email);
         String newEmail = userName + "@testnew.com";
         adminApi.updateUserEmail(userName, newEmail);
         Assert.assertEquals(adminApi.getUser(userName).getEmailAddress(), newEmail);
