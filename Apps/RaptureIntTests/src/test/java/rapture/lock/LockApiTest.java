@@ -69,7 +69,7 @@ public class LockApiTest {
         lockApi = helper.getLockApi();
         admin = helper.getAdminApi();
         if (!admin.doesUserExist(user)) {
-            admin.addUser(user, "Another User", MD5Utils.hash16(user), "user@incapture.net", "ignored");
+            admin.addUser(user, "Another User", MD5Utils.hash16(user), "user@incapture.net");
         }
 
         helper2 = new IntegrationTestHelper(url, user, user);
