@@ -38,6 +38,7 @@ import java.util.concurrent.TimeUnit;
 import org.bson.Document;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.Ignore;
 
 import com.github.fakemongo.Fongo;
 import com.mongodb.client.MongoCollection;
@@ -158,6 +159,7 @@ public class MongoLockHandlerTest {
 
     }
 
+    @Ignore
     @Test
     public void testAcquireLockShutout() throws InterruptedException {
         int threads = 10;
