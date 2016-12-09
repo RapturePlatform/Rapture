@@ -1,13 +1,37 @@
 {
-  "/opt/test/subfolder" : [ {
-    "event" : "ENTRY_CREATE",
-    "action" : "script://scripts/incapture/watchserver/createaction"
-  }, {
-    "event" : "ENTRY_MODIFY",
-    "action" : "script://scripts/incapture/watchserver/modifyaction"
-  } ],
-  "/home/ftpusers/filedrop" : [ {
-    "event" : "ENTRY_CREATE",
-    "action" : "workflow://workflows/incapture/watchserver/wsload"
-  } ]
+	"sources": [{
+		"type": "local",
+		"config": {
+			"folder": "/tmp/subfolder",
+			"events": [{
+					"event": "CREATE",
+					"action": "script://scripts/incapture/watchserver/createaction"
+			}, {
+					"event": "MODIFY",
+					"action": "script://scripts/incapture/watchserver/modifyaction"
+			}, {
+					"event": "DELETE",
+					"action": "script://scripts/incapture/watchserver/modifyaction"
+			}]
+		}
+	}, {
+		"type": "ftp",
+		"config": {
+			"folder": "ftp://<update with FTP Server IP>",
+			"connection": {
+					"username": "user",
+					"password": "password",
+					"port": "21",
+					"pathtomonitor": "/test",
+					"ftppassivemode": "true"
+			},
+			"events": [{
+					"event": "CREATE",
+					"action": "workflow://workflows/incapture/watchserver/wsload"
+			}, {
+					"event": "MODIFY",
+					"action": "script://scripts/incapture/watchserver/modifyaction"
+			}]
+		}
+	}]
 }
