@@ -76,6 +76,7 @@ docker run -d -p 8080:8080 -p 8665:8665 --link mongo --link rabbit -v fileDropTe
 docker run -d -p 8000:8000 --link curtis --name rim incapture/rim
 ```
 **Checkpoint**
+
 To ensure environment is up login to your local environment on [http://localhost:8000/browser](http://localhost:8000/browser)
 
 Credentials are rapture/rapture.
@@ -89,15 +90,17 @@ docker inspect --format '{{ .NetworkSettings.IPAddress }}' ftpserver
 docker run --link curtis incapture/watchserverplugin
 ```
 **Update the WatchServer Configuration**
-1. Load the RIM UI: http://localhost:8000/browser/_~doc~_sys.config/watchserver/config&state=editing
-2. In the config json file update the FTP IP:
-    "folder" : "ftp://<update with FTP Server IP>",
+
+1. Edit the config document: [http://localhost:8000/browser/_~doc~_sys.config/watchserver/config&state=editing](http://localhost:8000/browser/_~doc~_sys.config/watchserver/config&state=editing)
+2. In the config json file update the FTP IP: "folder" : "ftp://\<update with FTP Server IP\>"
 3. Hit the SAVE button
+
 **Start WatchServer**
 ```
 docker run -d --link mongo --link rabbit --name watchserver incapture/watchserver
 docker logs -f watchserver
 ```
+
 **Checkpoint**
 
 To ensure WatchServer has started successfully the log should state: _"INFO [main] (WatchServer.java:141) <> [] - WatchServer started and ready to process events."_
