@@ -38,7 +38,6 @@ import java.util.concurrent.TimeUnit;
 import org.bson.Document;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.Ignore;
 
 import com.github.fakemongo.Fongo;
 import com.mongodb.client.MongoCollection;
@@ -144,6 +143,7 @@ public class MongoLockHandlerTest {
                     handlesDenied.add(lockHolder + String.valueOf(counter));
                     // could not get lock, make sure our entry is still not in there
                     assertFalse(lockExists(lockName, lockHolder + String.valueOf(counter)));
+                    doneSignal.countDown();
                     return;
                 }
                 try {
@@ -159,7 +159,6 @@ public class MongoLockHandlerTest {
 
     }
 
-    @Ignore
     @Test
     public void testAcquireLockShutout() throws InterruptedException {
         int threads = 10;
@@ -169,6 +168,14 @@ public class MongoLockHandlerTest {
 
         for (int i = 0; i < threads; ++i)
             new Thread(new LockWorker(startLatch, endLatch, i)).start();
+
+        // Let the threads initialiase
+
+        try {
+            Thread.sleep(100);
+        } catch (Exception e) {
+        }
+
         startLatch.countDown();
         endLatch.await();
 
