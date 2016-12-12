@@ -39,6 +39,7 @@ import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPReply;
@@ -184,10 +185,9 @@ public class FTPConnection implements Connection {
                 }
                 log.debug("Logging in user: " + config.getLoginId());
                 if (!ftpClient.login(config.getLoginId(), config.getPassword())) {
-                    log.info("Could not login to " + config.getAddress() + " as " + config.getLoginId());
                     ftpClient.logout();
                     throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR,
-                            "Could not login to " + config.getAddress() + " as " + config.getLoginId());
+                            "Could not login via FTP to " + config.getAddress() + " as " + config.getLoginId());
                 }
                 isLoggedIn = true;
                 log.debug("Entering local passive mode");
@@ -263,11 +263,13 @@ public class FTPConnection implements Connection {
         if (slash > 0) {
             client.changeWorkingDirectory(fileName.substring(0, slash));
         }
+        client.setFileType(FTP.BINARY_FILE_TYPE);
         return client.storeFile(fileName.substring(slash + 1), stream);
     }
 
     /* SFTP is different */
     public boolean retrieveFile(String fileName, OutputStream stream) throws IOException {
+        getFtpClient().setFileType(FTP.BINARY_FILE_TYPE);
         return getFtpClient().retrieveFile(fileName, stream);
     }
 
@@ -299,14 +301,22 @@ public class FTPConnection implements Connection {
                         localName = localName.substring(6);
                     }
 
-                    if (localName.startsWith("//")) {
-                        outStream = new RaptureURIOutputStream(new RaptureURI(localName, Scheme.DOCUMENT)).setContext(context);
-                    } else if (!localName.startsWith("/")) {
-                        outStream = new RaptureURIOutputStream(new RaptureURI(localName)).setContext(context);
-                    } else {
-                        Path target = Paths.get(localName);
-                        if (!target.getParent().toFile().exists()) Files.createDirectories(target.getParent());
-                        outStream = new FileOutputStream(target.toFile());
+                    try {
+                        if (localName.startsWith("//")) {
+                            outStream = new RaptureURIOutputStream(new RaptureURI(localName, Scheme.DOCUMENT)).setContext(context);
+                        } else if (!localName.startsWith("/")) {
+                            outStream = new RaptureURIOutputStream(new RaptureURI(localName)).setContext(context);
+                        } else {
+                            Path target = Paths.get(localName);
+                            if (!target.getParent().toFile().exists()) Files.createDirectories(target.getParent());
+                            if (!target.getParent().toFile()
+                                    .canWrite()) throw new IllegalArgumentException("No write access to " + target.toFile().getAbsolutePath());
+                            outStream = new FileOutputStream(target.toFile());
+                        }
+                    } catch (Exception e) {
+                        log.warn("Cannot store " + localName + " : " + e.getMessage());
+                        request.setStatus(Status.ERROR);
+                        return request;
                     }
                 }
 
@@ -316,13 +326,18 @@ public class FTPConnection implements Connection {
                     log.debug("Local copy from " + file.getAbsolutePath());
                     if (IOUtils.copy(new FileInputStream(file), outStream) > 0) outStream.flush();
                 } else {
-                    isRetrieved = retrieveFile(request.getRemoteName(), outStream);
+                    String remoteName = request.getRemoteName();
+                    isRetrieved = retrieveFile(remoteName, outStream);
                     if (isRetrieved) {
                         log.debug("File retrieved");
                         request.setStatus(Status.SUCCESS);
                         outStream.flush();
                     } else {
-                        log.warn(String.format("Missing response from %s", request.getRemoteName()));
+                        int replyCode = getFtpClient().getReplyCode();
+                        log.warn(String.format("Error retrieving %s Server returned response code %d", request.getRemoteName(), replyCode));
+                        for (String replyString : getFtpClient().getReplyStrings()) {
+                            log.warn(replyString);
+                        }
                         request.setStatus(Status.ERROR);
                     }
                 }
