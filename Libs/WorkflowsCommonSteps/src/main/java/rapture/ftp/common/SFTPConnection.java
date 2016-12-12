@@ -58,6 +58,7 @@ public class SFTPConnection extends FTPConnection {
     public SFTPConnection(FTPConnectionConfig config) {
         super(config);
         if (config.isUseSFTP()) {
+            log.info("Connecting via SFTP");
             jsch = new JSch();
         } else {
             log.info("useSFTP is false - using FTP");
@@ -67,8 +68,10 @@ public class SFTPConnection extends FTPConnection {
 
     public SFTPConnection(String configUri) {
         super(configUri);
-        if (getConfig().isUseSFTP()) jsch = new JSch();
-        else {
+        if (getConfig().isUseSFTP()) {
+            log.info("Connecting via SFTP");
+            jsch = new JSch();
+        } else {
             log.info("useSFTP is false - using FTP");
             jsch = null;
         }
@@ -81,10 +84,10 @@ public class SFTPConnection extends FTPConnection {
             return true;
         }
 
-        if (!config.isUseSFTP()) {
-            return super.connectAndLogin();
-        } else {
-            if (!isConnected()) {
+        try {
+            if (!config.isUseSFTP())
+                return super.connectAndLogin();
+            else if (!isConnected()) {
                 return FTPService.runWithRetry("Could not login to " + config.getAddress() + " as " + config.getLoginId(), this, false,
                         new FTPAction<Boolean>() {
                             @SuppressWarnings("synthetic-access")
@@ -120,6 +123,8 @@ public class SFTPConnection extends FTPConnection {
                             }
                         });
             }
+        } catch (Exception e) {
+            log.error(e.getMessage());
         }
         return false;
     }

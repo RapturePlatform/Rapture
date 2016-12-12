@@ -140,7 +140,7 @@ public class GetFileStepTest {
         } catch (RaptureException e) {
             e.printStackTrace();
         }
-        
+
         Kernel.getBlob().createBlobRepo(context, "blob://tmp", BLOB_USING_MEMORY, META_USING_MEMORY);
         createWorkflow();
     }
@@ -158,6 +158,8 @@ public class GetFileStepTest {
     }
 
     static String workflowUri = "workflow://foo/bar/baz";
+    static String configRepo = "document://test" + System.currentTimeMillis();
+    static String configUri = configRepo + "/Config";
 
     static private void createWorkflow() {
         FTPConnectionConfig ftpConfig = new FTPConnectionConfig().setAddress("speedtest.tele2.net").setPort(23).setLoginId("ftp").setPassword("foo@bar")
@@ -165,8 +167,6 @@ public class GetFileStepTest {
 
         CallingContext context = ContextFactory.getKernelUser();
         DocApi dapi = Kernel.getDoc();
-        String configRepo = "document://test" + System.currentTimeMillis();
-        String configUri = configRepo + "/Config";
 
         dapi.createDocRepo(context, configRepo, "NREP {} USING MEMORY {}");
         dapi.putDoc(context, configUri, JacksonUtil.jsonFromObject(ftpConfig));
@@ -189,6 +189,173 @@ public class GetFileStepTest {
         w.setWorkflowURI(workflowUri);
         Kernel.getDecision().putWorkflow(context, w);
 
+    }
+
+    @Test
+    public void testGetFailNoBlobRepo() {
+        CallingContext context = ContextFactory.getKernelUser();
+        Map<String, String> args = new HashMap<>();
+        args.put("FETCH_FILES", JacksonUtil.jsonFromObject(ImmutableMap.of("1KB.zip", "blob://nonexistent/1KB.zip")));
+
+        CreateResponse response = Kernel.getDecision().createWorkOrderP(context, workflowUri, args, null);
+        assertTrue(response.getIsCreated());
+        WorkOrderDebug debug;
+        WorkOrderExecutionState state = WorkOrderExecutionState.NEW;
+        long timeout = System.currentTimeMillis() + 60000;
+        do {
+            debug = Kernel.getDecision().getWorkOrderDebug(context, response.getUri());
+            state = debug.getOrder().getStatus();
+        } while (((state == WorkOrderExecutionState.NEW) || (state == WorkOrderExecutionState.ACTIVE)) && (System.currentTimeMillis() < timeout));
+
+        // If anything went wrong
+
+        for (WorkerDebug db : debug.getWorkerDebugs()) {
+            for (StepRecordDebug srd : db.getStepRecordDebugs()) {
+                StepRecord sr = srd.getStepRecord();
+                if (sr.getExceptionInfo() != null) System.err.println(sr.getExceptionInfo().getStackTrace());
+            }
+        }
+
+        WorkerDebug worker = debug.getWorkerDebugs().get(0);
+        StepRecordDebug dbg = worker.getStepRecordDebugs().get(0);
+        assertEquals("quit", dbg.getStepRecord().getRetVal());
+        assertEquals(WorkOrderExecutionState.FINISHED, debug.getOrder().getStatus());
+    }
+
+    @Test
+    public void testGetFailDodgyCredentials1() {
+        CallingContext context = ContextFactory.getKernelUser();
+        DocApi dapi = Kernel.getDoc();
+
+        try {
+            FTPConnectionConfig ftpConfig = new FTPConnectionConfig().setAddress("speedtest.tele2.net").setPort(23).setLoginId("xyzzy").setPassword("plugh")
+                    .setUseSFTP(false);
+            dapi.putDoc(context, configUri, JacksonUtil.jsonFromObject(ftpConfig));
+            Map<String, String> args = new HashMap<>();
+            args.put("FETCH_FILES", JacksonUtil.jsonFromObject(ImmutableMap.of("1KB.zip", "blob://nonexistent/1KB.zip")));
+            CreateResponse response = Kernel.getDecision().createWorkOrderP(context, workflowUri, args, null);
+            assertTrue(response.getIsCreated());
+            WorkOrderDebug debug;
+            WorkOrderExecutionState state = WorkOrderExecutionState.NEW;
+            long timeout = System.currentTimeMillis() + 60000;
+            do {
+                debug = Kernel.getDecision().getWorkOrderDebug(context, response.getUri());
+                state = debug.getOrder().getStatus();
+            } while (((state == WorkOrderExecutionState.NEW) || (state == WorkOrderExecutionState.ACTIVE)) && (System.currentTimeMillis() < timeout));
+            for (WorkerDebug db : debug.getWorkerDebugs()) {
+                for (StepRecordDebug srd : db.getStepRecordDebugs()) {
+                    StepRecord sr = srd.getStepRecord();
+                    if (sr.getExceptionInfo() != null) System.err.println(sr.getExceptionInfo().getStackTrace());
+                }
+            }
+            WorkerDebug worker = debug.getWorkerDebugs().get(0);
+            StepRecordDebug dbg = worker.getStepRecordDebugs().get(0);
+            assertEquals("quit", dbg.getStepRecord().getRetVal());
+            assertEquals(WorkOrderExecutionState.FINISHED, debug.getOrder().getStatus());
+        } finally {
+            FTPConnectionConfig ftpConfig = new FTPConnectionConfig().setAddress("speedtest.tele2.net").setPort(23).setLoginId("ftp").setPassword("foo@bar")
+                    .setUseSFTP(false);
+            dapi.putDoc(context, configUri, JacksonUtil.jsonFromObject(ftpConfig));
+        }
+    }
+
+    @Test
+    public void testGetFailDodgyCredentials2() {
+        CallingContext context = ContextFactory.getKernelUser();
+        DocApi dapi = Kernel.getDoc();
+
+        try {
+            FTPConnectionConfig ftpConfig = new FTPConnectionConfig().setAddress("speedtest.tele2.net").setPort(23).setLoginId("ftp").setPassword("foo@bar")
+                    .setUseSFTP(true);
+            dapi.putDoc(context, configUri, JacksonUtil.jsonFromObject(ftpConfig));
+            Map<String, String> args = new HashMap<>();
+            args.put("FETCH_FILES", JacksonUtil.jsonFromObject(ImmutableMap.of("1KB.zip", "blob://nonexistent/1KB.zip")));
+            CreateResponse response = Kernel.getDecision().createWorkOrderP(context, workflowUri, args, null);
+            assertTrue(response.getIsCreated());
+            WorkOrderDebug debug;
+            WorkOrderExecutionState state = WorkOrderExecutionState.NEW;
+            long timeout = System.currentTimeMillis() + 120000;
+            do {
+                debug = Kernel.getDecision().getWorkOrderDebug(context, response.getUri());
+                state = debug.getOrder().getStatus();
+            } while (((state == WorkOrderExecutionState.NEW) || (state == WorkOrderExecutionState.ACTIVE)) && (System.currentTimeMillis() < timeout));
+            for (WorkerDebug db : debug.getWorkerDebugs()) {
+                for (StepRecordDebug srd : db.getStepRecordDebugs()) {
+                    StepRecord sr = srd.getStepRecord();
+                    if (sr.getExceptionInfo() != null) System.err.println(sr.getExceptionInfo().getStackTrace());
+                }
+            }
+            WorkerDebug worker = debug.getWorkerDebugs().get(0);
+            StepRecordDebug dbg = worker.getStepRecordDebugs().get(0);
+            assertEquals("quit", dbg.getStepRecord().getRetVal());
+            assertEquals(WorkOrderExecutionState.FINISHED, debug.getOrder().getStatus());
+        } finally {
+            FTPConnectionConfig ftpConfig = new FTPConnectionConfig().setAddress("speedtest.tele2.net").setPort(23).setLoginId("ftp").setPassword("foo@bar")
+                    .setUseSFTP(false);
+            dapi.putDoc(context, configUri, JacksonUtil.jsonFromObject(ftpConfig));
+        }
+    }
+
+    @Test
+    public void testGetFailNoDocRepo() {
+        CallingContext context = ContextFactory.getKernelUser();
+        Map<String, String> args = new HashMap<>();
+        args.put("FETCH_FILES", JacksonUtil.jsonFromObject(ImmutableMap.of("1KB.zip", "document://nonexistent/1KB.zip")));
+
+        CreateResponse response = Kernel.getDecision().createWorkOrderP(context, workflowUri, args, null);
+        assertTrue(response.getIsCreated());
+        WorkOrderDebug debug;
+        WorkOrderExecutionState state = WorkOrderExecutionState.NEW;
+        long timeout = System.currentTimeMillis() + 60000;
+        do {
+            debug = Kernel.getDecision().getWorkOrderDebug(context, response.getUri());
+            state = debug.getOrder().getStatus();
+        } while (((state == WorkOrderExecutionState.NEW) || (state == WorkOrderExecutionState.ACTIVE)) && (System.currentTimeMillis() < timeout));
+
+        // If anything went wrong
+
+        for (WorkerDebug db : debug.getWorkerDebugs()) {
+            for (StepRecordDebug srd : db.getStepRecordDebugs()) {
+                StepRecord sr = srd.getStepRecord();
+                if (sr.getExceptionInfo() != null) System.err.println(sr.getExceptionInfo().getStackTrace());
+            }
+        }
+
+        WorkerDebug worker = debug.getWorkerDebugs().get(0);
+        StepRecordDebug dbg = worker.getStepRecordDebugs().get(0);
+        assertEquals("quit", dbg.getStepRecord().getRetVal());
+        assertEquals(WorkOrderExecutionState.FINISHED, debug.getOrder().getStatus());
+    }
+
+    @Test
+    public void testGetFailNoSource() {
+        CallingContext context = ContextFactory.getKernelUser();
+        Map<String, String> args = new HashMap<>();
+        args.put("FETCH_FILES", JacksonUtil.jsonFromObject(ImmutableMap.of("1Kb.zip", configRepo + "/tmp/1Kb", "Whoops", configRepo + "/tmp/2KB")));
+
+        CreateResponse response = Kernel.getDecision().createWorkOrderP(context, workflowUri, args, null);
+        assertTrue(response.getIsCreated());
+        WorkOrderDebug debug;
+        WorkOrderExecutionState state = WorkOrderExecutionState.NEW;
+        long timeout = System.currentTimeMillis() + 60000;
+        do {
+            debug = Kernel.getDecision().getWorkOrderDebug(context, response.getUri());
+            state = debug.getOrder().getStatus();
+        } while (((state == WorkOrderExecutionState.NEW) || (state == WorkOrderExecutionState.ACTIVE)) && (System.currentTimeMillis() < timeout));
+
+        // If anything went wrong
+
+        for (WorkerDebug db : debug.getWorkerDebugs()) {
+            for (StepRecordDebug srd : db.getStepRecordDebugs()) {
+                StepRecord sr = srd.getStepRecord();
+                if (sr.getExceptionInfo() != null) System.err.println(sr.getExceptionInfo().getStackTrace());
+            }
+        }
+
+        WorkerDebug worker = debug.getWorkerDebugs().get(0);
+        StepRecordDebug dbg = worker.getStepRecordDebugs().get(0);
+        assertEquals("quit", dbg.getStepRecord().getRetVal());
+        assertEquals(WorkOrderExecutionState.FINISHED, debug.getOrder().getStatus());
     }
 
     @Test
@@ -273,6 +440,61 @@ public class GetFileStepTest {
         BlobContainer bc = Kernel.getBlob().getBlob(context, "blob://tmp/1KB.zip");
         assertNotNull(bc);
         assertEquals(1024, bc.getContent().length);
+    }
+
+    @Test
+    public void testGetYchartBlobStep() {
+        CallingContext context = ContextFactory.getKernelUser();
+        DocApi dapi = Kernel.getDoc();
+
+        try {
+            FTPConnectionConfig ftpConfig = new FTPConnectionConfig().setAddress("ftp.ycharts.com").setPort(21).setLoginId("incapture").setPassword("CjNF38sk")
+                    .setUseSFTP(false);
+            dapi.putDoc(context, configUri, JacksonUtil.jsonFromObject(ftpConfig));
+
+            Map<String, String> args = new HashMap<>();
+            args.put("FETCH_FILES",
+                    JacksonUtil.jsonFromObject(ImmutableMap.of("events/Events_Data_Delta_2016_12_02_00_00.txt.gz", "blob://tmp/ychart.txt.gz")));
+
+            CreateResponse response = Kernel.getDecision().createWorkOrderP(context, workflowUri, args, null);
+            assertTrue(response.getIsCreated());
+            WorkOrderDebug debug;
+            WorkOrderExecutionState state = WorkOrderExecutionState.NEW;
+            long timeout = System.currentTimeMillis() + 60000;
+            do {
+                debug = Kernel.getDecision().getWorkOrderDebug(context, response.getUri());
+                state = debug.getOrder().getStatus();
+            } while (((state == WorkOrderExecutionState.NEW) || (state == WorkOrderExecutionState.ACTIVE)) && (System.currentTimeMillis() < timeout));
+
+            // If anything went wrong
+
+            for (WorkerDebug db : debug.getWorkerDebugs()) {
+                for (StepRecordDebug srd : db.getStepRecordDebugs()) {
+                    StepRecord sr = srd.getStepRecord();
+                    if (sr.getExceptionInfo() != null) System.err.println(sr.getExceptionInfo().getStackTrace());
+                }
+            }
+
+            WorkerDebug worker = debug.getWorkerDebugs().get(0);
+            List<StepRecordDebug> dbgs = worker.getStepRecordDebugs();
+            int i = 0;
+            for (StepRecordDebug dbg : dbgs) {
+                Activity activity = dbg.getActivity();
+                if (activity != null) {
+                    assertEquals(10, activity.getMax().longValue());
+                    assertEquals(ActivityStatus.FINISHED, activity.getStatus());
+                    i++;
+                }
+            }
+            assertEquals(WorkOrderExecutionState.FINISHED, debug.getOrder().getStatus());
+            BlobContainer bc = Kernel.getBlob().getBlob(context, "blob://tmp/ychart.txt.gz");
+            assertNotNull(bc);
+            assertEquals(19657, bc.getContent().length);
+        } finally {
+            FTPConnectionConfig ftpConfig = new FTPConnectionConfig().setAddress("speedtest.tele2.net").setPort(23).setLoginId("ftp").setPassword("foo@bar")
+                    .setUseSFTP(false);
+            dapi.putDoc(context, configUri, JacksonUtil.jsonFromObject(ftpConfig));
+        }
     }
 
 }
