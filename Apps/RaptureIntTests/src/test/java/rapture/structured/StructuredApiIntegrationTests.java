@@ -412,42 +412,36 @@ public class StructuredApiIntegrationTests {
         }
     }
 
-    //
-    // Awaiting other code changes
-    //
+    @Test(groups = { "structured", "postgres", "nightly" })
+    public void testSqlSequenceGeneration() {
+        RaptureURI tableUri = new RaptureURI("structured://hhgg/ford");
+        String repoStr = tableUri.toAuthString();
+        String table = tableUri.getShortPath();
+        String config = "STRUCTURED { } USING POSTGRES { planet=\"magrathea\" }";
+        try {
+            if (!structApi.structuredRepoExists(repoStr)) structApi.createStructuredRepo(repoStr, config);
 
-    // @Test(groups = { "structured", "postgres", "nightly" })
-    // public void testSqlSequenceGeneration() {
-    // RaptureURI tableUri = new RaptureURI("structured://hhgg/ford");
-    // String repoStr = tableUri.toAuthString();
-    // String table = tableUri.getShortPath();
-    // String config = "STRUCTURED { } USING POSTGRES { planet=\"magrathea\" }";
-    // try {
-    // if (!structApi.structuredRepoExists(repoStr)) structApi.createStructuredRepo(repoStr, config);
-    //
-    // structApi.dropSequence(tableUri.toString(), "ident", true);
-    // String seq = structApi.createSequence(tableUri.toString(), "ident", null);
-    //
-    // String sql = "CREATE TABLE hhgg.ford ( ident INTEGER NOT NULL UNIQUE DEFAULT nextval('" + seq + "'), name TEXT);";
-    // structApi.createTableUsingSql(repoStr, sql);
-    //
-    // structApi.insertRow(table, ImmutableMap.of("name", "Dentarthurdent"));
-    // structApi.insertRow(table, ImmutableMap.of("name", "Tricia McMillan"));
-    //
-    // boolean pass = false;
-    // String ddl = structApi.getDdl(table, true);
-    // ddl = ddl.substring(0, ddl.indexOf('/'));
-    //
-    // Assert.assertEquals(
-    // "CREATE SEQUENCE " + seq + ";\n\nCREATE TABLE hhgg.ford\n(\n" + " ident INTEGER NOT NULL UNIQUE DEFAULT nextval('" + seq
-    // + "'),\n name TEXT\n);\n\n" + "INSERT INTO hhgg.ford (ident, name) VALUES ('1', 'Dentarthurdent')\n"
-    // + "INSERT INTO hhgg.ford (ident, name) VALUES ('2', 'Tricia McMillan')\n",
-    // ddl);
-    //
-    // } finally {
-    // if (structApi.structuredRepoExists(repoStr)) structApi.deleteStructuredRepo(repoStr);
-    // }
-    // }
+            structApi.dropSequence(tableUri.toString(), "ident", true);
+            String seq = structApi.createSequence(tableUri.toString(), "ident", null);
+
+            String sql = "CREATE TABLE hhgg.ford ( ident INTEGER NOT NULL UNIQUE DEFAULT nextval('" + seq + "'), name TEXT);";
+            structApi.createTableUsingSql(repoStr, sql);
+
+            structApi.insertRow(table, ImmutableMap.of("name", "Dentarthurdent"));
+            structApi.insertRow(table, ImmutableMap.of("name", "Tricia McMillan"));
+
+            boolean pass = false;
+            String ddl = structApi.getDdl(table, true);
+            ddl = ddl.substring(0, ddl.indexOf('/'));
+
+            Assert.assertEquals("CREATE SEQUENCE " + seq + ";\n\nCREATE TABLE hhgg.ford\n(\n" + " ident INTEGER NOT NULL UNIQUE DEFAULT nextval('" + seq
+                    + "'),\n name TEXT\n);\n\n" + "INSERT INTO hhgg.ford (ident, name) VALUES ('1', 'Dentarthurdent')\n"
+                    + "INSERT INTO hhgg.ford (ident, name) VALUES ('2', 'Tricia McMillan')\n", ddl);
+
+        } finally {
+            if (structApi.structuredRepoExists(repoStr)) structApi.deleteStructuredRepo(repoStr);
+        }
+    }
 
     // Test used in conjunction with manually running plugin installer to verify that it works.
     // Could possibly be expanded to invoke the PI but more hassle than it's worth.

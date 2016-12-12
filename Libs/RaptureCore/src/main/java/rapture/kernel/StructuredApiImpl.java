@@ -27,6 +27,7 @@ import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.annotation.Nullable;
@@ -519,8 +520,6 @@ public class StructuredApiImpl extends KernelBase implements StructuredApi {
         return getRepoOrFail(uri.getAuthority()).next(uri.getDocPath(), cursorId, count);
     }
 
-    ;
-
     @Override
     public List<Map<String, Object>> previous(CallingContext context, String tableUri, String cursorId, int count) {
         validateCursorCount(count);
@@ -528,23 +527,24 @@ public class StructuredApiImpl extends KernelBase implements StructuredApi {
         return getRepoOrFail(uri.getAuthority()).previous(uri.getDocPath(), cursorId, count);
     }
 
-    ;
-
     @Override
     public void closeCursor(CallingContext context, String tableUri, String cursorId) {
         RaptureURI uri = new RaptureURI(tableUri, Scheme.STRUCTURED);
         getRepoOrFail(uri.getAuthority()).closeCursor(uri.getDocPath(), cursorId);
     }
 
-    ;
+    // Dangerous. We allow the user to supply their own SQL.
+    // This could potentially bypass entitlement checks
 
     @Override
-    public void createProcedureCallUsingSql(CallingContext context, String procUri, String rawSql) {
+    public void createStoredProcedure(CallingContext context, String procUri, String rawSql, Map<String, String> arguments) {
         RaptureURI uri = new RaptureURI(procUri);
         StructuredRepo repo = getRepoOrFail(uri.getAuthority());
         registerWithTxManager(context, repo);
+
+        String name = uri.getLeafName();
         try {
-            repo.createProcedureCallUsingSql(context, rawSql);
+            repo.createStoredProcedure(context, name, rawSql, arguments);
         } catch (Exception e) {
             TransactionManager.transactionFailed(getTxId(context));
             throw RaptureExceptionFactory.create(e.getMessage(), e.getCause());
@@ -606,6 +606,47 @@ public class StructuredApiImpl extends KernelBase implements StructuredApi {
             docPaths.add(ruri.getDocPath());
         }
         return Pair.of(uri.getAuthority(), docPaths);
+    }
+
+    private String seqName(RaptureURI tableUri, String column) {
+        return tableUri.getLeafName() + "_" + column + "_seq";
+    }
+
+    @Override
+    public String createSequence(CallingContext context, String table, String column, Map<String, String> arguments) {
+        RaptureURI tableUri = new RaptureURI(table, Scheme.STRUCTURED);
+        String seqName = seqName(tableUri, column);
+
+        StructuredRepo repo = getRepoOrFail(tableUri.getAuthority());
+        registerWithTxManager(context, repo);
+        if (arguments != null) try {
+            // This might be considered a vulnerability.
+            StringBuilder sb = new StringBuilder();
+            sb.append("CREATE SEQUENCE ").append(seqName);
+            for (Entry<String, String> arg : arguments.entrySet()) {
+                sb.append(" ").append(arg.getKey()).append(" ").append(arg.getValue());
+            }
+            repo.executeRawSQL(sb.append(";").toString());
+        } catch (Exception e) {
+            TransactionManager.transactionFailed(getTxId(context));
+            throw RaptureExceptionFactory.create(e.getMessage(), e.getCause());
+        }
+        return seqName;
+    }
+
+    @Override
+    public Boolean dropSequence(CallingContext context, String table, String column, Boolean cascade) {
+        RaptureURI tableUri = new RaptureURI(table, Scheme.STRUCTURED);
+        StructuredRepo repo = getRepoOrFail(tableUri.getAuthority());
+        registerWithTxManager(context, repo);
+
+        try {
+            // This might be considered a vulnerability.
+            return repo.executeRawSQL("DROP SEQUENCE IF EXISTS " + seqName(tableUri, column) + ((cascade) ? "CASCADE;" : "RESTRICT;"));
+        } catch (Exception e) {
+            TransactionManager.transactionFailed(getTxId(context));
+            throw RaptureExceptionFactory.create(e.getMessage(), e.getCause());
+        }
     }
 
 }
