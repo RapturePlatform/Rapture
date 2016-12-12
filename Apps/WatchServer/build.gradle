@@ -23,14 +23,17 @@ startScripts {
 }
 
 dependencies {
+     compile 'org.apache.commons:commons-vfs2:2.1'
+     compile 'commons-net:commons-net:3.5'
+     compile 'commons-validator:commons-validator:1.5.1'
      compile "net.rapture:MongoDb:$project.platformVersion"
      compile "net.rapture:RabbitMQ:$project.platformVersion"
-	 compile "net.rapture:RaptureCore:$project.platformVersion"
-	 compile "net.rapture:RaptureAddinCore:$project.platformVersion"
+     compile "net.rapture:RaptureCore:$project.platformVersion"
+     compile "net.rapture:RaptureAddinCore:$project.platformVersion"
      compile 'jline:jline:2.7'
 }
 
-mainClassName = "rapture.server.WatchServer"
+mainClassName = "watchserver.server.WatchServer"
 
 // Config files
 //
