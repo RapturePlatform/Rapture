@@ -326,11 +326,6 @@ public class FTPConnection implements Connection {
                     if (IOUtils.copy(new FileInputStream(file), outStream) > 0) outStream.flush();
                 } else {
                     String remoteName = request.getRemoteName();
-                    // int i = remoteName.lastIndexOf('/');
-                    // if (i > 0) {
-                    // getFtpClient().changeWorkingDirectory(remoteName.substring(0, i));
-                    // remoteName = remoteName.substring(i + 1);
-                    // }
                     isRetrieved = retrieveFile(remoteName, outStream);
                     if (isRetrieved) {
                         log.debug("File retrieved");
