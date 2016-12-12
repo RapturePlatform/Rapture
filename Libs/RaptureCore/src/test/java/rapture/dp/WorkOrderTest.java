@@ -41,6 +41,7 @@ import org.junit.Test;
 
 import rapture.common.CallingContext;
 import rapture.common.JobType;
+import rapture.common.RaptureJob;
 import rapture.common.RaptureJobExec;
 import rapture.common.RaptureScriptLanguage;
 import rapture.common.RaptureScriptPurpose;
@@ -72,7 +73,7 @@ public class WorkOrderTest {
         Kernel.getScript().createScript(ctx, REPO_URI + "/" + scr1, RaptureScriptLanguage.REFLEX, RaptureScriptPurpose.PROGRAM,
                 "println(\"Hello there\"); return \"ok\";");
 
-        List<Step> steps = new ArrayList<Step>();
+        List<Step> steps = new ArrayList<>();
         Step s1 = new Step();
         s1.setName("start");
         s1.setExecutable("script://" + REPO_URI + "/" + scr1);
@@ -151,15 +152,16 @@ public class WorkOrderTest {
         r.setJobURI(jobUri);
         r.setExecTime(System.currentTimeMillis());
         assertNull(Kernel.getDecision().getWorkOrderByJobExec(ctx, r));
-        Kernel.getSchedule().createWorkflowJob(ctx, jobUri, null, workflowUri, "* * * * *", "America/New_York", new HashMap<>(), false, 1, null);
+        RaptureJob job = Kernel.getSchedule().createWorkflowJob(ctx, jobUri, null, workflowUri, "* * * * *", "America/New_York", new HashMap<>(), false, 1,
+                null);
         WorkOrder ret = Kernel.getDecision().getWorkOrderByJobExec(ctx, r);
-        assertNull(ret);
+        assertNull("Work order should be null", ret);
         String returnedWorkOrderUri = Kernel.getSchedule().runJobNow(ctx, jobUri, null);
-        assertNotNull(returnedWorkOrderUri);
+        assertNotNull("Work order URI should not be null", returnedWorkOrderUri);
         List<RaptureJobExec> rje = Kernel.getSchedule().getJobExecs(ctx, jobUri, 0, 1, false);
         log.info("jobexec is: " + JacksonUtil.jsonFromObject(rje.get(0)));
         ret = Kernel.getDecision().getWorkOrderByJobExec(ctx, rje.get(0));
-        assertNotNull(ret);
+        assertNotNull("Work order should not be null", ret);
         assertEquals(workflowUri, ret.getWorkflowURI());
     }
 
