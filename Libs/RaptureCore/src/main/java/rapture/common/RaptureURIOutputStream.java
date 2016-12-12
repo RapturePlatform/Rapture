@@ -25,8 +25,15 @@ public class RaptureURIOutputStream extends ByteArrayOutputStream {
         default:
             throw new IllegalArgumentException(uri.getScheme() + " not supported");
         case BLOB:
+            if (!Kernel.getBlob().blobRepoExists(context, uri.toAuthString())) {
+                throw new IllegalArgumentException("Repository " + uri.toAuthString() + " does not exist");
+            }
+            break;
         case DOCUMENT:
-            // Nothing to do yet
+            if (!Kernel.getDoc().docRepoExists(context, uri.toAuthString())) {
+                throw new IllegalArgumentException("Repository " + uri.toAuthString() + " does not exist");
+            }
+            break;
         }
     }
 
