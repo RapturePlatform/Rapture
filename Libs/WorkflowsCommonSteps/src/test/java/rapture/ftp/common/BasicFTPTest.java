@@ -50,6 +50,7 @@ import rapture.common.RaptureConstants;
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
 import rapture.common.api.DocApi;
+import rapture.common.exception.ExceptionToString;
 import rapture.common.impl.jackson.JacksonUtil;
 import rapture.config.ConfigLoader;
 import rapture.config.RaptureConfig;
@@ -328,6 +329,11 @@ public class BasicFTPTest {
         try {
             connection.connectAndLogin();
         } catch (Exception e) {
+            // There seem to be two possible code paths here.
+            // Normal behaviour is for ftpClient.login to fail and for FTPConnection.connectAndLogin to throw RaptureException
+            // but it seems that sometimes (particularly on Jenkins) ftpClient.login throws an exception
+            // which is caught and wrapped by FTPService.runWithRetry.
+            System.out.println(ExceptionToString.summary(e));
             Assert.assertEquals("Could not login via FTP to localhost as ftp", e.getMessage());
         }
     }
