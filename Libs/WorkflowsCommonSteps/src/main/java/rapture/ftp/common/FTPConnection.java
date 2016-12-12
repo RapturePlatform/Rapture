@@ -166,7 +166,9 @@ public class FTPConnection implements Connection {
             log.info("In local mode - not connecting");
             return true;
         }
-        return FTPService.runWithRetry("Could not login to " + config.getAddress() + " as " + config.getLoginId(), this, false, new FTPAction<Boolean>() {
+        final String cannotLogin = "Could not login via FTP to " + config.getAddress() + " as " + config.getLoginId();
+        return FTPService.runWithRetry(cannotLogin, this, false,
+                new FTPAction<Boolean>() {
             @Override
             public Boolean run(int attemptNum) throws IOException {
                 FTPClient ftpClient = getFtpClient();
@@ -186,8 +188,7 @@ public class FTPConnection implements Connection {
                 log.debug("Logging in user: " + config.getLoginId());
                 if (!ftpClient.login(config.getLoginId(), config.getPassword())) {
                     ftpClient.logout();
-                    throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR,
-                            "Could not login via FTP to " + config.getAddress() + " as " + config.getLoginId());
+                            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, cannotLogin);
                 }
                 isLoggedIn = true;
                 log.debug("Entering local passive mode");
