@@ -195,8 +195,13 @@ public class StructuredRepo {
         return store.closeCursor(tableName, cursorId);
     }
 
-    public Boolean createProcedureCallUsingSql(CallingContext context, String rawSql){
-        return store.createProcedureCallUsingSql(context, rawSql);
+    public Boolean createStoredProcedure(CallingContext context, String name, String rawSql, Map<String, String> arguments) {
+        return store.createStoredProcedure(context, name, rawSql, arguments);
+    }
+
+    // THIS MAY BE DANGEROUS
+    public Boolean executeRawSQL(String rawSql) {
+        return store.executeRawSQL(rawSql);
     }
 
     public StoredProcedureResponse callProcedure(CallingContext context, String procName, StoredProcedureParams params){

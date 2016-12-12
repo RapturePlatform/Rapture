@@ -29,7 +29,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -41,13 +40,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.google.common.collect.ImmutableMap;
+
 import rapture.common.CallingContext;
-import rapture.common.StoredProcedureParams;
-import rapture.common.StoredProcedureResponse;
 import rapture.kernel.ContextFactory;
 import rapture.structured.StructuredStore;
-
-import com.google.common.collect.ImmutableMap;
 
 public abstract class JDBCStructuredStoreContractTest {
 
@@ -66,14 +63,14 @@ public abstract class JDBCStructuredStoreContractTest {
     @Before
     public void setup() {
         ss = getStructuredStore();
-        Map<String, String> columns = new LinkedHashMap<String, String>();
+        Map<String, String> columns = new LinkedHashMap<>();
         columns.put("id", "int");
         columns.put("firstname", "varchar(255)");
         columns.put("lastname", "varchar(255)");
         columns.put("age", "int");
         assertTrue(ss.createTable(table, columns));
 
-        Map<String, String> columnsTable2 = new LinkedHashMap<String, String>();
+        Map<String, String> columnsTable2 = new LinkedHashMap<>();
         columnsTable2.put("id", "int");
         columnsTable2.put("street", "varchar(255)");
         columnsTable2.put("city", "varchar(255)");
@@ -113,7 +110,7 @@ public abstract class JDBCStructuredStoreContractTest {
         int limit = 1;
         List<Map<String, Object>> result = ss.selectRows(table, columnNames, where, order, ascending, limit);
         assertTrue(result.isEmpty());
-        Map<String, Object> vals = new HashMap<String, Object>();
+        Map<String, Object> vals = new HashMap<>();
         vals.put("id", 1);
         vals.put("firstname", "Duke");
         vals.put("lastname", "Nguyen");
@@ -210,9 +207,9 @@ public abstract class JDBCStructuredStoreContractTest {
         int num = 100;
         List<Map<String, Object>> result = ss.selectRows(table, columnNames, where, order, ascending, limit);
         assertTrue(result.isEmpty());
-        List<Map<String, Object>> vals = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> vals = new ArrayList<>();
         for (int i = 0; i < num; i++) {
-            Map<String, Object> m = new HashMap<String, Object>();
+            Map<String, Object> m = new HashMap<>();
             m.put("id", i);
             m.put("firstname", "first_" + i);
             m.put("lastname", "last_" + i);
@@ -233,7 +230,7 @@ public abstract class JDBCStructuredStoreContractTest {
 
     @Test
     public void testUpdateTableColumns() {
-        Map<String, Object> vals = new HashMap<String, Object>();
+        Map<String, Object> vals = new HashMap<>();
         vals.put("id", 1);
         vals.put("age", 24);
         assertTrue(ss.insertRow(table, vals));
@@ -257,7 +254,7 @@ public abstract class JDBCStructuredStoreContractTest {
 
     @Test
     public void testRenameTableColumns() {
-        Map<String, Object> vals = new HashMap<String, Object>();
+        Map<String, Object> vals = new HashMap<>();
         vals.put("id", 1);
         vals.put("age", 24);
         assertTrue(ss.insertRow(table, vals));
@@ -281,7 +278,7 @@ public abstract class JDBCStructuredStoreContractTest {
         newColumns.put("newcol1", "int");
         newColumns.put("newcol2", "varchar(255)");
         assertTrue(ss.addTableColumns(table, newColumns));
-        Map<String, Object> vals = new HashMap<String, Object>();
+        Map<String, Object> vals = new HashMap<>();
         vals.put("id", 1);
         vals.put("firstname", "Duke");
         vals.put("lastname", "Nguyen");
@@ -292,7 +289,7 @@ public abstract class JDBCStructuredStoreContractTest {
         assertEquals(1, result.size());
         assertEquals(100, result.get(0).get("newcol1"));
         assertEquals("blah", result.get(0).get("newcol2"));
-        assertTrue(ss.deleteTableColumns(table, new ArrayList<String>(newColumns.keySet())));
+        assertTrue(ss.deleteTableColumns(table, new ArrayList<>(newColumns.keySet())));
         result = ss.selectRows(table, null, null, null, null, -1);
         assertEquals(1, result.size());
         assertEquals("Duke", result.get(0).get("FIRSTName"));
@@ -415,14 +412,14 @@ public abstract class JDBCStructuredStoreContractTest {
         String tablea = "table_a";
         String tableb = "table_b";
 
-        Map<String, String> columns = new LinkedHashMap<String, String>();
+        Map<String, String> columns = new LinkedHashMap<>();
         columns.put("id", "int");
         columns.put("firstname", "varchar(255)");
         columns.put("lastname", "varchar(255)");
         columns.put("age", "int");
         assertTrue(ss.createTable(tablea, columns));
 
-        Map<String, String> columnsTable2 = new LinkedHashMap<String, String>();
+        Map<String, String> columnsTable2 = new LinkedHashMap<>();
         columnsTable2.put("id", "int");
         columnsTable2.put("street", "varchar(255)");
         columnsTable2.put("city", "varchar(255)");
@@ -458,21 +455,21 @@ public abstract class JDBCStructuredStoreContractTest {
         String tablea = "table_a";
         String tableb = "table_b";
 
-        Map<String, String> columns = new LinkedHashMap<String, String>();
+        Map<String, String> columns = new LinkedHashMap<>();
         columns.put("id", "int");
         columns.put("firstname", "varchar(255)");
         columns.put("lastname", "varchar(255)");
         columns.put("age", "int");
         assertTrue(ss.createTable(tablea, columns));
 
-        Map<String, String> columnsTable2 = new LinkedHashMap<String, String>();
+        Map<String, String> columnsTable2 = new LinkedHashMap<>();
         columnsTable2.put("id", "int");
         columnsTable2.put("street", "varchar(255)");
         columnsTable2.put("city", "varchar(255)");
         columnsTable2.put("zip", "int");
         assertTrue(ss.createTable(tableb, columnsTable2));
 
-        List<Map<String, Object>> tableaVals = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> tableaVals = new ArrayList<>();
         for (int i = 0; i < 100; i++) {
             Map<String, Object> vals = new HashMap<>();
             vals.put("id", i);
@@ -483,7 +480,7 @@ public abstract class JDBCStructuredStoreContractTest {
         }
         assertTrue(ss.insertRows(tablea, tableaVals));
 
-        List<Map<String, Object>> tablebVals = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> tablebVals = new ArrayList<>();
         for (int i = 0; i < 100; i++) {
             Map<String, Object> vals = new HashMap<>();
             vals.put("id", i);
@@ -563,14 +560,14 @@ public abstract class JDBCStructuredStoreContractTest {
         String tablea = "table_a";
         String tableb = "table_b";
 
-        Map<String, String> columns = new LinkedHashMap<String, String>();
+        Map<String, String> columns = new LinkedHashMap<>();
         columns.put("id", "int");
         columns.put("firstname", "varchar(255)");
         columns.put("lastname", "varchar(255)");
         columns.put("age", "int");
         assertTrue(ss.createTable(tablea, columns));
 
-        Map<String, String> columnsTable2 = new LinkedHashMap<String, String>();
+        Map<String, String> columnsTable2 = new LinkedHashMap<>();
         columnsTable2.put("id", "int");
         columnsTable2.put("street", "varchar(255)");
         columnsTable2.put("city", "varchar(255)");
@@ -705,7 +702,7 @@ public abstract class JDBCStructuredStoreContractTest {
         int limit = 1;
         List<Map<String, Object>> result = ss.selectRows(table, columnNames, where, order, ascending, limit);
         assertTrue(result.isEmpty());
-        Map<String, Object> vals = new HashMap<String, Object>();
+        Map<String, Object> vals = new HashMap<>();
         vals.put("id", 1);
         vals.put("firstname", "Duke");
         vals.put("lastname", "Nguyen");
@@ -720,12 +717,12 @@ public abstract class JDBCStructuredStoreContractTest {
 
     @Test
     public void testGetDdlForEntireSchema() {
-        Map<String, Object> vals = new HashMap<String, Object>();
+        Map<String, Object> vals = new HashMap<>();
         vals.put("id", 1);
         vals.put("firstname", "Duke");
         vals.put("lastname", "Nguyen");
         assertTrue(ss.insertRow(table, vals));
-        vals = new HashMap<String, Object>();
+        vals = new HashMap<>();
         vals.put("id", 2);
         vals.put("firstname", "Walter");
         vals.put("lastname", "White");
@@ -746,12 +743,12 @@ public abstract class JDBCStructuredStoreContractTest {
 
     @Test
     public void testGetDdlForSingleTable() {
-        Map<String, Object> vals = new HashMap<String, Object>();
+        Map<String, Object> vals = new HashMap<>();
         vals.put("id", 1);
         vals.put("firstname", "Duke");
         vals.put("lastname", "Nguyen");
         assertTrue(ss.insertRow(table, vals));
-        vals = new HashMap<String, Object>();
+        vals = new HashMap<>();
         vals.put("id", 2);
         vals.put("firstname", "Walter");
         vals.put("lastname", "White");
@@ -788,7 +785,7 @@ public abstract class JDBCStructuredStoreContractTest {
 
     @Test
     public void testGetCursor() {
-        Map<String, Object> vals = new HashMap<String, Object>();
+        Map<String, Object> vals = new HashMap<>();
         for (int i = 0; i < 100; i++) {
             vals.clear();
             vals.put("id", i);
@@ -910,82 +907,7 @@ public abstract class JDBCStructuredStoreContractTest {
     @Test
     public abstract void testDeleteStoredProcedure();
 
-    @Test
-    public void testCallStoredProc() {
-
-        Map<String, String> creationStrings = getStoredProcCreations();
-
-        String noParams = creationStrings.get("noParams");
-        String inParam = creationStrings.get("inParam");
-        String outParam = creationStrings.get("outParam");
-        String inAndOutParams = creationStrings.get("inAndOutParam");
-        String inOutParam = creationStrings.get("inOutParam");
-
-        // Procedure Call Setup
-        StoredProcedureResponse response;
-        Map<String, Object> retMap;
-        Boolean b;
-        StoredProcedureParams params = new StoredProcedureParams();
-        HashMap<String, Object> inParams = new HashMap<String, Object>();
-        HashMap<String, Integer> outParams = new HashMap<String, Integer>();
-        HashMap<String, Object> inOutParams = new HashMap<String, Object>();
-
-        // No Params
-        b = ss.createProcedureCallUsingSql(context, noParams);
-        assertTrue(b);
-        response = ss.callProcedure(context, "noParamProcedure", params);
-        assertEquals(true, response.getCallSuccessful());
-
-        // In Param
-        b = ss.createProcedureCallUsingSql(context, inParam);
-        assertTrue(b);
-        inParams.put("val", 1);
-        params.setInParams(inParams);
-        response = ss.callProcedure(context, "inParamProcedure", params);
-        assertEquals(true, response.getCallSuccessful());
-
-
-        // Out Param
-        b = ss.createProcedureCallUsingSql(context, outParam);
-        assertTrue(b);
-        outParams.put("retval", Types.INTEGER);
-        inParams.remove("val");
-        params.setInParams(inParams);
-        params.setOutParams(outParams);
-        response = ss.callProcedure(context, "outParamProcedure", params);
-        retMap = response.getSingleValueReturn();
-        assertEquals(true, response.getCallSuccessful());
-        assertEquals(20, retMap.get("retval"));
-
-        // In And Out Params
-        b = ss.createProcedureCallUsingSql(context, inAndOutParams);
-        assertTrue(b);
-        outParams.put("retval", Types.INTEGER);
-        inParams.put("val", 10);
-        params.setInParams(inParams);
-        params.setOutParams(outParams);
-        response = ss.callProcedure(context, "inAndOutProcedure", params);
-        retMap = response.getSingleValueReturn();
-        assertEquals(true, response.getCallSuccessful());
-        assertEquals(11, retMap.get("retval"));
-
-        // InOut Param
-        b = ss.createProcedureCallUsingSql(context, inOutParam);
-        assertTrue(b);
-        outParams.remove("retval");
-        inParams.remove("val");
-        inOutParams.put("retval", 1);
-        params.setInParams(inParams);
-        params.setOutParams(outParams);
-        params.setInOutParams(inOutParams);
-        response = ss.callProcedure(context, "inOutProcedure", params);
-        retMap = response.getSingleValueReturn();
-        assertEquals(true, response.getCallSuccessful());
-        assertEquals(2, retMap.get("retval"));
-
-        cleanUpStoredProc();
-
-    }
+    // Bad test removed
 
     public abstract Map<String, String> getStoredProcCreations();
 
