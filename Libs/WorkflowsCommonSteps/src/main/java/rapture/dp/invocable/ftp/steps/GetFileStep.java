@@ -57,6 +57,7 @@ public class GetFileStep extends AbstractInvocable {
 
     @Override
     public String invoke(CallingContext ctx) {
+        Connection connection = null;
         try {
             decision.setContextLiteral(ctx, getWorkerURI(), "STEPNAME", getStepName());
 
@@ -89,14 +90,13 @@ public class GetFileStep extends AbstractInvocable {
             int failCount = 0;
             StringBuilder sb = new StringBuilder();
             List<FTPRequest> requests = new ArrayList<>();
-            Connection connection = new SFTPConnection(configUri).setContext(ctx);
+            connection = new SFTPConnection(configUri).setContext(ctx);
             for (Entry<String, Object> e : map.entrySet()) {
                 FTPRequest request = new FTPRequest(Action.READ).setRemoteName(e.getKey()).setLocalName(e.getValue().toString());
                 connection.doAction(request);
                 if (!request.getStatus().equals(Status.SUCCESS)) {
                     retval = getFailTransition();
                     sb.append("Unable to retrieve ").append(e.getKey()).append(" as ").append(e.getValue().toString()).append("\n");
-                    log.warn("Unable to retrieve " + e.getKey());
                     failCount++;
                 }
                 requests.add(request);
@@ -120,6 +120,8 @@ public class GetFileStep extends AbstractInvocable {
             decision.writeWorkflowAuditEntry(ctx, getWorkerURI(),
                     "Problem in " + getStepName() + ": " + ExceptionToString.getRootCause(e).getLocalizedMessage(), true);
             return getErrorTransition();
+        } finally {
+            if (connection != null) connection.logoffAndDisconnect();
         }
     }
 

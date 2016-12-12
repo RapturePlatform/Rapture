@@ -241,9 +241,7 @@ public class BasicFTPTest {
         List<String> files = connection.listFiles("pub/example/*");
         assertEquals(19, files.size());
         List<FTPRequest> reads = new ArrayList<>();
-        // Path tmpDir = Files.createTempDirectory("test");
-        File tmpDir = new File("/tmp/test");
-        tmpDir.mkdirs();
+        Path tmpDir = Files.createTempDirectory("test");
         for (String file : files) {
             reads.add(new FTPRequest(Action.READ).setRemoteName("pub/example/" + file).setLocalName(tmpDir + "/" + file.substring(file.lastIndexOf('/') + 1)));
         }
@@ -330,7 +328,7 @@ public class BasicFTPTest {
         try {
             connection.connectAndLogin();
         } catch (Exception e) {
-            Assert.assertEquals("Could not login to localhost as ftp", e.getMessage());
+            Assert.assertEquals("Could not login via FTP to localhost as ftp", e.getMessage());
         }
     }
 
