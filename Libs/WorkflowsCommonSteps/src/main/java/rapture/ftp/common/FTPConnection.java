@@ -309,7 +309,8 @@ public class FTPConnection implements Connection {
                         } else {
                             Path target = Paths.get(localName);
                             if (!target.getParent().toFile().exists()) Files.createDirectories(target.getParent());
-                            if (!target.toFile().canWrite()) throw new IllegalArgumentException("No write access to " + target.toFile().getAbsolutePath());
+                            if (!target.getParent().toFile()
+                                    .canWrite()) throw new IllegalArgumentException("No write access to " + target.toFile().getAbsolutePath());
                             outStream = new FileOutputStream(target.toFile());
                         }
                     } catch (Exception e) {
