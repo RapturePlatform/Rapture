@@ -3,7 +3,7 @@ FROM gliderlabs/alpine:3.4
 MAINTAINER jonathan.major@incapturetechnologies.com
 
 # About nsswitch.conf - see https://registry.hub.docker.com/u/frolvlad/alpine-oraclejdk8/dockerfile/
-COPY rootfs /
+COPY docker/rootfs /
 
 # S6 is a process manager (helps with DNS)
 ADD https://github.com/just-containers/s6-overlay/releases/download/v1.13.0.0/s6-overlay-amd64.tar.gz /tmp/s6-overlay.tar.gz
@@ -25,14 +25,16 @@ RUN apk-install bash openjdk8-jre ca-certificates && \
 
 
 # Setup up required resources
-COPY WatchServer /opt/rapture/WatchServer
+COPY build/install/WatchServer /opt/rapture/WatchServer
 # this contains config files for docker environment using link names
-COPY config /opt/rapture/WatchServer/etc/rapture/config
+COPY docker/config /opt/rapture/WatchServer/etc/rapture/config
 
 # Setup environment
 ENV RAPTURE_CONFIG_HOME /opt/rapture/WatchServer/etc/rapture/config
 VOLUME ["/opt/rapture/WatchServer/etc"]
 WORKDIR /opt/rapture/WatchServer/bin
+
+RUN mkdir /tmp/subfolder
 
 ENTRYPOINT [ "/init" ]
 CMD ["/opt/rapture/WatchServer/bin/WatchServer"]
