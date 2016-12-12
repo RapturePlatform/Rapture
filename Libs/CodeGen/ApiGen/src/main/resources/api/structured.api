@@ -166,7 +166,7 @@ api(Structured) {
 
     [Create a stored procedure with raw SQL]
     @entitle=/structured/admin/$f(procUri)
-    @public void createProcedureCallUsingSql(String procUri, String rawSql);
+    @public void createStoredProcedure(String procUri, String rawSql, Map<String, String> arguments);
 
     [Call a stored procedure a value]
     @entitle=/structured/admin/$f(procUri)
@@ -183,6 +183,14 @@ api(Structured) {
     [Get foreign keys of a table]
     @entitle=/structured/read/$f(tableUri)
     @public List(ForeignKey) getForeignKeys(String tableUri);
+    
+    [Create a named sequence]
+    @entitle=/structured/admin/$f(tableUri)
+    @public String createSequence(String tableUri, String column, Map<String, String> arguments);
+
+    [Delete a named sequence]
+    @entitle=/structured/admin/$f(tableUri)
+    @public Boolean dropSequence(String tableUri, String column, Boolean cascade);
 
 }
 

@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Scanner;
 import java.util.TreeMap;
 
@@ -687,12 +688,33 @@ public abstract class JDBCStructuredStore implements StructuredStore {
         });
     }
 
+    private boolean checkEntitlements(String rawsql) {
+        // Extract table names from SQL and ensure that we have access
+        return false;
+    }
+
     @Override
-    public Boolean createProcedureCallUsingSql(CallingContext context, String rawSql) {
+    public Boolean createStoredProcedure(CallingContext context, String name, String rawSql, Map<String, String> arguments) {
 
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("CREATE OR REPLACE FUNCTION ").append(name);
+        String delimeter = "(";
+
+        for (Entry<String, String> arg : arguments.entrySet()) {
+            sb.append(delimeter).append(arg.getKey()).append(" ").append(arg.getValue());
+            delimeter = ",";
+        }
+        sb.append(")\n").append("RETURNS void AS $$\n").append("BEGIN\n");
+        sb.append(rawSql);
+        sb.append("\nEND;").append("$$ LANGUAGE plpgsql;");
+
+        return executeRawSQL(sb.toString());
+    }
+
+    @Override
+    public Boolean executeRawSQL(String rawSql) {
         try {
-            // TODO RAP-3548 Need to parse rawSql and check entitlements
-
             // Execute query
             jdbc.execute(rawSql);
             return true;
