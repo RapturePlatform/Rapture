@@ -619,12 +619,13 @@ public class StructuredApiImpl extends KernelBase implements StructuredApi {
 
         StructuredRepo repo = getRepoOrFail(tableUri.getAuthority());
         registerWithTxManager(context, repo);
-        if (arguments != null) try {
-            // This might be considered a vulnerability.
+        try {
             StringBuilder sb = new StringBuilder();
             sb.append("CREATE SEQUENCE ").append(seqName);
-            for (Entry<String, String> arg : arguments.entrySet()) {
-                sb.append(" ").append(arg.getKey()).append(" ").append(arg.getValue());
+            if (arguments != null) {
+                for (Entry<String, String> arg : arguments.entrySet()) {
+                    sb.append(" ").append(arg.getKey()).append(" ").append(arg.getValue());
+                }
             }
             repo.executeRawSQL(sb.append(";").toString());
         } catch (Exception e) {
@@ -642,7 +643,7 @@ public class StructuredApiImpl extends KernelBase implements StructuredApi {
 
         try {
             // This might be considered a vulnerability.
-            return repo.executeRawSQL("DROP SEQUENCE IF EXISTS " + seqName(tableUri, column) + ((cascade) ? "CASCADE;" : "RESTRICT;"));
+            return repo.executeRawSQL("DROP SEQUENCE IF EXISTS " + seqName(tableUri, column) + ((cascade) ? " CASCADE;" : " RESTRICT;"));
         } catch (Exception e) {
             TransactionManager.transactionFailed(getTxId(context));
             throw RaptureExceptionFactory.create(e.getMessage(), e.getCause());
