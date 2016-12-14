@@ -132,8 +132,6 @@ public class Login extends KernelBase {
         return savedContext;
     }
 
-    
-    
     /**
      * Given a username, validate the user exists, create a context for this user
      *
