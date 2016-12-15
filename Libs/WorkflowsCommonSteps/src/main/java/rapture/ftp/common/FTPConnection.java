@@ -376,7 +376,7 @@ public class FTPConnection implements Connection {
                 } else {
                     boolean isSent = sendFile(inStream, request.getRemoteName());
                     if (isSent) {
-                        log.debug("File sent successfully");
+                        log.info(request.getRemoteName() + " sent successfully");
                         request.setStatus(Status.SUCCESS);
                     } else {
                         log.warn(String.format("Missing response from %s", request.getRemoteName()));
