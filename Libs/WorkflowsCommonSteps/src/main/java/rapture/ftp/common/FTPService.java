@@ -84,7 +84,8 @@ public class FTPService {
             } catch (IOException e) {
                 lastException = e;
                 if (reconnectOnFailure) {
-                    log.warn("IOException, will try to reconnect: " + ExceptionToString.format(e));
+                    log.warn("IOException, will try to reconnect: " + ExceptionToString.summary(e));
+                    log.debug(ExceptionToString.format(e));
                     reconnect(connection);
                 } else {
                     log.warn("IOException: " + ExceptionToString.format(e));
