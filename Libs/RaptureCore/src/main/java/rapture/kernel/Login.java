@@ -146,6 +146,11 @@ public class Login extends KernelBase {
         RaptureUser usr = Kernel.getAdmin().getUser(ContextFactory.getKernelUser(), user);
         if (usr != null) {
             log.info("Found user " + usr.getUsername());
+            if (!usr.getInactive()) {
+                log.info("User " + usr.getUsername() + " is active.");
+            } else {
+                throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_UNAUTHORIZED, String.format("user: '%s' is inactive.", user));
+            }
         } else {
             throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_UNAUTHORIZED, String.format("No such user: '%s'", user));
         }
