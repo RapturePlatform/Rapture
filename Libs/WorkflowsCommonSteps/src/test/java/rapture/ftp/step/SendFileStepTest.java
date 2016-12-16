@@ -373,7 +373,7 @@ public class SendFileStepTest {
             assertTrue(response.getIsCreated());
             WorkOrderDebug debug;
             WorkOrderExecutionState state = WorkOrderExecutionState.NEW;
-            long timeout = System.currentTimeMillis() + 60000;
+            long timeout = System.currentTimeMillis() + 120000;
             do {
                 debug = Kernel.getDecision().getWorkOrderDebug(context, response.getUri());
                 state = debug.getOrder().getStatus();
@@ -386,13 +386,13 @@ public class SendFileStepTest {
             assertEquals(1, db.getStepRecordDebugs().size());
             StepRecordDebug srd = db.getStepRecordDebugs().get(0);
             StepRecord sr = srd.getStepRecord();
-            assertEquals("next", sr.getRetVal());
+            assertEquals("error", sr.getRetVal());
             Activity activity = srd.getActivity();
             if (activity != null) {
                 assertEquals(10, activity.getMax().longValue());
                 assertEquals(ActivityStatus.FINISHED, activity.getStatus());
             }
-            assertEquals(WorkOrderExecutionState.FINISHED, debug.getOrder().getStatus());
+            assertEquals(WorkOrderExecutionState.ERROR, debug.getOrder().getStatus());
         } finally {
             FTPConnectionConfig ftpConfig = new FTPConnectionConfig().setAddress("speedtest.tele2.net").setPort(23).setLoginId("ftp").setPassword("foo@bar")
                     .setUseSFTP(false);
@@ -413,7 +413,7 @@ public class SendFileStepTest {
             assertTrue(response.getIsCreated());
             WorkOrderDebug debug;
             WorkOrderExecutionState state = WorkOrderExecutionState.NEW;
-            long timeout = System.currentTimeMillis() + 60000;
+            long timeout = System.currentTimeMillis() + 120000;
             do {
                 debug = Kernel.getDecision().getWorkOrderDebug(context, response.getUri());
                 state = debug.getOrder().getStatus();
@@ -426,13 +426,13 @@ public class SendFileStepTest {
             assertEquals(1, db.getStepRecordDebugs().size());
             StepRecordDebug srd = db.getStepRecordDebugs().get(0);
             StepRecord sr = srd.getStepRecord();
-            assertEquals("next", sr.getRetVal());
+            assertEquals("error", sr.getRetVal());
             Activity activity = srd.getActivity();
             if (activity != null) {
                 assertEquals(10, activity.getMax().longValue());
                 assertEquals(ActivityStatus.FINISHED, activity.getStatus());
             }
-            assertEquals(WorkOrderExecutionState.FINISHED, debug.getOrder().getStatus());
+            assertEquals(WorkOrderExecutionState.ERROR, debug.getOrder().getStatus());
         } finally {
             FTPConnectionConfig ftpConfig = new FTPConnectionConfig().setAddress("speedtest.tele2.net").setPort(23).setLoginId("ftp").setPassword("foo@bar")
                     .setUseSFTP(false);

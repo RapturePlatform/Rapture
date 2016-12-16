@@ -351,7 +351,7 @@ public class FTPConnection implements Connection {
     public FTPRequest upload(final FTPRequest request) {
         if (request.getAction() != Action.WRITE) throw new IllegalArgumentException("Expected a Write Action");
         String errorMessage = String.format("Error uploading %s", request.getRemoteName());
-        return FTPService.runWithRetry(errorMessage, this, true, new FTPAction<FTPRequest>() {
+        return FTPService.runWithRetry(errorMessage, this, false, new FTPAction<FTPRequest>() {
             @Override
             public FTPRequest run(int attemptNum) throws IOException {
                 InputStream inStream = request.getSource();
