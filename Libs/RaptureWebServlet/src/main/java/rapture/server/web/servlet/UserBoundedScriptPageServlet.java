@@ -24,6 +24,7 @@
 package rapture.server.web.servlet;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.net.URLDecoder;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -97,6 +98,7 @@ public class UserBoundedScriptPageServlet extends BaseServlet {
             DEFINEDUSER.setUser(user);
             DEFINEDUSER.setValid(true);
         } catch (RaptureException re) {
+            log.error(re);
             throw new ServletException("Error looking up user. " + re.getMessage());
         }
     }
@@ -202,7 +204,13 @@ public class UserBoundedScriptPageServlet extends BaseServlet {
      * @param  resp          The HttpServletResponse
      */
     protected void runScriptWithUser(String script, Map<String, Object> parameterMap, HttpServletResponse resp) throws IOException {
-
+        
+        //check if user has been deactivated since servlet was init(). 
+        if (Kernel.getAdmin().getUser(DEFINEDUSER, user).getInactive()){
+            log.info(String.format("user: '%s' is inactive.", user));
+            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_UNAUTHORIZED, String.format("user: '%s' is inactive.", user));
+        }
+        
         Map<String, Object> masterParameterMap = new HashMap<String, Object>();
         masterParameterMap.put("web", parameterMap);
         // Now run script
