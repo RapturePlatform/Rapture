@@ -446,8 +446,11 @@ public class AdminApiImpl extends KernelBase implements AdminApi {
         checkParameter("User", userName); //$NON-NLS-1$
         RaptureUser user = getUser(context, userName);
         if (user != null) {
-            templateValues.put("user", user);
-            Mailer.email(context, emailTemplate, templateValues);
+            // Supplied map should not get modified.
+            Map<String, Object> values = new HashMap<>();
+            values.putAll(templateValues);
+            values.put("user", user);
+            Mailer.email(context, emailTemplate, values);
         } else {
             throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, adminMessageCatalog.getMessage("NoExistUser", userName)); //$NON-NLS-1$ }
         }
