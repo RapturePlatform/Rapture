@@ -35,6 +35,7 @@ import java.util.Map;
 
 import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -346,6 +347,10 @@ public class SendFileStepTest {
             assertEquals(1, db.getStepRecordDebugs().size());
             StepRecordDebug srd = db.getStepRecordDebugs().get(0);
             StepRecord sr = srd.getStepRecord();
+
+            // If SFTP server isn't present then we can't test
+            Assume.assumeTrue(!"quit".equals(sr.getRetVal()));
+
             assertEquals("next", sr.getRetVal());
             Activity activity = srd.getActivity();
             if (activity != null) {
@@ -386,6 +391,10 @@ public class SendFileStepTest {
             assertEquals(1, db.getStepRecordDebugs().size());
             StepRecordDebug srd = db.getStepRecordDebugs().get(0);
             StepRecord sr = srd.getStepRecord();
+
+            // If SFTP server isn't present then we can't test
+            Assume.assumeTrue(!"quit".equals(sr.getRetVal()));
+
             assertEquals("error", sr.getRetVal());
             Activity activity = srd.getActivity();
             if (activity != null) {
@@ -426,6 +435,10 @@ public class SendFileStepTest {
             assertEquals(1, db.getStepRecordDebugs().size());
             StepRecordDebug srd = db.getStepRecordDebugs().get(0);
             StepRecord sr = srd.getStepRecord();
+
+            // If SFTP server isn't present then we can't test
+            Assume.assumeTrue(!"quit".equals(sr.getRetVal()));
+
             assertEquals("error", sr.getRetVal());
             Activity activity = srd.getActivity();
             if (activity != null) {

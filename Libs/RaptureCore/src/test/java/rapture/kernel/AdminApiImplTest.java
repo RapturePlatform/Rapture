@@ -24,7 +24,9 @@
 package rapture.kernel;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Map;
 
@@ -43,6 +45,7 @@ import rapture.common.api.AdminApi;
 import rapture.common.impl.jackson.JacksonUtil;
 import rapture.common.impl.jackson.MD5Utils;
 import rapture.common.model.RaptureUser;
+import rapture.common.model.RaptureUserStorage;
 import rapture.mail.Mailer;
 import rapture.mail.SMTPConfig;
 
@@ -110,4 +113,34 @@ public class AdminApiImplTest {
             wiser.stop();
         }
     }
+
+    @Test
+    public void testVerifyResetTolkein() {
+        CallingContext context = ContextFactory.getKernelUser();
+        String geezer = "geezer";
+        AdminApi admin = Kernel.getAdmin();
+
+        context = ContextFactory.getKernelUser();
+        if (!admin.doesUserExist(context, geezer)) {
+            admin.addUser(context, geezer, "Geezer Butler", MD5Utils.hash16(geezer), "GEEZER@SABBATH.COM");
+        }
+
+        String token = admin.createPasswordResetToken(context, geezer);
+        assertFalse(admin.verifyPasswordResetToken(context, geezer, "_" + token));
+        assertTrue(admin.verifyPasswordResetToken(context, geezer, token));
+        RaptureUser user = admin.getUser(context, geezer);
+        Long expire = user.getTokenExpirationTime();
+        user.setTokenExpirationTime(0L);
+        RaptureUserStorage.add(user, user.getUsername(), "testing");
+        assertFalse(admin.verifyPasswordResetToken(context, geezer, token));
+
+        user.setTokenExpirationTime(expire);
+        RaptureUserStorage.add(user, user.getUsername(), "testing");
+        assertTrue(admin.verifyPasswordResetToken(context, geezer, token));
+
+        admin.destroyUser(context, geezer);
+        assertFalse(admin.verifyPasswordResetToken(context, geezer, token));
+
+    }
+
 }

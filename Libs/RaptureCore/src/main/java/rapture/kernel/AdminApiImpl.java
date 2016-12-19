@@ -36,6 +36,7 @@ import java.util.Properties;
 import java.util.TreeMap;
 
 import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 
@@ -385,11 +386,11 @@ public class AdminApiImpl extends KernelBase implements AdminApi {
         checkParameter("User", userName);
         checkParameter("Token", token);
         RaptureUser user = getUser(context, userName);
-        boolean match = user.getVerified();
-
         if (user == null) {
             throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, adminMessageCatalog.getMessage("NoExistUser", userName)); //$NON-NLS-1$
         }
+
+        boolean match = user.getVerified();
         if (!match) {
             match = token.equals(user.getRegistrationToken());
             if (match) {
@@ -399,6 +400,27 @@ public class AdminApiImpl extends KernelBase implements AdminApi {
             }
         }
         return match;
+    }
+
+    @Override
+    public Boolean verifyPasswordResetToken(CallingContext context, String userName, String token) {
+        checkParameter("User", userName);
+        checkParameter("Token", token);
+        RaptureUser user = getUser(context, userName);
+
+        if (user == null) {
+            log.info("User " + userName + " does not exist");
+            return false;
+        }
+        if (StringUtils.isBlank(user.getPasswordResetToken()) || !token.equals(user.getPasswordResetToken())) {
+            log.info("Invalid password reset token");
+            return false;
+        }
+        if (user.getTokenExpirationTime() <= System.currentTimeMillis()) {
+            log.info("Password reset token has expired");
+            return false;
+        }
+        return true;
     }
 
     private String generateSecureToken() {
