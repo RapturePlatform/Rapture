@@ -88,6 +88,7 @@ public class GetFileStep extends AbstractInvocable {
 
             String retval = getNextTransition();
             int failCount = 0;
+            int successCount = 0;
             StringBuilder sb = new StringBuilder();
             List<FTPRequest> requests = new ArrayList<>();
             connection = new SFTPConnection(configUri).setContext(ctx);
@@ -98,18 +99,21 @@ public class GetFileStep extends AbstractInvocable {
                     retval = getFailTransition();
                     sb.append("Unable to retrieve ").append(e.getKey()).append(" as ").append(e.getValue().toString()).append("\n");
                     failCount++;
+                } else {
+                    sb.append("Retrieved ").append(e.getKey()).append("\n");
+                    successCount++;
                 }
                 requests.add(request);
             }
             if (failCount > 0) decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), "Unable to retrieve " + failCount + " files");
-            else decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), "All files retrieved");
+            else decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), successCount + " files retrieved");
 
             String err = sb.toString();
             if (!StringUtils.isEmpty(err)) {
                 log.error(err);
                 decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), getStepName() + ": " + err, true);
             } else {
-                decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), getStepName() + ": All files retrieved", false);
+                decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), getStepName() + ": " + successCount + " files files retrieved", false);
             }
             decision.setContextLiteral(ctx, getWorkerURI(), getErrName(), err);
             return retval;
