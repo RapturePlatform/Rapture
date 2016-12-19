@@ -100,8 +100,10 @@ public class SendFileStep extends AbstractInvocable {
                 // If the target is a URI then just use the leaf name. Eg blob://foo/bar/baz -> baz
                 if (remote.contains("://")) remote = new RaptureURI(remote, Scheme.DOCUMENT).getLeafName();
                 FTPRequest request = new FTPRequest(Action.WRITE).setLocalName(e.getKey()).setRemoteName(remote);
-                connection.doAction(request);
-                if (!request.getStatus().equals(Status.SUCCESS)) {
+                boolean success = connection.doAction(request);
+                if (success && request.getStatus().equals(Status.SUCCESS)) {
+                    decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), "Sent " + e.getKey(), true);
+                } else {
                     retval = getFailTransition();
                     decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), "Unable to send " + e.getKey(), true);
                     failCount++;

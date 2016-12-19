@@ -31,9 +31,12 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -49,38 +52,94 @@ import rapture.common.exception.RaptureExceptionFactory;
 
 public class SFTPConnection extends FTPConnection {
 
-    private static final Logger log = Logger.getLogger(SFTPConnection.class);
+    // too many loggers
+    private static final Logger log4jLogger = Logger.getLogger(SFTPConnection.class);
 
     private final JSch jsch;
     private ChannelSftp channel;
     private Session session;
+    private static int logLevel = com.jcraft.jsch.Logger.INFO;
+
+    // Unfortunately JSCH only allows one logger for all instances
+    // This means that if there are multiple simultaneous SFTP connections
+    // we can't necessarily associate log messages with connections.
+    // We can only track messages that were logged while this SFTPConnection was instantiated
+
+    static class JschLogger implements com.jcraft.jsch.Logger {
+        static Map<SFTPConnection, List<String>> errors = new ConcurrentHashMap<>();
+
+        @Override
+        public boolean isEnabled(int level) {
+            return level >= logLevel;
+        }
+
+        @Override
+        public void log(int level, String message){
+            switch (level) {
+
+            // DEBUG and INFO level are somewhat noisy, but we'll keep the messages for debugging in case something fails
+            case DEBUG:
+                // logger.debug(message);
+                break;
+            case INFO:
+                // logger.info(message);
+                break;
+            case WARN:
+                log4jLogger.warn(message);
+                break;
+            case ERROR:
+                log4jLogger.error(message);
+                break;
+            case FATAL:
+                log4jLogger.fatal(message);
+                break;
+            }
+            for (List<String> list : errors.values())
+                list.add(message);
+        }
+
+        public static void register(SFTPConnection conn) {
+            errors.put(conn, new ArrayList<>());
+        }
+
+        public static List<String> getErrors(SFTPConnection conn) {
+            return errors.get(conn);
+        }
+
+        public static List<String> deregister(SFTPConnection conn) {
+            return errors.remove(conn);
+        }
+    }
+
+    static {
+        JSch.setLogger(new JschLogger());
+    }
+
+    public JSch setup(FTPConnectionConfig config) {
+        JschLogger.register(this);
+        if (config.isUseSFTP()) {
+            log4jLogger.info("Connecting via SFTP");
+            return new JSch();
+        } else {
+            log4jLogger.info("useSFTP is false - using FTP");
+            return null;
+        }
+    }
 
     public SFTPConnection(FTPConnectionConfig config) {
         super(config);
-        if (config.isUseSFTP()) {
-            log.info("Connecting via SFTP");
-            jsch = new JSch();
-        } else {
-            log.info("useSFTP is false - using FTP");
-            jsch = null;
-        }
+        jsch = setup(config);
     }
 
     public SFTPConnection(String configUri) {
         super(configUri);
-        if (getConfig().isUseSFTP()) {
-            log.info("Connecting via SFTP");
-            jsch = new JSch();
-        } else {
-            log.info("useSFTP is false - using FTP");
-            jsch = null;
-        }
+        jsch = setup(this.getConfig());
     }
 
     @Override
     public boolean connectAndLogin() {
         if (isLocal()) {
-            log.info("In test mode - not connecting");
+            log4jLogger.info("In test mode - not connecting");
             return true;
         }
 
@@ -88,7 +147,7 @@ public class SFTPConnection extends FTPConnection {
             if (!config.isUseSFTP())
                 return super.connectAndLogin();
             else if (!isConnected()) {
-                return FTPService.runWithRetry("Could not login to " + config.getAddress() + " as " + config.getLoginId(), this, false,
+                return FTPService.runWithRetry("Could not login vis SFTP to " + config.getAddress() + " as " + config.getLoginId(), this, false,
                         new FTPAction<Boolean>() {
                             @SuppressWarnings("synthetic-access")
                             @Override
@@ -115,16 +174,16 @@ public class SFTPConnection extends FTPConnection {
                                     if (e.getCause() instanceof UnknownHostException) {
                                         throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, "Unknown host " + config.getAddress());
                                     }
-                                    log.error("Unable to establish secure FTP connection " + config.getLoginId() + "@" + config.getAddress() + ":"
-                                            + config.getPort());
-                                    throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR,
-                                            "Unable to establish secure FTP connection to " + config.getAddress(), e);
+                                    String msg = "Unable to establish secure FTP connection " + config.getLoginId() + "@" + config.getAddress() + ":"
+                                            + config.getPort() + " : " + e.getMessage();
+                                    throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, msg, e);
                                 }
                             }
                         });
             }
         } catch (Exception e) {
-            log.error(e.getMessage());
+            log4jLogger.debug(JschLogger.getErrors(this));
+            log4jLogger.info(ExceptionToString.summary(e));
         }
         return false;
     }
@@ -152,8 +211,9 @@ public class SFTPConnection extends FTPConnection {
 
     @Override
     protected void finalize() throws Throwable {
-        super.finalize();
+        JschLogger.deregister(this);
         logoffAndDisconnect();
+        super.finalize();
     }
 
     /**
@@ -178,7 +238,8 @@ public class SFTPConnection extends FTPConnection {
                 }
             }
         } catch (SftpException e) {
-            log.debug(String.format("Error listing files with path [%s] on server [%s]. Error: %s", path, config.getAddress(), ExceptionToString.format(e)));
+            log4jLogger.info(JschLogger.getErrors(this));
+            log4jLogger.debug(String.format("Error listing files with path [%s] on server [%s]. Error: %s", path, config.getAddress(), ExceptionToString.format(e)));
         }
         return filenames;
     }
@@ -199,8 +260,9 @@ public class SFTPConnection extends FTPConnection {
                 return channel.get(fileName);
             } catch (SftpException e) {
                 String err = String.format("Failed to download %s: %s", fileName, e.getMessage());
-                log.warn(err);
-                log.trace(ExceptionToString.format(e));
+                log4jLogger.warn(err);
+                log4jLogger.info(JschLogger.getErrors(this));
+                log4jLogger.trace(ExceptionToString.format(e));
                 throw new IOException(err, e);
             }
         }
@@ -218,13 +280,14 @@ public class SFTPConnection extends FTPConnection {
     public boolean sendFile(InputStream stream, String fileName) throws IOException {
         if (!config.isUseSFTP()) return super.sendFile(stream, fileName);
         if (fileName.endsWith("/")) {
-            log.error("fileName must be the name of a file, not a directory");
+            log4jLogger.error("fileName must be the name of a file, not a directory");
         } else try {
             int lio = fileName.lastIndexOf('/');
             if (lio > 0) channel.cd(fileName.substring(0, lio));
             channel.put(stream, (lio > 0) ? fileName.substring(lio + 1) : fileName);
             return true;
         } catch (SftpException e) {
+            log4jLogger.info(JschLogger.getErrors(this));
             throw new IOException("Cannot copy data to " + fileName, e);
         }
         return false;

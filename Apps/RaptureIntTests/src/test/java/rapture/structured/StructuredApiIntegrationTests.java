@@ -34,6 +34,7 @@ import java.util.zip.ZipFile;
 
 import org.junit.Ignore;
 import org.testng.Assert;
+import org.testng.SkipException;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Optional;
 import org.testng.annotations.Parameters;
@@ -49,15 +50,8 @@ import rapture.common.RaptureURI;
 import rapture.common.Scheme;
 import rapture.common.StructuredRepoConfig;
 import rapture.common.client.HttpAdminApi;
-import rapture.common.client.HttpBlobApi;
-import rapture.common.client.HttpDocApi;
-import rapture.common.client.HttpLoginApi;
 import rapture.common.client.HttpPluginApi;
-import rapture.common.client.HttpScriptApi;
-import rapture.common.client.HttpSearchApi;
-import rapture.common.client.HttpSeriesApi;
 import rapture.common.client.HttpStructuredApi;
-import rapture.common.client.HttpUserApi;
 import rapture.common.impl.jackson.JacksonUtil;
 import rapture.common.impl.jackson.MD5Utils;
 import rapture.helper.IntegrationTestHelper;
@@ -68,19 +62,7 @@ import rapture.plugin.util.PluginUtils;
 public class StructuredApiIntegrationTests {
 
     private IntegrationTestHelper helper;
-    private HttpLoginApi raptureLogin = null;
-    private HttpUserApi userApi = null;
     private HttpStructuredApi structApi = null;
-    private HttpSeriesApi seriesApi = null;
-    private HttpScriptApi scriptApi = null;
-    private HttpSearchApi searchApi = null;
-    private HttpDocApi docApi = null;
-    private HttpBlobApi blobApi = null;
-
-    private IntegrationTestHelper helper2;
-    private HttpUserApi userApi2 = null;
-    private HttpDocApi docApi2 = null;
-    private HttpLoginApi raptureLogin2 = null;
     private HttpAdminApi admin = null;
     private HttpPluginApi pluginApi = null;
     private RaptureURI repoUri = null;
@@ -104,27 +86,20 @@ public class StructuredApiIntegrationTests {
 
         // If running from eclipse set env var -Penv=docker or use the following
         // url variable settings:
-        // url = "http://192.168.99.101:8665/rapture"; // docker
+        // url = "http://192.168.99.100:8665/rapture"; // docker
         // url="http://localhost:8665/rapture";
 
-        helper = new IntegrationTestHelper(url, username, password);
-        raptureLogin = helper.getRaptureLogin();
+        try {
+            helper = new IntegrationTestHelper(url, username, password);
+        } catch (Exception e) {
+            throw new SkipException("Cannot connect to IntegrationTestHelper " + e.getMessage());
+        }
         structApi = helper.getStructApi();
-        userApi = helper.getUserApi();
-        seriesApi = helper.getSeriesApi();
-        scriptApi = helper.getScriptApi();
-        docApi = helper.getDocApi();
-        blobApi = helper.getBlobApi();
-        searchApi = helper.getSearchApi();
         admin = helper.getAdminApi();
         pluginApi = helper.getPluginApi();
         if (!admin.doesUserExist(user)) {
             admin.addUser(user, "Another User", MD5Utils.hash16(user), "user@incapture.net");
         }
-        helper2 = new IntegrationTestHelper(url, user, user);
-        userApi2 = helper2.getUserApi();
-        docApi2 = helper2.getDocApi();
-
         repoUri = helper.getRandomAuthority(Scheme.DOCUMENT);
         helper.configureTestRepo(repoUri, "MONGODB"); // TODO Make this configurable
     }
@@ -434,10 +409,12 @@ public class StructuredApiIntegrationTests {
             String ddl = structApi.getDdl(table, true);
             ddl = ddl.substring(0, ddl.indexOf('/'));
 
-            Assert.assertEquals("CREATE SEQUENCE " + seq + ";\n\nCREATE TABLE hhgg.ford\n(\n" + " ident INTEGER NOT NULL UNIQUE DEFAULT nextval('" + seq
-                    + "'),\n name TEXT\n);\n\n" + "INSERT INTO hhgg.ford (ident, name) VALUES ('1', 'Dentarthurdent')\n"
-                    + "INSERT INTO hhgg.ford (ident, name) VALUES ('2', 'Tricia McMillan')\n", ddl);
 
+            String expect = "CREATE SEQUENCE " + seq + ";\n\nCREATE TABLE hhgg.ford\n(\n" + "    ident INTEGER NOT NULL UNIQUE DEFAULT nextval('" + seq
+                    + "'),\n    name TEXT\n);\n\n" + "INSERT INTO hhgg.ford (ident, name) VALUES ('1', 'Dentarthurdent')\n"
+                    + "INSERT INTO hhgg.ford (ident, name) VALUES ('2', 'Tricia McMillan')\n";
+
+            Assert.assertEquals(ddl.replaceAll(" ", "."), expect.replaceAll(" ", "."));
         } finally {
             if (structApi.structuredRepoExists(repoStr)) structApi.deleteStructuredRepo(repoStr);
         }

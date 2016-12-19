@@ -87,8 +87,12 @@ public class MemoryIndexHandler implements IndexHandler {
     public void addedRecord(String key, String value, DocumentMetadata mdLatest) {
         List<IndexRecord> records = indexProducer.getIndexRecords(key, value, mdLatest);
         for (IndexRecord record : records) {
-            memoryView.put(key, record.getValues());
-            memoryView.get(key).put(ROWID, key);
+            Map<String, Object> values = record.getValues();
+            if (values != null) {
+                // Should be set but Continuous build #80 failed because values was null
+                values.put(ROWID, key);
+                memoryView.put(key, values);
+            }
         }
     }
 

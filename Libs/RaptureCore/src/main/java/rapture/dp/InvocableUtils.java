@@ -63,7 +63,8 @@ public class InvocableUtils {
         if (!StringUtils.isEmpty(appStatusURI)) {
             logger.trace("Worker URI is " + workerURI + "APPSTATUS is " + appStatusURI);
             List<StepRecord> steps = StepRecordUtil.getStepRecords(worker);
-            String currStep = steps.get(steps.size() - 1).getName();
+
+            String currStep = (steps.size() > 0) ? steps.get(steps.size() - 1).getName() : "UNKNOWN";
             String auditUri = getWorkflowAuditLog(appStatusURI, worker.getWorkOrderURI(), currStep);
             logger.debug(String.format("audit uri is %s, appStatus uri %s", auditUri, appStatusURI));
             Kernel.getAudit().writeAuditEntry(ctx, auditUri, error ? "ERROR" : "workflow", error ? 2 : 1, message);
