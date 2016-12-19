@@ -180,7 +180,7 @@ public class ScriptApiImpl extends KernelBase implements ScriptApi {
     @Override
     public List<String> getScriptNames(CallingContext context, String scriptURI) {
         RaptureURI internalURI = new RaptureURI(scriptURI, Scheme.SCRIPT);
-        final List<String> ret = new ArrayList<String>();
+        final List<String> ret = new ArrayList<>();
         List<RaptureScript> scripts = RaptureScriptStorage.readAll(internalURI.getAuthority());
         for (RaptureScript script : scripts) {
             ret.add(script.getName());
@@ -228,7 +228,7 @@ public class ScriptApiImpl extends KernelBase implements ScriptApi {
         Kernel.getStackContainer().pushStack(context, internalURI.toString());
 
         IRaptureScript scriptContext = ScriptFactory.getScript(script);
-        Map<String, Object> extraVals = new HashMap<String, Object>();
+        Map<String, Object> extraVals = new HashMap<>();
         if (params != null) {
             for (Map.Entry<String, String> entry : params.entrySet()) {
                 extraVals.put(entry.getKey(), entry.getValue());
@@ -274,7 +274,7 @@ public class ScriptApiImpl extends KernelBase implements ScriptApi {
         RaptureURI internalUri = new RaptureURI(uriPrefix, Scheme.SCRIPT);
         Boolean getAll = false;
         String authority = internalUri.getAuthority();
-        Map<String, RaptureFolderInfo> ret = new HashMap<String, RaptureFolderInfo>();
+        Map<String, RaptureFolderInfo> ret = new HashMap<>();
 
         // Schema level is special case.
         if (authority.isEmpty()) {
@@ -305,7 +305,7 @@ public class ScriptApiImpl extends KernelBase implements ScriptApi {
         }
         if (depth <= 0) getAll = true;
 
-        Stack<String> parentsStack = new Stack<String>();
+        Stack<String> parentsStack = new Stack<>();
         parentsStack.push(parentDocPath);
 
         int startDepth = StringUtils.countMatches(parentDocPath, "/");
@@ -528,7 +528,7 @@ public class ScriptApiImpl extends KernelBase implements ScriptApi {
     }
 
     private List<REPLVariable> getVarsFromScope(Scope s) {
-        List<REPLVariable> ret = new ArrayList<REPLVariable>();
+        List<REPLVariable> ret = new ArrayList<>();
         for (Map.Entry<String, ReflexValue> entry : s.retrieveVariables().entrySet()) {
             REPLVariable repl = new REPLVariable();
             repl.setName(entry.getKey());
@@ -672,9 +672,10 @@ public class ScriptApiImpl extends KernelBase implements ScriptApi {
                 inputs.put(param.getParameterName(), scriptParam);
             }
             MetaReturn returnInfo = parser.scriptInfo.getReturnInfo();
-            output.setParameterType(returnInfo.getType());
-            output.setDescription(returnInfo.getDescription());
-
+            if (returnInfo != null) {
+                output.setParameterType(returnInfo.getType());
+                output.setDescription(returnInfo.getDescription());
+            }
             result.setProperties(parser.scriptInfo.getProperties());
         } catch (Exception e) {
             log.error("ScriptApiImpl.getInterface, scriptURI: " + scriptURI);
