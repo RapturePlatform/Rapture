@@ -387,7 +387,7 @@ public class StructuredApiIntegrationTests {
         }
     }
 
-    @Test(groups = { "structured", "postgres", "nightly" })
+    @Test(groups = { "structured", "postgres", "nightly" },enabled=true)
     public void testSqlSequenceGeneration() {
         RaptureURI tableUri = new RaptureURI("structured://hhgg/ford");
         String repoStr = tableUri.toAuthString();
