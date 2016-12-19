@@ -58,6 +58,10 @@ api(Admin) {
     @entitle=/admin/main
     @public Boolean verifyUser(String userName, String token);
 
+    [Verify that a Password Reset Token is valid]
+    @entitle=/admin/main
+    @public Boolean verifyPasswordResetToken(String userName, String token);
+
     [This api call can be used to determine whether a given user exists in the Rapture system. Only system administrators can use this api call.]
     @entitle=/admin/main
     @public Boolean doesUserExist(String userName);
