@@ -1,0 +1,11 @@
+{
+    "name"      :    "//default/table/user",
+    "menuPath"  :   [],
+    "title"     :   "Users",
+    "paneType"  :   "datatable",
+    "parameterNames" :  [ ],
+    "actions" : {
+        "struct" : "/widget/default/entity/user/table/struct",
+        "data" : "/widget/default/entity/user/table/data"
+    }
+}
