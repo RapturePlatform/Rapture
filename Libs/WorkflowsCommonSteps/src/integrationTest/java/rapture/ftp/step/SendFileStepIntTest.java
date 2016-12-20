@@ -147,8 +147,8 @@ public class SendFileStepIntTest {
 
     @AfterClass
     public static void tearDownAfterClass() throws Exception {
-        blobApi.deleteBlobRepo("blob://tmp");
-        docApi.deleteDoc("document://tmp/elp");
+        if (blobApi != null) blobApi.deleteBlobRepo("blob://tmp");
+        if (docApi != null) docApi.deleteDoc("document://tmp/elp");
         // decisionApi.deleteWorkflow(workflowUri);
     }
 

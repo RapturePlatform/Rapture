@@ -35,6 +35,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
 
+import javax.mail.MessagingException;
+
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -472,7 +474,12 @@ public class AdminApiImpl extends KernelBase implements AdminApi {
             Map<String, Object> values = new HashMap<>();
             values.putAll(templateValues);
             values.put("user", user);
-            Mailer.email(context, emailTemplate, values);
+            try {
+                Mailer.email(context, emailTemplate, values);
+            } catch (MessagingException e) {
+                throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST,
+                        adminMessageCatalog.getMessage("CannotEmailUser", new String[] { userName, user.getEmailAddress(), e.getMessage() }));
+            }
         } else {
             throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, adminMessageCatalog.getMessage("NoExistUser", userName)); //$NON-NLS-1$ }
         }

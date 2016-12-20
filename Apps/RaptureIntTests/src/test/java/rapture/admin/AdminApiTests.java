@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.junit.Assume;
 import org.testng.Assert;
 import org.testng.Reporter;
 import org.testng.annotations.AfterClass;
@@ -40,6 +41,7 @@ import org.testng.annotations.Optional;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 
+import rapture.common.CallingContext;
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
 import rapture.common.client.HttpAdminApi;
@@ -47,6 +49,7 @@ import rapture.common.impl.jackson.MD5Utils;
 import rapture.common.model.RaptureUser;
 import rapture.common.model.RepoConfig;
 import rapture.helper.IntegrationTestHelper;
+import rapture.kernel.ContextFactory;
 
 public class AdminApiTests {
 
@@ -56,10 +59,21 @@ public class AdminApiTests {
 
     @BeforeClass(groups = { "admin", "nightly" })
     @Parameters({ "RaptureURL", "RaptureUser", "RapturePassword" })
-    public void beforeTest(@Optional("http://localhost:8665/rapture") String url, @Optional("rapture") String user, @Optional("rapture") String password) {
+    public void beforeTest(@Optional("http://192.168.99.100:8665/rapture") String url, @Optional("rapture") String user, @Optional("rapture") String password) {
         helper = new IntegrationTestHelper(url, user, password);
         adminApi = helper.getAdminApi();
         raptureUrl = url;
+    }
+
+    @Test
+    public void testCreateUser() throws Exception {
+        CallingContext context = ContextFactory.getKernelUser();
+        String user = "qqqq";
+
+        Assume.assumeTrue(!adminApi.doesUserExist(context, user));
+        adminApi.addUser(context, user, user, MD5Utils.hash16(user), "dave.tong@incapturetechnologies.com");
+        RaptureUser rapuser = adminApi.getUser(context, user);
+        Assert.assertNotNull(rapuser);
     }
 
     @Test(groups = { "admin", "nightly" })
