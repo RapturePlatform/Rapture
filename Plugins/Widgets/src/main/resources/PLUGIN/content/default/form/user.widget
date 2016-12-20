@@ -1,0 +1,11 @@
+{
+    "name"      :    "//default/form/user",
+    "menuPath"  :   [],
+    "title"     :   "User Groups",
+    "paneType"  :   "form",
+    "parameterNames" :  [ ],
+    "actions" : {
+        "struct" : "/widget/default/entity/user/form/struct",
+        "data" : "/widget/default/entity/user/form/data"
+    }
+}
