@@ -12,20 +12,30 @@
  */
 package rapture.mail;
 
-import com.google.common.collect.ImmutableMap;
-import org.junit.Test;
-import rapture.common.CallingContext;
-import rapture.common.model.RaptureUser;
-import rapture.kernel.ContextFactory;
-import rapture.kernel.Kernel;
+import static org.junit.Assert.fail;
 
-import javax.mail.*;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+
+import org.junit.Test;
+
+import com.google.common.collect.ImmutableMap;
+
+import rapture.common.CallingContext;
+import rapture.common.exception.ExceptionToString;
+import rapture.common.model.RaptureUser;
+import rapture.kernel.ContextFactory;
+import rapture.kernel.Kernel;
 
 public class MailIntegration {
 
@@ -45,7 +55,11 @@ public class MailIntegration {
 
         Kernel.getAdmin().updateUserEmail(context, "rapture", "support@incapturetechnologies.com");
         RaptureUser user = Kernel.getAdmin().getUser(context, "rapture");
-        Mailer.email(context, templateName, ImmutableMap.of("user", user));
+        try {
+            Mailer.email(context, templateName, ImmutableMap.of("user", user));
+        } catch (MessagingException e) {
+            fail(ExceptionToString.summary(e));
+        }
 
         Map<String, Object> map = new HashMap<>();
         map.put("host", "http://localhost:8080");
@@ -67,6 +81,7 @@ public class MailIntegration {
         props.put("mail.smtp.host", "smtp.gmail.com");
         props.put("mail.smtp.port", "587");
         Session session = Session.getInstance(props, new javax.mail.Authenticator() {
+            @Override
             protected PasswordAuthentication getPasswordAuthentication() {
                 return new PasswordAuthentication("alan.moore@incapturetechnologies.com", "/////");
             }

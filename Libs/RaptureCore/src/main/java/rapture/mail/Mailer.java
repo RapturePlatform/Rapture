@@ -56,28 +56,14 @@ public class Mailer {
     public static String SMTP_CONFIG_URL = "email/config";
     public static String EMAIL_TEMPLATE_DIR = "email/template/";
 
-    public static void email(CallingContext context, String templateName, Map<String, ? extends Object> templateValues) {
-        final SMTPConfig config = getSMTPConfig();
-        Session session = getSession(config);
+    public static void email(CallingContext context, String templateName, Map<String, ? extends Object> templateValues) throws MessagingException {
         EmailTemplate template = getEmailTemplate(context, templateName);
-        try {
-            // Instantiate a new MimeMessage and fill it with the required information.
-            Message msg = new MimeMessage(session);
-            msg.setFrom(new InternetAddress(config.getFrom()));
-            String to = renderTemplate(template.getEmailTo(), templateValues);
-            if(StringUtils.isBlank(to)) {
-                throw RaptureExceptionFactory.create("No emailTo field");
-            }
-            InternetAddress[] address = { new InternetAddress(to) };
-            msg.setRecipients(Message.RecipientType.TO, address);
-            msg.setSubject(renderTemplate(template.getSubject(), templateValues));
-            msg.setSentDate(new Date());
-            msg.setContent(renderTemplate(template.getMsgBody(), templateValues), "text/html; charset=utf-8");
-            // Hand the message to the default transport service for delivery.
-            Transport.send(msg);
-        } catch (MessagingException e) {
-            log.error("Failed to send email", e);
-        }
+        String[] recipients = new String[1];
+        recipients[0] = renderTemplate(template.getEmailTo(), templateValues);
+        if (StringUtils.isBlank(recipients[0])) throw RaptureExceptionFactory.create("No emailTo field");
+        String subject = renderTemplate(template.getSubject(), templateValues);
+        String message = renderTemplate(template.getMsgBody(), templateValues);
+        email(recipients, subject, message);
     }
 
     public static void email(String[] recipients, String subject, String message) throws MessagingException {
@@ -90,7 +76,8 @@ public class Mailer {
             address[i] = new InternetAddress(recipients[i]);
         msg.setRecipients(Message.RecipientType.TO, address);
         msg.setSubject(subject);
-        msg.setContent(message, MediaType.PLAIN_TEXT_UTF_8.toString());
+        MediaType mediaType = message.contains("<!DOCTYPE html>") ? MediaType.HTML_UTF_8 : MediaType.PLAIN_TEXT_UTF_8;
+        msg.setContent(message, mediaType.toString());
         msg.setSentDate(new Date());
         Transport.send(msg);
     }
