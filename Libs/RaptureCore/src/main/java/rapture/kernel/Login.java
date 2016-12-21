@@ -180,9 +180,20 @@ public class Login extends KernelBase {
         return new KernelInfo();
     }
 
+    public CallingContext check(String user, String contextId) {
+        CallingContext heldContext = Kernel.getKernel().loadContext(contextId);
+        if (heldContext != null) {
+            if (heldContext.getUser().equals(user)) {
+                return heldContext;
+            }
+        }
+        return null;
+    }
+
     /**
      * @deprecated Call {@link #loginWithHash(String, String, ApiVersion)} instead
      */
+    @Deprecated
     public CallingContext loginWithHash(String userName, String hashPassword) {
         return loginWithHash(userName, hashPassword, null);
     }
@@ -210,6 +221,7 @@ public class Login extends KernelBase {
     /**
      * @deprecated Call {@link #login(String, String, ApiVersion)} instead
      */
+    @Deprecated
     public CallingContext login(String userName, String password) {
         return login(userName, password, null);
     }
