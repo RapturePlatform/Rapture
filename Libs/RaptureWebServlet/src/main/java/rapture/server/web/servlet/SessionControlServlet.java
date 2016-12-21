@@ -106,7 +106,7 @@ public class SessionControlServlet extends BaseServlet {
             return;
         }
 
-        Map<String, Object> parameterMap = new HashMap<String, Object>();
+        Map<String, Object> parameterMap = new HashMap<>();
 
         Enumeration<String> e = req.getParameterNames();
         while (e.hasMoreElements()) {
@@ -115,12 +115,20 @@ public class SessionControlServlet extends BaseServlet {
             parameterMap.put(key, val);
         }
         
+        Cookie[] cookies = req.getCookies();
+        if (cookies == null || cookies.length == 0) {
+            log.info("No cookies sent");
+        } else {
+            for (Cookie c : cookies) {
+                log.info(c.getName() + " = " + c.getValue());
+                if (c.getName().equals("raptureContext")) {
+                    parameterMap.put("raptureContext", c.getValue());
+                }
+            }
+        }
+
         ResponseControl control = new ResponseControl();
         control = runScriptWithResponseControl(script, parameterMap, control, resp);
-
-        // Run script with controlObject = variable "control"
-
-        // Retrieve object back from context/scope, turn back into control object
 
         // Handle cookies first
         log.info("Returned from run script");
@@ -164,7 +172,7 @@ public class SessionControlServlet extends BaseServlet {
 
         Map<String, Object> controlMap = JacksonUtil.getHashFromObject(control);
 
-        Map<String, Object> masterParameterMap = new HashMap<String, Object>();
+        Map<String, Object> masterParameterMap = new HashMap<>();
         masterParameterMap.put("control", controlMap);
         masterParameterMap.put("web", parameterMap);
                 // Now run script
