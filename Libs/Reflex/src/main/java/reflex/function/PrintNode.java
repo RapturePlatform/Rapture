@@ -45,7 +45,11 @@ public class PrintNode extends BaseNode {
         debugger.stepStart(this, scope);
         if (expression != null) {
             ReflexValue value = expression.evaluate(debugger, scope);
-            handler.getOutputHandler().printOutput(value .getValue() == ReflexValue.Internal.NULL ? "" : value.toString());
+            if (value.isNumber()) {
+                handler.getOutputHandler().printOutput(value.asBigDecimal().toPlainString());
+            } else {
+                handler.getOutputHandler().printOutput(value.getValue() == ReflexValue.Internal.NULL ? "" : value.toString());
+            }
         }
         debugger.stepEnd(this, new ReflexVoidValue(lineNumber), scope);
         return new ReflexVoidValue(lineNumber);
