@@ -118,7 +118,7 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
                 return;
             }
             log.error(apiMessageCatalog.getMessage("Exists", internalUri.toShortString()));
-            log.error("Existing config " + existingConfig.getDocumentRepo().getConfig() + " does nopt match " + config);
+            log.error("Existing config " + existingConfig.getDocumentRepo().getConfig() + " does not match " + config);
             throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, apiMessageCatalog.getMessage("Exists", internalUri.toShortString())); //$NON-NLS-1$
         }
 
