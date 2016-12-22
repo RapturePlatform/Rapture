@@ -1,0 +1,11 @@
+{
+    "name"      :    "//default/table/entitlement",
+    "menuPath"  :   [],
+    "title"     :   "Entitlements",
+    "paneType"  :   "datatable",
+    "parameterNames" :  [ ],
+    "actions" : {
+        "struct" : "/widget/default/entity/entitlement/table/struct",
+        "data" : "/widget/default/entity/entitlement/table/data"
+    }
+}
