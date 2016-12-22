@@ -1,0 +1,11 @@
+{
+    "name"      :    "//default/form/entitlementGroup__entitlement",
+    "menuPath"  :   [],
+    "title"     :   "Entitlements Associated with Entitlement Group",
+    "paneType"  :   "form",
+    "parameterNames" :  [ ],
+    "actions" : {
+        "struct" : "/widget/default/entity/entitlementGroup/form/entitlement/struct",
+        "data" : "/widget/default/entity/entitlementGroup/form/entitlement/data"
+    }
+}
