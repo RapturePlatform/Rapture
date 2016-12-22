@@ -23,6 +23,8 @@
  */
 package reflex.function;
 
+import java.math.BigDecimal;
+
 import reflex.IReflexHandler;
 import reflex.Scope;
 import reflex.debug.IReflexDebugger;
@@ -54,12 +56,12 @@ public class RoundNode extends BaseNode {
         int dp = 0;
         if (dpNode != null) {
             ReflexValue dpVal = dpNode.evaluate(debugger, scope);
-            dp = (Integer) dpVal.asInt();
+            dp = dpVal.asInt();
         }
-        double size = Math.pow(10, dp);
-        long val = Math.round(value.asDouble() * size);
-        double dVal = val;
-        ReflexValue retVal = new ReflexValue(dVal / size);
+        BigDecimal size = new BigDecimal(Math.pow(10, dp));
+        long val = Math.round(value.asDouble() * size.intValue());
+        BigDecimal dVal = new BigDecimal(val);
+        ReflexValue retVal = new ReflexValue(dVal.divide(size));
         debugger.stepEnd(this, retVal, scope);
         return retVal;
     }
