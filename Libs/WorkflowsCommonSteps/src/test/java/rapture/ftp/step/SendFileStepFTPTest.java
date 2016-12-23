@@ -367,7 +367,7 @@ public class SendFileStepFTPTest {
         assertEquals(6, log.size());
         assertEquals("step1 finished", log.get(0).getMessage());
         assertEquals("Unable to transfer 1 files", log.get(1).getMessage());
-        assertEquals("Unable to send file://dev/null", log.get(2).getMessage());
+        assertEquals("Unable to send file://dev/null as /etc/no/chance", log.get(2).getMessage());
         assertEquals("step1: 553 Could not create file.\r\n", log.get(3).getMessage());
         assertEquals("COPY_FILES parameter is deprecated - please use SEND_FILES", log.get(4).getMessage());
         assertEquals("step1 started", log.get(5).getMessage());
@@ -408,7 +408,7 @@ public class SendFileStepFTPTest {
         assertEquals(5, log.size());
         assertEquals("step1 finished", log.get(0).getMessage());
         assertEquals("Unable to transfer 1 files", log.get(1).getMessage());
-        assertEquals("Unable to send file://dev/null", log.get(2).getMessage());
+        assertEquals("Unable to send file://dev/null as /etc/no/chance", log.get(2).getMessage());
         assertEquals("step1: 553 Could not create file.\r\n", log.get(3).getMessage());
         assertEquals("step1 started", log.get(4).getMessage());
 
@@ -448,7 +448,7 @@ public class SendFileStepFTPTest {
         assertEquals(5, log.size());
         assertEquals("step1 finished", log.get(0).getMessage());
         assertEquals("Unable to transfer 1 files", log.get(1).getMessage());
-        assertEquals("Unable to send file://does/not/exist", log.get(2).getMessage());
+        assertEquals("Unable to send file://does/not/exist as /etc/no/chance", log.get(2).getMessage());
         assertEquals("step1: /does/not/exist (No such file or directory)", log.get(3).getMessage());
         assertEquals("step1 started", log.get(4).getMessage());
 
@@ -492,7 +492,7 @@ public class SendFileStepFTPTest {
             assertEquals(5, log.size());
             assertEquals("step1 finished", log.get(0).getMessage());
             assertEquals("Unable to transfer 1 files", log.get(1).getMessage());
-            assertEquals("Unable to send document://tmp/elp", log.get(2).getMessage());
+            assertEquals("Unable to send document://tmp/elp as upload/elp.dummyfile", log.get(2).getMessage());
             assertEquals("step1: Unknown host foo.bar.wibble.net", log.get(3).getMessage());
             assertEquals("step1 started", log.get(4).getMessage());
             assertEquals("quit", sr.getRetVal());

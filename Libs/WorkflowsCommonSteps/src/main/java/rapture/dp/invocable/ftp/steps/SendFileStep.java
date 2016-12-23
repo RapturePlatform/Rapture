@@ -103,6 +103,7 @@ public class SendFileStep extends AbstractInvocable {
             String retval = getNextTransition();
             int failCount = 0;
             int successCount = 0;
+            StringBuilder sb = new StringBuilder();
             connection = new SFTPConnection(configUri).setContext(ctx);
             List<FTPRequest> requests = new ArrayList<>();
             for (Entry<String, Object> e : map.entrySet()) {
@@ -121,7 +122,9 @@ public class SendFileStep extends AbstractInvocable {
                     if (errors != null) {
                         decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), getStepName() + ": " + errors, true);
                     }
-                    decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), "Unable to send " + e.getKey(), true);
+                    String unable = "Unable to send " + e.getKey() + " as " + e.getValue();
+                    sb.append(unable).append("\n");
+                    decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), unable, true);
                     retval = getFailTransition();
                     failCount++;
                 }
@@ -130,7 +133,7 @@ public class SendFileStep extends AbstractInvocable {
             String retrieved = (failCount > 0) ? "Unable to transfer " + failCount + " files" : successCount + " files transferred";
             decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), retrieved);
             decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), retrieved, true);
-            decision.setContextLiteral(ctx, getWorkerURI(), getErrName(), retrieved);
+            decision.setContextLiteral(ctx, getWorkerURI(), getErrName(), sb.toString());
             return retval;
         } catch (Exception e) {
             decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), "Unable to transfer files : " + e.getLocalizedMessage());
