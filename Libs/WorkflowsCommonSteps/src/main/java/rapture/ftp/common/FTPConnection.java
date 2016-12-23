@@ -95,22 +95,27 @@ public class FTPConnection implements Connection {
 
     @Override
     public boolean doAction(FTPRequest request) {
-        if (!isConnected()) {
-            if (!connectAndLogin()) return false;
+        try {
+            if (!isConnected()) {
+                if (!connectAndLogin()) return false;
+            }
+            switch (request.getAction()) {
+            case READ:
+                download(request);
+                break;
+            case WRITE:
+                upload(request);
+                break;
+            case EXISTS:
+                return fileExists(request);
+            default:
+                throw new UnsupportedOperationException("Don't support " + request.getAction() + " yet");
+            }
+            return request.getStatus().equals(Status.SUCCESS);
+        } catch (Exception e) {
+            request.addError(e.getMessage());
+            return false;
         }
-        switch (request.getAction()) {
-        case READ:
-            download(request);
-            break;
-        case WRITE:
-            upload(request);
-            break;
-        case EXISTS:
-            return fileExists(request);
-        default:
-            throw new UnsupportedOperationException("Don't support " + request.getAction() + " yet");
-        }
-        return request.getStatus().equals(Status.SUCCESS);
     }
 
     public Boolean fileExists(final FTPRequest request) {
@@ -144,16 +149,11 @@ public class FTPConnection implements Connection {
                 }
                 request.setLocal(true);
                 return exists;
-            } else {
-                return FTPService.runWithRetry("Error checking whether file exists: " + request.getRemoteName(), this, false, new FTPAction<Boolean>() {
-                    @Override
-                    public Boolean run(int attemptNum) throws IOException {
-                        List<String> result = listFiles(request.getRemoteName());
-                        request.setStatus((result.size() > 0) ? Status.SUCCESS : Status.ERROR);
-                        return (result.size() > 0);
-                    }
-                });
-            }
+            } else return FTPService.runWithRetry("Error checking whether file exists: " + request.getRemoteName(), this, false, attemptNum -> {
+                List<String> result = listFiles(request.getRemoteName());
+                request.setStatus((result.size() > 0) ? Status.SUCCESS : Status.ERROR);
+                return (result.size() > 0);
+            });
         } catch (Exception e) {
             log.error(ExceptionToString.format(ExceptionToString.getRootCause(e)));
             return false;
@@ -162,62 +162,57 @@ public class FTPConnection implements Connection {
 
     @Override
     public boolean connectAndLogin() {
-        if (isLocal()) {
-            log.info("In local mode - not connecting");
-            return true;
-        }
-        final String cannotLogin = "Could not login via FTP to " + config.getAddress() + " as " + config.getLoginId();
-        return FTPService.runWithRetry(cannotLogin, this, false,
-                new FTPAction<Boolean>() {
-            @Override
-            public Boolean run(int attemptNum) throws IOException {
-                FTPClient ftpClient = getFtpClient();
-                log.debug(String.format("Connecting to %s. Attempt %s of %s", config.getAddress(), 1 + attemptNum, config.getRetryCount()));
-                try {
-                    ftpClient.connect(config.getAddress());
-                } catch (UnknownHostException e) {
-                    log.info(ExceptionToString.summary(e));
-                    throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, "Unknown host " + config.getAddress());
-                }
-                int reply = ftpClient.getReplyCode();
-                if (!FTPReply.isPositiveCompletion(reply)) {
-                    log.debug("Got non-positive reply of " + reply);
-                    logoffAndDisconnect();
-                    throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, "Could not connect to: " + config.getAddress());
-                }
-                log.debug("Logging in user: " + config.getLoginId());
-                if (!ftpClient.login(config.getLoginId(), config.getPassword())) {
-                    ftpClient.logout();
-                            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, cannotLogin);
-                }
-                isLoggedIn = true;
-                log.debug("Entering local passive mode");
-                ftpClient.enterLocalPassiveMode();
-                log.info("Connected and logged in to: " + config.getAddress());
-                ftpClient.setSoTimeout(1000 * config.getTimeout());
+        try {
+            if (isLocal()) {
+                log.info("In local mode - not connecting");
                 return true;
             }
-        });
+            FTPClient ftpClient = getFtpClient();
+            log.debug(String.format("Connecting to %s", config.getAddress()));
+            try {
+                ftpClient.connect(config.getAddress());
+            } catch (UnknownHostException e) {
+                log.info(ExceptionToString.summary(e));
+                throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, "Unknown host " + config.getAddress());
+            }
+            int reply = ftpClient.getReplyCode();
+            if (!FTPReply.isPositiveCompletion(reply)) {
+                log.debug("Got non-positive reply of " + reply);
+                logoffAndDisconnect();
+                throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, "Could not connect to: " + config.getAddress());
+            }
+            log.debug("Logging in user: " + config.getLoginId());
+            if (!ftpClient.login(config.getLoginId(), config.getPassword())) {
+                ftpClient.logout();
+                throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, "Unable to login");
+            }
+            isLoggedIn = true;
+            log.debug("Entering local passive mode");
+            ftpClient.enterLocalPassiveMode();
+            log.info("Connected and logged in to: " + config.getAddress());
+            ftpClient.setSoTimeout(1000 * config.getTimeout());
+            return true;
+        } catch (IOException e) {
+            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, "Unable to login", e);
+
+        }
     }
 
     @Override
     public void logoffAndDisconnect() {
         try {
-            FTPService.runWithRetry("Error closing connection", this, false, new FTPAction<Boolean>() {
-                @Override
-                public Boolean run(int attemptNum) throws IOException {
-                    log.debug(String.format("Disconnecting from %s. Attempt %s of %s", config.getAddress(), attemptNum + 1, config.getRetryCount()));
-                    FTPClient ftpClient = getFtpClient();
-                    try {
-                        if (isLoggedIn) {
-                            ftpClient.logout();
-                        }
-                        return true;
-                    } catch (IOException ignore) {
-                        return false;
-                    } finally {
-                        ftpClient.disconnect();
+            FTPService.runWithRetry("Error closing connection", this, false, attemptNum -> {
+                log.debug(String.format("Disconnecting from %s. Attempt %s of %s", config.getAddress(), attemptNum + 1, config.getRetryCount()));
+                FTPClient ftpClient = getFtpClient();
+                try {
+                    if (isLoggedIn) {
+                        ftpClient.logout();
                     }
+                    return true;
+                } catch (IOException ignore) {
+                    return false;
+                } finally {
+                    ftpClient.disconnect();
                 }
             });
         } catch (RaptureException e) {
@@ -230,7 +225,9 @@ public class FTPConnection implements Connection {
         List<String> files = new LinkedList<>();
 
         try {
-            if (path == null) path = ".";
+            if (path == null) {
+                path = ".";
+            }
             FTPFile[] ftpfiles = getFtpClient().listFiles(path);
             for (FTPFile f : ftpfiles) {
                 files.add(f.getName());
@@ -290,103 +287,107 @@ public class FTPConnection implements Connection {
      */
     public FTPRequest download(final FTPRequest request) {
         if (request.getAction() != Action.READ) throw new IllegalArgumentException("Expected a Read Action");
-        String errorMessage = String.format("Error downloading %s", request.getRemoteName());
-        return FTPService.runWithRetry(errorMessage, this, true, new FTPAction<FTPRequest>() {
-            @Override
-            public FTPRequest run(int attemptNum) throws IOException {
-                OutputStream outStream = request.getDestination();
-                if (outStream == null) {
-                    RaptureURI uri = null;
-                    String localName = request.getLocalName();
-                    if (localName.startsWith("file://")) {
-                        localName = localName.substring(6);
-                    }
+        String.format("Error downloading %s", request.getRemoteName());
 
-                    try {
-                        if (localName.startsWith("//")) {
-                            outStream = new RaptureURIOutputStream(new RaptureURI(localName, Scheme.DOCUMENT)).setContext(context);
-                        } else if (!localName.startsWith("/")) {
-                            outStream = new RaptureURIOutputStream(new RaptureURI(localName)).setContext(context);
-                        } else {
-                            Path target = Paths.get(localName);
-                            if (!target.getParent().toFile().exists()) Files.createDirectories(target.getParent());
-                            if (!target.getParent().toFile()
-                                    .canWrite()) throw new IllegalArgumentException("No write access to " + target.toFile().getAbsolutePath());
-                            outStream = new FileOutputStream(target.toFile());
-                        }
-                    } catch (Exception e) {
-                        log.warn("Cannot store " + localName + " : " + e.getMessage());
-                        request.setStatus(Status.ERROR);
-                        return request;
-                    }
-                }
+        OutputStream outStream = request.getDestination();
+        if (outStream == null) {
+            String localName = request.getLocalName();
+            if (localName.startsWith("file://")) {
+                localName = localName.substring(6);
+            }
 
-                boolean isRetrieved;
-                if (isLocal() || request.isLocal()) {
-                    File file = new File(request.getRemoteName());
-                    log.debug("Local copy from " + file.getAbsolutePath());
-                    if (IOUtils.copy(new FileInputStream(file), outStream) > 0) outStream.flush();
+            try {
+                if (localName.startsWith("//")) {
+                    outStream = new RaptureURIOutputStream(new RaptureURI(localName, Scheme.DOCUMENT)).setContext(context);
+                } else if (!localName.startsWith("/")) {
+                    outStream = new RaptureURIOutputStream(new RaptureURI(localName)).setContext(context);
                 } else {
-                    String remoteName = request.getRemoteName();
-                    isRetrieved = retrieveFile(remoteName, outStream);
-                    if (isRetrieved) {
-                        log.debug("File retrieved");
-                        request.setStatus(Status.SUCCESS);
-                        outStream.flush();
-                    } else {
-                        int replyCode = getFtpClient().getReplyCode();
-                        log.warn(String.format("Error retrieving %s Server returned response code %d", request.getRemoteName(), replyCode));
-                        for (String replyString : getFtpClient().getReplyStrings()) {
-                            log.warn(replyString);
-                        }
-                        request.setStatus(Status.ERROR);
+                    Path target = Paths.get(localName);
+                    if (!target.getParent().toFile().exists()) {
+                        Files.createDirectories(target.getParent());
                     }
+                    if (!target.getParent().toFile().canWrite()) throw new IllegalArgumentException("No write access to " + target.toFile().getAbsolutePath());
+                    outStream = new FileOutputStream(target.toFile());
                 }
-                outStream.close();
+            } catch (Exception e) {
+                log.warn("Cannot store " + localName + " : " + e.getMessage());
+                request.setStatus(Status.ERROR);
+                request.addError(e.getMessage());
                 return request;
             }
-        });
+        }
+
+        try {
+            boolean isRetrieved;
+            if (isLocal() || request.isLocal()) {
+                File file = new File(request.getRemoteName());
+                log.debug("Local copy from " + file.getAbsolutePath());
+                if (IOUtils.copy(new FileInputStream(file), outStream) > 0) {
+                    outStream.flush();
+                }
+            } else {
+                String remoteName = request.getRemoteName();
+                isRetrieved = retrieveFile(remoteName, outStream);
+                if (isRetrieved) {
+                    log.debug("File retrieved");
+                    request.setStatus(Status.SUCCESS);
+                    outStream.flush();
+                } else {
+                    int replyCode = getFtpClient().getReplyCode();
+                    String ftperror = String.format("Error retrieving %s Server returned response code %d", request.getRemoteName(), replyCode);
+                    log.warn(ftperror);
+                    request.addError(ftperror);
+                    for (String replyString : getFtpClient().getReplyStrings()) {
+                        log.warn(replyString);
+                    }
+                    request.setStatus(Status.ERROR);
+                }
+            }
+            outStream.close();
+        } catch (IOException e) {
+            request.addError(e.getMessage());
+            log.warn(ExceptionToString.summary(e));
+        }
+        return request;
     }
 
     public FTPRequest upload(final FTPRequest request) {
         if (request.getAction() != Action.WRITE) throw new IllegalArgumentException("Expected a Write Action");
-        String errorMessage = String.format("Error uploading %s", request.getRemoteName());
-        return FTPService.runWithRetry(errorMessage, this, false, new FTPAction<FTPRequest>() {
-            @Override
-            public FTPRequest run(int attemptNum) throws IOException {
-                InputStream inStream = request.getSource();
-                String localName = request.getLocalName();
-                if (inStream == null) {
-                    if (localName.startsWith("file://")) {
-                        localName = localName.substring(6);
-                    }
-                    if (localName.startsWith("//")) {
-                        inStream = new RaptureURIInputStream(new RaptureURI(localName, Scheme.DOCUMENT));
-                    } else if (!localName.startsWith("/")) {
-                        inStream = new RaptureURIInputStream(new RaptureURI(localName));
-                    } else {
-                        inStream = new FileInputStream(new File(localName));
-                    }
-                }
 
-                if (request.isLocal()) {
-                    File file = new File(request.getRemoteName());
-                    log.debug("Copy to " + file.getAbsolutePath());
-                    IOUtils.copy(inStream, new FileOutputStream(file));
+        try {
+            InputStream inStream = request.getSource();
+            String localName = request.getLocalName();
+            if (inStream == null) {
+                if (localName.startsWith("file://")) {
+                    localName = localName.substring(6);
+                }
+                if (localName.startsWith("//")) {
+                    inStream = new RaptureURIInputStream(new RaptureURI(localName, Scheme.DOCUMENT));
+                } else if (!localName.startsWith("/")) {
+                    inStream = new RaptureURIInputStream(new RaptureURI(localName));
                 } else {
-                    boolean isSent = sendFile(inStream, request.getRemoteName());
-                    if (isSent) {
-                        log.info(request.getRemoteName() + " sent successfully");
-                        request.setStatus(Status.SUCCESS);
-                    } else {
-                        log.warn(String.format("Missing response from %s", request.getRemoteName()));
-                        request.setStatus(Status.ERROR);
-                    }
+                    inStream = new FileInputStream(new File(localName));
                 }
-                return request;
             }
-        });
-
+            if (request.isLocal()) {
+                File file = new File(request.getRemoteName());
+                log.debug("Copy to " + file.getAbsolutePath());
+                IOUtils.copy(inStream, new FileOutputStream(file));
+            } else {
+                boolean isSent = sendFile(inStream, request.getRemoteName());
+                if (isSent) {
+                    log.info(request.getRemoteName() + " sent successfully");
+                    request.setStatus(Status.SUCCESS);
+                } else {
+                    log.warn(String.format("Missing response from %s", request.getRemoteName()));
+                    request.setStatus(Status.ERROR);
+                }
+            }
+        } catch (IOException e) {
+            request.addError(e.getMessage());
+            log.warn(ExceptionToString.summary(e));
+        }
+        return request;
     }
 
     public Integer getRetryCount() {

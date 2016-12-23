@@ -334,7 +334,7 @@ public class BasicFTPTest {
             // but it seems that sometimes (particularly on Jenkins) ftpClient.login throws an exception
             // which is caught and wrapped by FTPService.runWithRetry.
             System.out.println(ExceptionToString.summary(e));
-            Assert.assertEquals("Could not login via FTP to localhost as ftp", e.getMessage());
+            Assert.assertEquals("Unable to login", e.getMessage());
         }
     }
 
