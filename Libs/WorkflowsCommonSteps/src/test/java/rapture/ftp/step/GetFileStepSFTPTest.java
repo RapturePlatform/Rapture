@@ -74,7 +74,6 @@ import rapture.kernel.ContextFactory;
 import rapture.kernel.Kernel;
 import rapture.kernel.script.KernelScript;
 
-//@Ignore
 // These tests require a working SFTP server.
 public class GetFileStepSFTPTest {
 
@@ -85,7 +84,7 @@ public class GetFileStepSFTPTest {
     private static final String REPO_USING_MEMORY = "REP {} USING MEMORY {prefix=\"/tmp/" + auth + "\"}";
     private static final String META_USING_MEMORY = "REP {} USING MEMORY {prefix=\"/tmp/M" + auth + "\"}";
 
-    static final boolean SFTP_Available = false;
+    static final boolean SFTP_Available = true;
 
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
@@ -451,6 +450,64 @@ public class GetFileStepSFTPTest {
                 if (sr.getExceptionInfo() != null) {
                     System.err.println(sr.getExceptionInfo().getStackTrace());
                 }
+
+                List<AuditLogEntry> log = Kernel.getAudit().getRecentLogEntries(context, debug.getLogURI() + "/" + sr.getName(), 10);
+                assertEquals(4, log.size());
+                assertEquals("step1 finished", log.get(0).getMessage());
+                assertEquals("1 files retrieved", log.get(1).getMessage());
+                assertEquals("Retrieved 1KB.zip", log.get(2).getMessage());
+                assertEquals("step1 started", log.get(3).getMessage());
+            }
+        }
+
+        WorkerDebug worker = debug.getWorkerDebugs().get(0);
+        List<StepRecordDebug> dbgs = worker.getStepRecordDebugs();
+        for (StepRecordDebug dbg : dbgs) {
+            Activity activity = dbg.getActivity();
+            if (activity != null) {
+                assertEquals(10, activity.getMax().longValue());
+                assertEquals(ActivityStatus.FINISHED, activity.getStatus());
+            }
+        }
+        assertEquals(WorkOrderExecutionState.FINISHED, debug.getOrder().getStatus());
+        File local = new File("/tmp/1KB.zip");
+        assertTrue(local.exists());
+        assertEquals(1024, local.length());
+    }
+
+    @Test
+    public void testFetchFileStep() {
+        CallingContext context = ContextFactory.getKernelUser();
+        Map<String, String> args = new HashMap<>();
+        args.put("FETCH_FILES", JacksonUtil.jsonFromObject(ImmutableMap.of("1KB.zip", "/tmp/1KB.zip")));
+
+        CreateResponse response = Kernel.getDecision().createWorkOrderP(context, workflowUri, args, null);
+        assertTrue(response.getIsCreated());
+        WorkOrderDebug debug;
+        WorkOrderExecutionState state = WorkOrderExecutionState.NEW;
+        long timeout = System.currentTimeMillis() + 60000;
+        do {
+            debug = Kernel.getDecision().getWorkOrderDebug(context, response.getUri());
+            state = debug.getOrder().getStatus();
+        } while (((state == WorkOrderExecutionState.NEW) || (state == WorkOrderExecutionState.ACTIVE)) && (System.currentTimeMillis() < timeout));
+
+        // If anything went wrong
+
+        for (WorkerDebug db : debug.getWorkerDebugs()) {
+            for (StepRecordDebug srd : db.getStepRecordDebugs()) {
+                StepRecord sr = srd.getStepRecord();
+                if (sr.getExceptionInfo() != null) {
+                    System.err.println(sr.getExceptionInfo().getStackTrace());
+                }
+
+                List<AuditLogEntry> log = Kernel.getAudit().getRecentLogEntries(context, debug.getLogURI() + "/" + sr.getName(), 10);
+                assertEquals(5, log.size());
+                assertEquals("step1 finished", log.get(0).getMessage());
+                assertEquals("1 files retrieved", log.get(1).getMessage());
+                assertEquals("Retrieved 1KB.zip", log.get(2).getMessage());
+                assertEquals("FETCH_FILES parameter is deprecated - please use GET_FILES", log.get(3).getMessage());
+                assertEquals("step1 started", log.get(4).getMessage());
+
             }
         }
 
