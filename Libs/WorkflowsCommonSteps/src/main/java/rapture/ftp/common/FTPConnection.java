@@ -187,8 +187,7 @@ public class FTPConnection implements Connection {
                 throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, "Unable to login");
             }
             isLoggedIn = true;
-            log.debug("Entering local passive mode");
-            ftpClient.enterLocalPassiveMode();
+            ftpClient.setUseEPSVwithIPv4(true);
             log.info("Connected and logged in to: " + config.getAddress());
             ftpClient.setSoTimeout(1000 * config.getTimeout());
             return true;
