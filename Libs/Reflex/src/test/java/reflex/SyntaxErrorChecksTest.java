@@ -32,8 +32,7 @@ import org.antlr.runtime.RecognitionException;
 import org.junit.Test;
 
 /**
- * Some tests around Syntax Errors - do we get enough information to inform the
- * user?
+ * Some tests around Syntax Errors - do we get enough information to inform the user?
  * 
  * @author amkimian
  * 
@@ -56,7 +55,8 @@ public class SyntaxErrorChecksTest extends AbstractReflexScriptTest {
             ReflexExecutor.runReflexProgram("x = '12';\ny=1;\nz=x<y;println('Z is ' + z);\n");
             fail("Should have thrown an exception");
         } catch (ReflexException e) {
-            assertEquals("Illegal arguments to expression - (x < y), both must be of same type: numeric, date, time or string; x is string and y is integer", e.getMessage());
+            assertEquals("Illegal arguments to expression - (x < y), both must be of same type: numeric, date, time or string; x is string and y is integer",
+                    e.getMessage());
         }
     }
 
@@ -66,7 +66,8 @@ public class SyntaxErrorChecksTest extends AbstractReflexScriptTest {
             ReflexExecutor.runReflexProgram("x = '12';\ny=1;\nz=x-y;println('Z is ' + z);\n");
             fail("Should have thrown an exception");
         } catch (ReflexException e) {
-            assertEquals("Illegal arguments to expression - (x - y), both sides must be numeric or the left side must be a list; x is string and y is integer", e.getMessage());
+            assertEquals("Illegal arguments to expression - (x - y), both sides must be numeric or the left side must be a list; x is string and y is integer",
+                    e.getMessage());
         }
     }
 
@@ -82,64 +83,46 @@ public class SyntaxErrorChecksTest extends AbstractReflexScriptTest {
 
     @Test
     public void testRAP3895() throws RecognitionException, UnsupportedEncodingException {
-    	String program = "x = 'abc';\n"+
-    			"y1 = \"abc\";\n"+
-    			"println(x == y1);\n"+
-    			"y2 = \u201Cabc\u201D;\n"+
-    			"println(x == y2);\n"+
-    			"y3 = \u201Dabc\u201C;\n"+
-    			"println(x == y3);\n"+
-    			"y4 = \u201Dabc\";\n"+
-    			"println(x == y4);\n";
-		String output = runScript(program, null);
-		assertEquals("true\ntrue\ntrue\ntrue", output.trim());
-	}
+        String program = "x = 'abc';\n" + "y1 = \"abc\";\n" + "println(x == y1);\n" + "y2 = \u201Cabc\u201D;\n" + "println(x == y2);\n"
+                + "y3 = \u201Dabc\u201C;\n" + "println(x == y3);\n" + "y4 = \u201Dabc\";\n" + "println(x == y4);\n";
+        String output = runScript(program, null);
+        System.out.println(output);
+        assertEquals("true\ntrue\ntrue\ntrue", output.trim());
+    }
 
     @Test
     public void testNonTerminatedString1() throws RecognitionException {
-    	String program = "x = 'abc';\n"+
-    			"y1 = \"xyz\"+\"abc;\n"+
-    			"println(x == y1);\n"+
-    			"";
-		String output = this.runScriptCatchingExceptions(program, null);
-		System.out.println(output);
-		String split[] = output.split("\n");
+        String program = "x = 'abc';\n" + "y1 = \"xyz\"+\"abc;\n" + "println(x == y1);\n" + "";
+        String output = this.runScriptCatchingExceptions(program, null);
+        System.out.println(output);
+        String split[] = output.split("\n");
         assertEquals("Found newline in string abc; at token \" at line 2", split[2]);
-	}
+    }
 
     @Test
     public void testNonTerminatedString2() throws RecognitionException {
-    	String program = "x = 'abc';\n"+
-    			"y1 = 'xyz'+'abc;\n"+
-    			"println(x == y1);\n"+
-    			"";
-		String output = this.runScriptCatchingExceptions(program, null);
-		System.out.println(output);
-		String split[] = output.split("\n");
+        String program = "x = 'abc';\n" + "y1 = 'xyz'+'abc;\n" + "println(x == y1);\n" + "";
+        String output = this.runScriptCatchingExceptions(program, null);
+        System.out.println(output);
+        String split[] = output.split("\n");
         assertEquals("Found newline in string abc; at token ' at line 2", split[2]);
-	}
+    }
 
     @Test
     public void testNonTerminatedString3() throws RecognitionException {
-    	String program = "x = 'abc';\n"+
-    			"y1 = \u201Dabc;\n"+
-    			"println(x == y1);\n"+
-    			"";
-		String output = this.runScriptCatchingExceptions(program, null);
-		System.out.println(output);
-		String split[] = output.split("\n");
+        String program = "x = 'abc';\n" + "y1 = \u201Dabc;\n" + "println(x == y1);\n" + "";
+        String output = this.runScriptCatchingExceptions(program, null);
+        System.out.println(output);
+        String split[] = output.split("\n");
         assertEquals("Found newline in string abc; at token \u201D at line 2", split[2]);
-	}
+    }
 
     @Test
     public void testNonTerminatedString4() throws RecognitionException {
-    	String program = "x = 'abc';\n"+
-    			"y1 = \u201Cabc;\n"+
-    			"println(x == y1);\n"+
-    			"";
-		String output = this.runScriptCatchingExceptions(program, null);
-		System.out.println(output);
-		String split[] = output.split("\n");
+        String program = "x = 'abc';\n" + "y1 = \u201Cabc;\n" + "println(x == y1);\n" + "";
+        String output = this.runScriptCatchingExceptions(program, null);
+        System.out.println(output);
+        String split[] = output.split("\n");
         assertEquals("Found newline in string abc; at token \u201C at line 2", split[2]);
-	}
+    }
 }

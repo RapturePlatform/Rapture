@@ -29,9 +29,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatterBuilder;
-import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -40,9 +37,9 @@ import java.util.Map;
 
 import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.google.common.collect.ImmutableMap;
@@ -77,7 +74,7 @@ import rapture.kernel.ContextFactory;
 import rapture.kernel.Kernel;
 import rapture.kernel.script.KernelScript;
 
-@Ignore
+//@Ignore
 // These tests require a working SFTP server.
 public class GetFileStepSFTPTest {
 
@@ -88,8 +85,11 @@ public class GetFileStepSFTPTest {
     private static final String REPO_USING_MEMORY = "REP {} USING MEMORY {prefix=\"/tmp/" + auth + "\"}";
     private static final String META_USING_MEMORY = "REP {} USING MEMORY {prefix=\"/tmp/M" + auth + "\"}";
 
+    static final boolean SFTP_Available = false;
+
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
+        Assume.assumeTrue(SFTP_Available);
         CallingContext context = ContextFactory.getKernelUser();
         RaptureConfig.setLoadYaml(false);
         RaptureConfig config = ConfigLoader.getConf();
@@ -205,7 +205,7 @@ public class GetFileStepSFTPTest {
     public void testGetFailNoBlobRepo() {
         CallingContext context = ContextFactory.getKernelUser();
         Map<String, String> args = new HashMap<>();
-        args.put("FETCH_FILES", JacksonUtil.jsonFromObject(ImmutableMap.of("1KB.zip", "blob://nonexistent/1KB.zip")));
+        args.put("GET_FILES", JacksonUtil.jsonFromObject(ImmutableMap.of("1KB.zip", "blob://nonexistent/1KB.zip")));
 
         CreateResponse response = Kernel.getDecision().createWorkOrderP(context, workflowUri, args, null);
         assertTrue(response.getIsCreated());
@@ -249,11 +249,12 @@ public class GetFileStepSFTPTest {
         DocApi dapi = Kernel.getDoc();
 
         try {
+            // Fails because SFTP flag is false
             FTPConnectionConfig ftpConfig = new FTPConnectionConfig().setAddress("speedtest.tele2.net").setPort(23).setLoginId("xyzzy").setPassword("plugh")
                     .setUseSFTP(false);
             dapi.putDoc(context, configUri, JacksonUtil.jsonFromObject(ftpConfig));
             Map<String, String> args = new HashMap<>();
-            args.put("FETCH_FILES", JacksonUtil.jsonFromObject(ImmutableMap.of("1KB.zip", "blob://nonexistent/1KB.zip")));
+            args.put("GET_FILES", JacksonUtil.jsonFromObject(ImmutableMap.of("1KB.zip", "blob://nonexistent/1KB.zip")));
             CreateResponse response = Kernel.getDecision().createWorkOrderP(context, workflowUri, args, null);
             assertTrue(response.getIsCreated());
             WorkOrderDebug debug;
@@ -271,11 +272,12 @@ public class GetFileStepSFTPTest {
                     }
 
                     List<AuditLogEntry> log = Kernel.getAudit().getRecentLogEntries(context, debug.getLogURI() + "/" + sr.getName(), 10);
-                    assertEquals(4, log.size());
+                    assertEquals(5, log.size());
                     assertEquals("step1 finished", log.get(0).getMessage());
                     assertEquals("Unable to retrieve 1 files", log.get(1).getMessage());
                     assertEquals("Unable to retrieve 1KB.zip as blob://nonexistent/1KB.zip", log.get(2).getMessage());
-                    assertEquals("step1 started", log.get(3).getMessage());
+                    assertEquals("step1: 530 This FTP server is anonymous only.\r\n\nUnable to login to speedtest.tele2.net", log.get(3).getMessage());
+                    assertEquals("step1 started", log.get(4).getMessage());
 
                 }
             }
@@ -302,7 +304,7 @@ public class GetFileStepSFTPTest {
                     .setUseSFTP(false);
             dapi.putDoc(context, configUri, JacksonUtil.jsonFromObject(ftpConfig));
             Map<String, String> args = new HashMap<>();
-            args.put("FETCH_FILES", JacksonUtil.jsonFromObject(ImmutableMap.of("1KB.zip", "blob://nonexistent/1KB.zip")));
+            args.put("GET_FILES", JacksonUtil.jsonFromObject(ImmutableMap.of("1KB.zip", "blob://nonexistent/1KB.zip")));
             CreateResponse response = Kernel.getDecision().createWorkOrderP(context, workflowUri, args, null);
             assertTrue(response.getIsCreated());
             WorkOrderDebug debug;
@@ -320,11 +322,12 @@ public class GetFileStepSFTPTest {
                     }
 
                     List<AuditLogEntry> log = Kernel.getAudit().getRecentLogEntries(context, debug.getLogURI() + "/" + sr.getName(), 10);
-                    assertEquals(JacksonUtil.jsonFromObject(log), 4, log.size());
+                    assertEquals(JacksonUtil.jsonFromObject(log), 5, log.size());
                     assertEquals("step1 finished", log.get(0).getMessage());
                     assertEquals("Unable to retrieve 1 files", log.get(1).getMessage());
                     assertEquals("Unable to retrieve 1KB.zip as blob://nonexistent/1KB.zip", log.get(2).getMessage());
-                    assertEquals("step1 started", log.get(3).getMessage());
+                    assertEquals("step1: 530 User rapture denied by SACL.\r\n\nUnable to login to localhost", log.get(3).getMessage());
+                    assertEquals("step1 started", log.get(4).getMessage());
 
                 }
             }
@@ -343,7 +346,7 @@ public class GetFileStepSFTPTest {
     public void testGetFailNoDocRepo() {
         CallingContext context = ContextFactory.getKernelUser();
         Map<String, String> args = new HashMap<>();
-        args.put("FETCH_FILES", JacksonUtil.jsonFromObject(ImmutableMap.of("1KB.zip", "document://nonexistent/1KB.zip")));
+        args.put("GET_FILES", JacksonUtil.jsonFromObject(ImmutableMap.of("1KB.zip", "document://nonexistent/1KB.zip")));
 
         CreateResponse response = Kernel.getDecision().createWorkOrderP(context, workflowUri, args, null);
         assertTrue(response.getIsCreated());
@@ -385,7 +388,7 @@ public class GetFileStepSFTPTest {
     public void testGetFailNoSource() {
         CallingContext context = ContextFactory.getKernelUser();
         Map<String, String> args = new HashMap<>();
-        args.put("FETCH_FILES", JacksonUtil.jsonFromObject(ImmutableMap.of("1Kb.zip", configRepo + "/tmp/1Kb", "Whoops", configRepo + "/tmp/2KB")));
+        args.put("GET_FILES", JacksonUtil.jsonFromObject(ImmutableMap.of("1Kb.zip", configRepo + "/tmp/1Kb", "Whoops", configRepo + "/tmp/2KB")));
 
         CreateResponse response = Kernel.getDecision().createWorkOrderP(context, workflowUri, args, null);
         assertTrue(response.getIsCreated());
@@ -428,7 +431,7 @@ public class GetFileStepSFTPTest {
     public void testGetFileStep() {
         CallingContext context = ContextFactory.getKernelUser();
         Map<String, String> args = new HashMap<>();
-        args.put("FETCH_FILES", JacksonUtil.jsonFromObject(ImmutableMap.of("1KB.zip", "/tmp/1KB.zip")));
+        args.put("GET_FILES", JacksonUtil.jsonFromObject(ImmutableMap.of("1KB.zip", "/tmp/1KB.zip")));
 
         CreateResponse response = Kernel.getDecision().createWorkOrderP(context, workflowUri, args, null);
         assertTrue(response.getIsCreated());
@@ -470,7 +473,7 @@ public class GetFileStepSFTPTest {
     public void testGetBlobStep() {
         CallingContext context = ContextFactory.getKernelUser();
         Map<String, String> args = new HashMap<>();
-        args.put("FETCH_FILES", JacksonUtil.jsonFromObject(ImmutableMap.of("1KB.zip", "blob://tmp/1KB.zip")));
+        args.put("GET_FILES", JacksonUtil.jsonFromObject(ImmutableMap.of("1KB.zip", "blob://tmp/1KB.zip")));
 
         CreateResponse response = Kernel.getDecision().createWorkOrderP(context, workflowUri, args, null);
         assertTrue(response.getIsCreated());
@@ -507,76 +510,4 @@ public class GetFileStepSFTPTest {
         assertNotNull(bc);
         assertEquals(1024, bc.getContent().length);
     }
-
-    @Test
-    @Ignore
-    // This is no longer working. It used to work but now we get
-    // Getting (FTPConnection.java:352) - java.net.SocketException: Connection reset
-    // when we send PASV - seems to be an issuer with the remote server.
-    public void testGetYchartBlobStep() {
-        CallingContext context = ContextFactory.getKernelUser();
-        DocApi dapi = Kernel.getDoc();
-
-        try {
-            FTPConnectionConfig ftpConfig = new FTPConnectionConfig().setAddress("localhost").setPort(22).setLoginId("rapture").setPassword("rapture")
-                    .setUseSFTP(true);
-            dapi.putDoc(context, configUri, JacksonUtil.jsonFromObject(ftpConfig));
-
-            Map<String, String> args = new HashMap<>();
-            String source = ZonedDateTime.now().minusDays(7)
-                    .format(new DateTimeFormatterBuilder().appendLiteral("events/Events_Data_Delta_").appendValue(ChronoField.YEAR).appendLiteral("_")
-                            .appendValue(ChronoField.MONTH_OF_YEAR).appendLiteral("_").appendValue(ChronoField.DAY_OF_MONTH).appendLiteral("_00_00.txt.gz")
-                            .toFormatter());
-
-            args.put("FETCH_FILES", JacksonUtil.jsonFromObject(ImmutableMap.of(source, "blob://tmp/ychart.txt.gz")));
-
-            CreateResponse response = Kernel.getDecision().createWorkOrderP(context, workflowUri, args, null);
-            assertTrue(response.getIsCreated());
-            WorkOrderDebug debug;
-            WorkOrderExecutionState state = WorkOrderExecutionState.NEW;
-            long timeout = System.currentTimeMillis() + 60000;
-            do {
-                debug = Kernel.getDecision().getWorkOrderDebug(context, response.getUri());
-                state = debug.getOrder().getStatus();
-            } while (((state == WorkOrderExecutionState.NEW) || (state == WorkOrderExecutionState.ACTIVE)) && (System.currentTimeMillis() < timeout));
-
-            // If anything went wrong
-
-            for (WorkerDebug db : debug.getWorkerDebugs()) {
-                for (StepRecordDebug srd : db.getStepRecordDebugs()) {
-                    StepRecord sr = srd.getStepRecord();
-                    if (sr.getExceptionInfo() != null) {
-                        System.err.println(sr.getExceptionInfo().getStackTrace());
-                    }
-
-                    List<AuditLogEntry> log = Kernel.getAudit().getRecentLogEntries(context, debug.getLogURI() + "/" + sr.getName(), 10);
-                    assertEquals(JacksonUtil.jsonFromObject(log), 4, log.size());
-                    assertEquals("step1 finished", log.get(0).getMessage());
-                    assertEquals("1 files retrieved", log.get(1).getMessage());
-                    assertEquals("Retrieved events/Events_Data_Delta_2016_12_15_00_00.txt.gz", log.get(2).getMessage());
-                    assertEquals("step1 started", log.get(3).getMessage());
-
-                }
-            }
-
-            WorkerDebug worker = debug.getWorkerDebugs().get(0);
-            List<StepRecordDebug> dbgs = worker.getStepRecordDebugs();
-            for (StepRecordDebug dbg : dbgs) {
-                Activity activity = dbg.getActivity();
-                if (activity != null) {
-                    assertEquals(10, activity.getMax().longValue());
-                    assertEquals(ActivityStatus.FINISHED, activity.getStatus());
-                }
-            }
-            assertEquals(WorkOrderExecutionState.FINISHED, debug.getOrder().getStatus());
-            BlobContainer bc = Kernel.getBlob().getBlob(context, "blob://tmp/ychart.txt.gz");
-            assertNotNull(bc);
-            assertEquals(19657, bc.getContent().length);
-        } finally {
-            FTPConnectionConfig ftpConfig = new FTPConnectionConfig().setAddress("localhost").setPort(22).setLoginId("rapture").setPassword("rapture")
-                    .setUseSFTP(true);
-            dapi.putDoc(context, configUri, JacksonUtil.jsonFromObject(ftpConfig));
-        }
-    }
-
 }
