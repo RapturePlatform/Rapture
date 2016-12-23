@@ -56,6 +56,19 @@ public class FTPRequest {
     private boolean isLocal = false;
     final private Action action;
     private Object result = null;
+    private String errors = null;
+
+    public String getErrors() {
+        return errors;
+    }
+
+    public void setErrors(String errors) {
+        this.errors = errors;
+    }
+
+    public void addError(String error) {
+        this.errors = (errors == null) ? error : errors + "\n" + error;
+    }
 
     private Status status = Status.READY;
 

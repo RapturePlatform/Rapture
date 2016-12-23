@@ -51,6 +51,7 @@ public class SendFileStep extends AbstractInvocable {
     private static final Logger log = Logger.getLogger(SendFileStep.class);
 
     DecisionApi decision;
+
     public SendFileStep(String workerUri, String stepName) {
         super(workerUri, stepName);
         decision = Kernel.getDecision();
@@ -77,8 +78,8 @@ public class SendFileStep extends AbstractInvocable {
 
             if (!Kernel.getDoc().docExists(ctx, configUri)) {
                 decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), "Cannot load FTP_CONFIGURATION from " + configUri);
-                decision.writeWorkflowAuditEntry(ctx, getWorkerURI(),
-                        "Problem in " + getStepName() + ": Cannot load FTP_CONFIGURATION from " + configUri, true);
+                decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), "Problem in " + getStepName() + ": Cannot load FTP_CONFIGURATION from " + configUri,
+                        true);
                 return getErrorTransition();
             }
 
@@ -93,16 +94,20 @@ public class SendFileStep extends AbstractInvocable {
 
             String retval = getNextTransition();
             int failCount = 0;
+            int successCount = 0;
             Connection connection = new SFTPConnection(configUri).setContext(ctx);
             List<FTPRequest> requests = new ArrayList<>();
             for (Entry<String, Object> e : map.entrySet()) {
                 String remote = e.getValue().toString();
                 // If the target is a URI then just use the leaf name. Eg blob://foo/bar/baz -> baz
-                if (remote.contains("://")) remote = new RaptureURI(remote, Scheme.DOCUMENT).getLeafName();
+                if (remote.contains("://")) {
+                    remote = new RaptureURI(remote, Scheme.DOCUMENT).getLeafName();
+                }
                 FTPRequest request = new FTPRequest(Action.WRITE).setLocalName(e.getKey()).setRemoteName(remote);
                 boolean success = connection.doAction(request);
                 if (success && request.getStatus().equals(Status.SUCCESS)) {
                     decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), "Sent " + e.getKey(), true);
+                    successCount++;
                 } else {
                     retval = getFailTransition();
                     decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), "Unable to send " + e.getKey(), true);
@@ -111,11 +116,11 @@ public class SendFileStep extends AbstractInvocable {
                 requests.add(request);
             }
             if (failCount > 0) {
-                decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), "Unable to send " + failCount + " of " + map.size() + " files)", true);
+                decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), "Unable to send " + failCount + " of " + map.size() + " files", true);
             } else {
-                decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), getStepName() + ": All files sent", false);
+                decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), getStepName() + ": Sent " + successCount + " files", false);
             }
-            decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), "Sent " + (map.size() - failCount) + " of " + map.size() + " files)");
+            decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), "Sent " + (map.size() - failCount) + " of " + map.size() + " files");
             return retval;
         } catch (Exception e) {
             decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), "Unable to send files : " + e.getLocalizedMessage());

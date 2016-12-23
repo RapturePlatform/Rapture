@@ -35,9 +35,9 @@ import java.util.Map;
 
 import org.junit.After;
 import org.junit.AfterClass;
-import org.junit.Assume;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.google.common.collect.ImmutableList;
@@ -73,7 +73,9 @@ import rapture.kernel.ContextFactory;
 import rapture.kernel.Kernel;
 import rapture.kernel.script.KernelScript;
 
-public class SendFileStepTest {
+@Ignore
+// These tests require a working SFTP server.
+public class SendFileStepSFTPTest {
 
     static String saveInitSysConfig;
     static String saveRaptureRepo;
@@ -171,8 +173,8 @@ public class SendFileStepTest {
     static DocApi dapi = Kernel.getDoc();
 
     static private void defineWorkflow() {
-        FTPConnectionConfig ftpConfig = new FTPConnectionConfig().setAddress("speedtest.tele2.net").setPort(23).setLoginId("ftp").setPassword("foo@bar")
-                .setUseSFTP(false);
+        FTPConnectionConfig ftpConfig = new FTPConnectionConfig().setAddress("localhost").setPort(22).setLoginId("rapture").setPassword("rapture")
+                .setUseSFTP(true);
         dapi.createDocRepo(context, configRepo, "NREP {} USING MEMORY {}");
         dapi.putDoc(context, configUri, JacksonUtil.jsonFromObject(ftpConfig));
 
@@ -187,7 +189,7 @@ public class SendFileStepTest {
         tran.setName("next");
         tran.setTargetStep("$RETURN");
         Transition tran2 = new Transition();
-        tran2.setName("error");
+        tran2.setName("quit");
         tran2.setTargetStep("$FAIL");
         step.setTransitions(ImmutableList.of(tran, tran2));
         steps.add(step);
@@ -223,19 +225,27 @@ public class SendFileStepTest {
         for (WorkerDebug db : debug.getWorkerDebugs()) {
             for (StepRecordDebug srd : db.getStepRecordDebugs()) {
                 StepRecord sr = srd.getStepRecord();
-                if (sr.getExceptionInfo() != null) System.err.println(sr.getExceptionInfo().getStackTrace());
+                if (sr.getExceptionInfo() != null) {
+                    System.err.println(sr.getExceptionInfo().getStackTrace());
+                }
+
+                List<AuditLogEntry> log = Kernel.getAudit().getRecentLogEntries(context, debug.getLogURI() + "/" + sr.getName(), 10);
+                assertEquals(4, log.size());
+                assertEquals("step1 finished", log.get(0).getMessage());
+                assertEquals("step1: All files sent", log.get(1).getMessage());
+                assertEquals("Sent /bin/ls", log.get(2).getMessage());
+                assertEquals("step1 started", log.get(3).getMessage());
+
             }
         }
 
         WorkerDebug worker = debug.getWorkerDebugs().get(0);
         List<StepRecordDebug> dbgs = worker.getStepRecordDebugs();
-        int i = 0;
         for (StepRecordDebug dbg : dbgs) {
             Activity activity = dbg.getActivity();
             if (activity != null) {
                 assertEquals(10, activity.getMax().longValue());
                 assertEquals(ActivityStatus.FINISHED, activity.getStatus());
-                i++;
             }
         }
         assertEquals(WorkOrderExecutionState.FINISHED, debug.getOrder().getStatus());
@@ -263,19 +273,27 @@ public class SendFileStepTest {
         for (WorkerDebug db : debug.getWorkerDebugs()) {
             for (StepRecordDebug srd : db.getStepRecordDebugs()) {
                 StepRecord sr = srd.getStepRecord();
-                if (sr.getExceptionInfo() != null) System.err.println(sr.getExceptionInfo().getStackTrace());
+                if (sr.getExceptionInfo() != null) {
+                    System.err.println(sr.getExceptionInfo().getStackTrace());
+                }
+
+                List<AuditLogEntry> log = Kernel.getAudit().getRecentLogEntries(context, debug.getLogURI() + "/" + sr.getName(), 10);
+                assertEquals(4, log.size());
+                assertEquals("step1 finished", log.get(0).getMessage());
+                assertEquals("step1: All files sent", log.get(1).getMessage());
+                assertEquals("Sent blob://tmp/blobby", log.get(2).getMessage());
+                assertEquals("step1 started", log.get(3).getMessage());
+
             }
         }
 
         WorkerDebug worker = debug.getWorkerDebugs().get(0);
         List<StepRecordDebug> dbgs = worker.getStepRecordDebugs();
-        int i = 0;
         for (StepRecordDebug dbg : dbgs) {
             Activity activity = dbg.getActivity();
             if (activity != null) {
                 assertEquals(10, activity.getMax().longValue());
                 assertEquals(ActivityStatus.FINISHED, activity.getStatus());
-                i++;
             }
         }
         assertEquals(WorkOrderExecutionState.FINISHED, debug.getOrder().getStatus());
@@ -303,158 +321,112 @@ public class SendFileStepTest {
         for (WorkerDebug db : debug.getWorkerDebugs()) {
             for (StepRecordDebug srd : db.getStepRecordDebugs()) {
                 StepRecord sr = srd.getStepRecord();
-                if (sr.getExceptionInfo() != null) System.err.println(sr.getExceptionInfo().getStackTrace());
+                if (sr.getExceptionInfo() != null) {
+                    System.err.println(sr.getExceptionInfo().getStackTrace());
+                }
+
+                List<AuditLogEntry> log = Kernel.getAudit().getRecentLogEntries(context, debug.getLogURI() + "/" + sr.getName(), 10);
+                assertEquals(4, log.size());
+                assertEquals("step1 finished", log.get(0).getMessage());
+                assertEquals("step1: All files sent", log.get(1).getMessage());
+                assertEquals("Sent document://tmp/elp", log.get(2).getMessage());
+                assertEquals("step1 started", log.get(3).getMessage());
+
             }
         }
 
         WorkerDebug worker = debug.getWorkerDebugs().get(0);
         List<StepRecordDebug> dbgs = worker.getStepRecordDebugs();
-        int i = 0;
         for (StepRecordDebug dbg : dbgs) {
             Activity activity = dbg.getActivity();
             if (activity != null) {
                 assertEquals(10, activity.getMax().longValue());
                 assertEquals(ActivityStatus.FINISHED, activity.getStatus());
-                i++;
             }
         }
         assertEquals(WorkOrderExecutionState.FINISHED, debug.getOrder().getStatus());
     }
 
     @Test
-    public void testSendDocSFTPStep() {
-        try {
-            FTPConnectionConfig ftpConfig = new FTPConnectionConfig().setAddress("localhost").setPort(22).setLoginId("rapture").setPassword("rapture")
-                    .setUseSFTP(true);
-            dapi.putDoc(context, configUri, JacksonUtil.jsonFromObject(ftpConfig));
-            Map<String, String> args = new HashMap<>();
-            args.put("COPY_FILES", JacksonUtil.jsonFromObject(ImmutableMap.of("document://tmp/elp", "upload/elp.dummyfile")));
+    public void testSendDocStepFail1() {
+        Map<String, String> args = new HashMap<>();
+        args.put("COPY_FILES", JacksonUtil.jsonFromObject(ImmutableMap.of("file://dev/null", "/etc/no/chance")));
 
-            CreateResponse response = Kernel.getDecision().createWorkOrderP(context, workflowUri, args, null);
-            assertTrue(response.getIsCreated());
-            WorkOrderDebug debug;
-            WorkOrderExecutionState state = WorkOrderExecutionState.NEW;
-            long timeout = System.currentTimeMillis() + 60000;
-            do {
-                debug = Kernel.getDecision().getWorkOrderDebug(context, response.getUri());
-                state = debug.getOrder().getStatus();
-            } while (((state == WorkOrderExecutionState.NEW) || (state == WorkOrderExecutionState.ACTIVE)) && (System.currentTimeMillis() < timeout));
+        CreateResponse response = Kernel.getDecision().createWorkOrderP(context, workflowUri, args, null);
+        assertTrue(response.getIsCreated());
+        WorkOrderDebug debug;
+        WorkOrderExecutionState state = WorkOrderExecutionState.NEW;
+        long timeout = System.currentTimeMillis() + 120000;
+        do {
+            debug = Kernel.getDecision().getWorkOrderDebug(context, response.getUri());
+            state = debug.getOrder().getStatus();
+        } while (((state == WorkOrderExecutionState.NEW) || (state == WorkOrderExecutionState.ACTIVE)) && (System.currentTimeMillis() < timeout));
 
-            // If anything went wrong
+        // If anything went wrong
 
-            assertEquals(1, debug.getWorkerDebugs().size());
-            WorkerDebug db = debug.getWorkerDebugs().get(0);
-            assertEquals(1, db.getStepRecordDebugs().size());
-            StepRecordDebug srd = db.getStepRecordDebugs().get(0);
-            StepRecord sr = srd.getStepRecord();
+        assertEquals(1, debug.getWorkerDebugs().size());
+        WorkerDebug db = debug.getWorkerDebugs().get(0);
+        assertEquals(1, db.getStepRecordDebugs().size());
+        StepRecordDebug srd = db.getStepRecordDebugs().get(0);
+        StepRecord sr = srd.getStepRecord();
 
-            // If SFTP server isn't present then we can't test
-            Assume.assumeTrue(!"quit".equals(sr.getRetVal()));
+        List<AuditLogEntry> log = Kernel.getAudit().getRecentLogEntries(context, debug.getLogURI() + "/" + sr.getName(), 10);
+        assertEquals(4, log.size());
+        assertEquals("step1 finished", log.get(0).getMessage());
+        assertEquals("Unable to send 1 of 1 files", log.get(1).getMessage());
+        assertEquals("Unable to send file://dev/null", log.get(2).getMessage());
+        assertEquals("step1 started", log.get(3).getMessage());
 
-            assertEquals("next", sr.getRetVal());
-            Activity activity = srd.getActivity();
-            if (activity != null) {
-                assertEquals(10, activity.getMax().longValue());
-                assertEquals(ActivityStatus.FINISHED, activity.getStatus());
-            }
-            assertEquals(WorkOrderExecutionState.FINISHED, debug.getOrder().getStatus());
-        } finally {
-            FTPConnectionConfig ftpConfig = new FTPConnectionConfig().setAddress("speedtest.tele2.net").setPort(23).setLoginId("ftp").setPassword("foo@bar")
-                    .setUseSFTP(false);
-            dapi.putDoc(context, configUri, JacksonUtil.jsonFromObject(ftpConfig));
+        assertEquals("quit", sr.getRetVal());
+        Activity activity = srd.getActivity();
+        if (activity != null) {
+            assertEquals(10, activity.getMax().longValue());
+            assertEquals(ActivityStatus.FINISHED, activity.getStatus());
         }
+        assertEquals(WorkOrderExecutionState.ERROR, debug.getOrder().getStatus());
     }
 
     @Test
-    public void testSendDocSFTPStepFail1() {
-        try {
-            FTPConnectionConfig ftpConfig = new FTPConnectionConfig().setAddress("localhost").setPort(22).setLoginId("rapture").setPassword("rapture")
-                    .setUseSFTP(true);
-            dapi.putDoc(context, configUri, JacksonUtil.jsonFromObject(ftpConfig));
-            Map<String, String> args = new HashMap<>();
-            args.put("COPY_FILES", JacksonUtil.jsonFromObject(ImmutableMap.of("file://dev/null", "/etc/no/chance")));
+    public void testSendDocStepFail2() {
+        Map<String, String> args = new HashMap<>();
+        args.put("COPY_FILES", JacksonUtil.jsonFromObject(ImmutableMap.of("file://does/not/exist", "/etc/no/chance")));
 
-            CreateResponse response = Kernel.getDecision().createWorkOrderP(context, workflowUri, args, null);
-            assertTrue(response.getIsCreated());
-            WorkOrderDebug debug;
-            WorkOrderExecutionState state = WorkOrderExecutionState.NEW;
-            long timeout = System.currentTimeMillis() + 120000;
-            do {
-                debug = Kernel.getDecision().getWorkOrderDebug(context, response.getUri());
-                state = debug.getOrder().getStatus();
-            } while (((state == WorkOrderExecutionState.NEW) || (state == WorkOrderExecutionState.ACTIVE)) && (System.currentTimeMillis() < timeout));
+        CreateResponse response = Kernel.getDecision().createWorkOrderP(context, workflowUri, args, null);
+        assertTrue(response.getIsCreated());
+        WorkOrderDebug debug;
+        WorkOrderExecutionState state = WorkOrderExecutionState.NEW;
+        long timeout = System.currentTimeMillis() + 120000;
+        do {
+            debug = Kernel.getDecision().getWorkOrderDebug(context, response.getUri());
+            state = debug.getOrder().getStatus();
+        } while (((state == WorkOrderExecutionState.NEW) || (state == WorkOrderExecutionState.ACTIVE)) && (System.currentTimeMillis() < timeout));
 
-            // If anything went wrong
+        // If anything went wrong
 
-            assertEquals(1, debug.getWorkerDebugs().size());
-            WorkerDebug db = debug.getWorkerDebugs().get(0);
-            assertEquals(1, db.getStepRecordDebugs().size());
-            StepRecordDebug srd = db.getStepRecordDebugs().get(0);
-            StepRecord sr = srd.getStepRecord();
+        assertEquals(1, debug.getWorkerDebugs().size());
+        WorkerDebug db = debug.getWorkerDebugs().get(0);
+        assertEquals(1, db.getStepRecordDebugs().size());
+        StepRecordDebug srd = db.getStepRecordDebugs().get(0);
+        StepRecord sr = srd.getStepRecord();
 
-            // If SFTP server isn't present then we can't test
-            Assume.assumeTrue(!"quit".equals(sr.getRetVal()));
+        List<AuditLogEntry> log = Kernel.getAudit().getRecentLogEntries(context, debug.getLogURI() + "/" + sr.getName(), 10);
+        assertEquals(4, log.size());
+        assertEquals("step1 finished", log.get(0).getMessage());
+        assertEquals("Unable to send 1 of 1 files", log.get(1).getMessage());
+        assertEquals("Unable to send file://does/not/exist", log.get(2).getMessage());
+        assertEquals("step1 started", log.get(3).getMessage());
 
-            assertEquals("error", sr.getRetVal());
-            Activity activity = srd.getActivity();
-            if (activity != null) {
-                assertEquals(10, activity.getMax().longValue());
-                assertEquals(ActivityStatus.FINISHED, activity.getStatus());
-            }
-            assertEquals(WorkOrderExecutionState.ERROR, debug.getOrder().getStatus());
-        } finally {
-            FTPConnectionConfig ftpConfig = new FTPConnectionConfig().setAddress("speedtest.tele2.net").setPort(23).setLoginId("ftp").setPassword("foo@bar")
-                    .setUseSFTP(false);
-            dapi.putDoc(context, configUri, JacksonUtil.jsonFromObject(ftpConfig));
+        assertEquals("quit", sr.getRetVal());
+        Activity activity = srd.getActivity();
+        if (activity != null) {
+            assertEquals(10, activity.getMax().longValue());
+            assertEquals(ActivityStatus.FINISHED, activity.getStatus());
         }
+        assertEquals(WorkOrderExecutionState.ERROR, debug.getOrder().getStatus());
     }
 
     @Test
-    public void testSendDocSFTPStepFail2() {
-        try {
-            FTPConnectionConfig ftpConfig = new FTPConnectionConfig().setAddress("localhost").setPort(22).setLoginId("rapture").setPassword("rapture")
-                    .setUseSFTP(true);
-            dapi.putDoc(context, configUri, JacksonUtil.jsonFromObject(ftpConfig));
-            Map<String, String> args = new HashMap<>();
-            args.put("COPY_FILES", JacksonUtil.jsonFromObject(ImmutableMap.of("file://does/not/exist", "/etc/no/chance")));
-
-            CreateResponse response = Kernel.getDecision().createWorkOrderP(context, workflowUri, args, null);
-            assertTrue(response.getIsCreated());
-            WorkOrderDebug debug;
-            WorkOrderExecutionState state = WorkOrderExecutionState.NEW;
-            long timeout = System.currentTimeMillis() + 120000;
-            do {
-                debug = Kernel.getDecision().getWorkOrderDebug(context, response.getUri());
-                state = debug.getOrder().getStatus();
-            } while (((state == WorkOrderExecutionState.NEW) || (state == WorkOrderExecutionState.ACTIVE)) && (System.currentTimeMillis() < timeout));
-
-            // If anything went wrong
-
-            assertEquals(1, debug.getWorkerDebugs().size());
-            WorkerDebug db = debug.getWorkerDebugs().get(0);
-            assertEquals(1, db.getStepRecordDebugs().size());
-            StepRecordDebug srd = db.getStepRecordDebugs().get(0);
-            StepRecord sr = srd.getStepRecord();
-
-            // If SFTP server isn't present then we can't test
-            Assume.assumeTrue(!"quit".equals(sr.getRetVal()));
-
-            assertEquals("error", sr.getRetVal());
-            Activity activity = srd.getActivity();
-            if (activity != null) {
-                assertEquals(10, activity.getMax().longValue());
-                assertEquals(ActivityStatus.FINISHED, activity.getStatus());
-            }
-            assertEquals(WorkOrderExecutionState.ERROR, debug.getOrder().getStatus());
-        } finally {
-            FTPConnectionConfig ftpConfig = new FTPConnectionConfig().setAddress("speedtest.tele2.net").setPort(23).setLoginId("ftp").setPassword("foo@bar")
-                    .setUseSFTP(false);
-            dapi.putDoc(context, configUri, JacksonUtil.jsonFromObject(ftpConfig));
-        }
-    }
-
-    @Test
-    public void testSendDocSFTPStepFail3() {
+    public void testSendDocStepFail3() {
         try {
             FTPConnectionConfig ftpConfig = new FTPConnectionConfig().setAddress("localhost").setPort(999).setLoginId("XYZ").setPassword("XYZ")
                     .setUseSFTP(true);
@@ -489,12 +461,11 @@ public class SendFileStepTest {
                 assertEquals(10, activity.getMax().longValue());
                 assertEquals(ActivityStatus.FINISHED, activity.getStatus());
             }
-            assertEquals(WorkOrderExecutionState.FINISHED, debug.getOrder().getStatus());
+            assertEquals(WorkOrderExecutionState.ERROR, debug.getOrder().getStatus());
         } finally {
-            FTPConnectionConfig ftpConfig = new FTPConnectionConfig().setAddress("speedtest.tele2.net").setPort(23).setLoginId("ftp").setPassword("foo@bar")
-                    .setUseSFTP(false);
+            FTPConnectionConfig ftpConfig = new FTPConnectionConfig().setAddress("localhost").setPort(22).setLoginId("rapture").setPassword("rapture")
+                    .setUseSFTP(true);
             dapi.putDoc(context, configUri, JacksonUtil.jsonFromObject(ftpConfig));
         }
     }
-
 }

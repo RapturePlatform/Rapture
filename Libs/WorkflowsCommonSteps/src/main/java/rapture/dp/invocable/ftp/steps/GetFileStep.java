@@ -89,33 +89,27 @@ public class GetFileStep extends AbstractInvocable {
             String retval = getNextTransition();
             int failCount = 0;
             int successCount = 0;
-            StringBuilder sb = new StringBuilder();
             List<FTPRequest> requests = new ArrayList<>();
             connection = new SFTPConnection(configUri).setContext(ctx);
             for (Entry<String, Object> e : map.entrySet()) {
                 FTPRequest request = new FTPRequest(Action.READ).setRemoteName(e.getKey()).setLocalName(e.getValue().toString());
                 connection.doAction(request);
                 if (!request.getStatus().equals(Status.SUCCESS)) {
+                    String errors = request.getErrors();
+                    if (errors != null) decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), getStepName() + ": " + errors, true);
+                    decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), "Unable to retrieve " + e.getKey() + " as " + e.getValue(), true);
                     retval = getFailTransition();
-                    sb.append("Unable to retrieve ").append(e.getKey()).append(" as ").append(e.getValue().toString()).append("\n");
                     failCount++;
                 } else {
-                    sb.append("Retrieved ").append(e.getKey()).append("\n");
+                    decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), "Retrieved " + e.getKey(), false);
                     successCount++;
                 }
                 requests.add(request);
             }
-            if (failCount > 0) decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), "Unable to retrieve " + failCount + " files");
-            else decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), successCount + " files retrieved");
-
-            String err = sb.toString();
-            if (!StringUtils.isEmpty(err)) {
-                log.error(err);
-                decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), getStepName() + ": " + err, true);
-            } else {
-                decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), getStepName() + ": " + successCount + " files files retrieved", false);
-            }
-            decision.setContextLiteral(ctx, getWorkerURI(), getErrName(), err);
+            String retrieved = (failCount > 0) ? "Unable to retrieve " + failCount + " files" : successCount + " files retrieved";
+            decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), retrieved);
+            decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), retrieved, true);
+            decision.setContextLiteral(ctx, getWorkerURI(), getErrName(), retrieved);
             return retval;
         } catch (Exception e) {
             decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), "Unable to retrieve files : " + e.getLocalizedMessage());

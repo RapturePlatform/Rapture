@@ -65,7 +65,7 @@ import rapture.config.LocalConfigService;
  * 
  */
 public class AuditApiImpl extends KernelBase implements AuditApi {
-    private static final RaptureURI KERNEL_URI = RaptureURI.builder(Scheme.LOG, "//kernel").build();
+    private static final RaptureURI KERNEL_URI = RaptureURI.builder(Scheme.LOG, "kernel").build();
     private static final Logger log = Logger.getLogger(AuditApiImpl.class);
 
     private Messages auditMsgCatalog;
