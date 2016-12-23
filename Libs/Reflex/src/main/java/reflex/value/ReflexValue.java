@@ -170,8 +170,9 @@ public class ReflexValue implements Comparable<ReflexValue> {
             // maybe we should have an Array type?
             Object[] array = (Object[]) value;
             List<ReflexValue> list = new ArrayList<>();
-            for (Object obj : array)
+            for (Object obj : array) {
                 list.add(new ReflexValue(obj));
+            }
             value = list;
             valueType = ReflexValueType.LIST;
         } else {
@@ -186,17 +187,15 @@ public class ReflexValue implements Comparable<ReflexValue> {
     private boolean isReturn = false;
 
     public ReflexValue(int lineNumber, List<ReflexValue> v) {
-        if (v == null) {
-            throw new ReflexException(lineNumber, NOTNULL);
-        } else {
+        if (v == null) throw new ReflexException(lineNumber, NOTNULL);
+        else {
             setValue(v);
         }
     }
 
     public ReflexValue(int lineNumber, Object v) {
-        if (v == null) {
-            throw new ReflexException(lineNumber, NOTNULL);
-        } else if (v instanceof ReflexValue) {
+        if (v == null) throw new ReflexException(lineNumber, NOTNULL);
+        else if (v instanceof ReflexValue) {
             // If we're including a value in a value, just include the value. If
             // that makes sense.
             setValue(((ReflexValue) v).value);
@@ -276,7 +275,12 @@ public class ReflexValue implements Comparable<ReflexValue> {
         case INTEGER:
             return new BigDecimal(((Number) value).longValue());
         case NUMBER:
-            return new BigDecimal(((Number) value).doubleValue(), MathContext.DECIMAL64);
+            BigDecimal bd = new BigDecimal(((Number) value).doubleValue(), (value instanceof Float) ? MathContext.DECIMAL32 : MathContext.DECIMAL64)
+                    .stripTrailingZeros();
+            if (bd.scale() == 0) {
+                bd = bd.setScale(1);
+            }
+            return bd;
         case STRING:
             return new BigDecimal(value.toString());
         default:
@@ -417,11 +421,8 @@ public class ReflexValue implements Comparable<ReflexValue> {
     public Object asObject() {
         switch (valueType) {
         case INTERNAL:
-            if (this.getValue() == ReflexValue.Internal.VOID) {
-                return "void";
-            } else if (this.getValue() == ReflexValue.Internal.NULL) {
-                return "null";
-            }
+            if (this.getValue() == ReflexValue.Internal.VOID) return "void";
+            else if (this.getValue() == ReflexValue.Internal.NULL) return "null";
         }
         return value;
     }
@@ -489,36 +490,24 @@ public class ReflexValue implements Comparable<ReflexValue> {
     @Override
     public int compareTo(ReflexValue that) {
         if (this.isNumber() && that.isNumber()) {
-            if (this.equals(that)) {
-                return 0;
-            } else {
-                return this.asDouble().compareTo(that.asDouble());
-            }
-        } else if (this.isString() && that.isString()) {
-            return this.asString().compareTo(that.asString());
-        } else if (this.isList() && that.isList()) {
-            return compareList(this.asList(), that.asList());
-        } else {
-            return this.asString().compareTo(that.asString());
-            // throw new ReflexException(-1,
-            // "illegal expression: can't compare `" + this + "` to `" + that +
-            // "`");
-        }
+            if (this.equals(that)) return 0;
+            else return this.asDouble().compareTo(that.asDouble());
+        } else if (this.isString() && that.isString()) return this.asString().compareTo(that.asString());
+        else if (this.isList() && that.isList()) return compareList(this.asList(), that.asList());
+        else return this.asString().compareTo(that.asString());
+        // throw new ReflexException(-1,
+        // "illegal expression: can't compare `" + this + "` to `" + that +
+        // "`");
     }
 
     private int compareList(List<? extends ReflexValue> asList, List<? extends ReflexValue> asList2) {
-        if (asList.size() != asList2.size()) {
-            return asList.size() > asList2.size() ? -1 : 1;
-        } else {
-            return asList.toString().compareTo(asList2.toString());
-        }
+        if (asList.size() != asList2.size()) return asList.size() > asList2.size() ? -1 : 1;
+        else return asList.toString().compareTo(asList2.toString());
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this.getValue() == Internal.VOID) {
-            throw new ReflexException(-1, "can't use VOID: " + this + " ==/!= " + o);
-        }
+        if (this.getValue() == Internal.VOID) throw new ReflexException(-1, "can't use VOID: " + this + " ==/!= " + o);
         if (o == null) return false;
         if (this == o) return true;
 
@@ -526,29 +515,18 @@ public class ReflexValue implements Comparable<ReflexValue> {
 
         // NULL and UNDEFINED are considered equivalent most of the time
         if (((this.getValue() == Internal.NULL) || (this.getValue() == Internal.UNDEFINED))
-                && ((that.getValue() == Internal.NULL) || (that.getValue() == Internal.UNDEFINED))) {
-            return true;
-        }
+                && ((that.getValue() == Internal.NULL) || (that.getValue() == Internal.UNDEFINED))) return true;
 
-        if (this.isInteger() && that.isInteger()) {
-            return this.asLong().equals(that.asLong());
-        } else if (this.isNumber() && that.isNumber()) {
-            return this.asBigDecimal().compareTo(that.asBigDecimal()) == 0;
-        } else if (this.isDate() && that.isDate()) {
-            return this.asDate().equals(that);
-        } else if (this.isTime() && that.isTime()) {
-            return this.asTime().equals(that);
-        } else if (this.isList() && that.isList()) {
-            return compareTwoLists(this.asList(), that.asList());
-        } else {
-            return this.value.equals(that.value);
-        }
+        if (this.isInteger() && that.isInteger()) return this.asLong().equals(that.asLong());
+        else if (this.isNumber() && that.isNumber()) return this.asBigDecimal().compareTo(that.asBigDecimal()) == 0;
+        else if (this.isDate() && that.isDate()) return this.asDate().equals(that);
+        else if (this.isTime() && that.isTime()) return this.asTime().equals(that);
+        else if (this.isList() && that.isList()) return compareTwoLists(this.asList(), that.asList());
+        else return this.value.equals(that.value);
     }
 
     private boolean compareTwoLists(List<? extends ReflexValue> a, List<? extends ReflexValue> b) {
-        if (a.size() != b.size()) {
-            return false;
-        }
+        if (a.size() != b.size()) return false;
         for (int i = 0; i < a.size(); i++) {
             ReflexValue one = a.get(i);
             ReflexValue two = b.get(i);
@@ -568,13 +546,9 @@ public class ReflexValue implements Comparable<ReflexValue> {
     public String getTypeAsString() {
         switch (valueType) {
         case INTERNAL:
-            if (isVoid()) {
-                return "void";
-            } else if (isNull()) {
-                return "null";
-            } else {
-                return "object";
-            }
+            if (isVoid()) return "void";
+            else if (isNull()) return "null";
+            else return "object";
         default:
             return valueType.name().toLowerCase();
         }
@@ -617,9 +591,7 @@ public class ReflexValue implements Comparable<ReflexValue> {
 
     @JsonIgnore
     public boolean isObject() {
-        if (valueType == ReflexValueType.INTERNAL) {
-            return !isVoid() && !isNull();
-        }
+        if (valueType == ReflexValueType.INTERNAL) return !isVoid() && !isNull();
         return valueType.isObject();
     }
 
@@ -715,7 +687,10 @@ public class ReflexValue implements Comparable<ReflexValue> {
 
     @Override
     public String toString() {
-        return isNull() ? "NULL" : isVoid() ? "VOID" : String.valueOf(value);
+        if (isNull()) return "NULL";
+        if (isVoid()) return "VOID";
+        if (isNumber()) return asBigDecimal().toPlainString();
+        return String.valueOf(value);
     }
 
     @SuppressWarnings("unchecked")

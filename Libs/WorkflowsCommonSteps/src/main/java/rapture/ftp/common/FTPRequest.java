@@ -67,6 +67,7 @@ public class FTPRequest {
     }
 
     public void addError(String error) {
+        if (error == null) return;
         this.errors = (errors == null) ? error : errors + "\n" + error;
     }
 

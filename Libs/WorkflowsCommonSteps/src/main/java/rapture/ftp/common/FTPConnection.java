@@ -29,7 +29,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.HttpURLConnection;
 import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -51,8 +50,6 @@ import rapture.common.RaptureURIInputStream;
 import rapture.common.RaptureURIOutputStream;
 import rapture.common.Scheme;
 import rapture.common.exception.ExceptionToString;
-import rapture.common.exception.RaptureException;
-import rapture.common.exception.RaptureExceptionFactory;
 import rapture.common.impl.jackson.JacksonUtil;
 import rapture.ftp.common.FTPRequest.Action;
 import rapture.ftp.common.FTPRequest.Status;
@@ -97,7 +94,7 @@ public class FTPConnection implements Connection {
     public boolean doAction(FTPRequest request) {
         try {
             if (!isConnected()) {
-                if (!connectAndLogin()) return false;
+                if (!connectAndLogin(request)) return false;
             }
             switch (request.getAction()) {
             case READ:
@@ -149,11 +146,11 @@ public class FTPConnection implements Connection {
                 }
                 request.setLocal(true);
                 return exists;
-            } else return FTPService.runWithRetry("Error checking whether file exists: " + request.getRemoteName(), this, false, attemptNum -> {
-                List<String> result = listFiles(request.getRemoteName());
+            } else {
+                List<String> result = listFiles(request.getRemoteName(), request);
                 request.setStatus((result.size() > 0) ? Status.SUCCESS : Status.ERROR);
                 return (result.size() > 0);
-            });
+            }
         } catch (Exception e) {
             log.error(ExceptionToString.format(ExceptionToString.getRootCause(e)));
             return false;
@@ -161,7 +158,7 @@ public class FTPConnection implements Connection {
     }
 
     @Override
-    public boolean connectAndLogin() {
+    public boolean connectAndLogin(FTPRequest request) {
         try {
             if (isLocal()) {
                 log.info("In local mode - not connecting");
@@ -173,18 +170,20 @@ public class FTPConnection implements Connection {
                 ftpClient.connect(config.getAddress());
             } catch (UnknownHostException e) {
                 log.info(ExceptionToString.summary(e));
-                throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, "Unknown host " + config.getAddress());
+                request.addError("Unknown host " + config.getAddress());
+                return false;
             }
-            int reply = ftpClient.getReplyCode();
-            if (!FTPReply.isPositiveCompletion(reply)) {
-                log.debug("Got non-positive reply of " + reply);
+            if (!FTPReply.isPositiveCompletion(ftpClient.getReplyCode())) {
+                request.addError(ftpClient.getReplyString());
                 logoffAndDisconnect();
-                throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, "Could not connect to: " + config.getAddress());
+                return false;
             }
             log.debug("Logging in user: " + config.getLoginId());
             if (!ftpClient.login(config.getLoginId(), config.getPassword())) {
+                request.addError(ftpClient.getReplyString());
                 ftpClient.logout();
-                throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, "Unable to login");
+                request.addError("Unable to login to " + config.getAddress());
+                return false;
             }
             isLoggedIn = true;
             ftpClient.setUseEPSVwithIPv4(true);
@@ -192,35 +191,31 @@ public class FTPConnection implements Connection {
             ftpClient.setSoTimeout(1000 * config.getTimeout());
             return true;
         } catch (IOException e) {
-            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, "Unable to login", e);
-
+            request.addError("Unable to login to " + config.getAddress());
+            request.addError(ftpClient.getReplyString());
+            request.addError(ExceptionToString.summary(e));
+            return false;
         }
     }
 
     @Override
     public void logoffAndDisconnect() {
         try {
-            FTPService.runWithRetry("Error closing connection", this, false, attemptNum -> {
-                log.debug(String.format("Disconnecting from %s. Attempt %s of %s", config.getAddress(), attemptNum + 1, config.getRetryCount()));
-                FTPClient ftpClient = getFtpClient();
-                try {
-                    if (isLoggedIn) {
-                        ftpClient.logout();
-                    }
-                    return true;
-                } catch (IOException ignore) {
-                    return false;
-                } finally {
-                    ftpClient.disconnect();
+            FTPClient ftpClient = getFtpClient();
+            try {
+                if (isLoggedIn) {
+                    ftpClient.logout();
                 }
-            });
-        } catch (RaptureException e) {
+            } finally {
+                ftpClient.disconnect();
+            }
+        } catch (Exception e) {
             log.warn("Unable to log off and disconnect, but will not die: " + ExceptionToString.format(e));
         }
     }
 
     @Override
-    public List<String> listFiles(String path) {
+    public List<String> listFiles(String path, FTPRequest request) {
         List<String> files = new LinkedList<>();
 
         try {
@@ -232,8 +227,10 @@ public class FTPConnection implements Connection {
                 files.add(f.getName());
             }
         } catch (IOException e) {
-            log.error(String.format("Error listing files with path [%s] on FTP config.getAddress() [%s]. Error: %s", path, config.getAddress(),
-                    ExceptionToString.format(e)));
+            String message = String.format("Error listing files with path [%s] on server [%s]. Error: %s", path, config.getAddress(),
+                    ExceptionToString.format(e));
+            log.info(message);
+            request.addError(message);
         }
         return files;
     }
@@ -254,7 +251,8 @@ public class FTPConnection implements Connection {
     }
 
     /* SFTP is different */
-    public boolean sendFile(InputStream stream, String fileName) throws IOException {
+    public boolean sendFile(InputStream stream, FTPRequest request) throws IOException {
+        String fileName = request.getRemoteName();
         int slash = fileName.lastIndexOf('/');
         FTPClient client = getFtpClient();
         if (slash > 0) {
@@ -373,12 +371,13 @@ public class FTPConnection implements Connection {
                 log.debug("Copy to " + file.getAbsolutePath());
                 IOUtils.copy(inStream, new FileOutputStream(file));
             } else {
-                boolean isSent = sendFile(inStream, request.getRemoteName());
+                boolean isSent = sendFile(inStream, request);
                 if (isSent) {
                     log.info(request.getRemoteName() + " sent successfully");
                     request.setStatus(Status.SUCCESS);
                 } else {
-                    log.warn(String.format("Missing response from %s", request.getRemoteName()));
+                    log.warn(String.format("%s from %s", ftpClient.getReplyString(), request.getRemoteName()));
+                    request.addError(ftpClient.getReplyString());
                     request.setStatus(Status.ERROR);
                 }
             }

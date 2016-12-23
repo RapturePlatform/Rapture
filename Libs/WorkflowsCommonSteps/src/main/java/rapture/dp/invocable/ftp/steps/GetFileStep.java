@@ -50,6 +50,7 @@ public class GetFileStep extends AbstractInvocable {
     private static final Logger log = Logger.getLogger(GetFileStep.class);
 
     DecisionApi decision;
+
     public GetFileStep(String workerUri, String stepName) {
         super(workerUri, stepName);
         decision = Kernel.getDecision();
@@ -61,9 +62,17 @@ public class GetFileStep extends AbstractInvocable {
         try {
             decision.setContextLiteral(ctx, getWorkerURI(), "STEPNAME", getStepName());
 
-            String copy = StringUtils.stripToNull(decision.getContextValue(ctx, getWorkerURI(), "FETCH_FILES"));
+            String copy = StringUtils.stripToNull(decision.getContextValue(ctx, getWorkerURI(), "GET_FILES"));
             if (copy == null) {
-                decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), "No files to copy");
+                // Try deprecated FETCH_FILES
+                copy = StringUtils.stripToNull(decision.getContextValue(ctx, getWorkerURI(), "FETCH_FILES"));
+                if (copy != null) {
+                    decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), "FETCH_FILES parameter is deprecated - please use GET_FILES", true);
+                }
+            }
+            if (copy == null) {
+                decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), "GET_FILES context variable is not set");
+                decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), getStepName() + ": No files to copy - GET_FILES context variable is not set", false);
                 return getNextTransition();
             }
 
@@ -74,15 +83,14 @@ public class GetFileStep extends AbstractInvocable {
             String configUri = decision.getContextValue(ctx, getWorkerURI(), "FTP_CONFIGURATION");
             if (configUri == null) {
                 decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), "FTP_CONFIGURATION not set");
-                decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), "Problem in " + getStepName() + " - parameter FTP_CONFIGURATION is not set",
-                        true);
+                decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), "Problem in " + getStepName() + " - parameter FTP_CONFIGURATION is not set", true);
                 return getErrorTransition();
             }
 
             if (!Kernel.getDoc().docExists(ctx, configUri)) {
                 decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), "Cannot load FTP_CONFIGURATION from " + configUri);
-                decision.writeWorkflowAuditEntry(ctx, getWorkerURI(),
-                        "Problem in " + getStepName() + " - Cannot load FTP_CONFIGURATION from " + configUri, true);
+                decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), "Problem in " + getStepName() + " - Cannot load FTP_CONFIGURATION from " + configUri,
+                        true);
                 return getErrorTransition();
             }
 
@@ -96,7 +104,9 @@ public class GetFileStep extends AbstractInvocable {
                 connection.doAction(request);
                 if (!request.getStatus().equals(Status.SUCCESS)) {
                     String errors = request.getErrors();
-                    if (errors != null) decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), getStepName() + ": " + errors, true);
+                    if (errors != null) {
+                        decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), getStepName() + ": " + errors, true);
+                    }
                     decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), "Unable to retrieve " + e.getKey() + " as " + e.getValue(), true);
                     retval = getFailTransition();
                     failCount++;
@@ -119,7 +129,9 @@ public class GetFileStep extends AbstractInvocable {
                     "Problem in " + getStepName() + ": " + ExceptionToString.getRootCause(e).getLocalizedMessage(), true);
             return getErrorTransition();
         } finally {
-            if (connection != null) connection.logoffAndDisconnect();
+            if (connection != null) {
+                connection.logoffAndDisconnect();
+            }
         }
     }
 

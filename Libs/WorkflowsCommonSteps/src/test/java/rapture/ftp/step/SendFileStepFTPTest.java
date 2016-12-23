@@ -206,7 +206,7 @@ public class SendFileStepFTPTest {
         CallingContext context = ContextFactory.getKernelUser();
 
         Map<String, String> args = new HashMap<>();
-        args.put("COPY_FILES", JacksonUtil.jsonFromObject(ImmutableMap.of("/bin/ls", "upload/ls.dummyfile", "/bin/mv", "upload/mv.dummyfile")));
+        args.put("SEND_FILES", JacksonUtil.jsonFromObject(ImmutableMap.of("/bin/ls", "upload/ls.dummyfile", "/bin/mv", "upload/mv.dummyfile")));
 
         CreateResponse response = Kernel.getDecision().createWorkOrderP(context, workflowUri, args, null);
         assertTrue(response.getIsCreated());
@@ -230,7 +230,7 @@ public class SendFileStepFTPTest {
                 List<AuditLogEntry> log = Kernel.getAudit().getRecentLogEntries(context, debug.getLogURI() + "/" + sr.getName(), 10);
                 assertEquals(5, log.size());
                 assertEquals("step1 finished", log.get(0).getMessage());
-                assertEquals("step1: Sent 2 files", log.get(1).getMessage());
+                assertEquals("2 files transferred", log.get(1).getMessage());
                 assertEquals("Sent /bin/mv", log.get(2).getMessage());
                 assertEquals("Sent /bin/ls", log.get(3).getMessage());
                 assertEquals("step1 started", log.get(4).getMessage());
@@ -255,7 +255,7 @@ public class SendFileStepFTPTest {
         CallingContext context = ContextFactory.getKernelUser();
 
         Map<String, String> args = new HashMap<>();
-        args.put("COPY_FILES", JacksonUtil.jsonFromObject(ImmutableMap.of("blob://tmp/blobby", "upload/blobby.dummyfile")));
+        args.put("SEND_FILES", JacksonUtil.jsonFromObject(ImmutableMap.of("blob://tmp/blobby", "upload/blobby.dummyfile")));
 
         CreateResponse response = Kernel.getDecision().createWorkOrderP(context, workflowUri, args, null);
         assertTrue(response.getIsCreated());
@@ -279,7 +279,7 @@ public class SendFileStepFTPTest {
                 List<AuditLogEntry> log = Kernel.getAudit().getRecentLogEntries(context, debug.getLogURI() + "/" + sr.getName(), 10);
                 assertEquals(4, log.size());
                 assertEquals("step1 finished", log.get(0).getMessage());
-                assertEquals("step1: Sent 1 files", log.get(1).getMessage());
+                assertEquals("1 files transferred", log.get(1).getMessage());
                 assertEquals("Sent blob://tmp/blobby", log.get(2).getMessage());
                 assertEquals("step1 started", log.get(3).getMessage());
 
@@ -301,7 +301,7 @@ public class SendFileStepFTPTest {
     @Test
     public void testSendDocStep() {
         Map<String, String> args = new HashMap<>();
-        args.put("COPY_FILES", JacksonUtil.jsonFromObject(ImmutableMap.of("document://tmp/elp", "upload/elp.dummyfile")));
+        args.put("SEND_FILES", JacksonUtil.jsonFromObject(ImmutableMap.of("document://tmp/elp", "upload/elp.dummyfile")));
 
         CreateResponse response = Kernel.getDecision().createWorkOrderP(context, workflowUri, args, null);
         assertTrue(response.getIsCreated());
@@ -327,7 +327,7 @@ public class SendFileStepFTPTest {
         List<AuditLogEntry> log = Kernel.getAudit().getRecentLogEntries(context, debug.getLogURI() + "/" + sr.getName(), 10);
         assertEquals(4, log.size());
         assertEquals("step1 finished", log.get(0).getMessage());
-        assertEquals("step1: Sent 1 files", log.get(1).getMessage());
+        assertEquals("1 files transferred", log.get(1).getMessage());
         assertEquals("Sent document://tmp/elp", log.get(2).getMessage());
         assertEquals("step1 started", log.get(3).getMessage());
 
@@ -341,7 +341,7 @@ public class SendFileStepFTPTest {
     }
 
     @Test
-    public void testSendDocStepFail1() {
+    public void testSendDocStepCopy() {
         Map<String, String> args = new HashMap<>();
         args.put("COPY_FILES", JacksonUtil.jsonFromObject(ImmutableMap.of("file://dev/null", "/etc/no/chance")));
 
@@ -364,11 +364,13 @@ public class SendFileStepFTPTest {
         StepRecord sr = srd.getStepRecord();
 
         List<AuditLogEntry> log = Kernel.getAudit().getRecentLogEntries(context, debug.getLogURI() + "/" + sr.getName(), 10);
-        assertEquals(4, log.size());
+        assertEquals(6, log.size());
         assertEquals("step1 finished", log.get(0).getMessage());
-        assertEquals("Unable to send 1 of 1 files", log.get(1).getMessage());
+        assertEquals("Unable to transfer 1 files", log.get(1).getMessage());
         assertEquals("Unable to send file://dev/null", log.get(2).getMessage());
-        assertEquals("step1 started", log.get(3).getMessage());
+        assertEquals("step1: 553 Could not create file.\r\n", log.get(3).getMessage());
+        assertEquals("COPY_FILES parameter is deprecated - please use SEND_FILES", log.get(4).getMessage());
+        assertEquals("step1 started", log.get(5).getMessage());
 
         assertEquals("quit", sr.getRetVal());
         Activity activity = srd.getActivity();
@@ -380,9 +382,9 @@ public class SendFileStepFTPTest {
     }
 
     @Test
-    public void testSendDocStepFail2() {
+    public void testSendDocStepFail1() {
         Map<String, String> args = new HashMap<>();
-        args.put("COPY_FILES", JacksonUtil.jsonFromObject(ImmutableMap.of("file://does/not/exist", "/etc/no/chance")));
+        args.put("SEND_FILES", JacksonUtil.jsonFromObject(ImmutableMap.of("file://dev/null", "/etc/no/chance")));
 
         CreateResponse response = Kernel.getDecision().createWorkOrderP(context, workflowUri, args, null);
         assertTrue(response.getIsCreated());
@@ -403,11 +405,52 @@ public class SendFileStepFTPTest {
         StepRecord sr = srd.getStepRecord();
 
         List<AuditLogEntry> log = Kernel.getAudit().getRecentLogEntries(context, debug.getLogURI() + "/" + sr.getName(), 10);
-        assertEquals(4, log.size());
+        assertEquals(5, log.size());
         assertEquals("step1 finished", log.get(0).getMessage());
-        assertEquals("Unable to send 1 of 1 files", log.get(1).getMessage());
+        assertEquals("Unable to transfer 1 files", log.get(1).getMessage());
+        assertEquals("Unable to send file://dev/null", log.get(2).getMessage());
+        assertEquals("step1: 553 Could not create file.\r\n", log.get(3).getMessage());
+        assertEquals("step1 started", log.get(4).getMessage());
+
+        assertEquals("quit", sr.getRetVal());
+        Activity activity = srd.getActivity();
+        if (activity != null) {
+            assertEquals(10, activity.getMax().longValue());
+            assertEquals(ActivityStatus.FINISHED, activity.getStatus());
+        }
+        assertEquals(WorkOrderExecutionState.ERROR, debug.getOrder().getStatus());
+    }
+
+    @Test
+    public void testSendDocStepFail2() {
+        Map<String, String> args = new HashMap<>();
+        args.put("SEND_FILES", JacksonUtil.jsonFromObject(ImmutableMap.of("file://does/not/exist", "/etc/no/chance")));
+
+        CreateResponse response = Kernel.getDecision().createWorkOrderP(context, workflowUri, args, null);
+        assertTrue(response.getIsCreated());
+        WorkOrderDebug debug;
+        WorkOrderExecutionState state = WorkOrderExecutionState.NEW;
+        long timeout = System.currentTimeMillis() + 120000;
+        do {
+            debug = Kernel.getDecision().getWorkOrderDebug(context, response.getUri());
+            state = debug.getOrder().getStatus();
+        } while (((state == WorkOrderExecutionState.NEW) || (state == WorkOrderExecutionState.ACTIVE)) && (System.currentTimeMillis() < timeout));
+
+        // If anything went wrong
+
+        assertEquals(1, debug.getWorkerDebugs().size());
+        WorkerDebug db = debug.getWorkerDebugs().get(0);
+        assertEquals(1, db.getStepRecordDebugs().size());
+        StepRecordDebug srd = db.getStepRecordDebugs().get(0);
+        StepRecord sr = srd.getStepRecord();
+
+        List<AuditLogEntry> log = Kernel.getAudit().getRecentLogEntries(context, debug.getLogURI() + "/" + sr.getName(), 10);
+        assertEquals(5, log.size());
+        assertEquals("step1 finished", log.get(0).getMessage());
+        assertEquals("Unable to transfer 1 files", log.get(1).getMessage());
         assertEquals("Unable to send file://does/not/exist", log.get(2).getMessage());
-        assertEquals("step1 started", log.get(3).getMessage());
+        assertEquals("step1: /does/not/exist (No such file or directory)", log.get(3).getMessage());
+        assertEquals("step1 started", log.get(4).getMessage());
 
         assertEquals("quit", sr.getRetVal());
         Activity activity = srd.getActivity();
@@ -425,7 +468,7 @@ public class SendFileStepFTPTest {
                     .setUseSFTP(false);
             dapi.putDoc(context, configUri, JacksonUtil.jsonFromObject(ftpConfig));
             Map<String, String> args = new HashMap<>();
-            args.put("COPY_FILES", JacksonUtil.jsonFromObject(ImmutableMap.of("document://tmp/elp", "upload/elp.dummyfile")));
+            args.put("SEND_FILES", JacksonUtil.jsonFromObject(ImmutableMap.of("document://tmp/elp", "upload/elp.dummyfile")));
 
             CreateResponse response = Kernel.getDecision().createWorkOrderP(context, workflowUri, args, null);
             assertTrue(response.getIsCreated());
@@ -446,8 +489,12 @@ public class SendFileStepFTPTest {
 
             List<AuditLogEntry> log = Kernel.getAudit().getRecentLogEntries(context, debug.getLogURI() + "/" + sr.getName(), 10);
             // System.out.println(JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(log)));
-            assertEquals(4, log.size());
+            assertEquals(5, log.size());
+            assertEquals("step1 finished", log.get(0).getMessage());
+            assertEquals("Unable to transfer 1 files", log.get(1).getMessage());
             assertEquals("Unable to send document://tmp/elp", log.get(2).getMessage());
+            assertEquals("step1: Unknown host foo.bar.wibble.net", log.get(3).getMessage());
+            assertEquals("step1 started", log.get(4).getMessage());
             assertEquals("quit", sr.getRetVal());
             Activity activity = srd.getActivity();
             if (activity != null) {

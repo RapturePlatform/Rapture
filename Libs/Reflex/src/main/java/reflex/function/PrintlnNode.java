@@ -23,8 +23,6 @@
  */
 package reflex.function;
 
-import java.math.BigDecimal;
-
 import reflex.IReflexHandler;
 import reflex.Scope;
 import reflex.debug.IReflexDebugger;
@@ -38,24 +36,13 @@ public class PrintlnNode extends PrintNode {
         super(lineNumber, handler, s, e);
     }
 
-
     @Override
     public ReflexValue evaluate(IReflexDebugger debugger, Scope scope) {
         debugger.stepStart(this, scope);
-        if (expression != null) {
-            ReflexValue value = expression.evaluate(debugger, scope);
-            if (value.isNumber()) {
-                BigDecimal bd = value.asBigDecimal();
-                handler.getOutputHandler().printOutput(bd.toPlainString());
-            } else {
-                handler.getOutputHandler().printOutput(value.toString());
-            }
-        } else {
-            handler.getOutputHandler().printOutput("");
-        }
-        handler.getOutputHandler().printOutput("\n");
-        debugger.stepEnd(this, new ReflexVoidValue(lineNumber), scope);
-        return new ReflexVoidValue();
+        doPrint(debugger, scope, "\n");
+        ReflexVoidValue rvv = new ReflexVoidValue(lineNumber);
+        debugger.stepEnd(this, rvv, scope);
+        return rvv;
     }
 
     @Override
