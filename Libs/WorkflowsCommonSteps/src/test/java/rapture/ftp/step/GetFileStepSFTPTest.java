@@ -171,7 +171,7 @@ public class GetFileStepSFTPTest {
     static String configUri = configRepo + "/Config";
 
     static private void createWorkflow() {
-        FTPConnectionConfig ftpConfig = new FTPConnectionConfig().setAddress("localhost").setPort(22).setLoginId("rapture").setPassword("rapture")
+        FTPConnectionConfig ftpConfig = new FTPConnectionConfig().setAddress("test.rebex.net").setPort(22).setLoginId("demo").setPassword("password")
                 .setUseSFTP(true);
 
         CallingContext context = ContextFactory.getKernelUser();
@@ -201,10 +201,10 @@ public class GetFileStepSFTPTest {
     }
 
     @Test
-    public void testGetFailNoBlobRepo() {
+    public void testGetFailNoSuchBlobRepo() {
         CallingContext context = ContextFactory.getKernelUser();
         Map<String, String> args = new HashMap<>();
-        args.put("GET_FILES", JacksonUtil.jsonFromObject(ImmutableMap.of("1KB.zip", "blob://nonexistent/1KB.zip")));
+        args.put("GET_FILES", JacksonUtil.jsonFromObject(ImmutableMap.of("pub/example/readme.txt", "blob://nonexistent/readme.txt")));
 
         CreateResponse response = Kernel.getDecision().createWorkOrderP(context, workflowUri, args, null);
         assertTrue(response.getIsCreated());
@@ -229,7 +229,7 @@ public class GetFileStepSFTPTest {
                 assertEquals(5, log.size());
                 assertEquals("step1 finished", log.get(0).getMessage());
                 assertEquals("Unable to retrieve 1 files", log.get(1).getMessage());
-                assertEquals("Unable to retrieve 1KB.zip as blob://nonexistent/1KB.zip", log.get(2).getMessage());
+                assertEquals("Unable to retrieve pub/example/readme.txt as blob://nonexistent/readme.txt", log.get(2).getMessage());
                 assertEquals("step1: Repository blob://nonexistent does not exist", log.get(3).getMessage());
                 assertEquals("step1 started", log.get(4).getMessage());
 
@@ -243,17 +243,16 @@ public class GetFileStepSFTPTest {
     }
 
     @Test
-    public void testGetFailDodgyCredentials1() {
+    public void testGetFailUseFtpToSftpServer() {
         CallingContext context = ContextFactory.getKernelUser();
         DocApi dapi = Kernel.getDoc();
 
         try {
-            // Fails because SFTP flag is false
-            FTPConnectionConfig ftpConfig = new FTPConnectionConfig().setAddress("speedtest.tele2.net").setPort(23).setLoginId("xyzzy").setPassword("plugh")
+            FTPConnectionConfig ftpConfig = new FTPConnectionConfig().setAddress("speedtest.tele2.net").setPort(22).setLoginId("demo").setPassword("password")
                     .setUseSFTP(false);
             dapi.putDoc(context, configUri, JacksonUtil.jsonFromObject(ftpConfig));
             Map<String, String> args = new HashMap<>();
-            args.put("GET_FILES", JacksonUtil.jsonFromObject(ImmutableMap.of("1KB.zip", "blob://nonexistent/1KB.zip")));
+            args.put("GET_FILES", JacksonUtil.jsonFromObject(ImmutableMap.of("pub/example/readme.txt", "blob://tmp/readme.txt")));
             CreateResponse response = Kernel.getDecision().createWorkOrderP(context, workflowUri, args, null);
             assertTrue(response.getIsCreated());
             WorkOrderDebug debug;
@@ -274,7 +273,7 @@ public class GetFileStepSFTPTest {
                     assertEquals(5, log.size());
                     assertEquals("step1 finished", log.get(0).getMessage());
                     assertEquals("Unable to retrieve 1 files", log.get(1).getMessage());
-                    assertEquals("Unable to retrieve 1KB.zip as blob://nonexistent/1KB.zip", log.get(2).getMessage());
+                    assertEquals("Unable to retrieve pub/example/readme.txt as blob://tmp/readme.txt", log.get(2).getMessage());
                     assertEquals("step1: 530 This FTP server is anonymous only.\r\n\nUnable to login to speedtest.tele2.net", log.get(3).getMessage());
                     assertEquals("step1 started", log.get(4).getMessage());
 
@@ -286,24 +285,23 @@ public class GetFileStepSFTPTest {
             assertEquals(WorkOrderExecutionState.FINISHED, debug.getOrder().getStatus());
 
         } finally {
-            FTPConnectionConfig ftpConfig = new FTPConnectionConfig().setAddress("localhost").setPort(22).setLoginId("rapture").setPassword("rapture")
+            FTPConnectionConfig ftpConfig = new FTPConnectionConfig().setAddress("test.rebex.net").setPort(22).setLoginId("demo").setPassword("password")
                     .setUseSFTP(true);
             dapi.putDoc(context, configUri, JacksonUtil.jsonFromObject(ftpConfig));
         }
     }
 
     @Test
-    public void testGetFailDodgyCredentials2() {
+    public void testGetFailIncorrectPassword() {
         CallingContext context = ContextFactory.getKernelUser();
         DocApi dapi = Kernel.getDoc();
 
-        // This should be a SFTP server that doesn't support FTP
         try {
-            FTPConnectionConfig ftpConfig = new FTPConnectionConfig().setAddress("localhost").setPort(22).setLoginId("rapture").setPassword("rapture")
+            FTPConnectionConfig ftpConfig = new FTPConnectionConfig().setAddress("test.rebex.net").setPort(22).setLoginId("demo").setPassword("incorrect")
                     .setUseSFTP(false);
             dapi.putDoc(context, configUri, JacksonUtil.jsonFromObject(ftpConfig));
             Map<String, String> args = new HashMap<>();
-            args.put("GET_FILES", JacksonUtil.jsonFromObject(ImmutableMap.of("1KB.zip", "blob://nonexistent/1KB.zip")));
+            args.put("GET_FILES", JacksonUtil.jsonFromObject(ImmutableMap.of("pub/example/readme.txt", "blob://nonexistent/readme.txt")));
             CreateResponse response = Kernel.getDecision().createWorkOrderP(context, workflowUri, args, null);
             assertTrue(response.getIsCreated());
             WorkOrderDebug debug;
@@ -324,8 +322,8 @@ public class GetFileStepSFTPTest {
                     assertEquals(JacksonUtil.jsonFromObject(log), 5, log.size());
                     assertEquals("step1 finished", log.get(0).getMessage());
                     assertEquals("Unable to retrieve 1 files", log.get(1).getMessage());
-                    assertEquals("Unable to retrieve 1KB.zip as blob://nonexistent/1KB.zip", log.get(2).getMessage());
-                    assertEquals("step1: 530 User rapture denied by SACL.\r\n\nUnable to login to localhost", log.get(3).getMessage());
+                    assertEquals("Unable to retrieve pub/example/readme.txt as blob://nonexistent/readme.txt", log.get(2).getMessage());
+                    assertEquals("step1: 530 User cannot log in.\r\n\nUnable to login to test.rebex.net", log.get(3).getMessage());
                     assertEquals("step1 started", log.get(4).getMessage());
 
                 }
@@ -335,17 +333,65 @@ public class GetFileStepSFTPTest {
             assertEquals("quit", dbg.getStepRecord().getRetVal());
             assertEquals(WorkOrderExecutionState.FINISHED, debug.getOrder().getStatus());
         } finally {
-            FTPConnectionConfig ftpConfig = new FTPConnectionConfig().setAddress("localhost").setPort(22).setLoginId("rapture").setPassword("rapture")
+            FTPConnectionConfig ftpConfig = new FTPConnectionConfig().setAddress("test.rebex.net").setPort(22).setLoginId("demo").setPassword("password")
                     .setUseSFTP(true);
             dapi.putDoc(context, configUri, JacksonUtil.jsonFromObject(ftpConfig));
         }
     }
 
     @Test
-    public void testGetFailNoDocRepo() {
+    public void testGetFailNoSuchServer() {
+        CallingContext context = ContextFactory.getKernelUser();
+        DocApi dapi = Kernel.getDoc();
+
+        try {
+            FTPConnectionConfig ftpConfig = new FTPConnectionConfig().setAddress("sun.microsystems.inc").setPort(22).setLoginId("demo").setPassword("incorrect")
+                    .setUseSFTP(false);
+            dapi.putDoc(context, configUri, JacksonUtil.jsonFromObject(ftpConfig));
+            Map<String, String> args = new HashMap<>();
+            args.put("GET_FILES", JacksonUtil.jsonFromObject(ImmutableMap.of("pub/example/readme.txt", "blob://nonexistent/readme.txt")));
+            CreateResponse response = Kernel.getDecision().createWorkOrderP(context, workflowUri, args, null);
+            assertTrue(response.getIsCreated());
+            WorkOrderDebug debug;
+            WorkOrderExecutionState state = WorkOrderExecutionState.NEW;
+            long timeout = System.currentTimeMillis() + 120000;
+            do {
+                debug = Kernel.getDecision().getWorkOrderDebug(context, response.getUri());
+                state = debug.getOrder().getStatus();
+            } while (((state == WorkOrderExecutionState.NEW) || (state == WorkOrderExecutionState.ACTIVE)) && (System.currentTimeMillis() < timeout));
+            for (WorkerDebug db : debug.getWorkerDebugs()) {
+                for (StepRecordDebug srd : db.getStepRecordDebugs()) {
+                    StepRecord sr = srd.getStepRecord();
+                    if (sr.getExceptionInfo() != null) {
+                        System.err.println(sr.getExceptionInfo().getStackTrace());
+                    }
+
+                    List<AuditLogEntry> log = Kernel.getAudit().getRecentLogEntries(context, debug.getLogURI() + "/" + sr.getName(), 10);
+                    assertEquals(JacksonUtil.jsonFromObject(log), 5, log.size());
+                    assertEquals("step1 finished", log.get(0).getMessage());
+                    assertEquals("Unable to retrieve 1 files", log.get(1).getMessage());
+                    assertEquals("Unable to retrieve pub/example/readme.txt as blob://nonexistent/readme.txt", log.get(2).getMessage());
+                    assertEquals("step1: Unknown host sun.microsystems.inc", log.get(3).getMessage());
+                    assertEquals("step1 started", log.get(4).getMessage());
+
+                }
+            }
+            WorkerDebug worker = debug.getWorkerDebugs().get(0);
+            StepRecordDebug dbg = worker.getStepRecordDebugs().get(0);
+            assertEquals("quit", dbg.getStepRecord().getRetVal());
+            assertEquals(WorkOrderExecutionState.FINISHED, debug.getOrder().getStatus());
+        } finally {
+            FTPConnectionConfig ftpConfig = new FTPConnectionConfig().setAddress("test.rebex.net").setPort(22).setLoginId("demo").setPassword("password")
+                    .setUseSFTP(true);
+            dapi.putDoc(context, configUri, JacksonUtil.jsonFromObject(ftpConfig));
+        }
+    }
+
+    @Test
+    public void testGetFailNoSuchDocRepo() {
         CallingContext context = ContextFactory.getKernelUser();
         Map<String, String> args = new HashMap<>();
-        args.put("GET_FILES", JacksonUtil.jsonFromObject(ImmutableMap.of("1KB.zip", "document://nonexistent/1KB.zip")));
+        args.put("GET_FILES", JacksonUtil.jsonFromObject(ImmutableMap.of("pub/example/readme.txt", "document://nonexistent/readme.txt")));
 
         CreateResponse response = Kernel.getDecision().createWorkOrderP(context, workflowUri, args, null);
         assertTrue(response.getIsCreated());
@@ -370,7 +416,7 @@ public class GetFileStepSFTPTest {
                 assertEquals(5, log.size());
                 assertEquals("step1 finished", log.get(0).getMessage());
                 assertEquals("Unable to retrieve 1 files", log.get(1).getMessage());
-                assertEquals("Unable to retrieve 1KB.zip as document://nonexistent/1KB.zip", log.get(2).getMessage());
+                assertEquals("Unable to retrieve pub/example/readme.txt as document://nonexistent/readme.txt", log.get(2).getMessage());
                 assertEquals("step1: Repository document://nonexistent does not exist", log.get(3).getMessage());
                 assertEquals("step1 started", log.get(4).getMessage());
 
@@ -384,10 +430,11 @@ public class GetFileStepSFTPTest {
     }
 
     @Test
-    public void testGetFailNoSource() {
+    public void testGetFailSourceFileNotFound() {
         CallingContext context = ContextFactory.getKernelUser();
         Map<String, String> args = new HashMap<>();
-        args.put("GET_FILES", JacksonUtil.jsonFromObject(ImmutableMap.of("1Kb.zip", configRepo + "/tmp/1Kb", "Whoops", configRepo + "/tmp/2KB")));
+        args.put("GET_FILES",
+                JacksonUtil.jsonFromObject(ImmutableMap.of("pub/example/readme.txt", configRepo + "/tmp/1Kb", "Whoops", configRepo + "/tmp/2KB")));
 
         CreateResponse response = Kernel.getDecision().createWorkOrderP(context, workflowUri, args, null);
         assertTrue(response.getIsCreated());
@@ -413,8 +460,8 @@ public class GetFileStepSFTPTest {
                 assertEquals("step1 finished", log.get(0).getMessage());
                 assertEquals("Unable to retrieve 1 files", log.get(1).getMessage());
                 assertEquals("Unable to retrieve Whoops as " + configRepo + "/tmp/2KB", log.get(2).getMessage());
-                assertEquals("step1: Failed to download Whoops: No such file", log.get(3).getMessage());
-                assertEquals("Retrieved 1Kb.zip", log.get(4).getMessage());
+                assertEquals("step1: Failed to download Whoops: File not found.", log.get(3).getMessage());
+                assertEquals("Retrieved pub/example/readme.txt", log.get(4).getMessage());
                 assertEquals("step1 started", log.get(5).getMessage());
 
             }
@@ -427,10 +474,10 @@ public class GetFileStepSFTPTest {
     }
 
     @Test
-    public void testGetFileStep() {
+    public void testGetFileStepSuccess() {
         CallingContext context = ContextFactory.getKernelUser();
         Map<String, String> args = new HashMap<>();
-        args.put("GET_FILES", JacksonUtil.jsonFromObject(ImmutableMap.of("1KB.zip", "/tmp/1KB.zip")));
+        args.put("GET_FILES", JacksonUtil.jsonFromObject(ImmutableMap.of("pub/example/readme.txt", "/tmp/readme.txt")));
 
         CreateResponse response = Kernel.getDecision().createWorkOrderP(context, workflowUri, args, null);
         assertTrue(response.getIsCreated());
@@ -455,7 +502,7 @@ public class GetFileStepSFTPTest {
                 assertEquals(4, log.size());
                 assertEquals("step1 finished", log.get(0).getMessage());
                 assertEquals("1 files retrieved", log.get(1).getMessage());
-                assertEquals("Retrieved 1KB.zip", log.get(2).getMessage());
+                assertEquals("Retrieved pub/example/readme.txt", log.get(2).getMessage());
                 assertEquals("step1 started", log.get(3).getMessage());
             }
         }
@@ -470,16 +517,16 @@ public class GetFileStepSFTPTest {
             }
         }
         assertEquals(WorkOrderExecutionState.FINISHED, debug.getOrder().getStatus());
-        File local = new File("/tmp/1KB.zip");
+        File local = new File("/tmp/readme.txt");
         assertTrue(local.exists());
-        assertEquals(1024, local.length());
+        assertEquals(407, local.length());
     }
 
     @Test
     public void testFetchFileStep() {
         CallingContext context = ContextFactory.getKernelUser();
         Map<String, String> args = new HashMap<>();
-        args.put("FETCH_FILES", JacksonUtil.jsonFromObject(ImmutableMap.of("1KB.zip", "/tmp/1KB.zip")));
+        args.put("FETCH_FILES", JacksonUtil.jsonFromObject(ImmutableMap.of("pub/example/readme.txt", "/tmp/readme.txt")));
 
         CreateResponse response = Kernel.getDecision().createWorkOrderP(context, workflowUri, args, null);
         assertTrue(response.getIsCreated());
@@ -504,7 +551,7 @@ public class GetFileStepSFTPTest {
                 assertEquals(5, log.size());
                 assertEquals("step1 finished", log.get(0).getMessage());
                 assertEquals("1 files retrieved", log.get(1).getMessage());
-                assertEquals("Retrieved 1KB.zip", log.get(2).getMessage());
+                assertEquals("Retrieved pub/example/readme.txt", log.get(2).getMessage());
                 assertEquals("FETCH_FILES parameter is deprecated - please use GET_FILES", log.get(3).getMessage());
                 assertEquals("step1 started", log.get(4).getMessage());
 
@@ -521,16 +568,16 @@ public class GetFileStepSFTPTest {
             }
         }
         assertEquals(WorkOrderExecutionState.FINISHED, debug.getOrder().getStatus());
-        File local = new File("/tmp/1KB.zip");
+        File local = new File("/tmp/readme.txt");
         assertTrue(local.exists());
-        assertEquals(1024, local.length());
+        assertEquals(407, local.length());
     }
 
     @Test
-    public void testGetBlobStep() {
+    public void testGetBlobStepSuccess() {
         CallingContext context = ContextFactory.getKernelUser();
         Map<String, String> args = new HashMap<>();
-        args.put("GET_FILES", JacksonUtil.jsonFromObject(ImmutableMap.of("1KB.zip", "blob://tmp/1KB.zip")));
+        args.put("GET_FILES", JacksonUtil.jsonFromObject(ImmutableMap.of("pub/example/readme.txt", "blob://tmp/readme.txt")));
 
         CreateResponse response = Kernel.getDecision().createWorkOrderP(context, workflowUri, args, null);
         assertTrue(response.getIsCreated());
@@ -563,8 +610,8 @@ public class GetFileStepSFTPTest {
             }
         }
         assertEquals(WorkOrderExecutionState.FINISHED, debug.getOrder().getStatus());
-        BlobContainer bc = Kernel.getBlob().getBlob(context, "blob://tmp/1KB.zip");
+        BlobContainer bc = Kernel.getBlob().getBlob(context, "blob://tmp/readme.txt");
         assertNotNull(bc);
-        assertEquals(1024, bc.getContent().length);
+        assertEquals(407, bc.getContent().length);
     }
 }
