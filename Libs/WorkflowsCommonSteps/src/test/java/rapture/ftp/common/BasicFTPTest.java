@@ -39,6 +39,7 @@ import java.util.List;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
@@ -76,9 +77,11 @@ public class BasicFTPTest {
     static FTPConnectionConfig rebexSftpConfig = new FTPConnectionConfig().setAddress("test.rebex.net").setPort(22).setLoginId("demo").setPassword("password")
             .setUseSFTP(true);
 
+    static final boolean FTP_Available = false;
+
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
-
+        Assume.assumeTrue(FTP_Available);
         RaptureConfig.setLoadYaml(false);
         RaptureConfig config = ConfigLoader.getConf();
         saveRaptureRepo = config.RaptureRepo;
@@ -176,8 +179,8 @@ public class BasicFTPTest {
         reads.add(new FTPRequest(FTPRequest.Action.EXISTS).setRemoteName("1KB.zip"));
         reads.add(new FTPRequest(FTPRequest.Action.EXISTS).setRemoteName("Holy_Grail.zip"));
         connection.doActions(reads);
-        assertEquals(reads.get(0).getStatus(), Status.SUCCESS);
-        assertEquals(reads.get(1).getStatus(), Status.ERROR);
+        assertEquals(Status.SUCCESS, reads.get(0).getStatus());
+        assertEquals(Status.ERROR, reads.get(1).getStatus());
         connection.logoffAndDisconnect();
     }
 
@@ -192,8 +195,8 @@ public class BasicFTPTest {
         reads.add(new FTPRequest(FTPRequest.Action.EXISTS).setRemoteName("readme.txt"));
         reads.add(new FTPRequest(FTPRequest.Action.EXISTS).setRemoteName("readyou.txt"));
         connection.doActions(reads);
-        assertEquals(reads.get(0).getStatus(), Status.SUCCESS);
-        assertEquals(reads.get(1).getStatus(), Status.ERROR);
+        assertEquals(Status.SUCCESS, reads.get(0).getStatus());
+        assertEquals(Status.ERROR, reads.get(1).getStatus());
         connection.logoffAndDisconnect();
     }
 

@@ -89,11 +89,11 @@ public class GetFileStepFTPTest {
     private static final String REPO_USING_MEMORY = "REP {} USING MEMORY {prefix=\"/tmp/" + auth + "\"}";
     private static final String META_USING_MEMORY = "REP {} USING MEMORY {prefix=\"/tmp/M" + auth + "\"}";
 
-    static final boolean SFTP_Available = true;
+    static final boolean FTP_Available = false;
 
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
-        Assume.assumeTrue(SFTP_Available);
+        Assume.assumeTrue(FTP_Available);
         CallingContext context = ContextFactory.getKernelUser();
         RaptureConfig.setLoadYaml(false);
         RaptureConfig config = ConfigLoader.getConf();
