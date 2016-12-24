@@ -174,7 +174,7 @@ public class BasicFTPTest {
         Connection connection = new SFTPConnection(ftpConfig);
         List<FTPRequest> reads = new ArrayList<>();
         reads.add(new FTPRequest(FTPRequest.Action.EXISTS).setRemoteName("1KB.zip"));
-        reads.add(new FTPRequest(FTPRequest.Action.EXISTS).setRemoteName("2KB.zip"));
+        reads.add(new FTPRequest(FTPRequest.Action.EXISTS).setRemoteName("Holy_Grail.zip"));
         connection.doActions(reads);
         assertEquals(reads.get(0).getStatus(), Status.SUCCESS);
         assertEquals(reads.get(1).getStatus(), Status.ERROR);
