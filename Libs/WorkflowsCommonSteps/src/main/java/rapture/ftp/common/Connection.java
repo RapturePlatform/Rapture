@@ -27,18 +27,15 @@ import java.util.List;
 
 public interface Connection {
 
-    boolean connectAndLogin();
+    boolean connectAndLogin(FTPRequest request);
 
     boolean isConnected();
 
     /**
      * Log off and terminate the connection, e.g. close the connection socket.
      * 
-     * If there is a failure in the implementation of this method, it may or may
-     * not be appropriate to throw an Exception. Throwing an exception will
-     * cause the entire Workflow to end in error. If this is not appropriate,
-     * take a look at {@link WarningHandler}, which can be used to log a
-     * warning.
+     * If there is a failure in the implementation of this method, it may or may not be appropriate to throw an Exception. Throwing an exception will cause the
+     * entire Workflow to end in error. If this is not appropriate, take a look at {@link WarningHandler}, which can be used to log a warning.
      */
     void logoffAndDisconnect();
 
@@ -46,6 +43,6 @@ public interface Connection {
 
     public boolean doAction(FTPRequest request);
 
-    public List<String> listFiles(String path);
+    public List<String> listFiles(String path, FTPRequest request);
 
 }

@@ -29,8 +29,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -48,7 +46,6 @@ import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpException;
 
 import rapture.common.exception.ExceptionToString;
-import rapture.common.exception.RaptureExceptionFactory;
 
 public class SFTPConnection extends FTPConnection {
 
@@ -74,7 +71,7 @@ public class SFTPConnection extends FTPConnection {
         }
 
         @Override
-        public void log(int level, String message){
+        public void log(int level, String message) {
             switch (level) {
 
             // DEBUG and INFO level are somewhat noisy, but we'll keep the messages for debugging in case something fails
@@ -94,8 +91,9 @@ public class SFTPConnection extends FTPConnection {
                 log4jLogger.fatal(message);
                 break;
             }
-            for (List<String> list : errors.values())
+            for (List<String> list : errors.values()) {
                 list.add(message);
+            }
         }
 
         public static void register(SFTPConnection conn) {
@@ -137,55 +135,41 @@ public class SFTPConnection extends FTPConnection {
     }
 
     @Override
-    public boolean connectAndLogin() {
+    public boolean connectAndLogin(FTPRequest request) {
         if (isLocal()) {
             log4jLogger.info("In test mode - not connecting");
             return true;
         }
-
+        if (!config.isUseSFTP()) return super.connectAndLogin(request);
+        if (isConnected()) return true;
         try {
-            if (!config.isUseSFTP())
-                return super.connectAndLogin();
-            else if (!isConnected()) {
-                return FTPService.runWithRetry("Could not login vis SFTP to " + config.getAddress() + " as " + config.getLoginId(), this, false,
-                        new FTPAction<Boolean>() {
-                            @SuppressWarnings("synthetic-access")
-                            @Override
-                            public Boolean run(int attemptNum) throws IOException {
-                                try {
-                                    java.util.Properties properties = new java.util.Properties();
-                                    session = jsch.getSession(config.getLoginId(), config.getAddress(), config.getPort());
-                                    properties.put("StrictHostKeyChecking", "no");
-                                    properties.put("kex",
-                                            "diffie-hellman-group1-sha1,diffie-hellman-group14-sha1,diffie-hellman-group-exchange-sha1,diffie-hellman-group-exchange-sha256");
-                                    session.setConfig(properties);
-                                    if (!StringUtils.isEmpty(config.getPassword())) {
-                                        session.setPassword(config.getPassword());
-                                    } else {
-                                        jsch.addIdentity(config.getAddress(), config.getPrivateKey().getBytes(), null, null);
-                                    }
-                                    session.connect();
-                                    channel = (ChannelSftp) session.openChannel("sftp");
-                                    channel.setInputStream(System.in);
-                                    channel.setOutputStream(System.out);
-                                    channel.connect();
-                                    return true;
-                                } catch (Exception e) {
-                                    if (e.getCause() instanceof UnknownHostException) {
-                                        throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, "Unknown host " + config.getAddress());
-                                    }
-                                    String msg = "Unable to establish secure FTP connection " + config.getLoginId() + "@" + config.getAddress() + ":"
-                                            + config.getPort() + " : " + e.getMessage();
-                                    throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, msg, e);
-                                }
-                            }
-                        });
+            java.util.Properties properties = new java.util.Properties();
+            session = jsch.getSession(config.getLoginId(), config.getAddress(), config.getPort());
+            properties.put("StrictHostKeyChecking", "no");
+            properties.put("kex",
+                    "diffie-hellman-group1-sha1,diffie-hellman-group14-sha1,diffie-hellman-group-exchange-sha1,diffie-hellman-group-exchange-sha256");
+            session.setConfig(properties);
+            if (!StringUtils.isEmpty(config.getPassword())) {
+                session.setPassword(config.getPassword());
+            } else {
+                jsch.addIdentity(config.getAddress(), config.getPrivateKey().getBytes(), null, null);
             }
+            session.connect();
+            channel = (ChannelSftp) session.openChannel("sftp");
+            channel.setInputStream(System.in);
+            channel.setOutputStream(System.out);
+            channel.connect();
+            return true;
         } catch (Exception e) {
-            log4jLogger.debug(JschLogger.getErrors(this));
+            for (String err : JschLogger.getErrors(this)) {
+                request.addError(err);
+            }
+            request.addError(ExceptionToString.summary(e));
+
+            log4jLogger.info(JschLogger.getErrors(this));
             log4jLogger.info(ExceptionToString.summary(e));
+            return false;
         }
-        return false;
     }
 
     @Override
@@ -223,10 +207,11 @@ public class SFTPConnection extends FTPConnection {
      * @return
      */
     @Override
-    public List<String> listFiles(String path) {
-        if (!config.isUseSFTP()) return super.listFiles(path);
+    public List<String> listFiles(String path, FTPRequest request) {
+        if (!config.isUseSFTP()) return super.listFiles(path, request);
 
         List<String> filenames = new LinkedList<>();
+        if (channel == null) return filenames;
         try {
             @SuppressWarnings("rawtypes")
             Vector vector = channel.ls((path == null) ? "." : path);
@@ -238,8 +223,14 @@ public class SFTPConnection extends FTPConnection {
                 }
             }
         } catch (SftpException e) {
+            for (String error : JschLogger.getErrors(this)) {
+                request.addError(error);
+            }
             log4jLogger.info(JschLogger.getErrors(this));
-            log4jLogger.debug(String.format("Error listing files with path [%s] on server [%s]. Error: %s", path, config.getAddress(), ExceptionToString.format(e)));
+            String message = String.format("Error listing files with path [%s] on server [%s]. Error: %s", path, config.getAddress(),
+                    ExceptionToString.format(e));
+            log4jLogger.info(message);
+            request.addError(message);
         }
         return filenames;
     }
@@ -249,9 +240,7 @@ public class SFTPConnection extends FTPConnection {
 
         if (isLocal()) {
             File f = new File(fileName);
-            if (f.canRead()) {
-                return new FileInputStream(f);
-            }
+            if (f.canRead()) return new FileInputStream(f);
             return new ByteArrayInputStream("".getBytes());
         } else {
             if (!config.isUseSFTP()) return super.read(fileName);
@@ -277,18 +266,26 @@ public class SFTPConnection extends FTPConnection {
 
     @Override
     // fileName must be the name of a file, not a directory
-    public boolean sendFile(InputStream stream, String fileName) throws IOException {
-        if (!config.isUseSFTP()) return super.sendFile(stream, fileName);
+    public boolean sendFile(InputStream stream, FTPRequest request) throws IOException {
+        if (!config.isUseSFTP()) return super.sendFile(stream, request);
+        String fileName = request.getRemoteName();
         if (fileName.endsWith("/")) {
             log4jLogger.error("fileName must be the name of a file, not a directory");
-        } else try {
-            int lio = fileName.lastIndexOf('/');
-            if (lio > 0) channel.cd(fileName.substring(0, lio));
-            channel.put(stream, (lio > 0) ? fileName.substring(lio + 1) : fileName);
-            return true;
-        } catch (SftpException e) {
-            log4jLogger.info(JschLogger.getErrors(this));
-            throw new IOException("Cannot copy data to " + fileName, e);
+            request.addError("fileName must be the name of a file, not a directory");
+        } else {
+            try {
+                int lio = fileName.lastIndexOf('/');
+                if (lio > 0) {
+                    channel.cd(fileName.substring(0, lio));
+                }
+                channel.put(stream, (lio > 0) ? fileName.substring(lio + 1) : fileName);
+                return true;
+            } catch (SftpException e) {
+                List<String> errors = JschLogger.getErrors(this);
+                log4jLogger.info(errors);
+                request.addError(errors.get(errors.size() - 1));
+                throw new IOException("Cannot copy data to " + fileName, e);
+            }
         }
         return false;
     }
