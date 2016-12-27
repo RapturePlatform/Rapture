@@ -644,7 +644,7 @@ public class MatrixWorkflowStepTest {
         mcprices_args.put("TRANSLATOR", translationUri);
         mcprices_args.put("JOBNAME", "mcprices");
         // mcprices_args.put("FTP_CONFIGURATION", mcpricesFTPconfigUri);
-        mcprices_args.put("FETCH_FILES", JacksonUtil.jsonFromObject(ImmutableMap.of("MATRXFTPH1/mcprice.${TODAY}", "blob://matrix/mcprice.${TODAY}")));
+        mcprices_args.put("GET_FILES", JacksonUtil.jsonFromObject(ImmutableMap.of("MATRXFTPH1/mcprice.${TODAY}", "blob://matrix/mcprice.${TODAY}")));
         mcprices_args.put("COPY_FILES",
                 JacksonUtil.jsonFromObject(ImmutableMap.of("blob://matrix/mcprice.${TODAY}",
                         ImmutableList.of("file://mnt/apps/tbOMGC/appServer/feeds/current/idsiPrice_NP.txt",
@@ -666,7 +666,7 @@ public class MatrixWorkflowStepTest {
         treasuries_args.put("TRANSLATOR", translationUri);
         treasuries_args.put("JOBNAME", "downloadtreasuries");
         // mcprices_args.put("FTP_CONFIGURATION", treasuriesFTPconfigUri);
-        treasuries_args.put("FETCH_FILES", JacksonUtil.jsonFromObject(ImmutableMap.of("MATRXFTPH2/treasuries.${TODAY}", "blob://matrix/treasuries.${TODAY}")));
+        treasuries_args.put("GET_FILES", JacksonUtil.jsonFromObject(ImmutableMap.of("MATRXFTPH2/treasuries.${TODAY}", "blob://matrix/treasuries.${TODAY}")));
         treasuries_args.put("COPY_FILES",
                 JacksonUtil.jsonFromObject(ImmutableMap.of("blob://matrix/treasuries.${TODAY}",
                         ImmutableList.of("file://mnt/32osData/matrix/IncomingFTP/${TODAY2}/SSS/treasuries.${TODAY}",

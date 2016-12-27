@@ -40,19 +40,23 @@ public class PrintNode extends BaseNode {
         this.expression = e;
     }
 
+    protected void doPrint(IReflexDebugger debugger, Scope scope, String suffix) {
+        if (expression != null) {
+            ReflexValue value = expression.evaluate(debugger, scope);
+            handler.getOutputHandler().printOutput(value.getValue() == ReflexValue.Internal.NULL ? "" : value.toString());
+        }
+        if (suffix != null) {
+            handler.getOutputHandler().printOutput(suffix);
+        }
+    }
+
     @Override
     public ReflexValue evaluate(IReflexDebugger debugger, Scope scope) {
         debugger.stepStart(this, scope);
-        if (expression != null) {
-            ReflexValue value = expression.evaluate(debugger, scope);
-            if (value.isNumber()) {
-                handler.getOutputHandler().printOutput(value.asBigDecimal().toPlainString());
-            } else {
-                handler.getOutputHandler().printOutput(value.getValue() == ReflexValue.Internal.NULL ? "" : value.toString());
-            }
-        }
-        debugger.stepEnd(this, new ReflexVoidValue(lineNumber), scope);
-        return new ReflexVoidValue(lineNumber);
+        doPrint(debugger, scope, null);
+        ReflexVoidValue rvv = new ReflexVoidValue(lineNumber);
+        debugger.stepEnd(this, rvv, scope);
+        return rvv;
     }
 
     protected String getFn() {

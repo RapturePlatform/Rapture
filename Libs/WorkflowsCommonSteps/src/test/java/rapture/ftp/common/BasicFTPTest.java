@@ -24,6 +24,7 @@
 package rapture.ftp.common;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
@@ -38,6 +39,7 @@ import java.util.List;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
@@ -75,10 +77,11 @@ public class BasicFTPTest {
     static FTPConnectionConfig rebexSftpConfig = new FTPConnectionConfig().setAddress("test.rebex.net").setPort(22).setLoginId("demo").setPassword("password")
             .setUseSFTP(true);
 
+    static final boolean FTP_Available = false;
 
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
-
+        Assume.assumeTrue(FTP_Available);
         RaptureConfig.setLoadYaml(false);
         RaptureConfig config = ConfigLoader.getConf();
         saveRaptureRepo = config.RaptureRepo;
@@ -120,10 +123,9 @@ public class BasicFTPTest {
         dapi.createDocRepo(context, configRepo, "NREP {} USING MEMORY {}");
         dapi.putDoc(context, configRepo + "/Config", JacksonUtil.jsonFromObject(ftpConfig));
 
-        Connection connection = new SFTPConnection(configRepo + "/Config");
-        connection.connectAndLogin();
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         FTPRequest read = new FTPRequest(FTPRequest.Action.READ).setDestination(baos).setRemoteName("1KB.zip");
+        Connection connection = new SFTPConnection(configRepo + "/Config");
         connection.doAction(read);
         assertEquals(1024, baos.size());
         for (byte b : baos.toByteArray()) {
@@ -139,7 +141,6 @@ public class BasicFTPTest {
 
     public void testSingleFTPRead() {
         Connection connection = new SFTPConnection(ftpConfig);
-        connection.connectAndLogin();
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         FTPRequest read = new FTPRequest(FTPRequest.Action.READ).setDestination(baos).setRemoteName("1KB.zip");
         connection.doAction(read);
@@ -157,7 +158,7 @@ public class BasicFTPTest {
 
     public void testSingleSFTPRead() {
         Connection connection = new SFTPConnection(rebexSftpConfig);
-        connection.connectAndLogin();
+
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         FTPRequest read = new FTPRequest(FTPRequest.Action.READ).setDestination(baos).setRemoteName("readme.txt");
         connection.doAction(read);
@@ -174,13 +175,12 @@ public class BasicFTPTest {
 
     public void testFTPExists() {
         Connection connection = new SFTPConnection(ftpConfig);
-        connection.connectAndLogin();
         List<FTPRequest> reads = new ArrayList<>();
         reads.add(new FTPRequest(FTPRequest.Action.EXISTS).setRemoteName("1KB.zip"));
-        reads.add(new FTPRequest(FTPRequest.Action.EXISTS).setRemoteName("2KB.zip"));
+        reads.add(new FTPRequest(FTPRequest.Action.EXISTS).setRemoteName("Holy_Grail.zip"));
         connection.doActions(reads);
-        assertEquals(reads.get(0).getStatus(), Status.SUCCESS);
-        assertEquals(reads.get(1).getStatus(), Status.ERROR);
+        assertEquals(Status.SUCCESS, reads.get(0).getStatus());
+        assertEquals(Status.ERROR, reads.get(1).getStatus());
         connection.logoffAndDisconnect();
     }
 
@@ -191,13 +191,12 @@ public class BasicFTPTest {
 
     public void testSFTPExists() {
         Connection connection = new SFTPConnection(rebexSftpConfig);
-        connection.connectAndLogin();
         List<FTPRequest> reads = new ArrayList<>();
         reads.add(new FTPRequest(FTPRequest.Action.EXISTS).setRemoteName("readme.txt"));
         reads.add(new FTPRequest(FTPRequest.Action.EXISTS).setRemoteName("readyou.txt"));
         connection.doActions(reads);
-        assertEquals(reads.get(0).getStatus(), Status.SUCCESS);
-        assertEquals(reads.get(1).getStatus(), Status.ERROR);
+        assertEquals(Status.SUCCESS, reads.get(0).getStatus());
+        assertEquals(Status.ERROR, reads.get(1).getStatus());
         connection.logoffAndDisconnect();
     }
 
@@ -205,11 +204,8 @@ public class BasicFTPTest {
      * Read multiple files via FTP
      */
     @Test
-
     public void testMultiFTPRead() throws IOException {
         Connection connection = new SFTPConnection(ftpConfig);
-        connection.connectAndLogin();
-
         List<String> files = ImmutableList.of("1KB.zip", "100KB.zip");
         assertEquals(2, files.size());
         List<FTPRequest> reads = new ArrayList<>();
@@ -237,9 +233,10 @@ public class BasicFTPTest {
 
     public void testMultiSFTPRead() throws IOException {
         Connection connection = new SFTPConnection(rebexSftpConfig);
-        connection.connectAndLogin();
-
-        List<String> files = connection.listFiles("pub/example/*");
+        FTPRequest fr = new FTPRequest(Action.READ);
+        connection.connectAndLogin(fr);
+        List<String> files = connection.listFiles("pub/example/*", fr);
+        assertNull(fr.getErrors());
         assertEquals(19, files.size());
         List<FTPRequest> reads = new ArrayList<>();
         Path tmpDir = Files.createTempDirectory("test");
@@ -261,7 +258,6 @@ public class BasicFTPTest {
     @Ignore
     public void testSingleFTPWrite() {
         Connection connection = new FTPConnection(ftpConfig);
-        connection.connectAndLogin();
         ByteArrayInputStream stream = new ByteArrayInputStream("Get loose, get loose!".getBytes());
         FTPRequest write = new FTPRequest(FTPRequest.Action.WRITE).setSource(stream).setRemoteName("upload/junk.1KB.zipfile");
         connection.doAction(write);
@@ -275,7 +271,6 @@ public class BasicFTPTest {
     @Ignore
     public void testSingleSFTPWrite() {
         Connection connection = new SFTPConnection(rebexSftpConfig);
-        connection.connectAndLogin();
         ByteArrayInputStream stream = new ByteArrayInputStream("Get loose, get loose!".getBytes());
         FTPRequest read = new FTPRequest(FTPRequest.Action.WRITE).setSource(stream).setRemoteName("junk");
         connection.doAction(read);
@@ -291,7 +286,7 @@ public class BasicFTPTest {
         FTPConnectionConfig ftpConfig = new FTPConnectionConfig().setAddress("non.ext.iste.nt").setLoginId("ftp").setPassword("foo@bar").setUseSFTP(true);
         Connection connection = new SFTPConnection(ftpConfig);
         try {
-            connection.connectAndLogin();
+            connection.connectAndLogin(new FTPRequest(FTPRequest.Action.WRITE));
         } catch (Exception e) {
             Assert.assertEquals("Unknown host non.ext.iste.nt", e.getMessage());
         }
@@ -303,7 +298,7 @@ public class BasicFTPTest {
         FTPConnectionConfig ftpConfig = new FTPConnectionConfig().setAddress("localhost").setLoginId("ftp").setPassword("foo@bar").setUseSFTP(true);
         Connection connection = new SFTPConnection(ftpConfig);
         try {
-            connection.connectAndLogin();
+            connection.connectAndLogin(new FTPRequest(FTPRequest.Action.WRITE));
         } catch (Exception e) {
             Assert.assertEquals("Unable to establish secure FTP connection to localhost", e.getMessage());
         }
@@ -315,7 +310,7 @@ public class BasicFTPTest {
         FTPConnectionConfig ftpConfig = new FTPConnectionConfig().setAddress("non.ext.iste.nt").setLoginId("ftp").setPassword("foo@bar").setUseSFTP(false);
         Connection connection = new FTPConnection(ftpConfig);
         try {
-            connection.connectAndLogin();
+            connection.connectAndLogin(new FTPRequest(FTPRequest.Action.WRITE));
         } catch (Exception e) {
             Assert.assertEquals("Unknown host non.ext.iste.nt", e.getMessage());
         }
@@ -327,14 +322,14 @@ public class BasicFTPTest {
         FTPConnectionConfig ftpConfig = new FTPConnectionConfig().setAddress("localhost").setLoginId("ftp").setPassword("foo@bar").setUseSFTP(false);
         Connection connection = new FTPConnection(ftpConfig);
         try {
-            connection.connectAndLogin();
+            connection.connectAndLogin(new FTPRequest(FTPRequest.Action.WRITE));
         } catch (Exception e) {
             // There seem to be two possible code paths here.
             // Normal behaviour is for ftpClient.login to fail and for FTPConnection.connectAndLogin to throw RaptureException
             // but it seems that sometimes (particularly on Jenkins) ftpClient.login throws an exception
             // which is caught and wrapped by FTPService.runWithRetry.
             System.out.println(ExceptionToString.summary(e));
-            Assert.assertEquals("Could not login via FTP to localhost as ftp", e.getMessage());
+            Assert.assertEquals("Unable to login", e.getMessage());
         }
     }
 
