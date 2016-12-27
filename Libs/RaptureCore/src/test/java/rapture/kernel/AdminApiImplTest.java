@@ -77,9 +77,6 @@ public class AdminApiImplTest {
         String geezer = "geezer";
         AdminApi admin = Kernel.getAdmin();
 
-        // SMTPConfig emailCfg = new SMTPConfig().setHost("email-smtp.us-west-2.amazonaws.com").setPort(587).setUsername("AKIAITJH4OMD772SGJEA")
-        // .setPassword("AsrWwMMyGHLJbJMEidXPH7b0d/s8/K7b41udMFDZXRlF").setFrom("Incapture <support@incapturetechnologies.com>").setAuthentication(true)
-        // .setTlsenable(true).setTlsrequired(true);
         Wiser wiser = new Wiser();
         try {
             wiser.setPort(2525); // Default is 25

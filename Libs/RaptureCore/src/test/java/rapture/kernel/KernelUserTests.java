@@ -30,8 +30,11 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.subethamail.wiser.Wiser;
 
 import rapture.common.CallingContext;
 import rapture.common.exception.RaptureException;
@@ -77,6 +80,20 @@ public class KernelUserTests {
     public void init() {
         Kernel.initBootstrap();
         Kernel.INSTANCE.clearRepoCache(true);
+    }
+
+    static Wiser wiser = null;
+    
+    @BeforeClass
+    public static void setUpBeforeClass() throws Exception {
+        wiser = new Wiser();
+        wiser.setPort(2525);
+        wiser.start();
+    }
+
+    @AfterClass
+    public static void tearDownAfterClass() throws Exception {
+        wiser.stop();
     }
 
     @Test
@@ -172,7 +189,8 @@ public class KernelUserTests {
         // create smtp config
         CallingContext context = ContextFactory.getKernelUser();
         String area = "CONFIG";
-        String smtpConfig = "{\"host\":\"email-smtp.us-west-2.amazonaws.com\",\"port\":25,\"username\":\"AKIAITJH4OMD772SGJEA\",\"password\":\"AsrWwMMyGHLJbJMEidXPH7b0d/s8/K7b41udMFDZXRlF\",\"from\":\"support@incapturetechnologies.com\"}";
+
+        String smtpConfig = "{\"host\":\"localhost\",\"port\":2525,\"username\":\"\",\"password\":\"\",\"from\":\"support@incapturetechnologies.com\"}";
         Kernel.getSys().writeSystemConfig(context, area, Mailer.SMTP_CONFIG_URL, smtpConfig);
 
         // create dummy email template
