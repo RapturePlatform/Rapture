@@ -27,9 +27,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.subethamail.wiser.Wiser;
 
 import rapture.client.ClientApiVersion;
 import rapture.common.CallingContext;
@@ -46,8 +48,18 @@ public class LoginTest {
     private static String password = "new_password";
     private static String hashedPassword = MD5Utils.hash16(password);
 
+    static Wiser wiser = null;
+
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
+        wiser = new Wiser();
+        wiser.setPort(2525);
+        wiser.start();
+    }
+
+    @AfterClass
+    public static void tearDownAfterClass() throws Exception {
+        wiser.stop();
     }
 
     @Before
@@ -122,7 +134,8 @@ public class LoginTest {
         // create smtp config
         CallingContext context = ContextFactory.getKernelUser();
         String area = "CONFIG";
-        String smtpConfig = "{\"host\":\"email-smtp.us-west-2.amazonaws.com\",\"port\":25,\"username\":\"AKIAITJH4OMD772SGJEA\",\"password\":\"AsrWwMMyGHLJbJMEidXPH7b0d/s8/K7b41udMFDZXRlF\",\"from\":\"support@incapturetechnologies.com\"}";
+
+        String smtpConfig = "{\"host\":\"localhost\",\"port\":2525,\"username\":\"\",\"password\":\"\",\"from\":\"support@incapturetechnologies.com\"}";
         Kernel.getSys().writeSystemConfig(context, area, Mailer.SMTP_CONFIG_URL, smtpConfig);
 
         // create dummy email template
