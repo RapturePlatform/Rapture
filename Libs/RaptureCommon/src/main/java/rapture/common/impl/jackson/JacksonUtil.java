@@ -23,16 +23,13 @@
  */
 package rapture.common.impl.jackson;
 
-import rapture.common.exception.ExceptionToString;
-import rapture.common.exception.RaptureExceptionFactory;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.io.InputStream;
 
 import org.apache.log4j.Logger;
 
@@ -41,7 +38,11 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.common.base.Charsets;
+
+import rapture.common.exception.ExceptionToString;
+import rapture.common.exception.RaptureExceptionFactory;
 
 /**
  * Copied from standard jackson utility classes
@@ -56,7 +57,7 @@ import com.google.common.base.Charsets;
 public final class JacksonUtil {
     private static final Logger log = Logger.getLogger(JacksonUtil.class);
 
-    public static final ObjectMapper DEFAULT_MAPPER = MapperFactory.createDefault();
+    public static final ObjectMapper DEFAULT_MAPPER = MapperFactory.createDefault().enable(SerializationFeature.WRITE_BIGDECIMAL_AS_PLAIN);
     private static final ObjectWriter PRETTY_PRINTER = DEFAULT_MAPPER.writerWithDefaultPrettyPrinter();
 
     public static Map<String, Object> getHashFromObject(Object obj) {
