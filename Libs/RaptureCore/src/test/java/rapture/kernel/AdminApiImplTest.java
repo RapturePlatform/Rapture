@@ -126,7 +126,7 @@ public class AdminApiImplTest {
         CallingContext context = ContextFactory.getKernelUser();
         AdminApi admin = Kernel.getAdmin();
 
-        Map<String, String> map = ImmutableMap.of("msgBody", "Hi", "emailTo", "$user.emailAddress$", "subject", "Rapture Password Reset");
+        Map<String, String> map = ImmutableMap.of("msgBody", "Hi", "emailTo", "$user.emailAddress$", "subject", "Test Rapture Password Reset");
         Kernel.getSys().writeSystemConfig(context, "CONFIG", "email/template/CREATE_PASSWORD_RESET_TOKEN", JacksonUtil.jsonFromObject(map));
 
         if (!admin.doesUserExist(context, geezer)) {
@@ -136,16 +136,19 @@ public class AdminApiImplTest {
         Map<String, Object> tmap = ImmutableMap.of("username", geezer);
         Kernel.getAdmin().emailUser(context, geezer, "CREATE_PASSWORD_RESET_TOKEN", tmap);
 
+        boolean found = false;
         for (WiserMessage message : wiser.getMessages()) {
             String envelopeSender = message.getEnvelopeSender();
             String envelopeReceiver = message.getEnvelopeReceiver();
             MimeMessage mess = message.getMimeMessage();
-            System.out.println("From " + envelopeSender + " To " + envelopeReceiver + " Body " + JacksonUtil.jsonFromObject(mess.getContent().toString()));
-            assertEquals("support@incapturetechnologies.com", envelopeSender);
-            assertEquals("GEEZER@SABBATH.COM", envelopeReceiver);
-            assertEquals("Hi\r\n", mess.getContent().toString());
-            break;
+            if (mess.getSubject().equals(map.get("subject"))) {
+                assertEquals("support@incapturetechnologies.com", envelopeSender);
+                assertEquals("GEEZER@SABBATH.COM", envelopeReceiver);
+                assertEquals("Hi\r\n", mess.getContent().toString());
+                found = true;
+            }
         }
+        assertTrue(found);
     }
 
     @Test
@@ -210,17 +213,20 @@ public class AdminApiImplTest {
         Map<String, Object> map = ImmutableMap.of("origin", "'", "userFullName", geezer);
         admin.emailUser(context, geezer, "CREATE_PASSWORD_RESET_TOKEN", map);
 
+        boolean found = false;
         for (WiserMessage message : wiser.getMessages()) {
             String envelopeSender = message.getEnvelopeSender();
             String envelopeReceiver = message.getEnvelopeReceiver();
             MimeMessage mess = message.getMimeMessage();
-            System.out.println("From " + envelopeSender + " To " + envelopeReceiver + " Body " + JacksonUtil.jsonFromObject(mess.getContent().toString()));
-            assertEquals("support@incapturetechnologies.com", envelopeSender);
-            assertEquals("GEEZER@SABBATH.COM", envelopeReceiver);
-            assertEquals(reset.get("msgBody").replaceAll(".origin.", map.get("origin").toString()).replaceAll(".userFullName.", geezer)
-                    .replaceAll(".user.username.", geezer).replaceAll(".user.passwordResetToken.", "") + "\r\n",
-                    mess.getContent().toString());
+            if (mess.getSubject().equals(reset.get("subject"))) {
+                assertEquals("support@incapturetechnologies.com", envelopeSender);
+                assertEquals("GEEZER@SABBATH.COM", envelopeReceiver);
+                assertEquals(reset.get("msgBody").replaceAll(".origin.", map.get("origin").toString()).replaceAll(".userFullName.", geezer)
+                        .replaceAll(".user.username.", geezer).replaceAll(".user.passwordResetToken.", "") + "\r\n",
+                        mess.getContent().toString());
+                found = true;
+            }
         }
-
+        assertTrue(found);
     }
 }
