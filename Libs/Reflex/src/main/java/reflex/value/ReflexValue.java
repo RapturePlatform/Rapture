@@ -105,9 +105,8 @@ public class ReflexValue implements Comparable<ReflexValue> {
 
     public void setValue(Object value) {
         if (value instanceof List<?>) {
-            value = ensureReflexValueList((List<?>) value);
-        }
-        this.value = value;
+            this.value = ensureReflexValueList((List<?>) value);
+        } else this.value = value;
         setTypeBasedOnValue();
     }
 
@@ -275,12 +274,8 @@ public class ReflexValue implements Comparable<ReflexValue> {
         case INTEGER:
             return new BigDecimal(((Number) value).longValue());
         case NUMBER:
-            BigDecimal bd = new BigDecimal(((Number) value).doubleValue(), (value instanceof Float) ? MathContext.DECIMAL32 : MathContext.DECIMAL64)
+            return new BigDecimal(((Number) value).doubleValue(), (value instanceof Float) ? MathContext.DECIMAL32 : MathContext.DECIMAL64)
                     .stripTrailingZeros();
-            if (bd.scale() == 0) {
-                bd = bd.setScale(1);
-            }
-            return bd;
         case STRING:
             return new BigDecimal(value.toString());
         default:
@@ -423,8 +418,9 @@ public class ReflexValue implements Comparable<ReflexValue> {
         case INTERNAL:
             if (this.getValue() == ReflexValue.Internal.VOID) return "void";
             else if (this.getValue() == ReflexValue.Internal.NULL) return "null";
+        default:
+            return value;
         }
-        return value;
     }
 
     public ReflexPortValue asPort() {
@@ -495,9 +491,6 @@ public class ReflexValue implements Comparable<ReflexValue> {
         } else if (this.isString() && that.isString()) return this.asString().compareTo(that.asString());
         else if (this.isList() && that.isList()) return compareList(this.asList(), that.asList());
         else return this.asString().compareTo(that.asString());
-        // throw new ReflexException(-1,
-        // "illegal expression: can't compare `" + this + "` to `" + that +
-        // "`");
     }
 
     private int compareList(List<? extends ReflexValue> asList, List<? extends ReflexValue> asList2) {
@@ -689,7 +682,15 @@ public class ReflexValue implements Comparable<ReflexValue> {
     public String toString() {
         if (isNull()) return "NULL";
         if (isVoid()) return "VOID";
-        if (isNumber()) return asBigDecimal().toPlainString();
+        if (isInteger()) {
+            return asBigDecimal().toPlainString();
+        }
+        if (isNumber()) {
+            BigDecimal bd = asBigDecimal();
+            String str = bd.toPlainString();
+            if (bd.scale() <= 0) str = str + ".0";
+            return str;
+        }
         return String.valueOf(value);
     }
 
@@ -721,7 +722,7 @@ public class ReflexValue implements Comparable<ReflexValue> {
         // E.g. if the other is a string, and this is a structure, try to assign
         // If this is a number and the passed is a string, cast, etc.
         // Strings are the most easy
-        //
+        throw new UnsupportedOperationException();
     }
 
 }
