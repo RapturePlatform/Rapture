@@ -37,10 +37,16 @@ public class CastTest extends ResourceBasedTest {
     @Test
     public void testCast1() throws RecognitionException {
         String result = runTestFor("/cast1.rfx");
-        Assert.assertEquals("number = 1.0\nnumber = 1.0\nnumber = 1\ninteger = 1\nstring = 1\n---\n"
-                + "number = 1.0\nnumber = 1.0\nnumber = 1.0\ninteger = 1\nstring = 1.0\n---\n"
-                + "number = 1.0\nnumber = 1.0\nnumber = 1\ninteger = 1\nstring = 1\n---\n"
-                + "number = 1.0\nnumber = 1.0\nnumber = 1.0\ninteger = 1\nstring = 1.0\n--RETURNS--true", result);
+        Assert.assertEquals(
+                "number = 1.0\nnumber = 1.00\nnumber = 0.0000001\n---\n"
+                        + "double number = 2.0\nfloat number = 2.0\nnumber = 2.0\ninteger = 2\nstring = 2\n---\n"
+                        + "double number = 3.0\nfloat number = 3.0\nnumber = 3.0\ninteger = 3\nstring = 3.0\n---\n"
+                        + "double number = 4.0\nfloat number = 4.0\nnumber = 4.0\ninteger = 4\nstring = 4\n---\n"
+                        + "double number = 5.0\nfloat number = 5.0\nnumber = 5.0\ninteger = 5\nstring = 5.0\n---\n"
+                        + "double number = 0.0000006\nfloat number = 0.0000006\nnumber = 0.0000006\ninteger = 0\nstring = 0.0000006\n---\n"
+                        + "double number = 70000000.0\nfloat number = 70000000.0\nnumber = 70000000.0\ninteger = 70000000\nstring = 70000000\n"
+                        + "--RETURNS--true",
+                result);
     }
 
     @Test

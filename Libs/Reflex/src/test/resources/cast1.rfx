@@ -23,67 +23,109 @@
  */
 // Test some casting
 
-y = cast(1, 'double');
+y = 1.0;
+println(typeof(y) + " = " + y);
+y = 1.00;
+println(typeof(y) + " = " + y);
+y = 0.0000001;
 println(typeof(y) + " = " + y);
 
-y = cast(1, 'float');
+println("---"); 
+
+y = cast(2, 'double');
+println("double "+typeof(y) + " = " + y);
+
+y = cast(2, 'float');
+println("float "+typeof(y) + " = " + y);
+
+y = cast(2, 'number');
 println(typeof(y) + " = " + y);
 
-y = cast(1, 'number');
+y = cast(2, 'integer');
 println(typeof(y) + " = " + y);
 
-y = cast(1, 'integer');
-println(typeof(y) + " = " + y);
-
-y = cast(1, 'string');
-println(typeof(y) + " = " + y);
-
-println("---");
-y = cast(1.0, 'double');
-println(typeof(y) + " = " + y);
-
-y = cast(1.0, 'float');
-println(typeof(y) + " = " + y);
-
-y = cast(1.0, 'number');
-println(typeof(y) + " = " + y);
-
-y = cast(1.0, 'integer');
-println(typeof(y) + " = " + y);
-
-y = cast(1.0, 'string');
+y = cast(2, 'string');
 println(typeof(y) + " = " + y);
 
 println("---");
-y = cast("1", 'double');
+y = cast(3.0, 'double');
+println("double "+typeof(y) + " = " + y);
+
+y = cast(3.0, 'float');
+println("float "+typeof(y) + " = " + y);
+
+y = cast(3.0, 'number');
 println(typeof(y) + " = " + y);
 
-y = cast("1", 'float');
+y = cast(3.0, 'integer');
 println(typeof(y) + " = " + y);
 
-y = cast("1", 'number');
-println(typeof(y) + " = " + y);
-
-y = cast("1", 'integer');
-println(typeof(y) + " = " + y);
-
-y = cast("1", 'string');
+y = cast(3.0, 'string');
 println(typeof(y) + " = " + y);
 
 println("---");
-y = cast("1.0", 'double');
+y = cast("4", 'double');
+println("double "+typeof(y) + " = " + y);
+
+y = cast("4", 'float');
+println("float "+typeof(y) + " = " + y);
+
+y = cast("4", 'number');
 println(typeof(y) + " = " + y);
 
-y = cast("1.0", 'float');
+y = cast("4", 'integer');
 println(typeof(y) + " = " + y);
 
-y = cast("1.0", 'number');
+y = cast("4", 'string');
 println(typeof(y) + " = " + y);
 
-y = cast("1.0", 'integer');
+println("---");
+y = cast("5.0", 'double');
+println("double "+typeof(y) + " = " + y);
+
+y = cast("5.0", 'float');
+println("float "+typeof(y) + " = " + y);
+
+y = cast("5.0", 'number');
 println(typeof(y) + " = " + y);
 
-y = cast("1.0", 'string');
+y = cast("5.0", 'integer');
+println(typeof(y) + " = " + y);
+
+y = cast("5.0", 'string');
+println(typeof(y) + " = " + y);
+
+println("---");
+
+y = cast(0.0000006, 'double');
+println("double "+typeof(y) + " = " + y);
+
+y = cast(0.0000006, 'float');
+println("float "+typeof(y) + " = " + y);
+
+y = cast(0.0000006, 'number');
+println(typeof(y) + " = " + y);
+
+y = cast(0.0000006, 'integer');
+println(typeof(y) + " = " + y);
+
+y = cast(0.0000006, 'string');
+println(typeof(y) + " = " + y);
+
+println("---");
+y = cast(70000000, 'double');
+println("double "+typeof(y) + " = " + y);
+
+y = cast(70000000, 'float');
+println("float "+typeof(y) + " = " + y);
+
+y = cast(70000000, 'number');
+println(typeof(y) + " = " + y);
+
+y = cast(70000000, 'integer');
+println(typeof(y) + " = " + y);
+
+y = cast(70000000, 'string');
 println(typeof(y) + " = " + y);
 
 return true;

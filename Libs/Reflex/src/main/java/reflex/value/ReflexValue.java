@@ -682,7 +682,15 @@ public class ReflexValue implements Comparable<ReflexValue> {
     public String toString() {
         if (isNull()) return "NULL";
         if (isVoid()) return "VOID";
-        if (isNumber()) return asBigDecimal().toPlainString();
+        if (isInteger()) {
+            return asBigDecimal().toPlainString();
+        }
+        if (isNumber()) {
+            BigDecimal bd = asBigDecimal();
+            String str = bd.toPlainString();
+            if (bd.scale() <= 0) str = str + ".0";
+            return str;
+        }
         return String.valueOf(value);
     }
 
