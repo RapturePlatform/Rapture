@@ -13,8 +13,6 @@ import rapture.common.RaptureField;
 import rapture.common.RaptureFieldTransform;
 import rapture.common.RaptureStructure;
 import rapture.common.impl.jackson.JacksonUtil;
-import rapture.field.model.FieldDefinition;
-import rapture.field.model.Structure;
 import reflex.value.ReflexValue;
 
 
@@ -38,15 +36,15 @@ public class TransformEngine extends BaseEngine {
         RaptureStructure targetS = getStructure(targetStructure);
         RaptureStructure sourceS = getStructure(sourceStructure);
         Map<String, Object> srcObject = JacksonUtil.getMapFromJson(sourceDoc);
-        Map<String, Object> targetObject = new HashMap<String, Object>();
-        Map<String, FieldStatus> targFields = new LinkedHashMap<String, FieldStatus>();
-        Map<String, FieldStatus> srcFields = new LinkedHashMap<String, FieldStatus>();
+        Map<String, Object> targetObject = new HashMap<>();
+        Map<String, FieldStatus> targFields = new LinkedHashMap<>();
+        Map<String, FieldStatus> srcFields = new LinkedHashMap<>();
         getBaseFields(targetS, targetObject, targFields);
         getBaseFields(sourceS, srcObject, srcFields);
         
-        List<TransformProduction> productionList = new ArrayList<TransformProduction>();
+        List<TransformProduction> productionList = new ArrayList<>();
         
-        Map<String, Boolean> satisfyMap = new HashMap<String, Boolean>();
+        Map<String, Boolean> satisfyMap = new HashMap<>();
         targFields.keySet().forEach(f -> satisfyMap.put(f, false));
         
         // First construct identity transforms for fields that are in the source structure and target structure
@@ -62,7 +60,7 @@ public class TransformEngine extends BaseEngine {
         // One pass
         List<String> transforms = ftLoader.getFieldTransforms(transArea);
         if (transforms == null) {
-            transforms = new ArrayList<String>();
+            transforms = new ArrayList<>();
         }
         //
         transforms.forEach(trId -> {
@@ -101,7 +99,7 @@ public class TransformEngine extends BaseEngine {
              
             productionList.forEach(tp -> runTransform(tp, srcFields, targFields));
             
-            String targDoc = JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(targetObject));
+            String targDoc = JacksonUtil.jsonFromObject(targetObject, true);
             return targDoc;
         }
         return sourceDoc;
@@ -115,8 +113,8 @@ public class TransformEngine extends BaseEngine {
         } else {
             RaptureFieldTransform ft = ftLoader.getFieldTransform(tp.getTransformUri());
             // Get the variables for the source fields for this transform, we use the sourceStructure to determine what key
-            Map<String, Object> inputParams = new HashMap<String, Object>();
-            List<Object> vals = new ArrayList<Object>();
+            Map<String, Object> inputParams = new HashMap<>();
+            List<Object> vals = new ArrayList<>();
             // This transform production works off a list of fields
             ft.getSourceFields().forEach(fieldUri -> {
                 vals.add(srcFields.get(fieldUri).getValue());
@@ -154,7 +152,7 @@ public class TransformEngine extends BaseEngine {
                 Object x = ctx.get(sf.getKey());
                 Map<String, Object> pass;
                 if (x == null) {
-                    pass = new HashMap<String, Object>();
+                    pass = new HashMap<>();
                     ctx.put(sf.getKey(), pass);
                 } else {
                     pass = (Map<String, Object>)x;
@@ -196,6 +194,7 @@ class TransformProduction {
     private String identityField;
     private boolean isIdentity = false;
     
+    @Override
     public String toString() {
         return isIdentity ? ("I-"+identityField) : transformUri;
         

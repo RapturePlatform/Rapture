@@ -82,7 +82,7 @@ public final class KernelExecutor {
                             Type[] types = im.getGenericParameterTypes();
                             int numExpectedParams = types.length;
                             if (numExpectedParams == numPassedParams) {
-                                List<Object> callParams = new ArrayList<Object>(types.length);
+                                List<Object> callParams = new ArrayList<>(types.length);
                                 // Now coerce the types...
                                 for (int i = 0; i < types.length; i++) {
                                     ReflexValue v = params.get(i);
@@ -143,7 +143,7 @@ public final class KernelExecutor {
     }
 
     public static Object convert(List<ReflexValue> asList) {
-        List<Object> ret = new ArrayList<Object>(asList.size());
+        List<Object> ret = new ArrayList<>(asList.size());
         for (Object o : asList) {
             if (o instanceof ReflexValue) {
                 ReflexValue e = (ReflexValue) o;
@@ -164,7 +164,7 @@ public final class KernelExecutor {
     }
 
     public static Object convertSimpleList(List<Object> asList) {
-        List<Object> ret = new ArrayList<Object>(asList.size());
+        List<Object> ret = new ArrayList<>(asList.size());
         for (Object o : asList) {
             if (o instanceof ReflexValue) {
                 ReflexValue e = (ReflexValue) o;
@@ -185,7 +185,7 @@ public final class KernelExecutor {
     @SuppressWarnings("unchecked")
     public static Map<String, Object> convert(Map<String, Object> asMap) {
         if (asMap == null) return null;
-        Map<String, Object> converted = new LinkedHashMap<String, Object>();
+        Map<String, Object> converted = new LinkedHashMap<>();
         for (Map.Entry<String, Object> e : asMap.entrySet()) {
             if (e.getValue() instanceof ReflexValue) {
                 ReflexValue val = (ReflexValue) e.getValue();
@@ -219,10 +219,7 @@ public final class KernelExecutor {
         } else if (value.isStruct()) {
             toJson = convert(value.asStruct().asMap());
         }
-        String ret = JacksonUtil.jsonFromObject(toJson);
-        if (prettyFy) {
-            ret = JacksonUtil.prettyfy(ret);
-        }
+        String ret = JacksonUtil.jsonFromObject(toJson, prettyFy);
         return ret;
     }
 
@@ -296,7 +293,7 @@ public final class KernelExecutor {
             }
         } else if (x instanceof List) {
             List<?> r = (List<?>) x;
-            List<ReflexValue> ret2 = new ArrayList<ReflexValue>(r.size());
+            List<ReflexValue> ret2 = new ArrayList<>(r.size());
             for (Object inner : r) {
                 ret2.add(inner == null ? new ReflexNullValue() : reconstructFromObject(inner));
             }
@@ -344,7 +341,7 @@ public final class KernelExecutor {
             List<ReflexValue> inner = v.asList();
             Type innerType = pType.getActualTypeArguments()[0];
             if (innerType.equals(String.class)) {
-                List<String> ret = new ArrayList<String>(inner.size());
+                List<String> ret = new ArrayList<>(inner.size());
                 for (ReflexValue vi : inner) {
                     ret.add(vi.asString());
                 }
@@ -386,14 +383,14 @@ public final class KernelExecutor {
     static Object convertObject(Object ret) {
         if (ret instanceof Object[]) {
             Object[] r = (Object[]) ret;
-            List<ReflexValue> ret2 = new ArrayList<ReflexValue>(r.length);
+            List<ReflexValue> ret2 = new ArrayList<>(r.length);
             for (Object x : r) {
                 ret2.add(x == null ? new ReflexNullValue() : new ReflexValue(x));
             }
             return ret2;
         } else if (ret instanceof List) {
             List<?> r = (List<?>) ret;
-            List<ReflexValue> ret2 = new ArrayList<ReflexValue>(r.size());
+            List<ReflexValue> ret2 = new ArrayList<>(r.size());
             for (Object x : r) {
                 ret2.add(x == null ? new ReflexNullValue() : new ReflexValue(convertObject(x)));
             }

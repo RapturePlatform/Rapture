@@ -68,7 +68,9 @@ import rapture.common.model.RaptureExchangeQueue;
 import rapture.common.model.RaptureExchangeType;
 import rapture.config.ConfigLoader;
 import rapture.config.RaptureConfig;
+import rapture.ftp.common.FTPConnection;
 import rapture.ftp.common.FTPConnectionConfig;
+import rapture.ftp.common.FTPRequest;
 import rapture.kernel.ContextFactory;
 import rapture.kernel.Kernel;
 import rapture.kernel.script.KernelScript;
@@ -179,6 +181,11 @@ public class SendFileStepSFTPTest {
                 .setUseSFTP(true);
         dapi.createDocRepo(context, configRepo, "NREP {} USING MEMORY {}");
         dapi.putDoc(context, configUri, JacksonUtil.jsonFromObject(ftpConfig));
+
+        FTPConnection precheck = new FTPConnection(ftpConfig);
+        precheck.connectAndLogin(new FTPRequest(FTPRequest.Action.EXISTS));
+        Assume.assumeTrue(precheck.isConnected());
+        precheck.logoffAndDisconnect();
 
         Workflow w = new Workflow();
         w.setStartStep("step1");
