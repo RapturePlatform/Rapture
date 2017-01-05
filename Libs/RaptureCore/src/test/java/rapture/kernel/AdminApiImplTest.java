@@ -241,7 +241,7 @@ public class AdminApiImplTest {
         SMTPConfig emailCfg = new SMTPConfig().setHost("localhost").setPort(2525).setUsername("").setPassword("")
                 .setFrom("Incapture <support@incapturetechnologies.com>").setAuthentication(false).setTlsenable(false).setTlsrequired(false).setDebug("INFO");
         Kernel.getSys().writeSystemConfig(context, configStr, Mailer.SMTP_CONFIG_URL, JacksonUtil.jsonFromObject(emailCfg));
-
+        System.out.println(JacksonUtil.jsonFromObject(emailCfg));
         Map<String, String> reset = ImmutableMap.of("emailTo", "$user.emailAddress$", "subject", "Rapture Password Reset", "msgBody", "This won't get sent");
         String content = JacksonUtil.jsonFromObject(reset);
         Kernel.getSys().writeSystemConfig(context, configStr, "email/template/CREATE_PASSWORD_RESET_TOKEN", content);
@@ -252,6 +252,7 @@ public class AdminApiImplTest {
         } catch (Exception e) {
             assertEquals("Cannot email user geezer at address geezer@sabbath.com : error is 530 Must issue a STARTTLS command first\n", e.getMessage());
         }
+        wiser.getServer().setRequireTLS(false);
 
     }
 }
