@@ -477,10 +477,13 @@ public class AdminApiImpl extends KernelBase implements AdminApi {
             try {
                 Mailer.email(context, emailTemplate, values);
             } catch (MessagingException e) {
-                throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST,
-                        adminMessageCatalog.getMessage("CannotEmailUser", new String[] { userName, user.getEmailAddress(), e.getMessage() }));
+                MessageFormat err = adminMessageCatalog.getMessage("CannotEmailUser", new String[] { userName, user.getEmailAddress(), e.getMessage() });
+                log.warn(err.format(), e);
+                throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, err);
             }
         } else {
+            MessageFormat err = adminMessageCatalog.getMessage("NoExistUser", userName);
+            log.warn(err.format());
             throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, adminMessageCatalog.getMessage("NoExistUser", userName)); //$NON-NLS-1$ }
         }
     }

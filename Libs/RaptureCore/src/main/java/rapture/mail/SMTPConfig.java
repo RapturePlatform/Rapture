@@ -29,6 +29,7 @@ public class SMTPConfig {
     private String username;
     private String password;
     private String from;
+    private String debug = null; // Logging level to write mail transcript out. See org.apache.log4j.Level
 
     private boolean authentication = false;
     private boolean tlsenable = false;
@@ -110,6 +111,15 @@ public class SMTPConfig {
 
     public SMTPConfig setFrom(String from) {
         this.from = from;
+        return this;
+    }
+
+    public String getDebug() {
+        return debug;
+    }
+
+    public SMTPConfig setDebug(String debug) {
+        this.debug = debug;
         return this;
     }
 }

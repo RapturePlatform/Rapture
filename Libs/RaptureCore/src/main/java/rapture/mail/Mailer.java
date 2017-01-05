@@ -23,6 +23,9 @@
  */
 package rapture.mail;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
 import java.util.Date;
 import java.util.Map;
 import java.util.Properties;
@@ -36,6 +39,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.stringtemplate.v4.ST;
 
@@ -69,17 +73,28 @@ public class Mailer {
     public static void email(String[] recipients, String subject, String message) throws MessagingException {
         final SMTPConfig config = getSMTPConfig();
         Session session = getSession(config);
-        Message msg = new MimeMessage(session);
-        msg.setFrom(new InternetAddress(config.getFrom()));
-        InternetAddress[] address = new InternetAddress[recipients.length];
-        for (int i = 0; i < recipients.length; i++)
-            address[i] = new InternetAddress(recipients[i]);
-        msg.setRecipients(Message.RecipientType.TO, address);
-        msg.setSubject(subject);
-        MediaType mediaType = message.contains("<!DOCTYPE html>") ? MediaType.HTML_UTF_8 : MediaType.PLAIN_TEXT_UTF_8;
-        msg.setContent(message, mediaType.toString());
-        msg.setSentDate(new Date());
-        Transport.send(msg);
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+            try (PrintStream out = new PrintStream(baos)) {
+                session.setDebugOut(out);
+                session.setDebug(true);
+                Message msg = new MimeMessage(session);
+                msg.setFrom(new InternetAddress(config.getFrom()));
+                InternetAddress[] address = new InternetAddress[recipients.length];
+                for (int i = 0; i < recipients.length; i++)
+                    address[i] = new InternetAddress(recipients[i]);
+                msg.setRecipients(Message.RecipientType.TO, address);
+                msg.setSubject(subject);
+                MediaType mediaType = message.contains("<!DOCTYPE html>") ? MediaType.HTML_UTF_8 : MediaType.PLAIN_TEXT_UTF_8;
+                msg.setContent(message, mediaType.toString());
+                msg.setSentDate(new Date());
+                Transport.send(msg);
+            } finally {
+                String level = config.getDebug();
+                if ((level != null) && (baos.size() > 0)) log.log(Level.toLevel(level), baos.toString());
+            }
+        } catch (IOException e) {
+            // ignored
+        }
     }
 
     public static Session getSession(final SMTPConfig config) {
@@ -100,18 +115,16 @@ public class Mailer {
     }
 
     public static SMTPConfig getSMTPConfig() {
-        String configString = Kernel.getSys().retrieveSystemConfig(
-                ContextFactory.getKernelUser(), "CONFIG", SMTP_CONFIG_URL);
-        if(StringUtils.isBlank(configString)) {
+        String configString = Kernel.getSys().retrieveSystemConfig(ContextFactory.getKernelUser(), "CONFIG", SMTP_CONFIG_URL);
+        if (StringUtils.isBlank(configString)) {
             throw RaptureExceptionFactory.create("No SMTP configured");
         }
         return JacksonUtil.objectFromJson(configString, SMTPConfig.class);
     }
 
     public static EmailTemplate getEmailTemplate(CallingContext context, String templateName) {
-        String templateJson = Kernel.getSys().retrieveSystemConfig(
-                context, "CONFIG", EMAIL_TEMPLATE_DIR + templateName);
-        if(StringUtils.isBlank(templateJson)) {
+        String templateJson = Kernel.getSys().retrieveSystemConfig(context, "CONFIG", EMAIL_TEMPLATE_DIR + templateName);
+        if (StringUtils.isBlank(templateJson)) {
             throw RaptureExceptionFactory.create("Email template " + templateName + " does not exist");
         }
         return JacksonUtil.objectFromJson(templateJson, EmailTemplate.class);
@@ -119,8 +132,8 @@ public class Mailer {
 
     public static String renderTemplate(String templateStr, Map<String, ? extends Object> templateValues) {
         ST template = new ST(templateStr, '$', '$');
-        if(templateValues != null) {
-            for(String key : templateValues.keySet()) {
+        if (templateValues != null) {
+            for (String key : templateValues.keySet()) {
                 template.add(key, templateValues.get(key));
             }
         }
