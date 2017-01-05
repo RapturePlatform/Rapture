@@ -202,8 +202,8 @@ public class CheckFileExistsStepTest {
         WorkerDebug worker = debug.getWorkerDebugs().get(0);
         List<StepRecordDebug> dbgs = worker.getStepRecordDebugs();
 
-        String dbginfo = JacksonUtil.jsonFromObject(dbgs);
-        System.out.println(JacksonUtil.prettyfy(dbginfo));
+        String dbginfo = JacksonUtil.jsonFromObject(dbgs, true);
+        System.out.println(dbginfo);
         int i = 0;
         for (StepRecordDebug dbg : dbgs) {
             Activity activity = dbg.getActivity();
