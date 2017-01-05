@@ -31,6 +31,8 @@ import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 
+import com.google.common.net.MediaType;
+
 import rapture.common.BlobContainer;
 import rapture.common.RaptureURI;
 import rapture.common.SeriesPoint;
@@ -40,8 +42,6 @@ import reflex.node.KernelExecutor;
 import reflex.util.MapConverter;
 import reflex.value.ReflexValue;
 import reflex.value.internal.ReflexNullValue;
-
-import com.google.common.net.MediaType;
 
 public abstract class AbstractReflexDataHandler implements IReflexDataHandler {
 
@@ -56,6 +56,7 @@ public abstract class AbstractReflexDataHandler implements IReflexDataHandler {
         this.originalApi = scriptClient;
     }
 
+    @Override
     public ReflexValue pullData(RaptureURI uri) {
         switch (uri.getScheme()) {
             case DOCUMENT:
@@ -78,10 +79,10 @@ public abstract class AbstractReflexDataHandler implements IReflexDataHandler {
                 String contentType = blobContainer.getHeaders().get("Content-Type");
                 if (contentType != null) {
                     if (contentType.startsWith(CSV)) {
-                        List<ReflexValue> linesArray = new ArrayList<ReflexValue>();
+                        List<ReflexValue> linesArray = new ArrayList<>();
                         String[] rows = input.split("\n");
                         for (String row : rows) {
-                            List<ReflexValue> lineArray = new ArrayList<ReflexValue>();
+                            List<ReflexValue> lineArray = new ArrayList<>();
                             for (String value : row.split(",")) {
                                 lineArray.add(new ReflexValue(value));
                             }
@@ -173,7 +174,7 @@ public abstract class AbstractReflexDataHandler implements IReflexDataHandler {
                     map = rvListToMap(list);
                 } else throw new ReflexException(-1, "Cannot write " + data.getTypeAsString() + " to " + uri);
 
-                api.getDoc().putDoc(uriStr, JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(map)));
+            api.getDoc().putDoc(uriStr, JacksonUtil.jsonFromObject(map, true));
                 break;
 
             case BLOB:
