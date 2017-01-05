@@ -65,9 +65,10 @@ public class RowComparatorFactory {
                     } else {
                         Object v1 = o1.get(index);
                         Object v2 = o2.get(index);
-                        
                         if (v1 instanceof Number && v2 instanceof Number) {
-                            retVal = ((Number) v1).intValue() - ((Number)v2).intValue();
+                            Double d1 = ((Number) v1).doubleValue();
+                            Double d2 = ((Number) v2).doubleValue();
+                            retVal = d1.compareTo(d2);
                         } else if (v1 instanceof Comparable) {
                             try {
                                 retVal = ((Comparable) v1).compareTo(v2);
