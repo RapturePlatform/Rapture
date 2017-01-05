@@ -1,0 +1,18 @@
+rates = {};
+rates["A"] = 1000000.0;
+rates["B"] = 100000.00;
+rates["C"] = 10000.000;
+rates["D"] = 1000.0000;
+rates["E"] = 100.00000;
+rates["F"] = 10.000000;
+rates["G"] = 1.0000000;
+rates["H"] = 0.1000000;
+rates["I"] = 0.0100000;
+rates["J"] = 0.0010000;
+rates["K"] = 0.0001000;
+rates["L"] = 0.0000100;
+rates["M"] = 0.0000010;
+rates["N"] = 0.0000001;
+
+println(json(rates));
+return true;
