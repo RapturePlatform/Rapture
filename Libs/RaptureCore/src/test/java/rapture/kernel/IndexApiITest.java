@@ -2,7 +2,6 @@ package rapture.kernel;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -24,12 +23,8 @@ import rapture.common.model.IndexConfig;
 
 public class IndexApiITest extends AbstractFileTest {
 
-    private static final Logger log = Logger.getLogger(DocApiFileTest.class);
     private static final String REPO_USING_FILE = "REP {} USING FILE {prefix=\"/tmp/" + auth + "\"}";
-    private static final String docAuthorityURI = "document://" + auth;
-
     private static CallingContext callingContext;
-    private static DocApiImpl docImpl;
 
     static String planetURI = "";
     static String INDEXCFG = "";
@@ -39,10 +34,6 @@ public class IndexApiITest extends AbstractFileTest {
     static IndexApi index = null;
     static CallingContext context = ContextFactory.getKernelUser();
 
-    private static final String url = "http://192.168.99.100:8665/rapture";
-    // private static final String url = "http://54.67.82.29:8665/rapture";
-    private static final String username = "rapture";
-    private static final String password = "rapture";
     private static IndexConfig planetIndex = null;
 
     @BeforeClass
@@ -67,41 +58,52 @@ public class IndexApiITest extends AbstractFileTest {
         Kernel.getAudit().createAuditLog(ContextFactory.getKernelUser(), new RaptureURI(RaptureConstants.DEFAULT_AUDIT_URI, Scheme.LOG).getAuthority(),
                 "LOG {} using FILE {prefix=\"/tmp/" + auth + "\"}");
         Kernel.getLock().createLockManager(ContextFactory.getKernelUser(), "lock://kernel", "LOCKING USING DUMMY {}", "");
-        docImpl = new DocApiImpl(Kernel.INSTANCE);
 
     }
 
     void data1() {
         document.putDoc(context, planetURI + "/Mercury/None",
-                JacksonUtil.jsonFromObject(ImmutableMap.of("one", "A", "two", new Double(1.5), "three", "constant", "inner", ImmutableMap.of("alpha", "Z"))));
+                JacksonUtil.jsonFromObject(ImmutableMap.of("one", "A", "two", new Double(1.5), "three", "constant", "inner", ImmutableMap.of("alpha", "Z")),
+                        true));
         document.putDoc(context, planetURI + "/Venus/None",
-                JacksonUtil.jsonFromObject(ImmutableMap.of("one", "B", "two", new Double(2.4), "three", "constant", "inner", ImmutableMap.of("alpha", "Y"))));
+                JacksonUtil.jsonFromObject(ImmutableMap.of("one", "B", "two", new Double(2.4), "three", "constant", "inner", ImmutableMap.of("alpha", "Y")),
+                        true));
         document.putDoc(context, planetURI + "/Earth/Moon",
-                JacksonUtil.jsonFromObject(ImmutableMap.of("one", "C", "two", new Double(2.6), "three", "constant", "inner", ImmutableMap.of("alpha", "X"))));
+                JacksonUtil.jsonFromObject(ImmutableMap.of("one", "C", "two", new Double(2.6), "three", "constant", "inner", ImmutableMap.of("alpha", "X")),
+                        true));
         document.putDoc(context, planetURI + "/Mars/Phobos",
-                JacksonUtil.jsonFromObject(ImmutableMap.of("one", "D", "two", new Integer(4), "three", "constant", "inner", ImmutableMap.of("alpha", "W"))));
+                JacksonUtil.jsonFromObject(ImmutableMap.of("one", "D", "two", new Integer(4), "three", "constant", "inner", ImmutableMap.of("alpha", "W")),
+                        true));
         document.putDoc(context, planetURI + "/Mars/Deimos",
-                JacksonUtil.jsonFromObject(ImmutableMap.of("one", "E", "two", new Integer(5), "three", "constant", "inner", ImmutableMap.of("alpha", "V"))));
+                JacksonUtil.jsonFromObject(ImmutableMap.of("one", "E", "two", new Integer(5), "three", "constant", "inner", ImmutableMap.of("alpha", "V")),
+                        true));
     }
 
     void data2() {
         document.putDoc(context, planetURI + "/Jupiter/Ganymede",
-                JacksonUtil.jsonFromObject(ImmutableMap.of("one", "F", "two", new Integer(6), "three", "constant", "inner", ImmutableMap.of("alpha", "U"))));
+                JacksonUtil.jsonFromObject(ImmutableMap.of("one", "F", "two", new Integer(6), "three", "constant", "inner", ImmutableMap.of("alpha", "U")),
+                        true));
         document.putDoc(context, planetURI + "/Jupiter/Europa",
-                JacksonUtil.jsonFromObject(ImmutableMap.of("one", "G", "two", new Integer(7), "three", "constant", "inner", ImmutableMap.of("alpha", "T"))));
+                JacksonUtil.jsonFromObject(ImmutableMap.of("one", "G", "two", new Integer(7), "three", "constant", "inner", ImmutableMap.of("alpha", "T")),
+                        true));
         document.putDoc(context, planetURI + "/Jupiter/Titan",
-                JacksonUtil.jsonFromObject(ImmutableMap.of("one", "H", "two", new Integer(8), "three", "constant", "inner", ImmutableMap.of("alpha", "S"))));
+                JacksonUtil.jsonFromObject(ImmutableMap.of("one", "H", "two", new Integer(8), "three", "constant", "inner", ImmutableMap.of("alpha", "S")),
+                        true));
         document.putDoc(context, planetURI + "/Jupiter/Io",
-                JacksonUtil.jsonFromObject(ImmutableMap.of("one", "I", "two", new Integer(9), "three", "constant", "inner", ImmutableMap.of("alpha", "R"))));
+                JacksonUtil.jsonFromObject(ImmutableMap.of("one", "I", "two", new Integer(9), "three", "constant", "inner", ImmutableMap.of("alpha", "R")),
+                        true));
     }
 
     void data3() {
         document.putDoc(context, planetURI + "/Earth/Moon/Foo",
-                JacksonUtil.jsonFromObject(ImmutableMap.of("one", "Q", "two", new Double(-1), "three", "constant", "inner", ImmutableMap.of("alpha", "X"))));
+                JacksonUtil.jsonFromObject(ImmutableMap.of("one", "Q", "two", new Double(-1), "three", "constant", "inner", ImmutableMap.of("alpha", "X")),
+                        true));
         document.putDoc(context, planetURI + "/Earth/Moon/Bar",
-                JacksonUtil.jsonFromObject(ImmutableMap.of("one", "W", "two", new Double(-2), "three", "constant", "inner", ImmutableMap.of("alpha", "X"))));
+                JacksonUtil.jsonFromObject(ImmutableMap.of("one", "W", "two", new Double(-2), "three", "constant", "inner", ImmutableMap.of("alpha", "X")),
+                        true));
         document.putDoc(context, planetURI + "/Earth/Moon/Baz",
-                JacksonUtil.jsonFromObject(ImmutableMap.of("one", "E", "two", new Double(-3), "three", "constant", "inner", ImmutableMap.of("alpha", "X"))));
+                JacksonUtil.jsonFromObject(ImmutableMap.of("one", "E", "two", new Double(-3), "three", "constant", "inner", ImmutableMap.of("alpha", "X")),
+                        true));
 
     }
 
@@ -121,7 +123,7 @@ public class IndexApiITest extends AbstractFileTest {
 
             TableQueryResult res = index.findIndex(context, planetURI, query);
             List<List<Object>> resList = res.getRows();
-            Reporter.log(JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(resList)));
+            Reporter.log(JacksonUtil.jsonFromObject(resList, true));
             Assert.assertNull(resList);
 
             data1();
@@ -133,24 +135,36 @@ public class IndexApiITest extends AbstractFileTest {
             Reporter.log("Query: " + query, true);
             res = index.findIndex(context, planetURI, query);
             resList = res.getRows();
-            Reporter.log(JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(resList)));
-            Assert.assertEquals(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(resList)), 3, resList.size());
+            Reporter.log(JacksonUtil.jsonFromObject(resList, true));
+            Assert.assertEquals(implementation + " : " + JacksonUtil.jsonFromObject(resList, true), 3, resList.size());
 
             data2();
 
             Reporter.log("Query: " + query, true);
             res = index.findIndex(context, planetURI, query);
             resList = res.getRows();
-            Reporter.log(JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(resList)));
-            Assert.assertEquals(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(resList)), 7, resList.size());
+            Reporter.log(JacksonUtil.jsonFromObject(resList, true));
+            Assert.assertEquals(implementation + " : " + JacksonUtil.jsonFromObject(resList, true), 7, resList.size());
 
             query = "SELECT planet, moon, fieldOne, fieldTwo WHERE fieldTwo < -1.5";
             Reporter.log("Query: " + query, true);
             res = index.findIndex(context, planetURI, query);
             resList = res.getRows();
-            Reporter.log(JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(resList)));
-            Assert.assertEquals(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(resList)), 2, resList.size());
+            Reporter.log(JacksonUtil.jsonFromObject(resList, true));
+            Assert.assertEquals(implementation + " : " + JacksonUtil.jsonFromObject(resList, true), 2, resList.size());
 
+            query = "SELECT planet, moon, fieldOne, fieldTwo ORDER BY fieldTwo";
+            Reporter.log("Query: " + query, true);
+            res = index.findIndex(context, planetURI, query);
+            resList = res.getRows();
+            Reporter.log(JacksonUtil.jsonFromObject(resList, true));
+            Assert.assertNotNull(resList);
+            Assert.assertEquals(implementation + " : " + JacksonUtil.jsonFromObject(resList, true), 12, resList.size());
+            for (int i = 1; i < resList.size(); i++) {
+                Number n0 = (Number) resList.get(i - 1).get(3);
+                Number n1 = (Number) resList.get(i).get(3);
+                Assert.assertTrue(n1.doubleValue() > n0.doubleValue());
+            }
         }
     }
 
@@ -174,33 +188,33 @@ public class IndexApiITest extends AbstractFileTest {
             Reporter.log("Query: " + limitQuery, true);
             TableQueryResult res = index.findIndex(context, planetURI, limitQuery);
             List<List<Object>> limitList = res.getRows();
-            Reporter.log(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)));
-            Assert.assertEquals(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)), 4, limitList.size());
+            Reporter.log(implementation + " : " + JacksonUtil.jsonFromObject(limitList, true));
+            Assert.assertEquals(implementation + " : " + JacksonUtil.jsonFromObject(limitList, true), 4, limitList.size());
 
             limitQuery = "SELECT planet, moon LIMIT -1";
             Reporter.log("Query: " + limitQuery, true);
             res = index.findIndex(context, planetURI, limitQuery);
             limitList = res.getRows();
-            Reporter.log(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)));
-            Assert.assertEquals(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)), 1, limitList.size());
+            Reporter.log(implementation + " : " + JacksonUtil.jsonFromObject(limitList, true));
+            Assert.assertEquals(implementation + " : " + JacksonUtil.jsonFromObject(limitList, true), 1, limitList.size());
 
             limitQuery = "SELECT DISTINCT planet, moon ORDER BY planet, moon ASC LIMIT 2";
             Reporter.log("Query: " + limitQuery, true);
             res = index.findIndex(context, planetURI, limitQuery);
             limitList = res.getRows();
-            Reporter.log(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)));
-            Assert.assertEquals(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)), 2, limitList.size());
+            Reporter.log(implementation + " : " + JacksonUtil.jsonFromObject(limitList, true));
+            Assert.assertEquals(implementation + " : " + JacksonUtil.jsonFromObject(limitList, true), 2, limitList.size());
 
             limitQuery = "select distinct planet, moon ORDER BY planet, moon Asc Limit 2 Skip 2";
 
             Reporter.log("Query: " + limitQuery, true);
             res = index.findIndex(context, planetURI, limitQuery);
             List<List<Object>> limitList2 = res.getRows();
-            Reporter.log(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList2)));
-            Assert.assertEquals(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList2)), 2, limitList.size());
+            Reporter.log(implementation + " : " + JacksonUtil.jsonFromObject(limitList2, true));
+            Assert.assertEquals(implementation + " : " + JacksonUtil.jsonFromObject(limitList2, true), 2, limitList.size());
 
-            System.out.println(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)));
-            System.out.println(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList2)));
+            System.out.println(implementation + " : " + JacksonUtil.jsonFromObject(limitList, true));
+            System.out.println(implementation + " : " + JacksonUtil.jsonFromObject(limitList2, true));
 
             Assert.assertEquals("Earth", limitList.get(0).get(0).toString());
             Assert.assertEquals("Jupiter", limitList.get(1).get(0).toString());
@@ -234,8 +248,8 @@ public class IndexApiITest extends AbstractFileTest {
             Reporter.log("Query: " + orderQuery, true);
             List<List<Object>> orderList = orderQuery.getRows();
             Assert.assertNotNull(implementation, orderList);
-            Reporter.log(JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(orderList)));
-            Assert.assertEquals(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(orderList)), 5, orderList.size());
+            Reporter.log(JacksonUtil.jsonFromObject(orderList, true));
+            Assert.assertEquals(implementation + " : " + JacksonUtil.jsonFromObject(orderList, true), 5, orderList.size());
         }
     }
 
@@ -260,15 +274,15 @@ public class IndexApiITest extends AbstractFileTest {
             Reporter.log("Query: " + orderQuery, true);
             List<List<Object>> orderList = orderQuery.getRows();
             Assert.assertNotNull(implementation, orderList);
-            System.out.println(JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(orderList)));
-            Assert.assertEquals(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(orderList)), 5, orderList.size());
+            System.out.println(JacksonUtil.jsonFromObject(orderList, true));
+            Assert.assertEquals(implementation + " : " + JacksonUtil.jsonFromObject(orderList, true), 5, orderList.size());
 
             orderQuery = index.findIndex(context, planetURI, "SELECT DISTINCT moon");
             Reporter.log("Query: " + orderQuery, true);
             orderList = orderQuery.getRows();
             Assert.assertNotNull(implementation, orderList);
-            System.out.println(JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(orderList)));
-            Assert.assertEquals(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(orderList)), 8, orderList.size());
+            System.out.println(JacksonUtil.jsonFromObject(orderList, true));
+            Assert.assertEquals(implementation + " : " + JacksonUtil.jsonFromObject(orderList, true), 8, orderList.size());
 
             data3();
 
@@ -276,36 +290,36 @@ public class IndexApiITest extends AbstractFileTest {
             Reporter.log("Query: " + orderQuery, true);
             orderList = orderQuery.getRows();
             Assert.assertNotNull(implementation, orderList);
-            System.out.println(JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(orderList)));
-            Assert.assertEquals(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(orderList)), 9, orderList.size());
+            System.out.println(JacksonUtil.jsonFromObject(orderList, true));
+            Assert.assertEquals(implementation + " : " + JacksonUtil.jsonFromObject(orderList, true), 9, orderList.size());
             String last = "Aaaa";
             for (List<Object> next : orderList) {
                 String nextStr = next.get(1).toString();
-                Assert.assertTrue(implementation + " : " + JacksonUtil.jsonFromObject(orderList), nextStr.compareTo(last) >= 0);
+                Assert.assertTrue(implementation + " : " + JacksonUtil.jsonFromObject(orderList, true), nextStr.compareTo(last) >= 0);
                 last = nextStr;
             }
             orderQuery = index.findIndex(context, planetURI, "SELECT planet, moon Order By moon, planet ASC");
             Reporter.log("Query: " + orderQuery, true);
             orderList = orderQuery.getRows();
             Assert.assertNotNull(implementation, orderList);
-            System.out.println(JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(orderList)));
-            Assert.assertEquals(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(orderList)), 12, orderList.size());
+            System.out.println(JacksonUtil.jsonFromObject(orderList, true));
+            Assert.assertEquals(implementation + " : " + JacksonUtil.jsonFromObject(orderList, true), 12, orderList.size());
             last = "Aaaa";
             for (List<Object> next : orderList) {
                 String nextStr = next.get(1).toString();
-                Assert.assertTrue(implementation + " : " + JacksonUtil.jsonFromObject(orderList), nextStr.compareTo(last) >= 0);
+                Assert.assertTrue(implementation + " : " + JacksonUtil.jsonFromObject(orderList, true), nextStr.compareTo(last) >= 0);
                 last = nextStr;
             }
             orderQuery = index.findIndex(context, planetURI, "SELECT planet, moon ORDER BY moon, planet ASC");
             Reporter.log("Query: " + orderQuery, true);
             orderList = orderQuery.getRows();
             Assert.assertNotNull(implementation, orderList);
-            System.out.println(JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(orderList)));
-            Assert.assertEquals(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(orderList)), 12, orderList.size());
+            System.out.println(JacksonUtil.jsonFromObject(orderList, true));
+            Assert.assertEquals(implementation + " : " + JacksonUtil.jsonFromObject(orderList, true), 12, orderList.size());
             last = "Aaaa";
             for (List<Object> next : orderList) {
                 String nextStr = next.get(1).toString();
-                Assert.assertTrue(implementation + " : " + JacksonUtil.jsonFromObject(orderList), nextStr.compareTo(last) >= 0);
+                Assert.assertTrue(implementation + " : " + JacksonUtil.jsonFromObject(orderList, true), nextStr.compareTo(last) >= 0);
                 last = nextStr;
             }
         }
@@ -333,12 +347,12 @@ public class IndexApiITest extends AbstractFileTest {
             Reporter.log("Query: " + orderQuery, true);
             List<List<Object>> orderList = orderQuery.getRows();
             Assert.assertNotNull(implementation, orderList);
-            System.out.println(JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(orderList)));
-            Assert.assertEquals(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(orderList)), 5, orderList.size());
+            System.out.println(JacksonUtil.jsonFromObject(orderList, true));
+            Assert.assertEquals(implementation + " : " + JacksonUtil.jsonFromObject(orderList, true), 5, orderList.size());
             String last = "Zzzz";
             for (List<Object> next : orderList) {
                 String nextStr = next.get(0).toString();
-                Assert.assertTrue(implementation + " : " + JacksonUtil.jsonFromObject(orderList), nextStr.compareTo(last) < 0);
+                Assert.assertTrue(implementation + " : " + JacksonUtil.jsonFromObject(orderList, true), nextStr.compareTo(last) < 0);
                 last = nextStr;
             }
         }
@@ -365,8 +379,8 @@ public class IndexApiITest extends AbstractFileTest {
             Reporter.log("Query: " + orderQuery, true);
             List<List<Object>> orderList = orderQuery.getRows();
             Assert.assertNotNull(implementation, orderList);
-            Reporter.log(JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(orderList)));
-            Assert.assertEquals(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(orderList)), 3, orderList.size());
+            Reporter.log(JacksonUtil.jsonFromObject(orderList, true));
+            Assert.assertEquals(implementation + " : " + JacksonUtil.jsonFromObject(orderList, true), 3, orderList.size());
         }
     }
 }
