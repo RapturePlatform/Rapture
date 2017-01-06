@@ -94,20 +94,17 @@ public final class JacksonUtil {
         }
     }
 
-    /**
-     * Use jsonFromObject(object, prettyfy)
-     * 
-     * @param object
-     * @return
-     */
-    @Deprecated
     public static String jsonFromObject(Object object) {
         return jsonFromObject(object, false);
     }
+    
+    public static String formattedJsonFromObject(Object object) {
+        return jsonFromObject(object, true);
+    }
 
-    public static String jsonFromObject(Object object, boolean pretty) {
+    public static String jsonFromObject(Object object, boolean formatted) {
         try {
-            if (pretty) {
+            if (formatted) {
                 return PRETTY_PRINTER.writeValueAsString(DEFAULT_MAPPER.valueToTree(object));
             } else {
                 StringWriter writer = new StringWriter();
