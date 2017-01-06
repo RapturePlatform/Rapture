@@ -202,7 +202,7 @@ public class NotificationStepTest {
         for (WorkerDebug wd : debug.getWorkerDebugs()) {
             for (StepRecordDebug srd : wd.getStepRecordDebugs()) {
                 sr = srd.getStepRecord();
-                System.out.println(JacksonUtil.jsonFromObject(sr, true));
+                System.out.println(JacksonUtil.formattedJsonFromObject(sr));
             }
         }
         assertNotNull(sr);

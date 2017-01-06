@@ -202,7 +202,7 @@ public class CheckFileExistsStepTest {
         WorkerDebug worker = debug.getWorkerDebugs().get(0);
         List<StepRecordDebug> dbgs = worker.getStepRecordDebugs();
 
-        String dbginfo = JacksonUtil.jsonFromObject(dbgs, true);
+        String dbginfo = JacksonUtil.formattedJsonFromObject(dbgs);
         System.out.println(dbginfo);
         int i = 0;
         for (StepRecordDebug dbg : dbgs) {

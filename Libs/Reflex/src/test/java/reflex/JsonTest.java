@@ -46,16 +46,16 @@ public class JsonTest extends ResourceBasedTest {
     public void testJsonPerformance() {
         Map<String, Double> map = new HashMap<>();
 
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 5000; i++) {
             map.put("Val" + i, Math.random());
         }
 
         Long start = System.currentTimeMillis();
         String s1 = JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(map));
         Long mid = System.currentTimeMillis();
-        String s2 = JacksonUtil.jsonFromObject(map, true);
+        String s2 = JacksonUtil.formattedJsonFromObject(map);
         Long end = System.currentTimeMillis();
-        String s3 = JacksonUtil.jsonFromObject(map, false);
+        String s3 = JacksonUtil.jsonFromObject(map);
         Long unformatted = System.currentTimeMillis() - end;
 
         Long oldWay = (mid - start);
@@ -63,8 +63,6 @@ public class JsonTest extends ResourceBasedTest {
         Assert.assertEquals(s1, s2);
         Assert.assertTrue(newWay < oldWay);
         System.out.println("Old way " + oldWay + "ms new way " + newWay + "ms Unformatted " + unformatted + "ms");
-
-        System.out.println("New way is " + oldWay / newWay + " times faster");
     }
 
 }
