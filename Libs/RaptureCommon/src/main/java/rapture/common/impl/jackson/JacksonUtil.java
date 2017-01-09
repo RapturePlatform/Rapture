@@ -66,6 +66,7 @@ public final class JacksonUtil {
         DEFAULT_MAPPER.getFactory().enable(Feature.WRITE_BIGDECIMAL_AS_PLAIN);
         DEFAULT_MAPPER.enable(DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS);
         PRETTY_PRINTER = DEFAULT_MAPPER.writerWithDefaultPrettyPrinter();
+        PRETTY_PRINTER.getFactory().enable(Feature.WRITE_BIGDECIMAL_AS_PLAIN);
 
     }
     public static Map<String, Object> getHashFromObject(Object obj) {
