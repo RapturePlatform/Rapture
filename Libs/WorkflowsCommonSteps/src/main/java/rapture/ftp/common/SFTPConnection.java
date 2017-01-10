@@ -29,6 +29,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.ConnectException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -161,6 +162,9 @@ public class SFTPConnection extends FTPConnection {
             channel.connect();
             return true;
         } catch (Exception e) {
+            if (e.getCause() instanceof ConnectException) {
+                request.addError("Unable to connect to " + config.getAddress() + " as " + config.getLoginId());
+            }
             for (String err : JschLogger.getErrors(this)) {
                 request.addError(err);
             }
