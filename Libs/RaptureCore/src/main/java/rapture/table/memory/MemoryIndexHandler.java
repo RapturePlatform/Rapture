@@ -182,29 +182,34 @@ public class MemoryIndexHandler implements IndexHandler {
 
     private Predicate<Map<String, Object>> predicateFromClause(final WhereStatement statement) {
         return new Predicate<Map<String, Object>>() {
+            @SuppressWarnings({ "unchecked", "rawtypes" })
             @Override
             public boolean apply(Map<String, Object> input) {
                 String fieldName = statement.getField();
                 Object queryValue = statement.getValue().getValue();
                 Object actualValue = input.get(fieldName);
-                if (queryValue != null && actualValue != null && queryValue.getClass().equals(actualValue.getClass())) {
-                    return compare((Comparable) actualValue, (Comparable) queryValue);
-                } else {
-                    String actualValueString;
-                    if (actualValue != null) {
-                        actualValueString = actualValue.toString();
-                    } else {
-                        actualValueString = null;
+                if (queryValue != null && actualValue != null) {
+                    if (queryValue.getClass().equals(actualValue.getClass())) {
+                        return compare((Comparable) actualValue, (Comparable) queryValue);
                     }
-
-                    String queryValueString;
-                    if (queryValue != null) {
-                        queryValueString = queryValue.toString();
-                    } else {
-                        queryValueString = null;
+                    if (queryValue instanceof Number && actualValue instanceof Number) {
+                        return compare((Number) actualValue, (Number) queryValue);
                     }
-                    return compare(actualValueString, queryValueString);
                 }
+                String actualValueString;
+                if (actualValue != null) {
+                    actualValueString = actualValue.toString();
+                } else {
+                    actualValueString = null;
+                }
+
+                String queryValueString;
+                if (queryValue != null) {
+                    queryValueString = queryValue.toString();
+                } else {
+                    queryValueString = null;
+                }
+                return compare(actualValueString, queryValueString);
             }
 
             protected <T extends Comparable<T>> boolean compare(T actualValue, T queryValue) {
@@ -219,6 +224,21 @@ public class MemoryIndexHandler implements IndexHandler {
                         return queryValue.equals(actualValue);
                     default:
                         return false;
+                }
+            }
+
+            protected <T extends Number> boolean compare(T actualValue, T queryValue) {
+                switch (statement.getOper()) {
+                case GT:
+                    return actualValue.doubleValue() > queryValue.doubleValue();
+                case LT:
+                    return actualValue.doubleValue() < queryValue.doubleValue();
+                case NOTEQUAL:
+                    return actualValue.doubleValue() != queryValue.doubleValue();
+                case EQUAL:
+                    return actualValue.doubleValue() == queryValue.doubleValue();
+                default:
+                    return false;
                 }
             }
 

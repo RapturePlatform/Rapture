@@ -23,11 +23,11 @@
  */
 package rapture.kernel;
 
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.TestCase.assertFalse;
-import static junit.framework.TestCase.fail;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.List;
 

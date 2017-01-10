@@ -30,10 +30,13 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.bson.Document;
+import org.bson.codecs.configuration.CodecRegistries;
+import org.bson.codecs.configuration.CodecRegistry;
 
 import com.mongodb.DB;
 import com.mongodb.Mongo;
 import com.mongodb.MongoClient;
+import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoClientURI;
 import com.mongodb.MongoException;
 import com.mongodb.client.MongoCollection;
@@ -50,6 +53,14 @@ import rapture.kernel.Kernel;
 
 public enum MongoDBFactory {
     INSTANCE;
+
+    private final static CodecRegistry codecRegistry;
+    private final static MongoClientOptions mongoClientOptions;
+    static {
+        codecRegistry = CodecRegistries.fromRegistries(CodecRegistries.fromCodecs(new BigDecimalCodec()),
+                MongoClient.getDefaultCodecRegistry());
+        mongoClientOptions = MongoClientOptions.builder().codecRegistry(codecRegistry).build();
+    }
 
     private Messages mongoMsgCatalog = new Messages("Mongo");
 
@@ -152,7 +163,7 @@ public enum MongoDBFactory {
     }
 
     public static MongoCollection<Document> getCollection(String instanceName, String name) {
-        return INSTANCE._getMongoDatabase(instanceName).getCollection(name);
+        return INSTANCE._getMongoDatabase(instanceName).getCollection(name).withCodecRegistry(codecRegistry);
     }
 
     /**
