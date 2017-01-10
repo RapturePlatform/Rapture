@@ -104,12 +104,14 @@ public class GetFileStep extends AbstractInvocable {
                 FTPRequest request = new FTPRequest(Action.READ).setRemoteName(e.getKey()).setLocalName(e.getValue().toString());
                 connection.doAction(request);
                 if (!request.getStatus().equals(Status.SUCCESS)) {
-                    String errors = request.getErrors();
+                    String errors = request.getErrors().replaceAll("\r", "");
+                    String unable = "Unable to retrieve " + e.getKey() + " as " + e.getValue();
+                    sb.append(unable);
                     if (errors != null) {
                         decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), getStepName() + ": " + errors, true);
+                        sb.append(" due to ").append(errors);
                     }
-                    String unable = "Unable to retrieve " + e.getKey() + " as " + e.getValue();
-                    sb.append(unable).append("\n");
+                    sb.append("\n");
                     decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), unable, true);
                     retval = getFailTransition();
                     failCount++;

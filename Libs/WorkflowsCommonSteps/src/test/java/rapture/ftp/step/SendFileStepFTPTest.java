@@ -83,7 +83,7 @@ public class SendFileStepFTPTest {
     private static final String BLOB_USING_MEMORY = "BLOB {} USING MEMORY {prefix=\"/tmp/B" + auth + "\"}";
     private static final String REPO_USING_MEMORY = "REP {} USING MEMORY {prefix=\"/tmp/" + auth + "\"}";
     private static final String META_USING_MEMORY = "REP {} USING MEMORY {prefix=\"/tmp/M" + auth + "\"}";
-    static final boolean FTP_Available = false;
+    static final boolean FTP_Available = true;
 
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
@@ -427,6 +427,9 @@ public class SendFileStepFTPTest {
             assertEquals(ActivityStatus.FINISHED, activity.getStatus());
         }
         assertEquals(WorkOrderExecutionState.ERROR, debug.getOrder().getStatus());
+
+        String step1Error = Kernel.getDecision().getContextValue(context, response.getUri(), "step1Error");
+        assertEquals("Unable to send file://dev/null as /etc/no/chance due to 553 Could not create file.\n\n", step1Error);
     }
 
     @Test
@@ -467,6 +470,9 @@ public class SendFileStepFTPTest {
             assertEquals(ActivityStatus.FINISHED, activity.getStatus());
         }
         assertEquals(WorkOrderExecutionState.ERROR, debug.getOrder().getStatus());
+
+        String step1Error = Kernel.getDecision().getContextValue(context, response.getUri(), "step1Error");
+        assertEquals("Unable to send file://does/not/exist as /etc/no/chance due to /does/not/exist (No such file or directory)\n", step1Error);
     }
 
     @Test
@@ -510,6 +516,9 @@ public class SendFileStepFTPTest {
                 assertEquals(ActivityStatus.FINISHED, activity.getStatus());
             }
             assertEquals(WorkOrderExecutionState.ERROR, debug.getOrder().getStatus());
+
+            String step1Error = Kernel.getDecision().getContextValue(context, response.getUri(), "step1Error");
+            assertEquals("Unable to send document://tmp/elp as upload/elp.dummyfile due to Unknown host foo.bar.wibble.net\n", step1Error);
         } finally {
             FTPConnectionConfig ftpConfig = new FTPConnectionConfig().setAddress("speedtest.tele2.net").setPort(23).setLoginId("ftp").setPassword("foo@bar")
                     .setUseSFTP(false);
