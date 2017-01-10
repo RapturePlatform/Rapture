@@ -43,6 +43,7 @@ public class JsonNode extends BaseNode {
     public ReflexValue evaluate(IReflexDebugger debugger, Scope scope) {
         debugger.stepStart(this, scope);
         ReflexValue rv = portExpr.evaluate(debugger, scope);
+
         String json = KernelExecutor.convertValueToJson(rv, true);
         ReflexValue retVal = new ReflexValue(json);
         debugger.stepEnd(this, retVal, scope);

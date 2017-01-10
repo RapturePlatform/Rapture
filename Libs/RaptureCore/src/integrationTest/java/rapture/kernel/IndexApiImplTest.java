@@ -55,7 +55,7 @@ public class IndexApiImplTest extends AbstractFileTest {
     static HttpEventApi event = null;
     static HttpIdGenApi fountain = null;
 
-    private static final String url = "http://192.168.99.101:8665/rapture";
+    private static final String url = "http://192.168.99.100:8665/rapture";
     // private static final String url = "http://54.67.82.29:8665/rapture";
     private static final String username = "rapture";
     private static final String password = "rapture";
@@ -141,7 +141,7 @@ public class IndexApiImplTest extends AbstractFileTest {
 
             TableQueryResult res = index.findIndex(planetURI, query);
             List<List<Object>> resList = res.getRows();
-            Reporter.log(JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(resList)));
+            Reporter.log(JacksonUtil.formattedJsonFromObject(resList));
             Assert.assertNull(resList);
 
             data1();
@@ -153,23 +153,23 @@ public class IndexApiImplTest extends AbstractFileTest {
             Reporter.log("Query: " + query, true);
             res = index.findIndex(planetURI, query);
             resList = res.getRows();
-            Reporter.log(JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(resList)));
-            Assert.assertEquals(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(resList)), 3, resList.size());
+            Reporter.log(JacksonUtil.formattedJsonFromObject(resList));
+            Assert.assertEquals(implementation + " : " + JacksonUtil.formattedJsonFromObject(resList), 3, resList.size());
 
             data2();
 
             Reporter.log("Query: " + query, true);
             res = index.findIndex(planetURI, query);
             resList = res.getRows();
-            Reporter.log(JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(resList)));
-            Assert.assertEquals(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(resList)), 7, resList.size());
+            Reporter.log(JacksonUtil.formattedJsonFromObject(resList));
+            Assert.assertEquals(implementation + " : " + JacksonUtil.formattedJsonFromObject(resList), 7, resList.size());
 
             query = "SELECT planet, moon, fieldOne, fieldTwo WHERE fieldTwo < -1.5";
             Reporter.log("Query: " + query, true);
             res = index.findIndex(planetURI, query);
             resList = res.getRows();
-            Reporter.log(JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(resList)));
-            Assert.assertEquals(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(resList)), 2, resList.size());
+            Reporter.log(JacksonUtil.formattedJsonFromObject(resList));
+            Assert.assertEquals(implementation + " : " + JacksonUtil.formattedJsonFromObject(resList), 2, resList.size());
 
         }
     }
@@ -195,25 +195,25 @@ public class IndexApiImplTest extends AbstractFileTest {
                 Reporter.log("Query: " + limitQuery, true);
                 TableQueryResult res = index.findIndex(planetURI, limitQuery);
                 List<List<Object>> limitList = res.getRows();
-                Reporter.log(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)));
-                Assert.assertEquals(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)), 4, limitList.size());
+                Reporter.log(implementation + " : " + JacksonUtil.formattedJsonFromObject(limitList));
+                Assert.assertEquals(implementation + " : " + JacksonUtil.formattedJsonFromObject(limitList), 4, limitList.size());
             }
             {
                 String limitQuery = "SELECT planet, moon LIMIT -1";
                 Reporter.log("Query: " + limitQuery, true);
                 TableQueryResult res = index.findIndex(planetURI, limitQuery);
                 List<List<Object>> limitList = res.getRows();
-                Reporter.log(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)));
-                Assert.assertEquals(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)), 1, limitList.size());
+                Reporter.log(implementation + " : " + JacksonUtil.formattedJsonFromObject(limitList));
+                Assert.assertEquals(implementation + " : " + JacksonUtil.formattedJsonFromObject(limitList), 1, limitList.size());
             }
             {
                 String limitQuery = "SELECT DISTINCT planet, moon ORDER BY planet, moon ASC LIMIT 2";
                 Reporter.log("Query: " + limitQuery, true);
                 TableQueryResult res = index.findIndex(planetURI, limitQuery);
                 List<List<Object>> limitList = res.getRows();
-                Reporter.log(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)));
-                Assert.assertEquals(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)), 2, limitList.size());
-                System.out.println(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)));
+                Reporter.log(implementation + " : " + JacksonUtil.formattedJsonFromObject(limitList));
+                Assert.assertEquals(implementation + " : " + JacksonUtil.formattedJsonFromObject(limitList), 2, limitList.size());
+                System.out.println(implementation + " : " + JacksonUtil.formattedJsonFromObject(limitList));
                 Assert.assertEquals("Earth", limitList.get(0).get(0).toString());
                 Assert.assertEquals("Jupiter", limitList.get(1).get(0).toString());
                 Assert.assertEquals("Europa", limitList.get(1).get(1).toString());
@@ -223,9 +223,9 @@ public class IndexApiImplTest extends AbstractFileTest {
                 Reporter.log("Query: " + limitQuery, true);
                 TableQueryResult res = index.findIndex(planetURI, limitQuery);
                 List<List<Object>> limitList = res.getRows();
-                Reporter.log(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)));
-                Assert.assertEquals(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)), 2, limitList.size());
-                System.out.println(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)));
+                Reporter.log(implementation + " : " + JacksonUtil.formattedJsonFromObject(limitList));
+                Assert.assertEquals(implementation + " : " + JacksonUtil.formattedJsonFromObject(limitList), 2, limitList.size());
+                System.out.println(implementation + " : " + JacksonUtil.formattedJsonFromObject(limitList));
                 Assert.assertEquals("Jupiter", limitList.get(0).get(0).toString());
                 Assert.assertEquals("Ganymede", limitList.get(0).get(1).toString());
                 Assert.assertEquals("Jupiter", limitList.get(1).get(0).toString());
@@ -236,9 +236,9 @@ public class IndexApiImplTest extends AbstractFileTest {
                 Reporter.log("Query: " + limitQuery, true);
                 TableQueryResult res = index.findIndex(planetURI, limitQuery);
                 List<List<Object>> limitList = res.getRows();
-                Reporter.log(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)));
-                Assert.assertEquals(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)), 3, limitList.size());
-                System.out.println(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)));
+                Reporter.log(implementation + " : " + JacksonUtil.formattedJsonFromObject(limitList));
+                Assert.assertEquals(implementation + " : " + JacksonUtil.formattedJsonFromObject(limitList), 3, limitList.size());
+                System.out.println(implementation + " : " + JacksonUtil.formattedJsonFromObject(limitList));
                 Assert.assertEquals("Jupiter", limitList.get(0).get(0).toString());
                 Assert.assertEquals("Titan", limitList.get(0).get(1).toString());
                 Assert.assertEquals("Mars", limitList.get(1).get(0).toString());
@@ -251,9 +251,9 @@ public class IndexApiImplTest extends AbstractFileTest {
                 Reporter.log("Query: " + limitQuery, true);
                 TableQueryResult res = index.findIndex(planetURI, limitQuery);
                 List<List<Object>> limitList = res.getRows();
-                Reporter.log(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)));
-                Assert.assertEquals(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)), 2, limitList.size());
-                System.out.println(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)));
+                Reporter.log(implementation + " : " + JacksonUtil.formattedJsonFromObject(limitList));
+                Assert.assertEquals(implementation + " : " + JacksonUtil.formattedJsonFromObject(limitList), 2, limitList.size());
+                System.out.println(implementation + " : " + JacksonUtil.formattedJsonFromObject(limitList));
                 Assert.assertEquals("Io", limitList.get(0).get(0).toString());
                 Assert.assertEquals("Moon", limitList.get(1).get(0).toString());
             }
@@ -262,9 +262,9 @@ public class IndexApiImplTest extends AbstractFileTest {
                 Reporter.log("Query: " + limitQuery, true);
                 TableQueryResult res = index.findIndex(planetURI, limitQuery);
                 List<List<Object>> limitList = res.getRows();
-                Reporter.log(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)));
-                System.out.println(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)));
-                Assert.assertEquals(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)), 12, limitList.size());
+                Reporter.log(implementation + " : " + JacksonUtil.formattedJsonFromObject(limitList));
+                System.out.println(implementation + " : " + JacksonUtil.formattedJsonFromObject(limitList));
+                Assert.assertEquals(implementation + " : " + JacksonUtil.formattedJsonFromObject(limitList), 12, limitList.size());
                 Assert.assertEquals("Deimos", limitList.get(0).get(0).toString());
             }
             {
@@ -272,9 +272,9 @@ public class IndexApiImplTest extends AbstractFileTest {
                 Reporter.log("Query: " + limitQuery, true);
                 TableQueryResult res = index.findIndex(planetURI, limitQuery);
                 List<List<Object>> limitList = res.getRows();
-                Reporter.log(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)));
-                System.out.println(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)));
-                Assert.assertEquals(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)), 12, limitList.size());
+                Reporter.log(implementation + " : " + JacksonUtil.formattedJsonFromObject(limitList));
+                System.out.println(implementation + " : " + JacksonUtil.formattedJsonFromObject(limitList));
+                Assert.assertEquals(implementation + " : " + JacksonUtil.formattedJsonFromObject(limitList), 12, limitList.size());
                 Assert.assertEquals("Deimos", limitList.get(0).get(0).toString());
             }
             {
@@ -282,9 +282,9 @@ public class IndexApiImplTest extends AbstractFileTest {
                 Reporter.log("Query: " + limitQuery, true);
                 TableQueryResult res = index.findIndex(planetURI, limitQuery);
                 List<List<Object>> limitList = res.getRows();
-                Reporter.log(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)));
-                System.out.println(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)));
-                Assert.assertEquals(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)), 1, limitList.size());
+                Reporter.log(implementation + " : " + JacksonUtil.formattedJsonFromObject(limitList));
+                System.out.println(implementation + " : " + JacksonUtil.formattedJsonFromObject(limitList));
+                Assert.assertEquals(implementation + " : " + JacksonUtil.formattedJsonFromObject(limitList), 1, limitList.size());
                 Assert.assertEquals("Moon", limitList.get(0).get(0).toString());
             }
             {
@@ -292,9 +292,9 @@ public class IndexApiImplTest extends AbstractFileTest {
                 Reporter.log("Query: " + limitQuery, true);
                 TableQueryResult res = index.findIndex(planetURI, limitQuery);
                 List<List<Object>> limitList = res.getRows();
-                Reporter.log(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)));
-                System.out.println(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)));
-                Assert.assertEquals(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)), 1, limitList.size());
+                Reporter.log(implementation + " : " + JacksonUtil.formattedJsonFromObject(limitList));
+                System.out.println(implementation + " : " + JacksonUtil.formattedJsonFromObject(limitList));
+                Assert.assertEquals(implementation + " : " + JacksonUtil.formattedJsonFromObject(limitList), 1, limitList.size());
                 Assert.assertEquals("Moon", limitList.get(0).get(0).toString());
             }
             {
@@ -302,9 +302,9 @@ public class IndexApiImplTest extends AbstractFileTest {
                 Reporter.log("Query: " + limitQuery, true);
                 TableQueryResult res = index.findIndex(planetURI, limitQuery);
                 List<List<Object>> limitList = res.getRows();
-                Reporter.log(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)));
-                System.out.println(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)));
-                Assert.assertEquals(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)), 1, limitList.size());
+                Reporter.log(implementation + " : " + JacksonUtil.formattedJsonFromObject(limitList));
+                System.out.println(implementation + " : " + JacksonUtil.formattedJsonFromObject(limitList));
+                Assert.assertEquals(implementation + " : " + JacksonUtil.formattedJsonFromObject(limitList), 1, limitList.size());
                 Assert.assertEquals("Moon", limitList.get(0).get(0).toString());
             }
             {
@@ -312,9 +312,9 @@ public class IndexApiImplTest extends AbstractFileTest {
                 Reporter.log("Query: " + limitQuery, true);
                 TableQueryResult res = index.findIndex(planetURI, limitQuery);
                 List<List<Object>> limitList = res.getRows();
-                Reporter.log(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)));
-                System.out.println(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)));
-                Assert.assertEquals(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)), 1, limitList.size());
+                Reporter.log(implementation + " : " + JacksonUtil.formattedJsonFromObject(limitList));
+                System.out.println(implementation + " : " + JacksonUtil.formattedJsonFromObject(limitList));
+                Assert.assertEquals(implementation + " : " + JacksonUtil.formattedJsonFromObject(limitList), 1, limitList.size());
                 Assert.assertEquals("Earth", limitList.get(0).get(0).toString());
                 Assert.assertEquals("Moon", limitList.get(0).get(1).toString());
             }
@@ -323,9 +323,9 @@ public class IndexApiImplTest extends AbstractFileTest {
                 Reporter.log("Query: " + limitQuery, true);
                 TableQueryResult res = index.findIndex(planetURI, limitQuery);
                 List<List<Object>> limitList = res.getRows();
-                Reporter.log(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)));
-                System.out.println(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)));
-                Assert.assertEquals(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)), 1, limitList.size());
+                Reporter.log(implementation + " : " + JacksonUtil.formattedJsonFromObject(limitList));
+                System.out.println(implementation + " : " + JacksonUtil.formattedJsonFromObject(limitList));
+                Assert.assertEquals(implementation + " : " + JacksonUtil.formattedJsonFromObject(limitList), 1, limitList.size());
                 // Assert.assertEquals("Deimos", limitList.get(0).get(0).toString());
             }
             {
@@ -333,9 +333,9 @@ public class IndexApiImplTest extends AbstractFileTest {
                 Reporter.log("Query: " + limitQuery, true);
                 TableQueryResult res = index.findIndex(planetURI, limitQuery);
                 List<List<Object>> limitList = res.getRows();
-                Reporter.log(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)));
-                System.out.println(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)));
-                Assert.assertEquals(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)), 1, limitList.size());
+                Reporter.log(implementation + " : " + JacksonUtil.formattedJsonFromObject(limitList));
+                System.out.println(implementation + " : " + JacksonUtil.formattedJsonFromObject(limitList));
+                Assert.assertEquals(implementation + " : " + JacksonUtil.formattedJsonFromObject(limitList), 1, limitList.size());
                 // Assert.assertEquals("Deimos", limitList.get(0).get(0).toString());
             }
             {
@@ -343,9 +343,9 @@ public class IndexApiImplTest extends AbstractFileTest {
                 Reporter.log("Query: " + limitQuery, true);
                 TableQueryResult res = index.findIndex(planetURI, limitQuery);
                 List<List<Object>> limitList = res.getRows();
-                Reporter.log(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)));
-                System.out.println(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)));
-                Assert.assertEquals(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)), 1, limitList.size());
+                Reporter.log(implementation + " : " + JacksonUtil.formattedJsonFromObject(limitList));
+                System.out.println(implementation + " : " + JacksonUtil.formattedJsonFromObject(limitList));
+                Assert.assertEquals(implementation + " : " + JacksonUtil.formattedJsonFromObject(limitList), 1, limitList.size());
                 // Assert.assertEquals("Ganymede", limitList.get(0).get(0).toString());
             }
             {
@@ -353,9 +353,9 @@ public class IndexApiImplTest extends AbstractFileTest {
                 Reporter.log("Query: " + limitQuery, true);
                 TableQueryResult res = index.findIndex(planetURI, limitQuery);
                 List<List<Object>> limitList = res.getRows();
-                Reporter.log(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)));
-                System.out.println(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)));
-                Assert.assertEquals(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(limitList)), 1, limitList.size());
+                Reporter.log(implementation + " : " + JacksonUtil.formattedJsonFromObject(limitList));
+                System.out.println(implementation + " : " + JacksonUtil.formattedJsonFromObject(limitList));
+                Assert.assertEquals(implementation + " : " + JacksonUtil.formattedJsonFromObject(limitList), 1, limitList.size());
                 // Assert.assertEquals("Mars", limitList.get(0).get(0).toString());
                 // Assert.assertEquals("Deimos", limitList.get(0).get(1).toString());
             }
@@ -384,8 +384,8 @@ public class IndexApiImplTest extends AbstractFileTest {
             Reporter.log("Query: " + orderQuery, true);
             List<List<Object>> orderList = orderQuery.getRows();
             Assert.assertNotNull(implementation, orderList);
-            Reporter.log(JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(orderList)));
-            Assert.assertEquals(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(orderList)), 5, orderList.size());
+            Reporter.log(JacksonUtil.formattedJsonFromObject(orderList));
+            Assert.assertEquals(implementation + " : " + JacksonUtil.formattedJsonFromObject(orderList), 5, orderList.size());
         }
     }
 
@@ -410,15 +410,15 @@ public class IndexApiImplTest extends AbstractFileTest {
             Reporter.log("Query: " + orderQuery, true);
             List<List<Object>> orderList = orderQuery.getRows();
             Assert.assertNotNull(implementation, orderList);
-            System.out.println(JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(orderList)));
-            Assert.assertEquals(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(orderList)), 5, orderList.size());
+            System.out.println(JacksonUtil.formattedJsonFromObject(orderList));
+            Assert.assertEquals(implementation + " : " + JacksonUtil.formattedJsonFromObject(orderList), 5, orderList.size());
 
             orderQuery = index.findIndex(planetURI, "SELECT DISTINCT moon");
             Reporter.log("Query: " + orderQuery, true);
             orderList = orderQuery.getRows();
             Assert.assertNotNull(implementation, orderList);
-            System.out.println(JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(orderList)));
-            Assert.assertEquals(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(orderList)), 8, orderList.size());
+            System.out.println(JacksonUtil.formattedJsonFromObject(orderList));
+            Assert.assertEquals(implementation + " : " + JacksonUtil.formattedJsonFromObject(orderList), 8, orderList.size());
 
             data3();
 
@@ -426,8 +426,8 @@ public class IndexApiImplTest extends AbstractFileTest {
             Reporter.log("Query: " + orderQuery, true);
             orderList = orderQuery.getRows();
             Assert.assertNotNull(implementation, orderList);
-            System.out.println(JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(orderList)));
-            Assert.assertEquals(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(orderList)), 9, orderList.size());
+            System.out.println(JacksonUtil.formattedJsonFromObject(orderList));
+            Assert.assertEquals(implementation + " : " + JacksonUtil.formattedJsonFromObject(orderList), 9, orderList.size());
             String last = "Aaaa";
             for (List<Object> next : orderList) {
                 String nextStr = next.get(1).toString();
@@ -438,8 +438,8 @@ public class IndexApiImplTest extends AbstractFileTest {
             Reporter.log("Query: " + orderQuery, true);
             orderList = orderQuery.getRows();
             Assert.assertNotNull(implementation, orderList);
-            System.out.println(JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(orderList)));
-            Assert.assertEquals(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(orderList)), 12, orderList.size());
+            System.out.println(JacksonUtil.formattedJsonFromObject(orderList));
+            Assert.assertEquals(implementation + " : " + JacksonUtil.formattedJsonFromObject(orderList), 12, orderList.size());
             last = "Aaaa";
             for (List<Object> next : orderList) {
                 String nextStr = next.get(1).toString();
@@ -450,8 +450,8 @@ public class IndexApiImplTest extends AbstractFileTest {
             Reporter.log("Query: " + orderQuery, true);
             orderList = orderQuery.getRows();
             Assert.assertNotNull(implementation, orderList);
-            System.out.println(JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(orderList)));
-            Assert.assertEquals(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(orderList)), 12, orderList.size());
+            System.out.println(JacksonUtil.formattedJsonFromObject(orderList));
+            Assert.assertEquals(implementation + " : " + JacksonUtil.formattedJsonFromObject(orderList), 12, orderList.size());
             last = "Aaaa";
             for (List<Object> next : orderList) {
                 String nextStr = next.get(1).toString();
@@ -483,8 +483,8 @@ public class IndexApiImplTest extends AbstractFileTest {
             Reporter.log("Query: " + orderQuery, true);
             List<List<Object>> orderList = orderQuery.getRows();
             Assert.assertNotNull(implementation, orderList);
-            System.out.println(JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(orderList)));
-            Assert.assertEquals(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(orderList)), 5, orderList.size());
+            System.out.println(JacksonUtil.formattedJsonFromObject(orderList));
+            Assert.assertEquals(implementation + " : " + JacksonUtil.formattedJsonFromObject(orderList), 5, orderList.size());
             String last = "Zzzz";
             for (List<Object> next : orderList) {
                 String nextStr = next.get(0).toString();
@@ -515,8 +515,8 @@ public class IndexApiImplTest extends AbstractFileTest {
             Reporter.log("Query: " + orderQuery, true);
             List<List<Object>> orderList = orderQuery.getRows();
             Assert.assertNotNull(implementation, orderList);
-            Reporter.log(JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(orderList)));
-            Assert.assertEquals(implementation + " : " + JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(orderList)), 3, orderList.size());
+            Reporter.log(JacksonUtil.formattedJsonFromObject(orderList));
+            Assert.assertEquals(implementation + " : " + JacksonUtil.formattedJsonFromObject(orderList), 3, orderList.size());
         }
     }
 
@@ -552,14 +552,14 @@ public class IndexApiImplTest extends AbstractFileTest {
         String gp = userApi.getPreference(callingContext, "books", "lotr");
         System.out.println(gp);
         List<String> pc = userApi.getPreferenceCategories(callingContext);
-        System.out.println(JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(pc)));
+        System.out.println(JacksonUtil.formattedJsonFromObject(pc));
         userApi.removePreference(callingContext, "books", "lotr");
         gp = userApi.getPreference(callingContext, "books", "lotr");
         System.out.println(gp);
         int i = 0;
         while (pc.size() > 1) {
             pc = userApi.getPreferenceCategories(callingContext);
-            System.out.println(JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(pc)));
+            System.out.println(JacksonUtil.formattedJsonFromObject(pc));
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {

@@ -497,7 +497,7 @@ public class EntitlementApiImplTest {
 
         List<RaptureEntitlement> ents = entApi.getEntitlementsForGroup(rootContext, vocals);
 
-        System.out.println(JacksonUtil.prettyfy(JacksonUtil.jsonFromObject(ents)));
+        System.out.println(JacksonUtil.jsonFromObject(ents, true));
 
         assertEquals(3, ents.size());
         for (RaptureEntitlement re : ents) {

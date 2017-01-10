@@ -45,7 +45,7 @@ public class LookupNode extends BaseNode {
 	}
 
 	private List<ReflexValue> getValuesFromList(List<ReflexNode> nodes, IReflexDebugger debugger, Scope scope) {
-		List<ReflexValue> indexValues = new ArrayList<ReflexValue>(indexes.size());
+		List<ReflexValue> indexValues = new ArrayList<>(indexes.size());
 
 		for (ReflexNode indexNode : nodes) {
 			indexValues.add(indexNode.evaluate(debugger, scope));
@@ -60,7 +60,7 @@ public class LookupNode extends BaseNode {
 		if (indexes.size() == 1) {
 			value = getNewValueByIndex(value, getValuesFromList(indexes.get(0), debugger, scope));
 		} else {
-			List<List<ReflexValue>> indexValues = new ArrayList<List<ReflexValue>>(indexes.size());
+			List<List<ReflexValue>> indexValues = new ArrayList<>(indexes.size());
 
 			for (List<ReflexNode> nodes : indexes) {
 				indexValues.add(getValuesFromList(nodes, debugger, scope));
@@ -102,9 +102,9 @@ public class LookupNode extends BaseNode {
                     if (value.isList()) {
                     	value = value.asList().get(idx);
                     } else if (value.isString()) {
-                    	value = new ReflexValue(lineNumber, String.valueOf(value.asString().charAt(idx)));
+                        value = new ReflexValue(lineNumber, String.valueOf(value.asString().charAt(idx)));
                     }
-                } catch (NumberFormatException e) {
+                } catch (NumberFormatException | StringIndexOutOfBoundsException e) {
                     value = new ReflexUndefinedValue(lineNumber);
                 }
 			}
