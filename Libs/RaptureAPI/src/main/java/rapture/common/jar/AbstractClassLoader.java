@@ -107,6 +107,7 @@ public abstract class AbstractClassLoader extends URLClassLoader {
      * @return
      */
     InputStream getStreamForName(String name) {
+        name = name.replaceAll("/", ".");
         String fqname = fqClassNameMap.get(name);
         if (fqname == null) fqname = name;
         String jar = classNameMap.get(fqname);
