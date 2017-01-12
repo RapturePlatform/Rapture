@@ -71,7 +71,13 @@ end
 //set up the decision process storage
 #decision.setWorkOrderIdGenConfig(_cfg.DefaultDecisionIdGenConfig(), false);
 
-#idGen.setupDefaultIdGens(false);
+try do
+  #idGen.setupDefaultIdGens(false);
+end
+catch e do
+  // Probably already exists
+  println("Ignoring exception "+e);
+end
 
 #lock.createLockManager("lock://kernel", "LOCKING USING MEMORY {}", "");
 #lock.createLockManager("lock://semaphore", "LOCKING USING MEMORY {}", "");

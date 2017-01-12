@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -89,6 +90,11 @@ public class IndexApiImplTest extends AbstractFileTest {
         Kernel.getLock().createLockManager(ContextFactory.getKernelUser(), "lock://kernel", "LOCKING USING DUMMY {}", "");
         docImpl = new DocApiImpl(Kernel.INSTANCE);
 
+    }
+
+    @AfterClass
+    public static void cleanup() {
+        document.deleteDocRepo(planetURI);
     }
 
     void data1() {

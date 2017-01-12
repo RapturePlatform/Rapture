@@ -55,7 +55,7 @@ public class JarUtils {
             while ((entry = jis.getNextJarEntry()) != null) {
                 // load the class name
                 String name = entry.getName();
-                if (name.endsWith(".class")) {
+                if (!name.endsWith("/")) {
                     // load the class bytes
                     ByteArrayOutputStream buffer = new ByteArrayOutputStream();
                     int numRead;
