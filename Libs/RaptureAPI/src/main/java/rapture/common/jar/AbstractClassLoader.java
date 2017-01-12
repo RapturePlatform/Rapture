@@ -23,6 +23,8 @@
  */
 package rapture.common.jar;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Collections;
@@ -50,7 +52,10 @@ public abstract class AbstractClassLoader extends URLClassLoader {
     private static final Logger log = Logger.getLogger(AbstractClassLoader.class);
 
     protected ScriptingApi api;
+    // Map full class name to jar
     protected Map<String, String> classNameMap = new HashMap<>();
+    // map partial name such as baz.version to full name - foo.bar.baz.version
+    protected Map<String, String> fqClassNameMap = new HashMap<>();
 
     public AbstractClassLoader(ClassLoader parent, ScriptingApi api, List<String> jarUris) throws ExecutionException {
         super(new URL[0], parent);
@@ -64,6 +69,14 @@ public abstract class AbstractClassLoader extends URLClassLoader {
                     List<String> classNames = JarCache.getInstance().getClassNames(api, expandedUri);
                     for (String className : classNames) {
                         classNameMap.put(className, expandedUri);
+                        int idx = className.indexOf('.');
+                        String partial = className;
+                        while (idx > 0) {
+                            partial = partial.substring(idx + 1);
+                            if (partial.equals("class")) break;
+                            fqClassNameMap.put(partial, className);
+                            idx = partial.indexOf('.');
+                        }
                     }
                 }
             }
@@ -79,10 +92,29 @@ public abstract class AbstractClassLoader extends URLClassLoader {
             return super.findClass(className);
         }
         try {
-            byte[] classBytes = JarCache.getInstance().getClassBytes(api, jarUri, className);
+            JarCache cache = JarCache.getInstance();
+            byte[] classBytes = cache.getClassBytes(api, jarUri, className);
             return defineClass(className, classBytes, 0, classBytes.length);
         } catch (ExecutionException e) {
             throw new ClassNotFoundException("Could not get class bytes from the cache", e);
         }
+    }
+
+    /**
+     * used by getResourceAsStream
+     * 
+     * @param name
+     * @return
+     */
+    InputStream getStreamForName(String name) {
+        String fqname = fqClassNameMap.get(name);
+        if (fqname == null) fqname = name;
+        String jar = classNameMap.get(fqname);
+        if (jar != null) try {
+            byte[] classBytes = JarCache.getInstance().getClassBytes(api, jar, fqname);
+            if (classBytes != null) return new ByteArrayInputStream(classBytes);
+        } catch (ExecutionException e) {
+        }
+        return null;
     }
 }

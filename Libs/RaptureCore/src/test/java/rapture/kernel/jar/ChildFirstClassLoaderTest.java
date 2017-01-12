@@ -23,13 +23,19 @@
  */
 package rapture.kernel.jar;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
+
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
+import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 
 import org.junit.Test;
 
+import rapture.common.exception.ExceptionToString;
 import rapture.common.jar.ChildFirstClassLoader;
 import rapture.kernel.ContextFactory;
 import rapture.kernel.script.KernelScript;
@@ -45,4 +51,33 @@ public class ChildFirstClassLoaderTest extends AbstractClassLoaderTest {
         ChildFirstClassLoader cl2 = new ChildFirstClassLoader(this.getClass().getClassLoader(), ks, Arrays.asList(JAR_URI1, JAR_URI2));
         testClassLoader(cl1, cl2);
     }
+
+    @SuppressWarnings({ "resource", "rawtypes" })
+    @Test
+    public void testGetResourceAsStream() {
+        KernelScript ks = new KernelScript();
+        ks.setCallingContext(ContextFactory.getKernelUser());
+
+        try {
+            ChildFirstClassLoader cl1 = new ChildFirstClassLoader(this.getClass().getClassLoader(), ks, Arrays.asList(JAR_URI1, JAR_URI2, JAR_URI3));
+            Class class1 = cl1.loadClass("biz.c24.VersionNumber");
+            assertNotNull(class1);
+            cl1.close();
+
+            Object a1 = class1.getConstructor().newInstance();
+            assertNotNull(a1);
+
+            InputStream is = cl1.getResourceAsStream("IO.version");
+            assertNotNull(is);
+            Properties properties = new Properties();
+            properties.load(is);
+            is.close();
+            assertNotNull(properties.get("build.version"));
+
+        } catch (ClassNotFoundException | ExecutionException | IOException | InstantiationException | IllegalAccessException | IllegalArgumentException
+                | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+            fail(ExceptionToString.summary(e));
+        }
+    }
+
 }
