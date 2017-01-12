@@ -40,6 +40,7 @@ import java.util.Map;
 
 import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -285,7 +286,10 @@ public class GetFileStepFTPTest {
                     assertEquals("step1 finished", log.get(0).getMessage());
                     assertEquals("Unable to retrieve 1 files", log.get(1).getMessage());
                     assertEquals("Unable to retrieve 1KB.zip as blob://nonexistent/1KB.zip", log.get(2).getMessage());
-                    assertEquals("step1: 530 This FTP server is anonymous only.\n\nUnable to login to speedtest.tele2.net", log.get(3).getMessage());
+
+                    String log3 = log.get(3).getMessage().replaceAll("\n", "");
+                    Assert.assertTrue(log3, log3.matches("step1: 5.*Unable to login to speedtest.tele2.net"));
+                    // assertEquals("step1: 530 This FTP server is anonymous only.\n\nUnable to login to speedtest.tele2.net", log.get(3).getMessage());
                     // assertEquals("step1: 503 Login with USER first.\n\nUnable to login to speedtest.tele2.net", log.get(3).getMessage());
                     assertTrue(log.get(3).getMessage().startsWith("step1: 5"));
                     assertEquals("step1 started", log.get(4).getMessage());
@@ -297,10 +301,14 @@ public class GetFileStepFTPTest {
             assertEquals("quit", dbg.getStepRecord().getRetVal());
             assertEquals(WorkOrderExecutionState.FINISHED, debug.getOrder().getStatus());
 
-            String step1Error = Kernel.getDecision().getContextValue(context, response.getUri(), "step1Error");
-            assertEquals(
-                    "Unable to retrieve 1KB.zip as blob://nonexistent/1KB.zip due to 530 This FTP server is anonymous only.\n\nUnable to login to speedtest.tele2.net\n",
-                    step1Error);
+            String step1Error = Kernel.getDecision().getContextValue(context, response.getUri(), "step1Error").replaceAll("\n", "");
+            Assert.assertTrue(step1Error,
+                    step1Error.matches("Unable to retrieve 1KB.zip as blob://nonexistent/1KB.zip due to 5.*Unable to login to speedtest.tele2.net"));
+
+            // assertEquals(
+            // "Unable to retrieve 1KB.zip as blob://nonexistent/1KB.zip due to 530 This FTP server is anonymous only.\n\nUnable to login to
+            // speedtest.tele2.net\n",
+            // step1Error);
 
         } finally {
             FTPConnectionConfig ftpConfig = new FTPConnectionConfig().setAddress("speedtest.tele2.net").setPort(23).setLoginId("ftp").setPassword("foo@bar")
@@ -356,13 +364,11 @@ public class GetFileStepFTPTest {
             assertEquals("quit", dbg.getStepRecord().getRetVal());
             assertEquals(WorkOrderExecutionState.FINISHED, debug.getOrder().getStatus());
 
-            String step1Error = Kernel.getDecision().getContextValue(context, response.getUri(), "step1Error");
-            assertEquals(
-                    "Unable to retrieve 1KB.zip as blob://nonexistent/1KB.zip due to Unable to connect to speedtest.tele2.net as ftp\n"
-                            + "Connecting to speedtest.tele2.net port 23\n"
-                            + "com.jcraft.jsch.JSchException: java.net.ConnectException: Connection refused\n"
-                            + "Caused by: java.net.ConnectException: Connection refused\n\n",
-                    step1Error);
+            String step1Error[] = Kernel.getDecision().getContextValue(context, response.getUri(), "step1Error").split("\n");
+            assertEquals("Unable to retrieve 1KB.zip as blob://nonexistent/1KB.zip due to Unable to connect to speedtest.tele2.net as ftp", step1Error[0]);
+            assertEquals("Connecting to speedtest.tele2.net port 23", step1Error[1]);
+            Assert.assertTrue(step1Error[2].matches("com.jcraft.jsch.JSchException: java.net.ConnectException: .*"));
+            Assert.assertTrue(step1Error[3].matches("Caused by: java.net.ConnectException: .*"));
         } finally {
             FTPConnectionConfig ftpConfig = new FTPConnectionConfig().setAddress("speedtest.tele2.net").setPort(23).setLoginId("ftp").setPassword("foo@bar")
                     .setUseSFTP(false);
