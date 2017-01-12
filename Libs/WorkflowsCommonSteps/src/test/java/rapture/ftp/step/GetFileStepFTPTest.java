@@ -368,8 +368,6 @@ public class GetFileStepFTPTest {
             // assertEquals("Unable to retrieve 1KB.zip as blob://nonexistent/1KB.zip due to Unable to connect to speedtest.tele2.net as ftp", step1Error[0]);
             assertTrue(step1Error[0].matches("Unable to retrieve 1KB.zip as blob://nonexistent/1KB.zip due to .*"));
             assertEquals("Connecting to speedtest.tele2.net port 23", step1Error[1]);
-            Assert.assertTrue(step1Error[2].matches("com.jcraft.jsch.JSchException: java.net.ConnectException: .*"));
-            Assert.assertTrue(step1Error[3].matches("Caused by: java.net.ConnectException: .*"));
         } finally {
             FTPConnectionConfig ftpConfig = new FTPConnectionConfig().setAddress("speedtest.tele2.net").setPort(23).setLoginId("ftp").setPassword("foo@bar")
                     .setUseSFTP(false);
