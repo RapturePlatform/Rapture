@@ -60,14 +60,14 @@ public class ChildFirstClassLoaderTest extends AbstractClassLoaderTest {
 
         try {
             ChildFirstClassLoader cl1 = new ChildFirstClassLoader(this.getClass().getClassLoader(), ks, Arrays.asList(JAR_URI1, JAR_URI2, JAR_URI3));
-            Class class1 = cl1.loadClass("biz.c24.VersionNumber");
+            Class class1 = cl1.loadClass("biz.c24.api.License");
             assertNotNull(class1);
             cl1.close();
 
-            Object a1 = class1.getConstructor().newInstance();
+            Object a1 = class1.getConstructor(boolean.class).newInstance(true);
             assertNotNull(a1);
 
-            InputStream is = cl1.getResourceAsStream("IO.version");
+            InputStream is = a1.getClass().getResourceAsStream("IO.version");
             assertNotNull(is);
             Properties properties = new Properties();
             properties.load(is);
