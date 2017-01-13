@@ -23,6 +23,8 @@
  */
 package rapture.common.jar;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Collections;
@@ -79,10 +81,28 @@ public abstract class AbstractClassLoader extends URLClassLoader {
             return super.findClass(className);
         }
         try {
-            byte[] classBytes = JarCache.getInstance().getClassBytes(api, jarUri, className);
+            JarCache cache = JarCache.getInstance();
+            byte[] classBytes = cache.getClassBytes(api, jarUri, className);
             return defineClass(className, classBytes, 0, classBytes.length);
         } catch (ExecutionException e) {
             throw new ClassNotFoundException("Could not get class bytes from the cache", e);
         }
+    }
+
+    /**
+     * used by getResourceAsStream
+     * 
+     * @param name
+     * @return
+     */
+    InputStream getStreamForName(String name) {
+        String fqname = name.replaceAll("/", ".");
+        String jar = classNameMap.get(fqname);
+        if (jar != null) try {
+            byte[] classBytes = JarCache.getInstance().getClassBytes(api, jar, fqname);
+            if (classBytes != null) return new ByteArrayInputStream(classBytes);
+        } catch (ExecutionException e) {
+        }
+        return null;
     }
 }

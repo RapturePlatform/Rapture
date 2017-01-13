@@ -44,6 +44,7 @@ public class AbstractClassLoaderTest {
     protected CallingContext ctx = ContextFactory.getKernelUser();
     protected static final String JAR_URI1 = "jar://somerepo/test.jar";
     protected static final String JAR_URI2 = "jar://anotherrepo/xmlunit-1.6.jar";
+    protected static final String JAR_URI3 = "jar://somerepo/c24.jar";
 
     @Before
     public void setup() throws IOException {
@@ -60,6 +61,10 @@ public class AbstractClassLoaderTest {
         jarBytes = IOUtils.toByteArray(this.getClass().getResourceAsStream("/workflowTestJars/xmlunit-1.6.jar"));
         Kernel.getJar().putJar(ctx, JAR_URI2, jarBytes);
         assertArrayEquals(jarBytes, Kernel.getJar().getJar(ctx, JAR_URI2).getContent());
+
+        jarBytes = IOUtils.toByteArray(this.getClass().getResourceAsStream("/workflowTestJars/c24.jar"));
+        Kernel.getJar().putJar(ctx, JAR_URI3, jarBytes);
+        assertArrayEquals(jarBytes, Kernel.getJar().getJar(ctx, JAR_URI3).getContent());
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -93,5 +98,4 @@ public class AbstractClassLoaderTest {
         acl1.close();
         acl2.close();
     }
-
 }

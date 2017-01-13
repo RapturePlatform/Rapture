@@ -1,5 +1,6 @@
 package rapture.common.jar;
 
+import java.io.InputStream;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -58,4 +59,12 @@ public class ChildFirstClassLoader extends AbstractClassLoader {
         }
         return c;
     }
+
+    @Override
+    public InputStream getResourceAsStream(String name) {
+        InputStream is = this.getStreamForName(name);
+        if (is != null) return is;
+        return super.getResourceAsStream(name);
+    }
+
 }

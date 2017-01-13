@@ -23,6 +23,7 @@
  */
 package rapture.common.jar;
 
+import java.io.InputStream;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -38,5 +39,12 @@ public class ParentFirstClassLoader extends AbstractClassLoader {
 
     public ParentFirstClassLoader(ClassLoader parent, ScriptingApi api, List<String> jarUris) throws ExecutionException {
         super(parent, api, jarUris);
+    }
+
+    @Override
+    public InputStream getResourceAsStream(String name) {
+        InputStream is = super.getResourceAsStream(name);
+        if (is != null) return is;
+        return this.getStreamForName(name);
     }
 }
