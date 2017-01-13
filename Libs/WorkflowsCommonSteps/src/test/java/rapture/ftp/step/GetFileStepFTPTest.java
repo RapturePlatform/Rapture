@@ -90,7 +90,7 @@ public class GetFileStepFTPTest {
     private static final String REPO_USING_MEMORY = "REP {} USING MEMORY {prefix=\"/tmp/" + auth + "\"}";
     private static final String META_USING_MEMORY = "REP {} USING MEMORY {prefix=\"/tmp/M" + auth + "\"}";
 
-    static final boolean FTP_Available = true;
+    static final boolean FTP_Available = false;
 
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
