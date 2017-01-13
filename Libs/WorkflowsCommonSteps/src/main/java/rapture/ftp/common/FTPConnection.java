@@ -174,6 +174,7 @@ public class FTPConnection implements Connection {
                 return false;
             }
             if (!FTPReply.isPositiveCompletion(ftpClient.getReplyCode())) {
+                request.addError("Unable to connect to " + config.getAddress() + " as " + config.getLoginId());
                 request.addError(ftpClient.getReplyString());
                 logoffAndDisconnect();
                 return false;
@@ -207,11 +208,12 @@ public class FTPConnection implements Connection {
                     ftpClient.logout();
                 }
             } finally {
-                ftpClient.disconnect();
+                if (ftpClient.isConnected()) ftpClient.disconnect();
             }
         } catch (Exception e) {
             log.warn("Unable to log off and disconnect, but will not die: " + ExceptionToString.format(e));
         }
+        isLoggedIn = false;
     }
 
     @Override
