@@ -83,7 +83,7 @@ public class SendFileStepFTPTest {
     private static final String BLOB_USING_MEMORY = "BLOB {} USING MEMORY {prefix=\"/tmp/B" + auth + "\"}";
     private static final String REPO_USING_MEMORY = "REP {} USING MEMORY {prefix=\"/tmp/" + auth + "\"}";
     private static final String META_USING_MEMORY = "REP {} USING MEMORY {prefix=\"/tmp/M" + auth + "\"}";
-    static final boolean FTP_Available = true;
+    static final boolean FTP_Available = false;
 
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
