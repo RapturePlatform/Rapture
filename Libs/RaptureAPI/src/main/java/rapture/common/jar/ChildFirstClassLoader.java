@@ -12,7 +12,6 @@ import rapture.common.api.ScriptingApi;
  * Load all jars referenced in the Rapture jar uris first before consulting the jars in the parent
  * 
  * @author dukenguyen
- * @param <K>
  *
  */
 public class ChildFirstClassLoader extends AbstractClassLoader {
@@ -20,6 +19,7 @@ public class ChildFirstClassLoader extends AbstractClassLoader {
     private static final Logger log = Logger.getLogger(ChildFirstClassLoader.class);
 
     private ClassLoader system;
+
     public ChildFirstClassLoader(ClassLoader parent, ScriptingApi api, List<String> jarUris) throws ExecutionException {
         super(parent, api, jarUris);
         system = getSystemClassLoader();
