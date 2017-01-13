@@ -118,12 +118,14 @@ public class SendFileStep extends AbstractInvocable {
                     decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), "Sent " + e.getKey(), true);
                     successCount++;
                 } else {
-                    String errors = request.getErrors();
+                    String unable = "Unable to send " + e.getKey() + " as " + e.getValue();
+                    String errors = request.getErrors().replaceAll("\r", "");
+                    sb.append(unable);
                     if (errors != null) {
                         decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), getStepName() + ": " + errors, true);
+                        sb.append(" due to ").append(errors);
                     }
-                    String unable = "Unable to send " + e.getKey() + " as " + e.getValue();
-                    sb.append(unable).append("\n");
+                    sb.append("\n");
                     decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), unable, true);
                     retval = getFailTransition();
                     failCount++;
