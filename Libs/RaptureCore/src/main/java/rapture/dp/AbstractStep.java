@@ -25,7 +25,9 @@ package rapture.dp;
 
 import org.apache.log4j.Logger;
 
+import rapture.common.CallingContext;
 import rapture.common.dp.AbstractInvocable;
+import rapture.kernel.Kernel;
 
 /**
  * Basic implementation of a step that adds logging to the Rapture audit system and provides some useful utilities for getting/setting uris
@@ -46,4 +48,10 @@ public abstract class AbstractStep extends AbstractInvocable<Object> {
         wsu = new WorkflowStepUtils(workerUri, stepName);
         log = wsu.getLogger();
     }
+
+    @Override
+    public void preInvoke(CallingContext ctx) {
+        Kernel.getDecision().setContextLiteral(ctx, this.getWorkerURI(), "STEPNAME", this.getStepName());
+    }
+
 }
