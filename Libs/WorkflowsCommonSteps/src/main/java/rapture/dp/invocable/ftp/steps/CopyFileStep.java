@@ -50,13 +50,13 @@ import rapture.common.RaptureURIInputStream;
 import rapture.common.RaptureURIOutputStream;
 import rapture.common.Scheme;
 import rapture.common.api.DecisionApi;
-import rapture.common.dp.AbstractInvocable;
 import rapture.common.exception.ExceptionToString;
 import rapture.common.impl.jackson.JacksonUtil;
+import rapture.dp.AbstractStep;
 import rapture.kernel.Kernel;
 import rapture.kernel.dp.ExecutionContextUtil;
 
-public class CopyFileStep extends AbstractInvocable {
+public class CopyFileStep extends AbstractStep {
     private static final Logger log = Logger.getLogger(CopyFileStep.class);
 
     DecisionApi decision;
@@ -116,7 +116,6 @@ public class CopyFileStep extends AbstractInvocable {
     @Override
     public String invoke(CallingContext ctx) {
         try {
-            decision.setContextLiteral(ctx, getWorkerURI(), "STEPNAME", getStepName());
             this.context = ctx;
             String copy = StringUtils.stripToNull(decision.getContextValue(ctx, getWorkerURI(), "COPY_FILES"));
             if (copy == null) {

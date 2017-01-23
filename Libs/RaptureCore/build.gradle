@@ -37,12 +37,12 @@ task antlrOutputDir << { mkdir(generateGrammarSource.destinationDir) }
 
 task generateGrammarSource(dependsOn: antlrOutputDir, type: JavaExec) {
     description = 'Generates Java sources from Antlr3 grammars.'
-    convention.antlrGenRootDir = "$buildDir/generated-sources/antlr3/";
+    convention.antlrGenRootDir = "$buildDir/generated-sources/antlr3";
     convention.destinationDir = "$antlrGenRootDir/rapture/generated"
     def antlrSource = 'src/main/antlr3'
 
     inputs.dir file(antlrSource)
-    outputs.dir fileTree(destinationDir)
+    outputs.dir file(destinationDir)
 
     def grammars = fileTree(antlrSource).include('**/*.g')
 
