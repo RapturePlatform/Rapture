@@ -26,6 +26,7 @@ package rapture.dp;
 import org.apache.log4j.Logger;
 
 import rapture.common.CallingContext;
+import rapture.common.api.DecisionApi;
 import rapture.common.dp.AbstractInvocable;
 import rapture.kernel.Kernel;
 
@@ -39,6 +40,7 @@ public abstract class AbstractStep extends AbstractInvocable<Object> {
 
     protected Logger log;
     protected WorkflowStepUtils wsu;
+    public static DecisionApi decisionApi = Kernel.getDecision();
 
     public AbstractStep(String workerUri, String stepName) {
         super(workerUri, stepName);
@@ -51,7 +53,7 @@ public abstract class AbstractStep extends AbstractInvocable<Object> {
 
     @Override
     public void preInvoke(CallingContext ctx) {
-        Kernel.getDecision().setContextLiteral(ctx, this.getWorkerURI(), "STEPNAME", this.getStepName());
+        decisionApi.setContextLiteral(ctx, this.getWorkerURI(), "STEPNAME", this.getStepName());
     }
 
 }

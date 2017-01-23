@@ -39,7 +39,6 @@ import org.apache.commons.lang3.StringUtils;
 import com.google.common.collect.ImmutableList;
 
 import rapture.common.CallingContext;
-import rapture.common.api.DecisionApi;
 import rapture.common.exception.ExceptionToString;
 import rapture.common.impl.jackson.JacksonUtil;
 import rapture.dp.AbstractStep;
@@ -53,12 +52,11 @@ public class CalendarLookupStep extends AbstractStep {
 
     @Override
     public String invoke(CallingContext ctx) {
-        DecisionApi decision = Kernel.getDecision();
         try {
-            String dateStr = StringUtils.stripToNull(decision.getContextValue(ctx, getWorkerURI(), "DATE"));
-            String calendar = StringUtils.stripToNull(decision.getContextValue(ctx, getWorkerURI(), "CALENDAR"));
-            String translator = StringUtils.stripToNull(decision.getContextValue(ctx, getWorkerURI(), "TRANSLATOR"));
-            if (translator == null) translator = StringUtils.stripToNull(decision.getContextValue(ctx, getWorkerURI(), "DEFAULT_TRANSLATOR"));
+            String dateStr = StringUtils.stripToNull(decisionApi.getContextValue(ctx, getWorkerURI(), "DATE"));
+            String calendar = StringUtils.stripToNull(decisionApi.getContextValue(ctx, getWorkerURI(), "CALENDAR"));
+            String translator = StringUtils.stripToNull(decisionApi.getContextValue(ctx, getWorkerURI(), "TRANSLATOR"));
+            if (translator == null) translator = StringUtils.stripToNull(decisionApi.getContextValue(ctx, getWorkerURI(), "DEFAULT_TRANSLATOR"));
             LocalDate date = (dateStr == null) ? LocalDate.now() : LocalDate.parse(dateStr);
             
             // Translate the date to a name - eg Good Friday, Yom Kippur, Thanksgiving
@@ -90,7 +88,7 @@ public class CalendarLookupStep extends AbstractStep {
 
             List<String> lookup = new ArrayList<>();
 
-            String languageTag = StringUtils.stripToNull(decision.getContextValue(ctx, getWorkerURI(), "LOCALE"));
+            String languageTag = StringUtils.stripToNull(decisionApi.getContextValue(ctx, getWorkerURI(), "LOCALE"));
             Locale locale = (languageTag == null) ? Locale.getDefault() : Locale.forLanguageTag(languageTag);
 
             for (DateTimeFormatter formatter : ImmutableList.of(DateTimeFormatter.ISO_LOCAL_DATE, DateTimeFormatter.ofPattern("ddMMMuuuu", locale),
@@ -110,22 +108,22 @@ public class CalendarLookupStep extends AbstractStep {
             }
             lookup.add(DayOfWeek.from(date).getDisplayName(TextStyle.FULL, locale));
             
-            decision.setContextLiteral(ctx, getWorkerURI(), "DATE_TRANSLATIONS", JacksonUtil.jsonFromObject(lookup));
+            decisionApi.setContextLiteral(ctx, getWorkerURI(), "DATE_TRANSLATIONS", JacksonUtil.jsonFromObject(lookup));
 
             // Calendar table defines the priority. getMapFromJson returns a LinkedHashMap so order is preserved.
             for (Entry<String, Object> calEntry : calendarTable.entrySet()) {
                 if (lookup.contains(calEntry.getKey())) {
-                    decision.setContextLiteral(ctx, getWorkerURI(), "CALENDAR_LOOKUP_ENTRY", JacksonUtil.jsonFromObject(calEntry));
-                    decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), calEntry.getKey() + " matched as " + calEntry.getValue().toString(), false);
+                    decisionApi.setContextLiteral(ctx, getWorkerURI(), "CALENDAR_LOOKUP_ENTRY", JacksonUtil.jsonFromObject(calEntry));
+                    decisionApi.writeWorkflowAuditEntry(ctx, getWorkerURI(), calEntry.getKey() + " matched as " + calEntry.getValue().toString(), false);
                     return calEntry.getValue().toString();
                 }
             }
-            decision.writeWorkflowAuditEntry(ctx, getWorkerURI(),
+            decisionApi.writeWorkflowAuditEntry(ctx, getWorkerURI(),
                     getStepName() + ": No matches for " + DateTimeFormatter.ISO_LOCAL_DATE.format(date) + " found in calendar", false);
             return getNextTransition();
         } catch (Exception e) {
-            decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), "Unable to access the calendar : " + e.getLocalizedMessage());
-            decision.setContextLiteral(ctx, getWorkerURI(), getStepName() + "Error", ExceptionToString.summary(e));
+            decisionApi.setContextLiteral(ctx, getWorkerURI(), getStepName(), "Unable to access the calendar : " + e.getLocalizedMessage());
+            decisionApi.setContextLiteral(ctx, getWorkerURI(), getErrName(), ExceptionToString.summary(e));
             log.error("Problem in " + getStepName() + ": " + ExceptionToString.getRootCause(e).getLocalizedMessage());
             return getErrorTransition();
         }

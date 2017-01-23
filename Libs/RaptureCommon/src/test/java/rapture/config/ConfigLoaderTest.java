@@ -65,10 +65,11 @@ public class ConfigLoaderTest {
         log.addAppender(appender);
         mockStaticPartial(System.class, "getProperty");
         File fs = new File(resPath + raptureFilename);
-        String filePath = getFilePath(fs.getAbsolutePath());
+        final String filePath = getFilePath(fs.getAbsolutePath());
         expect(System.getProperty(RaptureHomeRetriever.APP_NAME)).andStubReturn("TestApp1");
         expect(System.getProperty(RaptureHomeRetriever.RAPTURE_HOME)).andStubReturn(filePath);
         expect(System.getProperty(RaptureHomeRetriever.GLOBAL_CONFIG_HOME)).andStubReturn(filePath);
+
     }
 
     @Test
@@ -209,6 +210,7 @@ public class ConfigLoaderTest {
 
     @Test
     public void testClasspathBasedRetrieval() {
+        replay(System.class); // switch from record to replay mode
         assertTrue(MultiValueConfigLoader.getConfig("GTEST-xyz").equals("XYZ"));
     }
 
@@ -266,7 +268,7 @@ public class ConfigLoaderTest {
 
 //
 class ProxyTestAppender extends AppenderSkeleton {
-    private final List<LoggingEvent> log = new ArrayList<LoggingEvent>();
+    private final List<LoggingEvent> log = new ArrayList<>();
 
     @Override
     public boolean requiresLayout() {
@@ -283,6 +285,6 @@ class ProxyTestAppender extends AppenderSkeleton {
     }
 
     public List<LoggingEvent> getLog() {
-        return new ArrayList<LoggingEvent>(log);
+        return new ArrayList<>(log);
     }
 }
