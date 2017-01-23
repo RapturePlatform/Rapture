@@ -50,6 +50,12 @@ public abstract class AbstractInvocable<T> implements Steps {
         errName = stepName + "Error";
     }
 
+    public void preInvoke(CallingContext ctx) {
+        // Intended to be overrideable to allow any setup that requires CallingContext
+        // and therefore cannot be done in the constructor.
+        // Could make this abstract, but there are about 20 implementing classes.
+    }
+
     public Long getStepStartTime() {
         return stepStartTime;
     }
