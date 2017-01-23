@@ -45,7 +45,7 @@ project.tasks.create(name: 'genDotNet',  type: JavaExec, group: taskGroup) {
     classpath = project.sourceSets.main.runtimeClasspath
     inputs.dir file("api/")
     inputs.file "template/DotNet.stg"
-    outputs.dir(file("../../DotNetRaptureApi/DotNetRaptureApi/Generated"));
+    outputs.dir(fileTree("../../DotNetRaptureApi/DotNetRaptureApi/Generated"));
 
     args = [
             '-mainApiFile',
@@ -69,7 +69,7 @@ project.tasks.create(name: 'genCpp',  type: JavaExec, group: taskGroup) {
     classpath = project.sourceSets.main.runtimeClasspath
     inputs.dir file("api/")
     inputs.file "template/Cpp.stg"
-    outputs.dir(file("../../APILang/cpp/api/generated"));
+    outputs.dir(fileTree("../../APILang/cpp/api/generated"));
 
     args = [
             '-mainApiFile',
@@ -93,7 +93,7 @@ project.tasks.create(name: 'genCurtisDoc',  type: JavaExec, group: taskGroup) {
     main = mainClassName
     classpath = project.sourceSets.main.runtimeClasspath
     inputs.dir file("api/")
-    outputs.dir(file("../../CurtisDocRaptureApi/Generated"));
+    outputs.dir(fileTree("../../CurtisDocRaptureApi/Generated"));
 
     args = [
             '-mainApiFile',
