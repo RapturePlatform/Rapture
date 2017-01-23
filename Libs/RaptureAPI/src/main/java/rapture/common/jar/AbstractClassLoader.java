@@ -102,6 +102,7 @@ public abstract class AbstractClassLoader extends URLClassLoader {
             byte[] classBytes = JarCache.getInstance().getClassBytes(api, jar, fqname);
             if (classBytes != null) return new ByteArrayInputStream(classBytes);
         } catch (ExecutionException e) {
+            log.warn("Unable to get " + name + " from " + jar + ": " + e.getMessage());
         }
         return null;
     }

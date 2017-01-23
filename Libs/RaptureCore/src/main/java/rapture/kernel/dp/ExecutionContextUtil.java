@@ -72,8 +72,13 @@ public class ExecutionContextUtil {
                     toEval = ecf.getValue();
                     valueType = ContextValueType.getContextValueType(toEval.charAt(0));
                 } else {
-                    toEval = dfault;
-                    valueType = ContextValueType.NULL;
+                    toEval = lookupInView(view, idNoMarker);
+                    if (toEval != null) {
+                        valueType = ContextValueType.getContextValueType(toEval.charAt(0));
+                    } else {
+                        toEval = dfault;
+                        valueType = ContextValueType.NULL;
+                    }
                 }
             }
             if (valueType == ContextValueType.LINK) {
@@ -162,7 +167,7 @@ public class ExecutionContextUtil {
                     String varName = template.substring(startVar, endVar);
                     String dfault = null;
                     int idx = varName.indexOf('$');
-                    if (idx > 1) {
+                    if (idx >= 1) {
                         dfault = varName.substring(idx + 1);
                         varName = varName.substring(0, idx);
                     }
