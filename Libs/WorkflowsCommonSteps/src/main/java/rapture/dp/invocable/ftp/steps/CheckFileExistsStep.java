@@ -34,10 +34,10 @@ import org.apache.log4j.Logger;
 import rapture.common.CallingContext;
 import rapture.common.RaptureURI;
 import rapture.common.api.DecisionApi;
-import rapture.common.dp.AbstractInvocable;
 import rapture.common.dp.Steps;
 import rapture.common.exception.ExceptionToString;
 import rapture.common.impl.jackson.JacksonUtil;
+import rapture.dp.AbstractStep;
 import rapture.ftp.common.FTPConnection;
 import rapture.ftp.common.FTPRequest;
 import rapture.ftp.common.FTPRequest.Action;
@@ -45,7 +45,7 @@ import rapture.ftp.common.SFTPConnection;
 import rapture.kernel.Kernel;
 import rapture.kernel.dp.ExecutionContextUtil;
 
-public class CheckFileExistsStep extends AbstractInvocable {
+public class CheckFileExistsStep extends AbstractStep {
     private static final Logger log = Logger.getLogger(CopyFileStep.class);
 
     DecisionApi decision;
@@ -71,8 +71,6 @@ public class CheckFileExistsStep extends AbstractInvocable {
         String workerUri = getWorkerURI();
         String workOrderUri = new RaptureURI(workerUri).toShortString();
         try {
-            decision.setContextLiteral(ctx, workOrderUri, "STEPNAME", getStepName());
-
             String configUri = StringUtils.stripToNull(decision.getContextValue(ctx, workOrderUri, "FTP_CONFIGURATION"));
             String filename = StringUtils.stripToNull(decision.getContextValue(ctx, workOrderUri, "EXIST_FILENAMES"));
             if (filename == null) {

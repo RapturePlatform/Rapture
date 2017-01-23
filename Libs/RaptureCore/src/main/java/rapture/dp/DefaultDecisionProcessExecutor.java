@@ -973,6 +973,7 @@ public class DefaultDecisionProcessExecutor implements DecisionProcessExecutor {
                 if (limit > 0) {
                     return abstractInvocable.abortableInvoke(ctx, limit);
                 } else {
+                    abstractInvocable.preInvoke(ctx);
                     return abstractInvocable.invoke(ctx);
                 }
             default:

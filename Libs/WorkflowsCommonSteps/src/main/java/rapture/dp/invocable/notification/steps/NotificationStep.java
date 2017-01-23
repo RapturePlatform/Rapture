@@ -42,9 +42,12 @@ import rapture.common.CallingContext;
 import rapture.common.RaptureURI;
 import rapture.common.api.AdminApi;
 import rapture.common.api.DecisionApi;
-import rapture.common.dp.AbstractInvocable;
+import rapture.common.dp.Worker;
+import rapture.common.dp.WorkerStorage;
 import rapture.common.exception.ExceptionToString;
 import rapture.common.impl.jackson.JacksonUtil;
+import rapture.dp.AbstractStep;
+import rapture.dp.InvocableUtils;
 import rapture.kernel.Kernel;
 import rapture.kernel.dp.ExecutionContextUtil;
 import rapture.mail.EmailTemplate;
@@ -57,13 +60,21 @@ import rapture.mail.Mailer;
 // * By instant message app - Slack/What'sApp/Pidgin
 // * text message?
 
-public class NotificationStep extends AbstractInvocable {
+public class NotificationStep extends AbstractStep {
     private static Logger log = Logger.getLogger(NotificationStep.class);
     DecisionApi decision;
 
     public NotificationStep(String workerUri, String stepName) {
         super(workerUri, stepName);
         decision = Kernel.getDecision();
+    }
+
+    private String previousStepName = "UNDEFINED";
+
+    @Override
+    public void preInvoke(CallingContext ctx) {
+        String psn = StringUtils.stripToNull(decision.getContextValue(ctx, getWorkerURI(), "STEPNAME"));
+        if (psn != null) previousStepName = psn;
     }
 
     @Override
@@ -74,7 +85,7 @@ public class NotificationStep extends AbstractInvocable {
         String types = StringUtils.stripToNull(decision.getContextValue(ctx, getWorkerURI(), "NOTIFY_TYPE"));
 
         if (types == null) {
-            decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), "Problem in " + getStepName() + ": parameter NOTIFY_TYPE is not set", true);
+            decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), "Problem in " + previousStepName + ": parameter NOTIFY_TYPE is not set", true);
             return getErrorTransition();
         }
         StringBuffer error = new StringBuffer();
@@ -88,7 +99,7 @@ public class NotificationStep extends AbstractInvocable {
             } catch (Exception e) {
                 Throwable cause = ExceptionToString.getRootCause(e);
                 error.append("Cannot send slack notification : ").append(cause.getLocalizedMessage()).append("\n");
-                decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), "Problem in " + getStepName() + ": slack notification failed", true);
+                decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), "Problem in " + previousStepName + ": slack notification failed", true);
                 decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), ExceptionToString.summary(cause), true);
                 retval = getErrorTransition();
             }
@@ -101,7 +112,7 @@ public class NotificationStep extends AbstractInvocable {
             } catch (Exception e) {
                 Throwable cause = ExceptionToString.getRootCause(e);
                 error.append("Cannot send email notification : ").append(cause.getLocalizedMessage()).append("\n");
-                decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), "Problem in NotificationStep " + getStepName() + ": email notification failed", true);
+                decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), "Problem in NotificationStep " + previousStepName + ": email notification failed", true);
                 decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), ExceptionToString.summary(cause), true);
                 log.error(ExceptionToString.format(ExceptionToString.getRootCause(e)));
                 retval = getErrorTransition();
@@ -111,7 +122,7 @@ public class NotificationStep extends AbstractInvocable {
         String errMsg = error.toString();
         if (!StringUtils.isEmpty(errMsg)) {
             log.error(errMsg);
-            decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), "Notification failure");
+            decision.setContextLiteral(ctx, getWorkerURI(), previousStepName, "Notification failure");
             decision.setContextLiteral(ctx, getWorkerURI(), getErrName(), errMsg);
         }
         return retval;
@@ -133,8 +144,10 @@ public class NotificationStep extends AbstractInvocable {
     }
 
     public String renderTemplate(CallingContext ctx, String template) {
-        String workOrder = new RaptureURI(getWorkerURI()).toShortString();
-        return ExecutionContextUtil.evalTemplateECF(ctx, workOrder, template, new HashMap<String, String>());
+        RaptureURI workUri = new RaptureURI(getWorkerURI());
+        String workOrder = workUri.toShortString();
+        Worker worker = WorkerStorage.readByFields(workOrder, workUri.getElement());
+        return ExecutionContextUtil.evalTemplateECF(ctx, workOrder, template, InvocableUtils.getLocalViewOverlay(worker));
     }
 
     private boolean sendSlack(CallingContext ctx) throws IOException {
@@ -143,13 +156,13 @@ public class NotificationStep extends AbstractInvocable {
         String templateName = StringUtils.stripToNull(decision.getContextValue(ctx, getWorkerURI(), "MESSAGE_TEMPLATE"));
         String webhook = StringUtils.stripToNull(decision.getContextValue(ctx, getWorkerURI(), "SLACK_WEBHOOK"));
         if (webhook == null) {
-            decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), "Problem in " + getStepName() + ": No webhook specified", true);
+            decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), "Problem in " + previousStepName + ": No webhook specified", true);
             return false;
         }
 
         if (message == null) {
             if (templateName == null) {
-                decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), "Problem in " + getStepName() + ": No message specified", true);
+                decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), "Problem in " + previousStepName + ": No message specified", true);
                 return false;
             }
             EmailTemplate template = Mailer.getEmailTemplate(ctx, templateName);
@@ -160,11 +173,11 @@ public class NotificationStep extends AbstractInvocable {
         slackNotification.put("text", renderTemplate(ctx, message));
         int response = doPost(url, JacksonUtil.bytesJsonFromObject(slackNotification));
         if (response == 200) {
-            decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), getStepName() + ": slack notification sent successfully", false);
+            decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), previousStepName + ": slack notification sent successfully", false);
             return true;
         } else {
             decision.writeWorkflowAuditEntry(ctx, getWorkerURI(),
-                    "Problem in " + getStepName() + ": slack notification failed with HTTP error code " + response, true);
+                    "Problem in " + previousStepName + ": slack notification failed with HTTP error code " + response, true);
             return false;
         }
     }
@@ -186,18 +199,18 @@ public class NotificationStep extends AbstractInvocable {
         }
 
         if (message == null) {
-            decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), "Problem in " + getStepName() + ": No message specified", true);
+            decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), "Problem in " + previousStepName + ": No message specified", true);
             return false;
         }
 
         if (recipientList == null) {
-            decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), "Problem in " + getStepName() + ": No recipient specified", true);
+            decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), "Problem in " + previousStepName + ": No recipient specified", true);
             return false;
         }
 
         try {
             Mailer.email(renderTemplate(ctx, recipientList).split("[, ]+"), renderTemplate(ctx, subject), renderTemplate(ctx, message));
-            decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), getStepName() + ": email notification sent successfully", false);
+            decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), previousStepName + ": email notification sent successfully", false);
             return true;
         } catch (MessagingException e) {
             log.warn("Unable to send email", e);

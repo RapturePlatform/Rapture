@@ -40,12 +40,12 @@ import com.google.common.collect.ImmutableList;
 
 import rapture.common.CallingContext;
 import rapture.common.api.DecisionApi;
-import rapture.common.dp.AbstractInvocable;
 import rapture.common.exception.ExceptionToString;
 import rapture.common.impl.jackson.JacksonUtil;
+import rapture.dp.AbstractStep;
 import rapture.kernel.Kernel;
 
-public class CalendarLookupStep extends AbstractInvocable {
+public class CalendarLookupStep extends AbstractStep {
 
     public CalendarLookupStep(String workerUri, String stepName) {
         super(workerUri, stepName);
@@ -55,8 +55,6 @@ public class CalendarLookupStep extends AbstractInvocable {
     public String invoke(CallingContext ctx) {
         DecisionApi decision = Kernel.getDecision();
         try {
-            decision.setContextLiteral(ctx, getWorkerURI(), "STEPNAME", getStepName());
-
             String dateStr = StringUtils.stripToNull(decision.getContextValue(ctx, getWorkerURI(), "DATE"));
             String calendar = StringUtils.stripToNull(decision.getContextValue(ctx, getWorkerURI(), "CALENDAR"));
             String translator = StringUtils.stripToNull(decision.getContextValue(ctx, getWorkerURI(), "TRANSLATOR"));
@@ -128,8 +126,7 @@ public class CalendarLookupStep extends AbstractInvocable {
         } catch (Exception e) {
             decision.setContextLiteral(ctx, getWorkerURI(), getStepName(), "Unable to access the calendar : " + e.getLocalizedMessage());
             decision.setContextLiteral(ctx, getWorkerURI(), getStepName() + "Error", ExceptionToString.summary(e));
-            decision.writeWorkflowAuditEntry(ctx, getWorkerURI(),
-                    "Problem in " + getStepName() + ": " + ExceptionToString.getRootCause(e).getLocalizedMessage(), true);
+            log.error("Problem in " + getStepName() + ": " + ExceptionToString.getRootCause(e).getLocalizedMessage());
             return getErrorTransition();
         }
     }
