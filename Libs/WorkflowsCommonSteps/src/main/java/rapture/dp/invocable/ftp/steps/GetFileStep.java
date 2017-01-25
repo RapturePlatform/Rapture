@@ -35,9 +35,9 @@ import org.apache.log4j.Logger;
 import rapture.common.CallingContext;
 import rapture.common.RaptureURI;
 import rapture.common.api.DecisionApi;
-import rapture.common.dp.AbstractInvocable;
 import rapture.common.exception.ExceptionToString;
 import rapture.common.impl.jackson.JacksonUtil;
+import rapture.dp.AbstractStep;
 import rapture.ftp.common.Connection;
 import rapture.ftp.common.FTPRequest;
 import rapture.ftp.common.FTPRequest.Action;
@@ -46,7 +46,7 @@ import rapture.ftp.common.SFTPConnection;
 import rapture.kernel.Kernel;
 import rapture.kernel.dp.ExecutionContextUtil;
 
-public class GetFileStep extends AbstractInvocable {
+public class GetFileStep extends AbstractStep {
     private static final Logger log = Logger.getLogger(GetFileStep.class);
 
     DecisionApi decision;
@@ -60,8 +60,6 @@ public class GetFileStep extends AbstractInvocable {
     public String invoke(CallingContext ctx) {
         Connection connection = null;
         try {
-            decision.setContextLiteral(ctx, getWorkerURI(), "STEPNAME", getStepName());
-
             String copy = StringUtils.stripToNull(decision.getContextValue(ctx, getWorkerURI(), "GET_FILES"));
             if (copy == null) {
                 // Try deprecated FETCH_FILES

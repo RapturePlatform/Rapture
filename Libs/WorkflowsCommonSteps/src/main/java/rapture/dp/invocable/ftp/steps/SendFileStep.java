@@ -30,15 +30,14 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
 
 import rapture.common.CallingContext;
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
 import rapture.common.api.DecisionApi;
-import rapture.common.dp.AbstractInvocable;
 import rapture.common.exception.ExceptionToString;
 import rapture.common.impl.jackson.JacksonUtil;
+import rapture.dp.AbstractStep;
 import rapture.ftp.common.Connection;
 import rapture.ftp.common.FTPRequest;
 import rapture.ftp.common.FTPRequest.Action;
@@ -47,9 +46,7 @@ import rapture.ftp.common.SFTPConnection;
 import rapture.kernel.Kernel;
 import rapture.kernel.dp.ExecutionContextUtil;
 
-public class SendFileStep extends AbstractInvocable {
-    private static final Logger log = Logger.getLogger(SendFileStep.class);
-
+public class SendFileStep extends AbstractStep {
     DecisionApi decision;
 
     public SendFileStep(String workerUri, String stepName) {
@@ -67,8 +64,6 @@ public class SendFileStep extends AbstractInvocable {
         Connection connection = null;
         decision = Kernel.getDecision();
         try {
-            decision.setContextLiteral(ctx, getWorkerURI(), "STEPNAME", getStepName());
-
             String copy = StringUtils.stripToNull(decision.getContextValue(ctx, getWorkerURI(), "SEND_FILES"));
             if (copy == null) {
                 // Try deprecated COPY_FILES
