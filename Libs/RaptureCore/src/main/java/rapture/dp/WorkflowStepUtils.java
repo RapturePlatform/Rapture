@@ -60,8 +60,9 @@ public class WorkflowStepUtils {
     public Logger getLogger() {
         if (log == null) {
             log = Logger.getLogger(workerUri + "/" + stepName);
-            Appender app = getAppender();
-            log.removeAppender(app);
+            Appender app = newAppender();
+            // Remove any previous appender with the same name
+            log.removeAppender(app.getName());
             log.addAppender(app);
         }
         return log;
@@ -97,7 +98,7 @@ public class WorkflowStepUtils {
         return InvocableUtils.getWorkflowAuditLog(worker.getAppStatusNameStack().get(0), worker.getWorkOrderURI(), stepName);
     }
 
-    Appender getAppender() {
+    Appender newAppender() {
         return new AuditAppender(getAuditLogUri());
     }
 
