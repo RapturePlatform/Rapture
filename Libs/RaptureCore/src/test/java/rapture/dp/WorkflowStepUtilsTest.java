@@ -73,7 +73,7 @@ public class WorkflowStepUtilsTest {
         }
 
         @Override
-        Appender getAppender() {
+        Appender newAppender() {
             return appender;
         }
 
