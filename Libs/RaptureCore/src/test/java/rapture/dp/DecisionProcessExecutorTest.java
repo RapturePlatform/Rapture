@@ -24,10 +24,8 @@
 package rapture.dp;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,9 +33,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -45,7 +41,6 @@ import org.joda.time.LocalTime;
 import org.joda.time.format.DateTimeFormat;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import rapture.common.CallingContext;
@@ -53,7 +48,6 @@ import rapture.common.RaptureScriptLanguage;
 import rapture.common.RaptureScriptPurpose;
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
-import rapture.common.SemaphoreAcquireResponse;
 import rapture.common.WorkOrderExecutionState;
 import rapture.common.dp.ContextVariables;
 import rapture.common.dp.SemaphoreType;
@@ -71,9 +65,6 @@ import rapture.common.model.RaptureExchangeType;
 import rapture.common.pipeline.PipelineConstants;
 import rapture.dp.invocable.CheckPrerequisiteStep;
 import rapture.dp.invocable.PrerequisiteConfig;
-import rapture.dp.semaphore.LockKeyFactory;
-import rapture.dp.semaphore.WorkOrderSemaphore;
-import rapture.dp.semaphore.WorkOrderSemaphoreFactory;
 import rapture.kernel.ContextFactory;
 import rapture.kernel.Kernel;
 import rapture.kernel.dp.StepRecordUtil;
@@ -135,7 +126,7 @@ public class DecisionProcessExecutorTest {
         exchange.setExchangeType(RaptureExchangeType.FANOUT);
         exchange.setDomain("main");
 
-        List<RaptureExchangeQueue> queues = new ArrayList<>();
+        List<RaptureExchangeQueue> queues = new ArrayList<RaptureExchangeQueue>();
         RaptureExchangeQueue queue = new RaptureExchangeQueue();
         queue.setName("default");
         queue.setRouteBindings(new ArrayList<String>());
@@ -152,7 +143,7 @@ public class DecisionProcessExecutorTest {
     @Test
     public void testRunAndCheckStatus() throws InterruptedException {
         String wuri = "workflow://myworkflow/x";
-        List<Step> steps = new ArrayList<>();
+        List<Step> steps = new ArrayList<Step>();
         Step s1 = new Step();
         s1.setName("start");
         s1.setExecutable("script://" + REPO_URI + "/" + scr1);
@@ -200,7 +191,7 @@ public class DecisionProcessExecutorTest {
     @Test
     public void testResume() throws InterruptedException {
         String wuri = "workflow://myworkflow/later";
-        List<Step> steps = new ArrayList<>();
+        List<Step> steps = new ArrayList<Step>();
         Step s1 = new Step();
         s1.setName("start");
         s1.setExecutable("script://" + REPO_URI + "/" + scr3);
@@ -245,7 +236,7 @@ public class DecisionProcessExecutorTest {
     }
 
     protected void testBad(String wuri, String src) throws InterruptedException {
-        List<Step> steps = new ArrayList<>();
+        List<Step> steps = new ArrayList<Step>();
         Step s1 = new Step();
         s1.setName("start");
         s1.setExecutable("script://" + REPO_URI + "/" + scr1);
@@ -294,11 +285,11 @@ public class DecisionProcessExecutorTest {
     @Test
     public void testContextValues() throws InterruptedException {
         String wuri = "workflow://myworkflow/xCtx";
-        List<Step> steps = new ArrayList<>();
+        List<Step> steps = new ArrayList<Step>();
         Step s1 = new Step();
         s1.setName("start");
         s1.setExecutable(new RaptureURI.Builder(Scheme.DP_JAVA_INVOCABLE, "DecisionTestInvocable").build().toString());
-        Map<String, String> view = new HashMap<>();
+        Map<String, String> view = new HashMap<String, String>();
         view.put(CONST_ALIAS, "#" + SOME_CONSTANT);
         view.put(LINK_IN_VIEW, LINK_EXPRESSION);
         view.put(VARIABLE_ALIAS, "$" + CONTEXT_VARIABLE_1);
@@ -332,7 +323,7 @@ public class DecisionProcessExecutorTest {
     @Test
     public void testUnhandledCategory() throws InterruptedException {
         String wuri = "workflow://myworkflow/xUnhandled";
-        List<Step> steps = new ArrayList<>();
+        List<Step> steps = new ArrayList<Step>();
         Step s1 = new Step();
         s1.setName("start");
         s1.setExecutable("script://" + REPO_URI + "/" + scr1);
@@ -368,7 +359,7 @@ public class DecisionProcessExecutorTest {
     @Test
     public void testSemaphore() {
         String wuri = "workflow://myworkflow/xSemaphore";
-        List<Step> steps = new ArrayList<>();
+        List<Step> steps = new ArrayList<Step>();
         Step s1 = new Step();
         s1.setName("start");
         s1.setExecutable("script://" + REPO_URI + "/" + scr1);
@@ -389,72 +380,13 @@ public class DecisionProcessExecutorTest {
 
         String workOrderUri1 = Kernel.getDecision().createWorkOrder(CONTEXT, wuri, null);
         assertNotNull(workOrderUri1);
-        Map<String, String> overlay = new HashMap<>();
+        Map<String, String> overlay = new HashMap<String, String>();
         overlay.put(ContextVariables.PARENT_JOB_URI, "job://some/job/uri");
         String workOrderUri2 = Kernel.getDecision().createWorkOrder(CONTEXT, wuri, overlay);
         assertNotNull(workOrderUri2);
         String workOrderUri3 = Kernel.getDecision().createWorkOrder(CONTEXT, wuri, null);
         assertNull(workOrderUri3);
 
-    }
-
-    @Ignore
-    public void testSemaphore2() {
-        String wuri = "workflow://myworkflow/xSemaphore2";
-        List<Step> steps = new ArrayList<>();
-        Step s1 = new Step();
-        s1.setName("start");
-        s1.setExecutable("script://" + REPO_URI + "/" + scr1);
-        steps.add(s1);
-
-        Workflow workflow = new Workflow();
-        workflow.setCategory("unhandled"); // don't want this to be handled
-        // before we attempt to re-acquire
-        // lock
-        workflow.setSteps(steps);
-        workflow.setWorkflowURI(wuri);
-        workflow.setStartStep("start");
-        workflow.setSemaphoreType(SemaphoreType.WORKFLOW_BASED);
-        WorkflowBasedSemaphoreConfig config = new WorkflowBasedSemaphoreConfig();
-        config.setMaxAllowed(1);
-        workflow.setSemaphoreConfig(JacksonUtil.jsonFromObject(config));
-        Kernel.getDecision().putWorkflow(CONTEXT, workflow);
-
-        WorkOrderSemaphore semaphore = WorkOrderSemaphoreFactory.create(CONTEXT, workflow.getSemaphoreType(), workflow.getSemaphoreConfig());
-        String lockKey = LockKeyFactory.createLockKey(workflow.getSemaphoreType(), workflow.getSemaphoreConfig(), workflow.getWorkflowURI(), new HashMap<>());
-        assertNotNull(lockKey);
-
-        SemaphoreAcquireResponse response = semaphore.tryAcquirePermit(workflow.getWorkflowURI(), System.currentTimeMillis(), lockKey);
-        if (!response.getIsAcquired()) {
-            Set<String> existingStakeholderURIs = response.getExistingStakeholderURIs();
-            for (String stakeHolderURI : existingStakeholderURIs) {
-                System.out.println(String.format("{workOrderURI=%s, created by jobURI=%s}", stakeHolderURI,
-                        Kernel.getDecision().getContextValue(CONTEXT, stakeHolderURI, ContextVariables.PARENT_JOB_URI)));
-            }
-        }
-        assertTrue(response.getIsAcquired());
-        try {
-            Thread.sleep(10);
-        } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        SemaphoreAcquireResponse response2 = semaphore.tryAcquirePermit(workflow.getWorkflowURI(), System.currentTimeMillis(), lockKey);
-        assertFalse(response2.getIsAcquired());
-
-        List<String> existingWoDesc = new LinkedList<>();
-        Set<String> existingStakeholderURIs = response.getExistingStakeholderURIs();
-        for (String stakeHolderURI : existingStakeholderURIs) {
-            String jobURI = Kernel.getDecision().getContextValue(CONTEXT, stakeHolderURI, ContextVariables.PARENT_JOB_URI);
-            if (jobURI != null) {
-                existingWoDesc.add(String.format("{workOrderURI=%s, created by jobURI=%s}", stakeHolderURI, jobURI));
-            } else {
-                existingWoDesc.add(String.format("{workOrderURI=%s}", stakeHolderURI));
-            }
-        }
-
-        System.out.println("lock " + lockKey + " is already being held by: " + StringUtils.join(existingWoDesc, ", "));
-        semaphore.releasePermit(workflow.getWorkflowURI(), lockKey);
     }
 
     @Test
@@ -467,7 +399,7 @@ public class DecisionProcessExecutorTest {
 
         // create workflow
         String workflowUri = putWorkflow();
-        Map<String, String> contextMap = new HashMap<>();
+        Map<String, String> contextMap = new HashMap<String, String>();
         contextMap.put(CheckPrerequisiteStep.CONFIG_URI, configUri);
         final String workOrderUri = Kernel.getDecision().createWorkOrder(CONTEXT, workflowUri, contextMap);
 
@@ -513,7 +445,7 @@ public class DecisionProcessExecutorTest {
     }
 
     private static String putWorkflow() {
-        List<Step> steps = new ArrayList<>();
+        List<Step> steps = new ArrayList<Step>();
         Step step1 = new Step();
         step1.setName("firstStep");
         step1.setExecutable(new RaptureURI.Builder(Scheme.DP_JAVA_INVOCABLE, "CheckPrerequisiteStep").build().toString());

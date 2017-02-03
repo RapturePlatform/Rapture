@@ -29,7 +29,6 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import reflex.IReflexHandler;
-import reflex.ReflexException;
 import reflex.Scope;
 import reflex.debug.IReflexDebugger;
 import reflex.value.ReflexTimeValue;
@@ -63,13 +62,12 @@ public class DateFormatNode extends BaseNode {
         ReflexValue dateFormatValue = null;
         ReflexValue retVal = null;
         DateTimeZone zone = null;
-
         if (timezone != null) {
             ReflexValue rv = timezone.evaluate(debugger, scope);
             try {
                 if (!rv.isNull()) zone = DateTimeZone.forID(rv.asString());
             } catch (IllegalArgumentException e) {
-                throw new ReflexException(lineNumber, "Unrecognised time zone identifier " + rv.asString());
+                log.error("Unrecognised time zone identifier " + rv.asString());
             }
         }
 

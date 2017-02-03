@@ -51,12 +51,6 @@ public class DateTest extends ResourceBasedTest {
     }
 
     @Test
-    public void testDateFormat() throws RecognitionException {
-        String ret = runTestFor("/dateformat.rfx");
-        assertTrue("Test case did not complete successfully", ret.endsWith("true"));
-    }
-
-    @Test
     public void testDateCreation() throws RecognitionException {
         String ret = runTestFor("/date/creation.rfx");
         assertTrue("Test case did not complete successfully", ret.endsWith("true"));
