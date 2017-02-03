@@ -63,6 +63,21 @@ public class DateTest extends ResourceBasedTest {
     }
 
     @Test
+    public void testFormatException() throws RecognitionException {
+        String ret = runTestFor("/dateformat.rfx");
+        assertTrue("Test case did not complete successfully", ret.endsWith("true"));
+        String[] lines = ret.split("\n");
+        // EST succeeds but should not - very odd. Java bug.
+        assertEquals(lines[1], "Line: 10, reflex.ReflexException: Unrecognised time zone identifier EDT");
+        assertEquals(lines[2], "Line: 17, reflex.ReflexException: Unrecognised time zone identifier America/New York");
+        assertTrue(lines[3].endsWith("America/New_York"));
+        assertEquals(lines[4], "Line: 31, reflex.ReflexException: Unrecognised time zone identifier GMT+5");
+        assertTrue(lines[5].endsWith("UTC"));
+        assertEquals(lines[6], "java.lang.IllegalArgumentException: Illegal pattern component: U");
+
+    }
+
+    @Test
     public void testComparison() throws RecognitionException {
         String ret = runTestFor("/date/comparison.rfx");
         assertTrue("Test case did not complete successfully", ret.endsWith("true"));
