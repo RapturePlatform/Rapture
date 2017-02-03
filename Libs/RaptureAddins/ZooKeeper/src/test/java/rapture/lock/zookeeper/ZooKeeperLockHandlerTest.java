@@ -139,8 +139,8 @@ public class ZooKeeperLockHandlerTest {
         final int secondsToWait = 10;
         final int secondsToHold = 30; // ignored in zk impl
 
-        final Set<LockHandle> handles = new HashSet<LockHandle>();
-        final Set<String> locksAcquired = new HashSet<String>();
+        final Set<LockHandle> handles = new HashSet<>();
+        final Set<String> locksAcquired = new HashSet<>();
 
         assertFalse(lockExists(lockName, lockHolder));
 
@@ -156,7 +156,7 @@ public class ZooKeeperLockHandlerTest {
                     locksAcquired.add(lockName + String.valueOf(counter));
 
                     try {
-                        Thread.sleep(200);
+                        Thread.sleep(195);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -179,8 +179,8 @@ public class ZooKeeperLockHandlerTest {
         final int secondsToWait = 5;
         final int secondsToHold = 30;
 
-        final Set<String> handlesAcquired = new HashSet<String>();
-        final Set<String> handlesDenied = new HashSet<String>();
+        final Set<String> handlesAcquired = new HashSet<>();
+        final Set<String> handlesDenied = new HashSet<>();
 
         assertFalse(lockExists(lockName, lockHolder));
 
@@ -204,7 +204,7 @@ public class ZooKeeperLockHandlerTest {
                         return;
                     }
                     try {
-                        Thread.sleep(10000);
+                        Thread.sleep(9990);
                     } catch (InterruptedException e) {
                     }
                 }
