@@ -1,0 +1,34 @@
+try do
+d1 = dateformat(date(), "yyyyMMdd HH:mm", "EST");
+println(" EST "+d1);
+// By rights this should fail
+end catch e do
+end
+try do
+d2 = dateformat(date(), "yyyyMMdd HH:mm", "EDT");
+println(" EDT "+d2);
+end catch e do
+end
+try do
+d3 = dateformat(date(), "yyyyMMdd HH:mm", "America/New York");
+println(" America/New York "+d3);
+end catch e do
+end
+try do
+d4 = dateformat(date(), "yyyyMMdd HH:mm", "America/New_York");
+println(" America/New_York "+d4);
+end catch e do
+end
+try do
+d5 = dateformat(date(), "yyyyMMdd HH:mm", "GMT+5");
+println(" GMT+5 "+d5);
+end catch e do
+end
+try do
+d6 = dateformat(date(), "yyyyMMdd HH:mm", "UTC");
+println(" UTC "+d6);
+end catch e do
+end
+
+return true;
+

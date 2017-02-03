@@ -92,27 +92,31 @@ public class NotificationStep extends AbstractStep {
         String retval = getNextTransition();
         for (String type : types.split("[, ]+")) {
             try {
-                if (type.equalsIgnoreCase("SLACK") && !sendSlack(ctx)) {
-                    decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), "Slack notification failed", true);
+                if (type.equalsIgnoreCase("SLACK")) {
+                    if (!sendSlack(ctx)) {
+                        decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), "Slack notification failed", true);
+                        retval = getErrorTransition();
+                    }
+                } else if (type.equalsIgnoreCase("EMAIL")) {
+                    if (!sendEmail(ctx)) {
+                        decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), "Email notification failed", true);
+                        retval = getErrorTransition();
+                    }
+                } else if (type.equalsIgnoreCase("WORKFLOW")) {
+                    if (!sendEmail(ctx) && !sendSlack(ctx)) {
+                        decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), "Notification failed", true);
+                        retval = getErrorTransition();
+                    }
+                } else {
+                    String unsupported = "Unsupported notification type: " + type;
+                    error.append(unsupported).append("\n");
+                    decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), unsupported, true);
                     retval = getErrorTransition();
                 }
             } catch (Exception e) {
                 Throwable cause = ExceptionToString.getRootCause(e);
-                error.append("Cannot send slack notification : ").append(cause.getLocalizedMessage()).append("\n");
-                decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), "Problem in " + previousStepName + ": slack notification failed", true);
-                decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), ExceptionToString.summary(cause), true);
-                retval = getErrorTransition();
-            }
-
-            try {
-                if (type.equalsIgnoreCase("EMAIL") && !sendEmail(ctx)) {
-                    decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), "Email notification failed", true);
-                    retval = getErrorTransition();
-                }
-            } catch (Exception e) {
-                Throwable cause = ExceptionToString.getRootCause(e);
-                error.append("Cannot send email notification : ").append(cause.getLocalizedMessage()).append("\n");
-                decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), "Problem in NotificationStep " + previousStepName + ": email notification failed", true);
+                error.append("Cannot send ").append(type).append(" notification : ").append(cause.getLocalizedMessage()).append("\n");
+                decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), "Problem in NotificationStep " + previousStepName + ": notification failed", true);
                 decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), ExceptionToString.summary(cause), true);
                 log.error(ExceptionToString.format(ExceptionToString.getRootCause(e)));
                 retval = getErrorTransition();

@@ -38,7 +38,9 @@ import rapture.common.Scheme;
 import rapture.common.SemaphoreAcquireResponse;
 import rapture.common.SemaphoreLock;
 import rapture.common.SemaphoreLockStorage;
+import rapture.common.WorkOrderExecutionState;
 import rapture.common.api.LockApi;
+import rapture.common.dp.WorkOrderDebug;
 import rapture.common.exception.RaptureException;
 import rapture.common.impl.jackson.JsonContent;
 import rapture.dp.semaphore.URIGenerator;
@@ -123,7 +125,7 @@ public class LockApiImpl extends KernelBase implements LockApi {
     public List<RaptureLockConfig> getLockManagerConfigs(CallingContext context, final String managerUri) {
         final RaptureURI internalUri = new RaptureURI(managerUri, Scheme.LOCK);
         String prefix = RaptureLockConfigStorage.addressToStorageLocation(internalUri).getDocPath();
-        final List<RaptureLockConfig> ret = new ArrayList<RaptureLockConfig>();
+        final List<RaptureLockConfig> ret = new ArrayList<>();
         getConfigRepo().visitAll(prefix, null, new RepoVisitor() {
 
             @Override
@@ -182,7 +184,18 @@ public class LockApiImpl extends KernelBase implements LockApi {
                         semaphoreLock = new SemaphoreLock();
                         semaphoreLock.setLockKey(lockKey);
                     }
-                    if (semaphoreLock.getStakeholderURIs().size() < maxAllowed) {
+                    Set<String> stakeholderURIs = semaphoreLock.getStakeholderURIs();
+                    if (stakeholderURIs.size() >= maxAllowed) {
+                        for (String stakeholderURI : stakeholderURIs) {
+                            WorkOrderDebug debug = Kernel.getDecision().getWorkOrderDebug(callingContext, stakeholderURI);
+                            WorkOrderExecutionState state = (debug == null) ? null : debug.getOrder().getStatus();
+                            if (!state.equals(WorkOrderExecutionState.ACTIVE)) {
+                                log.warn("Semaphore " + lockKey + " is held by stakeholder " + stakeholderURI + " which has state " + state);
+                            }
+                        }
+                        // Should we clean up dead stakeholders?
+                    }
+                    if (stakeholderURIs.size() < maxAllowed) {
                         // add stakeholder
                         RaptureURI stakeholderUri = uriGenerator.generateStakeholderURI();
                         semaphoreLock.getStakeholderURIs().add(stakeholderUri.toString());
@@ -231,6 +244,16 @@ public class LockApiImpl extends KernelBase implements LockApi {
 
                 SemaphoreAcquireResponse response = new SemaphoreAcquireResponse();
                 response.setExistingStakeholderURIs(existingStakeholderUris);
+                if (count >= maxAllowed) {
+                    for (String stakeholderURI : existingStakeholderUris) {
+                        WorkOrderDebug debug = Kernel.getDecision().getWorkOrderDebug(callingContext, stakeholderURI);
+                        WorkOrderExecutionState state = (debug == null) ? null : debug.getOrder().getStatus();
+                        if ((state == null) || !state.equals(WorkOrderExecutionState.ACTIVE)) {
+                            log.warn("Semaphore " + lockKey + " is held by stakeholder " + stakeholderURI + " which has state " + state);
+                        }
+                    }
+                    // Should we clean up dead stakeholders?
+                }
 
                 if (count < maxAllowed) {
                     RaptureURI stakeholderUri = uriGenerator.generateStakeholderURI();
