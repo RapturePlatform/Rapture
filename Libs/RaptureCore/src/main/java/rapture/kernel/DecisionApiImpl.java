@@ -315,11 +315,16 @@ public class DecisionApiImpl extends KernelBase implements DecisionApi {
             List<String> existingWoDesc = new LinkedList<>();
             Set<String> existingStakeholderURIs = response.getExistingStakeholderURIs();
             for (String stakeHolderURI : existingStakeholderURIs) {
+
+                WorkOrderDebug debug = Kernel.getDecision().getWorkOrderDebug(context, stakeHolderURI);
+                WorkOrderExecutionState state = (debug == null) ? null : debug.getOrder().getStatus();
+
                 String jobURI = getContextValue(context, stakeHolderURI, ContextVariables.PARENT_JOB_URI);
                 if (jobURI != null) {
-                    existingWoDesc.add(String.format("{workOrderURI=%s, created by jobURI=%s}", stakeHolderURI, jobURI));
+                    existingWoDesc.add(String.format("{workOrderURI=%s in state %s, created by jobURI=%s}", stakeHolderURI,
+                            ((state == null) ? "UNKNOWN" : state.toString()), jobURI));
                 } else {
-                    existingWoDesc.add(String.format("{workOrderURI=%s}", stakeHolderURI));
+                    existingWoDesc.add(String.format("{workOrderURI=%s in state %s}", stakeHolderURI, ((state == null) ? "UNKNOWN" : state.toString())));
                 }
             }
             String error = String
@@ -327,6 +332,7 @@ public class DecisionApiImpl extends KernelBase implements DecisionApi {
                             " WorkOrder(s): %s",
                             workflowURI, lockKey, StringUtils.join(existingWoDesc, ", "));
             logger.warn(error);
+
             CreateResponse ret = new CreateResponse();
             ret.setIsCreated(false);
             ret.setMessage(error);
