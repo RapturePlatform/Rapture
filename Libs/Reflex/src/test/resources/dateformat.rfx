@@ -1,0 +1,51 @@
+try do
+  d1 = dateformat(date(), "yyyyMMdd HH:mm", "EST");
+  // By rights this should fail
+  println(d1 + ": EST");
+end catch e do
+  println(e);
+end
+
+try do
+  d2 = dateformat(date(), "yyyyMMdd HH:mm", "EDT");
+  println(d2 + ": EDT");
+end catch e do
+  println(e);
+end
+
+try do
+  d3 = dateformat(date(), "yyyyMMdd HH:mm", "America/New York");
+  println(d3 + ": America/New York");
+end catch e do
+  println(e);
+end
+
+try do
+  d4 = dateformat(date(), "yyyyMMdd HH:mm", "America/New_York");
+  println(d4 + ": America/New_York");
+end catch e do
+  println(e);
+end
+
+try do
+  d5 = dateformat(date(), "yyyyMMdd HH:mm", "GMT+5");
+  println(d5 + ": GMT+5");
+end catch e do
+  println(e);
+end
+
+try do
+  d6 = dateformat(date(), "yyyyMMdd HH:mm", "UTC");
+  println(d6 + ": UTC");
+end catch e do
+  println(e);
+end
+
+try do
+  d7 = dateformat(date(), "UTC");
+  println(d7 + ": UTC");
+end catch e do
+  println(e);
+end
+
+return true;
