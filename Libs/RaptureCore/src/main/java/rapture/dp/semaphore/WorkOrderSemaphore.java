@@ -67,7 +67,7 @@ public class WorkOrderSemaphore {
      * @param lockKey
      * @return A URI to be used for the WorkOrder, or null if fail to acquire a permit
      */
-    public SemaphoreAcquireResponse acquirePermit(final String workflowURI, final Long startInstant, String lockKey, long timeout) {
+    public SemaphoreAcquireResponse acquirePermit(final String workflowURI, final Long startInstant, String lockKey, long timeoutSeconds) {
         URIGenerator uriGenerator = new URIGenerator() {
             @Override
             public RaptureURI generateStakeholderURI() {
@@ -82,7 +82,7 @@ public class WorkOrderSemaphore {
             response.setIsAcquired(true);
             return response;
         } else {
-            return Kernel.getLock().getTrusted().acquirePermit(callingContext, maxAllowed, lockKey, uriGenerator, timeout);
+            return Kernel.getLock().getTrusted().acquirePermit(callingContext, maxAllowed, lockKey, uriGenerator, timeoutSeconds);
         }
     }
 
