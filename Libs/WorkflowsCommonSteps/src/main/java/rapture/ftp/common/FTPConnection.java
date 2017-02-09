@@ -35,6 +35,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -45,6 +46,7 @@ import org.apache.commons.net.ftp.FTPReply;
 import org.apache.log4j.Logger;
 
 import rapture.common.CallingContext;
+import rapture.common.RaptureFolderInfo;
 import rapture.common.RaptureURI;
 import rapture.common.RaptureURIInputStream;
 import rapture.common.RaptureURIOutputStream;
@@ -118,26 +120,40 @@ public class FTPConnection implements Connection {
     public Boolean fileExists(final FTPRequest request) {
         try {
             if (this.isLocal() || request.isLocal()) {
+                CallingContext kernel = ContextFactory.getKernelUser();
                 boolean exists = false;
                 File f = null;
                 String name = request.getRemoteName();
+                Map<String, RaptureFolderInfo> map = null;
+
                 if (name.startsWith("file://")) {
                     name = name.substring(6);
                     f = new File(name);
                     exists = f.exists();
                 } else if (name.startsWith("//")) {
                     RaptureURI uri = new RaptureURI(name, Scheme.DOCUMENT);
-                    exists = Kernel.getDoc().docExists(ContextFactory.getKernelUser(), uri.toString());
+                    exists = Kernel.getDoc().docExists(kernel, uri.toString());
+                    if (!exists) map = Kernel.getDoc().listDocsByUriPrefix(kernel, uri.toAuthString(), -1);
                 } else if (!name.startsWith("/")) {
                     RaptureURI uri = new RaptureURI(name);
                     if (uri.getScheme() == Scheme.DOCUMENT) {
-                        exists = Kernel.getDoc().docExists(ContextFactory.getKernelUser(), uri.toString());
+                        exists = Kernel.getDoc().docExists(kernel, uri.toString());
+                        if (!exists) map = Kernel.getDoc().listDocsByUriPrefix(kernel, uri.toAuthString(), -1);
                     } else if (uri.getScheme() == Scheme.BLOB) {
-                        exists = Kernel.getBlob().blobExists(ContextFactory.getKernelUser(), uri.toString());
+                        exists = Kernel.getBlob().blobExists(kernel, uri.toString());
+                        if (!exists) map = Kernel.getBlob().listBlobsByUriPrefix(kernel, uri.toAuthString(), -1);
                     }
                 } else {
                     f = new File(name);
                     exists = f.exists();
+                }
+                if (map != null) {
+                    for (String key : map.keySet()) {
+                        if (key.matches(name)) {
+                            exists = true;
+                            break;
+                        }
+                    }
                 }
                 if (!exists && (f != null)) {
                     List<String> matches = new PathMatcher(name).getResults();
