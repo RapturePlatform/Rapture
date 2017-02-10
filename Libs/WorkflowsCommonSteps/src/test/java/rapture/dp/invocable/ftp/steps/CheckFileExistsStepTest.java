@@ -228,4 +228,29 @@ public class CheckFileExistsStepTest {
                 foo10Error);
         assertEquals(cfes.getFailTransition(), trans);
     }
+
+    @Test
+    public void checkWildcardTest11() {
+        CallingContext ctx = ContextFactory.getAnonymousUser();
+        String workerUri = "workorder://x/y#0";
+        Kernel.getDoc().putDoc(ctx, "document://foo/bar/baz12345baz", JacksonUtil.jsonFromObject(ImmutableMap.of("A", "B")));
+
+        CheckFileExistsStep cfes = new CheckFileExistsStep(workerUri, "foo11a");
+        Kernel.getDecision().setContextLiteral(ctx, workerUri, "EXIST_FILENAMES",
+                JacksonUtil.jsonFromObject(ImmutableMap.of("document://foo/bar/baz12345baz", Boolean.TRUE)));
+        String trans = cfes.invoke(ctx);
+        String foo11aError = Kernel.getDecision().getContextValue(ctx, workerUri, "foo11aError");
+        // foo11aError = foo11aError.substring(foo11aError.indexOf(' '));
+        assertEquals("", Kernel.getDecision().getContextValue(ctx, workerUri, "foo11aError"));
+        assertEquals(cfes.getNextTransition(), trans);
+
+        cfes = new CheckFileExistsStep(workerUri, "foo11b");
+        Kernel.getDecision().setContextLiteral(ctx, workerUri, "EXIST_FILENAMES",
+                JacksonUtil.jsonFromObject(ImmutableMap.of("document://foo/bar/baz.*baz", Boolean.TRUE)));
+        trans = cfes.invoke(ctx);
+        String foo11bError = Kernel.getDecision().getContextValue(ctx, workerUri, "foo11bError");
+        // foo11bError = foo11bError.substring(foo11bError.indexOf(' '));
+        assertEquals("", Kernel.getDecision().getContextValue(ctx, workerUri, "foo11bError"));
+        assertEquals(cfes.getNextTransition(), trans);
+    }
 }
