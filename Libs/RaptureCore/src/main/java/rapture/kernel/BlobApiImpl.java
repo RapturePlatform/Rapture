@@ -330,7 +330,7 @@ public class BlobApiImpl extends KernelBase implements BlobApi, RaptureScheme {
         if (attributesString != null) {
             return JacksonUtil.objectFromJson(attributesString, HashMap.class);
         } else {
-            return new HashMap<String, String>();
+            return new HashMap<>();
         }
     }
 
@@ -443,7 +443,7 @@ public class BlobApiImpl extends KernelBase implements BlobApi, RaptureScheme {
     public Map<String, RaptureFolderInfo> listBlobsByUriPrefix(CallingContext context, String uriPrefix, int depth) {
         RaptureURI internalUri = new RaptureURI(uriPrefix, BLOB);
         String authority = internalUri.getAuthority();
-        Map<String, RaptureFolderInfo> ret = new HashMap<String, RaptureFolderInfo>();
+        Map<String, RaptureFolderInfo> ret = new HashMap<>();
 
         // Schema level is special case.
         if (authority.isEmpty()) {
@@ -484,7 +484,7 @@ public class BlobApiImpl extends KernelBase implements BlobApi, RaptureScheme {
         }
         if (depth <= 0) getAll = true;
 
-        Stack<String> parentsStack = new Stack<String>();
+        Stack<String> parentsStack = new Stack<>();
         parentsStack.push(parentDocPath);
 
         while (!parentsStack.isEmpty()) {

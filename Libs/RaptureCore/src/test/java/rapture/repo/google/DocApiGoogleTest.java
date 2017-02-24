@@ -21,18 +21,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package rapture.kernel;
+package rapture.repo.google;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,23 +39,33 @@ import java.util.UUID;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import com.google.cloud.datastore.Datastore;
+import com.google.cloud.datastore.DatastoreOptions;
+import com.google.cloud.datastore.Key;
+import com.google.cloud.datastore.Query;
+import com.google.cloud.datastore.QueryResults;
 
 import rapture.common.CallingContext;
 import rapture.common.RaptureConstants;
 import rapture.common.RaptureFolderInfo;
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
-import rapture.common.exception.RaptureException;
 import rapture.common.impl.jackson.JacksonUtil;
 import rapture.common.model.DocumentRepoConfig;
+import rapture.kernel.AbstractFileTest;
+import rapture.kernel.ContextFactory;
+import rapture.kernel.DocApiImpl;
+import rapture.kernel.Kernel;
 
-public class DocApiFileTest extends AbstractFileTest {
+public class DocApiGoogleTest extends AbstractFileTest {
 
-    private static final Logger log = Logger.getLogger(DocApiFileTest.class);
-    private static final String REPO_USING_FILE = "REP {} USING FILE {prefix=\"/tmp/" + auth + "\"}";
+    private static final Logger log = Logger.getLogger(DocApiGoogleTest.class);
+    private static final String REPO_USING_GDS = "REP {} USING GDS {kind =\"" + auth + "\"}";
     private static final String GET_ALL_BASE = "document://getAll";
     private static final String docContent = "{\"content\":\"Cold and misty morning I had heard a warning borne in the air\"}";
     private static final String docAuthorityURI = "document://" + auth;
@@ -68,9 +77,9 @@ public class DocApiFileTest extends AbstractFileTest {
     @BeforeClass
     static public void setUp() {
         AbstractFileTest.setUp();
-        config.RaptureRepo = REPO_USING_FILE;
-        config.InitSysConfig = "NREP {} USING FILE { prefix=\"/tmp/" + auth + "/sys.config\"}";
-        // config.DefaultPipelineTaskStatus = "TABLE {} USING FILE {prefix=\"/tmp/" + auth + "\"}";
+        config.RaptureRepo = REPO_USING_GDS;
+        config.InitSysConfig = "NREP {} USING GDS { kind =\"" + auth + "/sys.config\"}";
+        config.DefaultPipelineTaskStatus = "TABLE {} USING MEMORY {kind =\"" + auth + "\"}";
 
         callingContext = new CallingContext();
         callingContext.setUser("dummy");
@@ -80,62 +89,30 @@ public class DocApiFileTest extends AbstractFileTest {
 
         Kernel.INSTANCE.clearRepoCache(false);
         Kernel.getAudit().createAuditLog(ContextFactory.getKernelUser(), new RaptureURI(RaptureConstants.DEFAULT_AUDIT_URI, Scheme.LOG).getAuthority(),
-                "LOG {} using FILE {prefix=\"/tmp/" + auth + "\"}");
+                "LOG {} using MEMORY {kind =\"" + auth + "\"}");
         Kernel.getLock().createLockManager(ContextFactory.getKernelUser(), "lock://kernel", "LOCKING USING DUMMY {}", "");
         docImpl = new DocApiImpl(Kernel.INSTANCE);
     }
 
-    @Test
-    public void testThatWhichShouldNotBe() {
-        String dummyAuthorityURI = "document://dummy"; //$NON-NLS-1$
-        String dummyURI = dummyAuthorityURI + "/dummy"; //$NON-NLS-1$
-        try {
-            docImpl.createDocRepo(callingContext, dummyAuthorityURI, "NREP {} USING FILE { }");
-            String doc = docImpl.getDoc(callingContext, dummyURI);
-            fail("You can't create a repo without a prefix");
-        } catch (RaptureException e) {
-//            assertEquals("Repository document://dummy does not exist", e.getMessage());
+    @AfterClass
+    // Warning: scorched earth. Gets rid of everything.
+    static public void cleanup() {
+        List<Key> keys = new ArrayList<>();
+        Datastore store = DatastoreOptions.newBuilder().setProjectId(GoogleDatastoreKeyStore.id).build().getService();
+        QueryResults<Key> result = store.run(Query.newKeyQueryBuilder().build());
+        // Batch this
+        while (result.hasNext()) {
+            Key peele = result.next();
+            store.delete(peele);
+            System.out.println("Deleted " + peele.getName() + " from " + peele.getKind() + "parent " + peele.getParent());
         }
-
-        // because the config gets stored even though it's not valid
-        docImpl.deleteDocRepo(callingContext, dummyAuthorityURI);
-
-        try {
-            docImpl.createDocRepo(callingContext, dummyAuthorityURI, "NREP {} USING FILE { prefix=\"\" }");
-            String doc = docImpl.getDoc(callingContext, dummyURI);
-            fail("You can't create a repo without a valid prefix");
-        } catch (RaptureException e) {
-        }
-
-        // because the config gets stored even though it's not valid
-        docImpl.deleteDocRepo(callingContext, dummyAuthorityURI);
-
-        Map<String, String> hashMap = new HashMap<>();
-        try {
-            docImpl.createDocRepo(callingContext, dummyAuthorityURI, "NREP {} USING FILE {}");
-            String doc = docImpl.getDoc(callingContext, dummyURI);
-            fail("You can't create a repo without a prefix");
-        } catch (RaptureException e) {
-        }
-
-        // because the config gets stored even though it's not valid
-        docImpl.deleteDocRepo(callingContext, dummyAuthorityURI);
-
-        hashMap.put("prefix", "  ");
-        try {
-            docImpl.createDocRepo(callingContext, dummyAuthorityURI, "NREP {} USING FILE { prefix=\"  \" }");
-            String doc = docImpl.getDoc(callingContext, dummyURI);
-            fail("You can't create a repo without a valid prefix");
-        } catch (RaptureException e) {
-        }
-
     }
 
     @Test
     public void testValidDocStore() {
         Map<String, String> hashMap = new HashMap<>();
         hashMap.put("prefix", "/tmp/foo");
-        docImpl.createDocRepo(callingContext, "document://dummy2", "NREP {} USING FILE { prefix=\"/tmp/foo\"");
+        docImpl.createDocRepo(callingContext, "document://dummy2", "NREP {} USING GDS { kind =foo\"");
     }
 
     @Test
@@ -170,7 +147,7 @@ public class DocApiFileTest extends AbstractFileTest {
             docImpl.deleteDocRepo(callingContext, GET_ALL_BASE);
 
         } else {
-            docImpl.createDocRepo(callingContext, GET_ALL_BASE, "REP {} USING FILE {prefix=\"/tmp/" + auth + "-1\"}");
+            docImpl.createDocRepo(callingContext, GET_ALL_BASE, "REP {} USING GDS {kind =\"" + auth + "-1\"}");
         }
         docImpl.putDoc(callingContext, GET_ALL_BASE + "/uncle", "{\"magic\": \"Drunk Uncle\"}");
         docImpl.putDoc(callingContext, GET_ALL_BASE + "/dad/kid1", "{\"magic\": \"Awesome Child\"}");
@@ -178,6 +155,10 @@ public class DocApiFileTest extends AbstractFileTest {
         docImpl.putDoc(callingContext, GET_ALL_BASE + "/daddywarbucks/fakeKid", "{\"magic\": \"Fake Child\"}");
         Map<String, RaptureFolderInfo> allDocs = docImpl.listDocsByUriPrefix(callingContext, GET_ALL_BASE, 0);
         // listDocsByUriPrefix also returns both the folders /dad and /daddywarbucks
+
+        for (String s : allDocs.keySet()) {
+            System.out.println("Got key : " + s);
+        }
         assertEquals(6, allDocs.size());
         Assert.assertFalse(allDocs.values().toArray(new RaptureFolderInfo[6])[0].getName().startsWith(GET_ALL_BASE + "//"));
         Map<String, RaptureFolderInfo> dadDocs = docImpl.listDocsByUriPrefix(callingContext, GET_ALL_BASE + "/dad", 0);
@@ -196,10 +177,10 @@ public class DocApiFileTest extends AbstractFileTest {
     public void testCreateAndGetRepo() {
         if (!firstTime && docImpl.docRepoExists(callingContext, docAuthorityURI)) return;
         firstTime = false;
-        docImpl.createDocRepo(callingContext, docAuthorityURI, REPO_USING_FILE);
+        docImpl.createDocRepo(callingContext, docAuthorityURI, REPO_USING_GDS);
         DocumentRepoConfig docRepoConfig = docImpl.getDocRepoConfig(callingContext, docAuthorityURI);
         assertNotNull(docRepoConfig);
-        assertEquals(REPO_USING_FILE, docRepoConfig.getDocumentRepo().getConfig());
+        assertEquals(REPO_USING_GDS, docRepoConfig.getDocumentRepo().getConfig());
         assertEquals(auth, docRepoConfig.getAuthority());
     }
 
@@ -207,7 +188,7 @@ public class DocApiFileTest extends AbstractFileTest {
     public void testGetDocumentRepositories() {
         testCreateAndGetRepo();
         List<DocumentRepoConfig> docRepositories = docImpl.getDocRepoConfigs(callingContext);
-        docImpl.createDocRepo(callingContext, "document://somewhereelse/", REPO_USING_FILE);
+        docImpl.createDocRepo(callingContext, "document://somewhereelse/", REPO_USING_GDS);
         List<DocumentRepoConfig> docRepositoriesNow = docImpl.getDocRepoConfigs(callingContext);
         assertEquals(JacksonUtil.jsonFromObject(docRepositoriesNow), docRepositories.size() + 1, docRepositoriesNow.size());
     }
@@ -339,7 +320,7 @@ public class DocApiFileTest extends AbstractFileTest {
         f2.deleteOnExit();
         
         String json = "{\"key123\":\"value123\"}";
-        docImpl.createDocRepo(callingContext, repoUri, "VREP {} USING FILE {prefix=\"/tmp/" + repoUri + "\"}");
+        docImpl.createDocRepo(callingContext, repoUri, "VREP {} USING GDS {kind =\"" + repoUri + "\"}");
 
         /* DocumentRepoConfig dr = */
         docImpl.getDocRepoConfig(callingContext, repoUri);
@@ -420,11 +401,4 @@ public class DocApiFileTest extends AbstractFileTest {
         docImpl.deleteDocRepo(callingContext, docAuthorityURI);
         Assert.assertFalse(docImpl.docRepoExists(callingContext, docAuthorityURI));
     }
-    
-    @Test
-    public void testGetDocRepoStatus() {
-        Map<String, String> ret = docImpl.getDocRepoStatus(callingContext, docAuthorityURI);
-        assertNotEquals(0, ret.size());
-    }
-
 }

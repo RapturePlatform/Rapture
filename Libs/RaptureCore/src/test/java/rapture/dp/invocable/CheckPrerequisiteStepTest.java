@@ -49,7 +49,7 @@ import rapture.kernel.Kernel;
 public class CheckPrerequisiteStepTest {
 
     String prereqURI = "//datacapture/test/prerequisite";
-    private static final int TIMEOUT = 5000;
+    private static final int TIMEOUT = 10000;
 
     // / START GENERIC BOILERPLATE TEST STUFF
 
