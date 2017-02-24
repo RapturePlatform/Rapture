@@ -47,10 +47,11 @@ public final class BlobStoreFactory {
     private static final Map<Integer, String> implementationMap;
 
     static {
-        Map<Integer, String> setupMap = new HashMap<Integer, String>();
+        Map<Integer, String> setupMap = new HashMap<>();
         setupMap.put(BlobGenLexer.MEMORY, "rapture.blob.memory.MemoryBlobStore");
         setupMap.put(BlobGenLexer.FILE, "rapture.blob.file.FileBlobStore");
         setupMap.put(BlobGenLexer.CASSANDRA, "rapture.blob.cassandra.CassandraBlobStore");
+        setupMap.put(BlobGenLexer.GSTORE, "rapture.blob.google.GoogleBlobStore");
         setupMap.put(BlobGenLexer.MONGODB, "rapture.blob.mongodb.MongoDBBlobStore");
         implementationMap = Collections.unmodifiableMap(setupMap);
     }
