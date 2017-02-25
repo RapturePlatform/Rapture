@@ -37,6 +37,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -46,6 +48,7 @@ import com.google.cloud.datastore.DatastoreOptions;
 import com.google.cloud.datastore.Key;
 import com.google.cloud.datastore.Query;
 import com.google.cloud.datastore.QueryResults;
+import com.google.cloud.storage.StorageException;
 import com.google.common.net.MediaType;
 
 import rapture.common.BlobContainer;
@@ -198,7 +201,12 @@ public class BlobApiGoogleTest {
     @Test
     public void testPutAndGetBlob() {
         testCreateAndGetRepo();
-        blobImpl.putBlob(callingContext, blobURI, SAMPLE_BLOB, MediaType.CSS_UTF_8.toString());
+        try {
+            blobImpl.putBlob(callingContext, blobURI, SAMPLE_BLOB, MediaType.CSS_UTF_8.toString());
+        } catch (StorageException e) {
+            Assume.assumeFalse(e.getMessage().startsWith("503 Service Unavailable"));
+            Assert.fail(e.getMessage());
+        }
         BlobContainer blob = blobImpl.getBlob(callingContext, blobURI);
         assertArrayEquals(SAMPLE_BLOB, blob.getContent());
     }
