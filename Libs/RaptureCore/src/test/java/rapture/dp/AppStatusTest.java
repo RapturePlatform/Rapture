@@ -134,11 +134,11 @@ public class AppStatusTest {
 
     @AfterClass
     public static void afterClass() {
-        scheduler.shutdown();
+        if (scheduler != null) scheduler.shutdown();
     }
 
     private static void setTimestamp(long timestamp) {
-        Map<String, String> timeDoc = new HashMap<String, String>();
+        Map<String, String> timeDoc = new HashMap<>();
         timeDoc.put("timestamp", "" + timestamp);
         timeDoc.put("some_Other_data", "test");
         String json = JacksonUtil.jsonFromObject(timeDoc);
@@ -163,7 +163,7 @@ public class AppStatusTest {
     public void test1DefaultPattern() throws InterruptedException {
 
         final CallingContext context = ContextFactory.getKernelUser();
-        Map<String, String> contextMap = new HashMap<String, String>();
+        Map<String, String> contextMap = new HashMap<>();
         final String workOrder = Kernel.getDecision().createWorkOrder(context, wuri, contextMap);
 
         WaitingTestHelper.retry(new Runnable() {
@@ -185,7 +185,7 @@ public class AppStatusTest {
     @Test
     public void test2OverridePattern() throws InterruptedException {
         final CallingContext context = ContextFactory.getKernelUser();
-        Map<String, String> contextMap = new HashMap<String, String>();
+        Map<String, String> contextMap = new HashMap<>();
         String pattern = "%/idp.status a/workflow/" + PATTERN;
         // 3 runs should produce 3 sets of logs
         final List<String> workOrders = new ArrayList<>();
@@ -219,7 +219,7 @@ public class AppStatusTest {
          */
 
         final CallingContext context = ContextFactory.getKernelUser();
-        Map<String, String> contextMap = new HashMap<String, String>();
+        Map<String, String> contextMap = new HashMap<>();
         String pattern = "%/idp.status a/workflow/" + PATTERN;
         contextMap.put("app", "somethingElse");
         final String workOrder = Kernel.getDecision().createWorkOrderP(context, wuri, contextMap, pattern).getUri();
@@ -244,7 +244,7 @@ public class AppStatusTest {
     @Test
     public void test4FromJob() throws InterruptedException {
         final CallingContext context = ContextFactory.getKernelUser();
-        Map<String, String> jobParams = new HashMap<String, String>();
+        Map<String, String> jobParams = new HashMap<>();
         String pattern = "%/job.status a/${" + ContextVariables.TIMESTAMP + "}/${" + ContextVariables.LOCAL_DATE + "}/${app}";
         final String jobURI = "job://appstatus";
         final RaptureJob job = Kernel.getSchedule().createWorkflowJob(CTX, jobURI, "desc", wuri, "* * * *", "America/New_York", jobParams, false, 500, pattern);
@@ -288,7 +288,7 @@ public class AppStatusTest {
         long newTs = System.currentTimeMillis();
         assertNotEquals(newTs, TIMESTAMP);
         setTimestamp(newTs);
-        Map<String, String> contextMap = new HashMap<String, String>();
+        Map<String, String> contextMap = new HashMap<>();
         assertNotNull(Kernel.getDecision().createWorkOrder(CTX, wuri, contextMap));
 
         WaitingTestHelper.retry(new Runnable() {
@@ -306,7 +306,7 @@ public class AppStatusTest {
 
     private static String createWorkflow() {
         String wuri = "workflow://appStatus";
-        List<Step> steps = new ArrayList<Step>();
+        List<Step> steps = new ArrayList<>();
         Step s1 = new Step();
         s1.setName("firstStep");
         s1.setExecutable(new RaptureURI.Builder(Scheme.DP_JAVA_INVOCABLE, "AppStatus1").build().toString());
@@ -323,7 +323,7 @@ public class AppStatusTest {
         workflow.setStartStep("firstStep");
         workflow.setCategory(CATEGORY);
         workflow.setDefaultAppStatusNamePattern("%/default a/" + PATTERN);
-        Map<String, String> view = new HashMap<String, String>();
+        Map<String, String> view = new HashMap<>();
         view.put("app", "#" + DEFAULT_APP);
         view.put("timestamp", "!//appstatusRepo/timeDoc#timestamp");
         workflow.setView(view);

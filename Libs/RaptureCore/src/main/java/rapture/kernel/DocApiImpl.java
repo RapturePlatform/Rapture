@@ -200,9 +200,6 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
     @Override
     public void deleteDocRepo(CallingContext context, String docRepoUri) {
         RaptureURI internalUri = new RaptureURI(docRepoUri, Scheme.DOCUMENT);
-        DocumentRepoConfig drc = DocumentRepoConfigStorage.readByAddress(internalUri);
-        if (drc != null) System.out.println("Config is " + drc.toString());
-        else System.out.println("Config is NULL");
 
         if (internalUri.hasDocPath()) {
             throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, apiMessageCatalog.getMessage("NoDocPath", docRepoUri)); //$NON-NLS-1$
@@ -236,8 +233,13 @@ public class DocApiImpl extends KernelBase implements DocApi, RaptureScheme {
         // DocumentRepoConfigStorage.deleteByAddress(internalUri,
         // context.getUser(), "Drop document repo");
 
-        drc.setDeleted(true);
-        DocumentRepoConfigStorage.add(internalUri, drc, context.getUser(), "Mark config as deleted");
+        DocumentRepoConfig drc = DocumentRepoConfigStorage.readByAddress(internalUri);
+        if (drc == null) {
+            drc = new DocumentRepoConfig();
+            drc.setAuthority(internalUri.getAuthority());
+        }
+            drc.setDeleted(true);
+            DocumentRepoConfigStorage.add(internalUri, drc, context.getUser(), "Mark config as deleted");
         log.info("Config for " + internalUri.toString() + " marked as deleted ");
         removeRepoFromCache(internalUri.getAuthority());
 
