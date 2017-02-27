@@ -44,6 +44,7 @@ import com.google.cloud.storage.BucketInfo;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageException;
 import com.google.cloud.storage.StorageOptions;
+import com.google.common.hash.Hashing;
 
 import rapture.blob.BaseBlobStore;
 import rapture.blob.BlobStore;
@@ -83,17 +84,18 @@ public class GoogleBlobStore extends BaseBlobStore implements BlobStore {
                 try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
                     baos.write(blob.getContent());
                     IOUtils.copy(content, baos);
-                    Blob x = bucket.create(key, baos.toByteArray());
+                    int i = Hashing.crc32c().hashBytes("X".getBytes()).asInt();
+                    bucket.create(key, baos.toByteArray());
                     return true;
                 } catch (IOException e) {
                     logger.error(e.getMessage());
                     return false;
                 }
             }
-            System.out.println("Overwriting bucket " + bucketName + " Key " + key + " value " + new String(blob.getContent()));
+            System.out.println("Overwriting bucket " + bucketName + " Key " + key);
         }
         Blob x = bucket.create(key, content);
-        System.out.println("Wrote to bucket " + bucketName + " Value " + new String(bucket.get(key).getContent()) + " with key " + key);
+        System.out.println("Wrote to bucket " + bucketName + " with key " + key);
         return true;
     }
 
