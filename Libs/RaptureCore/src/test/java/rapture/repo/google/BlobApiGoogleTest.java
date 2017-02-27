@@ -44,6 +44,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import com.google.cloud.datastore.Datastore;
+import com.google.cloud.datastore.DatastoreException;
 import com.google.cloud.datastore.DatastoreOptions;
 import com.google.cloud.datastore.Key;
 import com.google.cloud.datastore.Query;
@@ -125,8 +126,12 @@ public class BlobApiGoogleTest {
         // Batch this
         while (result.hasNext()) {
             Key peele = result.next();
-            store.delete(peele);
-            System.out.println("Deleted " + peele.getName() + " from " + peele.getKind() + "parent " + peele.getParent());
+            try {
+                store.delete(peele);
+                System.out.println("Deleted " + peele.getName() + " from " + peele.getKind() + "parent " + peele.getParent());
+            } catch (DatastoreException e) {
+                System.out.println("Ignored Exception in cleanup " + e + " deleting " + peele.getName());
+            }
         }
     }
 
@@ -146,12 +151,13 @@ public class BlobApiGoogleTest {
 
     @Test
     public void testGetChildren() {
+
+        Map<String, RaptureFolderInfo> preexist = blobImpl.listBlobsByUriPrefix(callingContext, blobAuthorityURI, -1);
         testPutAndGetBlob();
         assertTrue(blobImpl.blobExists(callingContext, blobURI));
-
         Map<String, RaptureFolderInfo> children = blobImpl.listBlobsByUriPrefix(callingContext, blobAuthorityURI, -1);
-        int size = children.size();
-        assertEquals(1, children.size());
+        int size = children.size() - preexist.size();
+        assertEquals(1, size);
         children = blobImpl.listBlobsByUriPrefix(callingContext, "blob://thiswontexist", -1);
         assertTrue(children.isEmpty());
         children = blobImpl.listBlobsByUriPrefix(callingContext, "blob://thiswontexist/so/returnempty", -1);

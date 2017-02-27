@@ -3,7 +3,7 @@ jar.manifest.attributes "Implementation-Title" : "RaptureCommon"
 configurations { antlr3 }
 
 dependencies {
-    compile group: 'com.google.guava', name: 'guava', version: '14.0'
+    compile group: 'com.google.guava', name: 'guava', version: '20.0'
     compile 'org.antlr:antlr-runtime:3.5.2', { transitive = false }
     antlr3 'org.antlr:antlr:3.5.2'
     compile 'org.apache.commons:commons-lang3:3.4';
