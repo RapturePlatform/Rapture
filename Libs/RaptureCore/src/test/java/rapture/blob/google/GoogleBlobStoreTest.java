@@ -37,17 +37,18 @@ import rapture.blob.BlobStoreContractTest;
 public class GoogleBlobStoreTest extends BlobStoreContractTest {
 
     private GoogleBlobStore store;
+    String bukkit = "dave_incapture_com";
 
     @Before
     public void setUp() {
-
-        Map<String, String> config = ImmutableMap.of("prefix", "dave_incapture_com");
+        Map<String, String> config = ImmutableMap.of("prefix", bukkit, "projectid", "high-plating-157918");
         this.store = new GoogleBlobStore();
         store.setConfig(config);
     }
 
     @After
     public void tearDown() throws IOException {
+        store.destroyBucket(bukkit);
     }
 
     @Override

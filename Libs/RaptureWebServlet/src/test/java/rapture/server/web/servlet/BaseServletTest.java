@@ -38,6 +38,7 @@ import java.util.Map;
 
 import javax.servlet.AsyncContext;
 import javax.servlet.DispatcherType;
+import javax.servlet.ReadListener;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -48,6 +49,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpUpgradeHandler;
 import javax.servlet.http.Part;
 
 import org.apache.commons.io.IOUtils;
@@ -141,6 +143,24 @@ public class BaseServletTest {
                     @Override
                     public int read() throws IOException {
                         return is.read();
+                    }
+
+                    @Override
+                    public boolean isFinished() {
+                        // TODO Auto-generated method stub
+                        return false;
+                    }
+
+                    @Override
+                    public boolean isReady() {
+                        // TODO Auto-generated method stub
+                        return false;
+                    }
+
+                    @Override
+                    public void setReadListener(ReadListener listener) {
+                        // TODO Auto-generated method stub
+
                     }
                 };
             }
@@ -495,6 +515,24 @@ public class BaseServletTest {
 
             @Override
             public Part getPart(String name) throws IOException, IllegalStateException, ServletException {
+                // TODO Auto-generated method stub
+                return null;
+            }
+
+            @Override
+            public long getContentLengthLong() {
+                // TODO Auto-generated method stub
+                return 0;
+            }
+
+            @Override
+            public String changeSessionId() {
+                // TODO Auto-generated method stub
+                return null;
+            }
+
+            @Override
+            public <T extends HttpUpgradeHandler> T upgrade(Class<T> httpUpgradeHandlerClass) throws IOException, ServletException {
                 // TODO Auto-generated method stub
                 return null;
             }

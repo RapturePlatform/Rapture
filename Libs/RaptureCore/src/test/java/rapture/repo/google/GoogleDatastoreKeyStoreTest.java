@@ -62,13 +62,13 @@ public class GoogleDatastoreKeyStoreTest {
     @Before
     public void setup() {
         store = new GoogleDatastoreKeyStore();
-        store.setConfig(ImmutableMap.of("kind", "store"));
+        store.setConfig(ImmutableMap.of("prefix", "store", "projectid", "high-plating-157918"));
         meta = new GoogleDatastoreKeyStore();
-        meta.setConfig(ImmutableMap.of("kind", "meta"));
+        meta.setConfig(ImmutableMap.of("prefix", "meta", "projectid", "high-plating-157918"));
         version = new GoogleDatastoreKeyStore();
-        version.setConfig(ImmutableMap.of("kind", "version"));
+        version.setConfig(ImmutableMap.of("prefix", "version", "projectid", "high-plating-157918"));
         attribute = new GoogleDatastoreKeyStore();
-        attribute.setConfig(ImmutableMap.of("kind", "attribute"));
+        attribute.setConfig(ImmutableMap.of("prefix", "attribute", "projectid", "high-plating-157918"));
         repo = new NVersionedRepo(new HashMap<String, String>(), store, version, meta, attribute, new DummyLockHandler());
     }
 

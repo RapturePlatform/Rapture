@@ -50,6 +50,7 @@ import rapture.blob.BaseBlobStore;
 import rapture.blob.BlobStore;
 import rapture.common.CallingContext;
 import rapture.common.RaptureURI;
+import rapture.config.MultiValueConfigLoader;
 
 /**
  * GoogleBlobStore uses the Google Cloud Storage to implement a BlobStore Google has the concept of Buckets which store blobs. At first pass it seems logical to
@@ -63,13 +64,11 @@ public class GoogleBlobStore extends BaseBlobStore implements BlobStore {
 
     private static Logger logger = Logger.getLogger(GoogleBlobStore.class);
 
-    private static final String INCAPTURE = "incapture_"; // MUST BE LOWER CASE
-    private static final String projectId = "high-plating-157918";
-    Bucket bucket = null;
-    private Storage storage;
+    static final String INCAPTURE = "incapture_"; // MUST BE LOWER CASE
+    private Bucket bucket = null;
+    private Storage storage = null;
 
     public GoogleBlobStore() {
-        storage = StorageOptions.newBuilder().setProjectId(projectId).build().getService();
     }
 
     @Override
@@ -209,6 +208,17 @@ public class GoogleBlobStore extends BaseBlobStore implements BlobStore {
         if (prefix == null) {
             throw new RuntimeException("Prefix not set in " + config);
         }
+
+        String projectId = StringUtils.trimToNull(config.get("projectid"));
+        if (projectId == null) {
+            projectId = MultiValueConfigLoader.getConfig("GOOGLE-projectId");
+            if (projectId == null) {
+                throw new RuntimeException("Project ID not set in RaptureGOOGLE.cfg or in config " + config);
+            }
+        }
+
+        storage = StorageOptions.newBuilder().setProjectId(projectId).build().getService();
+
         // NOTE cannot currently use a full stop in a bucket name.
         bucketName = INCAPTURE + prefix.replaceAll("\\.", "").toLowerCase();
         try {
@@ -222,5 +232,21 @@ public class GoogleBlobStore extends BaseBlobStore implements BlobStore {
 
     @Override
     public void init() {
+    }
+
+    // For cleanup after testing
+    void destroyBucket(String name) {
+        String bName = INCAPTURE + name.replaceAll("\\.", "").toLowerCase();
+        Bucket bukkit = storage.get(bName);
+        if (bukkit != null) {
+            for (Blob blob : this.listBlobs(name)) {
+                storage.delete(blob.getBlobId());
+            }
+            try {
+                storage.delete(bName);
+            } catch (Exception e) {
+                System.err.println("Cannot delete bucket " + name + " : " + e.getMessage());
+            }
+        }
     }
 }

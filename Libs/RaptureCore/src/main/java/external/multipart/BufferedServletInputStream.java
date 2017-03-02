@@ -32,6 +32,7 @@ package external.multipart;
 
 import java.io.IOException;
 
+import javax.servlet.ReadListener;
 import javax.servlet.ServletInputStream;
 
 /**
@@ -236,5 +237,23 @@ public class BufferedServletInputStream extends ServletInputStream {
             total += copy;
         }
         return total;
+    }
+
+    @Override
+    public boolean isFinished() {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean isReady() {
+        // TODO Auto-generated method stub
+        return true;
+    }
+
+    @Override
+    public void setReadListener(ReadListener listener) {
+        // TODO Auto-generated method stub
+
     }
 }
