@@ -33,6 +33,7 @@ import com.google.common.collect.ImmutableMap;
 
 import rapture.blob.BlobStore;
 import rapture.blob.BlobStoreContractTest;
+import rapture.field.FieldTransformLoader;
 
 public class GoogleBlobStoreTest extends BlobStoreContractTest {
 
@@ -44,6 +45,7 @@ public class GoogleBlobStoreTest extends BlobStoreContractTest {
         Map<String, String> config = ImmutableMap.of("prefix", bukkit, "projectid", "high-plating-157918");
         this.store = new GoogleBlobStore();
         store.setConfig(config);
+        FieldTransformLoader ftl;
     }
 
     @After
