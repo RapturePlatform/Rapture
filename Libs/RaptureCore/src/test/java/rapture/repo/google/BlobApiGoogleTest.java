@@ -77,10 +77,9 @@ public class BlobApiGoogleTest {
     public static CallingContext callingContext;
 
     private static BlobApiImpl blobImpl;
-    private static final String BLOB_USING_GOOGLE = "BLOB {} USING GSTORE {prefix=\"B" + auth + "\"}";
-    private static final String REPO_USING_GOOGLE = "REP {} USING GDS {kind=\"" + auth + "\"}";
-    // private static final String META_USING_GOOGLE = "REP {} USING GDS {kind=\"M" + auth + "\"}";
-    private static final String META_USING_GOOGLE = "REP {} USING GSTORE {prefix=\"M" + auth + "\"}";
+    private static final String BLOB_USING_GOOGLE = "BLOB {} USING GSTORE {prefix=\"B" + auth + "\", projectid=\"high-plating-157918\"}";
+    private static final String REPO_USING_GOOGLE = "REP {} USING GDS {prefix=\"" + auth + "\", projectid=\"high-plating-157918\"}";
+    private static final String META_USING_GOOGLE = "REP {} USING GDS {prefix=\"M" + auth + "\", projectid=\"high-plating-157918\"}";
     private static final byte[] SAMPLE_BLOB = "This is a blob".getBytes();
 
     static String blobAuthorityURI = "blob://" + auth;
@@ -97,7 +96,7 @@ public class BlobApiGoogleTest {
         callingContext.setUser("dummy");
 
         config.RaptureRepo = REPO_USING_GOOGLE;
-        config.InitSysConfig = "NREP {} USING GDS { prefix=\"" + auth + ".sys.config\"}";
+        config.InitSysConfig = "NREP {} USING GDS { prefix=\"" + auth + ".sys.config\", projectid=\"high-plating-157918\"}";
 
         callingContext = new CallingContext();
         callingContext.setUser("dummy");
@@ -121,7 +120,7 @@ public class BlobApiGoogleTest {
 
         // Warning: scorched earth. Gets rid of everything.
         List<Key> keys = new ArrayList<>();
-        Datastore store = DatastoreOptions.newBuilder().setProjectId(GoogleDatastoreKeyStore.id).build().getService();
+        Datastore store = DatastoreOptions.newBuilder().setProjectId("high-plating-157918").build().getService();
         QueryResults<Key> result = store.run(Query.newKeyQueryBuilder().build());
         // Batch this
         while (result.hasNext()) {
@@ -152,12 +151,10 @@ public class BlobApiGoogleTest {
     @Test
     public void testGetChildren() {
 
-        Map<String, RaptureFolderInfo> preexist = blobImpl.listBlobsByUriPrefix(callingContext, blobAuthorityURI, -1);
         testPutAndGetBlob();
         assertTrue(blobImpl.blobExists(callingContext, blobURI));
         Map<String, RaptureFolderInfo> children = blobImpl.listBlobsByUriPrefix(callingContext, blobAuthorityURI, -1);
-        int size = children.size() - preexist.size();
-        assertEquals(1, size);
+        assertEquals(1, children.size());
         children = blobImpl.listBlobsByUriPrefix(callingContext, "blob://thiswontexist", -1);
         assertTrue(children.isEmpty());
         children = blobImpl.listBlobsByUriPrefix(callingContext, "blob://thiswontexist/so/returnempty", -1);
@@ -193,8 +190,9 @@ public class BlobApiGoogleTest {
             testCreateAndGetRepo();
             List<BlobRepoConfig> before = blobImpl.getBlobRepoConfigs(callingContext);
 
-            blobImpl.createBlobRepo(callingContext, "blob://somewhereelse/", "BLOB {} USING GSTORE {prefix=\"somewhereelse\"}",
-                    "REP {} USING GDS {prefix=\"somewhereelse\"}");
+            blobImpl.createBlobRepo(callingContext, "blob://somewhereelse/",
+                    "BLOB {} USING GSTORE {prefix=\"somewhereelse\", projectid=\"high-plating-157918\"}",
+                    "REP {} USING GDS {prefix=\"somewhereelse\", projectid=\"high-plating-157918\"}");
 
             List<BlobRepoConfig> after = blobImpl.getBlobRepoConfigs(callingContext);
             // And then there were three

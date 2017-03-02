@@ -72,6 +72,7 @@ import rapture.common.exception.RaptNotSupportedException;
 import rapture.common.exception.RaptureExceptionFactory;
 import rapture.common.impl.jackson.JacksonUtil;
 import rapture.common.model.DocumentMetadata;
+import rapture.config.MultiValueConfigLoader;
 import rapture.index.IndexHandler;
 import rapture.index.IndexProducer;
 import rapture.repo.AbstractKeyStore;
@@ -82,13 +83,11 @@ import rapture.repo.StoreKeyVisitor;
 
 public class GoogleDatastoreKeyStore extends AbstractKeyStore implements KeyStore {
     private static final Logger log = Logger.getLogger(GoogleDatastoreKeyStore.class);
-    static String id = "high-plating-157918"; // Make it a config value
     private Datastore datastore = null;
     private String kind;
+    private String id = null;
 
     public GoogleDatastoreKeyStore() {
-        // TODO id must be configurable - currently it is not
-        datastore = DatastoreOptions.newBuilder().setProjectId(id).build().getService();
     }
 
     /*
@@ -183,17 +182,29 @@ public class GoogleDatastoreKeyStore extends AbstractKeyStore implements KeyStor
 
     @Override
     public void setConfig(Map<String, String> config) {
-        String k = StringUtils.stripToNull(config.get("kind"));
-        System.err.println("DEBUG: Instance name = " + kind + " overwritten by config = " + k);
-        if (k != null) kind = k; // config takes precedence over instance name for now
-        if (kind == null) throw new RuntimeException("kind must be specified");
+        kind = StringUtils.stripToNull(config.get("prefix"));
+        if (kind == null) throw new RuntimeException("Prefix not set in config " + JacksonUtil.formattedJsonFromObject(config));
+
+        String projectId = StringUtils.trimToNull(config.get("projectid"));
+        if (projectId == null) {
+            projectId = MultiValueConfigLoader.getConfig("GOOGLE-projectId");
+            if (projectId == null) {
+                throw new RuntimeException("Project ID not set in RaptureGOOGLE.cfg or in config " + config);
+            }
+        }
+        datastore = DatastoreOptions.newBuilder().setProjectId(projectId).build().getService();
         this.config = config;
     }
 
     @Override
     public KeyStore createRelatedKeyStore(String relation) {
         KeyStore ks = new GoogleDatastoreKeyStore();
-        ks.setInstanceName(kind + relation);
+        String instance = kind + relation;
+        Map<String, String> relconf = new HashMap<>();
+        relconf.putAll(config);
+        relconf.put("prefix", instance);
+        ks.setInstanceName(instance);
+        ks.setConfig(relconf);
         return ks;
     }
 
@@ -387,7 +398,7 @@ public class GoogleDatastoreKeyStore extends AbstractKeyStore implements KeyStor
 
     @Override
     public void setInstanceName(String name) {
-        kind = name;
+        id = name;
     }
 
     public static final java.lang.String KEY_RESERVED_PROPERTY = "__key__";

@@ -45,6 +45,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.google.cloud.datastore.Datastore;
+import com.google.cloud.datastore.DatastoreException;
 import com.google.cloud.datastore.DatastoreOptions;
 import com.google.cloud.datastore.Key;
 import com.google.cloud.datastore.Query;
@@ -65,7 +66,7 @@ import rapture.kernel.Kernel;
 public class DocApiGoogleTest extends AbstractFileTest {
 
     private static final Logger log = Logger.getLogger(DocApiGoogleTest.class);
-    private static final String REPO_USING_GDS = "REP {} USING GDS {kind =\"" + auth + "\"}";
+    private static final String REPO_USING_GDS = "REP {} USING GDS {prefix =\"" + auth + "\", projectid=\"high-plating-157918\"}";
     private static final String GET_ALL_BASE = "document://getAll";
     private static final String docContent = "{\"content\":\"Cold and misty morning I had heard a warning borne in the air\"}";
     private static final String docAuthorityURI = "document://" + auth;
@@ -78,8 +79,8 @@ public class DocApiGoogleTest extends AbstractFileTest {
     static public void setUp() {
         AbstractFileTest.setUp();
         config.RaptureRepo = REPO_USING_GDS;
-        config.InitSysConfig = "NREP {} USING GDS { kind =\"" + auth + "/sys.config\"}";
-        config.DefaultPipelineTaskStatus = "TABLE {} USING MEMORY {kind =\"" + auth + "\"}";
+        config.InitSysConfig = "NREP {} USING GDS { prefix =\"" + auth + "/sys.config\", projectid=\"high-plating-157918\"}";
+        config.DefaultPipelineTaskStatus = "TABLE {} USING MEMORY {prefix =\"" + auth + "\"}";
 
         callingContext = new CallingContext();
         callingContext.setUser("dummy");
@@ -89,7 +90,7 @@ public class DocApiGoogleTest extends AbstractFileTest {
 
         Kernel.INSTANCE.clearRepoCache(false);
         Kernel.getAudit().createAuditLog(ContextFactory.getKernelUser(), new RaptureURI(RaptureConstants.DEFAULT_AUDIT_URI, Scheme.LOG).getAuthority(),
-                "LOG {} using MEMORY {kind =\"" + auth + "\"}");
+                "LOG {} using MEMORY {prefix =\"" + auth + "\"}");
         Kernel.getLock().createLockManager(ContextFactory.getKernelUser(), "lock://kernel", "LOCKING USING DUMMY {}", "");
         docImpl = new DocApiImpl(Kernel.INSTANCE);
     }
@@ -98,13 +99,17 @@ public class DocApiGoogleTest extends AbstractFileTest {
     // Warning: scorched earth. Gets rid of everything.
     static public void cleanup() {
         List<Key> keys = new ArrayList<>();
-        Datastore store = DatastoreOptions.newBuilder().setProjectId(GoogleDatastoreKeyStore.id).build().getService();
+        Datastore store = DatastoreOptions.newBuilder().setProjectId("high-plating-157918").build().getService();
         QueryResults<Key> result = store.run(Query.newKeyQueryBuilder().build());
         // Batch this
         while (result.hasNext()) {
             Key peele = result.next();
-            store.delete(peele);
-            System.out.println("Deleted " + peele.getName() + " from " + peele.getKind() + "parent " + peele.getParent());
+            try {
+                store.delete(peele);
+                System.out.println("Deleted " + peele.getName() + " from " + peele.getKind() + "parent " + peele.getParent());
+            } catch (DatastoreException e) {
+                System.out.println("Ignored Exception in cleanup " + e + " deleting " + peele.getName());
+            }
         }
     }
 
@@ -112,7 +117,7 @@ public class DocApiGoogleTest extends AbstractFileTest {
     public void testValidDocStore() {
         Map<String, String> hashMap = new HashMap<>();
         hashMap.put("prefix", "/tmp/foo");
-        docImpl.createDocRepo(callingContext, "document://dummy2", "NREP {} USING GDS { kind =foo\"");
+        docImpl.createDocRepo(callingContext, "document://dummy2", "NREP {} USING GDS { prefix = foo\"");
     }
 
     @Test
@@ -147,7 +152,7 @@ public class DocApiGoogleTest extends AbstractFileTest {
             docImpl.deleteDocRepo(callingContext, GET_ALL_BASE);
 
         } else {
-            docImpl.createDocRepo(callingContext, GET_ALL_BASE, "REP {} USING GDS {kind =\"" + auth + "-1\"}");
+            docImpl.createDocRepo(callingContext, GET_ALL_BASE, "REP {} USING GDS {prefix =\"" + auth + "-1\", projectid=\"high-plating-157918\"}");
         }
         docImpl.putDoc(callingContext, GET_ALL_BASE + "/uncle", "{\"magic\": \"Drunk Uncle\"}");
         docImpl.putDoc(callingContext, GET_ALL_BASE + "/dad/kid1", "{\"magic\": \"Awesome Child\"}");
@@ -320,7 +325,7 @@ public class DocApiGoogleTest extends AbstractFileTest {
         f2.deleteOnExit();
         
         String json = "{\"key123\":\"value123\"}";
-        docImpl.createDocRepo(callingContext, repoUri, "VREP {} USING GDS {kind =\"" + repoUri + "\"}");
+        docImpl.createDocRepo(callingContext, repoUri, "VREP {} USING GDS {prefix =\"" + repoUri + "\", projectid=\"high-plating-157918\"}");
 
         /* DocumentRepoConfig dr = */
         docImpl.getDocRepoConfig(callingContext, repoUri);

@@ -52,10 +52,12 @@ import javax.servlet.ServletInputStream;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.WriteListener;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpUpgradeHandler;
 import javax.servlet.http.Part;
 
 import org.junit.After;
@@ -66,7 +68,6 @@ import org.junit.Test;
 
 import rapture.common.BlobContainer;
 import rapture.common.CallingContext;
-import rapture.common.EntitlementSet;
 import rapture.common.RaptureConstants;
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
@@ -259,7 +260,7 @@ public class BlobContentServletTest {
 
         @Override
         public Enumeration<String> getInitParameterNames() {
-            return new Vector<String>(map.keySet()).elements();
+            return new Vector<>(map.keySet()).elements();
         }
     };
 
@@ -656,6 +657,24 @@ public class BlobContentServletTest {
             // TODO Auto-generated method stub
             return null;
         }
+
+        @Override
+        public long getContentLengthLong() {
+            // TODO Auto-generated method stub
+            return 0;
+        }
+
+        @Override
+        public String changeSessionId() {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        @Override
+        public <T extends HttpUpgradeHandler> T upgrade(Class<T> httpUpgradeHandlerClass) throws IOException, ServletException {
+            // TODO Auto-generated method stub
+            return null;
+        }
         
     };
     
@@ -680,6 +699,18 @@ public class BlobContentServletTest {
                 @Override
                 public void write(int b) throws IOException {
                     baos.write(b);
+                }
+
+                @Override
+                public boolean isReady() {
+                    // TODO Auto-generated method stub
+                    return false;
+                }
+
+                @Override
+                public void setWriteListener(WriteListener listener) {
+                    // TODO Auto-generated method stub
+
                 }
             };
         }
@@ -877,6 +908,12 @@ public class BlobContentServletTest {
         public Collection<String> getHeaderNames() {
             // TODO Auto-generated method stub
             return null;
+        }
+
+        @Override
+        public void setContentLengthLong(long length) {
+            // TODO Auto-generated method stub
+
         }
         
     };
