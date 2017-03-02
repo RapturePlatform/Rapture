@@ -1,0 +1,17 @@
+jar.manifest.attributes "Implementation-Title" : "GoogleCloud"
+
+dependencies {
+    compile project(':RaptureCore')
+    compile project(':RaptureAPI')
+    compile project(':RaptureAddinCore')
+    compile project(':Reflex')
+    compile project(':RaptureCommon')
+    compile project(':RaptureField')
+    compile group: 'com.google.guava', name: 'guava', version: '20.0'
+    compile group: 'org.apache.commons', name: 'commons-digester3', version: '3.2'
+    compile 'com.mashape.unirest:unirest-java:1.4.9'
+    compile 'com.google.cloud:google-cloud-storage:0.8+'
+    compile 'com.google.cloud:google-cloud-datastore:0.9.3+'
+    testCompile project (path: ":RaptureCore", configuration: 'testArtifacts')
+}
+
