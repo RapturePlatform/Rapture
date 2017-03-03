@@ -19,7 +19,7 @@ IDGEN : 'IDGEN';
 
 MEMORY : 'MEMORY';
 FILE : 'FILE';
-AWS : 'AWS';
+GDS : 'GDS';
 MONGODB : 'MONGODB';
 
 LBRACE : '{';
