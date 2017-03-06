@@ -28,8 +28,17 @@ import java.util.List;
 
 public class WhereClause {
 	
-	private WhereStatement primaryStatement;
-	private List<WhereExtension> extensions = new ArrayList<WhereExtension>();
+    @Override
+    public String toString() {
+        StringBuilder ret = new StringBuilder();
+        ret.append("where ").append(primaryStatement);
+        if (extensions != null) for (WhereExtension we : extensions)
+            ret.append(" ").append(we.toString());
+        return ret.toString();
+    }
+
+    private WhereStatement primaryStatement;
+	private List<WhereExtension> extensions = new ArrayList<>();
 	
 	public void addStatement(WhereStatement where) {
 	    // What if we already have a a primary?

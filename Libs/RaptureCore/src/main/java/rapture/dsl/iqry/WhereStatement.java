@@ -24,7 +24,12 @@
 package rapture.dsl.iqry;
 
 public class WhereStatement {
-	private String fieldName;
+    @Override
+    public String toString() {
+        return fieldName + " " + test + " " + value;
+    }
+
+    private String fieldName;
 	private WhereTest test;
 	private WhereValue value;
 

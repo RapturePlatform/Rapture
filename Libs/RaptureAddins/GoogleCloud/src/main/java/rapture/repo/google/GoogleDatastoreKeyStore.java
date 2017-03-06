@@ -65,13 +65,9 @@ import com.google.cloud.datastore.Value;
 import rapture.common.RaptureFolderInfo;
 import rapture.common.RaptureNativeQueryResult;
 import rapture.common.RaptureQueryResult;
-import rapture.common.TableQuery;
-import rapture.common.TableQueryResult;
-import rapture.common.TableRecord;
 import rapture.common.exception.RaptNotSupportedException;
 import rapture.common.exception.RaptureExceptionFactory;
 import rapture.common.impl.jackson.JacksonUtil;
-import rapture.common.model.DocumentMetadata;
 import rapture.config.MultiValueConfigLoader;
 import rapture.index.IndexHandler;
 import rapture.index.IndexProducer;
@@ -80,6 +76,7 @@ import rapture.repo.KeyStore;
 import rapture.repo.RepoLockHandler;
 import rapture.repo.RepoVisitor;
 import rapture.repo.StoreKeyVisitor;
+import rapture.table.google.GoogleIndexHandler;
 
 public class GoogleDatastoreKeyStore extends AbstractKeyStore implements KeyStore {
     private static final Logger log = Logger.getLogger(GoogleDatastoreKeyStore.class);
@@ -117,13 +114,9 @@ public class GoogleDatastoreKeyStore extends AbstractKeyStore implements KeyStor
     public boolean dropKeyStore() {
         List<Key> keys = new ArrayList<>();
         QueryResults<Key> result = datastore.run(Query.newKeyQueryBuilder().setKind(kind).build());
-        // Batch this
-        while (result.hasNext()) {
-            Key peele = result.next();
-            datastore.delete(peele);
-            System.out.println("Deleted " + peele.getName() + " from " + peele.getKind() + "parent " + peele.getParent());
-        }
-
+        while (result.hasNext())
+            keys.add(result.next());
+        datastore.delete(keys.toArray(new Key[keys.size()]));
         return super.dropKeyStore();
     }
 
@@ -218,7 +211,7 @@ public class GoogleDatastoreKeyStore extends AbstractKeyStore implements KeyStor
         return true;
     }
 
-    private void put(Map<String, Object> map, String name, Value<?> value) {
+    public static void put(Map<String, Object> map, String name, Value<?> value) {
         switch (value.getType()) {
         case STRING:
             map.put(name, ((StringValue) value).get());
@@ -300,7 +293,7 @@ public class GoogleDatastoreKeyStore extends AbstractKeyStore implements KeyStor
         return id;
     }
 
-    private Value<?> valerie(String key, Object val) {
+    public static Value<?> valerie(String key, Object val) {
         Value<?> valerie;
 
         if (val instanceof Map) {
@@ -316,7 +309,7 @@ public class GoogleDatastoreKeyStore extends AbstractKeyStore implements KeyStor
             String str = val.toString();
             valerie = StringValue.newBuilder(str).setExcludeFromIndexes(str.length() >= 1500).build();
         } else if ((val instanceof Double) || (val instanceof Float)) valerie = new DoubleValue((Double) val);
-        else if (val instanceof BigDecimal) valerie = new StringValue(((BigDecimal) val).toPlainString());
+        else if (val instanceof BigDecimal) valerie = new DoubleValue(((BigDecimal) val).doubleValue());
         else if (val instanceof Number) valerie = new LongValue(((Number) val).longValue());
         else if (val instanceof Boolean) valerie = new BooleanValue((Boolean) val);
         else if (val instanceof List) {
@@ -355,8 +348,6 @@ public class GoogleDatastoreKeyStore extends AbstractKeyStore implements KeyStor
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-
-        System.out.println("PUT KEY " + key + " VALUE " + value);
     }
 
     @Override
@@ -382,7 +373,7 @@ public class GoogleDatastoreKeyStore extends AbstractKeyStore implements KeyStor
             String jordan = peele.getName();
             count++;
             System.out.println("" + count + " : " + jordan);
-            if (jordan.startsWith(prefix)) {
+            if (prefix == null || jordan.startsWith(prefix)) {
                 String keegan = this.get(jordan);
                 if ((keegan != null) && !iStoreKeyVisitor.visit(jordan, keegan)) {
                     break;
@@ -450,70 +441,11 @@ public class GoogleDatastoreKeyStore extends AbstractKeyStore implements KeyStor
 
     @Override
     public IndexHandler createIndexHandler(IndexProducer indexProducer) {
-        IndexHandler indexHandler = new IndexHandler() {
-            IndexProducer indexProducer;
-
-            @Override
-            public void deleteTable() {
-                throw new RaptNotSupportedException("Not yet supported");
-            }
-
-            @Override
-            public void removeAll(String rowId) {
-                throw new RaptNotSupportedException("Not yet supported");
-            }
-
-            @Override
-            public void setConfig(Map<String, String> config) {
-                throw new RaptNotSupportedException("Not yet supported");
-            }
-
-            @Override
-            public List<TableRecord> queryTable(TableQuery query) {
-                throw new RaptNotSupportedException("Not yet supported");
-            }
-
-            @Override
-            public void setInstanceName(String instanceName) {
-                throw new RaptNotSupportedException("Not yet supported");
-            }
-
-            @Override
-            public TableQueryResult query(String query) {
-                throw new RaptNotSupportedException("Not yet supported");
-            }
-
-            @Override
-            public Long getLatestEpoch() {
-                throw new RaptNotSupportedException("Not yet supported");
-            }
-
-            @Override
-            public void setIndexProducer(IndexProducer indexProducer) {
-                this.indexProducer = indexProducer;
-            }
-
-            @Override
-            public void initialize() {
-                throw new RaptNotSupportedException("Not yet supported");
-            }
-
-            @Override
-            public void addedRecord(String key, String value, DocumentMetadata mdLatest) {
-                throw new RaptNotSupportedException("Not yet supported");
-            }
-
-            @Override
-            public void updateRow(String key, Map<String, Object> recordValues) {
-                throw new RaptNotSupportedException("Not yet supported");
-            }
-
-            @Override
-            public void ensureIndicesExist() {
-                throw new RaptNotSupportedException("Not yet supported");
-            }
-        };
-
+        Map<String, String> indexConfig = new HashMap<>();
+        indexConfig.putAll(config);
+        indexConfig.put("prefix", "index_" + kind);
+        IndexHandler indexHandler = new GoogleIndexHandler();
+        indexHandler.setConfig(indexConfig);
         indexHandler.setIndexProducer(indexProducer);
         return indexHandler;
     }
