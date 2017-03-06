@@ -33,6 +33,7 @@ dependencies {
     compile "net.rapture:RaptureCore:$project.platformVersion"
     compile "net.rapture:RaptureAddinCore:$project.platformVersion"
     compile "net.rapture:MongoDb:$project.platformVersion"
+    compile "net.rapture:GoogleCloud:$project.platformVersion"
     compile "net.rapture:RabbitMQ:$project.platformVersion"
     compile "net.rapture:ElasticSearch:$project.platformVersion"
     compile "net.rapture:Postgres:$project.platformVersion"
