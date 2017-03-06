@@ -24,6 +24,11 @@
 package rapture.dsl.iqry;
 
 public class WhereValue {
+    @Override
+    public String toString() {
+        return value.toString();
+    }
+
     private Object value;
     
     public WhereValue(Object value) {
