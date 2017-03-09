@@ -68,8 +68,8 @@ public class RepoFactory {
 
     private static Map<Integer, String> createKeystoreMap() {
         Map<Integer, String> keyStoreSetupMap = new HashMap<>();
-        keyStoreSetupMap.put(RapGenLexer.GDS, "rapture.repo.google.GoogleDatastoreKeyStore");
-        keyStoreSetupMap.put(RapGenLexer.GSTORE, "rapture.repo.google.GoogleDatastoreKeyStore");
+        keyStoreSetupMap.put(RapGenLexer.GCP_STORAGE, "rapture.repo.google.GoogleStorageKeyStore");
+        keyStoreSetupMap.put(RapGenLexer.GCP_DATASTORE, "rapture.repo.google.GoogleDatastoreKeyStore");
         keyStoreSetupMap.put(RapGenLexer.MEMORY, "rapture.repo.mem.MemKeyStore");
         keyStoreSetupMap.put(RapGenLexer.REDIS, "rapture.repo.redis.RedisKeyStore");
         keyStoreSetupMap.put(RapGenLexer.AWS, "rapture.repo.aws.SimpleDbKeyStore");

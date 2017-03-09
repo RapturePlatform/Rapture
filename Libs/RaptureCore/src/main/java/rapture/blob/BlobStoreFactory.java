@@ -51,7 +51,7 @@ public final class BlobStoreFactory {
         setupMap.put(BlobGenLexer.MEMORY, "rapture.blob.memory.MemoryBlobStore");
         setupMap.put(BlobGenLexer.FILE, "rapture.blob.file.FileBlobStore");
         setupMap.put(BlobGenLexer.CASSANDRA, "rapture.blob.cassandra.CassandraBlobStore");
-        setupMap.put(BlobGenLexer.GSTORE, "rapture.blob.google.GoogleBlobStore");
+        setupMap.put(BlobGenLexer.GCP_STORAGE, "rapture.blob.google.GoogleBlobStore");
         setupMap.put(BlobGenLexer.MONGODB, "rapture.blob.mongodb.MongoDBBlobStore");
         implementationMap = Collections.unmodifiableMap(setupMap);
     }

@@ -98,7 +98,9 @@ public class GoogleIndexHandler extends AbstractIndexHandler
 
     @Override
     public void removeAll(String rowId) {
-        throw new RaptNotSupportedException("Not yet supported");
+        if (datastore == null) throw RaptureExceptionFactory.create("Index is not configured");
+        Key entityKey = datastore.newKeyFactory().setKind(kind).newKey(rowId);
+        datastore.delete(entityKey);
     }
 
 
