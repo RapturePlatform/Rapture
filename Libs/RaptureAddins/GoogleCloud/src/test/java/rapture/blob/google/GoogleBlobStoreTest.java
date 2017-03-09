@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.util.Map;
 
 import org.junit.After;
+import org.junit.Assume;
 import org.junit.Before;
 
 import com.google.common.collect.ImmutableMap;
@@ -37,12 +38,20 @@ import rapture.field.FieldTransformLoader;
 
 public class GoogleBlobStoreTest extends BlobStoreContractTest {
 
-    private GoogleBlobStore store;
+    private GoogleBlobStore store = null;
     String bukkit = "dave_incapture_com";
+
+    // Currently there isn't an emulator for Google Cloud Storage,
+    // so an alternative is to create a test project.
+    // RemoteStorageHelper contains convenience methods to make setting up and cleaning up
+    // the test project easier. However we need a project ID to do that.
 
     @Before
     public void setUp() {
-        Map<String, String> config = ImmutableMap.of("prefix", bukkit, "projectid", "high-plating-157918");
+        String projectId = System.getenv("PROJECT_ID"); // "high-plating-157918"
+        Assume.assumeNotNull(projectId);
+
+        Map<String, String> config = ImmutableMap.of("prefix", bukkit, "projectid", projectId);
         this.store = new GoogleBlobStore();
         store.setConfig(config);
         FieldTransformLoader ftl;
@@ -50,7 +59,7 @@ public class GoogleBlobStoreTest extends BlobStoreContractTest {
 
     @After
     public void tearDown() throws IOException {
-        store.destroyBucket(bukkit);
+        if (store != null) store.destroyBucket(bukkit);
     }
 
     @Override

@@ -16,6 +16,7 @@ options {
 // and the queue storage implementation
 // [Processor] { x=y, ...} using [EXCHANGESTYLE] { x=y, ...}
 
+GCP_PUBSUB : 'GCP_PUBSUB';
 RABBITMQ : 'RABBITMQ';
 EXCHANGE : 'EXCHANGE';
 MEMORY : 'MEMORY';
