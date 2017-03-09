@@ -66,7 +66,7 @@ import rapture.kernel.Kernel;
 public class DocApiGoogleTest extends AbstractFileTest {
 
     private static final Logger log = Logger.getLogger(DocApiGoogleTest.class);
-    private static final String REPO_USING_GDS = "REP {} USING GDS {prefix =\"" + auth + "\", projectid=\"high-plating-157918\"}";
+    private static final String REPO_USING_GCP_DATASTORE = "REP {} USING GCP_DATASTORE {prefix =\"" + auth + "\", projectid=\"high-plating-157918\"}";
     private static final String GET_ALL_BASE = "document://getAll";
     private static final String docContent = "{\"content\":\"Cold and misty morning I had heard a warning borne in the air\"}";
     private static final String docAuthorityURI = "document://" + auth;
@@ -78,8 +78,8 @@ public class DocApiGoogleTest extends AbstractFileTest {
     @BeforeClass
     static public void setUp() {
         AbstractFileTest.setUp();
-        config.RaptureRepo = REPO_USING_GDS;
-        config.InitSysConfig = "NREP {} USING GDS { prefix =\"" + auth + "/sys.config\", projectid=\"high-plating-157918\"}";
+        config.RaptureRepo = REPO_USING_GCP_DATASTORE;
+        config.InitSysConfig = "NREP {} USING GCP_DATASTORE { prefix =\"" + auth + "/sys.config\", projectid=\"high-plating-157918\"}";
         config.DefaultPipelineTaskStatus = "TABLE {} USING MEMORY {prefix =\"" + auth + "\"}";
 
         callingContext = new CallingContext();
@@ -117,7 +117,7 @@ public class DocApiGoogleTest extends AbstractFileTest {
     public void testValidDocStore() {
         Map<String, String> hashMap = new HashMap<>();
         hashMap.put("prefix", "/tmp/foo");
-        docImpl.createDocRepo(callingContext, "document://dummy2", "NREP {} USING GDS { prefix = foo\"");
+        docImpl.createDocRepo(callingContext, "document://dummy2", "NREP {} USING GCP_DATASTORE { prefix = foo\"");
     }
 
     @Test
@@ -152,7 +152,7 @@ public class DocApiGoogleTest extends AbstractFileTest {
             docImpl.deleteDocRepo(callingContext, GET_ALL_BASE);
 
         } else {
-            docImpl.createDocRepo(callingContext, GET_ALL_BASE, "REP {} USING GDS {prefix =\"" + auth + "-1\", projectid=\"high-plating-157918\"}");
+            docImpl.createDocRepo(callingContext, GET_ALL_BASE, "REP {} USING GCP_DATASTORE {prefix =\"" + auth + "-1\", projectid=\"high-plating-157918\"}");
         }
         docImpl.putDoc(callingContext, GET_ALL_BASE + "/uncle", "{\"magic\": \"Drunk Uncle\"}");
         docImpl.putDoc(callingContext, GET_ALL_BASE + "/dad/kid1", "{\"magic\": \"Awesome Child\"}");
@@ -182,10 +182,10 @@ public class DocApiGoogleTest extends AbstractFileTest {
     public void testCreateAndGetRepo() {
         if (!firstTime && docImpl.docRepoExists(callingContext, docAuthorityURI)) return;
         firstTime = false;
-        docImpl.createDocRepo(callingContext, docAuthorityURI, REPO_USING_GDS);
+        docImpl.createDocRepo(callingContext, docAuthorityURI, REPO_USING_GCP_DATASTORE);
         DocumentRepoConfig docRepoConfig = docImpl.getDocRepoConfig(callingContext, docAuthorityURI);
         assertNotNull(docRepoConfig);
-        assertEquals(REPO_USING_GDS, docRepoConfig.getDocumentRepo().getConfig());
+        assertEquals(REPO_USING_GCP_DATASTORE, docRepoConfig.getDocumentRepo().getConfig());
         assertEquals(auth, docRepoConfig.getAuthority());
     }
 
@@ -193,7 +193,7 @@ public class DocApiGoogleTest extends AbstractFileTest {
     public void testGetDocumentRepositories() {
         testCreateAndGetRepo();
         List<DocumentRepoConfig> docRepositories = docImpl.getDocRepoConfigs(callingContext);
-        docImpl.createDocRepo(callingContext, "document://somewhereelse/", REPO_USING_GDS);
+        docImpl.createDocRepo(callingContext, "document://somewhereelse/", REPO_USING_GCP_DATASTORE);
         List<DocumentRepoConfig> docRepositoriesNow = docImpl.getDocRepoConfigs(callingContext);
         assertEquals(JacksonUtil.jsonFromObject(docRepositoriesNow), docRepositories.size() + 1, docRepositoriesNow.size());
     }
@@ -325,7 +325,7 @@ public class DocApiGoogleTest extends AbstractFileTest {
         f2.deleteOnExit();
         
         String json = "{\"key123\":\"value123\"}";
-        docImpl.createDocRepo(callingContext, repoUri, "VREP {} USING GDS {prefix =\"" + repoUri + "\", projectid=\"high-plating-157918\"}");
+        docImpl.createDocRepo(callingContext, repoUri, "VREP {} USING GCP_DATASTORE {prefix =\"" + repoUri + "\", projectid=\"high-plating-157918\"}");
 
         /* DocumentRepoConfig dr = */
         docImpl.getDocRepoConfig(callingContext, repoUri);

@@ -26,6 +26,7 @@ package rapture.kernel.index;
 import java.util.List;
 import java.util.UUID;
 
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -55,9 +56,11 @@ public class GoogleIndexTest {
     static CallingContext context = ContextFactory.getKernelUser();
 
     private static IndexConfig planetIndex = null;
+    final String authorityName = "docplanetdata1." + System.nanoTime();
 
     @BeforeClass
     public static void setUp() {
+        System.setProperty("LOGSTASH-ISENABLED", "false");
         document = Kernel.getDoc();
         script = Kernel.getScript();
         index = Kernel.getIndex();
@@ -67,6 +70,15 @@ public class GoogleIndexTest {
         Kernel.getAudit().createAuditLog(ContextFactory.getKernelUser(), new RaptureURI(RaptureConstants.DEFAULT_AUDIT_URI, Scheme.LOG).getAuthority(),
                 "LOG {} using FILE {projectid = \"high-plating-157918\", prefix=\"/tmp/" + auth + "\"}");
         Kernel.getLock().createLockManager(ContextFactory.getKernelUser(), "lock://kernel", "LOCKING USING DUMMY {}", "");
+        if (!Kernel.getDoc().docRepoExists(ctx, "//docTest")) Kernel.getDoc().createDocRepo(ctx, "//docTest",
+                "NREP {} USING GCP_DATASTORE {projectid = \"high-plating-157918\", prefix =\"" + auth + "\", projectid=\"high-plating-157918\"}");
+        Kernel.getIndex().createIndex(ctx, "//docTest", "field1($0) string, field2(test) string");
+    }
+
+    @After
+    public void clean() {
+        planetURI = RaptureURI.builder(Scheme.DOCUMENT, authorityName).build().toString();
+        document.deleteDocRepo(context, planetURI);
 
     }
 
@@ -74,15 +86,6 @@ public class GoogleIndexTest {
     public static void cleanUp() {
         Kernel.getDoc().deleteDocRepo(ctx, "//docTest");
         Kernel.getIndex().deleteIndex(ctx, "//docTest");
-    }
-
-    @BeforeClass
-    public static void setup() {
-        System.setProperty("LOGSTASH-ISENABLED", "false");
-        Kernel.initBootstrap();
-        if (!Kernel.getDoc().docRepoExists(ctx, "//docTest")) Kernel.getDoc().createDocRepo(ctx, "//docTest",
-                "NREP {} USING GDS {projectid = \"high-plating-157918\", prefix =\"" + auth + "\", projectid=\"high-plating-157918\"}");
-        Kernel.getIndex().createIndex(ctx, "//docTest", "field1($0) string, field2(test) string");
     }
 
     @Test
@@ -131,10 +134,9 @@ public class GoogleIndexTest {
 
     @Test
     public void updateDataTest() {
-        String authorityName = "docplanetdata1." + System.nanoTime();
         planetURI = RaptureURI.builder(Scheme.DOCUMENT, authorityName).build().toString();
 
-        String ver_config = "NREP {} USING GDS {projectid = \"high-plating-157918\", prefix=\"planet.%s\"}"; // versioned repository
+        String ver_config = "NREP {} USING GCP_DATASTORE {projectid = \"high-plating-157918\", prefix=\"planet.%s\"}"; // versioned repository
 
         // setup planet test data
         INDEXCFG = "planet($0) string, moon($1) string, fieldOne(one) string, fieldTwo(two) integer, fieldInner(inner.alpha) string";
@@ -151,7 +153,7 @@ public class GoogleIndexTest {
         data3();
 
         planetIndex = index.createIndex(context, planetURI, INDEXCFG);
-        System.out.println("Index details: GDS " + planetIndex.getName());
+        System.out.println("Index details: GCP_DATASTORE " + planetIndex.getName());
 
         System.out.println("Query: " + query);
         res = index.findIndex(context, planetURI, query);
@@ -190,10 +192,8 @@ public class GoogleIndexTest {
 
     @Test
     public void limitTest() {
-
-        String authorityName = "docplanetdata1." + System.nanoTime();
         planetURI = RaptureURI.builder(Scheme.DOCUMENT, authorityName).build().toString();
-        String ver_config = "NREP {} USING GDS {projectid = \"high-plating-157918\", prefix=\"planet.%s\"}"; // versioned repository
+        String ver_config = "NREP {} USING GCP_DATASTORE {projectid = \"high-plating-157918\", prefix=\"planet.%s\"}"; // versioned repository
         document.createDocRepo(context, planetURI, String.format(ver_config, System.nanoTime()));
 
         // setup planet test data
@@ -248,10 +248,10 @@ public class GoogleIndexTest {
 
     @Test
     public void distinctTest() {
-        String authorityName = "docplanetdata1." + System.nanoTime();
+
         planetURI = RaptureURI.builder(Scheme.DOCUMENT, authorityName).build().toString();
 
-        String ver_config = "NREP {} USING GDS {projectid = \"high-plating-157918\", prefix=\"planet.%s\"}"; // versioned repository
+        String ver_config = "NREP {} USING GCP_DATASTORE {projectid = \"high-plating-157918\", prefix=\"planet.%s\"}"; // versioned repository
         document.createDocRepo(context, planetURI, String.format(ver_config, System.nanoTime()));
 
         // setup planet test data
@@ -272,10 +272,9 @@ public class GoogleIndexTest {
 
     @Test
     public void orderAscTest() {
-        String authorityName = "docplanetdata1." + System.nanoTime();
         planetURI = RaptureURI.builder(Scheme.DOCUMENT, authorityName).build().toString();
 
-        String ver_config = "NREP {} USING GDS {projectid = \"high-plating-157918\", prefix=\"planet.%s\"}"; // versioned repository
+        String ver_config = "NREP {} USING GCP_DATASTORE {projectid = \"high-plating-157918\", prefix=\"planet.%s\"}"; // versioned repository
         document.createDocRepo(context, planetURI, String.format(ver_config, System.nanoTime()));
 
         // setup planet test data
@@ -342,10 +341,9 @@ public class GoogleIndexTest {
 
     @Test
     public void orderDescTest() {
-        String authorityName = "docplanetdata1." + System.nanoTime();
         planetURI = RaptureURI.builder(Scheme.DOCUMENT, authorityName).build().toString();
 
-        String ver_config = "NREP {} USING GDS {projectid = \"high-plating-157918\", prefix=\"planet.%s\"}"; // versioned repository
+        String ver_config = "NREP {} USING GCP_DATASTORE {projectid = \"high-plating-157918\", prefix=\"planet.%s\"}"; // versioned repository
         document.createDocRepo(context, planetURI, String.format(ver_config, System.nanoTime()));
 
         // setup planet test data
@@ -372,10 +370,9 @@ public class GoogleIndexTest {
 
     @Test
     public void orderLimitTest() {
-        String authorityName = "docplanetdata1." + System.nanoTime();
         planetURI = RaptureURI.builder(Scheme.DOCUMENT, authorityName).build().toString();
 
-        String ver_config = "NREP {} USING GDS {projectid = \"high-plating-157918\", prefix=\"planet.%s\"}"; // versioned repository
+        String ver_config = "NREP {} USING GCP_DATASTORE {projectid = \"high-plating-157918\", prefix=\"planet.%s\"}"; // versioned repository
         document.createDocRepo(context, planetURI, String.format(ver_config, System.nanoTime()));
 
         // setup planet test data
@@ -392,5 +389,34 @@ public class GoogleIndexTest {
         Assert.assertNotNull(orderList);
         System.out.println(JacksonUtil.jsonFromObject(orderList, true));
         Assert.assertEquals(3, orderList.size());
+    }
+
+    @Test
+    public void deleteTest() {
+        // RAP-4343
+        planetURI = RaptureURI.builder(Scheme.DOCUMENT, authorityName).build().toString();
+
+        String ver_config = "NREP {} USING GCP_DATASTORE {projectid = \"high-plating-157918\", prefix=\"planet.%s\"}"; // versioned repository
+        document.createDocRepo(context, planetURI, String.format(ver_config, System.nanoTime()));
+
+        // setup planet test data
+        INDEXCFG = "planet($0) string, moon($1) string, fieldOne(one) string, fieldTwo(two) integer, fieldInner(inner.alpha) string";
+        planetIndex = index.createIndex(context, planetURI, INDEXCFG);
+        data1();
+
+        String doc = document.getDoc(context, planetURI + "/Mercury/None");
+        Assert.assertNotNull(doc);
+
+        TableQueryResult orderQuery = index.findIndex(context, planetURI, "SELECT DISTINCT planet ORDER BY planet");
+        List<List<Object>> orderList = orderQuery.getRows();
+        Assert.assertEquals(4, orderList.size());
+
+        document.deleteDoc(context, planetURI + "/Mercury/None");
+        doc = document.getDoc(context, planetURI + "/Mercury/None");
+        Assert.assertNull(doc);
+        orderQuery = index.findIndex(context, planetURI, "SELECT DISTINCT planet ORDER BY planet");
+        orderList = orderQuery.getRows();
+        Assert.assertEquals(3, orderList.size());
+
     }
 }

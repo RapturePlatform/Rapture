@@ -17,7 +17,7 @@ public class IdGenGoogleStoreTest {
     @Test
     public void testIdGen1() {
         RaptureIdGen f = IdGenFactory
-                .getIdGen("IDGEN { initial = \"10\", base=\"26\", length=\"8\", prefix=\"TST\" } USING GDS { prefix=\"" + uuid
+                .getIdGen("IDGEN { initial = \"10\", base=\"26\", length=\"8\", prefix=\"TST\" } USING GCP_DATASTORE { prefix=\"" + uuid
                         + "\", projectid= \"high-plating-157918\"}");
         String result = f.incrementIdGen(10L);
         assertEquals("TST0000000K", result);
@@ -25,7 +25,7 @@ public class IdGenGoogleStoreTest {
 
     @Test
     public void testIdGen2() {
-        RaptureIdGen f = IdGenFactory.getIdGen("IDGEN { initial=\"706216874\", base=\"36\", length=\"6\", prefix=\"OI-\" } " + "USING GDS { prefix=\"" + uuid
+        RaptureIdGen f = IdGenFactory.getIdGen("IDGEN { initial=\"706216874\", base=\"36\", length=\"6\", prefix=\"OI-\" } " + "USING GCP_DATASTORE { prefix=\"" + uuid
                 + "\", projectid= \"high-plating-157918\"}");
 
         String result = f.incrementIdGen(1L);

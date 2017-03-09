@@ -352,11 +352,11 @@ public class GoogleDatastoreKeyStore extends AbstractKeyStore implements KeyStor
 
     @Override
     public RaptureQueryResult runNativeQuery(String repoType, List<String> queryParams) {
-        if (repoType.toUpperCase().equals("GDS")) {
+        if (repoType.toUpperCase().equals("GCP_DATASTORE")) {
             throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, "Not yet implemented");
         } else {
             throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST,
-                    "RepoType mismatch. Repo is of type GDS, asked for " + repoType);
+                    "RepoType mismatch. Repo is of type GCP_DATASTORE, asked for " + repoType);
         }
     }
 

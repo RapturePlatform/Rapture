@@ -31,7 +31,7 @@ storedef   : s=storestyle config { addConfig($s.text); };
 
 repstyle   : RREP | VREP | REP | NREP | QREP;
 cachestyle : c=EHCACHE { setCache($c); };
-storestyle : s=(CASSANDRA | GDS | GSTORE | REDIS | MEMORY | AWS | MEMCACHED | MONGODB | FILE | EHCACHE | JDBC | CSV | POSTGRES | NOTHING) { setStore($s); };
+storestyle : s=(CASSANDRA | GCP_DATASTORE | GCP_STORAGE | REDIS | MEMORY | AWS | MEMCACHED | MONGODB | FILE | EHCACHE | JDBC | CSV | POSTGRES | NOTHING) { setStore($s); };
 shadowstyle : s=(REDIS | MEMORY | AWS | MEMCACHED | MONGODB | FILE | EHCACHE ) { setShadow($s); };
 
 config 	   : LBRACE entrylist RBRACE;

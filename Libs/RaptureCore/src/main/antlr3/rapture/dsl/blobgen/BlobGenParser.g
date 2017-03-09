@@ -24,7 +24,7 @@ repdef	   : s=repstyle config { addProcessorConfig($s.text); };
 storedef   : s=storestyle config { addConfig($s.text); };
 
 repstyle   : BLOB;
-storestyle : s=(MEMORY | FILE | AWS | CASSANDRA | GSTORE | MONGODB) { setStore($s); };
+storestyle : s=(MEMORY | FILE | AWS | CASSANDRA | GCP_STORAGE | MONGODB) { setStore($s); };
 
 config 	   : LBRACE entrylist RBRACE;
 

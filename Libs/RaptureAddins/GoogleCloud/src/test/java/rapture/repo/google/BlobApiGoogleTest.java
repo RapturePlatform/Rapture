@@ -77,9 +77,9 @@ public class BlobApiGoogleTest {
     public static CallingContext callingContext;
 
     private static BlobApiImpl blobImpl;
-    private static final String BLOB_USING_GOOGLE = "BLOB {} USING GSTORE {prefix=\"B" + auth + "\", projectid=\"high-plating-157918\"}";
-    private static final String REPO_USING_GOOGLE = "REP {} USING GDS {prefix=\"" + auth + "\", projectid=\"high-plating-157918\"}";
-    private static final String META_USING_GOOGLE = "REP {} USING GDS {prefix=\"M" + auth + "\", projectid=\"high-plating-157918\"}";
+    private static final String BLOB_USING_GOOGLE = "BLOB {} USING GCP_STORAGE {prefix=\"B" + auth + "\", projectid=\"high-plating-157918\"}";
+    private static final String REPO_USING_GOOGLE = "REP {} USING GCP_DATASTORE {prefix=\"" + auth + "\", projectid=\"high-plating-157918\"}";
+    private static final String META_USING_GOOGLE = "REP {} USING GCP_DATASTORE {prefix=\"M" + auth + "\", projectid=\"high-plating-157918\"}";
     private static final byte[] SAMPLE_BLOB = "This is a blob".getBytes();
 
     static String blobAuthorityURI = "blob://" + auth;
@@ -96,7 +96,7 @@ public class BlobApiGoogleTest {
         callingContext.setUser("dummy");
 
         config.RaptureRepo = REPO_USING_GOOGLE;
-        config.InitSysConfig = "NREP {} USING GDS { prefix=\"" + auth + ".sys.config\", projectid=\"high-plating-157918\"}";
+        config.InitSysConfig = "NREP {} USING GCP_DATASTORE { prefix=\"" + auth + ".sys.config\", projectid=\"high-plating-157918\"}";
 
         callingContext = new CallingContext();
         callingContext.setUser("dummy");
@@ -180,7 +180,7 @@ public class BlobApiGoogleTest {
     public void testValidDocStore() {
         Map<String, String> hashMap = new HashMap<>();
         hashMap.put("prefix", "foo");
-        blobImpl.createBlobRepo(callingContext, "blob://dummy2", "BLOB {} USING GSTORE { prefix=\"foo\" }", "REP {} USING GDS { prefix=\"foo\" }");
+        blobImpl.createBlobRepo(callingContext, "blob://dummy2", "BLOB {} USING GCP_STORAGE { prefix=\"foo\" }", "REP {} USING GCP_DATASTORE { prefix=\"foo\" }");
 
     }
 
@@ -191,8 +191,8 @@ public class BlobApiGoogleTest {
             List<BlobRepoConfig> before = blobImpl.getBlobRepoConfigs(callingContext);
 
             blobImpl.createBlobRepo(callingContext, "blob://somewhereelse/",
-                    "BLOB {} USING GSTORE {prefix=\"somewhereelse\", projectid=\"high-plating-157918\"}",
-                    "REP {} USING GDS {prefix=\"somewhereelse\", projectid=\"high-plating-157918\"}");
+                    "BLOB {} USING GCP_STORAGE {prefix=\"somewhereelse\", projectid=\"high-plating-157918\"}",
+                    "REP {} USING GCP_DATASTORE {prefix=\"somewhereelse\", projectid=\"high-plating-157918\"}");
 
             List<BlobRepoConfig> after = blobImpl.getBlobRepoConfigs(callingContext);
             // And then there were three
