@@ -27,16 +27,21 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.TimeoutException;
 
+import org.joda.time.Duration;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.google.cloud.datastore.Datastore;
+import com.google.cloud.datastore.testing.LocalDatastoreHelper;
 import com.google.common.collect.ImmutableMap;
 
 import rapture.common.RaptureURI;
@@ -59,26 +64,34 @@ public class GoogleDatastoreKeyStoreTest {
     KeyStore version;
     KeyStore attribute;
 
+    LocalDatastoreHelper helper = LocalDatastoreHelper.create();
+
     @Before
-    public void setup() {
-        store = new GoogleDatastoreKeyStore();
-        store.setConfig(ImmutableMap.of("prefix", "store", "projectid", "high-plating-157918"));
-        meta = new GoogleDatastoreKeyStore();
-        meta.setConfig(ImmutableMap.of("prefix", "meta", "projectid", "high-plating-157918"));
-        version = new GoogleDatastoreKeyStore();
-        version.setConfig(ImmutableMap.of("prefix", "version", "projectid", "high-plating-157918"));
-        attribute = new GoogleDatastoreKeyStore();
-        attribute.setConfig(ImmutableMap.of("prefix", "attribute", "projectid", "high-plating-157918"));
+    public void setup() throws IOException, InterruptedException {
+        helper.start(); // Starts the local Datastore emulator in a separate process
+
+        Datastore localDatastore = helper.getOptions().getService();
+
+        store = new GoogleDatastoreKeyStore(localDatastore);
+        store.setConfig(ImmutableMap.of("prefix", "store"));
+        meta = new GoogleDatastoreKeyStore(localDatastore);
+        meta.setConfig(ImmutableMap.of("prefix", "meta"));
+        version = new GoogleDatastoreKeyStore(localDatastore);
+        version.setConfig(ImmutableMap.of("prefix", "version"));
+        attribute = new GoogleDatastoreKeyStore(localDatastore);
+        attribute.setConfig(ImmutableMap.of("prefix", "attribute"));
         repo = new NVersionedRepo(new HashMap<String, String>(), store, version, meta, attribute, new DummyLockHandler());
     }
 
     @After
-    public void tidyUp() {
+    public void tidyUp() throws IOException, InterruptedException, TimeoutException {
         store.dropKeyStore();
         meta.dropKeyStore();
         version.dropKeyStore();
         attribute.dropKeyStore();
+        helper.stop(new Duration(6000));
     }
+
 
     @Test
     public void multipleVersions() {

@@ -68,7 +68,8 @@ public abstract class BlobStoreContractTest {
     @After
     public void after() {
         long before = System.currentTimeMillis();
-        getBlobStore().deleteBlob(CONTEXT, TEST_URI);
+        BlobStore bs = getBlobStore();
+        if (bs != null) bs.deleteBlob(CONTEXT, TEST_URI);
         long after = System.currentTimeMillis();
         printDiff("delete in after", before, after);
     }

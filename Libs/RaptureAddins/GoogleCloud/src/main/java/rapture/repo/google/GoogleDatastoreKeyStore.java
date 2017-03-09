@@ -87,6 +87,10 @@ public class GoogleDatastoreKeyStore extends AbstractKeyStore implements KeyStor
     public GoogleDatastoreKeyStore() {
     }
 
+    public GoogleDatastoreKeyStore(Datastore testdatastore) {
+        datastore = testdatastore;
+    }
+
     /*
      * (non-Javadoc)
      * 
@@ -178,14 +182,16 @@ public class GoogleDatastoreKeyStore extends AbstractKeyStore implements KeyStor
         kind = StringUtils.stripToNull(config.get("prefix"));
         if (kind == null) throw new RuntimeException("Prefix not set in config " + JacksonUtil.formattedJsonFromObject(config));
 
-        String projectId = StringUtils.trimToNull(config.get("projectid"));
-        if (projectId == null) {
-            projectId = MultiValueConfigLoader.getConfig("GOOGLE-projectId");
+        if (datastore == null) {
+            String projectId = StringUtils.trimToNull(config.get("projectid"));
             if (projectId == null) {
-                throw new RuntimeException("Project ID not set in RaptureGOOGLE.cfg or in config " + config);
+                projectId = MultiValueConfigLoader.getConfig("GOOGLE-projectId");
+                if (projectId == null) {
+                    throw new RuntimeException("Project ID not set in RaptureGOOGLE.cfg or in config " + config);
+                }
             }
+            datastore = DatastoreOptions.newBuilder().setProjectId(projectId).build().getService();
         }
-        datastore = DatastoreOptions.newBuilder().setProjectId(projectId).build().getService();
         this.config = config;
     }
 
