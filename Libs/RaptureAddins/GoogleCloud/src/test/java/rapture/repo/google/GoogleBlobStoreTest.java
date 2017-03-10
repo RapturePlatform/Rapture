@@ -30,7 +30,6 @@ import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
 import org.joda.time.Duration;
-import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Assume;
@@ -78,12 +77,12 @@ public class GoogleBlobStoreTest extends BlobStoreContractTest {
 
     @AfterClass
     public static void tearDown() throws IOException, InterruptedException, TimeoutException {
-        helper.stop(new Duration(6000L));
-    }
-
-    @After
-    public void afterwards() {
         if (store != null) store.destroyBucket(bukkit);
+        try {
+            helper.stop(new Duration(6000L));
+        } catch (Exception e) {
+            System.out.println("Exception shutting down LocalDatastoreHelper: " + e.getMessage());
+        }
     }
 
     @Override

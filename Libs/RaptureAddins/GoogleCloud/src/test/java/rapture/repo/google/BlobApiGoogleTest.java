@@ -49,6 +49,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import com.google.cloud.datastore.testing.LocalDatastoreHelper;
+import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageException;
 import com.google.cloud.storage.testing.RemoteStorageHelper;
 import com.google.cloud.storage.testing.RemoteStorageHelper.StorageHelperException;
@@ -102,15 +103,21 @@ public class BlobApiGoogleTest {
             Assert.fail(e.getMessage());
         } // Starts the local Datastore emulator in a separate process
         
-        
+        RemoteStorageHelper helper = null;
+        Storage storage;
         try {
-            File key = new File("src/test/resources/key.json");
-            Assume.assumeTrue("Cannot read " + key.getAbsolutePath(), key.canRead());
-            RemoteStorageHelper helper = RemoteStorageHelper.create("todo3-incap", new FileInputStream(key));
-            GoogleBlobStore.setStorageForTesting(helper.getOptions().getService());
-        } catch (StorageHelperException | FileNotFoundException e) {
-            Assume.assumeNoException("Cannot create storage helper", e);
+            helper = RemoteStorageHelper.create();
+        } catch (Exception e1) {
+            try {
+                File key = new File("src/test/resources/key.json");
+                Assume.assumeTrue("Cannot read " + key.getAbsolutePath(), key.canRead());
+                helper = RemoteStorageHelper.create("todo3-incap", new FileInputStream(key));
+            } catch (StorageHelperException | FileNotFoundException e) {
+                Assume.assumeNoException("Cannot create storage helper", e);
+            }
         }
+        Assume.assumeNotNull(helper);
+        GoogleBlobStore.setStorageForTesting(helper.getOptions().getService());
 
         RaptureConfig.setLoadYaml(false);
         config = ConfigLoader.getConf();
@@ -143,19 +150,19 @@ public class BlobApiGoogleTest {
         try {
             if ((blobImpl != null) && blobImpl.blobRepoExists(callingContext, "blob://dummy")) blobImpl.deleteBlobRepo(callingContext, "blob://dummy");
         } catch (Exception e) {
-            System.err.println("Warning: exception in clean up: " + e.getMessage());
+            System.err.println("Warning: exception in clean up deleting blob://dummy : " + e.getMessage());
         }
 
         try {
             if ((blobImpl != null) && blobImpl.blobRepoExists(callingContext, blobAuthorityURI)) blobImpl.deleteBlobRepo(callingContext, blobAuthorityURI);
         } catch (Exception e) {
-            System.err.println("Warning: exception in clean up: " + e.getMessage());
+            System.err.println("Warning: exception in clean up deleting " + blobAuthorityURI + " : " + e.getMessage());
         }
 
         try {
             helper.stop(new Duration(6000L));
         } catch (Exception e) {
-            System.err.println("Warning: exception in clean up: " + e.getMessage());
+            System.err.println("Warning: exception in clean up stopping helper: " + e.getMessage());
         }
     }
 
