@@ -68,10 +68,10 @@ public class GoogleIndexTest {
 
         Kernel.INSTANCE.clearRepoCache(false);
         Kernel.getAudit().createAuditLog(ContextFactory.getKernelUser(), new RaptureURI(RaptureConstants.DEFAULT_AUDIT_URI, Scheme.LOG).getAuthority(),
-                "LOG {} using FILE {projectid = \"high-plating-157918\", prefix=\"/tmp/" + auth + "\"}");
+                "LOG {} using FILE {prefix=\"/tmp/" + auth + "\"}");
         Kernel.getLock().createLockManager(ContextFactory.getKernelUser(), "lock://kernel", "LOCKING USING DUMMY {}", "");
         if (!Kernel.getDoc().docRepoExists(ctx, "//docTest")) Kernel.getDoc().createDocRepo(ctx, "//docTest",
-                "NREP {} USING GCP_DATASTORE {projectid = \"high-plating-157918\", prefix =\"" + auth + "\", projectid=\"high-plating-157918\"}");
+                "NREP {} USING GCP_DATASTORE {prefix =\"" + auth + "\"}");
         Kernel.getIndex().createIndex(ctx, "//docTest", "field1($0) string, field2(test) string");
     }
 
@@ -136,7 +136,7 @@ public class GoogleIndexTest {
     public void updateDataTest() {
         planetURI = RaptureURI.builder(Scheme.DOCUMENT, authorityName).build().toString();
 
-        String ver_config = "NREP {} USING GCP_DATASTORE {projectid = \"high-plating-157918\", prefix=\"planet.%s\"}"; // versioned repository
+        String ver_config = "NREP {} USING GCP_DATASTORE {prefix=\"planet.%s\"}"; // versioned repository
 
         // setup planet test data
         INDEXCFG = "planet($0) string, moon($1) string, fieldOne(one) string, fieldTwo(two) integer, fieldInner(inner.alpha) string";
@@ -193,7 +193,7 @@ public class GoogleIndexTest {
     @Test
     public void limitTest() {
         planetURI = RaptureURI.builder(Scheme.DOCUMENT, authorityName).build().toString();
-        String ver_config = "NREP {} USING GCP_DATASTORE {projectid = \"high-plating-157918\", prefix=\"planet.%s\"}"; // versioned repository
+        String ver_config = "NREP {} USING GCP_DATASTORE {prefix=\"planet.%s\"}"; // versioned repository
         document.createDocRepo(context, planetURI, String.format(ver_config, System.nanoTime()));
 
         // setup planet test data
@@ -251,7 +251,7 @@ public class GoogleIndexTest {
 
         planetURI = RaptureURI.builder(Scheme.DOCUMENT, authorityName).build().toString();
 
-        String ver_config = "NREP {} USING GCP_DATASTORE {projectid = \"high-plating-157918\", prefix=\"planet.%s\"}"; // versioned repository
+        String ver_config = "NREP {} USING GCP_DATASTORE {prefix=\"planet.%s\"}"; // versioned repository
         document.createDocRepo(context, planetURI, String.format(ver_config, System.nanoTime()));
 
         // setup planet test data
@@ -274,7 +274,7 @@ public class GoogleIndexTest {
     public void orderAscTest() {
         planetURI = RaptureURI.builder(Scheme.DOCUMENT, authorityName).build().toString();
 
-        String ver_config = "NREP {} USING GCP_DATASTORE {projectid = \"high-plating-157918\", prefix=\"planet.%s\"}"; // versioned repository
+        String ver_config = "NREP {} USING GCP_DATASTORE {prefix=\"planet.%s\"}"; // versioned repository
         document.createDocRepo(context, planetURI, String.format(ver_config, System.nanoTime()));
 
         // setup planet test data
@@ -343,7 +343,7 @@ public class GoogleIndexTest {
     public void orderDescTest() {
         planetURI = RaptureURI.builder(Scheme.DOCUMENT, authorityName).build().toString();
 
-        String ver_config = "NREP {} USING GCP_DATASTORE {projectid = \"high-plating-157918\", prefix=\"planet.%s\"}"; // versioned repository
+        String ver_config = "NREP {} USING GCP_DATASTORE {prefix=\"planet.%s\"}"; // versioned repository
         document.createDocRepo(context, planetURI, String.format(ver_config, System.nanoTime()));
 
         // setup planet test data
@@ -372,7 +372,7 @@ public class GoogleIndexTest {
     public void orderLimitTest() {
         planetURI = RaptureURI.builder(Scheme.DOCUMENT, authorityName).build().toString();
 
-        String ver_config = "NREP {} USING GCP_DATASTORE {projectid = \"high-plating-157918\", prefix=\"planet.%s\"}"; // versioned repository
+        String ver_config = "NREP {} USING GCP_DATASTORE {prefix=\"planet.%s\"}"; // versioned repository
         document.createDocRepo(context, planetURI, String.format(ver_config, System.nanoTime()));
 
         // setup planet test data
@@ -396,7 +396,7 @@ public class GoogleIndexTest {
         // RAP-4343
         planetURI = RaptureURI.builder(Scheme.DOCUMENT, authorityName).build().toString();
 
-        String ver_config = "NREP {} USING GCP_DATASTORE {projectid = \"high-plating-157918\", prefix=\"planet.%s\"}"; // versioned repository
+        String ver_config = "NREP {} USING GCP_DATASTORE {prefix=\"planet.%s\"}"; // versioned repository
         document.createDocRepo(context, planetURI, String.format(ver_config, System.nanoTime()));
 
         // setup planet test data

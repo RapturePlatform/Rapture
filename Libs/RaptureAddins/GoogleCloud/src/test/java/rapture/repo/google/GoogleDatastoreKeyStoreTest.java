@@ -40,7 +40,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.google.cloud.datastore.Datastore;
 import com.google.cloud.datastore.testing.LocalDatastoreHelper;
 import com.google.common.collect.ImmutableMap;
 
@@ -69,16 +68,15 @@ public class GoogleDatastoreKeyStoreTest {
     @Before
     public void setup() throws IOException, InterruptedException {
         helper.start(); // Starts the local Datastore emulator in a separate process
+        GoogleDatastoreKeyStore.setDatastoreOptionsForTesting(helper.getOptions());
 
-        Datastore localDatastore = helper.getOptions().getService();
-
-        store = new GoogleDatastoreKeyStore(localDatastore);
+        store = new GoogleDatastoreKeyStore();
         store.setConfig(ImmutableMap.of("prefix", "store"));
-        meta = new GoogleDatastoreKeyStore(localDatastore);
+        meta = new GoogleDatastoreKeyStore();
         meta.setConfig(ImmutableMap.of("prefix", "meta"));
-        version = new GoogleDatastoreKeyStore(localDatastore);
+        version = new GoogleDatastoreKeyStore();
         version.setConfig(ImmutableMap.of("prefix", "version"));
-        attribute = new GoogleDatastoreKeyStore(localDatastore);
+        attribute = new GoogleDatastoreKeyStore();
         attribute.setConfig(ImmutableMap.of("prefix", "attribute"));
         repo = new NVersionedRepo(new HashMap<String, String>(), store, version, meta, attribute, new DummyLockHandler());
     }
@@ -91,7 +89,6 @@ public class GoogleDatastoreKeyStoreTest {
         attribute.dropKeyStore();
         helper.stop(new Duration(6000));
     }
-
 
     @Test
     public void multipleVersions() {

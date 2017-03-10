@@ -21,44 +21,68 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package rapture.blob.google;
+package rapture.repo.google;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Map;
+import java.util.concurrent.TimeoutException;
 
+import org.joda.time.Duration;
 import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.Assume;
-import org.junit.Before;
+import org.junit.BeforeClass;
 
+import com.google.cloud.datastore.testing.LocalDatastoreHelper;
+import com.google.cloud.storage.testing.RemoteStorageHelper;
+import com.google.cloud.storage.testing.RemoteStorageHelper.StorageHelperException;
 import com.google.common.collect.ImmutableMap;
 
 import rapture.blob.BlobStore;
 import rapture.blob.BlobStoreContractTest;
-import rapture.field.FieldTransformLoader;
 
 public class GoogleBlobStoreTest extends BlobStoreContractTest {
 
-    private GoogleBlobStore store = null;
-    String bukkit = "dave_incapture_com";
+    private static GoogleBlobStore store = null;
+    static String bukkit = "davet_incapture_com";
+    private static LocalDatastoreHelper helper = LocalDatastoreHelper.create();
 
     // Currently there isn't an emulator for Google Cloud Storage,
     // so an alternative is to create a test project.
     // RemoteStorageHelper contains convenience methods to make setting up and cleaning up
     // the test project easier. However we need a project ID to do that.
 
-    @Before
-    public void setUp() {
-        String projectId = System.getenv("PROJECT_ID"); // "high-plating-157918"
-        Assume.assumeNotNull(projectId);
+    @BeforeClass
+    public static void setUp() {
+        GoogleDatastoreKeyStore.setDatastoreOptionsForTesting(helper.getOptions());
+        try {
+            helper.start();
+        } catch (IOException | InterruptedException e) {
+            Assert.fail(e.getMessage());
+        } // Starts the local Datastore emulator in a separate process
 
-        Map<String, String> config = ImmutableMap.of("prefix", bukkit, "projectid", projectId);
-        this.store = new GoogleBlobStore();
-        store.setConfig(config);
-        FieldTransformLoader ftl;
+        try {
+            File key = new File("src/test/resources/key.json");
+            Assume.assumeTrue("Cannot read " + key.getAbsolutePath(), key.canRead());
+            RemoteStorageHelper helper = RemoteStorageHelper.create("todo3-incap", new FileInputStream(key));
+            GoogleBlobStore.setStorageForTesting(helper.getOptions().getService());
+            store = new GoogleBlobStore();
+            store.setConfig(ImmutableMap.of("prefix", bukkit));
+        } catch (StorageHelperException | FileNotFoundException e) {
+            Assume.assumeNoException("Cannot create storage helper", e);
+        }
+    }
+
+    @AfterClass
+    public static void tearDown() throws IOException, InterruptedException, TimeoutException {
+        helper.stop(new Duration(6000L));
     }
 
     @After
-    public void tearDown() throws IOException {
+    public void afterwards() {
         if (store != null) store.destroyBucket(bukkit);
     }
 

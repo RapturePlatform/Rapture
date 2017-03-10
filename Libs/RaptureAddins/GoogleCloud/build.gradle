@@ -12,6 +12,7 @@ dependencies {
     compile 'com.mashape.unirest:unirest-java:1.4.9'
     compile 'com.google.cloud:google-cloud-storage:0.8+'
     compile 'com.google.cloud:google-cloud-datastore:0.9.3+'
+    compile 'com.google.cloud:google-cloud-pubsub:0.9.4-alpha'
     testCompile project (path: ":RaptureCore", configuration: 'testArtifacts')
 }
 
