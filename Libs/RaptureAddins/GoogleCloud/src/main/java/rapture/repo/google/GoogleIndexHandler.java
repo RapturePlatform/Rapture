@@ -1,4 +1,4 @@
-package rapture.table.google;
+package rapture.repo.google;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -52,7 +52,6 @@ import rapture.dsl.iqry.OrderDirection;
 import rapture.index.AbstractIndexHandler;
 import rapture.index.IndexProducer;
 import rapture.index.IndexRecord;
-import rapture.repo.google.GoogleDatastoreKeyStore;
 import rapture.table.memory.RowComparatorFactory;
 
 public class GoogleIndexHandler extends AbstractIndexHandler
@@ -67,10 +66,17 @@ public class GoogleIndexHandler extends AbstractIndexHandler
     private IndexProducer indexProducer;
     private Datastore datastore = null;
     private String projectId;
+    private static DatastoreOptions testDatastoreOptions = null;
+
+    // For testing purposes
+    protected static void setDatastoreOptionsForTesting(DatastoreOptions datastoreOptions) {
+        testDatastoreOptions = datastoreOptions;
+    }
 
     public GoogleIndexHandler() {
         projectId = MultiValueConfigLoader.getConfig("GOOGLE-projectId");
         if (projectId != null) datastore = DatastoreOptions.newBuilder().setProjectId(projectId).build().getService();
+        if ((datastore == null) && (testDatastoreOptions != null)) datastore = testDatastoreOptions.getService();
     }
 
     @Override
