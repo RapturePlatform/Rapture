@@ -21,17 +21,22 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package rapture.kernel.index;
+package rapture.repo.google;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
+import org.joda.time.Duration;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.Assume;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.google.cloud.datastore.testing.LocalDatastoreHelper;
 import com.google.common.collect.ImmutableMap;
 
 import rapture.common.CallingContext;
@@ -57,10 +62,18 @@ public class GoogleIndexTest {
 
     private static IndexConfig planetIndex = null;
     final String authorityName = "docplanetdata1." + System.nanoTime();
+    static LocalDatastoreHelper helper = LocalDatastoreHelper.create();
 
     @BeforeClass
     public static void setUp() {
         System.setProperty("LOGSTASH-ISENABLED", "false");
+        try {
+            GoogleDatastoreKeyStore.setDatastoreOptionsForTesting(helper.getOptions());
+            GoogleIndexHandler.setDatastoreOptionsForTesting(helper.getOptions());
+            helper.start();
+        } catch (IOException | InterruptedException e) {
+            Assume.assumeNoException("Cannot start helper " + e.getMessage(), e);
+        } // Starts the local Datastore emulator in a separate process
         document = Kernel.getDoc();
         script = Kernel.getScript();
         index = Kernel.getIndex();
@@ -75,17 +88,25 @@ public class GoogleIndexTest {
         Kernel.getIndex().createIndex(ctx, "//docTest", "field1($0) string, field2(test) string");
     }
 
+    @Before
+    public void setup() throws IOException, InterruptedException {
+    }
+
     @After
     public void clean() {
         planetURI = RaptureURI.builder(Scheme.DOCUMENT, authorityName).build().toString();
         document.deleteDocRepo(context, planetURI);
-
     }
 
     @AfterClass
     public static void cleanUp() {
         Kernel.getDoc().deleteDocRepo(ctx, "//docTest");
         Kernel.getIndex().deleteIndex(ctx, "//docTest");
+        try {
+            helper.stop(new Duration(6000L));
+        } catch (Exception e) {
+            System.out.println("Exception shutting down LocalDatastoreHelper: " + e.getMessage());
+        }
     }
 
     @Test

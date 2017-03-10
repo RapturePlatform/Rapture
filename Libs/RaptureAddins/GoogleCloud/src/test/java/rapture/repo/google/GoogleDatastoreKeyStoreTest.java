@@ -87,7 +87,11 @@ public class GoogleDatastoreKeyStoreTest {
         meta.dropKeyStore();
         version.dropKeyStore();
         attribute.dropKeyStore();
-        helper.stop(new Duration(6000));
+        try {
+            helper.stop(new Duration(6000L));
+        } catch (Exception e) {
+            System.out.println("Exception shutting down LocalDatastoreHelper: " + e.getMessage());
+        }
     }
 
     @Test

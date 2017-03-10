@@ -76,7 +76,6 @@ import rapture.repo.KeyStore;
 import rapture.repo.RepoLockHandler;
 import rapture.repo.RepoVisitor;
 import rapture.repo.StoreKeyVisitor;
-import rapture.table.google.GoogleIndexHandler;
 
 public class GoogleDatastoreKeyStore extends AbstractKeyStore implements KeyStore {
     private static final Logger log = Logger.getLogger(GoogleDatastoreKeyStore.class);
