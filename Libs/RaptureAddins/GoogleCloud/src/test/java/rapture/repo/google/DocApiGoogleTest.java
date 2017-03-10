@@ -31,25 +31,21 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.TimeoutException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
+import org.joda.time.Duration;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.google.cloud.datastore.Datastore;
-import com.google.cloud.datastore.DatastoreException;
-import com.google.cloud.datastore.DatastoreOptions;
-import com.google.cloud.datastore.Key;
-import com.google.cloud.datastore.Query;
-import com.google.cloud.datastore.QueryResults;
+import com.google.cloud.datastore.testing.LocalDatastoreHelper;
 
 import rapture.common.CallingContext;
 import rapture.common.RaptureConstants;
@@ -66,7 +62,7 @@ import rapture.kernel.Kernel;
 public class DocApiGoogleTest extends AbstractFileTest {
 
     private static final Logger log = Logger.getLogger(DocApiGoogleTest.class);
-    private static final String REPO_USING_GCP_DATASTORE = "REP {} USING GCP_DATASTORE {prefix =\"" + auth + "\", projectid=\"high-plating-157918\"}";
+    private static final String REPO_USING_GCP_DATASTORE = "REP {} USING GCP_DATASTORE {prefix =\"" + auth + "\"}";
     private static final String GET_ALL_BASE = "document://getAll";
     private static final String docContent = "{\"content\":\"Cold and misty morning I had heard a warning borne in the air\"}";
     private static final String docAuthorityURI = "document://" + auth;
@@ -74,12 +70,25 @@ public class DocApiGoogleTest extends AbstractFileTest {
 
     private static CallingContext callingContext;
     private static DocApiImpl docImpl;
+    private static LocalDatastoreHelper helper = LocalDatastoreHelper.create();
+
+    @AfterClass
+    public static void tidyUp() throws IOException, InterruptedException, TimeoutException {
+        helper.stop(new Duration(6000));
+    }
 
     @BeforeClass
     static public void setUp() {
+        GoogleDatastoreKeyStore.setDatastoreOptionsForTesting(helper.getOptions());
+        try {
+            helper.start();
+        } catch (IOException | InterruptedException e) {
+            Assert.fail(e.getMessage());
+        } // Starts the local Datastore emulator in a separate process
+
         AbstractFileTest.setUp();
         config.RaptureRepo = REPO_USING_GCP_DATASTORE;
-        config.InitSysConfig = "NREP {} USING GCP_DATASTORE { prefix =\"" + auth + "/sys.config\", projectid=\"high-plating-157918\"}";
+        config.InitSysConfig = "NREP {} USING GCP_DATASTORE { prefix =\"" + auth + "/sys.config\"}";
         config.DefaultPipelineTaskStatus = "TABLE {} USING MEMORY {prefix =\"" + auth + "\"}";
 
         callingContext = new CallingContext();
@@ -93,24 +102,6 @@ public class DocApiGoogleTest extends AbstractFileTest {
                 "LOG {} using MEMORY {prefix =\"" + auth + "\"}");
         Kernel.getLock().createLockManager(ContextFactory.getKernelUser(), "lock://kernel", "LOCKING USING DUMMY {}", "");
         docImpl = new DocApiImpl(Kernel.INSTANCE);
-    }
-
-    @AfterClass
-    // Warning: scorched earth. Gets rid of everything.
-    static public void cleanup() {
-        List<Key> keys = new ArrayList<>();
-        Datastore store = DatastoreOptions.newBuilder().setProjectId("high-plating-157918").build().getService();
-        QueryResults<Key> result = store.run(Query.newKeyQueryBuilder().build());
-        // Batch this
-        while (result.hasNext()) {
-            Key peele = result.next();
-            try {
-                store.delete(peele);
-                System.out.println("Deleted " + peele.getName() + " from " + peele.getKind() + "parent " + peele.getParent());
-            } catch (DatastoreException e) {
-                System.out.println("Ignored Exception in cleanup " + e + " deleting " + peele.getName());
-            }
-        }
     }
 
     @Test
@@ -152,7 +143,7 @@ public class DocApiGoogleTest extends AbstractFileTest {
             docImpl.deleteDocRepo(callingContext, GET_ALL_BASE);
 
         } else {
-            docImpl.createDocRepo(callingContext, GET_ALL_BASE, "REP {} USING GCP_DATASTORE {prefix =\"" + auth + "-1\", projectid=\"high-plating-157918\"}");
+            docImpl.createDocRepo(callingContext, GET_ALL_BASE, "REP {} USING GCP_DATASTORE {prefix =\"" + auth + "-1\"}");
         }
         docImpl.putDoc(callingContext, GET_ALL_BASE + "/uncle", "{\"magic\": \"Drunk Uncle\"}");
         docImpl.putDoc(callingContext, GET_ALL_BASE + "/dad/kid1", "{\"magic\": \"Awesome Child\"}");
@@ -325,7 +316,7 @@ public class DocApiGoogleTest extends AbstractFileTest {
         f2.deleteOnExit();
         
         String json = "{\"key123\":\"value123\"}";
-        docImpl.createDocRepo(callingContext, repoUri, "VREP {} USING GCP_DATASTORE {prefix =\"" + repoUri + "\", projectid=\"high-plating-157918\"}");
+        docImpl.createDocRepo(callingContext, repoUri, "VREP {} USING GCP_DATASTORE {prefix =\"" + repoUri + "\"}");
 
         /* DocumentRepoConfig dr = */
         docImpl.getDocRepoConfig(callingContext, repoUri);

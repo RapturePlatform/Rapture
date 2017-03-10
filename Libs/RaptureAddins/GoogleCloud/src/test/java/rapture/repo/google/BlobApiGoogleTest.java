@@ -31,11 +31,16 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.util.ArrayList;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeoutException;
 
+import org.joda.time.Duration;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Assume;
@@ -43,13 +48,10 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import com.google.cloud.datastore.Datastore;
-import com.google.cloud.datastore.DatastoreException;
-import com.google.cloud.datastore.DatastoreOptions;
-import com.google.cloud.datastore.Key;
-import com.google.cloud.datastore.Query;
-import com.google.cloud.datastore.QueryResults;
+import com.google.cloud.datastore.testing.LocalDatastoreHelper;
 import com.google.cloud.storage.StorageException;
+import com.google.cloud.storage.testing.RemoteStorageHelper;
+import com.google.cloud.storage.testing.RemoteStorageHelper.StorageHelperException;
 import com.google.common.net.MediaType;
 
 import rapture.common.BlobContainer;
@@ -77,16 +79,39 @@ public class BlobApiGoogleTest {
     public static CallingContext callingContext;
 
     private static BlobApiImpl blobImpl;
-    private static final String BLOB_USING_GOOGLE = "BLOB {} USING GCP_STORAGE {prefix=\"B" + auth + "\", projectid=\"high-plating-157918\"}";
-    private static final String REPO_USING_GOOGLE = "REP {} USING GCP_DATASTORE {prefix=\"" + auth + "\", projectid=\"high-plating-157918\"}";
-    private static final String META_USING_GOOGLE = "REP {} USING GCP_DATASTORE {prefix=\"M" + auth + "\", projectid=\"high-plating-157918\"}";
+    private static final String BLOB_USING_GOOGLE = "BLOB {} USING GCP_STORAGE {prefix=\"B" + auth + "\"}";
+    private static final String REPO_USING_GOOGLE = "REP {} USING GCP_DATASTORE {prefix=\"" + auth + "\"}";
+    private static final String META_USING_GOOGLE = "REP {} USING GCP_DATASTORE {prefix=\"M" + auth + "\"}";
     private static final byte[] SAMPLE_BLOB = "This is a blob".getBytes();
 
     static String blobAuthorityURI = "blob://" + auth;
     static String blobURI = blobAuthorityURI + "/SwampThing";
+    private static LocalDatastoreHelper helper = LocalDatastoreHelper.create();
+
+    @AfterClass
+    public static void tidyUp() throws IOException, InterruptedException, TimeoutException {
+        helper.stop(new Duration(6000));
+    }
 
     @BeforeClass
     static public void setUp() {
+        GoogleDatastoreKeyStore.setDatastoreOptionsForTesting(helper.getOptions());
+        try {
+            helper.start();
+        } catch (IOException | InterruptedException e) {
+            Assert.fail(e.getMessage());
+        } // Starts the local Datastore emulator in a separate process
+        
+        
+        try {
+            File key = new File("src/test/resources/key.json");
+            Assume.assumeTrue("Cannot read " + key.getAbsolutePath(), key.canRead());
+            RemoteStorageHelper helper = RemoteStorageHelper.create("todo3-incap", new FileInputStream(key));
+            GoogleBlobStore.setStorageForTesting(helper.getOptions().getService());
+        } catch (StorageHelperException | FileNotFoundException e) {
+            Assume.assumeNoException("Cannot create storage helper", e);
+        }
+
         RaptureConfig.setLoadYaml(false);
         config = ConfigLoader.getConf();
         saveRaptureRepo = config.RaptureRepo;
@@ -96,7 +121,7 @@ public class BlobApiGoogleTest {
         callingContext.setUser("dummy");
 
         config.RaptureRepo = REPO_USING_GOOGLE;
-        config.InitSysConfig = "NREP {} USING GCP_DATASTORE { prefix=\"" + auth + ".sys.config\", projectid=\"high-plating-157918\"}";
+        config.InitSysConfig = "NREP {} USING GCP_DATASTORE { prefix=\"" + auth + ".sys.config\"}";
 
         callingContext = new CallingContext();
         callingContext.setUser("dummy");
@@ -111,26 +136,26 @@ public class BlobApiGoogleTest {
     }
 
     @AfterClass
-    static public void cleanUp() {
+    static public void cleanUp() throws IOException, InterruptedException, TimeoutException {
         ConfigLoader.getConf().InitSysConfig = saveInitSysConfig;
         ConfigLoader.getConf().RaptureRepo = saveRaptureRepo;
 
-        if ((blobImpl != null) && blobImpl.blobRepoExists(callingContext, "blob://dummy")) blobImpl.deleteBlobRepo(callingContext, "blob://dummy");
-        if ((blobImpl != null) && blobImpl.blobRepoExists(callingContext, blobAuthorityURI)) blobImpl.deleteBlobRepo(callingContext, blobAuthorityURI);
+        try {
+            if ((blobImpl != null) && blobImpl.blobRepoExists(callingContext, "blob://dummy")) blobImpl.deleteBlobRepo(callingContext, "blob://dummy");
+        } catch (Exception e) {
+            System.err.println("Warning: exception in clean up: " + e.getMessage());
+        }
 
-        // Warning: scorched earth. Gets rid of everything.
-        List<Key> keys = new ArrayList<>();
-        Datastore store = DatastoreOptions.newBuilder().setProjectId("high-plating-157918").build().getService();
-        QueryResults<Key> result = store.run(Query.newKeyQueryBuilder().build());
-        // Batch this
-        while (result.hasNext()) {
-            Key peele = result.next();
-            try {
-                store.delete(peele);
-                System.out.println("Deleted " + peele.getName() + " from " + peele.getKind() + "parent " + peele.getParent());
-            } catch (DatastoreException e) {
-                System.out.println("Ignored Exception in cleanup " + e + " deleting " + peele.getName());
-            }
+        try {
+            if ((blobImpl != null) && blobImpl.blobRepoExists(callingContext, blobAuthorityURI)) blobImpl.deleteBlobRepo(callingContext, blobAuthorityURI);
+        } catch (Exception e) {
+            System.err.println("Warning: exception in clean up: " + e.getMessage());
+        }
+
+        try {
+            helper.stop(new Duration(6000L));
+        } catch (Exception e) {
+            System.err.println("Warning: exception in clean up: " + e.getMessage());
         }
     }
 
@@ -190,15 +215,14 @@ public class BlobApiGoogleTest {
             testCreateAndGetRepo();
             List<BlobRepoConfig> before = blobImpl.getBlobRepoConfigs(callingContext);
 
-            blobImpl.createBlobRepo(callingContext, "blob://somewhereelse/",
-                    "BLOB {} USING GCP_STORAGE {prefix=\"somewhereelse\", projectid=\"high-plating-157918\"}",
-                    "REP {} USING GCP_DATASTORE {prefix=\"somewhereelse\", projectid=\"high-plating-157918\"}");
+            blobImpl.createBlobRepo(callingContext, "blob://somewhere_else/", "BLOB {} USING GCP_STORAGE {prefix=\"somewhere_else\"}",
+                    "REP {} USING GCP_DATASTORE {prefix=\"somewhere_else\"}");
 
             List<BlobRepoConfig> after = blobImpl.getBlobRepoConfigs(callingContext);
             // And then there were three
             assertEquals(JacksonUtil.jsonFromObject(after), before.size() + 1, after.size());
         } finally {
-            blobImpl.deleteBlobRepo(callingContext, "blob://somewhereelse/");
+            blobImpl.deleteBlobRepo(callingContext, "blob://somewhere_else/");
         }
     }
 

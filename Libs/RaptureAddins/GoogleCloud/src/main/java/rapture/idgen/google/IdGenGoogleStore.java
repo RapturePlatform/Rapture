@@ -60,10 +60,17 @@ public class IdGenGoogleStore implements IdGenStore {
     private String instanceName = "default";
     private Messages googleMsgCatalog = new Messages("Google");
     private String kind;
-    private Map<String, String> config;
+    private Map<String, String> config = null;
     private Datastore datastore = null;
 
     public IdGenGoogleStore() {
+    }
+
+    // For unit testing.
+    protected IdGenGoogleStore(Datastore testdatastore, String testkind) {
+        datastore = testdatastore;
+        kind = testkind;
+        makeValid();
     }
 
     @Override

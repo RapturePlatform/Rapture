@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package rapture.blob.google;
+package rapture.repo.google;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -65,7 +65,11 @@ public class GoogleBlobStore extends BaseBlobStore implements BlobStore {
 
     static final String INCAPTURE = "incapture_"; // MUST BE LOWER CASE
     private Bucket bucket = null;
-    private Storage storage = null;
+    private static Storage storage = null;
+
+    protected static void setStorageForTesting(Storage teststorage) {
+        storage = teststorage;
+    }
 
     public GoogleBlobStore() {
     }
@@ -207,16 +211,17 @@ public class GoogleBlobStore extends BaseBlobStore implements BlobStore {
             throw new RuntimeException("Prefix not set in " + config);
         }
 
-        String projectId = StringUtils.trimToNull(config.get("projectid"));
-        if (projectId == null) {
-            projectId = MultiValueConfigLoader.getConfig("GOOGLE-projectId");
+        if (storage == null) {
+            String projectId = StringUtils.trimToNull(config.get("projectid"));
             if (projectId == null) {
-                throw new RuntimeException("Project ID not set in RaptureGOOGLE.cfg or in config " + config);
+                projectId = MultiValueConfigLoader.getConfig("GOOGLE-projectId");
+                if (projectId == null) {
+                    throw new RuntimeException("Project ID not set in RaptureGOOGLE.cfg or in config " + config);
+                }
             }
+
+            storage = StorageOptions.newBuilder().setProjectId(projectId).build().getService();
         }
-
-        storage = StorageOptions.newBuilder().setProjectId(projectId).build().getService();
-
         // NOTE cannot currently use a full stop in a bucket name.
         bucketName = INCAPTURE + prefix.replaceAll("\\.", "").toLowerCase();
         try {

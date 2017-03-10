@@ -37,7 +37,6 @@ import org.apache.log4j.Logger;
 import com.google.cloud.storage.Blob;
 import com.google.common.collect.ImmutableMap;
 
-import rapture.blob.google.GoogleBlobStore;
 import rapture.common.RaptureFolderInfo;
 import rapture.common.RaptureNativeQueryResult;
 import rapture.common.RaptureQueryResult;
