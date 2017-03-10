@@ -63,16 +63,24 @@ public class GoogleBlobStoreTest extends BlobStoreContractTest {
             Assert.fail(e.getMessage());
         } // Starts the local Datastore emulator in a separate process
 
+        RemoteStorageHelper helper = null;
         try {
-            File key = new File("src/test/resources/key.json");
-            Assume.assumeTrue("Cannot read " + key.getAbsolutePath(), key.canRead());
-            RemoteStorageHelper helper = RemoteStorageHelper.create("todo3-incap", new FileInputStream(key));
-            GoogleBlobStore.setStorageForTesting(helper.getOptions().getService());
-            store = new GoogleBlobStore();
-            store.setConfig(ImmutableMap.of("prefix", bukkit));
-        } catch (StorageHelperException | FileNotFoundException e) {
-            Assume.assumeNoException("Cannot create storage helper", e);
+            helper = RemoteStorageHelper.create();
+        } catch (Exception e) {
+            // That failed, try the key
+            try {
+                File key = new File("src/test/resources/key.json");
+                Assume.assumeTrue("Cannot read " + key.getAbsolutePath(), key.canRead());
+                helper = RemoteStorageHelper.create("todo3-incap", new FileInputStream(key));
+            } catch (StorageHelperException | FileNotFoundException ee) {
+                Assume.assumeNoException("Cannot create storage helper", ee);
+            }
         }
+        Assume.assumeNotNull("Storage helper not initialized", helper);
+        GoogleBlobStore.setStorageForTesting(helper.getOptions().getService());
+        store = new GoogleBlobStore();
+        store.setConfig(ImmutableMap.of("prefix", bukkit));
+
     }
 
     @AfterClass
