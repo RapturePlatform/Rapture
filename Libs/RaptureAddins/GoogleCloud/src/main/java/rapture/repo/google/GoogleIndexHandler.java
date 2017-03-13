@@ -74,7 +74,7 @@ public class GoogleIndexHandler extends AbstractIndexHandler
     }
 
     public GoogleIndexHandler() {
-        projectId = MultiValueConfigLoader.getConfig("GOOGLE-projectId");
+        projectId = MultiValueConfigLoader.getConfig("GOOGLE-projectid");
         if (projectId != null) datastore = DatastoreOptions.newBuilder().setProjectId(projectId).build().getService();
         if ((datastore == null) && (testDatastoreOptions != null)) datastore = testDatastoreOptions.getService();
     }

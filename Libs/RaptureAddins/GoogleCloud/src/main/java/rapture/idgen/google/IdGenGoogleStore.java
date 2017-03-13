@@ -84,7 +84,7 @@ public class IdGenGoogleStore implements IdGenStore {
         if (kind == null) throw new RuntimeException("Prefix not set in config " + JacksonUtil.formattedJsonFromObject(config));
         String projectId = StringUtils.trimToNull(config.get("projectid"));
         if (projectId == null) {
-            projectId = MultiValueConfigLoader.getConfig("GOOGLE-projectId");
+            projectId = MultiValueConfigLoader.getConfig("GOOGLE-projectid");
             if (projectId == null) {
                 throw new RuntimeException("Project ID not set in RaptureGOOGLE.cfg or in config " + config);
             }

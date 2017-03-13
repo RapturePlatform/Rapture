@@ -189,7 +189,7 @@ public class GoogleDatastoreKeyStore extends AbstractKeyStore implements KeyStor
             } else {
                 String projectId = StringUtils.trimToNull(config.get("projectid"));
                 if (projectId == null) {
-                    projectId = MultiValueConfigLoader.getConfig("GOOGLE-projectId");
+                    projectId = MultiValueConfigLoader.getConfig("GOOGLE-projectid");
                     if (projectId == null) {
                         throw new RuntimeException("Project ID not set in RaptureGOOGLE.cfg or in config " + config);
                     }

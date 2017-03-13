@@ -13,6 +13,7 @@ dependencies {
     compile 'com.google.cloud:google-cloud-storage:0.8+'
     compile 'com.google.cloud:google-cloud-datastore:0.9.3+'
     compile 'com.google.cloud:google-cloud-pubsub:0.9.4-alpha'
+    compile 'com.google.api.grpc:grpc-google-cloud-pubsub-v1:0.1.5+'
     testCompile project (path: ":RaptureCore", configuration: 'testArtifacts')
 }
 
