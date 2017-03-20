@@ -43,8 +43,9 @@ public final class ExchangeFactory {
     private static Logger log = Logger.getLogger(ExchangeFactory.class);
     private static final Map<Integer, String> implementationMap;
     static {
-        Map<Integer, String> setupMap = new HashMap<Integer, String>();
+        Map<Integer, String> setupMap = new HashMap<>();
         setupMap.put(EGenLexer.RABBITMQ, "rapture.exchange.rabbitmq.RabbitExchangeHandler");
+        setupMap.put(EGenLexer.GCP_PUBSUB, "rapture.exchange.gcp.PubsubExchangeHandler");
         setupMap.put(EGenLexer.MEMORY, "rapture.exchange.memory.MemoryExchangeHandler");
 	// TODO EGenLexer.FILE ?
         implementationMap = Collections.unmodifiableMap(setupMap);

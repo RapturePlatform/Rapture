@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package rapture.idgen.google;
+package rapture.repo.google;
 
 import java.net.HttpURLConnection;
 import java.util.Map;

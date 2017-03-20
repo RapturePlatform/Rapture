@@ -284,19 +284,25 @@ public class GoogleDatastoreKeyStore extends AbstractKeyStore implements KeyStor
 
     @Override
     public String get(String key) {
-        Key entityKey = datastore.newKeyFactory().setKind(kind).newKey(key);
-        Entity entity = datastore.get(entityKey);
-        Map<String, Object> map = new HashMap<>();
-        if (entity != null) {
-            for (String name : entity.getNames()) {
-                Value<?> value = entity.getValue(name);
-                if (value != null) {
-                    put(map, name, value);
+        try {
+            Key entityKey = datastore.newKeyFactory().setKind(kind).newKey(key);
+            Entity entity = datastore.get(entityKey);
+            Map<String, Object> map = new HashMap<>();
+            if (entity != null) {
+                for (String name : entity.getNames()) {
+                    Value<?> value = entity.getValue(name);
+                    if (value != null) {
+                        put(map, name, value);
+                    }
                 }
             }
+            if (map.isEmpty()) return null;
+            return JacksonUtil.jsonFromObject(map);
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return null;
         }
-        if (map.isEmpty()) return null;
-        return JacksonUtil.jsonFromObject(map);
     }
 
     @Override

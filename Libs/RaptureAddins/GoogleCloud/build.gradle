@@ -10,10 +10,8 @@ dependencies {
     compile group: 'com.google.guava', name: 'guava', version: '20.0'
     compile group: 'org.apache.commons', name: 'commons-digester3', version: '3.2'
     compile 'com.mashape.unirest:unirest-java:1.4.9'
-    compile 'com.google.cloud:google-cloud-storage:0.8+'
-    compile 'com.google.cloud:google-cloud-datastore:0.9.3+'
-    compile 'com.google.cloud:google-cloud-pubsub:0.9.4-alpha'
-    compile 'com.google.api.grpc:grpc-google-cloud-pubsub-v1:0.1.5+'
+    compile 'com.google.cloud:google-cloud:0.9.4-alpha'
     testCompile project (path: ":RaptureCore", configuration: 'testArtifacts')
+    testCompile 'junit:junit:4.10'
 }
 

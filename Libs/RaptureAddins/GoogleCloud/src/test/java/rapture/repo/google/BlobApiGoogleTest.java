@@ -40,15 +40,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
-import org.joda.time.Duration;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
-import com.google.cloud.datastore.testing.LocalDatastoreHelper;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageException;
 import com.google.cloud.storage.testing.RemoteStorageHelper;
@@ -87,41 +84,28 @@ public class BlobApiGoogleTest {
 
     static String blobAuthorityURI = "blob://" + auth;
     static String blobURI = blobAuthorityURI + "/SwampThing";
-    private static LocalDatastoreHelper helper = LocalDatastoreHelper.create();
 
-    @AfterClass
-    public static void tidyUp() throws IOException, InterruptedException, TimeoutException {
-        try {
-            helper.stop(new Duration(6000L));
-        } catch (Exception e) {
-            System.out.println("Exception shutting down LocalDatastoreHelper: " + e.getMessage());
-        }
-    }
 
     @BeforeClass
     static public void setUp() {
-        GoogleDatastoreKeyStore.setDatastoreOptionsForTesting(helper.getOptions());
-        try {
-            helper.start();
-        } catch (IOException | InterruptedException e) {
-            Assert.fail(e.getMessage());
-        } // Starts the local Datastore emulator in a separate process
-        
-        RemoteStorageHelper helper = null;
+
+        Assume.assumeTrue(false);
+
+        RemoteStorageHelper storageHelper = null;
         Storage storage;
         try {
-            helper = RemoteStorageHelper.create();
+            storageHelper = RemoteStorageHelper.create();
         } catch (Exception e1) {
             try {
                 File key = new File("src/test/resources/key.json");
                 Assume.assumeTrue("Cannot read " + key.getAbsolutePath(), key.canRead());
-                helper = RemoteStorageHelper.create("todo3-incap", new FileInputStream(key));
+                storageHelper = RemoteStorageHelper.create("todo3-incap", new FileInputStream(key));
             } catch (StorageHelperException | FileNotFoundException e) {
                 Assume.assumeNoException("Cannot create storage helper", e);
             }
         }
-        Assume.assumeNotNull(helper);
-        GoogleBlobStore.setStorageForTesting(helper.getOptions().getService());
+        Assume.assumeNotNull(storageHelper);
+        GoogleBlobStore.setStorageForTesting(storageHelper.getOptions().getService());
 
         RaptureConfig.setLoadYaml(false);
         config = ConfigLoader.getConf();
@@ -146,6 +130,7 @@ public class BlobApiGoogleTest {
         blobImpl = new BlobApiImpl(Kernel.INSTANCE);
     }
 
+
     @AfterClass
     static public void cleanUp() throws IOException, InterruptedException, TimeoutException {
         ConfigLoader.getConf().InitSysConfig = saveInitSysConfig;
@@ -162,15 +147,10 @@ public class BlobApiGoogleTest {
         } catch (Exception e) {
             System.err.println("Warning: exception in clean up deleting " + blobAuthorityURI + " : " + e.getMessage());
         }
-
-        try {
-            helper.stop(new Duration(6000L));
-        } catch (Exception e) {
-            System.err.println("Warning: exception in clean up stopping helper: " + e.getMessage());
-        }
     }
 
     static boolean firstTime = true;
+
 
     @Test
     public void testCreateAndGetRepo() {
@@ -184,6 +164,7 @@ public class BlobApiGoogleTest {
         assertEquals(auth, blobRepoConfig.getAuthority());
     }
 
+
     @Test
     public void testGetChildren() {
 
@@ -196,6 +177,7 @@ public class BlobApiGoogleTest {
         children = blobImpl.listBlobsByUriPrefix(callingContext, "blob://thiswontexist/so/returnempty", -1);
         assertTrue(children.isEmpty());
     }
+
 
     @Test
     public void testDeleteRepo() {
@@ -212,6 +194,7 @@ public class BlobApiGoogleTest {
         assertTrue(blobImpl.blobExists(callingContext, blobURI));
     }
 
+
     @Test
     public void testValidDocStore() {
         Map<String, String> hashMap = new HashMap<>();
@@ -219,6 +202,7 @@ public class BlobApiGoogleTest {
         blobImpl.createBlobRepo(callingContext, "blob://dummy2", "BLOB {} USING GCP_STORAGE { prefix=\"foo\" }", "REP {} USING GCP_DATASTORE { prefix=\"foo\" }");
 
     }
+
 
     @Test
     public void testGetBlobRepositories() {
@@ -237,6 +221,7 @@ public class BlobApiGoogleTest {
         }
     }
 
+
     @Test
     public void testPutAndGetBlob() {
         testCreateAndGetRepo();
@@ -251,7 +236,7 @@ public class BlobApiGoogleTest {
     }
 
     // Can't store blobs with attributes - See RAP-2797
-    @Ignore
+
     @Test
     public void testPutAndGetBlobWithAttribute() {
         testCreateAndGetRepo();
@@ -261,6 +246,7 @@ public class BlobApiGoogleTest {
         assertArrayEquals(SAMPLE_BLOB, blob.getContent());
     }
 
+
     @Test
     public void testGetWithNoScheme() {
         testPutAndGetBlob();
@@ -269,6 +255,7 @@ public class BlobApiGoogleTest {
         assertEquals(MediaType.CSS_UTF_8.toString(), blob.getHeaders().get("Content-Type"));
     }
 
+
     @Test
     public void testDeleteBlob() {
         testCreateAndGetRepo();
@@ -276,6 +263,7 @@ public class BlobApiGoogleTest {
         BlobContainer blob = blobImpl.getBlob(callingContext, blobURI);
         assertNull(blob);
     }
+
 
     @Test()
     public void testDeleteBlobRepo() {
@@ -289,12 +277,14 @@ public class BlobApiGoogleTest {
         }
     }
 
+
     @Test
     public void testGetBlobMetaData() {
         testPutAndGetBlob();
         Map<String, String> metaData = blobImpl.getBlobMetaData(callingContext, blobURI);
         assertEquals(metaData.get("Content-Type"), MediaType.CSS_UTF_8.toString());
     }
+
 
     @Test
     public void testGetSize() {
@@ -304,6 +294,7 @@ public class BlobApiGoogleTest {
     }
 
     // deleteBlobsByUriPrefix called on a non-existent blob deletes all existing blobs in folder
+
     @Test
     public void testRap3945() {
         testCreateAndGetRepo();

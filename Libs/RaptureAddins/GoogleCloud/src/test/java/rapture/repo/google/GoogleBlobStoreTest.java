@@ -31,7 +31,6 @@ import java.util.concurrent.TimeoutException;
 
 import org.joda.time.Duration;
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.BeforeClass;
 
@@ -47,45 +46,23 @@ public class GoogleBlobStoreTest extends BlobStoreContractTest {
 
     private static GoogleBlobStore store = null;
     static String bukkit = "davet_incapture_com";
-    private static LocalDatastoreHelper helper = LocalDatastoreHelper.create();
 
     // Currently there isn't an emulator for Google Cloud Storage,
     // so an alternative is to create a test project.
     // RemoteStorageHelper contains convenience methods to make setting up and cleaning up
     // the test project easier. However we need a project ID to do that.
 
+    final static LocalDatastoreHelper helper = LocalDatastoreHelper.create();
+
     @BeforeClass
-    public static void setUp() {
+    public static void setupLocalDatastore() throws IOException, InterruptedException {
+        helper.start(); // Starts the local Datastore emulator in a separate process
         GoogleDatastoreKeyStore.setDatastoreOptionsForTesting(helper.getOptions());
-        try {
-            helper.start();
-        } catch (IOException | InterruptedException e) {
-            Assert.fail(e.getMessage());
-        } // Starts the local Datastore emulator in a separate process
-
-        RemoteStorageHelper helper = null;
-        try {
-            helper = RemoteStorageHelper.create();
-        } catch (Exception e) {
-            // That failed, try the key
-            try {
-                File key = new File("src/test/resources/key.json");
-                Assume.assumeTrue("Cannot read " + key.getAbsolutePath(), key.canRead());
-                helper = RemoteStorageHelper.create("todo3-incap", new FileInputStream(key));
-            } catch (StorageHelperException | FileNotFoundException ee) {
-                Assume.assumeNoException("Cannot create storage helper", ee);
-            }
-        }
-        Assume.assumeNotNull("Storage helper not initialized", helper);
-        GoogleBlobStore.setStorageForTesting(helper.getOptions().getService());
-        store = new GoogleBlobStore();
-        store.setConfig(ImmutableMap.of("prefix", bukkit));
-
+        GoogleIndexHandler.setDatastoreOptionsForTesting(helper.getOptions());
     }
 
     @AfterClass
-    public static void tearDown() throws IOException, InterruptedException, TimeoutException {
-        if (store != null) store.destroyBucket(bukkit);
+    public static void cleanupLocalDatastore() throws IOException, InterruptedException, TimeoutException {
         try {
             helper.stop(new Duration(6000L));
         } catch (Exception e) {
@@ -93,9 +70,34 @@ public class GoogleBlobStoreTest extends BlobStoreContractTest {
         }
     }
 
+    @BeforeClass
+    public static void beforeClass() {
+        RemoteStorageHelper storageHelper = null;
+        try {
+            storageHelper = RemoteStorageHelper.create();
+        } catch (Exception e) {
+            // That failed, try the key
+            try {
+                File key = new File("src/test/resources/key.json");
+                Assume.assumeTrue("Cannot read " + key.getAbsolutePath(), key.canRead());
+                storageHelper = RemoteStorageHelper.create("todo3-incap", new FileInputStream(key));
+            } catch (StorageHelperException | FileNotFoundException ee) {
+                Assume.assumeNoException("Cannot create storage helper", ee);
+            }
+        }
+        Assume.assumeNotNull("Storage helper not initialized", helper);
+        GoogleBlobStore.setStorageForTesting(storageHelper.getOptions().getService());
+        store = new GoogleBlobStore();
+        store.setConfig(ImmutableMap.of("prefix", bukkit));
+    }
+
+    @AfterClass
+    public static void tearDown() throws IOException, InterruptedException, TimeoutException {
+        if (store != null) store.destroyBucket(bukkit);
+    }
+
     @Override
     public BlobStore getBlobStore() {
         return store;
     }
-
 }
