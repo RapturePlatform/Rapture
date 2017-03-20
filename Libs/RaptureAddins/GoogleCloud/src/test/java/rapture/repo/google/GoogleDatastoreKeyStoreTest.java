@@ -35,12 +35,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
-import org.joda.time.Duration;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.google.cloud.datastore.testing.LocalDatastoreHelper;
 import com.google.common.collect.ImmutableMap;
 
 import rapture.common.RaptureURI;
@@ -55,7 +53,7 @@ import rapture.lock.dummy.DummyLockHandler;
 import rapture.repo.KeyStore;
 import rapture.repo.NVersionedRepo;
 
-public class GoogleDatastoreKeyStoreTest {
+public class GoogleDatastoreKeyStoreTest extends MockDataStoreTest {
     private NVersionedRepo repo;
 
     KeyStore store;
@@ -63,13 +61,8 @@ public class GoogleDatastoreKeyStoreTest {
     KeyStore version;
     KeyStore attribute;
 
-    LocalDatastoreHelper helper = LocalDatastoreHelper.create();
-
     @Before
     public void setup() throws IOException, InterruptedException {
-        helper.start(); // Starts the local Datastore emulator in a separate process
-        GoogleDatastoreKeyStore.setDatastoreOptionsForTesting(helper.getOptions());
-
         store = new GoogleDatastoreKeyStore();
         store.setConfig(ImmutableMap.of("prefix", "store"));
         meta = new GoogleDatastoreKeyStore();
@@ -87,11 +80,6 @@ public class GoogleDatastoreKeyStoreTest {
         meta.dropKeyStore();
         version.dropKeyStore();
         attribute.dropKeyStore();
-        try {
-            helper.stop(new Duration(6000L));
-        } catch (Exception e) {
-            System.out.println("Exception shutting down LocalDatastoreHelper: " + e.getMessage());
-        }
     }
 
     @Test

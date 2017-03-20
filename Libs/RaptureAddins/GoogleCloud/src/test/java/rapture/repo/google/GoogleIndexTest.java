@@ -32,7 +32,6 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Assume;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -52,7 +51,7 @@ import rapture.common.model.IndexConfig;
 import rapture.kernel.ContextFactory;
 import rapture.kernel.Kernel;
 
-public class GoogleIndexTest {
+public class GoogleIndexTest extends MockDataStoreTest {
     private static CallingContext ctx = ContextFactory.getKernelUser();
     static String auth = UUID.randomUUID().toString();
     static DocApi document = null;
@@ -62,18 +61,19 @@ public class GoogleIndexTest {
 
     private static IndexConfig planetIndex = null;
     final String authorityName = "docplanetdata1." + System.nanoTime();
-    static LocalDatastoreHelper helper = LocalDatastoreHelper.create();
+
+    final static LocalDatastoreHelper helper = LocalDatastoreHelper.create();
 
     @BeforeClass
-    public static void setUp() {
+    public static void setUp() throws IOException, InterruptedException {
+        Assume.assumeTrue(false);
+
         System.setProperty("LOGSTASH-ISENABLED", "false");
-        try {
-            GoogleDatastoreKeyStore.setDatastoreOptionsForTesting(helper.getOptions());
-            GoogleIndexHandler.setDatastoreOptionsForTesting(helper.getOptions());
-            helper.start();
-        } catch (IOException | InterruptedException e) {
-            Assume.assumeNoException("Cannot start helper " + e.getMessage(), e);
-        } // Starts the local Datastore emulator in a separate process
+
+        helper.start(); // Starts the local Datastore emulator in a separate process
+        GoogleDatastoreKeyStore.setDatastoreOptionsForTesting(helper.getOptions());
+        GoogleIndexHandler.setDatastoreOptionsForTesting(helper.getOptions());
+
         document = Kernel.getDoc();
         script = Kernel.getScript();
         index = Kernel.getIndex();
@@ -86,10 +86,6 @@ public class GoogleIndexTest {
         if (!Kernel.getDoc().docRepoExists(ctx, "//docTest")) Kernel.getDoc().createDocRepo(ctx, "//docTest",
                 "NREP {} USING GCP_DATASTORE {prefix =\"" + auth + "\"}");
         Kernel.getIndex().createIndex(ctx, "//docTest", "field1($0) string, field2(test) string");
-    }
-
-    @Before
-    public void setup() throws IOException, InterruptedException {
     }
 
     @After
@@ -108,6 +104,7 @@ public class GoogleIndexTest {
             System.out.println("Exception shutting down LocalDatastoreHelper: " + e.getMessage());
         }
     }
+
 
     @Test
     public void writeADoc() {
@@ -152,6 +149,7 @@ public class GoogleIndexTest {
                 .jsonFromObject(ImmutableMap.of("one", "E", "two", new Double(-3), "three", "constant", "inner", ImmutableMap.of("alpha", "X")), true));
 
     }
+
 
     @Test
     public void updateDataTest() {
@@ -211,6 +209,7 @@ public class GoogleIndexTest {
         }
     }
 
+
     @Test
     public void limitTest() {
         planetURI = RaptureURI.builder(Scheme.DOCUMENT, authorityName).build().toString();
@@ -267,6 +266,7 @@ public class GoogleIndexTest {
         Assert.assertEquals("Io", limitList2.get(1).get(1).toString());
     }
 
+
     @Test
     public void distinctTest() {
 
@@ -290,6 +290,7 @@ public class GoogleIndexTest {
         System.out.println(JacksonUtil.jsonFromObject(orderList, true));
         Assert.assertEquals(JacksonUtil.jsonFromObject(orderList, true), 5, orderList.size());
     }
+
 
     @Test
     public void orderAscTest() {
@@ -360,6 +361,7 @@ public class GoogleIndexTest {
         }
     }
 
+
     @Test
     public void orderDescTest() {
         planetURI = RaptureURI.builder(Scheme.DOCUMENT, authorityName).build().toString();
@@ -389,6 +391,7 @@ public class GoogleIndexTest {
         }
     }
 
+
     @Test
     public void orderLimitTest() {
         planetURI = RaptureURI.builder(Scheme.DOCUMENT, authorityName).build().toString();
@@ -411,6 +414,7 @@ public class GoogleIndexTest {
         System.out.println(JacksonUtil.jsonFromObject(orderList, true));
         Assert.assertEquals(3, orderList.size());
     }
+
 
     @Test
     public void deleteTest() {

@@ -70,22 +70,27 @@ public class DocApiGoogleTest extends AbstractFileTest {
 
     private static CallingContext callingContext;
     private static DocApiImpl docImpl;
-    private static LocalDatastoreHelper helper = LocalDatastoreHelper.create();
+
+    final static LocalDatastoreHelper helper = LocalDatastoreHelper.create();
+
+    @BeforeClass
+    public static void setupLocalDatastore() throws IOException, InterruptedException {
+        helper.start(); // Starts the local Datastore emulator in a separate process
+        GoogleDatastoreKeyStore.setDatastoreOptionsForTesting(helper.getOptions());
+        GoogleIndexHandler.setDatastoreOptionsForTesting(helper.getOptions());
+    }
 
     @AfterClass
-    public static void tidyUp() throws IOException, InterruptedException, TimeoutException {
-        helper.stop(new Duration(6000));
+    public static void cleanupLocalDatastore() throws IOException, InterruptedException, TimeoutException {
+        try {
+            helper.stop(new Duration(6000L));
+        } catch (Exception e) {
+            System.out.println("Exception shutting down LocalDatastoreHelper: " + e.getMessage());
+        }
     }
 
     @BeforeClass
     static public void setUp() {
-        GoogleDatastoreKeyStore.setDatastoreOptionsForTesting(helper.getOptions());
-        try {
-            helper.start();
-        } catch (IOException | InterruptedException e) {
-            Assert.fail(e.getMessage());
-        } // Starts the local Datastore emulator in a separate process
-
         AbstractFileTest.setUp();
         config.RaptureRepo = REPO_USING_GCP_DATASTORE;
         config.InitSysConfig = "NREP {} USING GCP_DATASTORE { prefix =\"" + auth + "/sys.config\"}";

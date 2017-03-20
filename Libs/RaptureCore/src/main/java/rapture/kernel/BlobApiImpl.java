@@ -356,7 +356,7 @@ public class BlobApiImpl extends KernelBase implements BlobApi, RaptureScheme {
 
         // Why not just put attribute in BlobContainer headers map?
         if (raptureUri.hasAttribute()) {
-            throw new UnsupportedOperationException("not yet implemented");
+            throw new UnsupportedOperationException("Put URI with attribute not yet implemented " + raptureUri.toString());
         } else if (raptureUri.hasDocPath()) {
             // TODO: Ben -
             if (content instanceof BlobContainer && ((BlobContainer) content).getHeaders() != null) {
