@@ -59,7 +59,7 @@ public class AdminApiTests {
 
     @BeforeClass(groups = { "admin", "nightly" })
     @Parameters({ "RaptureURL", "RaptureUser", "RapturePassword" })
-    public void beforeTest(@Optional("http://192.168.99.101:8665/rapture") String url, @Optional("rapture") String user, @Optional("rapture") String password) {
+    public void beforeTest(@Optional("http://35.185.85.21:8665/rapture") String url, @Optional("rapture") String user, @Optional("rapture") String password) {
         helper = new IntegrationTestHelper(url, user, password);
         adminApi = helper.getAdminApi();
         raptureUrl = url;
