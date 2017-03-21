@@ -61,7 +61,7 @@ public class ReflexTestRunner {
 
     @BeforeClass(groups = { "script", "mongo", "nightly" })
     @Parameters({ "RaptureURL", "RaptureUser", "RapturePassword" })
-    public void beforeTest(@Optional("http://35.185.85.21:8665/rapture") String url, @Optional("rapture") String user, @Optional("rapture") String password) {
+    public void beforeTest(@Optional("http://localhost:8665/rapture") String url, @Optional("rapture") String user, @Optional("rapture") String password) {
         helper = new IntegrationTestHelper(url, user, password);
         scriptApi = helper.getScriptApi();
         loadScripts(helper.getRandomAuthority(Scheme.SCRIPT));
