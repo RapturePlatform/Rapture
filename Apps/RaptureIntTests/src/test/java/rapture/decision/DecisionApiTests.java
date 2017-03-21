@@ -74,7 +74,7 @@ public class DecisionApiTests {
 
     @BeforeClass(groups = { "decision", "nightly" })
     @Parameters({ "RaptureURL", "RaptureUser", "RapturePassword" })
-    public void beforeTest(@Optional("http://35.185.85.21:8665/rapture") String url, @Optional("rapture") String user, @Optional("rapture") String password) {
+    public void beforeTest(@Optional("http://localhost:8665/rapture") String url, @Optional("rapture") String user, @Optional("rapture") String password) {
        
     	helper = new IntegrationTestHelper(url, user, password);
         decisionApi = new HttpDecisionApi(helper.getRaptureLogin());
@@ -181,7 +181,7 @@ public class DecisionApiTests {
             Map <String, Object> workerMap=JacksonUtil.getMapFromJson(wd.toString());
             for (Map<String,Object> currStepRecordDebug : (List <Map<String, Object>>)workerMap.get("stepRecordDebugs")) {
 
-            	Object currStepRecord=currStepRecordDebug.get("stepRecord");
+                Object currStepRecord = currStepRecordDebug.get("stepRecord");
             	Map<String,Object> stepRecordMap =(Map<String,Object>)currStepRecord;
             	Assert.assertTrue(stepRecordMap.keySet().containsAll(Arrays.asList(new String[]{"stepURI","name","startTime","endTime"})));
             }
@@ -298,7 +298,7 @@ public class DecisionApiTests {
                 Map <String, Object> workerMap=JacksonUtil.getMapFromJson(wd.toString());
                 for (Map<String,Object> currStepRecordDebug : (List <Map<String, Object>>)workerMap.get("stepRecordDebugs")) {
 
-                	Object currStepRecord=currStepRecordDebug.get("stepRecord");
+                    Object currStepRecord = currStepRecordDebug.get("stepRecord");
                 	Map<String,Object> stepRecordMap =(Map<String,Object>)currStepRecord;
                 	Assert.assertTrue(stepRecordMap.keySet().containsAll(Arrays.asList(new String[]{"stepURI","name","startTime","endTime"})));
                 }
@@ -460,7 +460,7 @@ public class DecisionApiTests {
             Map <String, Object> workerMap=JacksonUtil.getMapFromJson(wd.toString());
             for (Map<String,Object> currStepRecordDebug : (List <Map<String, Object>>)workerMap.get("stepRecordDebugs")) {
 
-            	Object currStepRecord=currStepRecordDebug.get("stepRecord");
+                Object currStepRecord = currStepRecordDebug.get("stepRecord");
             	Map<String,Object> stepRecordMap =(Map<String,Object>)currStepRecord;
             	Assert.assertTrue(stepRecordMap.keySet().containsAll(Arrays.asList(new String[]{"stepURI","name","startTime","endTime"})));
             }
@@ -623,7 +623,7 @@ public class DecisionApiTests {
             Map <String, Object> workerMap=JacksonUtil.getMapFromJson(wd.toString());
             for (Map<String,Object> currStepRecordDebug : (List <Map<String, Object>>)workerMap.get("stepRecordDebugs")) {
 
-            	Object currStepRecord=currStepRecordDebug.get("stepRecord");
+                Object currStepRecord = currStepRecordDebug.get("stepRecord");
             	Map<String,Object> stepRecordMap =(Map<String,Object>)currStepRecord;
             	Assert.assertTrue(stepRecordMap.keySet().containsAll(Arrays.asList(new String[]{"stepURI","name","startTime","endTime"})));
             }
@@ -719,7 +719,7 @@ public class DecisionApiTests {
             Map <String, Object> workerMap=JacksonUtil.getMapFromJson(wd.toString());
             for (Map<String,Object> currStepRecordDebug : (List <Map<String, Object>>)workerMap.get("stepRecordDebugs")) {
 
-            	Object currStepRecord=currStepRecordDebug.get("stepRecord");
+                Object currStepRecord = currStepRecordDebug.get("stepRecord");
             	Map<String,Object> stepRecordMap =(Map<String,Object>)currStepRecord;
             	Assert.assertTrue(stepRecordMap.keySet().containsAll(Arrays.asList(new String[]{"stepURI","name","startTime","endTime"})));
             }
@@ -831,7 +831,7 @@ public class DecisionApiTests {
             Map <String, Object> workerMap=JacksonUtil.getMapFromJson(wd.toString());
             for (Map<String,Object> currStepRecordDebug : (List <Map<String, Object>>)workerMap.get("stepRecordDebugs")) {
 
-            	Object currStepRecord=currStepRecordDebug.get("stepRecord");
+                Object currStepRecord = currStepRecordDebug.get("stepRecord");
             	Map<String,Object> stepRecordMap =(Map<String,Object>)currStepRecord;
             	Assert.assertTrue(stepRecordMap.keySet().containsAll(Arrays.asList(new String[]{"stepURI","name","startTime","endTime"})));
             }
@@ -906,7 +906,7 @@ public class DecisionApiTests {
             Map <String, Object> workerMap=JacksonUtil.getMapFromJson(wd.toString());
             for (Map<String,Object> currStepRecordDebug : (List <Map<String, Object>>)workerMap.get("stepRecordDebugs")) {
 
-            	Object currStepRecord=currStepRecordDebug.get("stepRecord");
+                Object currStepRecord = currStepRecordDebug.get("stepRecord");
             	Map<String,Object> stepRecordMap =(Map<String,Object>)currStepRecord;
             	Assert.assertTrue(stepRecordMap.keySet().containsAll(Arrays.asList(new String[]{"stepURI","name","startTime","endTime"})));
             }
@@ -987,7 +987,7 @@ public class DecisionApiTests {
             Map <String, Object> workerMap=JacksonUtil.getMapFromJson(wd.toString());
             for (Map<String,Object> currStepRecordDebug : (List <Map<String, Object>>)workerMap.get("stepRecordDebugs")) {
 
-            	Object currStepRecord=currStepRecordDebug.get("stepRecord");
+                Object currStepRecord = currStepRecordDebug.get("stepRecord");
             	Map<String,Object> stepRecordMap =(Map<String,Object>)currStepRecord;
             	Assert.assertTrue(stepRecordMap.keySet().containsAll(Arrays.asList(new String[]{"stepURI","name","startTime","endTime"})));
             }
@@ -1078,7 +1078,7 @@ public class DecisionApiTests {
             Map <String, Object> workerMap=JacksonUtil.getMapFromJson(wd.toString());
             for (Map<String,Object> currStepRecordDebug : (List <Map<String, Object>>)workerMap.get("stepRecordDebugs")) {
 
-            	Object currStepRecord=currStepRecordDebug.get("stepRecord");
+                Object currStepRecord = currStepRecordDebug.get("stepRecord");
             	Map<String,Object> stepRecordMap =(Map<String,Object>)currStepRecord;
             	Assert.assertTrue(stepRecordMap.keySet().containsAll(Arrays.asList(new String[]{"stepURI","name","startTime","endTime"})));
             }
@@ -1182,7 +1182,7 @@ public class DecisionApiTests {
             Map <String, Object> workerMap=JacksonUtil.getMapFromJson(wd.toString());
             for (Map<String,Object> currStepRecordDebug : (List <Map<String, Object>>)workerMap.get("stepRecordDebugs")) {
 
-            	Object currStepRecord=currStepRecordDebug.get("stepRecord");
+                Object currStepRecord = currStepRecordDebug.get("stepRecord");
             	Map<String,Object> stepRecordMap =(Map<String,Object>)currStepRecord;
             	Assert.assertTrue(stepRecordMap.keySet().containsAll(Arrays.asList(new String[]{"stepURI","name","startTime","endTime"})));
             }
@@ -1325,7 +1325,7 @@ public class DecisionApiTests {
             Map <String, Object> workerMap=JacksonUtil.getMapFromJson(wd.toString());
             for (Map<String,Object> currStepRecordDebug : (List <Map<String, Object>>)workerMap.get("stepRecordDebugs")) {
 
-            	Object currStepRecord=currStepRecordDebug.get("stepRecord");
+                Object currStepRecord = currStepRecordDebug.get("stepRecord");
             	Map<String,Object> stepRecordMap =(Map<String,Object>)currStepRecord;
             	Assert.assertTrue(stepRecordMap.keySet().containsAll(Arrays.asList(new String[]{"stepURI","name","startTime","endTime"})));
             }
@@ -1423,7 +1423,7 @@ public class DecisionApiTests {
             Map <String, Object> workerMap=JacksonUtil.getMapFromJson(wd.toString());
             for (Map<String,Object> currStepRecordDebug : (List <Map<String, Object>>)workerMap.get("stepRecordDebugs")) {
 
-            	Object currStepRecord=currStepRecordDebug.get("stepRecord");
+                Object currStepRecord = currStepRecordDebug.get("stepRecord");
             	Map<String,Object> stepRecordMap =(Map<String,Object>)currStepRecord;
             	Assert.assertTrue(stepRecordMap.keySet().containsAll(Arrays.asList(new String[]{"stepURI","name","startTime","endTime"})));
             }
