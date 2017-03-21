@@ -56,12 +56,12 @@ public class ReflexTestRunner {
     String raptureUrl = null;
     private HttpScriptApi scriptApi = null;
 
-    private List<String> scriptList = new ArrayList<String>();
+    private List<String> scriptList = new ArrayList<>();
     IntegrationTestHelper helper;
 
     @BeforeClass(groups = { "script", "mongo", "nightly" })
     @Parameters({ "RaptureURL", "RaptureUser", "RapturePassword" })
-    public void beforeTest(@Optional("http://localhost:8665/rapture") String url, @Optional("rapture") String user, @Optional("rapture") String password) {
+    public void beforeTest(@Optional("http://35.185.85.21:8665/rapture") String url, @Optional("rapture") String user, @Optional("rapture") String password) {
         helper = new IntegrationTestHelper(url, user, password);
         scriptApi = helper.getScriptApi();
         loadScripts(helper.getRandomAuthority(Scheme.SCRIPT));
@@ -70,7 +70,7 @@ public class ReflexTestRunner {
     }
 
     Map<String, String> getParams() {
-        Map<String, String> paramMap = new HashMap<String, String>();
+        Map<String, String> paramMap = new HashMap<>();
 
         RaptureURI blobRepo = helper.getRandomAuthority(Scheme.BLOB);
         helper.configureTestRepo(blobRepo, "MEMORY");

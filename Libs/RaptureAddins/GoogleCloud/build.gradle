@@ -1,6 +1,7 @@
 jar.manifest.attributes "Implementation-Title" : "GoogleCloud"
 
 dependencies {
+    compile group: 'javax.servlet', name: 'javax.servlet-api', version: '3.1.0'
     compile project(':RaptureCore')
     compile project(':RaptureAPI')
     compile project(':RaptureAddinCore')
