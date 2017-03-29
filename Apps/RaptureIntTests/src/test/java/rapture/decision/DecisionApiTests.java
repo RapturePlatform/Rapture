@@ -78,6 +78,7 @@ public class DecisionApiTests {
     @BeforeClass(groups = { "decision", "nightly" })
     @Parameters({ "RaptureURL", "RaptureUser", "RapturePassword" })
     public void beforeTest(@Optional("http://localhost:8665/rapture") String url, @Optional("rapture") String user, @Optional("rapture") String password) {
+    	
     	helper = new IntegrationTestHelper(url, user, password);
         decisionApi = new HttpDecisionApi(helper.getRaptureLogin());
         scriptMap = new HashMap<String, String>();
@@ -1228,6 +1229,9 @@ public class DecisionApiTests {
         }
 
         // Test state of workorder, step and worker
+        try {
+        	Thread.sleep(1000);
+        } catch (Exception e) {}
         Assert.assertEquals(woDebug.getWorkerDebugs().get(0).getStepRecordDebugs().size(), 1, "only first step should be exercised.");
         Assert.assertEquals(decisionApi.getWorkOrderStatus(woUri).getStatus(), WorkOrderExecutionState.ERROR, "Overall work order status");
         Assert.assertEquals(woDebug.getWorkerDebugs().get(0).getStepRecordDebugs().get(0).getStepRecord().getStatus(), WorkOrderExecutionState.ERROR,
