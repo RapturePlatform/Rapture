@@ -94,7 +94,7 @@ public class PipelineApiImpl extends KernelBase implements PipelineApi, RaptureM
 
     @Override
     public List<String> getExchanges(CallingContext context) {
-        final List<String> ret = new ArrayList<String>();
+        final List<String> ret = new ArrayList<>();
         RaptureExchangeStorage.visitAll(new RepoVisitor() {
 
             @Override
@@ -123,7 +123,7 @@ public class PipelineApiImpl extends KernelBase implements PipelineApi, RaptureM
 
     @Override
     public List<String> getServerCategories(CallingContext context) {
-        final List<String> ret = new ArrayList<String>();
+        final List<String> ret = new ArrayList<>();
         ServerCategoryStorage.visitAll(new RepoVisitor() {
 
             @Override
@@ -141,7 +141,7 @@ public class PipelineApiImpl extends KernelBase implements PipelineApi, RaptureM
 
     @Override
     public List<String> getExchangeDomains(CallingContext context) {
-        final List<String> ret = new ArrayList<String>();
+        final List<String> ret = new ArrayList<>();
         ExchangeDomainStorage.visitAll(new RepoVisitor() {
 
             @Override
@@ -196,7 +196,7 @@ public class PipelineApiImpl extends KernelBase implements PipelineApi, RaptureM
         return true;
     }
 
-    private Map<String, ExchangeHandler> domainHandlers = new HashMap<String, ExchangeHandler>();
+    private Map<String, ExchangeHandler> domainHandlers = new HashMap<>();
 
     public Boolean publishPipelineMessage(CallingContext context, String exchange, RapturePipelineTask task) {
         // Here we want to ensure that the exchange is running and then send it
@@ -265,7 +265,7 @@ public class PipelineApiImpl extends KernelBase implements PipelineApi, RaptureM
 
     @Override
     public List<CategoryQueueBindings> getBoundExchanges(CallingContext context, final String category) {
-        final List<CategoryQueueBindings> ret = new ArrayList<CategoryQueueBindings>();
+        final List<CategoryQueueBindings> ret = new ArrayList<>();
         CategoryQueueBindingsStorage.visitAll(new RepoVisitor() {
 
             @Override
@@ -407,10 +407,14 @@ public class PipelineApiImpl extends KernelBase implements PipelineApi, RaptureM
 
     @Override
     public void setupStandardCategory(CallingContext context, String category) {
-        if (registerServerCategory(context, category, "description")) {
-            bindPipeline(context, category, PipelineConstants.DEFAULT_EXCHANGE, "");
+        if (Pipeline2ApiImpl.usePipeline2) {
+            Kernel.getPipeline2().createBroadcastQueue(context, category, null);
         } else {
-            throw RaptureExceptionFactory.create("Error registering server category " + category);
+            if (registerServerCategory(context, category, "description")) {
+                bindPipeline(context, category, PipelineConstants.DEFAULT_EXCHANGE, "");
+            } else {
+                throw RaptureExceptionFactory.create("Error registering server category " + category);
+            }
         }
     }
 
@@ -466,21 +470,17 @@ public class PipelineApiImpl extends KernelBase implements PipelineApi, RaptureM
     }
 
     @Override
-    public Map<String, Object> makeRPC(CallingContext context,
-            String queueName, String fnName, Map<String, Object> params,
-            Long timeoutInSeconds) {
-        ExchangeHandler handler = getExchangeHandler("main"); // Main is the default exchange
-        return handler.makeRPC(queueName, fnName, params, timeoutInSeconds);
-    }
+    public void createTopicExchange(CallingContext context, String domain, String exchange) {
 
-    @Override
-    public void createTopicExchange(CallingContext context, String domain,
-            String exchange) {
-        RaptureExchange exc = new RaptureExchange();
-        exc.setDomain(domain);
-        exc.setExchangeType(RaptureExchangeType.TOPIC);
-        exc.setName(exchange);
-        registerPipelineExchange(context, exchange, exc);
+        if (Pipeline2ApiImpl.usePipeline2) {
+            Kernel.getPipeline2().createBroadcastQueue(context, domain, null);
+        } else {
+            RaptureExchange exc = new RaptureExchange();
+            exc.setDomain(domain);
+            exc.setExchangeType(RaptureExchangeType.TOPIC);
+            exc.setName(exchange);
+            registerPipelineExchange(context, exchange, exc);
+        }
     }
 
     @Override
@@ -496,7 +496,7 @@ public class PipelineApiImpl extends KernelBase implements PipelineApi, RaptureM
 
     // You can only use this in a Kernel application
     public long subscribeTopic(String domain, String exchange, String topic, TopicMessageHandler messageHandler) {
-        log.info("Subscribing attempt to d=" + domain + ",e=" + exchange + ",t=" + topic);
+        log.info("Subscribing attempt to domain " + domain + ", topic " + exchange + ", subscriber ID " + topic);
         RaptureExchange exchangeConfig = getExchange(exchange);
         if (exchangeConfig != null) {
             ExchangeHandler handler = getExchangeHandler(exchangeConfig);

@@ -1614,4 +1614,22 @@ type TagValueType (@package=rapture.common) {
    String COMPLEX;
 }
 
+[Represents a task that has been submitted to the Rapture pipeline V2. Includes the task's status, type, and categories associated with it.]
+type TaskStatus(@package=rapture.common) {
+}
 
+[Callback handler for a task response]
+type TaskResponseHandler (@package=rapture.common) {
+}
+
+[Callback handler for a queue subscription]
+type QueueSubscriber (@package=rapture.common) {
+}
+
+[A RapturePipeline2 is the coordination point for a task based pipeline. Intended to be an implementation-agnostic version of RaptureExchange]
+@Storable(storagePath : {name}, prefix="exchange")
+type RapturePipeline2(@package=rapture.common.model) {
+	String name;
+	String queueIdentifier;
+	Map<String, String> queueConfig;
+}

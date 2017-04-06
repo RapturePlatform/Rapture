@@ -23,7 +23,6 @@
  */
 package rapture.exchange;
 
-import java.util.List;
 import java.util.Map;
 
 import rapture.common.RapturePipelineTask;
@@ -67,17 +66,11 @@ public interface ExchangeHandler {
      */
     String startConsuming(String exchange, String queue, QueueHandler handler);
 
-    String subscribeToExchange(String exchange, List<String> routingKeys, QueueHandler handler);
-
     void ensureExchangeUnAvailable(RaptureExchange exchangeConfig);
-
-	Map<String, Object> makeRPC(String queueName, String fnName,
-			Map<String, Object> params, long timeoutInSeconds);
 
 	void publishTopicMessage(String exchange, String topic, String message);
 
-	long subscribeTopic(String exchange, String topic,
-			TopicMessageHandler messageHandler);
+    long subscribeTopic(String exchange, String topic, TopicMessageHandler messageHandler);
 
 	void unsubscribeTopic(long handle);
 }

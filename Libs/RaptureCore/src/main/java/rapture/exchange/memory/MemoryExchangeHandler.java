@@ -24,7 +24,7 @@
 package rapture.exchange.memory;
 
 import java.util.HashMap;
-import java.util.List;
+import java.util.LinkedList;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -43,8 +43,11 @@ import rapture.exchange.TopicMessageHandler;
  */
 public class MemoryExchangeHandler implements ExchangeHandler {
     private static Logger log = Logger.getLogger(MemoryExchangeHandler.class);
-    private Map<String, ExchangeRouter> routerMap = new HashMap<String, ExchangeRouter>();
+    private Map<String, ExchangeRouter> routerMap = new HashMap<>();
     private String instanceName = "default"; //$NON-NLS-1$
+
+    Map<String, Map<String, LinkedList<String>>> exchanges = new HashMap<>();
+    Map<String, Map<String, LinkedList<TopicMessageHandler>>> topicHandlers = new HashMap<>();
 
     @Override
     public void setConfig(Map<String, String> config) {
@@ -97,33 +100,52 @@ public class MemoryExchangeHandler implements ExchangeHandler {
     }
 
     @Override
-    public String subscribeToExchange(String exchange, List<String> routingKeys, QueueHandler handler) {
-        log.error("Attempt to subscribe to MemoryExchange");
-        return null;
-    }
-
-    @Override
     public void ensureExchangeUnAvailable(RaptureExchange exchangeConfig) {
         tearDownExchange(exchangeConfig);
     }
 
     @Override
-    public Map<String, Object> makeRPC(String queueName, String fnName,
-            Map<String, Object> params, long timeoutInSeconds) {
-        log.error("RPC Message not implemented");
-        return null;
+    public void publishTopicMessage(String exchange, String topic, String message) {
+        Map<String, LinkedList<String>> queues = exchanges.get(exchange);
+        if (queues == null) {
+            queues = new HashMap<>();
+            exchanges.put(exchange, queues);
+        }
+        LinkedList<String> queue = queues.get(topic);
+        if (queue == null) {
+            queue = new LinkedList<>();
+            queues.put(topic, queue);
+        }
+        queue.addLast(message);
+
+        Map<String, LinkedList<TopicMessageHandler>> handlers = topicHandlers.get(exchange);
+        if (handlers == null) return;
+
+        while (!queue.isEmpty()) {
+            try {
+                String mess = queue.removeFirst();
+                if (mess == null) return;
+                for (TopicMessageHandler handler : handlers.get(topic))
+                    handler.deliverMessage(exchange, topic, topic, mess);
+            } catch (Exception e) {
+                return;
+            }
+        }
     }
 
     @Override
-    public void publishTopicMessage(String exchange, String topic,
-            String message) {
-        log.error("Publish Topic Message not implemented");
-    }
-
-    @Override
-    public long subscribeTopic(String exchange, String topic,
-            TopicMessageHandler messageHandler) {
-        log.error("Subscribe to Topic not implemented");
+    public long subscribeTopic(String exchange, String topic, TopicMessageHandler messageHandler) {
+        Map<String, LinkedList<TopicMessageHandler>> handlers = topicHandlers.get(exchange);
+        if (handlers == null) {
+            handlers = new HashMap<>();
+            topicHandlers.put(exchange, handlers);
+        }
+        LinkedList<TopicMessageHandler> handleList = handlers.get(topic);
+        if (handleList == null) {
+            handleList = new LinkedList<>();
+            handlers.put(topic, handleList);
+        }
+        handleList.addLast(messageHandler);
         return 0L;
     }
 

@@ -28,7 +28,7 @@ import java.util.concurrent.TimeUnit;
 public class WaitingTestHelper {
 
     public static void retry(Runnable runnable, int timeout) throws InterruptedException {
-        long sleepInterval = 500;
+        long sleepInterval = 2500;
         retry(runnable, timeout, sleepInterval);
     }
 

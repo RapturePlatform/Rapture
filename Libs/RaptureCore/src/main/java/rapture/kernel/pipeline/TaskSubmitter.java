@@ -25,12 +25,14 @@ package rapture.kernel.pipeline;
 
 import java.util.ArrayList;
 
+import com.google.common.collect.ImmutableList;
+
 import rapture.common.CallingContext;
 import rapture.common.RapturePipelineTask;
 import rapture.common.RaptureTransferObject;
+import rapture.common.impl.jackson.JacksonUtil;
 import rapture.kernel.Kernel;
-
-import com.google.common.collect.ImmutableList;
+import rapture.kernel.Pipeline2ApiImpl;
 
 public class TaskSubmitter {
 
@@ -44,20 +46,32 @@ public class TaskSubmitter {
 
     public static String submitBroadcastToAll(CallingContext context, RaptureTransferObject mimeObject, String mimeType, String category) {
         RapturePipelineTask task = createTask(mimeObject, mimeType, category);
-        Kernel.getPipeline().broadcastMessageToAll(context, task);
+        if (Pipeline2ApiImpl.usePipeline2) {
+            Kernel.getPipeline2().getTrusted().broadcastMessageToAll(context, task);
+        } else {
+            Kernel.getPipeline().broadcastMessageToAll(context, task);
+        }
         return task.getTaskId();
     }
 
     public static String submitBroadcastToCategory(CallingContext context, RaptureTransferObject mimeObject, String mimeType, String category) {
         RapturePipelineTask task = createTask(mimeObject, mimeType, category);
-        Kernel.getPipeline().broadcastMessageToCategory(context, task);
+        if (Pipeline2ApiImpl.usePipeline2) {
+            Kernel.getPipeline2().broadcastMessage(context, category, JacksonUtil.jsonFromObject(task));
+        } else {
+            Kernel.getPipeline().broadcastMessageToCategory(context, task);
+        }
         return task.getTaskId();
     }
 
     public static String submitLoadBalancedToCategory(CallingContext context, RaptureTransferObject mimeObject, String mimeType, String category) {
         RapturePipelineTask task = createTask(mimeObject, mimeType, category);
         statusManager.initialCreation(task);
-        Kernel.getPipeline().publishMessageToCategory(context, task);
+        if (Pipeline2ApiImpl.usePipeline2) {
+            Kernel.getPipeline2().broadcastMessage(context, category, JacksonUtil.jsonFromObject(task));
+        } else {
+            Kernel.getPipeline().broadcastMessageToCategory(context, task);
+        }
         return task.getTaskId();
     }
 
@@ -65,8 +79,7 @@ public class TaskSubmitter {
         RapturePipelineTask pTask = new RapturePipelineTask();
         if (category != null) {
             pTask.setCategoryList(ImmutableList.<String> of(category));
-        }
-        else {
+        } else {
             pTask.setCategoryList(new ArrayList<String>());
         }
         pTask.setPriority(1);
@@ -88,7 +101,12 @@ public class TaskSubmitter {
 
         pTask.addMimeObject(mimeObject);
         pTask.setContentType(mimeType);
-        Kernel.getPipeline().publishMessageToCategory(context, pTask);
+        if (Pipeline2ApiImpl.usePipeline2) {
+            // This is the reply
+            Kernel.getPipeline2().publishTask(context, originalMessage.getCategoryList().get(0), JacksonUtil.jsonFromObject(pTask), 0L, null);
+        } else {
+            Kernel.getPipeline().publishMessageToCategory(context, pTask);
+        }
         return pTask.getTaskId();
     }
 

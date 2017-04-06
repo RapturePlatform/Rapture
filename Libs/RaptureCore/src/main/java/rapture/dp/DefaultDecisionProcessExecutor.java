@@ -93,6 +93,7 @@ import rapture.kernel.ContextFactory;
 import rapture.kernel.DocApiImpl;
 import rapture.kernel.Kernel;
 import rapture.kernel.LockApiImpl;
+import rapture.kernel.Pipeline2ApiImpl;
 import rapture.kernel.dp.ExecutionContextUtil;
 import rapture.kernel.dp.StepRecordUtil;
 import rapture.kernel.dp.WorkOrderStatusUtil;
@@ -175,7 +176,12 @@ public class DefaultDecisionProcessExecutor implements DecisionProcessExecutor {
         task.addMimeObject(worker);
         task.setContentType(MimeDecisionProcessAdvance.getMimeType());
         task.initTask();
-        Kernel.getPipeline().publishMessageToCategory(ContextFactory.getKernelUser(), task);
+        if (Pipeline2ApiImpl.usePipeline2) { 
+            Kernel.getPipeline2().broadcastMessage(ContextFactory.getKernelUser(), category, JacksonUtil.jsonFromObject(task));
+//            Kernel.getPipeline2().publishTask(ContextFactory.getKernelUser(), category, JacksonUtil.jsonFromObject(task), 0L, null);
+        } else {
+            Kernel.getPipeline().publishMessageToCategory(ContextFactory.getKernelUser(), task);
+        }
     }
 
     private void publishForkChildren(Worker worker, Step step, Workflow flow) {

@@ -18,6 +18,7 @@ dependencies {
        exclude module: 'servlet-api'
     }
     compile 'org.testng:testng:6.9.10'
+    compile 'javax.mail:mail:1.4.5'
     compile 'com.github.fge:json-patch:1.9'
 }
 

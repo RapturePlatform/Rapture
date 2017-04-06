@@ -176,7 +176,7 @@ public class ReflexRaptureScript implements IRaptureScript {
             walker.currentScope.assign("_data", new ReflexValue(JacksonUtil.getHashFromObject(data)));
             ReflexNode res = walker.walk();
             List<ReflexValue> ret = res.evaluateWithoutScope(new NullDebugger()).asList();
-            List<Object> realRet = new ArrayList<Object>(ret.size());
+            List<Object> realRet = new ArrayList<>(ret.size());
             for (ReflexValue v : ret) {
                 realRet.add(v.asObject());
             }

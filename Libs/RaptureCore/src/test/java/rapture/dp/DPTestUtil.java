@@ -27,6 +27,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.google.common.collect.Maps;
+
 import rapture.common.CallingContext;
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
@@ -36,8 +38,6 @@ import rapture.common.model.RaptureExchange;
 import rapture.common.model.RaptureExchangeQueue;
 import rapture.common.model.RaptureExchangeType;
 import rapture.kernel.Kernel;
-
-import com.google.common.collect.Maps;
 
 /**
  * This is a place to put static routines to be shared between DP tests.
@@ -76,7 +76,7 @@ public class DPTestUtil {
         exchange.setExchangeType(RaptureExchangeType.FANOUT);
         exchange.setDomain("questions");
 
-        List<RaptureExchangeQueue> queues = new ArrayList<RaptureExchangeQueue>();
+        List<RaptureExchangeQueue> queues = new ArrayList<>();
         RaptureExchangeQueue queue = new RaptureExchangeQueue();
         queue.setName("default");
         queue.setRouteBindings(new ArrayList<String>());
@@ -88,5 +88,4 @@ public class DPTestUtil {
         Kernel.getPipeline().getTrusted().bindPipeline(ctx, ALPHA, EXCHANGE, "default");
         Kernel.setCategoryMembership(ALPHA);
     }
-
 }

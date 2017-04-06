@@ -35,6 +35,7 @@ import rapture.common.RaptureURI;
 import rapture.common.Scheme;
 import rapture.common.api.BlobApi;
 import rapture.common.api.JarApi;
+import rapture.common.impl.jackson.JacksonUtil;
 import rapture.common.mime.MimeJarCacheUpdate;
 
 /**
@@ -120,6 +121,10 @@ public class JarApiImpl extends KernelBase implements JarApi {
         mime.setDeletion(isDeletion);
         task.setContentType(MimeJarCacheUpdate.getMimeType());
         task.addMimeObject(mime);
-        Kernel.getPipeline().broadcastMessageToAll(ctx, task);
+        if (Pipeline2ApiImpl.usePipeline2) {
+            Kernel.getPipeline2().broadcastMessage(ctx, Kernel.getPipeline2().getTrusted().BROADCAST, JacksonUtil.jsonFromObject(task));
+        } else {
+            Kernel.getPipeline().broadcastMessageToAll(ctx, task);
+        }
     }
 }
