@@ -31,6 +31,7 @@ import org.testng.Assert;
 import org.testng.Reporter;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Optional;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
@@ -105,27 +106,31 @@ public class DocumentApiTest {
         Assert.assertFalse(docApi.docExists(docPath));
     }
 
-    @Test(groups = { "document", "mongo", "nightly" })
-    public void testDocumentWithAutoID() {
+    @Test(groups = { "document", "mongo", "nightly" },dataProvider = "docAutoidScenarios")
+    public void testDocumentWithAutoID(int base, int length) {
         String idgenPrefix = "TST";
-        int NUM_DOCS = 5;
+
+        int NUM_DOCS = base-1;
         RaptureURI repo = helper.getRandomAuthority(Scheme.DOCUMENT);
         helper.configureTestRepo(repo, "MONGODB");
 
         String docPath = new RaptureURI.Builder(repo).docPath("folder/#id").build().toString();
-        String idgenCfg = "IDGEN { base=\"10\",length=\"5\", prefix=\"" + idgenPrefix + "\"} USING MONGODB {prefix=\"testfountain." + System.nanoTime() + "\"}";
+        String idgenCfg = "IDGEN { base=\""+base+"\",length=\""+length+"\", prefix=\"" + idgenPrefix + "\"} USING MONGODB {prefix=\"testfountain." + System.nanoTime() + "\"}";
         docApi.setDocRepoIdGenConfig(repo.toString(), idgenCfg);
 
         String putData = "{\"key1\":\"#id\"}";
 
         Reporter.log("Creating " + NUM_DOCS + " documents", true);
+        String zerosString="";
+        for (int i = 0; i<length -1;i++)
+        	zerosString=zerosString.concat("0");
         for (int i = 1; i < NUM_DOCS; i++) {
             String putContentUri = docApi.putDoc(docPath, putData);
             Reporter.log("Creating document " + putContentUri, true);
             String getContent = docApi.getDoc(putContentUri);
             Reporter.log("Checking URI and content of document " + putContentUri, true);
-            Assert.assertTrue(putContentUri.contains(idgenPrefix + "0000" + i));
-            Assert.assertTrue(getContent.contains(idgenPrefix + "0000" + i));
+            Assert.assertTrue(putContentUri.contains(idgenPrefix + zerosString + Integer.toString(i, base).toUpperCase()));
+            Assert.assertTrue(getContent.contains(idgenPrefix + zerosString + Integer.toString(i, base).toUpperCase()));
         }
 
     }
@@ -284,6 +289,17 @@ public class DocumentApiTest {
         Assert.assertEquals(docApi.getDoc(docURI + "@5"), content5, "Content for version 5 does not match");
     }
 
+    @DataProvider
+    public Object[][] docAutoidScenarios() {
+        return new Object[][] {
+                new Object[] {10,5},
+                new Object[] { 8, 4 },
+                new Object[] { 6, 4 },
+                new Object[] { 11, 4 },
+                new Object[] { 15, 4 },
+        };
+    }
+    
     @AfterClass(groups = { "document", "mongo", "nightly" })
     public void AfterTest() {
         helper.cleanAllAssets();

@@ -57,6 +57,7 @@ import rapture.common.dp.Step;
 import rapture.common.dp.Transition;
 import rapture.common.dp.WorkOrderDebug;
 import rapture.common.dp.Workflow;
+import rapture.common.exception.RaptureException;
 import rapture.helper.IntegrationTestHelper;
 
 public class LockWorkflowTest {
@@ -562,7 +563,9 @@ public class LockWorkflowTest {
 		       	lockHandle.setLockName(decisionApi.getContextValue(orderUri+"#0", "lockName"));	
 	       	}
         }
-        Assert.assertTrue(lockApi.releaseLock(lockUri.toString(), lockConfig.getName(), lockHandle));
+        try {
+        	Assert.assertTrue(lockApi.releaseLock(lockUri.toString(), lockConfig.getName(), lockHandle));
+        } catch (RaptureException e) {}
         Assert.assertEquals(helper.getDocApi().getDoc(winningPath),winningContent);
     }
 }
