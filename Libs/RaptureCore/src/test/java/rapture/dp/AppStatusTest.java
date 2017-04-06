@@ -195,6 +195,7 @@ public class AppStatusTest {
         workOrders.add(Kernel.getDecision().createWorkOrderP(context, wuri, contextMap, pattern).getUri());
 
         WaitingTestHelper.retry(new Runnable() {
+            @SuppressWarnings("synthetic-access")
             @Override
             public void run() {
                 List<AppStatus> defs = Kernel.getDecision().getAppStatuses(CTX, EXPECTED_DEF_URI);

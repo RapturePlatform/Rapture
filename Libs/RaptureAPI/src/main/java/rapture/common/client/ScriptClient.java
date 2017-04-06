@@ -53,6 +53,7 @@ public class ScriptClient implements ScriptingApi {
     private final HttpEntityApi entity;
     private final HttpPluginApi plugin;
     private final HttpPipelineApi pipeline;
+    private final HttpPipeline2Api pipeline2;
     private final HttpAsyncApi async;
     private final HttpSysApi sys;
     private final HttpRunnerApi runner;
@@ -89,6 +90,7 @@ public class ScriptClient implements ScriptingApi {
         entity = new HttpEntityApi(loginApi);
         plugin = new HttpPluginApi(loginApi);
         pipeline = new HttpPipelineApi(loginApi);
+        pipeline2 = new HttpPipeline2Api(loginApi);
         async = new HttpAsyncApi(loginApi);
         sys = new HttpSysApi(loginApi);
         runner = new HttpRunnerApi(loginApi);
@@ -116,98 +118,127 @@ public class ScriptClient implements ScriptingApi {
         return activity;
     }
 
+    @Override
     public HttpAdminApi getAdmin() {
         return admin;
     }
 
+    @Override
     public HttpAuditApi getAudit() {
         return audit;
     }
 
+    @Override
     public HttpBootstrapApi getBootstrap() {
         return bootstrap;
     }
 
+    @Override
     public HttpEntitlementApi getEntitlement() {
         return entitlement;
     }
 
+    @Override
     public HttpEventApi getEvent() {
         return event;
     }
 
+    @Override
     public HttpTransformApi getTransform() {
         return transform;
     }
 
+    @Override
     public HttpEntityApi getEntity() {
     	return entity;
     }
     
+    @Override
     public HttpIdGenApi getIdGen() {
         return idgen;
     }
 
+    @Override
     public HttpPluginApi getPlugin() {
         return plugin;
     }
 
+    @Override
     public HttpIndexApi getIndex() {
         return index;
     }
 
+    @Override
     public HttpLockApi getLock() {
         return lock;
     }
 
+    @Override
     public HttpScheduleApi getSchedule() {
         return schedule;
     }
 
+    @Override
     public HttpScriptApi getScript() {
         return script;
     }
 
+    @Override
     public HttpUserApi getUser() {
         return user;
     }
 
+    @Override
     public HttpPipelineApi getPipeline() {
         return pipeline;
     }
 
+    @Override
+    public HttpPipeline2Api getPipeline2() {
+        return pipeline2;
+    }
+
+    @Override
     public HttpAsyncApi getAsync() {
         return async;
     }
 
+    @Override
     public HttpSysApi getSys() {
         return sys;
     }
 
+    @Override
     public HttpRunnerApi getRunner() {
         return runner;
     }
 
+    @Override
     public HttpNotificationApi getNotification() {
         return notification;
     }
 
+    @Override
     public HttpBlobApi getBlob() {
         return blob;
     }
 
+    @Override
     public HttpJarApi getJar() {
         return jar;
     }
 
+    @Override
     public HttpSeriesApi getSeries() {
         return series;
     }
 
+    @Override
     public HttpDocApi getDoc() {
         return doc;
     }
 
+    @Override
     public HttpEnvironmentApi getEnvironment() {
         return environment;
     }
@@ -217,14 +248,17 @@ public class ScriptClient implements ScriptingApi {
         return decision;
     }
 
+    @Override
     public HttpStructuredApi getStructured() {
         return structured;
     }
     
+    @Override
     public HttpWidgetApi getWidget() {
     	return widget;
     }
     
+    @Override
     public HttpProgramApi getProgram() {
     	return program;
     }

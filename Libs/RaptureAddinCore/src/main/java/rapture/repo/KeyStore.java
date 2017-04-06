@@ -23,15 +23,15 @@
  */
 package rapture.repo;
 
+import java.util.List;
+import java.util.Map;
+
 import rapture.common.RaptureFolderInfo;
 import rapture.common.RaptureNativeQueryResult;
 import rapture.common.RaptureQueryResult;
 import rapture.common.exception.RaptNotSupportedException;
-import rapture.index.IndexProducer;
 import rapture.index.IndexHandler;
-
-import java.util.List;
-import java.util.Map;
+import rapture.index.IndexProducer;
 
 /**
  * How repositories store data

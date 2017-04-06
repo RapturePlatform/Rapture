@@ -23,7 +23,6 @@
  */
 package rapture.kernel;
 
-import java.net.HttpURLConnection;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -35,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import rapture.common.CallingContext;
@@ -59,7 +59,6 @@ import rapture.common.RaptureServerGroupStorage;
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
 import rapture.common.api.RunnerApi;
-import rapture.common.exception.RaptureExceptionFactory;
 import rapture.common.impl.jackson.JacksonUtil;
 import rapture.common.impl.jackson.JsonContent;
 import rapture.common.mime.custom.MimeRunnerNotification;
@@ -91,7 +90,7 @@ public class RunnerApiImpl extends KernelBase implements RunnerApi {
         newGroup.setLibraries(new HashSet<String>());
         newGroup.setName(name);
         newGroup.setDescription(description);
-        Set<String> inclusions = new HashSet<String>();
+        Set<String> inclusions = new HashSet<>();
         inclusions.add("*");
         newGroup.setInclusions(inclusions);
         newGroup.setExclusions(new HashSet<String>());
@@ -224,14 +223,14 @@ public class RunnerApiImpl extends KernelBase implements RunnerApi {
         rai.setDescription(description);
         rai.setAppName(appName);
         rai.setRetryCount(retryCount);
-        if (parameters.trim().isEmpty()) {
+        if (StringUtils.trimToNull(parameters) == null) {
             rai.setParameters("");
         } else {
             rai.setParameters(parameters);
         }
         rai.setTimeRangeSpecification(timeRange);
         rai.setServerGroup(serverGroup);
-        if (apiUser.trim().isEmpty()) {
+        if (StringUtils.trimToNull(apiUser) == null) {
             rai.setApiUser("");
         } else {
             rai.setApiUser(apiUser);
@@ -252,7 +251,7 @@ public class RunnerApiImpl extends KernelBase implements RunnerApi {
     }
 
     private List<RaptureApplicationInstance> getApplicationInstancesForServerGroup(CallingContext context, String serverGroup) {
-        final List<RaptureApplicationInstance> ret = new ArrayList<RaptureApplicationInstance>();
+        final List<RaptureApplicationInstance> ret = new ArrayList<>();
         String prefix = new RaptureApplicationInstancePathBuilder().serverGroup(serverGroup).buildStorageLocation().getDocPath() + "/";
         getConfigRepo().visitAll(prefix, null, new RepoVisitor() {
 
@@ -274,7 +273,7 @@ public class RunnerApiImpl extends KernelBase implements RunnerApi {
         // ApplicationInstances within
         // those groups
         List<RaptureServerGroup> serverGroups = getServerGroupInstances(context);
-        List<RaptureApplicationInstance> ret = new ArrayList<RaptureApplicationInstance>();
+        List<RaptureApplicationInstance> ret = new ArrayList<>();
         for (RaptureServerGroup serverGroup : serverGroups) {
             boolean thisIncluded = false;
             if (serverGroup.getInclusions().contains("*")) {
@@ -399,7 +398,7 @@ public class RunnerApiImpl extends KernelBase implements RunnerApi {
 
     @Override
     public Map<String, RaptureInstanceCapabilities> getCapabilities(CallingContext context, String serverName, List<String> instanceNames) {
-        Map<String, RaptureInstanceCapabilities> nameToRic = new HashMap<String, RaptureInstanceCapabilities>();
+        Map<String, RaptureInstanceCapabilities> nameToRic = new HashMap<>();
         for (String name : instanceNames) {
             RaptureInstanceCapabilities ric = RaptureInstanceCapabilitiesStorage.readByFields(serverName, name);
             if (ric == null) {
@@ -427,7 +426,7 @@ public class RunnerApiImpl extends KernelBase implements RunnerApi {
 
     @Override
     public List<String> getRunnerServers(CallingContext context) {
-        final List<String> ret = new ArrayList<String>();
+        final List<String> ret = new ArrayList<>();
         List<RaptureRunnerStatus> statuses = RaptureRunnerStatusStorage.readAll();
         for (RaptureRunnerStatus status : statuses) {
             ret.add(status.getServerName());
@@ -457,33 +456,6 @@ public class RunnerApiImpl extends KernelBase implements RunnerApi {
         return RaptureApplicationInstanceStorage.readByFields(serverGroup, name);
     }
 
-    public RaptureApplicationInstance createOneShot(CallingContext context, String appName, String serverGroup, String parameters, String apiUser) {
-        logger.warn("RunnerApi.createOneShot is deprecated. Please change your code to use runApplication");
-        RaptureApplicationInstance rai = new RaptureApplicationInstance();
-        String instanceId = IDGenerator.getUUID(5);
-        rai.setName(appName + "-" + instanceId);
-        rai.setDescription("One shot for " + appName);
-        rai.setAppName(appName);
-        rai.setRetryCount(3);
-        rai.setLastStateChange(new Date());
-        if (parameters.trim().isEmpty()) {
-            rai.setParameters("");
-        } else {
-            rai.setParameters(parameters);
-        }
-        rai.setTimeRangeSpecification("* *");
-        rai.setServerGroup(serverGroup);
-        if (apiUser.trim().isEmpty()) {
-            rai.setApiUser("");
-        } else {
-            rai.setApiUser(apiUser);
-        }
-        rai.setOneShot(true);
-        RaptureApplicationInstanceStorage.add(rai, context.getUser(), "Create one shot");
-        notifyRunner(context);
-        return rai;
-    }
-
     private void notifyRunner(CallingContext context) {
         MimeRunnerNotification mime = new MimeRunnerNotification();
         // notify all runners, since we may have multiple runners connected to
@@ -491,44 +463,9 @@ public class RunnerApiImpl extends KernelBase implements RunnerApi {
         TaskSubmitter.submitBroadcastToCategory(context, mime, MimeRunnerNotification.getMimeType(), PipelineConstants.CATEGORY_RUNNER);
     }
 
-    public RaptureApplicationInstance updateOneShot(CallingContext context, String appName, String serverGroup, String status, Boolean finished) {
-        logger.warn("RunnerApi.updateOneShot is deprecated. Please change your code to use runApplication");
-        RaptureApplicationInstance inst = getApplicationInstance(context, appName, serverGroup);
-        if (inst.getOneShot()) {
-            inst.setStatus(status);
-            inst.setFinished(finished);
-            inst.setLastStateChange(new Date());
-            RaptureApplicationInstanceStorage.add(inst, context.getUser(), "Update one shot");
-            notifyRunner(context);
-        } else {
-            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, "Instance is not a one-shot instance");
-        }
-        return inst;
-    }
-
-    public Boolean lockOneShot(CallingContext context, String name, String serverGroup, String myServer) {
-        logger.warn("RunnerApi.lockOneShot is deprecated. Please change your code to use runApplication");
-        RaptureApplicationInstance instance = getApplicationInstance(context, name, serverGroup);
-        if (instance.getLockedBy() != null) {
-            if (instance.getLockedBy().equals(myServer)) {
-                return true;
-            } else {
-                return false;
-            }
-        }
-        instance.setLockedBy(myServer);
-        RaptureApplicationInstanceStorage.add(instance, context.getUser(), "Lock one shot");
-        notifyRunner(context);
-        instance = getApplicationInstance(context, name, serverGroup);
-        if (instance.getLockedBy().equals(myServer)) {
-            return true;
-        }
-        return false;
-    }
-
     @Override
     public List<String> getApplicationsForServerGroup(CallingContext context, String serverGroup) {
-        final List<String> ret = new ArrayList<String>();
+        final List<String> ret = new ArrayList<>();
         final String prefix = new RaptureApplicationInstancePathBuilder().serverGroup(serverGroup).buildStorageLocation().getDocPath() + "/";
         getConfigRepo().visitAll(prefix, null, new RepoVisitor() {
 
@@ -557,7 +494,7 @@ public class RunnerApiImpl extends KernelBase implements RunnerApi {
                 try {
                     logger.debug("Cleaning data on server " + serverName);
                     RaptureRunnerStatus status = getRunnerStatus(context, serverName);
-                    List<String> toRemove = new ArrayList<String>();
+                    List<String> toRemove = new ArrayList<>();
                     Calendar now = Calendar.getInstance();
                     now.add(Calendar.MINUTE, ageInMinutes * -1);
                     for (Map.Entry<String, RaptureRunnerInstanceStatus> entry : status.getStatusByInstanceName().entrySet()) {
@@ -659,7 +596,7 @@ public class RunnerApiImpl extends KernelBase implements RunnerApi {
 
         RapturePipelineTask pTask = new RapturePipelineTask();
         pTask.setPriority(1);
-        List<String> categoryList = new LinkedList<String>();
+        List<String> categoryList = new LinkedList<>();
         categoryList.add(PipelineConstants.CATEGORY_APPMANAGER);
         pTask.setCategoryList(categoryList);
         pTask.initTask();
@@ -679,7 +616,7 @@ public class RunnerApiImpl extends KernelBase implements RunnerApi {
 
     @Override
     public List<String> getApplicationStatusDates(CallingContext context) {
-        final Set<String> dates = new HashSet<String>();
+        final Set<String> dates = new HashSet<>();
         RaptureApplicationStatusStorage.visitAll(new RepoVisitor() {
             @Override
             public boolean visit(String name, JsonContent content, boolean isFolder) {
@@ -688,7 +625,7 @@ public class RunnerApiImpl extends KernelBase implements RunnerApi {
                 return true;
             }
         });
-        return new ArrayList<String>(dates);
+        return new ArrayList<>(dates);
     }
 
     @Override

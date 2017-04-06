@@ -33,6 +33,7 @@ import rapture.common.RaptureApplicationInstance;
 import rapture.common.exception.RaptureException;
 import rapture.kernel.ContextFactory;
 import rapture.kernel.Kernel;
+import rapture.kernel.Pipeline2ApiImpl;
 
 /**
  * Create a test that puts a script to be run on a schedule, and show that it
@@ -45,9 +46,9 @@ import rapture.kernel.Kernel;
 public class RunnerIntegrationTest {
     @Before
     public void setup() {
+        Pipeline2ApiImpl.usePipeline2 = false;
         try {
             Kernel.initBootstrap(null, null, true);
-
         } catch (RaptureException e) {
             e.printStackTrace();
         }

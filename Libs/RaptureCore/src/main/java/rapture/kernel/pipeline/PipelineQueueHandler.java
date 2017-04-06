@@ -35,13 +35,13 @@ import rapture.common.RapturePipelineTask;
 import rapture.common.mime.MimeDecisionProcessAdvance;
 import rapture.common.mime.MimeDocumentIndexRebuild;
 import rapture.common.mime.MimeIndexRebuild;
+import rapture.common.mime.MimeJarCacheUpdate;
 import rapture.common.mime.MimeRaptureDocument;
 import rapture.common.mime.MimeReflexScript;
 import rapture.common.mime.MimeReflexScriptRef;
 import rapture.common.mime.MimeReflexScriptResume;
 import rapture.common.mime.MimeScheduleReflexScriptRef;
 import rapture.common.mime.MimeSearchUpdateObject;
-import rapture.common.mime.MimeJarCacheUpdate;
 import rapture.exchange.QueueHandler;
 import rapture.kernel.dp.RaptureDecisionProcessAdvanceHandler;
 
@@ -63,7 +63,7 @@ public class PipelineQueueHandler implements QueueHandler {
     private static final Map<String, QueueHandler> defaultHandlers;
 
     static {
-        Map<String, QueueHandler> setupMap = new HashMap<String, QueueHandler>();
+        Map<String, QueueHandler> setupMap = new HashMap<>();
         setupMap.put("text/plain", new TextPlainHandler()); //$NON-NLS-1$
         setupMap.put(MimeReflexScript.getMimeType(), new RaptureReflexScriptHandler());
         setupMap.put(MimeReflexScriptRef.getMimeType(), new RaptureReflexScriptRefHandler());

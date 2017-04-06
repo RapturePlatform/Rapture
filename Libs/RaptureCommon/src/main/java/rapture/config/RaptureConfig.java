@@ -57,7 +57,7 @@ public class RaptureConfig {
     public String ServerType = "webserver";
     public String StandardTemplate = "REP {} USING MEMORY {}";
     public String DefaultAudit = "LOG {} USING MEMORY {}";
-    public String DefaultExchange = "EXCHANGE {} USING GCP_PUBSUB { projectid=\"todo3-incap\"}";
+    public String DefaultExchange = "EXCHANGE {} USING MEMORY { }";
     public String DefaultCommentary = "COMMENTARY {} USING MEMORY {}";
     public String DefaultNotification = "NOTIFICATION USING MEMORY {}";
     public String DefaultStatus = "STATUS {} USING MEMORY {}";

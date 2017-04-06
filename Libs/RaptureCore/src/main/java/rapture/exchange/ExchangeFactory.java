@@ -96,7 +96,7 @@ public final class ExchangeFactory {
                 throw raptException;
             }
         } catch (ClassNotFoundException e) {
-            RaptureException raptException = RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, "Error creating exchange");
+            RaptureException raptException = RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, "Error creating exchange with config ", e);
             log.error(RaptureExceptionFormatter.getExceptionMessage(raptException, e));
             throw raptException;
         }

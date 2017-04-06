@@ -31,9 +31,8 @@ import org.joda.time.Duration;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.Assume;
 import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.Ignore;
 
 import com.google.cloud.datastore.testing.LocalDatastoreHelper;
 import com.google.common.collect.ImmutableMap;
@@ -51,6 +50,7 @@ import rapture.common.model.IndexConfig;
 import rapture.kernel.ContextFactory;
 import rapture.kernel.Kernel;
 
+@Ignore
 public class GoogleIndexTest extends MockDataStoreTest {
     private static CallingContext ctx = ContextFactory.getKernelUser();
     static String auth = UUID.randomUUID().toString();
@@ -66,8 +66,6 @@ public class GoogleIndexTest extends MockDataStoreTest {
 
     @BeforeClass
     public static void setUp() throws IOException, InterruptedException {
-        Assume.assumeTrue(false);
-
         System.setProperty("LOGSTASH-ISENABLED", "false");
 
         helper.start(); // Starts the local Datastore emulator in a separate process
@@ -106,7 +104,7 @@ public class GoogleIndexTest extends MockDataStoreTest {
     }
 
 
-    @Test
+    @Ignore
     public void writeADoc() {
         String doc = "//docTest/one/two";
         String content = "{ \"test\" : \"hello\" }";
@@ -151,7 +149,7 @@ public class GoogleIndexTest extends MockDataStoreTest {
     }
 
 
-    @Test
+    @Ignore
     public void updateDataTest() {
         planetURI = RaptureURI.builder(Scheme.DOCUMENT, authorityName).build().toString();
 
@@ -210,7 +208,7 @@ public class GoogleIndexTest extends MockDataStoreTest {
     }
 
 
-    @Test
+    @Ignore
     public void limitTest() {
         planetURI = RaptureURI.builder(Scheme.DOCUMENT, authorityName).build().toString();
         String ver_config = "NREP {} USING GCP_DATASTORE {prefix=\"planet.%s\"}"; // versioned repository
@@ -267,7 +265,7 @@ public class GoogleIndexTest extends MockDataStoreTest {
     }
 
 
-    @Test
+    @Ignore
     public void distinctTest() {
 
         planetURI = RaptureURI.builder(Scheme.DOCUMENT, authorityName).build().toString();
@@ -292,7 +290,7 @@ public class GoogleIndexTest extends MockDataStoreTest {
     }
 
 
-    @Test
+    @Ignore
     public void orderAscTest() {
         planetURI = RaptureURI.builder(Scheme.DOCUMENT, authorityName).build().toString();
 
@@ -362,7 +360,7 @@ public class GoogleIndexTest extends MockDataStoreTest {
     }
 
 
-    @Test
+    @Ignore
     public void orderDescTest() {
         planetURI = RaptureURI.builder(Scheme.DOCUMENT, authorityName).build().toString();
 
@@ -392,7 +390,7 @@ public class GoogleIndexTest extends MockDataStoreTest {
     }
 
 
-    @Test
+    @Ignore
     public void orderLimitTest() {
         planetURI = RaptureURI.builder(Scheme.DOCUMENT, authorityName).build().toString();
 
@@ -416,7 +414,7 @@ public class GoogleIndexTest extends MockDataStoreTest {
     }
 
 
-    @Test
+    @Ignore
     public void deleteTest() {
         // RAP-4343
         planetURI = RaptureURI.builder(Scheme.DOCUMENT, authorityName).build().toString();

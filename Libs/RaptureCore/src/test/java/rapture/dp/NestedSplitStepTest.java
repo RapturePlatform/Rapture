@@ -36,7 +36,6 @@ import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.google.common.collect.ImmutableMap;
@@ -47,9 +46,12 @@ import rapture.common.WorkOrderExecutionState;
 import rapture.common.dp.Step;
 import rapture.common.dp.WorkOrderStatus;
 import rapture.common.dp.Workflow;
+import rapture.config.ConfigLoader;
+import rapture.config.RaptureConfig;
 import rapture.dp.invocable.SignalInvocable;
 import rapture.kernel.ContextFactory;
 import rapture.kernel.Kernel;
+import rapture.kernel.Pipeline2ApiImpl;
 
 public class NestedSplitStepTest {
     private static final String AUTHORITY = "//splitsteptest";
@@ -72,11 +74,13 @@ public class NestedSplitStepTest {
 
     @Before
     public void setup() {
+        RaptureConfig config = ConfigLoader.getConf();
+        config.DefaultExchange = "PIPELINE {} USING GCP_PUBSUB { projectid=\"todo3-incap\"}";
         Kernel.initBootstrap();
         if (!Kernel.getDoc().docRepoExists(ctx, AUTHORITY)) {
             Kernel.getDoc().createDocRepo(ctx, AUTHORITY, "NREP {} USING MEMORY {}");
         }
-        initPipeline(ctx);
+        if (!Pipeline2ApiImpl.usePipeline2) initPipeline(ctx);
         createWorkflow();
     }
 
@@ -162,7 +166,7 @@ public class NestedSplitStepTest {
         Kernel.getDecision().putWorkflow(ctx, wf);
     }
 
-    @Ignore
+    // @Ignore
     @Test
     // TODO: fix flaky test
     public void runTest() throws InterruptedException {

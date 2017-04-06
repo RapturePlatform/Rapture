@@ -274,8 +274,12 @@ public class SearchApiImpl extends KernelBase implements SearchApi {
             for (SearchRepoConfig config : configs) {
                 getRepoOrFail(config.getAuthority()).start();
             }
-            Kernel.getPipeline().setupStandardCategory(context, PipelineConstants.CATEGORY_SEARCH);
-            Kernel.setCategoryMembership(PipelineConstants.CATEGORY_SEARCH);
+            if (Pipeline2ApiImpl.usePipeline2) {
+                Kernel.createAndSubscribe(PipelineConstants.CATEGORY_SEARCH, null);
+            } else {
+                Kernel.getPipeline().setupStandardCategory(context, PipelineConstants.CATEGORY_SEARCH);
+                Kernel.setCategoryMembership(PipelineConstants.CATEGORY_SEARCH);
+            }
         }
     }
 

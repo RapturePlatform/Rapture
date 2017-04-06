@@ -23,15 +23,15 @@
  */
 package rapture.index;
 
-import rapture.common.impl.jackson.JacksonUtil;
-import rapture.common.model.DocumentMetadata;
-import rapture.dsl.idef.FieldDefinition;
-import rapture.dsl.idef.IndexDefinition;
-
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
+import rapture.common.impl.jackson.JacksonUtil;
+import rapture.common.model.DocumentMetadata;
+import rapture.dsl.idef.FieldDefinition;
+import rapture.dsl.idef.IndexDefinition;
 
 /**
  * //todo this needs to be updated to truly support multiple indices

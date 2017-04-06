@@ -23,13 +23,13 @@
  */
 package rapture.index;
 
+import java.util.List;
+import java.util.Map;
+
 import rapture.common.TableQuery;
 import rapture.common.TableQueryResult;
 import rapture.common.TableRecord;
 import rapture.common.model.DocumentMetadata;
-
-import java.util.List;
-import java.util.Map;
 
 public interface IndexHandler {
     String ROWID = "rowId";
