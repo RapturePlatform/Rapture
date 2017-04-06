@@ -21,7 +21,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package rapture.dp;
+
+package rapture.dp.memory;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -44,24 +45,34 @@ import rapture.common.CallingContext;
 import rapture.common.QueueSubscriber;
 import rapture.common.WorkOrderExecutionState;
 import rapture.common.dp.Step;
+import rapture.common.dp.WorkOrderStatus;
 import rapture.common.dp.Workflow;
+import rapture.common.impl.jackson.JacksonUtil;
 import rapture.config.ConfigLoader;
 import rapture.config.RaptureConfig;
+import rapture.dp.WaitingTestHelper;
 import rapture.dp.invocable.SignalInvocable;
 import rapture.kernel.ContextFactory;
 import rapture.kernel.Kernel;
 import rapture.kernel.Pipeline2ApiImpl;
 
-public class SimpleSplitStepTest {
+public class NestedSplitStepTest {
     private static final String AUTHORITY = "//splitsteptest";
     private CallingContext ctx = ContextFactory.getKernelUser();
     private static final String HELLO = "howdy";
     private static final String SPLIT_STEP = "splitter";
+    private static final String SPLIT_STEP_A = "splittera";
+    private static final String SPLIT_STEP_B = "splitterb";
     private static final String AFTER_SPLIT = "goodbye";
-    private static final String LEFT = "left1";
-    private static final String LEFT_CONTINUE = "left2";
-    private static final String LEFT_FINISH = "left3";
-    private static final String RIGHT = "right1";
+    private static final String AFTER_SPLIT_B = "goodbyeb";
+    private static final String LEFT_A = "left1a";
+    private static final String LEFT_CONTINUE_A = "left2a";
+    private static final String LEFT_FINISH_A = "left3a";
+    private static final String RIGHT_A = "right1a";
+    private static final String LEFT_B = "left1b";
+    private static final String LEFT_CONTINUE_B = "left2b";
+    private static final String LEFT_FINISH_B = "left3b";
+    private static final String RIGHT_B = "right1b";
     private static final String WF = "workflow://splitsteptest/workflow";
     private QueueSubscriber subscriber = null;
     private static final int MAX_WAIT = 20000;
@@ -70,85 +81,135 @@ public class SimpleSplitStepTest {
     public void setup() {
         Pipeline2ApiImpl.usePipeline2 = true;
         RaptureConfig config = ConfigLoader.getConf();
-        config.DefaultExchange = "PIPELINE {} USING GCP_PUBSUB { projectid=\"todo3-incap\"}";
-
+        // config.DefaultExchange = "PIPELINE {} USING MEMORY { }";
+        config.DefaultExchange = "PIPELINE {} USING MEMORY {  }";
         Kernel.initBootstrap();
         if (!Kernel.getDoc().docRepoExists(ctx, AUTHORITY)) {
             Kernel.getDoc().createDocRepo(ctx, AUTHORITY, "NREP {} USING MEMORY {}");
         }
-        subscriber = Kernel.INSTANCE.createAndSubscribe(ALPHA, "PIPELINE {} USING GCP_PUBSUB { projectid=\"todo3-incap\"}");
+        // subscriber = Kernel.createAndSubscribe(ALPHA, "PIPELINE {} USING MEMORY { }");
+        subscriber = Kernel.createAndSubscribe(ALPHA, "PIPELINE {} USING MEMORY { }");
         createWorkflow();
     }
-    
+
     @After
     public void tearDown() {
-        String[] signals = { HELLO, SPLIT_STEP, AFTER_SPLIT, LEFT, LEFT_CONTINUE, LEFT_FINISH, RIGHT };
+        String[] signals = { HELLO, SPLIT_STEP, SPLIT_STEP_A, SPLIT_STEP_B, AFTER_SPLIT, AFTER_SPLIT_B, LEFT_A, LEFT_CONTINUE_A, LEFT_FINISH_A, RIGHT_A, LEFT_B,
+                LEFT_CONTINUE_B, LEFT_FINISH_B, RIGHT_B };
         for (String signal : Arrays.asList(signals)) {
             SignalInvocable.Singleton.clearSignal(signal);
         }
-        if (subscriber != null) Kernel.getPipeline2().unsubscribeQueue(ctx, subscriber);
+        Kernel.getPipeline2().unsubscribeQueue(ctx, subscriber);
     }
 
     private void createWorkflow() {
         List<Step> steps = Lists.newArrayList();
-        
+
         Step step = makeSignalStep(HELLO);
         step.setTransitions(Lists.newArrayList(makeTransition("", SPLIT_STEP)));
         steps.add(step);
-        
+
         step = new Step();
         step.setName(SPLIT_STEP);
-        step.setExecutable("$SPLIT:" + LEFT + "," + RIGHT);
+        step.setExecutable("$SPLIT:" + SPLIT_STEP_A + "," + SPLIT_STEP_B);
         step.setTransitions(Lists.newArrayList(makeTransition("", AFTER_SPLIT)));
         steps.add(step);
-        
+
+        step = new Step();
+        step.setName(SPLIT_STEP_A);
+        step.setExecutable("$SPLIT:" + LEFT_A + "," + RIGHT_A);
+        step.setTransitions(Lists.newArrayList(makeTransition("", "$JOIN")));
+        steps.add(step);
+
+        step = new Step();
+        step.setName(SPLIT_STEP_B);
+        step.setExecutable("$SPLIT:" + LEFT_B + "," + RIGHT_B);
+        step.setTransitions(Lists.newArrayList(makeTransition("", AFTER_SPLIT_B)));
+        steps.add(step);
+
         step = makeSignalStep(AFTER_SPLIT);
         steps.add(step);
-        
-        step = makeSignalStep(RIGHT);
+
+        step = makeSignalStep(AFTER_SPLIT_B);
         step.setTransitions(Lists.newArrayList(makeTransition("", "$JOIN")));
         steps.add(step);
 
-        step = makeSignalStep(LEFT);
-        step.setTransitions(Lists.newArrayList(makeTransition("", LEFT_CONTINUE)));
-        steps.add(step);
-
-        step = makeSignalStep(LEFT_CONTINUE);
-        step.setTransitions(Lists.newArrayList(makeTransition("", LEFT_FINISH)));
-        steps.add(step);
-        
-        step = makeSignalStep(LEFT_FINISH);
+        step = makeSignalStep(RIGHT_A);
         step.setTransitions(Lists.newArrayList(makeTransition("", "$JOIN")));
         steps.add(step);
-        
+
+        step = makeSignalStep(RIGHT_B);
+        step.setTransitions(Lists.newArrayList(makeTransition("", "$JOIN")));
+        steps.add(step);
+
+        step = makeSignalStep(LEFT_A);
+        step.setTransitions(Lists.newArrayList(makeTransition("", LEFT_CONTINUE_A)));
+        steps.add(step);
+
+        step = makeSignalStep(LEFT_B);
+        step.setTransitions(Lists.newArrayList(makeTransition("", LEFT_CONTINUE_B)));
+        steps.add(step);
+
+        step = makeSignalStep(LEFT_CONTINUE_A);
+        step.setTransitions(Lists.newArrayList(makeTransition("", LEFT_FINISH_A)));
+        steps.add(step);
+
+        step = makeSignalStep(LEFT_CONTINUE_B);
+        step.setTransitions(Lists.newArrayList(makeTransition("", LEFT_FINISH_B)));
+        steps.add(step);
+
+        step = makeSignalStep(LEFT_FINISH_A);
+        step.setTransitions(Lists.newArrayList(makeTransition("", "$JOIN")));
+        steps.add(step);
+
+        step = makeSignalStep(LEFT_FINISH_B);
+        step.setTransitions(Lists.newArrayList(makeTransition("", "$JOIN")));
+        steps.add(step);
+
         Workflow wf = new Workflow();
         wf.setWorkflowURI(WF);
         wf.setCategory(ALPHA);
         wf.setStartStep(HELLO);
-        wf.setSteps(steps);     
-        
+        wf.setSteps(steps);
+
         Kernel.getDecision().putWorkflow(ctx, wf);
     }
 
     @Test
     public void runTest() throws InterruptedException {
+        // 2 level nested join. A side join joins to the outer, B side join has a step then joins to the outer.
         String workOrderUri = Kernel.getDecision().createWorkOrder(ctx, WF, ImmutableMap.of("testName", "#SimpleSplit"));
-
         WaitingTestHelper.retry(new Runnable() {
             @Override
             public void run() {
                 assertEquals(WorkOrderExecutionState.FINISHED, Kernel.getDecision().getWorkOrderStatus(ctx, workOrderUri).getStatus());
             }
-        }, MAX_WAIT);
+        }, MAX_WAIT * 20);
 
+        assertStatus(workOrderUri, ctx, 25000, WorkOrderExecutionState.FINISHED);
         assertTrue(SignalInvocable.Singleton.testSignal(HELLO));
         assertFalse(SignalInvocable.Singleton.testSignal("Fake Signal"));
-        assertTrue(SignalInvocable.Singleton.testSignal(LEFT));
-        assertTrue(SignalInvocable.Singleton.testSignal(RIGHT));
-        assertTrue(SignalInvocable.Singleton.testSignal(LEFT_CONTINUE));
-        assertTrue(SignalInvocable.Singleton.testSignal(LEFT_FINISH));
+        assertTrue(SignalInvocable.Singleton.testSignal(LEFT_A));
+        assertTrue(SignalInvocable.Singleton.testSignal(RIGHT_A));
+        assertTrue(SignalInvocable.Singleton.testSignal(LEFT_B));
+        assertTrue(SignalInvocable.Singleton.testSignal(RIGHT_B));
+        assertTrue(SignalInvocable.Singleton.testSignal(LEFT_CONTINUE_A));
+        assertTrue(SignalInvocable.Singleton.testSignal(LEFT_CONTINUE_B));
+        assertTrue(SignalInvocable.Singleton.testSignal(LEFT_FINISH_B));
         assertTrue(SignalInvocable.Singleton.testSignal(AFTER_SPLIT));
     }
 
-    
+    // helper to assert on the status of a work order. TODO(Oliver): This should be in a utility class.
+    private void assertStatus(final String workOrderUri, final CallingContext context, int timeout, final WorkOrderExecutionState expectedStatus)
+            throws InterruptedException {
+        WaitingTestHelper.retry(new Runnable() {
+            @Override
+            public void run() {
+                WorkOrderStatus status = Kernel.getDecision().getWorkOrderStatus(context, workOrderUri);
+                System.out.println(JacksonUtil.formattedJsonFromObject(status));
+                assertEquals(expectedStatus, status.getStatus());
+            }
+        }, timeout);
+    }
+
 }

@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package rapture.dp;
+package rapture.dp.memory;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -65,6 +65,9 @@ import rapture.common.impl.jackson.JacksonUtil;
 import rapture.common.model.AuditLogEntry;
 import rapture.config.ConfigLoader;
 import rapture.config.RaptureConfig;
+import rapture.dp.InvocableUtils;
+import rapture.dp.WaitingTestHelper;
+import rapture.dp.WorkflowFactory;
 import rapture.kernel.ContextFactory;
 import rapture.kernel.Kernel;
 import rapture.kernel.Pipeline2ApiImpl;
@@ -93,7 +96,7 @@ public class AppStatusP2Test {
         Pipeline2ApiImpl.usePipeline2 = true;
         String auditConfig = "LOG {} USING MEMORY {maxEntries=\"100\"}";
         RaptureConfig config = ConfigLoader.getConf();
-        config.DefaultExchange = "PIPELINE {} USING GCP_PUBSUB { projectid=\"todo3-incap\"}";
+        config.DefaultExchange = "PIPELINE {} USING MEMORY { }";
         config.DefaultWorkflowAuditLog = auditConfig;
         System.setProperty("LOGSTASH-ISENABLED", "false");
 

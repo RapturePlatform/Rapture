@@ -38,8 +38,8 @@ public class MemoryPipeline2Handler implements Pipeline2Handler {
 
     String instanceName;
     private static Logger logger = Logger.getLogger(MemoryPipeline2Handler.class);
-    Map<QueueSubscriber, Thread> activeSubscriptions = new HashMap<>();
-    Map<String, ConcurrentLinkedQueue<String>> queueMap = new ConcurrentHashMap<>();
+    static Map<QueueSubscriber, Thread> activeSubscriptions = new HashMap<>();
+    static Map<String, ConcurrentLinkedQueue<String>> queueMap = new ConcurrentHashMap<>();
 
     @Override
     public void setInstanceName(String instanceName) {
@@ -61,7 +61,6 @@ public class MemoryPipeline2Handler implements Pipeline2Handler {
         return topic;
     }
 
-
     @Override
     public void createPipeline(String queueIdentifier) {
         queueMap.put(queueIdentifier, new ConcurrentLinkedQueue<String>());
@@ -81,6 +80,7 @@ public class MemoryPipeline2Handler implements Pipeline2Handler {
                     String message = queue.poll();
                     if (message != null) {
                         qMemorySubscriber.handleEvent(queueIdentifier, message.getBytes());
+                        continue;
                     }
                     synchronized (queue) {
                         try {
@@ -99,7 +99,8 @@ public class MemoryPipeline2Handler implements Pipeline2Handler {
     public void publishTask(String queueIdentifier, String task) {
         MemoryTopic MemoryTopic = createTopic(queueIdentifier);
         ConcurrentLinkedQueue<String> queue = queueMap.get(queueIdentifier);
-        synchronized (queue) {
+
+        if (queue != null) synchronized (queue) {
             queue.add(task);
             queue.notifyAll();
         }

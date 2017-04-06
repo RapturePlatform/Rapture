@@ -1,4 +1,4 @@
-package rapture.dp;
+package rapture.dp.pubsub;
 
 import static org.junit.Assert.assertEquals;
 
@@ -15,6 +15,7 @@ import rapture.common.QueueSubscriber;
 import rapture.common.model.AuditLogEntry;
 import rapture.config.ConfigLoader;
 import rapture.config.RaptureConfig;
+import rapture.dp.AuditAppender;
 import rapture.kernel.ContextFactory;
 import rapture.kernel.Kernel;
 import rapture.kernel.Pipeline2ApiImpl;

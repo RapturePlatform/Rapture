@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package rapture.dp;
+package rapture.dp.pubsub;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

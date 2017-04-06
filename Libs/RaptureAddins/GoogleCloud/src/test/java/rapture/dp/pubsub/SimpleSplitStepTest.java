@@ -21,18 +21,18 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package rapture.dp;
+package rapture.dp.pubsub;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static rapture.dp.DPTestUtil.ALPHA;
 import static rapture.dp.DPTestUtil.makeSignalStep;
 import static rapture.dp.DPTestUtil.makeTransition;
 
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -42,36 +42,30 @@ import com.google.common.collect.Lists;
 
 import rapture.common.CallingContext;
 import rapture.common.QueueSubscriber;
-import rapture.common.RaptureURI;
-import rapture.common.Scheme;
 import rapture.common.WorkOrderExecutionState;
 import rapture.common.dp.Step;
-import rapture.common.dp.Transition;
-import rapture.common.dp.WorkOrderStatus;
 import rapture.common.dp.Workflow;
 import rapture.config.ConfigLoader;
 import rapture.config.RaptureConfig;
+import rapture.dp.WaitingTestHelper;
 import rapture.dp.invocable.SignalInvocable;
 import rapture.kernel.ContextFactory;
 import rapture.kernel.Kernel;
 import rapture.kernel.Pipeline2ApiImpl;
 
-public class SimpleForkStepTest {
+public class SimpleSplitStepTest {
+    private static final String AUTHORITY = "//splitsteptest";
     private CallingContext ctx = ContextFactory.getKernelUser();
-    @SuppressWarnings("unused")
-    private static Logger log = Logger.getLogger(SimpleForkStepTest.class);
-    private static final String AUTHORITY = "//forksteptest";
-    private static final String ALPHA = "alpha";
-    private static final String HELLO = "hello";
-    private static final String FORK_STEP = "forker";
-    private static final String MAIN_CONTINUE = "main2";
-    private static final String LEFT_STEP = "left1";
-    private static final String RIGHT_STEP = "right1";
+    private static final String HELLO = "howdy";
+    private static final String SPLIT_STEP = "splitter";
+    private static final String AFTER_SPLIT = "goodbye";
+    private static final String LEFT = "left1";
     private static final String LEFT_CONTINUE = "left2";
-    private static final String HELLO_I = new RaptureURI.Builder(Scheme.DP_JAVA_INVOCABLE, "HelloWorld").build().toString();
-    private static final String WF = "workflow://forksteptest/workflow";
-
+    private static final String LEFT_FINISH = "left3";
+    private static final String RIGHT = "right1";
+    private static final String WF = "workflow://splitsteptest/workflow";
     private QueueSubscriber subscriber = null;
+    private static final int MAX_WAIT = 20000;
 
     @Before
     public void setup() {
@@ -86,10 +80,10 @@ public class SimpleForkStepTest {
         subscriber = Kernel.INSTANCE.createAndSubscribe(ALPHA, "PIPELINE {} USING GCP_PUBSUB { projectid=\"todo3-incap\"}");
         createWorkflow();
     }
-
+    
     @After
     public void tearDown() {
-        String[] signals = { HELLO, ALPHA, FORK_STEP, MAIN_CONTINUE, LEFT_STEP, RIGHT_STEP, LEFT_CONTINUE };
+        String[] signals = { HELLO, SPLIT_STEP, AFTER_SPLIT, LEFT, LEFT_CONTINUE, LEFT_FINISH, RIGHT };
         for (String signal : Arrays.asList(signals)) {
             SignalInvocable.Singleton.clearSignal(signal);
         }
@@ -98,68 +92,64 @@ public class SimpleForkStepTest {
 
     private void createWorkflow() {
         List<Step> steps = Lists.newArrayList();
+        
+        Step step = makeSignalStep(HELLO);
+        step.setTransitions(Lists.newArrayList(makeTransition("", SPLIT_STEP)));
+        steps.add(step);
+        
+        step = new Step();
+        step.setName(SPLIT_STEP);
+        step.setExecutable("$SPLIT:" + LEFT + "," + RIGHT);
+        step.setTransitions(Lists.newArrayList(makeTransition("", AFTER_SPLIT)));
+        steps.add(step);
+        
+        step = makeSignalStep(AFTER_SPLIT);
+        steps.add(step);
+        
+        step = makeSignalStep(RIGHT);
+        step.setTransitions(Lists.newArrayList(makeTransition("", "$JOIN")));
+        steps.add(step);
 
-        Step hello = new Step();
-        List<Transition> transitions = Lists.newArrayList();
-        transitions.add(makeTransition("", FORK_STEP));
-        hello.setName(HELLO);
-        hello.setExecutable(HELLO_I);
-        hello.setTransitions(transitions);
-        steps.add(hello);
+        step = makeSignalStep(LEFT);
+        step.setTransitions(Lists.newArrayList(makeTransition("", LEFT_CONTINUE)));
+        steps.add(step);
 
-        Step fork = new Step();
-        transitions = Lists.newArrayList();
-        transitions.add(makeTransition("", MAIN_CONTINUE));
-        fork.setName(FORK_STEP);
-        fork.setExecutable("$FORK:" + LEFT_STEP + "," + RIGHT_STEP);
-        fork.setTransitions(transitions);
-        steps.add(fork);
-
-        Step main = makeSignalStep(MAIN_CONTINUE);
-        steps.add(main);
-
-        Step left1 = makeSignalStep(LEFT_STEP);
-        left1.getTransitions().add(makeTransition("", LEFT_CONTINUE));
-        steps.add(left1);
-
-        Step right = makeSignalStep(RIGHT_STEP);
-        steps.add(right);
-
-        Step left2 = makeSignalStep(LEFT_CONTINUE);
-        steps.add(left2);
-
+        step = makeSignalStep(LEFT_CONTINUE);
+        step.setTransitions(Lists.newArrayList(makeTransition("", LEFT_FINISH)));
+        steps.add(step);
+        
+        step = makeSignalStep(LEFT_FINISH);
+        step.setTransitions(Lists.newArrayList(makeTransition("", "$JOIN")));
+        steps.add(step);
+        
         Workflow wf = new Workflow();
         wf.setWorkflowURI(WF);
         wf.setCategory(ALPHA);
         wf.setStartStep(HELLO);
-        wf.setSteps(steps);
-
+        wf.setSteps(steps);     
+        
         Kernel.getDecision().putWorkflow(ctx, wf);
     }
 
     @Test
     public void runTest() throws InterruptedException {
-        String workOrderUri = Kernel.getDecision().createWorkOrder(ctx, WF, ImmutableMap.of("testName", "#SimpleFork"));
-        assertStatus(workOrderUri, ctx, 15000, WorkOrderExecutionState.FINISHED);
-        assertTrue(SignalInvocable.Singleton.testSignal("Hello World"));
-        assertFalse(SignalInvocable.Singleton.testSignal("Fake Signal"));
-        assertTrue(SignalInvocable.Singleton.testSignal(LEFT_STEP));
-        assertTrue(SignalInvocable.Singleton.testSignal(RIGHT_STEP));
-        assertTrue(SignalInvocable.Singleton.testSignal(LEFT_CONTINUE));
-        assertTrue(SignalInvocable.Singleton.testSignal(MAIN_CONTINUE));
-        assertEquals(WorkOrderExecutionState.FINISHED, Kernel.getDecision().getWorkOrderStatus(ctx, workOrderUri).getStatus());
-    }
+        String workOrderUri = Kernel.getDecision().createWorkOrder(ctx, WF, ImmutableMap.of("testName", "#SimpleSplit"));
 
-    // helper to assert on the status of a work order. TODO(Oliver): This should be in a utility class.
-    private void assertStatus(final String workOrderUri, final CallingContext context, int timeout, final WorkOrderExecutionState expectedStatus)
-            throws InterruptedException {
         WaitingTestHelper.retry(new Runnable() {
             @Override
             public void run() {
-                WorkOrderStatus status = Kernel.getDecision().getWorkOrderStatus(context, workOrderUri);
-                assertEquals(expectedStatus, status.getStatus());
+                assertEquals(WorkOrderExecutionState.FINISHED, Kernel.getDecision().getWorkOrderStatus(ctx, workOrderUri).getStatus());
             }
-        }, timeout);
+        }, MAX_WAIT);
+
+        assertTrue(SignalInvocable.Singleton.testSignal(HELLO));
+        assertFalse(SignalInvocable.Singleton.testSignal("Fake Signal"));
+        assertTrue(SignalInvocable.Singleton.testSignal(LEFT));
+        assertTrue(SignalInvocable.Singleton.testSignal(RIGHT));
+        assertTrue(SignalInvocable.Singleton.testSignal(LEFT_CONTINUE));
+        assertTrue(SignalInvocable.Singleton.testSignal(LEFT_FINISH));
+        assertTrue(SignalInvocable.Singleton.testSignal(AFTER_SPLIT));
     }
 
+    
 }

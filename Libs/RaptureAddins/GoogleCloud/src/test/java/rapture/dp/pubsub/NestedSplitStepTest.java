@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package rapture.dp;
+package rapture.dp.pubsub;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -50,6 +50,7 @@ import rapture.common.dp.Workflow;
 import rapture.common.impl.jackson.JacksonUtil;
 import rapture.config.ConfigLoader;
 import rapture.config.RaptureConfig;
+import rapture.dp.WaitingTestHelper;
 import rapture.dp.invocable.SignalInvocable;
 import rapture.kernel.ContextFactory;
 import rapture.kernel.Kernel;
@@ -80,12 +81,14 @@ public class NestedSplitStepTest {
     public void setup() {
         Pipeline2ApiImpl.usePipeline2 = true;
         RaptureConfig config = ConfigLoader.getConf();
-        config.DefaultExchange = "PIPELINE {} USING GCP_PUBSUB { projectid=\"todo3-incap\"}";
+        // config.DefaultExchange = "PIPELINE {} USING GCP_PUBSUB { projectid=\"todo3-incap\"}";
+        config.DefaultExchange = "PIPELINE {} USING MEMORY {  }";
         Kernel.initBootstrap();
         if (!Kernel.getDoc().docRepoExists(ctx, AUTHORITY)) {
             Kernel.getDoc().createDocRepo(ctx, AUTHORITY, "NREP {} USING MEMORY {}");
         }
-        subscriber = Kernel.INSTANCE.createAndSubscribe(ALPHA, "PIPELINE {} USING GCP_PUBSUB { projectid=\"todo3-incap\"}");
+        // subscriber = Kernel.createAndSubscribe(ALPHA, "PIPELINE {} USING GCP_PUBSUB { projectid=\"todo3-incap\"}");
+        subscriber = Kernel.createAndSubscribe(ALPHA, "PIPELINE {} USING MEMORY { }");
         createWorkflow();
     }
 
@@ -172,9 +175,7 @@ public class NestedSplitStepTest {
         Kernel.getDecision().putWorkflow(ctx, wf);
     }
 
-    // @Ignore
     @Test
-    // TODO: fix flaky test
     public void runTest() throws InterruptedException {
         // 2 level nested join. A side join joins to the outer, B side join has a step then joins to the outer.
         String workOrderUri = Kernel.getDecision().createWorkOrder(ctx, WF, ImmutableMap.of("testName", "#SimpleSplit"));
@@ -183,7 +184,7 @@ public class NestedSplitStepTest {
             public void run() {
                 assertEquals(WorkOrderExecutionState.FINISHED, Kernel.getDecision().getWorkOrderStatus(ctx, workOrderUri).getStatus());
             }
-        }, MAX_WAIT);
+        }, MAX_WAIT * 20);
 
         assertStatus(workOrderUri, ctx, 25000, WorkOrderExecutionState.FINISHED);
         assertTrue(SignalInvocable.Singleton.testSignal(HELLO));
