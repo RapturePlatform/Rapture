@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package rapture.dp;
+package rapture.dp.pubsub;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -73,6 +73,8 @@ import rapture.common.model.RaptureExchangeType;
 import rapture.common.pipeline.PipelineConstants;
 import rapture.config.ConfigLoader;
 import rapture.config.RaptureConfig;
+import rapture.dp.WaitingTestHelper;
+import rapture.dp.WorkflowFactory;
 import rapture.dp.invocable.CheckPrerequisiteStep;
 import rapture.dp.invocable.PrerequisiteConfig;
 import rapture.dp.semaphore.LockKeyFactory;
