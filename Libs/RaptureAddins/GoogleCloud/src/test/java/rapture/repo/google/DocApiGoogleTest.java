@@ -95,6 +95,7 @@ public class DocApiGoogleTest extends AbstractFileTest {
         config.RaptureRepo = REPO_USING_GCP_DATASTORE;
         config.InitSysConfig = "NREP {} USING GCP_DATASTORE { prefix =\"" + auth + "/sys.config\"}";
         config.DefaultPipelineTaskStatus = "TABLE {} USING MEMORY {prefix =\"" + auth + "\"}";
+        config.DefaultExchange = "PIPELINE {} USING GCP_PUBSUB { projectid=\"todo3-incap\"}";
 
         callingContext = new CallingContext();
         callingContext.setUser("dummy");

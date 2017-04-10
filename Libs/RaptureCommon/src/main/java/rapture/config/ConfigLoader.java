@@ -58,6 +58,7 @@ public class ConfigLoader {
 
         ConfigFileReader<RaptureConfig> configFileReader = new YamlConfigReader(configFileName);
         conf = configFileReader.findAndRead();
+
         if (conf == null) {
             log.fatal("Unable to load rapture config from any sources.");
             conf = new RaptureConfig();

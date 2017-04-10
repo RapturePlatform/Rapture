@@ -44,6 +44,7 @@ import rapture.common.TaskStatus;
 import rapture.common.api.Pipeline2Api;
 import rapture.common.impl.jackson.JacksonUtil;
 import rapture.common.model.RaptureExchange;
+import rapture.config.ConfigLoader;
 import rapture.kernel.pipeline.ExchangeConfigFactory;
 import rapture.pipeline.Pipeline2Factory;
 import rapture.pipeline.Pipeline2Handler;
@@ -58,7 +59,7 @@ public class Pipeline2ApiImpl extends KernelBase implements Pipeline2Api {
     Map<String, TaskStatus> currentTasks = new ConcurrentHashMap<>();
     Map<String, List<QueueSubscriber>> watchmen = new ConcurrentHashMap<>();
 
-    // To turn on and off while testing
+    // This flag will be set if the DefaultExchange config value starts with PIPELINE
     public static boolean usePipeline2 = false;
 
     // I don't believe that we currently have a unique Rapture cluster ID.
@@ -119,6 +120,8 @@ public class Pipeline2ApiImpl extends KernelBase implements Pipeline2Api {
     // There needs to be a common ID shared by members of a Rapture cluster since instances can share a GCP Project ID
     public Pipeline2ApiImpl(Kernel raptureKernel) {
         super(raptureKernel);
+        usePipeline2 = (ConfigLoader.getConf().DefaultExchange.startsWith("PIPELINE"));
+        if (usePipeline2) System.out.println("Default Exchange is " + ConfigLoader.getConf().DefaultExchange);
     }
 
     @Override

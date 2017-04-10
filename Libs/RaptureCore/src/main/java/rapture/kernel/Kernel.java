@@ -829,7 +829,13 @@ public enum Kernel {
     public static QueueSubscriber createAndSubscribe(String queue, String config) {
         Pipeline2ApiImpl pai2 = getPipeline2().getTrusted();
         if (config == null) config = ConfigLoader.getConf().DefaultExchange;
-        pai2.createBroadcastQueue(null, queue, config);
+        try {
+            pai2.createBroadcastQueue(null, queue, config);
+        } catch (Exception e) {
+            log.error("Unable to create queue " + queue + " with config " + config);
+            log.info(ExceptionToString.summary(e));
+            return null;
+        }
         QueueSubscriber qsub = new QueueSubscriber(queue, "R" + UUID.randomUUID().toString()) {
             PipelineQueueHandler pqh = new PipelineQueueHandler(null);
 

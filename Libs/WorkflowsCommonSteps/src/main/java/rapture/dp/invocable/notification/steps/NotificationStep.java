@@ -202,6 +202,8 @@ public class NotificationStep extends AbstractStep {
             }
         }
 
+        if (subject == null) subject = "No Subject Given";
+
         if (message == null) {
             decision.writeWorkflowAuditEntry(ctx, getWorkerURI(), "Problem in " + previousStepName + ": No message specified", true);
             return false;
