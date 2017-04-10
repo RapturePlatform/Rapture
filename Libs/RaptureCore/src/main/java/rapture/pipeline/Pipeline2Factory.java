@@ -44,7 +44,7 @@ public final class Pipeline2Factory {
     private static final Map<Integer, String> implementationMap;
     static {
         Map<Integer, String> setupMap = new HashMap<>();
-        // Pipeline2 not implemented for Rabbit. Should we?
+        // Pipeline2 not implemented for Rabbit. If we decide to implement it enable it here and eliminate old Pipeline API
         // setupMap.put(P2GenLexer.RABBITMQ, "rapture.pipeline2.rabbitmq.RabbitPipeline2Handler");
         setupMap.put(P2GenLexer.GCP_PUBSUB, "rapture.pipeline2.gcp.PubsubPipeline2Handler");
         setupMap.put(P2GenLexer.MEMORY, "rapture.pipeline2.memory.MemoryPipeline2Handler");
