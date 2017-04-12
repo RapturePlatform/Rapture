@@ -30,6 +30,11 @@ import rapture.common.model.DocumentMetadata;
 public class AuthorityLocator extends FieldLocator {
 
 	@Override
+    public String toString() {
+        return "AuthorityLocator";
+    }
+
+    @Override
 	public Object value(String key, Map<String, Object> mappedContent,
 			DocumentMetadata meta) {
 		return "";
