@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
@@ -44,10 +45,13 @@ import org.junit.Test;
 import rapture.common.CallingContext;
 import rapture.common.JobType;
 import rapture.common.QueueSubscriber;
+import rapture.common.RaptureConstants;
 import rapture.common.RaptureJob;
 import rapture.common.RaptureJobExec;
 import rapture.common.RaptureScriptLanguage;
 import rapture.common.RaptureScriptPurpose;
+import rapture.common.RaptureURI;
+import rapture.common.Scheme;
 import rapture.common.WorkOrderExecutionState;
 import rapture.common.dp.Step;
 import rapture.common.dp.WorkOrder;
@@ -80,6 +84,8 @@ public class WorkOrderTest {
         config.DefaultExchange = "PIPELINE {} USING MEMORY { }";
 
         Kernel.initBootstrap();
+        Kernel.getAudit().createAuditLog(ContextFactory.getKernelUser(), new RaptureURI(RaptureConstants.DEFAULT_AUDIT_URI, Scheme.LOG).getAuthority(),
+                "LOG {} using MEMORY {prefix=\"/tmp/" + UUID.randomUUID() + "\"}");
 
         subscriber = Kernel.createAndSubscribe(ALPHA, "PIPELINE {} USING MEMORY { }");
 
@@ -160,7 +166,8 @@ public class WorkOrderTest {
         final String workOrderUri = Kernel.getDecision().createWorkOrder(ctx, workflowUri, null);
         Map<String, List<String>> statuses = Kernel.getDecision().getWorkOrderStatusesByWorkflow(ctx, System.currentTimeMillis(), workflowUri);
         assertEquals(1, statuses.size());
-        assertEquals(WorkOrderExecutionState.NEW.toString(), statuses.entrySet().iterator().next().getKey());
+        String state = statuses.entrySet().iterator().next().getKey();
+        assertTrue(WorkOrderExecutionState.NEW.toString().equals(state) || WorkOrderExecutionState.ACTIVE.toString().equals(state));
         assertEquals(workOrderUri, statuses.entrySet().iterator().next().getValue().get(0));
     }
 

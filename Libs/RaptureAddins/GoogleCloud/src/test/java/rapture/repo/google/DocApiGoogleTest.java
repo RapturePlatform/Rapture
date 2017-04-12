@@ -58,6 +58,7 @@ import rapture.kernel.AbstractFileTest;
 import rapture.kernel.ContextFactory;
 import rapture.kernel.DocApiImpl;
 import rapture.kernel.Kernel;
+import rapture.pipeline2.gcp.PubsubPipeline2Handler;
 
 public class DocApiGoogleTest extends AbstractFileTest {
 
@@ -71,10 +72,11 @@ public class DocApiGoogleTest extends AbstractFileTest {
     private static CallingContext callingContext;
     private static DocApiImpl docImpl;
 
-    final static LocalDatastoreHelper helper = LocalDatastoreHelper.create();
+    static LocalDatastoreHelper helper = null;
 
     @BeforeClass
     public static void setupLocalDatastore() throws IOException, InterruptedException {
+        helper = LocalDatastoreHelper.create(1.0);
         helper.start(); // Starts the local Datastore emulator in a separate process
         GoogleDatastoreKeyStore.setDatastoreOptionsForTesting(helper.getOptions());
         GoogleIndexHandler.setDatastoreOptionsForTesting(helper.getOptions());
@@ -82,8 +84,12 @@ public class DocApiGoogleTest extends AbstractFileTest {
 
     @AfterClass
     public static void cleanupLocalDatastore() throws IOException, InterruptedException, TimeoutException {
+        Kernel.shutdown();
+        PubsubPipeline2Handler.cleanUp();
         try {
-            helper.stop(new Duration(6000L));
+            helper.stop(new Duration(60000L));
+            helper.reset();
+            helper = null;
         } catch (Exception e) {
             System.out.println("Exception shutting down LocalDatastoreHelper: " + e.getMessage());
         }
@@ -96,12 +102,16 @@ public class DocApiGoogleTest extends AbstractFileTest {
         config.InitSysConfig = "NREP {} USING GCP_DATASTORE { prefix =\"" + auth + "/sys.config\"}";
         config.DefaultPipelineTaskStatus = "TABLE {} USING MEMORY {prefix =\"" + auth + "\"}";
         config.DefaultExchange = "PIPELINE {} USING GCP_PUBSUB { projectid=\"todo3-incap\"}";
+        config.DefaultWorkflowAuditLog = "LOG {} USING MEMORY {maxEntries=\"100\"}";
+        System.setProperty("LOGSTASH-ISENABLED", "false");
 
         callingContext = new CallingContext();
         callingContext.setUser("dummy");
 
         Kernel.initBootstrap();
         callingContext = ContextFactory.getKernelUser();
+        Kernel.getAudit().createAuditLog(ContextFactory.getKernelUser(), new RaptureURI(RaptureConstants.DEFAULT_AUDIT_URI, Scheme.LOG).getAuthority(),
+                "LOG {} using MEMORY {prefix=\"/tmp/" + UUID.randomUUID() + "\"}");
 
         Kernel.INSTANCE.clearRepoCache(false);
         Kernel.getAudit().createAuditLog(ContextFactory.getKernelUser(), new RaptureURI(RaptureConstants.DEFAULT_AUDIT_URI, Scheme.LOG).getAuthority(),

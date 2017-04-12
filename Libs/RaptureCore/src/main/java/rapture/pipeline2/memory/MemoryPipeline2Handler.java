@@ -31,6 +31,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import org.apache.log4j.Logger;
 
 import rapture.common.QueueSubscriber;
+import rapture.common.exception.ExceptionToString;
 import rapture.exchange.memory.MemoryTopic;
 import rapture.pipeline.Pipeline2Handler;
 
@@ -79,7 +80,13 @@ public class MemoryPipeline2Handler implements Pipeline2Handler {
                 while (!interrupted()) {
                     String message = queue.poll();
                     if (message != null) {
-                        qMemorySubscriber.handleEvent(queueIdentifier, message.getBytes());
+                        try {
+                            qMemorySubscriber.handleEvent(queueIdentifier, message.getBytes());
+                        } catch (Exception e) {
+                            String error = ExceptionToString.format(e);
+                            logger.error(error);
+                            throw e;
+                        }
                         continue;
                     }
                     synchronized (queue) {

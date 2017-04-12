@@ -29,6 +29,7 @@ import static org.junit.Assert.assertNotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
@@ -42,8 +43,11 @@ import com.google.common.collect.Lists;
 
 import rapture.common.CallingContext;
 import rapture.common.QueueSubscriber;
+import rapture.common.RaptureConstants;
 import rapture.common.RaptureScriptLanguage;
 import rapture.common.RaptureScriptPurpose;
+import rapture.common.RaptureURI;
+import rapture.common.Scheme;
 import rapture.common.WorkOrderExecutionState;
 import rapture.common.dp.ContextVariables;
 import rapture.common.dp.Step;
@@ -94,6 +98,9 @@ public class WorkflowReturnTest {
         config.DefaultExchange = "PIPELINE {} USING MEMORY { }";
 
         Kernel.initBootstrap();
+        Kernel.getAudit().createAuditLog(ContextFactory.getKernelUser(), new RaptureURI(RaptureConstants.DEFAULT_AUDIT_URI, Scheme.LOG).getAuthority(),
+                "LOG {} using MEMORY {prefix=\"/tmp/" + UUID.randomUUID() + "\"}");
+        System.setProperty("LOGSTASH-ISENABLED", "false");
 
         if (!Kernel.getDoc().docRepoExists(ctx, AUTHORITY)) {
             Kernel.getDoc().createDocRepo(ctx, AUTHORITY, "NREP {} USING MEMORY {}");

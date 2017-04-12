@@ -95,6 +95,8 @@ public class WorkflowReturnTest {
 
         Kernel.initBootstrap();
 
+        String idGenUri = "idgen://sys/event/id";
+        if (!Kernel.getIdGen().idGenExists(ctx, idGenUri)) Kernel.getIdGen().createIdGen(ctx, idGenUri, "IDGEN {} USING MEMORY {}");
         if (!Kernel.getDoc().docRepoExists(ctx, AUTHORITY)) {
             Kernel.getDoc().createDocRepo(ctx, AUTHORITY, "NREP {} USING MEMORY {}");
         }

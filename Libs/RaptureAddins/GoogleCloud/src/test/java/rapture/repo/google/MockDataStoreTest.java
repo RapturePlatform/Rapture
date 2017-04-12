@@ -23,7 +23,7 @@ public class MockDataStoreTest {
     @AfterClass
     public static void cleanupLocalDatastore() throws IOException, InterruptedException, TimeoutException {
         try {
-            helper.stop(new Duration(6000L));
+            if (helper != null) helper.stop(new Duration(6000L));
         } catch (Exception e) {
             System.out.println("Exception shutting down LocalDatastoreHelper: " + e.getMessage());
         }

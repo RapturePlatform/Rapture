@@ -38,14 +38,19 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.TimeoutException;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
+import com.google.cloud.datastore.Datastore;
+import com.google.cloud.datastore.DatastoreOptions;
+import com.google.cloud.datastore.testing.LocalDatastoreHelper;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageException;
 import com.google.cloud.storage.testing.RemoteStorageHelper;
@@ -77,24 +82,31 @@ public class BlobApiGoogleTest {
     public static CallingContext callingContext;
 
     private static BlobApiImpl blobImpl;
-    private static final String BLOB_USING_GOOGLE = "BLOB {} USING GCP_STORAGE {prefix=\"B" + auth + "\"}";
-    private static final String REPO_USING_GOOGLE = "REP {} USING GCP_DATASTORE {prefix=\"" + auth + "\"}";
-    private static final String META_USING_GOOGLE = "REP {} USING GCP_DATASTORE {prefix=\"M" + auth + "\"}";
+    private static final String BLOB_USING_GOOGLE = "BLOB {} USING GCP_STORAGE { projectid=\"todo3-incap\", prefix=\"B" + auth + "\"}";
+    private static final String REPO_USING_GOOGLE = "REP {} USING GCP_DATASTORE { projectid=\"todo3-incap\", prefix=\"" + auth + "\"}";
+    private static final String META_USING_GOOGLE = "REP {} USING GCP_DATASTORE { projectid=\"todo3-incap\", prefix=\"M" + auth + "\"}";
     private static final byte[] SAMPLE_BLOB = "This is a blob".getBytes();
 
     static String blobAuthorityURI = "blob://" + auth;
     static String blobURI = blobAuthorityURI + "/SwampThing";
 
+    static LocalDatastoreHelper helper = null;
+    static Datastore datastore;
+    static RemoteStorageHelper storageHelper = null;
+    static Storage storage;
 
     @BeforeClass
     static public void setUp() {
-
-        Assume.assumeTrue(false);
-
-        RemoteStorageHelper storageHelper = null;
-        Storage storage;
+        String namespace = UUID.randomUUID().toString();
         try {
+            helper = LocalDatastoreHelper.create(1.0);
+            helper.start(); // Starts the local Datastore emulator in a separate process
+            DatastoreOptions options = helper.getOptions(namespace);
+            GoogleDatastoreKeyStore.setDatastoreOptionsForTesting(options);
+            GoogleIndexHandler.setDatastoreOptionsForTesting(options);
+            datastore = options.getService();
             storageHelper = RemoteStorageHelper.create();
+            storage = storageHelper.getOptions().getService();
         } catch (Exception e1) {
             try {
                 File key = new File("src/test/resources/key.json");
@@ -105,7 +117,7 @@ public class BlobApiGoogleTest {
             }
         }
         Assume.assumeNotNull(storageHelper);
-        GoogleBlobStore.setStorageForTesting(storageHelper.getOptions().getService());
+        GoogleBlobStore.setStorageForTesting(storage);
 
         RaptureConfig.setLoadYaml(false);
         config = ConfigLoader.getConf();
@@ -116,7 +128,7 @@ public class BlobApiGoogleTest {
         callingContext.setUser("dummy");
 
         config.RaptureRepo = REPO_USING_GOOGLE;
-        config.InitSysConfig = "NREP {} USING GCP_DATASTORE { prefix=\"" + auth + ".sys.config\"}";
+        config.InitSysConfig = "NREP {} USING GCP_DATASTORE { projectid=\"todo3-incap\", prefix=\"" + auth + ".sys.config\"}";
 
         callingContext = new CallingContext();
         callingContext.setUser("dummy");
@@ -125,7 +137,8 @@ public class BlobApiGoogleTest {
 
         Kernel.initBootstrap();
         callingContext = ContextFactory.getKernelUser();
-
+        Kernel.getAudit().createAuditLog(ContextFactory.getKernelUser(), new RaptureURI(RaptureConstants.DEFAULT_AUDIT_URI, Scheme.LOG).getAuthority(),
+                "LOG {} using MEMORY {prefix=\"/tmp/" + UUID.randomUUID() + "\"}");
         Kernel.getLock().createLockManager(ContextFactory.getKernelUser(), "lock://kernel", "LOCKING USING DUMMY {}", "");
         blobImpl = new BlobApiImpl(Kernel.INSTANCE);
     }
@@ -133,9 +146,6 @@ public class BlobApiGoogleTest {
 
     @AfterClass
     static public void cleanUp() throws IOException, InterruptedException, TimeoutException {
-        ConfigLoader.getConf().InitSysConfig = saveInitSysConfig;
-        ConfigLoader.getConf().RaptureRepo = saveRaptureRepo;
-
         try {
             if ((blobImpl != null) && blobImpl.blobRepoExists(callingContext, "blob://dummy")) blobImpl.deleteBlobRepo(callingContext, "blob://dummy");
         } catch (Exception e) {
@@ -147,6 +157,9 @@ public class BlobApiGoogleTest {
         } catch (Exception e) {
             System.err.println("Warning: exception in clean up deleting " + blobAuthorityURI + " : " + e.getMessage());
         }
+        String environment = Kernel.getAdmin().getEnvironmentName(ContextFactory.getKernelUser()).toLowerCase();
+        Kernel.shutdown();
+        storageHelper.forceDelete(storage, (environment + "b" + auth).toLowerCase());
     }
 
     static boolean firstTime = true;
@@ -199,7 +212,8 @@ public class BlobApiGoogleTest {
     public void testValidDocStore() {
         Map<String, String> hashMap = new HashMap<>();
         hashMap.put("prefix", "foo");
-        blobImpl.createBlobRepo(callingContext, "blob://dummy2", "BLOB {} USING GCP_STORAGE { prefix=\"foo\" }", "REP {} USING GCP_DATASTORE { prefix=\"foo\" }");
+        blobImpl.createBlobRepo(callingContext, "blob://dummy2", "BLOB {} USING GCP_STORAGE { projectid=\"todo3-incap\", prefix=\"foo\" }",
+                "REP {} USING GCP_DATASTORE { projectid=\"todo3-incap\", prefix=\"foo\" }");
 
     }
 
@@ -210,8 +224,9 @@ public class BlobApiGoogleTest {
             testCreateAndGetRepo();
             List<BlobRepoConfig> before = blobImpl.getBlobRepoConfigs(callingContext);
 
-            blobImpl.createBlobRepo(callingContext, "blob://somewhere_else/", "BLOB {} USING GCP_STORAGE {prefix=\"somewhere_else\"}",
-                    "REP {} USING GCP_DATASTORE {prefix=\"somewhere_else\"}");
+            blobImpl.createBlobRepo(callingContext, "blob://somewhere_else/",
+                    "BLOB {} USING GCP_STORAGE {projectid=\"todo3-incap\", prefix=\"somewhere_else\"}",
+                    "REP {} USING GCP_DATASTORE {projectid=\"todo3-incap\", prefix=\"somewhere_else\"}");
 
             List<BlobRepoConfig> after = blobImpl.getBlobRepoConfigs(callingContext);
             // And then there were three
@@ -238,6 +253,7 @@ public class BlobApiGoogleTest {
     // Can't store blobs with attributes - See RAP-2797
 
     @Test
+    @Ignore
     public void testPutAndGetBlobWithAttribute() {
         testCreateAndGetRepo();
         RaptureURI blobURIWithAttribute = new RaptureURI.Builder(Scheme.BLOB, auth).docPath("Foo").attribute("Bar").build();

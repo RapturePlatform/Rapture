@@ -245,12 +245,18 @@ public class RepoFactory {
     }
 
     private static RapGenParser parseConfig(String config) throws RecognitionException {
-        RapGenLexer lexer = new RapGenLexer();
-        lexer.setCharStream(new ANTLRStringStream(config));
-        CommonTokenStream tokens = new CommonTokenStream(lexer);
-        RapGenParser parser = new RapGenParser(tokens);
-        parser.repinfo();
-        return parser;
+        try {
+            RapGenLexer lexer = new RapGenLexer();
+            lexer.setCharStream(new ANTLRStringStream(config));
+            CommonTokenStream tokens = new CommonTokenStream(lexer);
+            RapGenParser parser = new RapGenParser(tokens);
+            parser.repinfo();
+            return parser;
+        } catch (Exception e) {
+            String error = ExceptionToString.format(e);
+            log.error(error);
+            throw e;
+        }
     }
 
     private RepoFactory() {

@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -70,6 +71,20 @@ public class PubsubPipeline2Handler implements Pipeline2Handler {
     Map<String, String> config = null;
 
     Map<QueueSubscriber, Thread> activeSubscriptions = new ConcurrentHashMap<>();
+
+    // Clean up for unit testing
+    static List<PubsubPipeline2Handler> handlers = new CopyOnWriteArrayList<>();
+
+    public PubsubPipeline2Handler() {
+        handlers.add(this);
+    }
+
+    // Run between unit tests
+    public static void cleanUp() {
+        for (PubsubPipeline2Handler handler : handlers) {
+            handler.close();
+        }
+    }
 
     @Override
     public void setInstanceName(String instanceName) {
@@ -136,12 +151,30 @@ public class PubsubPipeline2Handler implements Pipeline2Handler {
 
     @Override
     protected void finalize() throws Throwable {
+        close();
         super.finalize();
+    }
+
+    public void close() {
         Set<QueueSubscriber> subs = activeSubscriptions.keySet();
-        for (QueueSubscriber subscriber : subs)
+        for (QueueSubscriber subscriber : subs) {
             unsubscribe(subscriber);
-        if (publisherClient != null) publisherClient.close();
-        if (subscriberClient != null) subscriberClient.close();
+            activeSubscriptions.remove(subscriber);
+        }
+        if (publisherClient != null) {
+            try {
+                publisherClient.close();
+            } catch (Exception e) {
+            }
+            publisherClient = null;
+        }
+        if (subscriberClient != null) {
+            try {
+                subscriberClient.close();
+            } catch (Exception e) {
+            }
+            subscriberClient = null;
+        }
     }
 
     @Override
@@ -248,7 +281,7 @@ public class PubsubPipeline2Handler implements Pipeline2Handler {
             messageIdFuture.addCallback(new RpcFutureCallback<String>() {
                 @Override
                 public void onSuccess(String messageId) {
-                    logger.trace("published " + JacksonUtil.prettyfy(task) + "\n to queue " + queue + " with message id: " + messageId);
+                    logger.trace("published " + task + "\n to queue " + queue + " with message id: " + messageId);
                 }
 
                 @Override

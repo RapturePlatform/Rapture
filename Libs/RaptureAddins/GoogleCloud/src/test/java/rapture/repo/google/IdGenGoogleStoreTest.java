@@ -17,8 +17,13 @@ import com.google.cloud.datastore.Datastore;
 import com.google.cloud.datastore.testing.LocalDatastoreHelper;
 import com.google.common.collect.ImmutableMap;
 
+import rapture.common.RaptureConstants;
+import rapture.common.RaptureURI;
+import rapture.common.Scheme;
 import rapture.common.exception.RaptureException;
 import rapture.dsl.idgen.RaptureIdGen;
+import rapture.kernel.ContextFactory;
+import rapture.kernel.Kernel;
 
 public class IdGenGoogleStoreTest {
     UUID uuid = UUID.randomUUID();
@@ -32,6 +37,8 @@ public class IdGenGoogleStoreTest {
         helper.start(); // Starts the local Datastore emulator in a separate process
         GoogleDatastoreKeyStore.setDatastoreOptionsForTesting(helper.getOptions());
         GoogleIndexHandler.setDatastoreOptionsForTesting(helper.getOptions());
+        Kernel.getAudit().createAuditLog(ContextFactory.getKernelUser(), new RaptureURI(RaptureConstants.DEFAULT_AUDIT_URI, Scheme.LOG).getAuthority(),
+                "LOG {} using MEMORY {prefix=\"/tmp/" + UUID.randomUUID() + "\"}");
     }
 
     @AfterClass

@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
@@ -44,10 +45,13 @@ import org.junit.Test;
 import rapture.common.CallingContext;
 import rapture.common.JobType;
 import rapture.common.QueueSubscriber;
+import rapture.common.RaptureConstants;
 import rapture.common.RaptureJob;
 import rapture.common.RaptureJobExec;
 import rapture.common.RaptureScriptLanguage;
 import rapture.common.RaptureScriptPurpose;
+import rapture.common.RaptureURI;
+import rapture.common.Scheme;
 import rapture.common.WorkOrderExecutionState;
 import rapture.common.dp.Step;
 import rapture.common.dp.WorkOrder;
@@ -81,7 +85,9 @@ public class WorkOrderTest {
 
         Kernel.initBootstrap();
 
-        subscriber = Kernel.INSTANCE.createAndSubscribe(ALPHA, "PIPELINE {} USING GCP_PUBSUB { projectid=\"todo3-incap\"}");
+        subscriber = Kernel.createAndSubscribe(ALPHA, "PIPELINE {} USING GCP_PUBSUB { projectid=\"todo3-incap\"}");
+        Kernel.getAudit().createAuditLog(ContextFactory.getKernelUser(), new RaptureURI(RaptureConstants.DEFAULT_AUDIT_URI, Scheme.LOG).getAuthority(),
+                "LOG {} using MEMORY {prefix=\"/tmp/" + UUID.randomUUID() + "\"}");
 
         String scr1 = "script1";
         Kernel.getScript().deleteScript(ctx, REPO_URI + "/" + scr1);

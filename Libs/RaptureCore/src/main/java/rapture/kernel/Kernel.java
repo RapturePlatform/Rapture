@@ -82,7 +82,6 @@ import rapture.common.model.RaptureUser;
 import rapture.common.model.RaptureUserStorage;
 import rapture.config.ConfigLoader;
 import rapture.dsl.entparser.ParseEntitlementPath;
-import rapture.exchange.QueueHandler;
 import rapture.index.IndexHandler;
 import rapture.kernel.cache.KernelCaches;
 import rapture.kernel.cache.RepoCacheManager;
@@ -1010,21 +1009,27 @@ public enum Kernel {
      * @param category
      */
     public static void setCategoryMembership(String category) {
-        INSTANCE.taskHandler.setCategoryMembership(category);
+        if (Pipeline2ApiImpl.usePipeline2) {
+            createAndSubscribe(category, ConfigLoader.getConf().DefaultExchange);
+        } else {
+            INSTANCE.taskHandler.setCategoryMembership(category);
+        }
     }
 
-    /**
-     * Register this server to handle messages on exchanges associated with the given category. This differs from {@link #setCategoryMembership(String)} in what
-     * Queue Handlers it allows. This method allows defining custom handlers, which will override all default handlers. If you wish to handle some custom mime
-     * types or use custom handlers *in addition* to the default handlers, you currently need to pass in all the default handlers. It may be worth writing a
-     * method that makes this easier.
-     *
-     * @param category
-     * @param customHandlers
-     */
-    public static void setCategoryMembership(String category, Map<String, QueueHandler> customHandlers) {
-        INSTANCE.taskHandler.setCategoryMembership(category, customHandlers);
-    }
+    // Not used anywhere
+    // /**
+    // * Register this server to handle messages on exchanges associated with the given category. This differs from {@link #setCategoryMembership(String)} in
+    // what
+    // * Queue Handlers it allows. This method allows defining custom handlers, which will override all default handlers. If you wish to handle some custom mime
+    // * types or use custom handlers *in addition* to the default handlers, you currently need to pass in all the default handlers. It may be worth writing a
+    // * method that makes this easier.
+    // *
+    // * @param category
+    // * @param customHandlers
+    // */
+    // public static void setCategoryMembership(String category, Map<String, QueueHandler> customHandlers) {
+    // if (INSTANCE.taskHandler != null) INSTANCE.taskHandler.setCategoryMembership(category, customHandlers);
+    // }
 
     public SeriesRepo getSeriesRepo(RaptureURI seriesURI) {
         return repoCacheManager.getSeriesRepo(seriesURI.getAuthority());

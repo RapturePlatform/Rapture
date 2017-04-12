@@ -160,7 +160,7 @@ public class Pipeline2ApiImpl extends KernelBase implements Pipeline2Api {
     @Override
     public Boolean queueExists(CallingContext context, String queueIdentifier) {
         Pipeline2Handler handler = getHandler(queueIdentifier);
-        if (handler == null) throw new RuntimeException("Cannot set up " + queueIdentifier);
+        if (handler == null) return false;
         return handler.queueExists(queueIdentifier);
     }
 
@@ -190,9 +190,8 @@ public class Pipeline2ApiImpl extends KernelBase implements Pipeline2Api {
     public void unsubscribeQueue(CallingContext context, QueueSubscriber subscriber) {
         Pipeline2Handler handler = getHandler(subscriber.getQueueName());
         if (handler == null) {
-            throw new RuntimeException("Queue does not exist");
-        }
-        handler.unsubscribePipeline(subscriber.getQueueName(), subscriber);
+            log.error("Queue does not exist");
+        } else handler.unsubscribePipeline(subscriber.getQueueName(), subscriber);
     }
 
     private Map<String, Pipeline2Handler> pipelineHandlers = new HashMap<>();
@@ -229,7 +228,10 @@ public class Pipeline2ApiImpl extends KernelBase implements Pipeline2Api {
             if (domain != null) {
                 handler = Pipeline2Factory.getHandler(domain.getName(), domain.getConfig());
                 pipelineHandlers.put(exchangeConfig.getDomain(), handler);
-            } else throw new RuntimeException("Cannot set up " + queueIdentifier + " - no valid configuration defined");
+            } else {
+                log.info("Cannot set up " + queueIdentifier + " - no valid configuration defined");
+                return false;
+            }
         }
         handler.publishTask(queueIdentifier, message);
         return true;

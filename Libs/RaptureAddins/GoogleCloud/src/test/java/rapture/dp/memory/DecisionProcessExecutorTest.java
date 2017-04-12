@@ -67,9 +67,6 @@ import rapture.common.dp.WorkerDebug;
 import rapture.common.dp.Workflow;
 import rapture.common.dp.WorkflowBasedSemaphoreConfig;
 import rapture.common.impl.jackson.JacksonUtil;
-import rapture.common.model.RaptureExchange;
-import rapture.common.model.RaptureExchangeQueue;
-import rapture.common.model.RaptureExchangeType;
 import rapture.common.pipeline.PipelineConstants;
 import rapture.config.ConfigLoader;
 import rapture.config.RaptureConfig;
@@ -95,7 +92,7 @@ public class DecisionProcessExecutorTest {
     public static final String VARIABLE_ALIAS = "varAlias";
     public static final String CONTEXT_VARIABLE_1 = "contextVar1";
     public static final String CONTEXT_VARIABLE_2 = "contextVar2";
-    private static final CallingContext CONTEXT = ContextFactory.getKernelUser();
+    static final CallingContext CONTEXT = ContextFactory.getKernelUser();
     public static final String REPO_URI = "//dpdocrepo";
     private static final String scr1 = "script1";
     private static final String scr2 = "script2";
@@ -120,8 +117,9 @@ public class DecisionProcessExecutorTest {
         if (Kernel.getDoc().docRepoExists(CONTEXT, REPO_URI)) cleanUp();
 
         Kernel.getDoc().createDocRepo(CONTEXT, REPO_URI, "NREP {} USING MEMORY {}");
-
-        subscriber = Kernel.INSTANCE.createAndSubscribe(ALPHA, "PIPELINE {} USING MEMORY { }");
+        String idGenUri = "idgen://sys/event/id";
+        if (!Kernel.getIdGen().idGenExists(CONTEXT, idGenUri)) Kernel.getIdGen().createIdGen(CONTEXT, idGenUri, "IDGEN {} USING MEMORY {}");
+        subscriber = Kernel.createAndSubscribe(ALPHA, "PIPELINE {} USING MEMORY { }");
         Kernel.getScript().deleteScript(CONTEXT, REPO_URI + "/" + scr1);
         Kernel.getScript().deleteScript(CONTEXT, REPO_URI + "/" + scr2);
         Kernel.getScript().deleteScript(CONTEXT, REPO_URI + "/" + scr3);
@@ -135,31 +133,6 @@ public class DecisionProcessExecutorTest {
                 "println(this has bad syntax, it should error out;");
         Kernel.getScript().createScript(CONTEXT, REPO_URI + "/" + scr4, RaptureScriptLanguage.REFLEX, RaptureScriptPurpose.PROGRAM,
                 "return 'fail';");
-    }
-
-    private static void initPipeline() {
-        Kernel.getPipeline().setupStandardCategory(CONTEXT, "alpha");
-        Kernel.getPipeline().setupStandardCategory(CONTEXT, "beta");
-
-        Kernel.getPipeline().registerExchangeDomain(CONTEXT, "//main", "EXCHANGE {} USING MEMORY {}");
-
-        RaptureExchange exchange = new RaptureExchange();
-        exchange.setName("kernel");
-        exchange.setExchangeType(RaptureExchangeType.FANOUT);
-        exchange.setDomain("main");
-
-        List<RaptureExchangeQueue> queues = new ArrayList<>();
-        RaptureExchangeQueue queue = new RaptureExchangeQueue();
-        queue.setName("default");
-        queue.setRouteBindings(new ArrayList<String>());
-        queues.add(queue);
-
-        exchange.setQueueBindings(queues);
-
-        // Kernel.getPipeline().registerPipelineExchange(CONTEXT, "kernel",
-        // exchange);
-        // Kernel.getPipeline().bindPipeline(CONTEXT, "alpha", "kernel", "default");
-        Kernel.setCategoryMembership("alpha");
     }
 
     @Test

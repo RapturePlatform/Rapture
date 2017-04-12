@@ -335,7 +335,10 @@ public class DefaultDecisionProcessExecutor implements DecisionProcessExecutor {
     @Override
     public void executeStep(Worker worker) {
         WorkOrder workOrder = WorkOrderFactory.loadWorkOrder(worker);
-
+        if (workOrder == null) {
+            log.warn("No work order for worker " + worker.toString());
+            return;
+        }
         List<String> stack = worker.getStack();
         worker.setStatus(WorkerExecutionState.RUNNING);
         saveWorker(worker);

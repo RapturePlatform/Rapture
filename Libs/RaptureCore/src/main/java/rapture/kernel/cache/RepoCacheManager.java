@@ -154,11 +154,11 @@ public class RepoCacheManager {
     }
 
     public void resetAllCache() {
-        sysRepoCache = null;
-        blobRepoCache = null;
-        docRepoCache = null;
-        seriesRepoCache = null;
-        structuredRepoCache = null;
-        searchRepoCache = null;
+        sysRepoCache = new SysRepoCache();
+        blobRepoCache = new BlobRepoCache();
+        docRepoCache = new DocRepoCache();
+        seriesRepoCache = new SeriesRepoCache();
+        structuredRepoCache = new StructuredRepoCache();
+        searchRepoCache = new SearchRepoCache();
     }
 }

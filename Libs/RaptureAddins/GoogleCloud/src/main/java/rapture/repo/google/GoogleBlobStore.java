@@ -50,6 +50,8 @@ import rapture.blob.BlobStore;
 import rapture.common.CallingContext;
 import rapture.common.RaptureURI;
 import rapture.config.MultiValueConfigLoader;
+import rapture.kernel.ContextFactory;
+import rapture.kernel.Kernel;
 
 /**
  * GoogleBlobStore uses the Google Cloud Storage to implement a BlobStore Google has the concept of Buckets which store blobs. At first pass it seems logical to
@@ -63,8 +65,8 @@ public class GoogleBlobStore extends BaseBlobStore implements BlobStore {
 
     private static Logger logger = Logger.getLogger(GoogleBlobStore.class);
 
-    static final String INCAPTURE = "incapture_"; // MUST BE LOWER CASE
-    private Bucket bucket = null;
+    private String environment;
+    Bucket bucket = null;
     private static Storage storage = null;
 
     protected static void setStorageForTesting(Storage teststorage) {
@@ -72,6 +74,7 @@ public class GoogleBlobStore extends BaseBlobStore implements BlobStore {
     }
 
     public GoogleBlobStore() {
+        environment = Kernel.getAdmin().getEnvironmentName(ContextFactory.getKernelUser()).toLowerCase();
     }
 
     @Override
@@ -223,7 +226,7 @@ public class GoogleBlobStore extends BaseBlobStore implements BlobStore {
             storage = StorageOptions.newBuilder().setProjectId(projectId).build().getService();
         }
         // NOTE cannot currently use a full stop in a bucket name.
-        bucketName = INCAPTURE + prefix.replaceAll("\\.", "").toLowerCase();
+        bucketName = environment + prefix.replaceAll("\\.", "").toLowerCase();
         try {
             bucket = storage.get(bucketName);
         } catch (StorageException e) {
@@ -239,7 +242,7 @@ public class GoogleBlobStore extends BaseBlobStore implements BlobStore {
 
     // For cleanup after testing
     void destroyBucket(String name) {
-        String bName = INCAPTURE + name.replaceAll("\\.", "").toLowerCase();
+        String bName = environment + name.replaceAll("\\.", "").toLowerCase();
         Bucket bukkit = storage.get(bName);
         if (bukkit != null) {
             for (Blob blob : this.listBlobs(name)) {

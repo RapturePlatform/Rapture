@@ -145,7 +145,7 @@ public class AppStatusP2Test {
     @AfterClass
     public static void afterClass() {
         if (scheduler != null) scheduler.shutdown();
-        Kernel.getPipeline2().unsubscribeQueue(CTX, subscriber);
+        if (subscriber != null) Kernel.getPipeline2().unsubscribeQueue(CTX, subscriber);
     }
 
     private static void setTimestamp(long timestamp) {
@@ -280,7 +280,7 @@ public class AppStatusP2Test {
                 long timestamp = exec.getExecTime();
                 String expectedAppStatusName = "job.status a/" + timestamp + "/" + FORMATTER.print(ld) + "/" + DEFAULT_APP;
                 List<AppStatus> jobs = Kernel.getDecision().getAppStatuses(CTX, expectedAppStatusName);
-                assertEquals(1, jobs.size());
+                assertEquals(JacksonUtil.formattedJsonFromObject(jobs), 1, jobs.size());
 
                 String workOrder = JacksonUtil.objectFromJson(exec.getExecDetails(), WorkflowJobExecDetails.class).getWorkOrderURI();
                 verifyFirstStepLogs(expectedAppStatusName, workOrder);
@@ -311,7 +311,7 @@ public class AppStatusP2Test {
                 assertEquals(2, defs.size());
 
                 List<AppStatus> jobs = Kernel.getDecision().getAppStatuses(CTX, "job.status a");
-                assertEquals(1, jobs.size());
+                assertEquals(JacksonUtil.formattedJsonFromObject(jobs), 1, jobs.size());
             }
         }, MAX_WAIT);
     }

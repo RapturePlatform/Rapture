@@ -93,7 +93,11 @@ public class AuditApiImpl extends KernelBase implements AuditApi {
 
     @Override
     public Boolean doesAuditLogExist(CallingContext context, String logURI) {
-        return getAuditLog(context, logURI) != null;
+        try {
+            return getAuditLog(context, logURI) != null;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     @Override
