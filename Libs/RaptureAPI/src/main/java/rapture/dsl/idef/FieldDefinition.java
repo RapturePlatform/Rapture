@@ -30,6 +30,7 @@ public class FieldDefinition {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
+        result = prime * result + ((locator == null) ? 0 : locator.hashCode());
         result = prime * result + ((name == null) ? 0 : name.hashCode());
         result = prime * result + ((type == null) ? 0 : type.hashCode());
         return result;
@@ -41,6 +42,9 @@ public class FieldDefinition {
         if (obj == null) return false;
         if (getClass() != obj.getClass()) return false;
         FieldDefinition other = (FieldDefinition) obj;
+        if (locator == null) {
+            if (other.locator != null) return false;
+        } else if (!locator.equals(other.locator)) return false;
         if (name == null) {
             if (other.name != null) return false;
         } else if (!name.equals(other.name)) return false;
@@ -77,6 +81,9 @@ public class FieldDefinition {
 	
 	@Override
     public String toString() {
-        return "FieldDefinition [name=" + name + ", type=" + type + ", locator=" + locator + "]";
+        StringBuilder sb = new StringBuilder();
+        sb.append("Name=" + name);
+        sb.append(",Locator=" + locator.toString());
+        return sb.toString();
     }
 }
