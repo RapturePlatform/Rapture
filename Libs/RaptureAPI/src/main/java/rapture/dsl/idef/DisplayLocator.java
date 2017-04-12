@@ -28,7 +28,25 @@ import java.util.Map;
 import rapture.common.model.DocumentMetadata;
 
 public class DisplayLocator extends FieldLocator {
-	private int fieldNum;
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + fieldNum;
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!super.equals(obj)) return false;
+        if (getClass() != obj.getClass()) return false;
+        DisplayLocator other = (DisplayLocator) obj;
+        if (fieldNum != other.fieldNum) return false;
+        return true;
+    }
+
+    private int fieldNum;
 	
 	public DisplayLocator(String fieldNumber) {
 		this.fieldNum = Integer.valueOf(fieldNumber);
