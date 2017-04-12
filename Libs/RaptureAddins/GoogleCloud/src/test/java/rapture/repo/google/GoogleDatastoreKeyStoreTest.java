@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.TimeoutException;
 
 import org.junit.After;
@@ -41,6 +42,7 @@ import org.junit.Test;
 
 import com.google.common.collect.ImmutableMap;
 
+import rapture.common.RaptureConstants;
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
 import rapture.common.impl.jackson.JacksonUtil;
@@ -49,6 +51,8 @@ import rapture.common.model.DocumentWithMeta;
 import rapture.dsl.dparse.AbsoluteVersion;
 import rapture.dsl.dparse.AsOfTimeDirective;
 import rapture.dsl.dparse.AsOfTimeDirectiveParser;
+import rapture.kernel.ContextFactory;
+import rapture.kernel.Kernel;
 import rapture.lock.dummy.DummyLockHandler;
 import rapture.repo.KeyStore;
 import rapture.repo.NVersionedRepo;
@@ -72,6 +76,9 @@ public class GoogleDatastoreKeyStoreTest extends MockDataStoreTest {
         attribute = new GoogleDatastoreKeyStore();
         attribute.setConfig(ImmutableMap.of("prefix", "attribute"));
         repo = new NVersionedRepo(new HashMap<String, String>(), store, version, meta, attribute, new DummyLockHandler());
+        Kernel.getAudit().createAuditLog(ContextFactory.getKernelUser(), new RaptureURI(RaptureConstants.DEFAULT_AUDIT_URI, Scheme.LOG).getAuthority(),
+                "LOG {} using MEMORY {prefix=\"/tmp/" + UUID.randomUUID() + "\"}");
+
     }
 
     @After

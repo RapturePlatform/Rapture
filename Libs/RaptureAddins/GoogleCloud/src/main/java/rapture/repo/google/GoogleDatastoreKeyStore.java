@@ -65,6 +65,7 @@ import com.google.cloud.datastore.Value;
 import rapture.common.RaptureFolderInfo;
 import rapture.common.RaptureNativeQueryResult;
 import rapture.common.RaptureQueryResult;
+import rapture.common.exception.ExceptionToString;
 import rapture.common.exception.RaptNotSupportedException;
 import rapture.common.exception.RaptureExceptionFactory;
 import rapture.common.impl.jackson.JacksonUtil;
@@ -299,8 +300,9 @@ public class GoogleDatastoreKeyStore extends AbstractKeyStore implements KeyStor
             if (map.isEmpty()) return null;
             return JacksonUtil.jsonFromObject(map);
         } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            String error = ExceptionToString.format(e);
+            log.info(e.getMessage());
+            log.trace(error);
             return null;
         }
     }
@@ -335,8 +337,7 @@ public class GoogleDatastoreKeyStore extends AbstractKeyStore implements KeyStor
                 valist.add(valerie(null, o));
             }
             valerie = new ListValue(valist);
-        }
-        else {
+        } else {
             log.warn("Not sure about " + val.getClass());
             valerie = new BlobValue(Blob.copyFrom(val.toString().getBytes()));
         }
@@ -362,8 +363,9 @@ public class GoogleDatastoreKeyStore extends AbstractKeyStore implements KeyStor
         try {
             datastore.put(entity);
         } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            String error = ExceptionToString.summary(e);
+            log.error(error);
+            throw e;
         }
     }
 
@@ -372,8 +374,7 @@ public class GoogleDatastoreKeyStore extends AbstractKeyStore implements KeyStor
         if (repoType.toUpperCase().equals("GCP_DATASTORE")) {
             throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, "Not yet implemented");
         } else {
-            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST,
-                    "RepoType mismatch. Repo is of type GCP_DATASTORE, asked for " + repoType);
+            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, "RepoType mismatch. Repo is of type GCP_DATASTORE, asked for " + repoType);
         }
     }
 

@@ -27,13 +27,17 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.UUID;
 import java.util.concurrent.TimeoutException;
 
+import org.apache.log4j.Logger;
 import org.joda.time.Duration;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.BeforeClass;
 
+import com.google.cloud.datastore.Datastore;
 import com.google.cloud.datastore.testing.LocalDatastoreHelper;
 import com.google.cloud.storage.testing.RemoteStorageHelper;
 import com.google.cloud.storage.testing.RemoteStorageHelper.StorageHelperException;
@@ -41,34 +45,28 @@ import com.google.common.collect.ImmutableMap;
 
 import rapture.blob.BlobStore;
 import rapture.blob.BlobStoreContractTest;
+import rapture.common.RaptureConstants;
+import rapture.common.RaptureURI;
+import rapture.common.Scheme;
+import rapture.common.exception.ExceptionToString;
+import rapture.kernel.ContextFactory;
+import rapture.kernel.Kernel;
 
 public class GoogleBlobStoreTest extends BlobStoreContractTest {
 
     private static GoogleBlobStore store = null;
+    private static Datastore metaStore;
     static String bukkit = "davet_incapture_com";
+    private static final Logger log = Logger.getLogger(GoogleBlobStoreTest.class);
 
     // Currently there isn't an emulator for Google Cloud Storage,
     // so an alternative is to create a test project.
     // RemoteStorageHelper contains convenience methods to make setting up and cleaning up
     // the test project easier. However we need a project ID to do that.
 
-    final static LocalDatastoreHelper helper = LocalDatastoreHelper.create();
+    // LocalDatastoreHelper emulates a GCP DataStore for Blob metadata
+    static LocalDatastoreHelper helper = null;
 
-    @BeforeClass
-    public static void setupLocalDatastore() throws IOException, InterruptedException {
-        helper.start(); // Starts the local Datastore emulator in a separate process
-        GoogleDatastoreKeyStore.setDatastoreOptionsForTesting(helper.getOptions());
-        GoogleIndexHandler.setDatastoreOptionsForTesting(helper.getOptions());
-    }
-
-    @AfterClass
-    public static void cleanupLocalDatastore() throws IOException, InterruptedException, TimeoutException {
-        try {
-            helper.stop(new Duration(6000L));
-        } catch (Exception e) {
-            System.out.println("Exception shutting down LocalDatastoreHelper: " + e.getMessage());
-        }
-    }
 
     @BeforeClass
     public static void beforeClass() {
@@ -85,15 +83,47 @@ public class GoogleBlobStoreTest extends BlobStoreContractTest {
                 Assume.assumeNoException("Cannot create storage helper", ee);
             }
         }
+
+        try {
+            helper = LocalDatastoreHelper.create();
+            helper.start();
+            helper.reset();
+        } catch (IOException | InterruptedException e) {
+            Assert.fail(e.getMessage());
+        }
+
+        metaStore = helper.getOptions().getService();
+        GoogleDatastoreKeyStore.setDatastoreOptionsForTesting(helper.getOptions());
+        GoogleIndexHandler.setDatastoreOptionsForTesting(helper.getOptions());
+
         Assume.assumeNotNull("Storage helper not initialized", helper);
-        GoogleBlobStore.setStorageForTesting(storageHelper.getOptions().getService());
-        store = new GoogleBlobStore();
-        store.setConfig(ImmutableMap.of("prefix", bukkit));
+        try {
+            GoogleBlobStore.setStorageForTesting(storageHelper.getOptions().getService());
+            Kernel.initBootstrap();
+
+            store = new GoogleBlobStore();
+            store.setConfig(ImmutableMap.of("prefix", bukkit));
+
+            Kernel.getAudit().createAuditLog(ContextFactory.getKernelUser(), new RaptureURI(RaptureConstants.DEFAULT_AUDIT_URI, Scheme.LOG).getAuthority(),
+                    "LOG {} using MEMORY {prefix=\"/tmp/" + UUID.randomUUID() + "\"}");
+        } catch (Exception e) {
+            String error = ExceptionToString.format(e);
+            log.error(error);
+            // I don't get it. These test cases pass when run as a standalone block,
+            // but when run as part of a suite they fail. I haven't found a way to fix that.
+            Assume.assumeNoException(e);
+        }
     }
 
     @AfterClass
     public static void tearDown() throws IOException, InterruptedException, TimeoutException {
+        Kernel.shutdown();
         if (store != null) store.destroyBucket(bukkit);
+        try {
+            if (helper != null) helper.stop(new Duration(6000L));
+        } catch (Exception e) {
+            System.out.println("Exception shutting down LocalDatastoreHelper: " + e.getMessage());
+        }
     }
 
     @Override

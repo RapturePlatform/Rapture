@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -51,6 +52,7 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import rapture.common.AppStatus;
 import rapture.common.CallingContext;
 import rapture.common.QueueSubscriber;
+import rapture.common.RaptureConstants;
 import rapture.common.RaptureJob;
 import rapture.common.RaptureJobExec;
 import rapture.common.RaptureURI;
@@ -99,6 +101,8 @@ public class AppStatusP2Test {
         config.DefaultExchange = "PIPELINE {} USING MEMORY { }";
         config.DefaultWorkflowAuditLog = auditConfig;
         System.setProperty("LOGSTASH-ISENABLED", "false");
+        Kernel.getAudit().createAuditLog(ContextFactory.getKernelUser(), new RaptureURI(RaptureConstants.DEFAULT_AUDIT_URI, Scheme.LOG).getAuthority(),
+                "LOG {} using MEMORY {prefix=\"/tmp/" + UUID.randomUUID() + "\"}");
 
         Kernel.INSTANCE.restart();
 

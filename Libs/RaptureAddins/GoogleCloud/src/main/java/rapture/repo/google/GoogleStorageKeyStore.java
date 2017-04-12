@@ -35,6 +35,7 @@ import java.util.Scanner;
 import org.apache.log4j.Logger;
 
 import com.google.cloud.storage.Blob;
+import com.google.cloud.storage.Storage;
 import com.google.common.collect.ImmutableMap;
 
 import rapture.common.RaptureFolderInfo;
@@ -60,6 +61,10 @@ public class GoogleStorageKeyStore extends AbstractKeyStore implements KeyStore 
     private static final Logger log = Logger.getLogger(GoogleStorageKeyStore.class);
     private GoogleBlobStore blobStore;
     private String id;
+
+    public static void setStorageForTesting(Storage storage) {
+        GoogleBlobStore.setStorageForTesting(storage);   
+    }
 
     public GoogleStorageKeyStore() {
     }
