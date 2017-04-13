@@ -267,6 +267,7 @@ public abstract class ObjectStorage {
         RaptureURI storageLocation = storable.getStorageLocation();
         if (log.isTraceEnabled()) log.trace("ObjectStorage.addDoc called. Storage location is " + storageLocation.toString() + " user " + user + " comment "
                 + comment);
+
         Repository repository = getRepo(storageLocation.getAuthority(), storableInfo.getIndexInfo());
         String path = storageLocation.getDocPath();
         String jsonString;

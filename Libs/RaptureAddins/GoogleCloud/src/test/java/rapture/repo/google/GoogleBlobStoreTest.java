@@ -87,7 +87,6 @@ public class GoogleBlobStoreTest extends BlobStoreContractTest {
         try {
             helper = LocalDatastoreHelper.create();
             helper.start();
-            helper.reset();
         } catch (IOException | InterruptedException e) {
             Assert.fail(e.getMessage());
         }

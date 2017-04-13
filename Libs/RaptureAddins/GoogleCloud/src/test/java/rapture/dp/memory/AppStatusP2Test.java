@@ -149,7 +149,7 @@ public class AppStatusP2Test {
     @AfterClass
     public static void afterClass() {
         if (scheduler != null) scheduler.shutdown();
-        Kernel.getPipeline2().unsubscribeQueue(CTX, subscriber);
+        if (subscriber != null) Kernel.getPipeline2().unsubscribeQueue(CTX, subscriber);
     }
 
     private static void setTimestamp(long timestamp) {

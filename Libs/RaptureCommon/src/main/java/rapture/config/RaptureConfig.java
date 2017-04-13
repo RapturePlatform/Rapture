@@ -71,8 +71,8 @@ public class RaptureConfig {
 
     public String DefaultDecisionRepoConfig = "NREP {} USING MEMORY { prefix=\"sys.decision\"}";
 
-    public String DefaultDecisionIdGenConfig = "IDGEN { base=\"36\", length=\"8\", prefix=\"wo.\" } USING MEMORY {}";
-    public String EventIdGenConfig = "IDGEN { base=\"36\", length=\"8\", prefix=\"mem-event.\" } USING MEMORY {}";
+    public String DefaultDecisionIdGenConfig = "IDGEN { base=\"36\", length=\"8\", prefix=\"WO_\" } USING MEMORY {}";
+    public String EventIdGenConfig = "IDGEN { base=\"36\", length=\"8\", prefix=\"mem-event_\" } USING MEMORY {}";
     public String ActivityIdGenConfig = "IDGEN { base=\"36\", length=\"8\", prefix=\"\" } USING MEMORY {}";
 
     public String DefaultSemaphoreConfig = "LOCKING USING MEMORY {}";
