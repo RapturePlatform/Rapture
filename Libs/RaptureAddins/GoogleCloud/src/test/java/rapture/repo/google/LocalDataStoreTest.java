@@ -16,6 +16,7 @@ import com.google.cloud.datastore.Datastore;
 import com.google.cloud.datastore.testing.LocalDatastoreHelper;
 
 import rapture.common.CallingContext;
+import rapture.common.exception.ExceptionToString;
 import rapture.config.ConfigLoader;
 import rapture.config.RaptureConfig;
 import rapture.kernel.AbstractFileTest;
@@ -59,21 +60,21 @@ public class LocalDataStoreTest {
 
     @AfterClass
     public static void cleanupLocalDatastore() throws IOException, InterruptedException, TimeoutException {
-        for (File temp : files)
-            try {
-                if (temp.isDirectory()) FileUtils.deleteDirectory(temp);
-            } catch (Exception e) {
-                Logger.getLogger(AbstractFileTest.class).warn("Cannot delete " + temp);
-                // Unable to clean up properly
-            }
-        ConfigLoader.getConf().InitSysConfig = saveInitSysConfig;
-        ConfigLoader.getConf().RaptureRepo = saveRaptureRepo;
-
-        PubsubPipeline2Handler.cleanUp();
         try {
+            for (File temp : files)
+                try {
+                    if (temp.isDirectory()) FileUtils.deleteDirectory(temp);
+                } catch (Exception e) {
+                    Logger.getLogger(AbstractFileTest.class).warn("Cannot delete " + temp);
+                    // Unable to clean up properly
+                }
+            ConfigLoader.getConf().InitSysConfig = saveInitSysConfig;
+            ConfigLoader.getConf().RaptureRepo = saveRaptureRepo;
+
+            PubsubPipeline2Handler.cleanUp();
             helper.stop(new Duration(60000L));
         } catch (Exception e) {
-            System.out.println("Exception shutting down LocalDatastoreHelper: " + e.getMessage());
+            System.out.println("Exception shutting down LocalDatastoreHelper: " + ExceptionToString.format(e));
         }
     }
 }

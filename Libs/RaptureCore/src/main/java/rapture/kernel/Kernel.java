@@ -282,7 +282,6 @@ public enum Kernel {
 
     public static void initBootstrap() {
         // Ensure config is loaded
-        INSTANCE.shutdown();
         initBootstrap(null, null, false);
     }
 
@@ -695,6 +694,7 @@ public enum Kernel {
 
     @SuppressWarnings("static-access")
     public void restart() {
+        this.stopRapture();
         try {
             log.debug("Restarting Rapture");
             ScriptFactory.init();
