@@ -30,6 +30,7 @@ import rapture.common.hooks.CallName;
 import rapture.common.hooks.HookType;
 import rapture.common.impl.jackson.JacksonUtil;
 import rapture.kernel.Kernel;
+import rapture.kernel.Pipeline2ApiImpl;
 
 public class TopicPubHook extends AbstractApiHook {
     private Logger log = Logger.getLogger(getClass());
@@ -37,7 +38,11 @@ public class TopicPubHook extends AbstractApiHook {
     @Override
     public void doExecute(HookType hookType, CallingContext context, CallName callName) {
         HookMessage msg = new HookMessage(callName.toString(), context.getUser());
-        Kernel.getPipeline().getTrusted().publishTopicMessage(context, "main", "raptureTopic", "apiHook", JacksonUtil.jsonFromObject(msg));
+        if (Pipeline2ApiImpl.usePipeline2) {
+            Kernel.getPipeline2().broadcastMessage(context, "apiHook", JacksonUtil.jsonFromObject(msg));
+        } else {
+            Kernel.getPipeline().getTrusted().publishTopicMessage(context, "main", "raptureTopic", "apiHook", JacksonUtil.jsonFromObject(msg));
+        }
     }
 
     public static String getStandardId() {
