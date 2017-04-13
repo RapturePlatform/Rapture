@@ -105,7 +105,6 @@ public class AppStatusP2Test {
                 "LOG {} using MEMORY {prefix=\"/tmp/" + UUID.randomUUID() + "\"}");
 
         Kernel.INSTANCE.restart();
-
         Kernel.initBootstrap();
         Kernel.getAudit().createAuditLog(CTX, "//workflow", auditConfig);
         subscriber = Kernel.INSTANCE.createAndSubscribe(CATEGORY, config.DefaultExchange);

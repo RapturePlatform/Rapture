@@ -131,6 +131,7 @@ public class BlobApiGoogleTest extends LocalDataStoreTest {
         Kernel.getAudit().createAuditLog(ContextFactory.getKernelUser(), new RaptureURI(RaptureConstants.DEFAULT_AUDIT_URI, Scheme.LOG).getAuthority(),
                 "LOG {} using MEMORY {}");
 
+        Kernel.INSTANCE.restart();
         Kernel.initBootstrap();
         callingContext = ContextFactory.getKernelUser();
         Kernel.getAudit().createAuditLog(ContextFactory.getKernelUser(), new RaptureURI(RaptureConstants.DEFAULT_AUDIT_URI, Scheme.LOG).getAuthority(),

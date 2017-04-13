@@ -84,6 +84,7 @@ public class WorkOrderTest {
         RaptureConfig config = ConfigLoader.getConf();
         config.DefaultExchange = "PIPELINE {} USING GCP_PUBSUB { projectid=\"todo3-incap\"}";
 
+        Kernel.shutdown();
         Kernel.initBootstrap();
 
         // LocalPubSubHelper is deprecated

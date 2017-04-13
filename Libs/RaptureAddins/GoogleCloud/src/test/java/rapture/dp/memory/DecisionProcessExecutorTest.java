@@ -81,7 +81,6 @@ import rapture.kernel.ContextFactory;
 import rapture.kernel.Kernel;
 import rapture.kernel.Pipeline2ApiImpl;
 import rapture.kernel.dp.StepRecordUtil;
-import rapture.repo.google.GoogleDatastoreKeyStore;
 
 public class DecisionProcessExecutorTest {
     private static final Logger log = Logger.getLogger(DecisionProcessExecutorTest.class);
@@ -109,7 +108,6 @@ public class DecisionProcessExecutorTest {
 
     @BeforeClass
     public static void setup() {
-        GoogleDatastoreKeyStore.brk = true;
         Pipeline2ApiImpl.usePipeline2 = true;
         RaptureConfig config = ConfigLoader.getConf();
         config.DefaultExchange = "PIPELINE {} USING MEMORY { }";
