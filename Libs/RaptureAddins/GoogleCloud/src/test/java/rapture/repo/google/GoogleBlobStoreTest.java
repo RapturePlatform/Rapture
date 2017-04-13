@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.util.UUID;
 import java.util.concurrent.TimeoutException;
 
+import org.apache.http.conn.scheme.Scheme;
 import org.apache.log4j.Logger;
 import org.joda.time.Duration;
 import org.junit.AfterClass;
@@ -47,7 +48,6 @@ import rapture.blob.BlobStore;
 import rapture.blob.BlobStoreContractTest;
 import rapture.common.RaptureConstants;
 import rapture.common.RaptureURI;
-import rapture.common.Scheme;
 import rapture.common.exception.ExceptionToString;
 import rapture.kernel.ContextFactory;
 import rapture.kernel.Kernel;

@@ -282,6 +282,7 @@ public enum Kernel {
 
     public static void initBootstrap() {
         // Ensure config is loaded
+        INSTANCE.shutdown();
         initBootstrap(null, null, false);
     }
 
