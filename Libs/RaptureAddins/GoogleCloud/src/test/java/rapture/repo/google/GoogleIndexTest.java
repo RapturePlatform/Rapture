@@ -27,14 +27,12 @@ import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
-import org.joda.time.Duration;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 
-import com.google.cloud.datastore.testing.LocalDatastoreHelper;
 import com.google.common.collect.ImmutableMap;
 
 import rapture.common.CallingContext;
@@ -51,7 +49,7 @@ import rapture.kernel.ContextFactory;
 import rapture.kernel.Kernel;
 
 @Ignore
-public class GoogleIndexTest extends MockDataStoreTest {
+public class GoogleIndexTest extends LocalDataStoreTest {
     private static CallingContext ctx = ContextFactory.getKernelUser();
     static String auth = UUID.randomUUID().toString();
     static DocApi document = null;
@@ -62,15 +60,9 @@ public class GoogleIndexTest extends MockDataStoreTest {
     private static IndexConfig planetIndex = null;
     final String authorityName = "docplanetdata1." + System.nanoTime();
 
-    final static LocalDatastoreHelper helper = LocalDatastoreHelper.create();
-
     @BeforeClass
     public static void setUp() throws IOException, InterruptedException {
         System.setProperty("LOGSTASH-ISENABLED", "false");
-
-        helper.start(); // Starts the local Datastore emulator in a separate process
-        GoogleDatastoreKeyStore.setDatastoreOptionsForTesting(helper.getOptions());
-        GoogleIndexHandler.setDatastoreOptionsForTesting(helper.getOptions());
 
         document = Kernel.getDoc();
         script = Kernel.getScript();
@@ -96,13 +88,8 @@ public class GoogleIndexTest extends MockDataStoreTest {
     public static void cleanUp() {
         Kernel.getDoc().deleteDocRepo(ctx, "//docTest");
         Kernel.getIndex().deleteIndex(ctx, "//docTest");
-        try {
-            helper.stop(new Duration(6000L));
-        } catch (Exception e) {
-            System.out.println("Exception shutting down LocalDatastoreHelper: " + e.getMessage());
-        }
-    }
 
+    }
 
     @Ignore
     public void writeADoc() {

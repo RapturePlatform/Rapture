@@ -35,17 +35,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.TimeoutException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
-import org.joda.time.Duration;
-import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import com.google.cloud.datastore.testing.LocalDatastoreHelper;
 
 import rapture.common.CallingContext;
 import rapture.common.RaptureConstants;
@@ -54,13 +49,11 @@ import rapture.common.RaptureURI;
 import rapture.common.Scheme;
 import rapture.common.impl.jackson.JacksonUtil;
 import rapture.common.model.DocumentRepoConfig;
-import rapture.kernel.AbstractFileTest;
 import rapture.kernel.ContextFactory;
 import rapture.kernel.DocApiImpl;
 import rapture.kernel.Kernel;
-import rapture.pipeline2.gcp.PubsubPipeline2Handler;
 
-public class DocApiGoogleTest extends AbstractFileTest {
+public class DocApiGoogleTest extends LocalDataStoreTest {
 
     private static final Logger log = Logger.getLogger(DocApiGoogleTest.class);
     private static final String REPO_USING_GCP_DATASTORE = "REP {} USING GCP_DATASTORE {prefix =\"" + auth + "\"}";
@@ -69,35 +62,10 @@ public class DocApiGoogleTest extends AbstractFileTest {
     private static final String docAuthorityURI = "document://" + auth;
     private static final String docURI = docAuthorityURI + "/brain/salad/surgery";
 
-    private static CallingContext callingContext;
     private static DocApiImpl docImpl;
-
-    static LocalDatastoreHelper helper = null;
-
-    @BeforeClass
-    public static void setupLocalDatastore() throws IOException, InterruptedException {
-        helper = LocalDatastoreHelper.create(1.0);
-        helper.start(); // Starts the local Datastore emulator in a separate process
-        GoogleDatastoreKeyStore.setDatastoreOptionsForTesting(helper.getOptions());
-        GoogleIndexHandler.setDatastoreOptionsForTesting(helper.getOptions());
-    }
-
-    @AfterClass
-    public static void cleanupLocalDatastore() throws IOException, InterruptedException, TimeoutException {
-        Kernel.shutdown();
-        PubsubPipeline2Handler.cleanUp();
-        try {
-            helper.stop(new Duration(60000L));
-            helper.reset();
-            helper = null;
-        } catch (Exception e) {
-            System.out.println("Exception shutting down LocalDatastoreHelper: " + e.getMessage());
-        }
-    }
 
     @BeforeClass
     static public void setUp() {
-        AbstractFileTest.setUp();
         config.RaptureRepo = REPO_USING_GCP_DATASTORE;
         config.InitSysConfig = "NREP {} USING GCP_DATASTORE { prefix =\"" + auth + "/sys.config\"}";
         config.DefaultPipelineTaskStatus = "TABLE {} USING MEMORY {prefix =\"" + auth + "\"}";

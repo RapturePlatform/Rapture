@@ -84,8 +84,9 @@ import rapture.kernel.ContextFactory;
 import rapture.kernel.Kernel;
 import rapture.kernel.Pipeline2ApiImpl;
 import rapture.kernel.dp.StepRecordUtil;
+import rapture.repo.google.LocalDataStoreTest;
 
-public class DecisionProcessExecutorTest {
+public class DecisionProcessExecutorTest extends LocalDataStoreTest {
     private static final Logger log = Logger.getLogger(DecisionProcessExecutorTest.class);
 
     private static final int MAX_WAIT = 20000;

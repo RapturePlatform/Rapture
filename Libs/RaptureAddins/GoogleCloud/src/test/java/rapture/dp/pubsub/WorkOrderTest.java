@@ -41,6 +41,7 @@ import org.joda.time.DateTimeZone;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.testng.Assert;
 
 import rapture.common.CallingContext;
 import rapture.common.JobType;
@@ -78,12 +79,25 @@ public class WorkOrderTest {
 
     @Before
     public void setup() {
-        Kernel.getKernel().restart();
+
         Pipeline2ApiImpl.usePipeline2 = true;
         RaptureConfig config = ConfigLoader.getConf();
         config.DefaultExchange = "PIPELINE {} USING GCP_PUBSUB { projectid=\"todo3-incap\"}";
 
         Kernel.initBootstrap();
+
+        // LocalPubSubHelper is deprecated
+        // Start the emulator by hand using gcloud beta emulators pubsub start
+        // and point the code at the host and port it uses
+
+        // helper = LocalPubSubHelper.create();
+        // try {
+        // helper.start();
+        // } catch (IOException | InterruptedException e) {
+        // // TODO Auto-generated catch block
+        // e.printStackTrace();
+        // }
+        // localPubsub = helper.getOptions().getService();
 
         subscriber = Kernel.createAndSubscribe(ALPHA, "PIPELINE {} USING GCP_PUBSUB { projectid=\"todo3-incap\"}");
         Kernel.getAudit().createAuditLog(ContextFactory.getKernelUser(), new RaptureURI(RaptureConstants.DEFAULT_AUDIT_URI, Scheme.LOG).getAuthority(),
@@ -130,19 +144,22 @@ public class WorkOrderTest {
 
     @Test
     public void testGetWorkOrdersByWorkflow() {
+        List<String> before = Kernel.getDecision().getWorkOrdersByWorkflow(ctx, System.currentTimeMillis(), workflowUri);
+        int prev = before.size();
+
         final String workOrderUri = Kernel.getDecision().createWorkOrder(ctx, workflowUri, null);
         Kernel.getDecision().createWorkOrder(ctx, workflowUri2, null);
 
         List<String> ret = Kernel.getDecision().getWorkOrdersByWorkflow(ctx, System.currentTimeMillis(), workflowUri);
-        assertEquals(1, ret.size());
-        assertEquals(workOrderUri, ret.get(0));
+        assertEquals(prev + 1, ret.size());
+        assertEquals(workOrderUri, ret.get(prev));
 
         // test past date
         DateTime inThePast = new DateTime(System.currentTimeMillis(), DateTimeZone.UTC).withTimeAtStartOfDay();
         inThePast = inThePast.minusDays(10);
         ret = Kernel.getDecision().getWorkOrdersByWorkflow(ctx, inThePast.getMillis(), workflowUri);
-        assertEquals(1, ret.size());
-        assertEquals(workOrderUri, ret.get(0));
+        assertEquals(prev + 1, ret.size());
+        assertEquals(workOrderUri, ret.get(prev));
 
         // test future
         DateTime inTheFuture = new DateTime(System.currentTimeMillis(), DateTimeZone.UTC).withTimeAtStartOfDay();
@@ -156,8 +173,8 @@ public class WorkOrderTest {
 
         // test null param
         ret = Kernel.getDecision().getWorkOrdersByWorkflow(ctx, null, workflowUri);
-        assertEquals(1, ret.size());
-        assertEquals(workOrderUri, ret.get(0));
+        assertEquals(prev + 1, ret.size());
+        assertEquals(workOrderUri, ret.get(prev));
 
     }
 
@@ -193,15 +210,23 @@ public class WorkOrderTest {
 
     @Test
     public void testGetJobExecsAndWorkOrdersByDay() {
+        Map<RaptureJobExec, WorkOrder> init = Kernel.getDecision().getJobExecsAndWorkOrdersByDay(ctx, System.currentTimeMillis());
+        int prev = init.size();
+
         final String jobUri = "job://workorderjobz/job2";
         Kernel.getSchedule().createWorkflowJob(ctx, jobUri, null, workflowUri, "* * * * *", "America/New_York", new HashMap<>(), false, 1, null);
         String returnedWorkOrderUri = Kernel.getSchedule().runJobNow(ctx, jobUri, null);
         assertNotNull(returnedWorkOrderUri);
         Map<RaptureJobExec, WorkOrder> ret = Kernel.getDecision().getJobExecsAndWorkOrdersByDay(ctx, System.currentTimeMillis());
-        assertEquals(1, ret.size());
-        Map.Entry<RaptureJobExec, WorkOrder> entry = ret.entrySet().iterator().next();
-        assertEquals(jobUri, entry.getKey().getJobURI());
-        assertEquals(workflowUri, entry.getValue().getWorkflowURI());
+        assertEquals(1 + prev, ret.size());
+        boolean found = false;
+        for (Map.Entry<RaptureJobExec, WorkOrder> entry : ret.entrySet()) {
+            if (jobUri.equals(entry.getKey().getJobURI())) {
+                assertEquals(workflowUri, entry.getValue().getWorkflowURI());
+                found = true;
+            }
+        }
+        Assert.assertTrue(found);
     }
 
 }

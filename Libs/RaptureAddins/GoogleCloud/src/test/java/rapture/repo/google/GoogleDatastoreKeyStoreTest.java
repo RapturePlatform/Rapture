@@ -57,7 +57,7 @@ import rapture.lock.dummy.DummyLockHandler;
 import rapture.repo.KeyStore;
 import rapture.repo.NVersionedRepo;
 
-public class GoogleDatastoreKeyStoreTest extends MockDataStoreTest {
+public class GoogleDatastoreKeyStoreTest extends LocalDataStoreTest {
     private NVersionedRepo repo;
 
     KeyStore store;

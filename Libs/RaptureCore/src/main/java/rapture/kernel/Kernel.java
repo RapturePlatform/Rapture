@@ -82,6 +82,7 @@ import rapture.common.model.RaptureUser;
 import rapture.common.model.RaptureUserStorage;
 import rapture.config.ConfigLoader;
 import rapture.dsl.entparser.ParseEntitlementPath;
+import rapture.exchange.QueueHandler;
 import rapture.index.IndexHandler;
 import rapture.kernel.cache.KernelCaches;
 import rapture.kernel.cache.RepoCacheManager;
@@ -153,9 +154,9 @@ public enum Kernel {
     public static TransformApiImplWrapper getTransform() {
         return INSTANCE.transform;
     }
-    
+
     public static EntityApiImplWrapper getEntity() {
-    	return INSTANCE.entity;
+        return INSTANCE.entity;
     }
 
     public static IdGenApiImplWrapper getIdGen() {
@@ -245,17 +246,17 @@ public enum Kernel {
     public static TagApiImplWrapper getTag() {
         return INSTANCE.tag;
     }
-    
+
     public static OperationApiImplWrapper getOperation() {
-    	return INSTANCE.operation;
+        return INSTANCE.operation;
     }
-    
+
     public static WidgetApiImplWrapper getWidget() {
-    	return INSTANCE.widget;
+        return INSTANCE.widget;
     }
-    
+
     public static ProgramApiImplWrapper getProgram() {
-    	return INSTANCE.program;
+        return INSTANCE.program;
     }
 
     public static MetricsService getMetricsService() {
@@ -535,8 +536,8 @@ public enum Kernel {
     }
 
     /**
-     * Here we need to look for the ipaddresswhitelist. If present, check this address against it If not present, everything goes. A separate parameter
-     * "never check" in the kernel can change this behaviour - that will be set on startup.
+     * Here we need to look for the ipaddresswhitelist. If present, check this address against it If not present, everything goes. A separate parameter "never
+     * check" in the kernel can change this behaviour - that will be set on startup.
      *
      * @param remoteAddr
      * @return
@@ -887,31 +888,29 @@ public enum Kernel {
     }
 
     public void stopRapture() {
-        notificationManager.stopNotificationManager();
-        repoCacheManager.resetAllCache();
+        if (notificationManager != null) notificationManager.stopNotificationManager();
+        if (repoCacheManager != null) repoCacheManager.resetAllCache();
     }
 
     public CallingContext loadContext(String contextId) {
         return CallingContextStorage.readByFields(contextId);
     }
-    
-    public CallingContext loadContext(String appKey, String apiKey) {
-    	log.info("Looking for " + appKey + " and " + apiKey);
-    	APIKeyDefinition def = APIKeyDefinitionStorage.readByFields(appKey, apiKey);
-    	if (def == null) {
-    	    log.debug(appKey + apiKey + " pair does not exist.");
-    		return null;
-    	}
-    	else {
-    		log.info("Resolved to user: " + def.getUserId());
-    		CallingContext ctx = new CallingContext();
-    		ctx.setUser(def.getUserId());
-    		ctx.setContext(apiKey);
-    		ctx.setValid(true);
-    		return ctx;
-    	}
-	}
 
+    public CallingContext loadContext(String appKey, String apiKey) {
+        log.info("Looking for " + appKey + " and " + apiKey);
+        APIKeyDefinition def = APIKeyDefinitionStorage.readByFields(appKey, apiKey);
+        if (def == null) {
+            log.debug(appKey + apiKey + " pair does not exist.");
+            return null;
+        } else {
+            log.info("Resolved to user: " + def.getUserId());
+            CallingContext ctx = new CallingContext();
+            ctx.setUser(def.getUserId());
+            ctx.setContext(apiKey);
+            ctx.setValid(true);
+            return ctx;
+        }
+    }
 
     public void validateContext(CallingContext context, String entitlementPath, IEntitlementsContext entCtx) throws RaptureException, RaptNotLoggedInException {
         // Check to see if the user is an apiKey (it will have a prefix of zz )
@@ -1016,20 +1015,23 @@ public enum Kernel {
         }
     }
 
-    // Not used anywhere
-    // /**
-    // * Register this server to handle messages on exchanges associated with the given category. This differs from {@link #setCategoryMembership(String)} in
-    // what
-    // * Queue Handlers it allows. This method allows defining custom handlers, which will override all default handlers. If you wish to handle some custom mime
-    // * types or use custom handlers *in addition* to the default handlers, you currently need to pass in all the default handlers. It may be worth writing a
-    // * method that makes this easier.
-    // *
-    // * @param category
-    // * @param customHandlers
-    // */
-    // public static void setCategoryMembership(String category, Map<String, QueueHandler> customHandlers) {
-    // if (INSTANCE.taskHandler != null) INSTANCE.taskHandler.setCategoryMembership(category, customHandlers);
-    // }
+    /**
+     * Register this server to handle messages on exchanges associated with the given category. This differs from {@link #setCategoryMembership(String)} in what
+     * Queue Handlers it allows. This method allows defining custom handlers, which will override all default handlers. If you wish to handle some custom mime
+     * types or use custom handlers *in addition* to the default handlers, you currently need to pass in all the default handlers. It may be worth writing a
+     * method that makes this easier.
+     *
+     * @param category
+     * @param customHandlers
+     */
+    public static void setCategoryMembership(String category, Map<String, QueueHandler> customHandlers) {
+        if (Pipeline2ApiImpl.usePipeline2) {
+            throw new RuntimeException("setCategoryMembership with legacy Queue Handlers not supported for Pipeine 2");
+            // createAndSubscribe(category, ConfigLoader.getConf().DefaultExchange);
+        } else {
+            INSTANCE.taskHandler.setCategoryMembership(category, customHandlers);
+        }
+    }
 
     public SeriesRepo getSeriesRepo(RaptureURI seriesURI) {
         return repoCacheManager.getSeriesRepo(seriesURI.getAuthority());
@@ -1096,5 +1098,4 @@ public enum Kernel {
         return (sb.toString());
     }
 
-	
 }

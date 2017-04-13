@@ -168,7 +168,7 @@ public class GoogleDatastoreKeyStore extends AbstractKeyStore implements KeyStor
 
     @Override
     public boolean containsKey(String key) {
-        Key taskKey = datastore.newKeyFactory().setKind(kind).newKey(key);
+        Key taskKey = datastore.newKeyFactory().setKind(kind).newKey(encode(key));
         return (datastore.get(taskKey) != null);
     }
 
@@ -218,7 +218,7 @@ public class GoogleDatastoreKeyStore extends AbstractKeyStore implements KeyStor
      */
     @Override
     public boolean delete(String key) {
-        Key entityKey = datastore.newKeyFactory().setKind(kind).newKey(key);
+        Key entityKey = datastore.newKeyFactory().setKind(kind).newKey(encode(key));
         datastore.delete(entityKey);
         return true;
     }
@@ -286,7 +286,7 @@ public class GoogleDatastoreKeyStore extends AbstractKeyStore implements KeyStor
     @Override
     public String get(String key) {
         try {
-            Key entityKey = datastore.newKeyFactory().setKind(kind).newKey(key);
+            Key entityKey = datastore.newKeyFactory().setKind(kind).newKey(encode(key));
             Entity entity = datastore.get(entityKey);
             Map<String, Object> map = new HashMap<>();
             if (entity != null) {
@@ -321,17 +321,21 @@ public class GoogleDatastoreKeyStore extends AbstractKeyStore implements KeyStor
             Set<Entry> entries = ((Map) val).entrySet();
             for (Entry e : entries) {
                 String kiki = e.getKey().toString();
-                builder.set(kiki, valerie(kiki, e.getValue()));
+                builder.set(encode(kiki), valerie(kiki, e.getValue()));
             }
             valerie = new EntityValue(builder.build());
         } else if (val instanceof String) {
             String str = val.toString();
-            valerie = StringValue.newBuilder(str).setExcludeFromIndexes(str.length() >= 1500).build();
-        } else if ((val instanceof Double) || (val instanceof Float)) valerie = new DoubleValue((Double) val);
-        else if (val instanceof BigDecimal) valerie = new DoubleValue(((BigDecimal) val).doubleValue());
-        else if (val instanceof Number) valerie = new LongValue(((Number) val).longValue());
-        else if (val instanceof Boolean) valerie = new BooleanValue((Boolean) val);
-        else if (val instanceof List) {
+            valerie = StringValue.newBuilder(str).setExcludeFromIndexes(true).build();
+        } else if ((val instanceof Double) || (val instanceof Float)) {
+            valerie = DoubleValue.newBuilder((Double) val).setExcludeFromIndexes(true).build();
+        } else if (val instanceof BigDecimal) {
+            valerie = DoubleValue.newBuilder(((BigDecimal) val).doubleValue()).setExcludeFromIndexes(true).build();
+        } else if (val instanceof Number) {
+            valerie = LongValue.newBuilder(((Number) val).longValue()).setExcludeFromIndexes(true).build();
+        } else if (val instanceof Boolean) {
+            valerie = new BooleanValue((Boolean) val);
+        } else if (val instanceof List) {
             List<Value<?>> valist = new ArrayList<>();
             for (Object o : ((List) val)) {
                 valist.add(valerie(null, o));
@@ -350,20 +354,23 @@ public class GoogleDatastoreKeyStore extends AbstractKeyStore implements KeyStor
      * For a key that uses a custom name, always use UTF-8 characters except a forward slash (/). Non-UTF-8 characters interfere with various processes such as
      * importing a Cloud Datastore backup into Google BigQuery. A forward slash could interfere with future functionality.
      */
+
+    public static boolean brk = false;
+
     @Override
     public void put(String key, String value) {
-        Key entityKey = datastore.newKeyFactory().setKind(kind).newKey(key);
+        Key entityKey = datastore.newKeyFactory().setKind(kind).newKey(encode(key));
         Map<String, Object> map = JacksonUtil.getMapFromJson(value);
         Builder builder = Entity.newBuilder(entityKey);
         for (Entry<String, Object> entry : map.entrySet()) {
-            builder.set(entry.getKey(), valerie(entry.getKey(), entry.getValue()));
+            builder.set(encode(entry.getKey()), valerie(entry.getKey(), entry.getValue()));
         }
         Entity entity = builder.build();
 
         try {
             datastore.put(entity);
         } catch (Exception e) {
-            String error = ExceptionToString.summary(e);
+            String error = ExceptionToString.format(e);
             log.error(error);
             throw e;
         }
@@ -388,7 +395,7 @@ public class GoogleDatastoreKeyStore extends AbstractKeyStore implements KeyStor
         int count = 0;
         while (result.hasNext()) {
             Key peele = result.next();
-            String jordan = peele.getName();
+            String jordan = decode(peele.getName());
             count++;
             System.out.println("" + count + " : " + jordan);
             if (prefix == null || jordan.startsWith(prefix)) {
@@ -427,7 +434,7 @@ public class GoogleDatastoreKeyStore extends AbstractKeyStore implements KeyStor
         QueryResults<Key> result = datastore.run(query.build());
         while (result.hasNext()) {
             Key peele = result.next();
-            String jordan = peele.getName();
+            String jordan = decode(peele.getName());
             if (jordan.startsWith(prefix)) {
                 String keegan = jordan.substring(prefix.length());
                 int idx = keegan.indexOf('/');
@@ -477,5 +484,22 @@ public class GoogleDatastoreKeyStore extends AbstractKeyStore implements KeyStor
     @Override
     public long getSize() {
         return -1;
+    }
+
+    static String encode(String key) {
+        if (key.contains(".")) log.warn("Google Datastore does not like dots in keys");
+        // try {
+        // return URLEncoder.encode(key, "UTF-8");
+        // } catch (UnsupportedEncodingException e) {
+            return key;
+        // }
+    }
+
+    static String decode(String key) {
+        // try {
+        // return URLDecoder.decode(key, "UTF-8");
+        // } catch (UnsupportedEncodingException e) {
+            return key;
+        // }
     }
 }

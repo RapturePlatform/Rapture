@@ -48,9 +48,6 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import com.google.cloud.datastore.Datastore;
-import com.google.cloud.datastore.DatastoreOptions;
-import com.google.cloud.datastore.testing.LocalDatastoreHelper;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageException;
 import com.google.cloud.storage.testing.RemoteStorageHelper;
@@ -73,7 +70,7 @@ import rapture.kernel.BlobApiImpl;
 import rapture.kernel.ContextFactory;
 import rapture.kernel.Kernel;
 
-public class BlobApiGoogleTest {
+public class BlobApiGoogleTest extends LocalDataStoreTest {
 
     public static String saveInitSysConfig;
     public static String saveRaptureRepo;
@@ -90,21 +87,20 @@ public class BlobApiGoogleTest {
     static String blobAuthorityURI = "blob://" + auth;
     static String blobURI = blobAuthorityURI + "/SwampThing";
 
-    static LocalDatastoreHelper helper = null;
-    static Datastore datastore;
     static RemoteStorageHelper storageHelper = null;
     static Storage storage;
+
+    // Make sure
+    // * that the google SDK is installed
+    // * that $PATH includes google-cloud-sdk/bin
+    // that gcloud version returns a value for cloud-datastore-emulator
+    //
+    // You can install cloud-datastore-emulator with the command gcloud beta emulators datastore start
 
     @BeforeClass
     static public void setUp() {
         String namespace = UUID.randomUUID().toString();
         try {
-            helper = LocalDatastoreHelper.create(1.0);
-            helper.start(); // Starts the local Datastore emulator in a separate process
-            DatastoreOptions options = helper.getOptions(namespace);
-            GoogleDatastoreKeyStore.setDatastoreOptionsForTesting(options);
-            GoogleIndexHandler.setDatastoreOptionsForTesting(options);
-            datastore = options.getService();
             storageHelper = RemoteStorageHelper.create();
             storage = storageHelper.getOptions().getService();
         } catch (Exception e1) {
@@ -169,8 +165,8 @@ public class BlobApiGoogleTest {
     public void testCreateAndGetRepo() {
         if (!firstTime && blobImpl.blobRepoExists(callingContext, blobAuthorityURI)) return;
         firstTime = false;
-        blobImpl.createBlobRepo(callingContext, blobAuthorityURI, BLOB_USING_GOOGLE, META_USING_GOOGLE);
-        BlobRepoConfig blobRepoConfig = blobImpl.getBlobRepoConfig(callingContext, blobAuthorityURI);
+	blobImpl.createBlobRepo(callingContext, blobAuthorityURI, BLOB_USING_GOOGLE, META_USING_GOOGLE);
+	BlobRepoConfig blobRepoConfig = blobImpl.getBlobRepoConfig(callingContext, blobAuthorityURI);
         assertNotNull(blobRepoConfig);
         assertEquals(BLOB_USING_GOOGLE, blobRepoConfig.getConfig());
         assertEquals(META_USING_GOOGLE, blobRepoConfig.getMetaConfig());
