@@ -355,8 +355,6 @@ public class GoogleDatastoreKeyStore extends AbstractKeyStore implements KeyStor
      * importing a Cloud Datastore backup into Google BigQuery. A forward slash could interfere with future functionality.
      */
 
-    public static boolean brk = false;
-
     @Override
     public void put(String key, String value) {
         Key entityKey = datastore.newKeyFactory().setKind(kind).newKey(encode(key));
