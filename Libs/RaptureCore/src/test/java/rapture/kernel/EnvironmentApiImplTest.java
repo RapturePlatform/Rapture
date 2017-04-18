@@ -41,7 +41,7 @@ import rapture.jmx.JmxApp;
 import rapture.jmx.JmxAppCache;
 import rapture.jmx.JmxServer;
 
-public class EnvironmentApiImplTest { // 408 247 5500 5:40 thu
+public class EnvironmentApiImplTest {
 
     private static final Logger log = Logger.getLogger(EnvironmentApiImplTest.class);
 

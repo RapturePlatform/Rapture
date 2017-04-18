@@ -66,7 +66,10 @@ public final class IdGenFactory {
                 ret.setIdGenStore(new IdGenMemoryStore());
                 break;
             case IdGenLexer.GCP_DATASTORE:
-                ret.setIdGenStore(getIdGenStore("rapture.repo.google.IdGenGoogleStore", parser.getInstance(), parser.getConfig().getConfig()));
+                ret.setIdGenStore(getIdGenStore("rapture.repo.google.IdGenGoogleDatastore", parser.getInstance(), parser.getConfig().getConfig()));
+                break;
+            case IdGenLexer.GCP_STORAGE:
+                ret.setIdGenStore(getIdGenStore("rapture.repo.google.IdGenGoogleStorage", parser.getInstance(), parser.getConfig().getConfig()));
                 break;
             case IdGenLexer.MONGODB:
                 ret.setIdGenStore(getIdGenStore("rapture.idgen.mongodb.IdGenMongoStore", parser.getInstance(), parser.getConfig().getConfig()));

@@ -20,7 +20,7 @@ import rapture.dsl.idgen.RaptureIdGen;
 import rapture.kernel.ContextFactory;
 import rapture.kernel.Kernel;
 
-public class IdGenGoogleStoreTest extends LocalDataStoreTest {
+public class IdGenGoogleDatastoreTest extends LocalDataStoreTest {
     UUID uuid = UUID.randomUUID();
 
 
@@ -34,7 +34,7 @@ public class IdGenGoogleStoreTest extends LocalDataStoreTest {
     public void testIdGen1() {
         RaptureIdGen f = new RaptureIdGen();
         ImmutableMap<String, String> map = ImmutableMap.of("initial", "10", "base", "26", "length", "8", "prefix", "TST");
-        f.setIdGenStore(new IdGenGoogleStore(localDatastore, "TST"));
+        f.setIdGenStore(new IdGenGoogleDatastore(localDatastore, "TST"));
         f.setProcessorConfig(map);
         String result = f.incrementIdGen(10L);
         assertEquals("TST0000000K", result);
@@ -44,7 +44,7 @@ public class IdGenGoogleStoreTest extends LocalDataStoreTest {
     public void testIdGen2() {
         RaptureIdGen f = new RaptureIdGen();
         ImmutableMap<String, String> map = ImmutableMap.of("initial", "706216874", "base", "36", "length", "6", "prefix", "OI-");
-        f.setIdGenStore(new IdGenGoogleStore(localDatastore, "OI-"));
+        f.setIdGenStore(new IdGenGoogleDatastore(localDatastore, "OI-"));
         f.setProcessorConfig(map);
 
         String result = f.incrementIdGen(1L);
