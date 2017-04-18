@@ -260,7 +260,8 @@ public class PubsubPipeline2Handler implements Pipeline2Handler {
         } catch (Exception e) {
             // If there are multiple subscribers sharing the same ID it may have already have been deleted.
         }
-        if (subMap.get(queueIdentifier).equals(qsubscriber.getSubscriberId())) {
+        String qid = subMap.get(queueIdentifier);
+        if ((qid != null) && qid.equals(qsubscriber.getSubscriberId())) {
             subMap.remove(queueIdentifier);
         }
     }
