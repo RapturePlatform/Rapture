@@ -48,8 +48,8 @@ import rapture.dsl.idgen.IdGenStore;
  * A idgen implemented on GoogleDb
  */
 
-public class IdGenGoogleStore implements IdGenStore {
-    private static Logger log = Logger.getLogger(IdGenGoogleStore.class);
+public class IdGenGoogleDatastore implements IdGenStore {
+    private static Logger log = Logger.getLogger(IdGenGoogleDatastore.class);
 
     private static final String SEQ = "seq";
     private static final String IDGEN = "idgen";
@@ -63,11 +63,11 @@ public class IdGenGoogleStore implements IdGenStore {
     private Map<String, String> config = null;
     private Datastore datastore = null;
 
-    public IdGenGoogleStore() {
+    public IdGenGoogleDatastore() {
     }
 
     // For unit testing.
-    protected IdGenGoogleStore(Datastore testdatastore, String testkind) {
+    protected IdGenGoogleDatastore(Datastore testdatastore, String testkind) {
         datastore = testdatastore;
         kind = testkind;
         makeValid();

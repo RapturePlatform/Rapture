@@ -24,7 +24,7 @@ pdef	   : s=pstyle config { addProcessorConfig($s.text); };
 idef   : s=istyle config { addConfig($s.text); };
 
 pstyle   : IDGEN;
-istyle : s=(MEMORY | FILE| GCP_DATASTORE | MONGODB) { setStore($s); };
+istyle : s=(MEMORY | FILE | GCP_DATASTORE | GCP_STORAGE | MONGODB) { setStore($s); };
 
 config 	   : LBRACE entrylist RBRACE;
 

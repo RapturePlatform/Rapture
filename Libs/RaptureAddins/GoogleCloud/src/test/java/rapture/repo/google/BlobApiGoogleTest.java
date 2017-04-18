@@ -61,6 +61,7 @@ import rapture.common.RaptureConstants;
 import rapture.common.RaptureFolderInfo;
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
+import rapture.common.exception.ExceptionToString;
 import rapture.common.exception.RaptureException;
 import rapture.common.impl.jackson.JacksonUtil;
 import rapture.common.model.BlobRepoConfig;
@@ -156,7 +157,12 @@ public class BlobApiGoogleTest extends LocalDataStoreTest {
         }
         String environment = Kernel.getAdmin().getEnvironmentName(ContextFactory.getKernelUser()).toLowerCase();
         Kernel.shutdown();
-        storageHelper.forceDelete(storage, (environment + "b" + auth).toLowerCase());
+        try {
+            storageHelper.forceDelete(storage, (environment + "b" + auth).toLowerCase());
+        } catch (Exception e) {
+            System.out.println("Ignored exception in cleanup " + ExceptionToString.format(e));
+            // Cleaning up. Don't care about exceptions here
+        }
     }
 
     static boolean firstTime = true;

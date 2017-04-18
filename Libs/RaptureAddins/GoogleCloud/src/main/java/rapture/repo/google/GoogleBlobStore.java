@@ -32,6 +32,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -50,8 +51,6 @@ import rapture.blob.BlobStore;
 import rapture.common.CallingContext;
 import rapture.common.RaptureURI;
 import rapture.config.MultiValueConfigLoader;
-import rapture.kernel.ContextFactory;
-import rapture.kernel.Kernel;
 
 /**
  * GoogleBlobStore uses the Google Cloud Storage to implement a BlobStore Google has the concept of Buckets which store blobs. At first pass it seems logical to
@@ -74,7 +73,9 @@ public class GoogleBlobStore extends BaseBlobStore implements BlobStore {
     }
 
     public GoogleBlobStore() {
-        environment = Kernel.getAdmin().getEnvironmentName(ContextFactory.getKernelUser()).toLowerCase();
+        environment = System.getenv("ENV_NAME");
+        if (environment == null) environment = UUID.randomUUID().toString();
+        environment = "r" + System.currentTimeMillis();
     }
 
     @Override
@@ -209,6 +210,7 @@ public class GoogleBlobStore extends BaseBlobStore implements BlobStore {
 
     @Override
     public void setConfig(Map<String, String> config) {
+
         String prefix = StringUtils.trimToNull(config.get("prefix"));
         if (prefix == null) {
             throw new RuntimeException("Prefix not set in " + config);
@@ -226,7 +228,7 @@ public class GoogleBlobStore extends BaseBlobStore implements BlobStore {
             storage = StorageOptions.newBuilder().setProjectId(projectId).build().getService();
         }
         // NOTE cannot currently use a full stop in a bucket name.
-        bucketName = environment + prefix.replaceAll("\\.", "").toLowerCase();
+        bucketName = environment + prefix.replaceAll("[\\./]", "").toLowerCase();
         try {
             bucket = storage.get(bucketName);
         } catch (StorageException e) {
