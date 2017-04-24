@@ -79,7 +79,6 @@ public class SimpleBranchTest {
     
     @BeforeClass
     public static void setup() {
-        Pipeline2ApiImpl.usePipeline2 = true;
         System.setProperty("LOGSTASH-ISENABLED", "false");
         RaptureConfig config = ConfigLoader.getConf();
         config.DefaultExchange = "PIPELINE {} USING MEMORY { }";

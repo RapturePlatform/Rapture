@@ -59,7 +59,7 @@ public final class Pipeline2Factory {
             if (implementationMap.containsKey(implementationType)) {
                 return getPipeline2(implementationMap.get(implementationType), id, parser.getInstance(), parser.getImplementionConfig());
             } else {
-                throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, "Unsupported log store - " + parser.getImplementationName());
+                throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, "Unsupported configuration - " + config);
             }
         } catch (RecognitionException e) {
             RaptureException raptException = RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, "Error creating exchange");

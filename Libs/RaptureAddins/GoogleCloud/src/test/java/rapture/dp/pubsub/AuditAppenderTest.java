@@ -18,7 +18,6 @@ import rapture.config.RaptureConfig;
 import rapture.dp.AuditAppender;
 import rapture.kernel.ContextFactory;
 import rapture.kernel.Kernel;
-import rapture.kernel.Pipeline2ApiImpl;
 
 public class AuditAppenderTest {
 
@@ -31,7 +30,6 @@ public class AuditAppenderTest {
 
     @Before
     public void setup() {
-        Pipeline2ApiImpl.usePipeline2 = true;
         RaptureConfig config = ConfigLoader.getConf();
         config.DefaultExchange = "PIPELINE {} USING GCP_PUBSUB { projectid=\"todo3-incap\"}";
 

@@ -71,7 +71,6 @@ public class StepProgressTest {
 
     @Before
     public void setUp() throws Exception {
-        Pipeline2ApiImpl.usePipeline2 = true;
         RaptureConfig config = ConfigLoader.getConf();
         config.DefaultExchange = "PIPELINE {} USING MEMORY { }";
 

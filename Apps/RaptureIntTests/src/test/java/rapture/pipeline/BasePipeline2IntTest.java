@@ -288,6 +288,6 @@ public abstract class BasePipeline2IntTest {
             }
         }
         assertTrue("log appender was not called after 20s", success);
-        Assert.assertEquals("Updating jar cache for jar uri [jar://mytest/testjar1.jar]", sb.toString());
+        Assert.assertTrue(sb.toString().startsWith("Updating jar cache for jar uri [jar://mytest/testjar1.jar]"));
     }
 }

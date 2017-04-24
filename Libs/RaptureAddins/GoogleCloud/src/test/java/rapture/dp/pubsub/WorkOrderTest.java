@@ -80,7 +80,6 @@ public class WorkOrderTest {
     @Before
     public void setup() {
 
-        Pipeline2ApiImpl.usePipeline2 = true;
         RaptureConfig config = ConfigLoader.getConf();
         config.DefaultExchange = "PIPELINE {} USING GCP_PUBSUB { projectid=\"todo3-incap\"}";
 

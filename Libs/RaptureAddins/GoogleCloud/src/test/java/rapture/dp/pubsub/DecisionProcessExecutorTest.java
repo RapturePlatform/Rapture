@@ -82,7 +82,6 @@ import rapture.dp.semaphore.WorkOrderSemaphore;
 import rapture.dp.semaphore.WorkOrderSemaphoreFactory;
 import rapture.kernel.ContextFactory;
 import rapture.kernel.Kernel;
-import rapture.kernel.Pipeline2ApiImpl;
 import rapture.kernel.dp.StepRecordUtil;
 import rapture.repo.google.LocalDataStoreTest;
 
@@ -112,7 +111,6 @@ public class DecisionProcessExecutorTest extends LocalDataStoreTest {
 
     @BeforeClass
     public static void setup() {
-        Pipeline2ApiImpl.usePipeline2 = true;
         RaptureConfig config = ConfigLoader.getConf();
         config.DefaultExchange = "PIPELINE {} USING GCP_PUBSUB { projectid=\"todo3-incap\"}";
 

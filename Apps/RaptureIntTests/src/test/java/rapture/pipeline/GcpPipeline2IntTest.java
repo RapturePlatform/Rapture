@@ -34,6 +34,7 @@ import rapture.config.ConfigLoader;
 import rapture.config.RaptureConfig;
 import rapture.kernel.ContextFactory;
 import rapture.kernel.Kernel;
+import rapture.kernel.Pipeline2ApiImpl;
 import rapture.pipeline2.gcp.PubsubPipeline2Handler;
 
 public class GcpPipeline2IntTest extends BasePipeline2IntTest {
@@ -44,9 +45,10 @@ public class GcpPipeline2IntTest extends BasePipeline2IntTest {
         config = ConfigLoader.getConf();
         config.DefaultExchange = "PIPELINE {} USING GCP_PUBSUB { projectid=\"todo3-incap\"}";
 
-        MessagingException me = new MessagingException();
-
         Kernel.initBootstrap();
+        Pipeline2ApiImpl p2ai = new Pipeline2ApiImpl(Kernel.INSTANCE);
+        MessagingException me = new MessagingException();
+        Kernel.INSTANCE.restart();
         context = ContextFactory.getKernelUser();
         papi = Kernel.getPipeline2().getTrusted();
 

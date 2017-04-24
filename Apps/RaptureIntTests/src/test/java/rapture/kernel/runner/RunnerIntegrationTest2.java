@@ -37,7 +37,6 @@ import rapture.config.ConfigLoader;
 import rapture.config.RaptureConfig;
 import rapture.kernel.ContextFactory;
 import rapture.kernel.Kernel;
-import rapture.kernel.Pipeline2ApiImpl;
 
 /**
  * Create a test that puts a script to be run on a schedule, and show that it
@@ -53,7 +52,6 @@ public class RunnerIntegrationTest2 {
 
         rapture.pipeline2.gcp.PubsubPipeline2Handler pp2h;
 
-        Pipeline2ApiImpl.usePipeline2 = true;
         RaptureConfig.setLoadYaml(false);
         ConfigLoader.getConf().DefaultExchange = "PIPELINE {} USING GCP_PUBSUB { projectid=\"todo3-incap\"}";
 

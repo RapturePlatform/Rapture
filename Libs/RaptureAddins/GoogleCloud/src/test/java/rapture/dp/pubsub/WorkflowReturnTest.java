@@ -89,7 +89,6 @@ public class WorkflowReturnTest {
 
     @BeforeClass
     public static void setupClass() {
-        Pipeline2ApiImpl.usePipeline2 = true;
         RaptureConfig config = ConfigLoader.getConf();
         config.DefaultExchange = "PIPELINE {} USING GCP_PUBSUB { projectid=\"todo3-incap\"}";
 

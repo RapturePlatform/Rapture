@@ -32,15 +32,18 @@ import rapture.config.ConfigLoader;
 import rapture.config.RaptureConfig;
 import rapture.kernel.ContextFactory;
 import rapture.kernel.Kernel;
+import rapture.kernel.Pipeline2ApiImpl;
 
 public class RabbitPipelineIntTest extends BasePipelineIntTest {
 
     @BeforeClass
     public static void setUp() {
+        Kernel.shutdown();
         RaptureConfig.setLoadYaml(false);
         RaptureConfig config = ConfigLoader.getConf();
         config.DefaultExchange = "EXCHANGE {} USING RABBITMQ { }";
-
+        Pipeline2ApiImpl p2ai = new Pipeline2ApiImpl(Kernel.INSTANCE);
+        Kernel.INSTANCE.restart();
         Kernel.initBootstrap();
         context = ContextFactory.getKernelUser();
         papi = Kernel.getPipeline().getTrusted();

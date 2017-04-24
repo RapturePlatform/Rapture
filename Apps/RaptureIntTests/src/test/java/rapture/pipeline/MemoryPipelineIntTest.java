@@ -32,6 +32,7 @@ import rapture.config.ConfigLoader;
 import rapture.config.RaptureConfig;
 import rapture.kernel.ContextFactory;
 import rapture.kernel.Kernel;
+import rapture.kernel.Pipeline2ApiImpl;
 
 public class MemoryPipelineIntTest extends BasePipelineIntTest {
 
@@ -40,11 +41,13 @@ public class MemoryPipelineIntTest extends BasePipelineIntTest {
         RaptureConfig.setLoadYaml(false);
         RaptureConfig config = ConfigLoader.getConf();
         config.DefaultExchange = "EXCHANGE {} USING MEMORY { }";
-
+        Pipeline2ApiImpl p2ai = new Pipeline2ApiImpl(Kernel.INSTANCE);
+        Kernel.INSTANCE.restart();
         Kernel.initBootstrap();
         context = ContextFactory.getKernelUser();
         papi = Kernel.getPipeline().getTrusted();
         Kernel.setCategoryMembership("alpha");
+        Kernel.setCategoryMembership("main");
 
         // NOTE: This gets done in the _startup.rfx script
         // papi.registerExchangeDomain(context, "//" + domain, config.DefaultExchange);

@@ -238,7 +238,7 @@ public class PipelineApiImpl extends KernelBase implements PipelineApi, RaptureM
 
     private ExchangeHandler getExchangeHandler(String domain) {
         if (!domainHandlers.containsKey(domain)) {
-            log.info("Domain " + domain + " not found, setting up");
+            log.info("Domain called " + domain + " not found, setting up");
             setupDomain(domain);
         }
         ExchangeHandler handler = domainHandlers.get(domain);
@@ -472,7 +472,11 @@ public class PipelineApiImpl extends KernelBase implements PipelineApi, RaptureM
     @Override
     public void createTopicExchange(CallingContext context, String domain, String exchange) {
 
-        if (Pipeline2ApiImpl.usePipeline2) {
+        RaptureExchange exchangeConfig = ExchangeConfigFactory.createStandardDirect(domain);
+        ExchangeDomain eDomain = getExchangeDomain(exchangeConfig.getDomain());
+        boolean useP2 = ((eDomain != null) && eDomain.getConfig().contains("PIPELINE"));
+
+        if (useP2) {
             Kernel.getPipeline2().createBroadcastQueue(context, domain, null);
         } else {
             RaptureExchange exc = new RaptureExchange();
