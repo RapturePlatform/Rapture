@@ -108,7 +108,6 @@ public class DecisionProcessExecutorTest {
 
     @BeforeClass
     public static void setup() {
-        Pipeline2ApiImpl.usePipeline2 = true;
         RaptureConfig config = ConfigLoader.getConf();
         config.DefaultExchange = "PIPELINE {} USING MEMORY { }";
 

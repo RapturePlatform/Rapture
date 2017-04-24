@@ -79,7 +79,6 @@ public class NestedSplitStepTest {
 
     @Before
     public void setup() {
-        Pipeline2ApiImpl.usePipeline2 = true;
         RaptureConfig config = ConfigLoader.getConf();
         // config.DefaultExchange = "PIPELINE {} USING MEMORY { }";
         config.DefaultExchange = "PIPELINE {} USING MEMORY {  }";

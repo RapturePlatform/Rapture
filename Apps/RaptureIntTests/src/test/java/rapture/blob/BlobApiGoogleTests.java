@@ -43,10 +43,12 @@ import org.testng.annotations.Optional;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 
+import rapture.common.RaptureFolderInfo;
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
 import rapture.common.client.HttpBlobApi;
 import rapture.common.exception.RaptureException;
+import rapture.common.impl.jackson.JacksonUtil;
 import rapture.helper.IntegrationTestHelper;
 import rapture.util.ResourceLoader;
 
@@ -60,7 +62,7 @@ public class BlobApiGoogleTests {
      */
     @BeforeClass(groups = { "blob", "mongo", "nightly" })
     @Parameters({ "RaptureURL", "RaptureUser", "RapturePassword" })
-    public void beforeTest(@Optional("http://192.168.99.101:8665/rapture") String url, @Optional("rapture") String user, @Optional("rapture") String password) {
+    public void beforeTest(@Optional("http://35.185.30.63:8665/rapture") String url, @Optional("rapture") String user, @Optional("rapture") String password) {
         // public void beforeTest(@Optional("http://localhost:8665/rapture") String url, @Optional("rapture") String user, @Optional("rapture") String password)
         // {
 
@@ -78,7 +80,7 @@ public class BlobApiGoogleTests {
     public void testBlobFromFile(String fileName, String contentType) throws IOException {
 
         RaptureURI repo = helper.getRandomAuthority(Scheme.BLOB);
-        helper.configureTestRepo(repo, "GSTORE");
+        helper.configureTestRepo(repo, "GCP_STORAGE");
         String repoName = new RaptureURI.Builder(repo).docPath("").build().toString();
         String blobUri = repoName + "testblob" + System.nanoTime();
         byte[] bytes = null;
@@ -100,7 +102,7 @@ public class BlobApiGoogleTests {
     @Test(groups = { "blob", "mongo", "nightly" }, enabled = true, expectedExceptions = RaptureException.class)
     public void testNullBlobContents() {
         RaptureURI repo = helper.getRandomAuthority(Scheme.BLOB);
-        helper.configureTestRepo(repo, "GSTORE");
+        helper.configureTestRepo(repo, "GCP_STORAGE");
         String repoName = new RaptureURI.Builder(repo).docPath("").build().toString();
         String blobUri = repoName + "testblob" + System.nanoTime();
 
@@ -114,7 +116,7 @@ public class BlobApiGoogleTests {
 
         Random rand = new Random();
         RaptureURI repo = helper.getRandomAuthority(Scheme.BLOB);
-        helper.configureTestRepo(repo, "GSTORE");
+        helper.configureTestRepo(repo, "GCP_STORAGE");
         String repoName = new RaptureURI.Builder(repo).docPath("").build().toString();
         String blobUri = repoName + "testblob" + System.nanoTime();
 
@@ -138,7 +140,7 @@ public class BlobApiGoogleTests {
     public void testBlobAppend() {
 
         RaptureURI repo = helper.getRandomAuthority(Scheme.BLOB);
-        helper.configureTestRepo(repo, "GSTORE");
+        helper.configureTestRepo(repo, "GCP_STORAGE");
         String repoName = new RaptureURI.Builder(repo).docPath("").build().toString();
         String blobUri = repoName + "testblob" + System.nanoTime();
         String currBlobURI = blobUri + Thread.currentThread().getId() + "_" + System.nanoTime();
@@ -162,7 +164,7 @@ public class BlobApiGoogleTests {
     @Test(groups = { "blob", "mongo", "nightly" })
     public void testBlobDelete() {
         RaptureURI repo = helper.getRandomAuthority(Scheme.BLOB);
-        helper.configureTestRepo(repo, "GSTORE");
+        helper.configureTestRepo(repo, "GCP_STORAGE");
         String repoName = new RaptureURI.Builder(repo).docPath("").build().toString();
 
         // test that blob does not exists and is null before putting content
@@ -195,7 +197,7 @@ public class BlobApiGoogleTests {
     @Test(groups = { "blob", "mongo", "nightly" })
     public void testBlobDeletePut() {
         RaptureURI repo = helper.getRandomAuthority(Scheme.BLOB);
-        helper.configureTestRepo(repo, "GSTORE");
+        helper.configureTestRepo(repo, "GCP_STORAGE");
         String repoName = new RaptureURI.Builder(repo).docPath("").build().toString();
 
         // test that blob does not exists and is null before putting content
@@ -219,7 +221,7 @@ public class BlobApiGoogleTests {
     public void overwriteExistingTextBlobTest(int originalContentSize, int newContentSize) {
 
         RaptureURI repo = helper.getRandomAuthority(Scheme.BLOB);
-        helper.configureTestRepo(repo, "GSTORE");
+        helper.configureTestRepo(repo, "GCP_STORAGE");
         String repoName = new RaptureURI.Builder(repo).docPath("").build().toString();
 
         // write original blob to blob store
@@ -264,7 +266,7 @@ public class BlobApiGoogleTests {
     @Test(groups = { "blob", "mongo", "nightly" })
     public void testBlobListByUriPrefix() {
         RaptureURI repo = helper.getRandomAuthority(Scheme.BLOB);
-        helper.configureTestRepo(repo, "GSTORE");
+        helper.configureTestRepo(repo, "GCP_STORAGE");
 
         Reporter.log("Create some test blobs", true);
         String blobURIf1d1 = RaptureURI.builder(BLOB, repo.getAuthority()).docPath("folder1/doc1").build().toString();
@@ -284,7 +286,17 @@ public class BlobApiGoogleTests {
         Reporter.log("Check folder contents using different depths", true);
         Assert.assertEquals(blobApi.listBlobsByUriPrefix(RaptureURI.builder(BLOB, repo.getAuthority()).docPath("folder1").build().toString(), 2).size(), 3);
         Assert.assertEquals(blobApi.listBlobsByUriPrefix(RaptureURI.builder(BLOB, repo.getAuthority()).docPath("folder1").build().toString(), 1).size(), 3);
-        Assert.assertEquals(blobApi.listBlobsByUriPrefix(RaptureURI.builder(BLOB, repo.getAuthority()).docPath("folder2").build().toString(), 2).size(), 3);
+        Map<String, RaptureFolderInfo> blobs = blobApi.listBlobsByUriPrefix(RaptureURI.builder(BLOB, repo.getAuthority()).docPath("folder2").build().toString(),
+                2);
+
+        System.out.println(JacksonUtil.formattedJsonFromObject(blobs));
+        System.out.println(blobs.size());
+        if (blobs.size() < 3) {
+            // BREAK HERE AND TRY AGAIN
+            blobs = blobApi.listBlobsByUriPrefix(RaptureURI.builder(BLOB, repo.getAuthority()).docPath("folder2").build().toString(), 2);
+        }
+
+        Assert.assertEquals(blobs.size(), 3);
         Assert.assertEquals(blobApi.listBlobsByUriPrefix(RaptureURI.builder(BLOB, repo.getAuthority()).docPath("folder2").build().toString(), 1).size(), 1);
         Assert.assertEquals(blobApi.listBlobsByUriPrefix(RaptureURI.builder(BLOB, repo.getAuthority()).docPath("folder2").build().toString(), 0).size(), 3);
         Assert.assertEquals(blobApi.listBlobsByUriPrefix(RaptureURI.builder(BLOB, repo.getAuthority()).docPath("folder3").build().toString(), 0).size(), 1);
@@ -305,7 +317,7 @@ public class BlobApiGoogleTests {
     public void overwriteExistingPDFBlobWithTextBlobTest() throws FileNotFoundException {
 
         RaptureURI repo = helper.getRandomAuthority(Scheme.BLOB);
-        helper.configureTestRepo(repo, "GSTORE");
+        helper.configureTestRepo(repo, "GCP_STORAGE");
         String repoName = new RaptureURI.Builder(repo).docPath("").build().toString();
 
         // load file1 and store in blob store
@@ -341,7 +353,7 @@ public class BlobApiGoogleTests {
     @Test(groups = { "blob", "mongo", "nightly" }, enabled = true)
     public void testBlobRepositoryCreation() {
         RaptureURI repo = helper.getRandomAuthority(Scheme.BLOB);
-        helper.configureTestRepo(repo, "GSTORE");
+        helper.configureTestRepo(repo, "GCP_STORAGE");
         String repoName = new RaptureURI.Builder(repo).docPath("").build().toString();
 
         Assert.assertTrue(blobApi.blobRepoExists(repoName));

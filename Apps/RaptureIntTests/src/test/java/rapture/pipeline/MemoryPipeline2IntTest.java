@@ -33,6 +33,7 @@ import rapture.config.ConfigLoader;
 import rapture.config.RaptureConfig;
 import rapture.kernel.ContextFactory;
 import rapture.kernel.Kernel;
+import rapture.kernel.Pipeline2ApiImpl;
 import rapture.pipeline2.memory.MemoryPipeline2Handler;
 
 public class MemoryPipeline2IntTest extends BasePipeline2IntTest {
@@ -45,6 +46,8 @@ public class MemoryPipeline2IntTest extends BasePipeline2IntTest {
         RaptureConfig.setLoadYaml(false);
         config = ConfigLoader.getConf();
         config.DefaultExchange = "PIPELINE {} USING MEMORY { }";
+        Pipeline2ApiImpl p2ai = new Pipeline2ApiImpl(Kernel.INSTANCE);
+        Kernel.INSTANCE.restart();
         MemoryPipeline2Handler mp2h = new MemoryPipeline2Handler();
         mp2h.setInstanceName("test");
         MessagingException me = new MessagingException();

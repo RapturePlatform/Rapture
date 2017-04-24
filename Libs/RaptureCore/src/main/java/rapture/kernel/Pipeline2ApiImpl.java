@@ -121,7 +121,7 @@ public class Pipeline2ApiImpl extends KernelBase implements Pipeline2Api {
     public Pipeline2ApiImpl(Kernel raptureKernel) {
         super(raptureKernel);
         usePipeline2 = (ConfigLoader.getConf().DefaultExchange.startsWith("PIPELINE"));
-        if (usePipeline2) System.out.println("Default Exchange is " + ConfigLoader.getConf().DefaultExchange);
+        System.out.println("Default Exchange is " + ConfigLoader.getConf().DefaultExchange);
     }
 
     @Override

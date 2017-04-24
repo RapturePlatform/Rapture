@@ -79,7 +79,6 @@ public class WorkOrderTest {
     @Before
     public void setup() {
         Kernel.getKernel().restart();
-        Pipeline2ApiImpl.usePipeline2 = true;
         RaptureConfig config = ConfigLoader.getConf();
         config.DefaultExchange = "PIPELINE {} USING MEMORY { }";
 

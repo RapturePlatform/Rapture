@@ -87,7 +87,7 @@ public class IntegrationTestHelper {
     HttpStructuredApi structApi = null;
     HttpOperationApi operationApi = null;
 
-    static final String testPrefix = "__RESERVED__";
+    static final String testPrefix = "test";
 
     Set<RaptureURI> uriCache;
 

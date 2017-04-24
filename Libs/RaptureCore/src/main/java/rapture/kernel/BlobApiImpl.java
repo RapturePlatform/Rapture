@@ -439,6 +439,9 @@ public class BlobApiImpl extends KernelBase implements BlobApi, RaptureScheme {
         }
     }
 
+    /**
+     * TODO Intermittent bug here whereby it returns all the blobs correctly but omits the folder Seen on gcloud but hard to debug.
+     */
     @Override
     public Map<String, RaptureFolderInfo> listBlobsByUriPrefix(CallingContext context, String uriPrefix, int depth) {
         RaptureURI internalUri = new RaptureURI(uriPrefix, BLOB);
@@ -510,9 +513,11 @@ public class BlobApiImpl extends KernelBase implements BlobApi, RaptureScheme {
             } else {
                 for (RaptureFolderInfo child : children) {
                     String childDocPath = currParentDocPath + (top ? "" : "/") + child.getName();
+                    log.info("Child of " + currParentDocPath + " is " + child.toString());
                     if (child.getName().isEmpty()) continue;
                     String childUri = RaptureURI.builder(BLOB, authority).docPath(childDocPath).asString() + (child.isFolder() ? "/" : "");
                     ret.put(childUri, child);
+                    log.info("Added " + childUri + " as a " + (child.isFolder() ? "folder" : "file"));
                     if (child.isFolder()) {
                         parentsStack.push(childDocPath);
                     }

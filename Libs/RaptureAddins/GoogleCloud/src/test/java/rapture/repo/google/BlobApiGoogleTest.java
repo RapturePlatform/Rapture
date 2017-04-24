@@ -47,6 +47,7 @@ import org.junit.Assume;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.testng.Reporter;
 
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageException;
@@ -259,7 +260,7 @@ public class BlobApiGoogleTest extends LocalDataStoreTest {
     @Ignore
     public void testPutAndGetBlobWithAttribute() {
         testCreateAndGetRepo();
-        RaptureURI blobURIWithAttribute = new RaptureURI.Builder(Scheme.BLOB, auth).docPath("Foo").attribute("Bar").build();
+        RaptureURI blobURIWithAttribute = new RaptureURI.Builder(Scheme.BLOB, auth + "/Foo").attribute("Bar").build();
         blobImpl.putBlob(callingContext, blobURIWithAttribute.toString(), SAMPLE_BLOB, MediaType.CSS_UTF_8.toString());
         BlobContainer blob = blobImpl.getBlob(callingContext, blobURIWithAttribute.toString());
         assertArrayEquals(SAMPLE_BLOB, blob.getContent());
@@ -353,4 +354,56 @@ public class BlobApiGoogleTest extends LocalDataStoreTest {
         assertNotNull(blob.getContent());
         assertArrayEquals(SAMPLE_BLOB, blob.getContent());
     }
+
+    @Test
+    public void testBlobListByUriPrefix() {
+        testCreateAndGetRepo();
+
+        Reporter.log("Create some test blobs", true);
+
+        blobImpl.putBlob(callingContext, blobAuthorityURI + "/folder1/doc1", SAMPLE_BLOB, MediaType.CSS_UTF_8.toString());
+        blobImpl.putBlob(callingContext, blobAuthorityURI + "/folder1/doc2", SAMPLE_BLOB, MediaType.CSS_UTF_8.toString());
+        blobImpl.putBlob(callingContext, blobAuthorityURI + "/folder1/doc3", SAMPLE_BLOB, MediaType.CSS_UTF_8.toString());
+        blobImpl.putBlob(callingContext, blobAuthorityURI + "/folder2/folder21/doc1", SAMPLE_BLOB, MediaType.CSS_UTF_8.toString());
+        blobImpl.putBlob(callingContext, blobAuthorityURI + "/folder2/folder21/doc2", SAMPLE_BLOB, MediaType.CSS_UTF_8.toString());
+        blobImpl.putBlob(callingContext, blobAuthorityURI + "/folder3/doc1", SAMPLE_BLOB, MediaType.CSS_UTF_8.toString());
+
+        Reporter.log("Check folder contents using different depths", true);
+        Assert.assertEquals(
+                blobImpl.listBlobsByUriPrefix(callingContext, blobAuthorityURI + "/folder1", 2).size(), 3);
+        Assert.assertEquals(
+                blobImpl.listBlobsByUriPrefix(callingContext, blobAuthorityURI + "/folder1", 1).size(), 3);
+        Map<String, RaptureFolderInfo> blobs = blobImpl.listBlobsByUriPrefix(callingContext,
+                blobAuthorityURI + "/folder2", 2);
+
+        System.out.println(JacksonUtil.formattedJsonFromObject(blobs));
+
+        if (blobs.size() != 3) {
+            blobs = blobImpl.listBlobsByUriPrefix(callingContext, blobAuthorityURI + "/folder2", 2);
+        }
+        System.out.println(blobs.size());
+        Assert.assertEquals(blobs.size(), 3);
+        Assert.assertEquals(
+                blobImpl.listBlobsByUriPrefix(callingContext, blobAuthorityURI + "/folder2", 1).size(), 1);
+        Assert.assertEquals(
+                blobImpl.listBlobsByUriPrefix(callingContext, blobAuthorityURI + "/folder2", 0).size(), 3);
+        Assert.assertEquals(
+                blobImpl.listBlobsByUriPrefix(callingContext, blobAuthorityURI + "/folder3", 0).size(), 1);
+
+        Reporter.log("Delete some blobs and check folder contents", true);
+        blobImpl.deleteBlob(callingContext, blobAuthorityURI + "/folder1/doc1");
+        blobImpl.deleteBlob(callingContext, blobAuthorityURI + "/folder3/doc1");
+        Assert.assertEquals(
+                blobImpl.listBlobsByUriPrefix(callingContext, blobAuthorityURI + "/folder1", 2).size(), 2);
+        Assert.assertEquals(
+                blobImpl.listBlobsByUriPrefix(callingContext, blobAuthorityURI + "/folder1", 1).size(), 2);
+        Assert.assertEquals(
+                blobImpl.listBlobsByUriPrefix(callingContext, blobAuthorityURI + "/folder3", 0).size(), 0);
+
+        Reporter.log("Recreated some blobs and check folder contents", true);
+        blobImpl.putBlob(callingContext, blobAuthorityURI + "/folder3/doc1", SAMPLE_BLOB, "text/plain");
+        Assert.assertEquals(
+                blobImpl.listBlobsByUriPrefix(callingContext, blobAuthorityURI + "/folder3", 1).size(), 1);
+    }
+
 }

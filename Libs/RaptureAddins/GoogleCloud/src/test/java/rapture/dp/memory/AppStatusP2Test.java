@@ -72,7 +72,6 @@ import rapture.dp.WaitingTestHelper;
 import rapture.dp.WorkflowFactory;
 import rapture.kernel.ContextFactory;
 import rapture.kernel.Kernel;
-import rapture.kernel.Pipeline2ApiImpl;
 import rapture.kernel.schedule.ScheduleManager;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -95,7 +94,6 @@ public class AppStatusP2Test {
 
     @BeforeClass
     public static void setup() {
-        Pipeline2ApiImpl.usePipeline2 = true;
         String auditConfig = "LOG {} USING MEMORY {maxEntries=\"100\"}";
         RaptureConfig config = ConfigLoader.getConf();
         config.DefaultExchange = "PIPELINE {} USING MEMORY { }";

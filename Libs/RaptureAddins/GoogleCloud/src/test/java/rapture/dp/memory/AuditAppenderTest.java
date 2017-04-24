@@ -31,7 +31,6 @@ public class AuditAppenderTest {
 
     @Before
     public void setup() {
-        Pipeline2ApiImpl.usePipeline2 = true;
         RaptureConfig config = ConfigLoader.getConf();
         config.DefaultExchange = "PIPELINE {} USING MEMORY { }";
 

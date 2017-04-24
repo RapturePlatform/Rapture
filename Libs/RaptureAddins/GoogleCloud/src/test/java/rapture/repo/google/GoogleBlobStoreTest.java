@@ -125,6 +125,7 @@ public class GoogleBlobStoreTest extends BlobStoreContractTest {
         }
     }
 
+
     @Override
     public BlobStore getBlobStore() {
         return store;
