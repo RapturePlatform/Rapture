@@ -232,9 +232,13 @@ public class GoogleStorageKeyStore extends AbstractKeyStore implements KeyStore 
         List<RaptureFolderInfo> list = new ArrayList<>();
         Map<String, RaptureFolderInfo> map = new HashMap<>();
         for (Blob key : blobStore.listBlobs(prefix)) {
-            String name = key.getName();
-            if (name.startsWith(prefix)) {
-                String keegan = name.substring(prefix.length());
+            String jordan = key.getName();
+            int l = prefix.length();
+            if (jordan.startsWith(prefix)) {
+                while (jordan.charAt(l) == '/') {
+                    l++;
+                }
+                String keegan = jordan.substring(l);
                 int idx = keegan.indexOf('/');
                 if (idx > 0) {
                     list.add(new RaptureFolderInfo(keegan.substring(0, idx), true));

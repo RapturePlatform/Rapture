@@ -122,13 +122,22 @@ public class PubsubPipeline2Handler implements Pipeline2Handler {
         }
     }
 
-    private Topic getTopic(String topicId) {
-        TopicName topicName = TopicName.create(projectId, topicId);
-        try {
-            return publisherClient.getTopic(topicName);
-        } catch (Exception e) {
-            return publisherClient.createTopic(topicName);
+    static Map<String, Topic> topics = new ConcurrentHashMap<>();
+
+    public Topic getTopic(String topicId) {
+        Topic topic = topics.get(topicId);
+        if (topic == null) {
+            TopicName topicName = TopicName.create(projectId, topicId);
+            try {
+                logger.trace("Try to get topic " + topicName.toString());
+                topic = publisherClient.getTopic(topicName);
+            } catch (Exception e) {
+                logger.trace("Cannot get. Try to create topic " + topicName.toString());
+                topic = publisherClient.createTopic(topicName);
+            }
+            topics.put(topicId, topic);
         }
+        return topic;
     }
 
     public void unsubscribe(QueueSubscriber qsubscriber) {
@@ -192,7 +201,7 @@ public class PubsubPipeline2Handler implements Pipeline2Handler {
         }
 
         if (subMap.containsKey(queueIdentifier)) {
-            logger.info("Queue already has a subscriber");
+            logger.debug("Queue already has a subscriber - possibly overwriting");
         }
         subMap.put(queueIdentifier, qsubscriber.getSubscriberId());
 
@@ -213,7 +222,7 @@ public class PubsubPipeline2Handler implements Pipeline2Handler {
             Thread subscriber = new Thread() {
                 @Override
                 public void run() {
-                    logger.info("Running subscription thread for " + topic.getName());
+                    logger.debug("Running subscription thread for " + topic.getName());
 
                     while (!interrupted()) {
                         // get one message only
@@ -222,7 +231,7 @@ public class PubsubPipeline2Handler implements Pipeline2Handler {
                         if (!messasges.isEmpty()) {
                             ReceivedMessage rcvmsg = messasges.get(0);
                             PubsubMessage mess = rcvmsg.getMessage();
-                            logger.info(subscriptionName.getSubscription() + " reading Message " + mess.getMessageId());
+                            logger.debug(subscriptionName.getSubscription() + " reading Message " + mess.getMessageId());
                             if (!this.isInterrupted()) {
                                 // Should we ack before we deliver or after?
                                 subscriberClient.acknowledge(subscriptionName, ImmutableList.of(rcvmsg.getAckId()));
@@ -266,16 +275,25 @@ public class PubsubPipeline2Handler implements Pipeline2Handler {
         }
     }
 
+    private static Map<TopicName, Publisher> randomHouse = new ConcurrentHashMap<>();
+
     @Override
     public void publishTask(final String queue, final String task) {
         Topic topic = getTopic(queue);
         ByteString data = ByteString.copyFromUtf8(task);
         TopicName topicName = topic.getNameAsTopicName();
 
-
         try {
             PubsubMessage psmessage = PubsubMessage.newBuilder().setData(data).build();
-            Publisher publisher = Publisher.newBuilder(topicName).build();
+
+            Publisher publisher = randomHouse.get(topicName);
+            if (publisher == null) {
+                logger.trace("No publisher found for " + topicName + " - creating");
+                publisher = Publisher.newBuilder(topicName).build();
+                randomHouse.put(topicName, publisher);
+            } else {
+                logger.trace("Existing publisher found for " + topicName);
+            }
 
             // RpcFuture is being renamed to ApiFuture in a later version of GAX
             RpcFuture<String> messageIdFuture = publisher.publish(psmessage);

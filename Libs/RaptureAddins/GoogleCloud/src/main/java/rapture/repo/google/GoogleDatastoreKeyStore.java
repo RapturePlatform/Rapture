@@ -433,8 +433,12 @@ public class GoogleDatastoreKeyStore extends AbstractKeyStore implements KeyStor
         while (result.hasNext()) {
             Key peele = result.next();
             String jordan = decode(peele.getName());
+            int l = prefix.length();
             if (jordan.startsWith(prefix)) {
-                String keegan = jordan.substring(prefix.length());
+                while (jordan.charAt(l) == '/') {
+                    l++;
+                }
+                String keegan = jordan.substring(l);
                 int idx = keegan.indexOf('/');
                 if (idx > 0) {
                     list.add(new RaptureFolderInfo(keegan.substring(0, idx), true));
