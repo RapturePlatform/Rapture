@@ -29,7 +29,17 @@ import rapture.common.model.DocumentMetadata;
 
 public abstract class FieldLocator {
 
-	public abstract Object value(String key, Map<String, Object> mappedContent,
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return super.equals(obj);
+    }
+
+    public abstract Object value(String key, Map<String, Object> mappedContent,
 			DocumentMetadata meta);
 
 }
