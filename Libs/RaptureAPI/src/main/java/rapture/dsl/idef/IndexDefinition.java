@@ -28,9 +28,33 @@ import java.util.List;
 
 public class IndexDefinition {
 
-	private String indexName;
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((fields == null) ? 0 : fields.hashCode());
+        result = prime * result + ((indexName == null) ? 0 : indexName.hashCode());
+        return result;
+    }
 
-	private List<FieldDefinition> fields = new ArrayList<FieldDefinition>();
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
+        IndexDefinition other = (IndexDefinition) obj;
+        if (fields == null) {
+            if (other.fields != null) return false;
+        } else if (!fields.equals(other.fields)) return false;
+        if (indexName == null) {
+            if (other.indexName != null) return false;
+        } else if (!indexName.equals(other.indexName)) return false;
+        return true;
+    }
+
+    private String indexName;
+
+	private List<FieldDefinition> fields = new ArrayList<>();
 	public void add(FieldDefinition field) {
 		fields.add(field);
 	}
@@ -48,14 +72,10 @@ public class IndexDefinition {
 		return false;
 	}
 	
-	public String toString() {
-	    StringBuilder sb = new StringBuilder();
-	    for(FieldDefinition def : fields) {
-	        sb.append(",");
-	        sb.append(def.toString());
-	    }
-	    return sb.toString();
-	}
+    @Override
+    public String toString() {
+        return "IndexDefinition [indexName=" + indexName + ", fields=" + fields + "]";
+    }
 
 	public String getIndexName() {
 		return indexName;
