@@ -101,10 +101,11 @@ public abstract class AbstractMetaHandler {
         Thread thread = new Thread() {
             @Override
             public void run() {
+                log.info("Rebuild index using producer " + producer.toString());
                 documentStore.visitKeysFromStart(null, new StoreKeyVisitor() {
                     @Override
                     public boolean visit(String key, String value) {
-                        log.info("Index rebuild, rebuilding " + key);
+                        log.debug("Index rebuild, rebuilding " + key);
                         DocumentMetadata mdLatest = getLatestMeta(key);
                         indexHandler.get().addedRecord(key, value, mdLatest);
                         return true;

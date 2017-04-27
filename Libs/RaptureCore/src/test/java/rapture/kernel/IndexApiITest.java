@@ -21,6 +21,8 @@ import rapture.common.api.IndexApi;
 import rapture.common.api.ScriptApi;
 import rapture.common.impl.jackson.JacksonUtil;
 import rapture.common.model.IndexConfig;
+import rapture.dsl.idef.IndexDefinition;
+import rapture.dsl.idef.IndexDefinitionFactory;
 
 public class IndexApiITest extends AbstractFileTest {
 
@@ -117,9 +119,11 @@ public class IndexApiITest extends AbstractFileTest {
             String ver_config = "NREP {} USING " + implementation + " {prefix=\"planet.%s\"}"; // versioned repository
 
             // setup planet test data
-            INDEXCFG = "planet($0) string, moon($1) string, fieldOne(one) string, fieldTwo(two) integer, fieldInner(inner.alpha) string";
-            document.createDocRepo(context, planetURI, String.format(ver_config, System.nanoTime()));
+            INDEXCFG = "INDEX (indexNameGoesHere) planet($0) string, moon($1) string, fieldOne(one) string, fieldTwo(two) integer, fieldInner(inner.alpha) string";
+            IndexDefinition definition = IndexDefinitionFactory.getDefinition(INDEXCFG);
+            Assert.assertEquals("indexNameGoesHere", definition.getIndexName());
 
+            document.createDocRepo(context, planetURI, String.format(ver_config, System.nanoTime()));
             String query = "SELECT planet, moon, fieldOne, fieldTwo WHERE fieldTwo > 2.5";
 
             TableQueryResult res = index.findIndex(context, planetURI, query);
@@ -131,6 +135,7 @@ public class IndexApiITest extends AbstractFileTest {
             data3();
 
             planetIndex = index.createIndex(context, planetURI, INDEXCFG);
+
             Reporter.log("Index details: " + implementation + " " + planetIndex.getName(), true);
 
             // Index rebuild is now asynchronous. Give it a chance.
