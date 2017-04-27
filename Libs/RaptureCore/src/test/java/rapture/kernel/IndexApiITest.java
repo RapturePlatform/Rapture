@@ -133,10 +133,17 @@ public class IndexApiITest extends AbstractFileTest {
             planetIndex = index.createIndex(context, planetURI, INDEXCFG);
             Reporter.log("Index details: " + implementation + " " + planetIndex.getName(), true);
 
+            // Index rebuild is now asynchronous. Give it a chance.
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+            }
+
             Reporter.log("Query: " + query, true);
             res = index.findIndex(context, planetURI, query);
             resList = res.getRows();
             Reporter.log(JacksonUtil.jsonFromObject(resList, true));
+            Assert.assertNotNull("Expected some results for " + query, resList);
             Assert.assertEquals(implementation + " : " + JacksonUtil.jsonFromObject(resList, true), 3, resList.size());
 
             data2();
