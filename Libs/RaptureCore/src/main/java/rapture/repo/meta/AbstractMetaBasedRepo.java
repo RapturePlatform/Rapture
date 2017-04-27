@@ -90,15 +90,13 @@ public abstract class AbstractMetaBasedRepo<MH extends AbstractMetaHandler> exte
     @Override
     public void setIndexProducer(IndexProducer producer) {
         if (this.producer != null) {
-            System.out.println(this.producer.toString());
-            System.out.println(producer.toString());
             if (this.producer.equals(producer)) {
                 if (this.producer.toString().equals(producer.toString())) {
                     log.debug("Producer is already set to " + this.producer.toString());
                     return;
                 }
             }
-            log.info("Updating Producer from " + this.producer.toString() + " to " + producer.toString());
+            log.debug("Updating Producer from " + this.producer.toString() + " to " + producer.toString());
         }
         this.producer = producer;
         metaHandler.setIndexProducer(producer);
