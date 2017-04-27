@@ -47,7 +47,12 @@ try {
 }
 };
 
+indexName returns [ String nom ]
+@init { $nom = "default"; } : INDEX ( OBRAC n=ID CBRAC )? { $nom = $n.text; };
+
 indexDefinition returns [IndexDefinition idef] 
 @init {
    $idef = new IndexDefinition();
-} : x=fieldDefinition { $idef.add($x.def); } (COMMA y=fieldDefinition { $idef.add($y.def); } )*;
+} : name=indexName? { $idef.setIndexName($name.nom); } x=fieldDefinition { $idef.add($x.def); } (COMMA y=fieldDefinition { $idef.add($y.def); } )*;
+
+
