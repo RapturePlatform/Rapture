@@ -31,7 +31,27 @@ import java.util.Map;
 import rapture.common.model.DocumentMetadata;
 
 public class DocLocator extends FieldLocator {
-    private List<String> fields = new ArrayList<String>();
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + ((fields == null) ? 0 : fields.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!super.equals(obj)) return false;
+        if (getClass() != obj.getClass()) return false;
+        DocLocator other = (DocLocator) obj;
+        if (fields == null) {
+            if (other.fields != null) return false;
+        } else if (!fields.equals(other.fields)) return false;
+        return true;
+    }
+
+    private List<String> fields = new ArrayList<>();
 
     public void addField(String field) {
         fields.add(field);
@@ -57,7 +77,7 @@ public class DocLocator extends FieldLocator {
             if (allInList) {
                 // everything in list assumes the next field is the end and
                 // doesn't go deeper
-                List<Object> vals = new ArrayList<Object>();
+                List<Object> vals = new ArrayList<>();
                 for (int i = 0; i < current.size(); i++) {
                     Map<String, Object> listObj = (Map<String, Object>) current.get(String.valueOf(i));
                     vals.add(listObj.get(field));
@@ -89,7 +109,7 @@ public class DocLocator extends FieldLocator {
      * @return - a map with key being list index and value being object
      */
     private Map<String, Object> listToMap(List<?> l) {
-        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<>();
         for (int i = 0; i < l.size(); i++) {
             map.put(String.valueOf(i), l.get(i));
         }

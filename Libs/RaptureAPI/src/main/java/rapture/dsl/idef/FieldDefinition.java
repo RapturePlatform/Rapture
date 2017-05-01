@@ -25,7 +25,34 @@ package rapture.dsl.idef;
 
 public class FieldDefinition {
 	private String name;
-	private IndexFieldType type;
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((locator == null) ? 0 : locator.hashCode());
+        result = prime * result + ((name == null) ? 0 : name.hashCode());
+        result = prime * result + ((type == null) ? 0 : type.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
+        FieldDefinition other = (FieldDefinition) obj;
+        if (locator == null) {
+            if (other.locator != null) return false;
+        } else if (!locator.equals(other.locator)) return false;
+        if (name == null) {
+            if (other.name != null) return false;
+        } else if (!name.equals(other.name)) return false;
+        if (type != other.type) return false;
+        return true;
+    }
+
+    private IndexFieldType type;
 	private FieldLocator locator;
 	
 	public void setType(String typeName) {
@@ -52,10 +79,11 @@ public class FieldDefinition {
 		return name;
 	}
 	
-	public String toString() {
-	    StringBuilder sb = new StringBuilder();
-	    sb.append("Name=" + name);
-	    sb.append(",Locator=" + locator.toString());
-	    return sb.toString();
-	}
+	@Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Name=" + name);
+        sb.append(",Locator=" + locator.toString());
+        return sb.toString();
+    }
 }

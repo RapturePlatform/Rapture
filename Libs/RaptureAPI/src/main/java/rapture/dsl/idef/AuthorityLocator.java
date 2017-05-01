@@ -29,7 +29,25 @@ import rapture.common.model.DocumentMetadata;
 
 public class AuthorityLocator extends FieldLocator {
 
+    @Override
+    public int hashCode() {
+        return 10538;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!super.equals(obj)) return false;
+        if (getClass() != obj.getClass()) return false;
+        return true;
+    }
+
 	@Override
+    public String toString() {
+        return "AuthorityLocator";
+    }
+
+    @Override
 	public Object value(String key, Map<String, Object> mappedContent,
 			DocumentMetadata meta) {
 		return "";
