@@ -1,13 +1,13 @@
 package rapture.pipeline2.gcp;
 
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Test;
 
 import com.google.common.collect.ImmutableMap;
 
 import rapture.common.QueueSubscriber;
 import rapture.common.model.RapturePipeline2;
-import rapture.pipeline2.gcp.PubsubPipeline2Handler;
 
 public class PubsubPipeline2HandlerTest {
 
@@ -28,7 +28,17 @@ public class PubsubPipeline2HandlerTest {
         rp2.setName("hazelnut" + System.currentTimeMillis());
 
         PubsubPipeline2Handler pipe2Handler = new PubsubPipeline2Handler();
-        pipe2Handler.setConfig(ImmutableMap.of("projectid", "todo3-incap"));
+        try {
+            pipe2Handler.setConfig(ImmutableMap.of("projectid", "todo3-incap"));
+        } catch (Exception e1) {
+            // This can't run if the credentials aren't available.
+            // rapture.common.exception.RaptureException: Cannot configure:
+            // java.io.IOException: The Application Default Credentials are not available.
+            // They are available if running in Google Compute Engine.
+            // Otherwise, the environment variable GOOGLE_APPLICATION_CREDENTIALS must be defined pointing to a file defining the credentials.
+            // See https://developers.google.com/accounts/docs/application-default-credentials for more information.
+            Assume.assumeNoException(e1);
+        }
 
         QueueSubscriber qs1 = new QueueSubscriber(rp2.getName(), rp2.getName() + "subscriber1") {
             @Override
