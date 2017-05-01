@@ -44,6 +44,26 @@ import rapture.dsl.idef.IndexDefinition;
 public class IndexProducer {
     private List<IndexDefinition> indexDefinitions;
 
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((indexDefinitions == null) ? 0 : indexDefinitions.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
+        IndexProducer other = (IndexProducer) obj;
+        if (indexDefinitions == null) {
+            if (other.indexDefinitions != null) return false;
+        } else if (!indexDefinitions.equals(other.indexDefinitions)) return false;
+        return true;
+    }
+
     public IndexProducer(List<IndexDefinition> indexDefinitions) {
         this.indexDefinitions = indexDefinitions; // IndexDefinitionFactory.getDefinition(config.getConfig());
     }

@@ -1,6 +1,7 @@
 package rapture.kernel;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -20,6 +21,8 @@ import rapture.common.api.IndexApi;
 import rapture.common.api.ScriptApi;
 import rapture.common.impl.jackson.JacksonUtil;
 import rapture.common.model.IndexConfig;
+import rapture.dsl.idef.IndexDefinition;
+import rapture.dsl.idef.IndexDefinitionFactory;
 
 public class IndexApiITest extends AbstractFileTest {
 
@@ -116,9 +119,11 @@ public class IndexApiITest extends AbstractFileTest {
             String ver_config = "NREP {} USING " + implementation + " {prefix=\"planet.%s\"}"; // versioned repository
 
             // setup planet test data
-            INDEXCFG = "planet($0) string, moon($1) string, fieldOne(one) string, fieldTwo(two) integer, fieldInner(inner.alpha) string";
-            document.createDocRepo(context, planetURI, String.format(ver_config, System.nanoTime()));
+            INDEXCFG = "INDEX (indexNameGoesHere) planet($0) string, moon($1) string, fieldOne(one) string, fieldTwo(two) integer, fieldInner(inner.alpha) string";
+            IndexDefinition definition = IndexDefinitionFactory.getDefinition(INDEXCFG);
+            Assert.assertEquals("indexNameGoesHere", definition.getIndexName());
 
+            document.createDocRepo(context, planetURI, String.format(ver_config, System.nanoTime()));
             String query = "SELECT planet, moon, fieldOne, fieldTwo WHERE fieldTwo > 2.5";
 
             TableQueryResult res = index.findIndex(context, planetURI, query);
@@ -130,12 +135,20 @@ public class IndexApiITest extends AbstractFileTest {
             data3();
 
             planetIndex = index.createIndex(context, planetURI, INDEXCFG);
+
             Reporter.log("Index details: " + implementation + " " + planetIndex.getName(), true);
+
+            // Index rebuild is now asynchronous. Give it a chance.
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+            }
 
             Reporter.log("Query: " + query, true);
             res = index.findIndex(context, planetURI, query);
             resList = res.getRows();
             Reporter.log(JacksonUtil.jsonFromObject(resList, true));
+            Assert.assertNotNull("Expected some results for " + query, resList);
             Assert.assertEquals(implementation + " : " + JacksonUtil.jsonFromObject(resList, true), 3, resList.size());
 
             data2();
@@ -381,6 +394,53 @@ public class IndexApiITest extends AbstractFileTest {
             Assert.assertNotNull(implementation, orderList);
             Reporter.log(JacksonUtil.jsonFromObject(orderList, true));
             Assert.assertEquals(implementation + " : " + JacksonUtil.jsonFromObject(orderList, true), 3, orderList.size());
+        }
+    }
+
+    @Test
+    public void repeatRepoTest() {
+        for (String implementation : ImmutableList.of("FILE", "MEMORY")) {
+            String authorityName = "docplanetdata1." + System.nanoTime();
+            planetURI = RaptureURI.builder(Scheme.DOCUMENT, authorityName).build().toString();
+
+            String ver_config = "NREP {} USING " + implementation + " {prefix=\"planet.%s\"}"; // versioned repository
+            document.createDocRepo(context, planetURI, String.format(ver_config, System.nanoTime()));
+
+            // setup planet test data
+            INDEXCFG = "planet($0) string, moon($1) string, fieldOne(one) string, fieldTwo(two) integer";
+            planetIndex = index.createIndex(context, planetURI, INDEXCFG);
+
+            int MAXMOONS = 1000;
+
+            for (int i = 0; i < MAXMOONS; i++)
+                document.putDoc(context, planetURI + "/Jupiter/" + UUID.randomUUID().toString(),
+                        JacksonUtil.jsonFromObject(ImmutableMap.of(UUID.randomUUID().toString(), UUID.randomUUID().toString(), UUID.randomUUID().toString(),
+                                new Integer(6), UUID.randomUUID().toString(), "constant", "inner", ImmutableMap.of("alpha", UUID.randomUUID().toString())),
+                                true));
+
+            INDEXCFG = "planet($0) string, moon($1) string, fieldOne(one) string, fieldTwo(two) integer, fieldInner(inner.alpha) string";
+            planetIndex = index.createIndex(context, planetURI, INDEXCFG);
+
+            // Re-indexing should not be instantaneous. If this assert fails try increasing MAXMOONS
+            TableQueryResult orderQuery = index.findIndex(context, planetURI, "SELECT DISTINCT moon ORDER BY moon DESC");
+            List<List<Object>> orderList = orderQuery.getRows();
+            if (orderList != null) Assert.assertFalse(orderList.size() == MAXMOONS);
+
+            // Give it a few seconds to complete re-indexing
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            orderQuery = index.findIndex(context, planetURI, "SELECT DISTINCT moon ORDER BY moon DESC");
+            orderList = orderQuery.getRows();
+            Assert.assertNotNull(implementation, orderList);
+
+            // Re-indexing should not be this slow.
+            // If this assert fails try decreasing MAXMOONS or increasing sleep timer, but it's bad
+            Assert.assertEquals(MAXMOONS, orderList.size());
+
         }
     }
 }

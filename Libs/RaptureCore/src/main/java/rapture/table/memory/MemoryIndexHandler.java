@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
 
@@ -71,7 +72,7 @@ public class MemoryIndexHandler extends AbstractIndexHandler {
     }
 
     private void reset() {
-        memoryView = new HashMap<>();
+        memoryView = new ConcurrentHashMap<>();
     }
 
     @Override
