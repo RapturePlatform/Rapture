@@ -73,13 +73,13 @@ public class Pipeline2ApiImpl extends KernelBase implements Pipeline2Api {
         }
 
         @Override
-        public boolean handleEvent(String queueIdentifier, byte[] data) {
+        public boolean handleEvent(byte[] data) {
             log.error("Received event " + new String(data) + " - expoected Task");
             return false;
         }
 
         @Override
-        public boolean handleTask(String queueIdentifier, TaskStatus update) {
+        public boolean handleTask(TaskStatus update) {
             System.err.println("TASK WATCHER " + update);
 
             if (update == null) return false;
@@ -136,7 +136,7 @@ public class Pipeline2ApiImpl extends KernelBase implements Pipeline2Api {
                 pipelineHandlers.put(exchangeConfig.getDomain(), handler);
             } else throw new RuntimeException("Cannot set up " + queueIdentifier + " - no valid configuration defined");
         }
-        handler.createPipeline(queueIdentifier);
+        handler.createQueue(queueIdentifier);
         pipelineHandlers.put(queueIdentifier, handler);
         return null; // make this void?
     }
@@ -144,10 +144,10 @@ public class Pipeline2ApiImpl extends KernelBase implements Pipeline2Api {
     @Override
     public String createTaskQueue(CallingContext context, String queueIdentifier, String queueConfig) {
         Pipeline2Handler handler = Pipeline2Factory.getHandler(queueIdentifier, queueConfig);
-        handler.createPipeline(queueIdentifier);
+        handler.createQueue(queueIdentifier);
         pipelineHandlers.put(queueIdentifier, handler);
         String responseIdentifier = queueIdentifier + "-response";
-        handler.createPipeline(responseIdentifier);
+        handler.createQueue(responseIdentifier);
         pipelineHandlers.put(responseIdentifier, handler);
         return null; // make this void?
     }
@@ -161,20 +161,23 @@ public class Pipeline2ApiImpl extends KernelBase implements Pipeline2Api {
     public Boolean queueExists(CallingContext context, String queueIdentifier) {
         Pipeline2Handler handler = getHandler(queueIdentifier);
         if (handler == null) return false;
-        return handler.queueExists(queueIdentifier);
+        throw new RuntimeException("TODO DO NOT CHECK THIS IN");
+        // return handler.queueExists(queueIdentifier);
     }
 
     @Override
     public void removeBroadcastQueue(CallingContext context, String queueIdentifier) {
         Pipeline2Handler handler = getHandler(queueIdentifier);
-        handler.removePipeline(queueIdentifier);
+        throw new RuntimeException("TODO DO NOT CHECK THIS IN");
+        // handler.removePipeline(queueIdentifier);
     }
 
     @Override
     public void removeTaskQueue(CallingContext context, String queueIdentifier) {
         Pipeline2Handler handler = getHandler(queueIdentifier);
-        handler.removePipeline(queueIdentifier);
-        handler.removePipeline(queueIdentifier + "-response");
+        throw new RuntimeException("TODO DO NOT CHECK THIS IN");
+        // handler.removePipeline(queueIdentifier);
+        // handler.removePipeline(queueIdentifier + "-response");
     }
 
     @Override
@@ -183,7 +186,7 @@ public class Pipeline2ApiImpl extends KernelBase implements Pipeline2Api {
         if (handler == null) {
             throw new RuntimeException("Queue does not exist");
         }
-        handler.subscribeToPipeline(subscriber.getQueueName(), subscriber);
+        handler.subscribe(subscriber.getQueueName(), subscriber);
     }
 
     @Override
@@ -191,7 +194,7 @@ public class Pipeline2ApiImpl extends KernelBase implements Pipeline2Api {
         Pipeline2Handler handler = getHandler(subscriber.getQueueName());
         if (handler == null) {
             log.error("Queue does not exist");
-        } else handler.unsubscribePipeline(subscriber.getQueueName(), subscriber);
+        } else handler.unsubscribe(subscriber);
     }
 
     private Map<String, Pipeline2Handler> pipelineHandlers = new HashMap<>();
@@ -269,7 +272,7 @@ public class Pipeline2ApiImpl extends KernelBase implements Pipeline2Api {
         }
         if (subscriber == null) subscriber = new TaskWatcher(queueIdentifier, "Watcher" + UUID.randomUUID());
         if (!watchers.contains(subscriber)) {
-            responseHandler.subscribeToPipeline(queueIdentifier + "-response", subscriber);
+            responseHandler.subscribe(queueIdentifier + "-response", subscriber);
             watchers.add(subscriber);
         }
         subscriber.setStatus(status);

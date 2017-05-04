@@ -36,17 +36,14 @@ import rapture.common.QueueSubscriber;
 public interface Pipeline2Handler {
     void setConfig(Map<String, String> config);
 
-    void setInstanceName(String instanceName);
+    void createQueue(String queueIdentifier);
 
-    void createPipeline(String queueIdentifier);
+    void subscribe(String queueIdentifier, QueueSubscriber subscriber);
 
-    boolean queueExists(String queueIdentifier);
-
-    void subscribeToPipeline(String queueIdentifier, QueueSubscriber subscriber);
-
-    void unsubscribePipeline(String queueIdentifier, QueueSubscriber subscriber);
+    void unsubscribe(QueueSubscriber subscriber);
 
     void publishTask(String queueIdentifier, String task);
 
-    void removePipeline(String queueIdentifier);
+    // void removePipeline(String queueIdentifier);
+    // boolean queueExists(String queueIdentifier);
 }

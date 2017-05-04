@@ -19,7 +19,6 @@ import com.google.cloud.datastore.BlobValue;
 import com.google.cloud.datastore.BooleanValue;
 import com.google.cloud.datastore.Datastore;
 import com.google.cloud.datastore.DatastoreOptions;
-import com.google.cloud.datastore.DateTimeValue;
 import com.google.cloud.datastore.DoubleValue;
 import com.google.cloud.datastore.Entity;
 import com.google.cloud.datastore.Entity.Builder;
@@ -216,8 +215,6 @@ public class GoogleIndexHandler extends AbstractIndexHandler
             return((DoubleValue) value).get();
         case BOOLEAN:
             return ((BooleanValue) value).get();
-        case DATE_TIME:
-            return((DateTimeValue) value).get();
         case BLOB:
             try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
                 IOUtils.copy(((BlobValue) value).get().asInputStream(), baos);

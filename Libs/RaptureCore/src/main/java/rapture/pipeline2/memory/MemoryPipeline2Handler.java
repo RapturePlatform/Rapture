@@ -43,11 +43,6 @@ public class MemoryPipeline2Handler implements Pipeline2Handler {
     static Map<String, ConcurrentLinkedQueue<String>> queueMap = new ConcurrentHashMap<>();
 
     @Override
-    public void setInstanceName(String instanceName) {
-        this.instanceName = instanceName;
-    }
-
-    @Override
     public synchronized void setConfig(Map<String, String> config) {
     }
 
@@ -63,12 +58,12 @@ public class MemoryPipeline2Handler implements Pipeline2Handler {
     }
 
     @Override
-    public void createPipeline(String queueIdentifier) {
+    public void createQueue(String queueIdentifier) {
         queueMap.put(queueIdentifier, new ConcurrentLinkedQueue<String>());
     }
 
     @Override
-    public void subscribeToPipeline(String queueIdentifier, QueueSubscriber qMemorySubscriber) {
+    public void subscribe(String queueIdentifier, QueueSubscriber qMemorySubscriber) {
         MemoryTopic MemoryTopic = createTopic(queueIdentifier);
         ConcurrentLinkedQueue<String> queue = queueMap.get(queueIdentifier);
 
@@ -81,7 +76,7 @@ public class MemoryPipeline2Handler implements Pipeline2Handler {
                     String message = queue.poll();
                     if (message != null) {
                         try {
-                            qMemorySubscriber.handleEvent(queueIdentifier, message.getBytes());
+                            qMemorySubscriber.handleEvent(message.getBytes());
                         } catch (Exception e) {
                             String error = ExceptionToString.format(e);
                             logger.error(error);
@@ -114,17 +109,18 @@ public class MemoryPipeline2Handler implements Pipeline2Handler {
     }
 
     @Override
-    public boolean queueExists(String queueIdentifier) {
-        return queueMap.get(queueIdentifier) != null;
-    }
-
-    @Override
-    public void unsubscribePipeline(String queueIdentifier, QueueSubscriber subscriber) {
+    public void unsubscribe(QueueSubscriber subscriber) {
         activeSubscriptions.remove(subscriber).interrupt();
     }
 
-    @Override
-    public void removePipeline(String queueIdentifier) {
-        queueMap.remove(queueIdentifier);
-    }
+    //
+    // @Override
+    // public boolean queueExists(String queueIdentifier) {
+    // return queueMap.get(queueIdentifier) != null;
+    // }
+    //
+    // @Override
+    // public void removePipeline(String queueIdentifier) {
+    // queueMap.remove(queueIdentifier);
+    // }
 }

@@ -8,9 +8,9 @@ import java.util.concurrent.TimeoutException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
-import org.joda.time.Duration;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.threeten.bp.Duration;
 
 import com.google.cloud.datastore.Datastore;
 import com.google.cloud.datastore.testing.LocalDatastoreHelper;
@@ -72,7 +72,7 @@ public class LocalDataStoreTest {
             ConfigLoader.getConf().RaptureRepo = saveRaptureRepo;
 
             PubsubPipeline2Handler.cleanUp();
-            helper.stop(new Duration(60000L));
+            if (helper != null) helper.stop(Duration.ofSeconds(6000L));
         } catch (Exception e) {
             System.out.println("Exception shutting down LocalDatastoreHelper: " + ExceptionToString.format(e));
         }

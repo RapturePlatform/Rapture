@@ -29,7 +29,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -38,7 +37,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import com.google.cloud.Page;
+import com.google.api.gax.paging.Page;
 import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.Bucket;
 import com.google.cloud.storage.BucketInfo;
@@ -106,11 +105,9 @@ public class GoogleBlobStore extends BaseBlobStore implements BlobStore {
 
     public Collection<Blob> listBlobs(String prefix) {
         Page<Blob> blobs = bucket.list();
-        Iterator<Blob> iter = blobs.iterateAll();
         List<Blob> list = new ArrayList<>();
 
-        while (iter.hasNext()) {
-            Blob blob = iter.next();
+        for (Blob blob : blobs.iterateAll()) {
             if (blob.getName().startsWith(prefix)) {
                 list.add(blob);
             }

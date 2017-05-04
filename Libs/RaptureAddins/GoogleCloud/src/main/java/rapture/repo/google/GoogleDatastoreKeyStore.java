@@ -43,7 +43,6 @@ import com.google.cloud.datastore.BlobValue;
 import com.google.cloud.datastore.BooleanValue;
 import com.google.cloud.datastore.Datastore;
 import com.google.cloud.datastore.DatastoreOptions;
-import com.google.cloud.datastore.DateTimeValue;
 import com.google.cloud.datastore.DoubleValue;
 import com.google.cloud.datastore.Entity;
 import com.google.cloud.datastore.Entity.Builder;
@@ -260,9 +259,6 @@ public class GoogleDatastoreKeyStore extends AbstractKeyStore implements KeyStor
             break;
         case BOOLEAN:
             map.put(name, ((BooleanValue) value).get());
-            break;
-        case DATE_TIME:
-            map.put(name, ((DateTimeValue) value).get());
             break;
         case BLOB:
             try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
