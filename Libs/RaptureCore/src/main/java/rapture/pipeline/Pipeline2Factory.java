@@ -77,7 +77,6 @@ public final class Pipeline2Factory {
             Object fStore = idgenClass.newInstance();
             if (fStore instanceof Pipeline2Handler) {
                 Pipeline2Handler ret = (Pipeline2Handler) fStore;
-                ret.setInstanceName(instance);
                 ret.setConfig(config);
                 return ret;
             } else {

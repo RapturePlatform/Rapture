@@ -841,7 +841,7 @@ public enum Kernel {
             PipelineQueueHandler pqh = new PipelineQueueHandler(null);
 
             @Override
-            public boolean handleEvent(String queueIdentifier, byte[] data) {
+            public boolean handleEvent(byte[] data) {
                 RapturePipelineTask task = JacksonUtil.objectFromJson(data, RapturePipelineTask.class);
                 return pqh.handleMessage(null, null, task.getContentType(), task);
             }

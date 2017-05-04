@@ -31,11 +31,11 @@ import java.util.UUID;
 import java.util.concurrent.TimeoutException;
 
 import org.apache.log4j.Logger;
-import org.joda.time.Duration;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.BeforeClass;
+import org.threeten.bp.Duration;
 
 import com.google.cloud.datastore.Datastore;
 import com.google.cloud.datastore.testing.LocalDatastoreHelper;
@@ -119,7 +119,7 @@ public class GoogleBlobStoreTest extends BlobStoreContractTest {
         Kernel.shutdown();
         if (store != null) store.destroyBucket(bukkit);
         try {
-            if (helper != null) helper.stop(new Duration(6000L));
+            if (helper != null) helper.stop(Duration.ofSeconds(6000L));
         } catch (Exception e) {
             System.out.println("Exception shutting down LocalDatastoreHelper: " + e.getMessage());
         }

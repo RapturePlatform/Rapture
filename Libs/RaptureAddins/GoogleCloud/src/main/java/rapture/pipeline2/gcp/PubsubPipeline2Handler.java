@@ -34,43 +34,39 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import com.google.api.gax.core.RpcFuture;
-import com.google.api.gax.core.RpcFutureCallback;
+import com.google.api.core.ApiFuture;
+import com.google.api.gax.grpc.ExecutorProvider;
+import com.google.api.gax.grpc.InstantiatingExecutorProvider;
+import com.google.cloud.pubsub.spi.v1.AckReplyConsumer;
+import com.google.cloud.pubsub.spi.v1.MessageReceiver;
 import com.google.cloud.pubsub.spi.v1.Publisher;
-import com.google.cloud.pubsub.spi.v1.PublisherClient;
-import com.google.cloud.pubsub.spi.v1.PublisherSettings;
-import com.google.cloud.pubsub.spi.v1.SubscriberClient;
-import com.google.cloud.pubsub.spi.v1.SubscriberSettings;
-import com.google.common.collect.ImmutableList;
+import com.google.cloud.pubsub.spi.v1.Publisher.Builder;
+import com.google.cloud.pubsub.spi.v1.Subscriber;
+import com.google.cloud.pubsub.spi.v1.SubscriptionAdminClient;
+import com.google.cloud.pubsub.spi.v1.TopicAdminClient;
+import com.google.common.util.concurrent.MoreExecutors;
 import com.google.protobuf.ByteString;
 import com.google.pubsub.v1.PubsubMessage;
-import com.google.pubsub.v1.PullResponse;
 import com.google.pubsub.v1.PushConfig;
-import com.google.pubsub.v1.ReceivedMessage;
 import com.google.pubsub.v1.Subscription;
 import com.google.pubsub.v1.SubscriptionName;
 import com.google.pubsub.v1.Topic;
 import com.google.pubsub.v1.TopicName;
 
 import rapture.common.QueueSubscriber;
-import rapture.common.TaskStatus;
 import rapture.common.exception.ExceptionToString;
 import rapture.common.exception.RaptureExceptionFactory;
-import rapture.common.impl.jackson.JacksonUtil;
 import rapture.config.MultiValueConfigLoader;
 import rapture.pipeline.Pipeline2Handler;
 
 public class PubsubPipeline2Handler implements Pipeline2Handler {
 
     static Logger logger = Logger.getLogger(PubsubPipeline2Handler.class);
-    private String instanceName = "default"; //$NON-NLS-1$
-
-    PublisherClient publisherClient = null;
-    SubscriberClient subscriberClient = null;
     private String projectId;
     Map<String, String> config = null;
 
-    Map<QueueSubscriber, Thread> activeSubscriptions = new ConcurrentHashMap<>();
+    static Map<QueueSubscriber, Subscriber> subscribers = new ConcurrentHashMap<>();
+    static Map<SubscriptionName, Subscription> subscriptions = new ConcurrentHashMap<>();
 
     // Clean up for unit testing
     static List<PubsubPipeline2Handler> handlers = new CopyOnWriteArrayList<>();
@@ -86,20 +82,7 @@ public class PubsubPipeline2Handler implements Pipeline2Handler {
         }
     }
 
-    @Override
-    public void setInstanceName(String instanceName) {
-        this.instanceName = instanceName;
-    }
-
-    // Overrideable for testing
-    PublisherSettings getPublisherSettingsFromConfig(Map<String, String> config) throws IOException {
-        return PublisherSettings.defaultBuilder().build();
-    }
-
-    // Overrideable for testing
-    SubscriberSettings getSubscriberSettingsFromConfig(Map<String, String> config) throws IOException {
-        return SubscriberSettings.defaultBuilder().build();
-    }
+    ExecutorProvider executor = null;
 
     @Override
     public synchronized void setConfig(Map<String, String> config) {
@@ -111,14 +94,10 @@ public class PubsubPipeline2Handler implements Pipeline2Handler {
                 throw new RuntimeException("Project ID not set in RaptureGOOGLE.cfg or in config " + config);
             }
         }
-
-        try {
-            PublisherSettings publisherSettings = getPublisherSettingsFromConfig(config);
-            publisherClient = PublisherClient.create(publisherSettings);
-        } catch (IOException e) {
-            String message = String.format("Cannot configure: %s", ExceptionToString.format(e));
-            logger.error(message);
-            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, message, e);
+        
+        String threads = config.get("threads");
+        if (threads != null) {
+            executor = InstantiatingExecutorProvider.newBuilder().setExecutorThreadCount(Integer.parseInt(threads)).build();
         }
     }
 
@@ -127,35 +106,34 @@ public class PubsubPipeline2Handler implements Pipeline2Handler {
     public Topic getTopic(String topicId) {
         Topic topic = topics.get(topicId);
         if (topic == null) {
-            TopicName topicName = TopicName.create(projectId, topicId);
-            try {
-                logger.trace("Try to get topic " + topicName.toString());
-                topic = publisherClient.getTopic(topicName);
-            } catch (Exception e) {
-                logger.trace("Cannot get. Try to create topic " + topicName.toString());
-                topic = publisherClient.createTopic(topicName);
+            try (TopicAdminClient topicAdminClient = TopicAdminClient.create()) {
+                TopicName topicName = TopicName.create(projectId, topicId);
+                try {
+                    topic = topicAdminClient.getTopic(topicName);
+                } catch (Exception e) {
+                    if (topic == null) {
+                        topic = topicAdminClient.createTopic(topicName);
+                        topics.put(topicId, topic);
+                    }
+                }
+            } catch (Exception ioe) {
+                throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, "Cannot create topic " + topicId, ioe);
             }
-            topics.put(topicId, topic);
         }
         return topic;
     }
 
-    public void unsubscribe(QueueSubscriber qsubscriber) {
-        if (subscriberClient == null) return; // WTF?
-        SubscriptionName subscriptionName = SubscriptionName.create(projectId, qsubscriber.getSubscriberId());
-        subscriberClient.deleteSubscription(subscriptionName);
-    }
-
-    // Public for testing
     public void deleteTopic(String topicId) {
-        if (subscriberClient == null) return; // WTF?
-        TopicName topicName = TopicName.create(projectId, topicId);
-        try {
-            publisherClient.deleteTopic(topicName);
-        } catch (Exception e) {
-            String error = String.format("Cannot delete topic %s:\n%s", topicId, ExceptionToString.format(e));
-            logger.error(error);
+        Topic topic = topics.get(topicId);
+        if (topic != null) {
+            try (TopicAdminClient topicAdminClient = TopicAdminClient.create()) {
+                TopicName topicName = TopicName.create(projectId, topicId);
+                topicAdminClient.deleteTopic(topicName);
+            } catch (Exception ioe) {
+                throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, "Cannot create topic " + topicId, ioe);
+            }
         }
+        topics.remove(topicId);
     }
 
     @Override
@@ -165,92 +143,65 @@ public class PubsubPipeline2Handler implements Pipeline2Handler {
     }
 
     public void close() {
-        Set<QueueSubscriber> subs = activeSubscriptions.keySet();
+        Set<QueueSubscriber> subs = subscribers.keySet();
         for (QueueSubscriber subscriber : subs) {
             unsubscribe(subscriber);
-            activeSubscriptions.remove(subscriber);
-        }
-        if (publisherClient != null) {
-            try {
-                publisherClient.close();
-            } catch (Exception e) {
-            }
-            publisherClient = null;
-        }
-        if (subscriberClient != null) {
-            try {
-                subscriberClient.close();
-            } catch (Exception e) {
-            }
-            subscriberClient = null;
         }
     }
 
     @Override
-    public void createPipeline(String queueIdentifier) {
+    public void createQueue(String queueIdentifier) {
         Topic topic = getTopic(queueIdentifier);
     }
 
-    static Map<String, String> subMap = new ConcurrentHashMap<>();
-
     @Override
-    public void subscribeToPipeline(String queueIdentifier, final QueueSubscriber qsubscriber) {
+    public void subscribe(String queueIdentifier, final QueueSubscriber qsubscriber) {
         logger.debug("Subscribing to " + queueIdentifier + " as " + qsubscriber.getSubscriberId());
         if (StringUtils.stripToNull(queueIdentifier) == null) {
             throw new RuntimeException("Null topic");
         }
 
-        if (subMap.containsKey(queueIdentifier)) {
-            logger.debug("Queue already has a subscriber - possibly overwriting");
-        }
-        subMap.put(queueIdentifier, qsubscriber.getSubscriberId());
-
+        SubscriptionName subscriptionName = SubscriptionName.create(projectId, qsubscriber.getSubscriberId());
         Topic topic = getTopic(queueIdentifier);
-        try {
-            TopicName topicName = topic.getNameAsTopicName();
-            if (subscriberClient == null) {
-                SubscriberSettings subscriberSettings = getSubscriberSettingsFromConfig(config);
-                subscriberClient = SubscriberClient.create(subscriberSettings);
-            }
-            SubscriptionName subscriptionName = SubscriptionName.create(projectId, qsubscriber.getSubscriberId());
-            try {
-                @SuppressWarnings("unused")
-                Subscription subscription = subscriberClient.createSubscription(subscriptionName, topicName, PushConfig.getDefaultInstance(), 0);
-            } catch (Exception e) {
-            }
-
-            Thread subscriber = new Thread() {
-                @Override
-                public void run() {
-                    logger.debug("Running subscription thread for " + topic.getName());
-
-                    while (!interrupted()) {
-                        // get one message only
-                        PullResponse response = subscriberClient.pull(subscriptionName, false, 1);
-                        List<ReceivedMessage> messasges = response.getReceivedMessagesList();
-                        if (!messasges.isEmpty()) {
-                            ReceivedMessage rcvmsg = messasges.get(0);
-                            PubsubMessage mess = rcvmsg.getMessage();
-                            logger.debug(subscriptionName.getSubscription() + " reading Message " + mess.getMessageId());
-                            if (!this.isInterrupted()) {
-                                // Should we ack before we deliver or after?
-                                subscriberClient.acknowledge(subscriptionName, ImmutableList.of(rcvmsg.getAckId()));
-                                byte[] info = mess.getData().toByteArray();
-                                try {
-                                    TaskStatus taskStatus = JacksonUtil.objectFromJson(info, TaskStatus.class);
-                                    qsubscriber.handleTask(queueIdentifier, taskStatus);
-                                } catch (Exception e) {
-                                    qsubscriber.handleEvent(queueIdentifier, info);
-                                }
-                            }
-                        }
+        Subscription subscription = subscriptions.get(subscriptionName);
+        if (subscription == null) {
+            try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
+                try {
+                    subscription = subscriptionAdminClient.getSubscription(subscriptionName);
+                } catch (Exception e) {
+                    if (subscription == null) {
+                        subscription = subscriptionAdminClient.createSubscription(subscriptionName, topic.getNameAsTopicName(), PushConfig.getDefaultInstance(),
+                                0);
+                        subscriptions.put(subscriptionName, subscription);
                     }
-                    activeSubscriptions.remove(qsubscriber);
+                }
+            } catch (Exception ioe) {
+                System.err.println(ExceptionToString.format(ioe));
+            }
+        }
+        try {
+            MessageReceiver receiver = new MessageReceiver() {
+                @Override
+                public void receiveMessage(PubsubMessage message, AckReplyConsumer consumer) {
+                    System.out.println("Received " + message.getData().toStringUtf8());
+                    if (qsubscriber.handleEvent(message.getData().toByteArray())) consumer.ack();
                 }
             };
-            subscriber.start();
 
-            activeSubscriptions.put(qsubscriber, subscriber);
+            Subscriber.Builder builder = Subscriber.defaultBuilder(subscriptionName, receiver);
+            // The default executor provider creates an insane number of threads.
+            if (executor != null) builder.setExecutorProvider(executor);
+            Subscriber subscriber = builder.build();
+
+            subscriber.addListener(new Subscriber.Listener() {
+                @Override
+                public void failed(Subscriber.State from, Throwable failure) {
+                    // Subscriber encountered a fatal error and is shutting down.
+                    System.err.println(failure);
+                }
+            }, MoreExecutors.directExecutor());
+            subscriber.startAsync().awaitRunning();
+            subscribers.put(qsubscriber, subscriber);
         } catch (Exception e) {
             String error = String.format("Cannot subscribe to topic %s:\n%s", topic.getName(), ExceptionToString.format(e));
             logger.error(error);
@@ -259,23 +210,20 @@ public class PubsubPipeline2Handler implements Pipeline2Handler {
     }
 
     @Override
-    public void unsubscribePipeline(String queueIdentifier, QueueSubscriber qsubscriber) {
-        logger.debug("Unsubscribing from " + queueIdentifier + " as " + qsubscriber.getSubscriberId());
-        Thread thread = activeSubscriptions.remove(qsubscriber);
-        if (thread != null) thread.interrupt();
-        SubscriptionName subscriptionName = SubscriptionName.create(projectId, qsubscriber.getSubscriberId());
-        try {
-            subscriberClient.deleteSubscription(subscriptionName);
-        } catch (Exception e) {
-            // If there are multiple subscribers sharing the same ID it may have already have been deleted.
-        }
-        String qid = subMap.get(queueIdentifier);
-        if ((qid != null) && qid.equals(qsubscriber.getSubscriberId())) {
-            subMap.remove(queueIdentifier);
-        }
+    public void unsubscribe(QueueSubscriber qsubscriber) {
+        logger.debug("Unsubscribing " + qsubscriber.getSubscriberId());
+        Subscriber subscriber = subscribers.remove(qsubscriber);
+        if (subscriber != null) subscriber.stopAsync();
     }
 
     private static Map<TopicName, Publisher> randomHouse = new ConcurrentHashMap<>();
+
+    static final Runnable listener = new Runnable() {
+        @Override
+        public void run() {
+            System.out.println("Message published");
+        }
+    };
 
     @Override
     public void publishTask(final String queue, final String task) {
@@ -285,52 +233,26 @@ public class PubsubPipeline2Handler implements Pipeline2Handler {
 
         try {
             PubsubMessage psmessage = PubsubMessage.newBuilder().setData(data).build();
-
             Publisher publisher = randomHouse.get(topicName);
             if (publisher == null) {
                 logger.trace("No publisher found for " + topicName + " - creating");
-                publisher = Publisher.newBuilder(topicName).build();
+                Builder builder = Publisher.defaultBuilder(topicName);
+                // The default executor provider creates an insane number of threads.
+                if (executor != null) builder.setExecutorProvider(executor);
+                publisher = builder.build();
                 randomHouse.put(topicName, publisher);
             } else {
                 logger.trace("Existing publisher found for " + topicName);
             }
 
-            // RpcFuture is being renamed to ApiFuture in a later version of GAX
-            RpcFuture<String> messageIdFuture = publisher.publish(psmessage);
-            messageIdFuture.addCallback(new RpcFutureCallback<String>() {
-                @Override
-                public void onSuccess(String messageId) {
-                    logger.trace("published " + task + "\n to queue " + queue + " with message id: " + messageId);
-                }
+            ApiFuture<String> messageIdFuture = publisher.publish(psmessage);
 
-                @Override
-                public void onFailure(Throwable t) {
-                    logger.warn("failed to publish: " + t);
-                }
-            });
+            if (executor != null) messageIdFuture.addListener(listener, executor.getExecutor());
+
         } catch (IOException e) {
             String error = String.format("Cannot send message to topic %s:\n%s", topic.getName(), ExceptionToString.format(e));
             logger.error(error);
             throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, error, e);
         }
-
-    }
-
-    @Override
-    public boolean queueExists(String queueIdentifier) {
-        TopicName topicName = TopicName.create(projectId, queueIdentifier);
-        try {
-            publisherClient.getTopic(topicName);
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-
-    }
-
-    @Override
-    public void removePipeline(String queueIdentifier) {
-        TopicName topicName = TopicName.create(projectId, queueIdentifier);
-        publisherClient.deleteTopic(topicName);
     }
 }

@@ -39,30 +39,6 @@ public class QueueSubscriber implements QueueEventHandler {
     String subscriberId;
     TaskStatus status;
 
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((queueName == null) ? 0 : queueName.hashCode());
-        result = prime * result + ((subscriberId == null) ? 0 : subscriberId.hashCode());
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null) return false;
-        if (getClass() != obj.getClass()) return false;
-        QueueSubscriber other = (QueueSubscriber) obj;
-        if (queueName == null) {
-            if (other.queueName != null) return false;
-        } else if (!queueName.equals(other.queueName)) return false;
-        if (subscriberId == null) {
-            if (other.subscriberId != null) return false;
-        } else if (!subscriberId.equals(other.subscriberId)) return false;
-        return true;
-    }
-
     public QueueSubscriber(String queueName, String subscriberId) {
         super();
         setQueueName(queueName);
@@ -102,7 +78,7 @@ public class QueueSubscriber implements QueueEventHandler {
     }
 
     @Override
-    public boolean handleEvent(String queueIdentifier, byte[] data) {
+    public boolean handleEvent(byte[] data) {
         if ((data == null) || (data.length == 0)) return false;
         if (status == null) status = new TaskStatus();
         status.getOutput().add(new String(data));
@@ -110,7 +86,7 @@ public class QueueSubscriber implements QueueEventHandler {
     }
 
     @Override
-    public boolean handleTask(String queueIdentifier, TaskStatus update) {
+    public boolean handleTask(TaskStatus update) {
         if (update == null) return false;
         String taskId = update.getTaskId();
         if (taskId != status.getTaskId()) {
