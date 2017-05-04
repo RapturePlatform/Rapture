@@ -81,11 +81,11 @@ public class SimpleBranchTest {
     public static void setup() {
         System.setProperty("LOGSTASH-ISENABLED", "false");
         RaptureConfig config = ConfigLoader.getConf();
-        config.DefaultExchange = "PIPELINE {} USING GCP_PUBSUB { projectid=\"todo3-incap\"}";
+        config.DefaultExchange = "PIPELINE {} USING GCP_PUBSUB { threads=\"5\", projectid=\"todo3-incap\"}";
         Kernel.initBootstrap();
-        // Kernel.getPipeline2().getTrusted().registerExchangeDomain(ctx, "main", "PIPELINE {} USING GCP_PUBSUB { projectid=\"todo3-incap\"}");
+        // Kernel.getPipeline2().getTrusted().registerExchangeDomain(ctx, "main", "PIPELINE {} USING GCP_PUBSUB { threads=\"5\", projectid=\"todo3-incap\"}");
 
-        subscriber = Kernel.INSTANCE.createAndSubscribe(ALPHA, "PIPELINE {} USING GCP_PUBSUB { projectid=\"todo3-incap\"}");
+        subscriber = Kernel.INSTANCE.createAndSubscribe(ALPHA, "PIPELINE {} USING GCP_PUBSUB { threads=\"5\", projectid=\"todo3-incap\"}");
         if (!Kernel.getDoc().docRepoExists(ctx, AUTHORITY)) {
             Kernel.getDoc().createDocRepo(ctx, AUTHORITY, "NREP {} USING MEMORY {}");
         }

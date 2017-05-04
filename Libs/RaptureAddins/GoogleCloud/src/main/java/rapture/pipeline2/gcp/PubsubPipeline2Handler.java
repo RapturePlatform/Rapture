@@ -44,6 +44,7 @@ import com.google.cloud.pubsub.spi.v1.Publisher.Builder;
 import com.google.cloud.pubsub.spi.v1.Subscriber;
 import com.google.cloud.pubsub.spi.v1.SubscriptionAdminClient;
 import com.google.cloud.pubsub.spi.v1.TopicAdminClient;
+import com.google.cloud.pubsub.spi.v1.TopicAdminSettings;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.protobuf.ByteString;
 import com.google.pubsub.v1.PubsubMessage;
@@ -103,10 +104,17 @@ public class PubsubPipeline2Handler implements Pipeline2Handler {
 
     static Map<String, Topic> topics = new ConcurrentHashMap<>();
 
+    private TopicAdminClient topicAdminClientCreate() throws IOException {
+        TopicAdminSettings.Builder builder = TopicAdminSettings.defaultBuilder();
+        // The default executor provider creates an insane number of threads.
+        if (executor != null) builder.setExecutorProvider(executor);
+        return TopicAdminClient.create(builder.build());
+    }
+    
     public Topic getTopic(String topicId) {
         Topic topic = topics.get(topicId);
         if (topic == null) {
-            try (TopicAdminClient topicAdminClient = TopicAdminClient.create()) {
+            try (TopicAdminClient topicAdminClient = topicAdminClientCreate()) {
                 TopicName topicName = TopicName.create(projectId, topicId);
                 try {
                     topic = topicAdminClient.getTopic(topicName);
@@ -117,7 +125,7 @@ public class PubsubPipeline2Handler implements Pipeline2Handler {
                     }
                 }
             } catch (Exception ioe) {
-                throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, "Cannot create topic " + topicId, ioe);
+                throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, "Cannot create or get topic " + topicId, ioe);
             }
         }
         return topic;
@@ -126,11 +134,11 @@ public class PubsubPipeline2Handler implements Pipeline2Handler {
     public void deleteTopic(String topicId) {
         Topic topic = topics.get(topicId);
         if (topic != null) {
-            try (TopicAdminClient topicAdminClient = TopicAdminClient.create()) {
+            try (TopicAdminClient topicAdminClient = topicAdminClientCreate()) {
                 TopicName topicName = TopicName.create(projectId, topicId);
                 topicAdminClient.deleteTopic(topicName);
             } catch (Exception ioe) {
-                throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, "Cannot create topic " + topicId, ioe);
+                throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, "Cannot delete topic " + topicId, ioe);
             }
         }
         topics.remove(topicId);

@@ -74,7 +74,7 @@ import rapture.kernel.schedule.ScheduleManager;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class AppStatusP2Test {
-    private static final int MAX_WAIT = 20000;
+    private static final int MAX_WAIT = 30000;
     private static final long TIMESTAMP = System.currentTimeMillis();
     private static final String DEFAULT_APP = "some app's: name!";
     private static final String EXPECTED_OVER_URI = "idp.status a/workflow/" + TIMESTAMP + "/" + DEFAULT_APP;
@@ -94,7 +94,7 @@ public class AppStatusP2Test {
     public static void setup() {
         String auditConfig = "LOG {} USING MEMORY {maxEntries=\"100\"}";
         RaptureConfig config = ConfigLoader.getConf();
-        config.DefaultExchange = "PIPELINE {} USING GCP_PUBSUB { projectid=\"todo3-incap\"}";
+        config.DefaultExchange = "PIPELINE {} USING GCP_PUBSUB { threads=\"5\", projectid=\"todo3-incap\"}";
         config.DefaultWorkflowAuditLog = auditConfig;
         System.setProperty("LOGSTASH-ISENABLED", "false");
 

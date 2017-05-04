@@ -49,7 +49,6 @@ public class MemoryPipeline2IntTest extends BasePipeline2IntTest {
         Pipeline2ApiImpl p2ai = new Pipeline2ApiImpl(Kernel.INSTANCE);
         Kernel.INSTANCE.restart();
         MemoryPipeline2Handler mp2h = new MemoryPipeline2Handler();
-        mp2h.setInstanceName("test");
         MessagingException me = new MessagingException();
 
         Kernel.initBootstrap();

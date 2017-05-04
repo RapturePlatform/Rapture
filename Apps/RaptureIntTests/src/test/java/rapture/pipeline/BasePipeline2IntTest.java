@@ -72,13 +72,13 @@ public abstract class BasePipeline2IntTest {
 
         QueueSubscriber qs1 = new QueueSubscriber(queue, queue + "_" + subscriber + "_1") {
             @Override
-            public boolean handleTask(String pipeline, TaskStatus task) {
+            public boolean handleTask(TaskStatus task) {
                 Assert.fail("Did not expect Task " + JacksonUtil.formattedJsonFromObject(task));
                 return false;
             }
 
             @Override
-            public boolean handleEvent(String pipeline, byte[] message) {
+            public boolean handleEvent(byte[] message) {
                 if (success == true) Assert.fail("Handler called twice for a topic message");
                 success = true;
                 synchronized (this) {
@@ -113,7 +113,7 @@ public abstract class BasePipeline2IntTest {
         // Simple task consumer
         QueueSubscriber qs2 = new QueueSubscriber(queue, queue + "_" + subscriber + "_2") {
             @Override
-            public boolean handleTask(String pipeline, TaskStatus status) {
+            public boolean handleTask(TaskStatus status) {
                 System.out.println("Got Task " + JacksonUtil.formattedJsonFromObject(status));
                 status.addToOutput("Response");
                 status.setCurrentState(PipelineTaskState.COMPLETED);
@@ -141,7 +141,7 @@ public abstract class BasePipeline2IntTest {
         // Simple task consumer
         QueueSubscriber qs3 = new QueueSubscriber(timeoutQueue, timeoutQueue + "_" + subscriber + "_3") {
             @Override
-            public boolean handleTask(String pipeline, TaskStatus status) {
+            public boolean handleTask(TaskStatus status) {
                 System.out.println("Got Task " + JacksonUtil.formattedJsonFromObject(status));
                 try {
                     Thread.sleep(4000);
@@ -199,7 +199,7 @@ public abstract class BasePipeline2IntTest {
         // Two subscribers with the same ID - only one should handle each task
         QueueSubscriber qsA = new QueueSubscriber(queue, queue + "_" + subscriber) {
             @Override
-            public boolean handleTask(String pipeline, TaskStatus status) {
+            public boolean handleTask(TaskStatus status) {
                 status.addToOutput("Response from Subscriber A");
                 status.setCurrentState(PipelineTaskState.COMPLETED);
                 papi.publishTaskResponse(context, queue, status);
@@ -209,7 +209,7 @@ public abstract class BasePipeline2IntTest {
 
         QueueSubscriber qsB = new QueueSubscriber(queue, queue + "_" + subscriber) {
             @Override
-            public boolean handleTask(String pipeline, TaskStatus status) {
+            public boolean handleTask(TaskStatus status) {
                 System.out.println("Got Task " + JacksonUtil.formattedJsonFromObject(status));
                 status.addToOutput("Response from Subscriber B");
                 status.setCurrentState(PipelineTaskState.COMPLETED);

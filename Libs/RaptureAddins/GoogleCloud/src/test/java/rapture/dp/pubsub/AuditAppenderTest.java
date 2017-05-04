@@ -31,7 +31,7 @@ public class AuditAppenderTest {
     @Before
     public void setup() {
         RaptureConfig config = ConfigLoader.getConf();
-        config.DefaultExchange = "PIPELINE {} USING GCP_PUBSUB { projectid=\"todo3-incap\"}";
+        config.DefaultExchange = "PIPELINE {} USING GCP_PUBSUB { threads=\"5\", projectid=\"todo3-incap\"}";
 
         Kernel.INSTANCE.restart();
         // subscriber = Kernel.INSTANCE.createAndSubscribe(CATEGORY, config.DefaultExchange);

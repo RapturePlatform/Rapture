@@ -53,7 +53,6 @@ public class GcpPipeline2IntTest extends BasePipeline2IntTest {
         papi = Kernel.getPipeline2().getTrusted();
 
         PubsubPipeline2Handler pp2h = new PubsubPipeline2Handler();
-        pp2h.setInstanceName("test");
 
         // NOTE: This gets done in the _startup.rfx script
         // papi.registerExchangeDomain(context, "//" + domain, config.DefaultExchange);
