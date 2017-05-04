@@ -55,7 +55,6 @@ import rapture.dp.WaitingTestHelper;
 import rapture.dp.invocable.SignalInvocable;
 import rapture.kernel.ContextFactory;
 import rapture.kernel.Kernel;
-import rapture.kernel.Pipeline2ApiImpl;
 
 public class SimpleForkStepTest {
     private CallingContext ctx = ContextFactory.getKernelUser();
@@ -140,7 +139,7 @@ public class SimpleForkStepTest {
     @Test
     public void runTest() throws InterruptedException {
         String workOrderUri = Kernel.getDecision().createWorkOrder(ctx, WF, ImmutableMap.of("testName", "#SimpleFork"));
-        assertStatus(workOrderUri, ctx, 15000, WorkOrderExecutionState.FINISHED);
+        assertStatus(workOrderUri, ctx, 30000, WorkOrderExecutionState.FINISHED);
         assertTrue(SignalInvocable.Singleton.testSignal("Hello World"));
         assertFalse(SignalInvocable.Singleton.testSignal("Fake Signal"));
         assertTrue(SignalInvocable.Singleton.testSignal(LEFT_STEP));
