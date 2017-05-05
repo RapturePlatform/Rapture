@@ -45,6 +45,7 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.LocalTime;
 import org.joda.time.format.DateTimeFormat;
 import org.junit.AfterClass;
+import org.junit.Assume;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -66,6 +67,7 @@ import rapture.common.dp.WorkOrderDebug;
 import rapture.common.dp.WorkerDebug;
 import rapture.common.dp.Workflow;
 import rapture.common.dp.WorkflowBasedSemaphoreConfig;
+import rapture.common.exception.ExceptionToString;
 import rapture.common.impl.jackson.JacksonUtil;
 import rapture.common.model.RaptureExchange;
 import rapture.common.model.RaptureExchangeQueue;
@@ -105,8 +107,10 @@ public class DecisionProcessExecutorTest extends LocalDataStoreTest {
 
     @AfterClass
     public static void cleanUp() {
-        Kernel.getDoc().deleteDocRepo(CONTEXT, REPO_URI);
-        if (subscriber != null) Kernel.getPipeline2().unsubscribeQueue(CONTEXT, subscriber);
+        if (subscriber != null) {
+            Kernel.getPipeline2().unsubscribeQueue(CONTEXT, subscriber);
+            Kernel.getDoc().deleteDocRepo(CONTEXT, REPO_URI);
+        }
     }
 
     @BeforeClass
@@ -115,7 +119,13 @@ public class DecisionProcessExecutorTest extends LocalDataStoreTest {
         config.DefaultExchange = "PIPELINE {} USING GCP_PUBSUB { threads=\"5\", projectid=\"todo3-incap\"}";
 
         System.setProperty("LOGSTASH-ISENABLED", "false");
-        Kernel.initBootstrap();
+        try {
+            Kernel.initBootstrap();
+        } catch (Exception e) {
+            String error = ExceptionToString.format(e);
+            if (error.contains("The Application Default Credentials are not available.")) Assume.assumeNoException(e);
+            throw e;
+        }
         if (Kernel.getDoc().docRepoExists(CONTEXT, REPO_URI)) cleanUp();
 
         Kernel.getDoc().createDocRepo(CONTEXT, REPO_URI, "NREP {} USING MEMORY {}");
@@ -132,8 +142,7 @@ public class DecisionProcessExecutorTest extends LocalDataStoreTest {
                 "println(\"This is step2\"); return \"success\";");
         Kernel.getScript().createScript(CONTEXT, REPO_URI + "/" + scr3, RaptureScriptLanguage.REFLEX, RaptureScriptPurpose.PROGRAM,
                 "println(this has bad syntax, it should error out;");
-        Kernel.getScript().createScript(CONTEXT, REPO_URI + "/" + scr4, RaptureScriptLanguage.REFLEX, RaptureScriptPurpose.PROGRAM,
-                "return 'fail';");
+        Kernel.getScript().createScript(CONTEXT, REPO_URI + "/" + scr4, RaptureScriptLanguage.REFLEX, RaptureScriptPurpose.PROGRAM, "return 'fail';");
     }
 
     private static void initPipeline() {
@@ -328,10 +337,8 @@ public class DecisionProcessExecutorTest extends LocalDataStoreTest {
         WaitingTestHelper.retry(new Runnable() {
             @Override
             public void run() {
-                assertEquals(
-                        "Check the error log if this fails it means that the DecisionTestInvocable didn't execute successfully. There are some assertions"
-                                + " in there.",
-                        WorkOrderExecutionState.FINISHED, Kernel.getDecision().getWorkOrderStatus(CONTEXT, workOrderUri).getStatus());
+                assertEquals("Check the error log if this fails it means that the DecisionTestInvocable didn't execute successfully. There are some assertions"
+                        + " in there.", WorkOrderExecutionState.FINISHED, Kernel.getDecision().getWorkOrderStatus(CONTEXT, workOrderUri).getStatus());
             }
         }, MAX_WAIT);
         List<StepRecord> records = getStepRecords(workOrderUri);
@@ -488,10 +495,8 @@ public class DecisionProcessExecutorTest extends LocalDataStoreTest {
         WaitingTestHelper.retry(new Runnable() {
             @Override
             public void run() {
-                assertEquals(
-                        "Check the error log if this fails it means that the DecisionTestInvocable didn't execute successfully. There are some assertions"
-                                + " in there.",
-                        WorkOrderExecutionState.FINISHED, Kernel.getDecision().getWorkOrderStatus(CONTEXT, workOrderUri).getStatus());
+                assertEquals("Check the error log if this fails it means that the DecisionTestInvocable didn't execute successfully. There are some assertions"
+                        + " in there.", WorkOrderExecutionState.FINISHED, Kernel.getDecision().getWorkOrderStatus(CONTEXT, workOrderUri).getStatus());
             }
         }, MAX_WAIT);
     }

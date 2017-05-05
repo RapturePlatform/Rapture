@@ -39,6 +39,7 @@ import java.util.UUID;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -47,6 +48,7 @@ import rapture.common.RaptureConstants;
 import rapture.common.RaptureFolderInfo;
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
+import rapture.common.exception.ExceptionToString;
 import rapture.common.impl.jackson.JacksonUtil;
 import rapture.common.model.DocumentRepoConfig;
 import rapture.kernel.ContextFactory;
@@ -76,7 +78,11 @@ public class DocApiGoogleTest extends LocalDataStoreTest {
         callingContext = new CallingContext();
         callingContext.setUser("dummy");
 
-        Kernel.initBootstrap();
+        try {
+            Kernel.initBootstrap();
+        } catch (Exception e) {
+            if (ExceptionToString.format(e).contains("The Application Default Credentials are not available")) Assume.assumeNoException(e);
+        }
         callingContext = ContextFactory.getKernelUser();
         Kernel.getAudit().createAuditLog(ContextFactory.getKernelUser(), new RaptureURI(RaptureConstants.DEFAULT_AUDIT_URI, Scheme.LOG).getAuthority(),
                 "LOG {} using MEMORY {prefix=\"/tmp/" + UUID.randomUUID() + "\"}");

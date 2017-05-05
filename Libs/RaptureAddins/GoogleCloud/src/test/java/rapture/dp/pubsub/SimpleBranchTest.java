@@ -29,6 +29,7 @@ import static org.junit.Assert.assertNotNull;
 import java.util.List;
 
 import org.junit.AfterClass;
+import org.junit.Assume;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -44,12 +45,12 @@ import rapture.common.dp.Step;
 import rapture.common.dp.Transition;
 import rapture.common.dp.WorkOrderStatus;
 import rapture.common.dp.Workflow;
+import rapture.common.exception.ExceptionToString;
 import rapture.common.impl.jackson.JacksonUtil;
 import rapture.config.ConfigLoader;
 import rapture.config.RaptureConfig;
 import rapture.kernel.ContextFactory;
 import rapture.kernel.Kernel;
-import rapture.kernel.Pipeline2ApiImpl;
 
 public class SimpleBranchTest {
     private static CallingContext ctx = ContextFactory.getKernelUser();
@@ -67,14 +68,24 @@ public class SimpleBranchTest {
     private static final String systemBlobRepo = "//sys.blob";
     private static QueueSubscriber subscriber = null;
 
+    static boolean cleanUpNeeded = false;
+
     @AfterClass
     public static void cleanUp() {
-        Kernel.getScript().deleteScript(ctx, START_SCRIPT);
-        Kernel.getScript().deleteScript(ctx, WIN_SCRIPT);
-        Kernel.getScript().deleteScript(ctx, LOSE_SCRIPT);
-        Kernel.getDoc().deleteDocRepo(ctx, AUTHORITY);
-        Kernel.getBlob().deleteBlobRepo(ctx, systemBlobRepo);
-        if (subscriber != null) Kernel.getPipeline2().unsubscribeQueue(ctx, subscriber);
+        if (!cleanUpNeeded) return;
+
+        try {
+            Kernel.getScript().deleteScript(ctx, START_SCRIPT);
+            Kernel.getScript().deleteScript(ctx, WIN_SCRIPT);
+            Kernel.getScript().deleteScript(ctx, LOSE_SCRIPT);
+            Kernel.getDoc().deleteDocRepo(ctx, AUTHORITY);
+            Kernel.getBlob().deleteBlobRepo(ctx, systemBlobRepo);
+            if (subscriber != null) Kernel.getPipeline2().unsubscribeQueue(ctx, subscriber);
+        } catch (Exception e) {
+            String error = ExceptionToString.format(e);
+            if (error.contains("The Application Default Credentials are not available.")) Assume.assumeNoException(e);
+            throw e;
+        }
     }
     
     @BeforeClass
@@ -82,9 +93,16 @@ public class SimpleBranchTest {
         System.setProperty("LOGSTASH-ISENABLED", "false");
         RaptureConfig config = ConfigLoader.getConf();
         config.DefaultExchange = "PIPELINE {} USING GCP_PUBSUB { threads=\"5\", projectid=\"todo3-incap\"}";
-        Kernel.initBootstrap();
+        try {
+            Kernel.initBootstrap();
+        } catch (Exception e) {
+            String error = ExceptionToString.format(e);
+            if (error.contains("The Application Default Credentials are not available.")) Assume.assumeNoException(e);
+            throw e;
+        }
         // Kernel.getPipeline2().getTrusted().registerExchangeDomain(ctx, "main", "PIPELINE {} USING GCP_PUBSUB { threads=\"5\", projectid=\"todo3-incap\"}");
 
+        cleanUpNeeded = true;
         subscriber = Kernel.INSTANCE.createAndSubscribe(ALPHA, "PIPELINE {} USING GCP_PUBSUB { threads=\"5\", projectid=\"todo3-incap\"}");
         if (!Kernel.getDoc().docRepoExists(ctx, AUTHORITY)) {
             Kernel.getDoc().createDocRepo(ctx, AUTHORITY, "NREP {} USING MEMORY {}");

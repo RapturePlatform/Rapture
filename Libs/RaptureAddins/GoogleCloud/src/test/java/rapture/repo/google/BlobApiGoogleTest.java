@@ -134,7 +134,13 @@ public class BlobApiGoogleTest extends LocalDataStoreTest {
                 "LOG {} using MEMORY {}");
 
         Kernel.INSTANCE.restart();
-        Kernel.initBootstrap();
+        try {
+            Kernel.initBootstrap();
+        } catch (Exception e) {
+            String error = ExceptionToString.format(e);
+            if (error.contains("The Application Default Credentials are not available.")) Assume.assumeNoException(e);
+            throw e;
+        }
         callingContext = ContextFactory.getKernelUser();
         Kernel.getAudit().createAuditLog(ContextFactory.getKernelUser(), new RaptureURI(RaptureConstants.DEFAULT_AUDIT_URI, Scheme.LOG).getAuthority(),
                 "LOG {} using MEMORY {prefix=\"/tmp/" + UUID.randomUUID() + "\"}");

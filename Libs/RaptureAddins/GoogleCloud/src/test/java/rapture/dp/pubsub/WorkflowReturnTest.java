@@ -33,6 +33,7 @@ import java.util.Map;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 import org.junit.AfterClass;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -49,6 +50,7 @@ import rapture.common.dp.ContextVariables;
 import rapture.common.dp.Step;
 import rapture.common.dp.Transition;
 import rapture.common.dp.Workflow;
+import rapture.common.exception.ExceptionToString;
 import rapture.common.model.RaptureExchange;
 import rapture.common.model.RaptureExchangeQueue;
 import rapture.common.model.RaptureExchangeType;
@@ -57,7 +59,6 @@ import rapture.config.RaptureConfig;
 import rapture.dp.WaitingTestHelper;
 import rapture.kernel.ContextFactory;
 import rapture.kernel.Kernel;
-import rapture.kernel.Pipeline2ApiImpl;
 
 public class WorkflowReturnTest {
     private static final String GET = "get";
@@ -92,7 +93,13 @@ public class WorkflowReturnTest {
         RaptureConfig config = ConfigLoader.getConf();
         config.DefaultExchange = "PIPELINE {} USING GCP_PUBSUB { threads=\"5\", projectid=\"todo3-incap\"}";
 
-        Kernel.initBootstrap();
+        try {
+            Kernel.initBootstrap();
+        } catch (Exception e) {
+            String error = ExceptionToString.format(e);
+            if (error.contains("The Application Default Credentials are not available.")) Assume.assumeNoException(e);
+            throw e;
+        }
 
         String idGenUri = "idgen://sys/event/id";
         if (!Kernel.getIdGen().idGenExists(ctx, idGenUri)) Kernel.getIdGen().createIdGen(ctx, idGenUri, "IDGEN {} USING MEMORY {}");

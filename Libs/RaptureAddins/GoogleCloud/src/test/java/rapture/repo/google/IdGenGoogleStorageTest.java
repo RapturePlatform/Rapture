@@ -21,6 +21,7 @@ import com.google.common.collect.ImmutableMap;
 import rapture.common.RaptureConstants;
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
+import rapture.common.exception.ExceptionToString;
 import rapture.common.exception.RaptureException;
 import rapture.dsl.idgen.RaptureIdGen;
 import rapture.kernel.ContextFactory;
@@ -61,35 +62,47 @@ public class IdGenGoogleStorageTest {
 
     @Test
     public void testIdGen1() {
-        RaptureIdGen f = new RaptureIdGen();
-        IdGenGoogleStorage iggs = new IdGenGoogleStorage();
-        iggs.setConfig(ImmutableMap.of("projectid", "todo3-incap", "prefix", "TST"));
-        f.setIdGenStore(iggs);
-        f.setProcessorConfig(ImmutableMap.of("initial", "10", "base", "26", "length", "8", "prefix", "TST"));
-        String result = f.incrementIdGen(10L);
-        assertEquals("TST0000000K", result);
+        try {
+            RaptureIdGen f = new RaptureIdGen();
+            IdGenGoogleStorage iggs = new IdGenGoogleStorage();
+            iggs.setConfig(ImmutableMap.of("projectid", "todo3-incap", "prefix", "TST"));
+            f.setIdGenStore(iggs);
+            f.setProcessorConfig(ImmutableMap.of("initial", "10", "base", "26", "length", "8", "prefix", "TST"));
+            String result = f.incrementIdGen(10L);
+            assertEquals("TST0000000K", result);
+        } catch (Exception e) {
+            String error = ExceptionToString.format(e);
+            if (error.contains("com.google.cloud.storage.StorageException: 401 Unauthorized")) Assume.assumeNoException(e);
+            throw e;
+        }
     }
 
     @Test
     public void testIdGen2() {
-        RaptureIdGen f = new RaptureIdGen();
-        IdGenGoogleStorage iggs = new IdGenGoogleStorage();
-        iggs.setConfig(ImmutableMap.of("projectid", "todo3-incap", "prefix", "TST"));
-        f.setIdGenStore(iggs);
-        f.setProcessorConfig(ImmutableMap.of("initial", "706216874", "base", "36", "length", "6", "prefix", "OI-"));
-
-        String result = f.incrementIdGen(1L);
-        assertEquals("OI-BOGOFF", result);
-        result = f.incrementIdGen(735953563L);
-        assertEquals("OI-NUMPTY", result);
-        result = f.incrementIdGen(655030524L);
-        assertEquals("OI-YOMAMA", result);
-        f.invalidate();
         try {
-            result = f.incrementIdGen(2L);
-            Assert.fail("ID Generator was invalidated");
-        } catch (RaptureException e) {
-            // assertEquals("IdGenerator has been deleted", e.getMessage());
+            RaptureIdGen f = new RaptureIdGen();
+            IdGenGoogleStorage iggs = new IdGenGoogleStorage();
+            iggs.setConfig(ImmutableMap.of("projectid", "todo3-incap", "prefix", "TST"));
+            f.setIdGenStore(iggs);
+            f.setProcessorConfig(ImmutableMap.of("initial", "706216874", "base", "36", "length", "6", "prefix", "OI-"));
+
+            String result = f.incrementIdGen(1L);
+            assertEquals("OI-BOGOFF", result);
+            result = f.incrementIdGen(735953563L);
+            assertEquals("OI-NUMPTY", result);
+            result = f.incrementIdGen(655030524L);
+            assertEquals("OI-YOMAMA", result);
+            f.invalidate();
+            try {
+                result = f.incrementIdGen(2L);
+                Assert.fail("ID Generator was invalidated");
+            } catch (RaptureException e) {
+                // assertEquals("IdGenerator has been deleted", e.getMessage());
+            }
+        } catch (Exception e) {
+            String error = ExceptionToString.format(e);
+            if (error.contains("com.google.cloud.storage.StorageException: 401 Unauthorized")) Assume.assumeNoException(e);
+            throw e;
         }
     }
 

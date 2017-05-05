@@ -52,6 +52,7 @@ import com.google.common.collect.ImmutableMap;
 import rapture.common.RaptureConstants;
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
+import rapture.common.exception.ExceptionToString;
 import rapture.common.impl.jackson.JacksonUtil;
 import rapture.common.model.DocumentMetadata;
 import rapture.common.model.DocumentWithMeta;
@@ -93,24 +94,30 @@ public class GoogleStorageKeyStoreTest {
         Kernel.getAudit().createAuditLog(ContextFactory.getKernelUser(), new RaptureURI(RaptureConstants.DEFAULT_AUDIT_URI, Scheme.LOG).getAuthority(),
                 "LOG {} using MEMORY {prefix=\"/tmp/" + UUID.randomUUID() + "\"}");
 
-        store = new GoogleStorageKeyStore();
-        store.setConfig(ImmutableMap.of("prefix", "store"));
-        meta = new GoogleStorageKeyStore();
-        meta.setConfig(ImmutableMap.of("prefix", "meta"));
-        version = new GoogleStorageKeyStore();
-        version.setConfig(ImmutableMap.of("prefix", "version"));
-        attribute = new GoogleStorageKeyStore();
-        attribute.setConfig(ImmutableMap.of("prefix", "attribute"));
-        repo = new NVersionedRepo(new HashMap<String, String>(), store, version, meta, attribute, new DummyLockHandler());
+        try {
+            store = new GoogleStorageKeyStore();
+            store.setConfig(ImmutableMap.of("prefix", "store"));
+            meta = new GoogleStorageKeyStore();
+            meta.setConfig(ImmutableMap.of("prefix", "meta"));
+            version = new GoogleStorageKeyStore();
+            version.setConfig(ImmutableMap.of("prefix", "version"));
+            attribute = new GoogleStorageKeyStore();
+            attribute.setConfig(ImmutableMap.of("prefix", "attribute"));
+            repo = new NVersionedRepo(new HashMap<String, String>(), store, version, meta, attribute, new DummyLockHandler());
+        } catch (Exception e) {
+            String error = ExceptionToString.format(e);
+            if (error.contains("com.google.cloud.storage.StorageException: 401 Unauthorized")) Assume.assumeNoException(e);
+            throw e;
+        }
     }
 
     @After
     public void tidyUp() throws IOException, InterruptedException, TimeoutException {
-        store.dropKeyStore();
-        meta.dropKeyStore();
-        version.dropKeyStore();
-        attribute.dropKeyStore();
-        repo.drop();
+        if (store != null) store.dropKeyStore();
+        if (meta != null) meta.dropKeyStore();
+        if (version != null) version.dropKeyStore();
+        if (attribute != null) attribute.dropKeyStore();
+        if (repo != null) repo.drop();
     }
 
     @Test
