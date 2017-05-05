@@ -41,6 +41,7 @@ import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.junit.AfterClass;
+import org.junit.Assume;
 import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -98,11 +99,17 @@ public class AppStatusP2Test {
         config.DefaultWorkflowAuditLog = auditConfig;
         System.setProperty("LOGSTASH-ISENABLED", "false");
 
-        Kernel.INSTANCE.restart();
+        try {
+            Kernel.INSTANCE.restart();
 
-        Kernel.initBootstrap();
-        Kernel.getAudit().createAuditLog(CTX, "//workflow", auditConfig);
-        subscriber = Kernel.INSTANCE.createAndSubscribe(CATEGORY, config.DefaultExchange);
+            Kernel.initBootstrap();
+            Kernel.getAudit().createAuditLog(CTX, "//workflow", auditConfig);
+            subscriber = Kernel.INSTANCE.createAndSubscribe(CATEGORY, config.DefaultExchange);
+        } catch (Exception e1) {
+            String error = ExceptionToString.format(e1);
+            if (error.contains("The Application Default Credentials are not available.")) Assume.assumeNoException(e1);
+            throw e1;
+        }
 
         Kernel.getDoc().deleteDocRepo(CTX, REPO_URI);
         Kernel.getDoc().createDocRepo(CTX, REPO_URI, "NREP {} USING MEMORY {}");

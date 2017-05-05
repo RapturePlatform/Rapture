@@ -32,12 +32,14 @@ import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 
 import rapture.common.RaptureConstants;
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
+import rapture.common.exception.ExceptionToString;
 import rapture.config.ConfigLoader;
 import rapture.config.RaptureConfig;
 import rapture.dsl.idgen.IdGenFactory;
@@ -66,7 +68,13 @@ public class IdGenApiDatastoreTest {
 
         System.setProperty("LOGSTASH-ISENABLED", "false");
 
-        Kernel.initBootstrap();
+        try {
+            Kernel.initBootstrap();
+        } catch (Exception e) {
+            String error = ExceptionToString.format(e);
+            if (error.contains("The Application Default Credentials are not available.")) Assume.assumeNoException(e);
+            throw e;
+        }
         Kernel.INSTANCE.clearRepoCache(false);
         Kernel.getAudit().createAuditLog(ContextFactory.getKernelUser(), new RaptureURI(RaptureConstants.DEFAULT_AUDIT_URI, Scheme.LOG).getAuthority(),
                 "LOG {} using MEMORY {}");

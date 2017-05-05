@@ -34,6 +34,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.After;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -45,13 +46,13 @@ import rapture.common.QueueSubscriber;
 import rapture.common.WorkOrderExecutionState;
 import rapture.common.dp.Step;
 import rapture.common.dp.Workflow;
+import rapture.common.exception.ExceptionToString;
 import rapture.config.ConfigLoader;
 import rapture.config.RaptureConfig;
 import rapture.dp.WaitingTestHelper;
 import rapture.dp.invocable.SignalInvocable;
 import rapture.kernel.ContextFactory;
 import rapture.kernel.Kernel;
-import rapture.kernel.Pipeline2ApiImpl;
 
 public class SimpleSplitStepTest {
     private static final String AUTHORITY = "//splitsteptest";
@@ -72,7 +73,13 @@ public class SimpleSplitStepTest {
         RaptureConfig config = ConfigLoader.getConf();
         config.DefaultExchange = "PIPELINE {} USING GCP_PUBSUB { threads=\"5\", projectid=\"todo3-incap\"}";
 
-        Kernel.initBootstrap();
+        try {
+            Kernel.initBootstrap();
+        } catch (Exception e) {
+            String error = ExceptionToString.format(e);
+            if (error.contains("The Application Default Credentials are not available.")) Assume.assumeNoException(e);
+            throw e;
+        }
         if (!Kernel.getDoc().docRepoExists(ctx, AUTHORITY)) {
             Kernel.getDoc().createDocRepo(ctx, AUTHORITY, "NREP {} USING MEMORY {}");
         }
