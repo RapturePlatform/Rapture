@@ -74,7 +74,7 @@ public class NestedSplitStepTest {
     private static final String RIGHT_B = "right1b";
     private static final String WF = "workflow://splitsteptest/workflow";
     private QueueSubscriber subscriber = null;
-    private static final int MAX_WAIT = 5000;
+    private static final int MAX_WAIT = 20000;
 
     @Before
     public void setup() {

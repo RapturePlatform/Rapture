@@ -102,7 +102,7 @@ public class ScriptApiDatastoreTest extends AbstractFileTest {
         }
         callingContext = ContextFactory.getKernelUser();
 
-        Kernel.INSTANCE.clearRepoCache(false);
+        // Kernel.INSTANCE.clearRepoCache(false);
         Kernel.getAudit().createAuditLog(ContextFactory.getKernelUser(), new RaptureURI(RaptureConstants.DEFAULT_AUDIT_URI, Scheme.LOG).getAuthority(),
                 "LOG {} using MEMORY {projectid=\"todo3-incap\", prefix=\"/tmp/" + auth + "\"}");
         Kernel.getLock().createLockManager(callingContext, "lock://kernel", "LOCKING USING DUMMY {}", "");
