@@ -54,7 +54,6 @@ import rapture.dp.WaitingTestHelper;
 import rapture.dp.invocable.SignalInvocable;
 import rapture.kernel.ContextFactory;
 import rapture.kernel.Kernel;
-import rapture.kernel.Pipeline2ApiImpl;
 
 public class NestedSplitStepTest {
     private static final String AUTHORITY = "//splitsteptest";
@@ -75,7 +74,7 @@ public class NestedSplitStepTest {
     private static final String RIGHT_B = "right1b";
     private static final String WF = "workflow://splitsteptest/workflow";
     private QueueSubscriber subscriber = null;
-    private static final int MAX_WAIT = 20000;
+    private static final int MAX_WAIT = 5000;
 
     @Before
     public void setup() {
