@@ -26,6 +26,7 @@ package rapture.repo.google;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.testng.Assert.assertNotNull;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -37,6 +38,7 @@ import java.util.UUID;
 import java.util.concurrent.TimeoutException;
 
 import org.junit.After;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -45,6 +47,8 @@ import com.google.common.collect.ImmutableMap;
 import rapture.common.RaptureConstants;
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
+import rapture.common.exception.ExceptionToString;
+import rapture.common.exception.RaptureException;
 import rapture.common.impl.jackson.JacksonUtil;
 import rapture.common.model.DocumentMetadata;
 import rapture.common.model.DocumentWithMeta;
@@ -67,6 +71,14 @@ public class GoogleDatastoreKeyStoreTest extends LocalDataStoreTest {
 
     @Before
     public void setup() throws IOException, InterruptedException {
+        try {
+            Kernel.initBootstrap(null, null, true);
+        } catch (RaptureException e) {
+            String error = ExceptionToString.format(e);
+            if (error.contains("The Application Default Credentials are not available.") || error.contains("RESOURCE_EXHAUSTED")) Assume.assumeNoException(e);
+            throw e;
+        }
+
         store = new GoogleDatastoreKeyStore();
         store.setConfig(ImmutableMap.of("prefix", "store"));
         meta = new GoogleDatastoreKeyStore();
@@ -281,6 +293,7 @@ public class GoogleDatastoreKeyStoreTest extends LocalDataStoreTest {
     protected void assertDocWithMeta(String key, String value, String user, String comment, long before, long after, DocumentWithMeta found) {
         assertEquals(key, found.getDisplayName());
         assertEquals(value, found.getContent());
+        assertNotNull(found.getMetaData());
         assertEquals(user, found.getMetaData().getUser());
         assertEquals(comment, found.getMetaData().getComment());
         assertFalse(found.getMetaData().getDeleted());
