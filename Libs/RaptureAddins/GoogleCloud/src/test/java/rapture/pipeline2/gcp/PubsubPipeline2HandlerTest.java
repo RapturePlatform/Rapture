@@ -49,6 +49,11 @@ public class PubsubPipeline2HandlerTest {
                     System.out.println("Handler 1 called");
                     Assert.assertEquals("A hazelnut in every byte", new String(message));
                     count1++;
+                    if (count1 + count2 + count3 == 9) {
+                        synchronized (waitForMe) {
+                            waitForMe.notify();
+                        }
+                    }
                     return true;
                 }
             };
@@ -60,6 +65,11 @@ public class PubsubPipeline2HandlerTest {
                     System.out.println("Handler 2 called");
                     Assert.assertEquals("A hazelnut in every byte", new String(message));
                     count2++;
+                    if (count1 + count2 + count3 == 9) {
+                        synchronized (waitForMe) {
+                            waitForMe.notify();
+                        }
+                    }
                     return true;
                 }
             };
@@ -71,6 +81,11 @@ public class PubsubPipeline2HandlerTest {
                     System.out.println("Handler 3 called");
                     Assert.assertEquals("A hazelnut in every byte", new String(message));
                     count3++;
+                    if (count1 + count2 + count3 == 9) {
+                        synchronized (waitForMe) {
+                            waitForMe.notify();
+                        }
+                    }
                     return true;
                 }
             };
@@ -80,21 +95,26 @@ public class PubsubPipeline2HandlerTest {
             pipe2Handler.publishTask(rp2.getName(), "A hazelnut in every byte");
             pipe2Handler.publishTask(rp2.getName(), "A hazelnut in every byte");
 
-            try {
-                // arbitrary wait
-                Thread.sleep(5000);
-            } catch (InterruptedException e) {
+            synchronized (waitForMe) {
+                try {
+                    waitForMe.wait(60000);
+                } catch (InterruptedException e) {
+                    Assert.fail(ExceptionToString.summary(e));
+                }
             }
 
-            Assert.assertEquals(9, count1 + count2 + count3);
-            Assert.assertEquals(3, count1);
-            Assert.assertEquals(3, count2);
-            Assert.assertEquals(3, count3);
+            Assert.assertEquals("Handler 1", 3, count1);
+            Assert.assertEquals("Handler 2", 3, count2);
+            Assert.assertEquals("Handler 3", 3, count3);
 
             pipe2Handler.unsubscribe(qs1);
             pipe2Handler.unsubscribe(qs2);
             pipe2Handler.unsubscribe(qs3);
             pipe2Handler.deleteTopic(rp2.getName());
+            pipe2Handler.forceDeleteSubscription(qs1);
+            pipe2Handler.forceDeleteSubscription(qs2);
+            pipe2Handler.forceDeleteSubscription(qs3);
+
         } catch (RaptureException e) {
             Throwable cause = e.getCause();
             if (cause.getMessage().contains("RESOURCE_EXHAUSTED")) {
@@ -105,6 +125,8 @@ public class PubsubPipeline2HandlerTest {
     }
 
     // In fan-in mode only one person should get each message
+
+    Object waitForMe = new Object();
 
     @Test
     public void testPubsubPipeline2HandlerFanIn() {
@@ -135,6 +157,11 @@ public class PubsubPipeline2HandlerTest {
                 public boolean handleEvent(byte[] message) {
                     System.out.println("Handler 1 got " + new String(message));
                     count1++;
+                    if (count1 + count2 + count3 == 3) {
+                        synchronized (waitForMe) {
+                            waitForMe.notify();
+                        }
+                    }
                     return true;
                 }
             };
@@ -144,7 +171,12 @@ public class PubsubPipeline2HandlerTest {
                 @Override
                 public boolean handleEvent(byte[] message) {
                     System.out.println("Handler 2 got " + new String(message));
-                    count1++;
+                    count2++;
+                    if (count1 + count2 + count3 == 3) {
+                        synchronized (waitForMe) {
+                            waitForMe.notify();
+                        }
+                    }
                     return true;
                 }
             };
@@ -154,7 +186,12 @@ public class PubsubPipeline2HandlerTest {
                 @Override
                 public boolean handleEvent(byte[] message) {
                     System.out.println("Handler 3 got " + new String(message));
-                    count1++;
+                    count3++;
+                    if (count1 + count2 + count3 == 3) {
+                        synchronized (waitForMe) {
+                            waitForMe.notify();
+                        }
+                    }
                     return true;
                 }
             };
@@ -167,15 +204,20 @@ public class PubsubPipeline2HandlerTest {
             pipe2Handler.publishTask(rp2.getName(), "Snickers");
             pipe2Handler.publishTask(rp2.getName(), "Mars Bar");
 
-            try {
-                Thread.sleep(5000);
-            } catch (InterruptedException e) {
+            synchronized (waitForMe) {
+                try {
+                    waitForMe.wait(60000);
+                } catch (InterruptedException e) {
+                    Assert.fail(ExceptionToString.summary(e));
+                }
             }
 
             pipe2Handler.unsubscribe(qs1);
             pipe2Handler.unsubscribe(qs2);
             pipe2Handler.unsubscribe(qs3);
+
             pipe2Handler.deleteTopic(rp2.getName());
+            pipe2Handler.forceDeleteSubscription(qs1); // They all have the same name
             Assert.assertEquals(3, count1 + count2 + count3);
         } catch (RaptureException e) {
             Throwable cause = e.getCause();

@@ -138,7 +138,7 @@ public class BlobApiGoogleTest extends LocalDataStoreTest {
             Kernel.initBootstrap();
         } catch (Exception e) {
             String error = ExceptionToString.format(e);
-            if (error.contains("The Application Default Credentials are not available.")) Assume.assumeNoException(e);
+            if (error.contains("The Application Default Credentials are not available.") || error.contains("RESOURCE_EXHAUSTED")) Assume.assumeNoException(e);
             throw e;
         }
         callingContext = ContextFactory.getKernelUser();

@@ -112,16 +112,20 @@ public class PubsubPipeline2Handler implements Pipeline2Handler {
     }
     
     public Topic getTopic(String topicId) {
-        Topic topic = topics.get(topicId);
+        if (topicId == null) {
+            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, "Illegal Argument: topic Id is null");
+        }
+        String topId = (topicId.toLowerCase().startsWith("rapture")) ? topicId : topicId + "rapture";
+        Topic topic = topics.get(topId);
         if (topic == null) {
             try (TopicAdminClient topicAdminClient = topicAdminClientCreate()) {
-                TopicName topicName = TopicName.create(projectId, topicId);
+                TopicName topicName = TopicName.create(projectId, topId);
                 try {
                     topic = topicAdminClient.getTopic(topicName);
                 } catch (Exception e) {
                     if (topic == null) {
                         topic = topicAdminClient.createTopic(topicName);
-                        topics.put(topicId, topic);
+                        topics.put(topId, topic);
                     }
                 }
             } catch (Exception ioe) {
@@ -132,10 +136,14 @@ public class PubsubPipeline2Handler implements Pipeline2Handler {
     }
 
     public void deleteTopic(String topicId) {
-        Topic topic = topics.get(topicId);
+        if (topicId == null) {
+            throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, "Illegal Argument: topic Id is null");
+        }
+        String topId = (topicId.toLowerCase().startsWith("rapture")) ? topicId : topicId + "rapture";
+        Topic topic = topics.get(topId);
         if (topic != null) {
             try (TopicAdminClient topicAdminClient = topicAdminClientCreate()) {
-                TopicName topicName = TopicName.create(projectId, topicId);
+                TopicName topicName = TopicName.create(projectId, topId);
                 topicAdminClient.deleteTopic(topicName);
             } catch (Exception ioe) {
                 throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, "Cannot delete topic " + topicId, ioe);
@@ -164,7 +172,6 @@ public class PubsubPipeline2Handler implements Pipeline2Handler {
 
     @Override
     public void subscribe(String queueIdentifier, final QueueSubscriber qsubscriber) {
-        logger.debug("Subscribing to " + queueIdentifier + " as " + qsubscriber.getSubscriberId());
         if (StringUtils.stripToNull(queueIdentifier) == null) {
             throw new RuntimeException("Null topic");
         }
@@ -215,6 +222,8 @@ public class PubsubPipeline2Handler implements Pipeline2Handler {
             logger.error(error);
             throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, error, e);
         }
+        logger.debug("Subscribed to " + queueIdentifier + " as " + qsubscriber.getSubscriberId());
+
     }
 
     @Override
@@ -222,6 +231,15 @@ public class PubsubPipeline2Handler implements Pipeline2Handler {
         logger.debug("Unsubscribing " + qsubscriber.getSubscriberId());
         Subscriber subscriber = subscribers.remove(qsubscriber);
         if (subscriber != null) subscriber.stopAsync();
+    }
+
+    public void forceDeleteSubscription(QueueSubscriber qsubscriber) {
+        SubscriptionName subscriptionName = SubscriptionName.create(projectId, qsubscriber.getSubscriberId());
+        try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
+            subscriptionAdminClient.deleteSubscription(subscriptionName);
+        } catch (Exception ioe) {
+            System.err.println(ExceptionToString.format(ioe));
+        }
     }
 
     private static Map<TopicName, Publisher> randomHouse = new ConcurrentHashMap<>();

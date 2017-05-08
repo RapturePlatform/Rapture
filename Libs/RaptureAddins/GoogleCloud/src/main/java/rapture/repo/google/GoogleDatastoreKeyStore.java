@@ -449,12 +449,47 @@ public class GoogleDatastoreKeyStore extends AbstractKeyStore implements KeyStor
 
     @Override
     public List<RaptureFolderInfo> removeSubKeys(String folder, Boolean force) {
-        throw new RaptNotSupportedException("Not yet supported");
+        List<RaptureFolderInfo> ret = new ArrayList<>();
+        removeEntries(ret, folder);
+        return ret;
+
+    }
+
+    private void removeEntries(List<RaptureFolderInfo> ret, String folder) {
+        List<RaptureFolderInfo> entries = getSubKeys(folder);
+        for (RaptureFolderInfo rfi : entries) {
+            String nextLevel = folder + "/" + rfi.getName();
+            if (rfi.isFolder()) {
+                removeEntries(ret, nextLevel);
+            } else {
+                delete(nextLevel);
+                RaptureFolderInfo nextRfi = new RaptureFolderInfo();
+                nextRfi.setName(folder);
+                nextRfi.setFolder(false);
+                ret.add(nextRfi);
+            }
+        }
+        delete(folder);
+        RaptureFolderInfo topRfi = new RaptureFolderInfo();
+        topRfi.setFolder(true);
+        topRfi.setName(folder);
+        ret.add(topRfi);
     }
 
     @Override
-    public List<String> getAllSubKeys(String displayNamePart) {
-        throw new RaptNotSupportedException("Not yet supported");
+    public synchronized List<String> getAllSubKeys(String displayNamePart) {
+        List<String> ret = new ArrayList<>();
+        for (RaptureFolderInfo info : getSubKeys("/")) {
+            String key = info.getName();
+            if (key.startsWith(displayNamePart)) {
+                if (key.length() > displayNamePart.length() + 1) {
+                    ret.add(key.substring(displayNamePart.length()));
+                } else {
+                    // ret.add(key); //TODO do we need this?
+                }
+            }
+        }
+        return ret;
     }
 
     @Override
