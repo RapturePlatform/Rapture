@@ -95,10 +95,10 @@ public class GoogleDatastoreKeyStoreTest extends LocalDataStoreTest {
 
     @After
     public void tidyUp() throws IOException, InterruptedException, TimeoutException {
-        store.dropKeyStore();
-        meta.dropKeyStore();
-        version.dropKeyStore();
-        attribute.dropKeyStore();
+        if (store != null) store.dropKeyStore();
+        if (meta != null) meta.dropKeyStore();
+        if (version != null) version.dropKeyStore();
+        if (attribute != null) attribute.dropKeyStore();
     }
 
     @Test
