@@ -34,7 +34,6 @@ import org.junit.Test;
 import rapture.common.CallingContext;
 import rapture.common.RaptureApplicationInstance;
 import rapture.common.exception.ExceptionToString;
-import rapture.common.exception.RaptureException;
 import rapture.config.ConfigLoader;
 import rapture.config.RaptureConfig;
 import rapture.kernel.ContextFactory;
@@ -59,7 +58,7 @@ public class RunnerIntegrationTest2 {
 
         try {
             Kernel.initBootstrap(null, null, true);
-        } catch (RaptureException e) {
+        } catch (Exception e) {
             String error = ExceptionToString.format(e);
             if (error.contains("The Application Default Credentials are not available.") || error.contains("RESOURCE_EXHAUSTED")) Assume.assumeNoException(e);
             throw e;
