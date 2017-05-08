@@ -27,11 +27,13 @@ import java.util.List;
 import java.util.UUID;
 
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 
 import rapture.common.CallingContext;
 import rapture.common.RaptureApplicationInstance;
+import rapture.common.exception.ExceptionToString;
 import rapture.common.exception.RaptureException;
 import rapture.config.ConfigLoader;
 import rapture.config.RaptureConfig;
@@ -58,7 +60,9 @@ public class RunnerIntegrationTest2 {
         try {
             Kernel.initBootstrap(null, null, true);
         } catch (RaptureException e) {
-            e.printStackTrace();
+            String error = ExceptionToString.format(e);
+            if (error.contains("The Application Default Credentials are not available.") || error.contains("RESOURCE_EXHAUSTED")) Assume.assumeNoException(e);
+            throw e;
         }
     }
 

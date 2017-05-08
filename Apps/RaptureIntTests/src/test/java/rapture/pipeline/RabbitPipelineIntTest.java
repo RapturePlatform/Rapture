@@ -25,9 +25,11 @@ package rapture.pipeline;
 
 import java.io.IOException;
 
+import org.junit.Assume;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import rapture.common.exception.ExceptionToString;
 import rapture.config.ConfigLoader;
 import rapture.config.RaptureConfig;
 import rapture.kernel.ContextFactory;
@@ -43,11 +45,19 @@ public class RabbitPipelineIntTest extends BasePipelineIntTest {
         RaptureConfig config = ConfigLoader.getConf();
         config.DefaultExchange = "EXCHANGE {} USING RABBITMQ { }";
         Pipeline2ApiImpl p2ai = new Pipeline2ApiImpl(Kernel.INSTANCE);
-        Kernel.INSTANCE.restart();
-        Kernel.initBootstrap();
-        context = ContextFactory.getKernelUser();
-        papi = Kernel.getPipeline().getTrusted();
-        Kernel.setCategoryMembership("alpha");
+
+        try {
+            Kernel.INSTANCE.restart();
+            Kernel.initBootstrap();
+            context = ContextFactory.getKernelUser();
+            papi = Kernel.getPipeline().getTrusted();
+            Kernel.setCategoryMembership("alpha");
+        } catch (Exception e) {
+            String error = ExceptionToString.format(e);
+            // If RabbitMQ isn't running this will happen
+            if (error.contains("Connection refused")) Assume.assumeNoException(e);
+            throw e;
+        }
 
         // NOTE: This gets done in the _startup.rfx script
         // papi.registerExchangeDomain(context, "//" + domain, config.DefaultExchange);

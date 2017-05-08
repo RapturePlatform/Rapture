@@ -27,9 +27,11 @@ import java.io.IOException;
 
 import javax.mail.MessagingException;
 
+import org.junit.Assume;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import rapture.common.exception.ExceptionToString;
 import rapture.config.ConfigLoader;
 import rapture.config.RaptureConfig;
 import rapture.kernel.ContextFactory;
@@ -45,7 +47,13 @@ public class GcpPipeline2IntTest extends BasePipeline2IntTest {
         config = ConfigLoader.getConf();
         config.DefaultExchange = "PIPELINE {} USING GCP_PUBSUB { projectid=\"todo3-incap\"}";
 
-        Kernel.initBootstrap();
+        try {
+            Kernel.initBootstrap();
+        } catch (Exception e) {
+            String error = ExceptionToString.format(e);
+            if (error.contains("The Application Default Credentials are not available.") || error.contains("RESOURCE_EXHAUSTED")) Assume.assumeNoException(e);
+            throw e;
+        }
         Pipeline2ApiImpl p2ai = new Pipeline2ApiImpl(Kernel.INSTANCE);
         MessagingException me = new MessagingException();
         Kernel.INSTANCE.restart();
