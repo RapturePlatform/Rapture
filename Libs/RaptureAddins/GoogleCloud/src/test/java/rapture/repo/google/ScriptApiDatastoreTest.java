@@ -42,6 +42,7 @@ import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.CommonTreeNodeStream;
+import org.junit.Assume;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -56,6 +57,7 @@ import rapture.common.RaptureURI;
 import rapture.common.Scheme;
 import rapture.common.ScriptResult;
 import rapture.common.api.ScriptingApi;
+import rapture.common.exception.ExceptionToString;
 import rapture.config.ConfigLoader;
 import rapture.kernel.AbstractFileTest;
 import rapture.kernel.ContextFactory;
@@ -91,7 +93,13 @@ public class ScriptApiDatastoreTest extends AbstractFileTest {
         config.RaptureRepo = REPO_USING_GCP_DATASTORE;
         config.InitSysConfig = "NREP {} USING GCP_DATASTORE { projectid=\"todo3-incap\", prefix=\"/tmp/" + auth + "/sys.config\"}";
 
-        Kernel.initBootstrap();
+        try {
+            Kernel.initBootstrap();
+        } catch (Exception e) {
+            String error = ExceptionToString.format(e);
+            if (error.contains("The Application Default Credentials are not available.") || error.contains("RESOURCE_EXHAUSTED")) Assume.assumeNoException(e);
+            throw e;
+        }
         callingContext = ContextFactory.getKernelUser();
 
         Kernel.INSTANCE.clearRepoCache(false);
