@@ -71,7 +71,7 @@ public class SimpleSplitStepTest {
     @Before
     public void setup() {
         RaptureConfig config = ConfigLoader.getConf();
-        config.DefaultExchange = "PIPELINE {} USING GCP_PUBSUB { threads=\"5\", projectid=\"todo3-incap\"}";
+        config.DefaultExchange = "PIPELINE {} USING GCP_PUBSUB { threads=\"5\"}";
 
         try {
             Kernel.initBootstrap();
@@ -83,7 +83,7 @@ public class SimpleSplitStepTest {
         if (!Kernel.getDoc().docRepoExists(ctx, AUTHORITY)) {
             Kernel.getDoc().createDocRepo(ctx, AUTHORITY, "NREP {} USING MEMORY {}");
         }
-        subscriber = Kernel.INSTANCE.createAndSubscribe(ALPHA, "PIPELINE {} USING GCP_PUBSUB { threads=\"5\", projectid=\"todo3-incap\"}");
+        subscriber = Kernel.INSTANCE.createAndSubscribe(ALPHA, "PIPELINE {} USING GCP_PUBSUB { threads=\"5\"}");
         createWorkflow();
     }
     

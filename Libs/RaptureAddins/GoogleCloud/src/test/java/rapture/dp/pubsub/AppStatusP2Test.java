@@ -95,7 +95,7 @@ public class AppStatusP2Test {
     public static void setup() {
         String auditConfig = "LOG {} USING MEMORY {maxEntries=\"100\"}";
         RaptureConfig config = ConfigLoader.getConf();
-        config.DefaultExchange = "PIPELINE {} USING GCP_PUBSUB { threads=\"5\", projectid=\"todo3-incap\"}";
+        config.DefaultExchange = "PIPELINE {} USING GCP_PUBSUB { threads=\"5\"}";
         config.DefaultWorkflowAuditLog = auditConfig;
         System.setProperty("LOGSTASH-ISENABLED", "false");
 

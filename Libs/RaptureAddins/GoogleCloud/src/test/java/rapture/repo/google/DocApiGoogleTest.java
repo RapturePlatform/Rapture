@@ -71,7 +71,7 @@ public class DocApiGoogleTest extends LocalDataStoreTest {
         config.RaptureRepo = REPO_USING_GCP_DATASTORE;
         config.InitSysConfig = "NREP {} USING GCP_DATASTORE { prefix =\"" + auth + "/sys.config\"}";
         config.DefaultPipelineTaskStatus = "TABLE {} USING MEMORY {prefix =\"" + auth + "\"}";
-        config.DefaultExchange = "PIPELINE {} USING GCP_PUBSUB { threads=\"5\", projectid=\"todo3-incap\"}";
+        config.DefaultExchange = "PIPELINE {} USING GCP_PUBSUB { threads=\"5\"}";
         config.DefaultWorkflowAuditLog = "LOG {} USING MEMORY {maxEntries=\"100\"}";
         System.setProperty("LOGSTASH-ISENABLED", "false");
 

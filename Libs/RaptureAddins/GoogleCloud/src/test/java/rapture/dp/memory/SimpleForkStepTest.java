@@ -78,6 +78,7 @@ public class SimpleForkStepTest {
         RaptureConfig config = ConfigLoader.getConf();
         config.DefaultExchange = "PIPELINE {} USING MEMORY { }";
 
+        Kernel.INSTANCE.restart();
         Kernel.initBootstrap();
         if (!Kernel.getDoc().docRepoExists(ctx, AUTHORITY)) {
             Kernel.getDoc().createDocRepo(ctx, AUTHORITY, "NREP {} USING MEMORY {}");

@@ -49,6 +49,7 @@ import rapture.common.RaptureConstants;
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
 import rapture.common.exception.ExceptionToString;
+import rapture.config.MultiValueConfigLoader;
 import rapture.kernel.ContextFactory;
 import rapture.kernel.Kernel;
 
@@ -78,7 +79,13 @@ public class GoogleBlobStoreTest extends BlobStoreContractTest {
             try {
                 File key = new File("src/test/resources/key.json");
                 Assume.assumeTrue("Cannot read " + key.getAbsolutePath(), key.canRead());
-                storageHelper = RemoteStorageHelper.create("todo3-incap", new FileInputStream(key));
+                String projectId = MultiValueConfigLoader.getConfig("GOOGLE-projectid");
+                if (projectId == null) {
+                    throw new RuntimeException("Project ID not set");
+                }
+
+                storageHelper = RemoteStorageHelper.create(projectId, new FileInputStream(key));
+
             } catch (StorageHelperException | FileNotFoundException ee) {
                 Assume.assumeNoException("Cannot create storage helper", ee);
             }

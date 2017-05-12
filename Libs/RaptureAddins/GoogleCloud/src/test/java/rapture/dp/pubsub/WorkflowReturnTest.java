@@ -91,7 +91,7 @@ public class WorkflowReturnTest {
     @BeforeClass
     public static void setupClass() {
         RaptureConfig config = ConfigLoader.getConf();
-        config.DefaultExchange = "PIPELINE {} USING GCP_PUBSUB { threads=\"5\", projectid=\"todo3-incap\"}";
+        config.DefaultExchange = "PIPELINE {} USING GCP_PUBSUB { threads=\"5\"}";
 
         try {
             Kernel.initBootstrap();
@@ -110,7 +110,7 @@ public class WorkflowReturnTest {
         Kernel.getBlob().deleteBlobRepo(ctx, systemBlobRepo);
         Kernel.getBlob().createBlobRepo(ctx, systemBlobRepo, ConfigLoader.getConf().DefaultSystemBlobConfig,
                 ConfigLoader.getConf().DefaultSystemBlobFoldersConfig);
-        subscriber = Kernel.INSTANCE.createAndSubscribe(ALPHA, "PIPELINE {} USING GCP_PUBSUB { threads=\"5\", projectid=\"todo3-incap\"}");
+        subscriber = Kernel.INSTANCE.createAndSubscribe(ALPHA, "PIPELINE {} USING GCP_PUBSUB { threads=\"5\"}");
         createScripts();
     }
 

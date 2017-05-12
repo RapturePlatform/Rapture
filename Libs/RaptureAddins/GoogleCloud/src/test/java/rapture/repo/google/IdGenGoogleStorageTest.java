@@ -23,6 +23,7 @@ import rapture.common.RaptureURI;
 import rapture.common.Scheme;
 import rapture.common.exception.ExceptionToString;
 import rapture.common.exception.RaptureException;
+import rapture.config.MultiValueConfigLoader;
 import rapture.dsl.idgen.RaptureIdGen;
 import rapture.kernel.ContextFactory;
 import rapture.kernel.Kernel;
@@ -51,7 +52,13 @@ public class IdGenGoogleStorageTest {
             try {
                 File key = new File("src/test/resources/key.json");
                 Assume.assumeTrue("Cannot read " + key.getAbsolutePath(), key.canRead());
-                storageHelper = RemoteStorageHelper.create("todo3-incap", new FileInputStream(key));
+                String projectId = MultiValueConfigLoader.getConfig("GOOGLE-projectid");
+                if (projectId == null) {
+                    throw new RuntimeException("Project ID not set");
+                }
+
+                storageHelper = RemoteStorageHelper.create(projectId, new FileInputStream(key));
+
             } catch (StorageHelperException | FileNotFoundException e) {
                 Assume.assumeNoException("Cannot create storage helper", e);
             }
@@ -65,7 +72,7 @@ public class IdGenGoogleStorageTest {
         try {
             RaptureIdGen f = new RaptureIdGen();
             IdGenGoogleStorage iggs = new IdGenGoogleStorage();
-            iggs.setConfig(ImmutableMap.of("projectid", "todo3-incap", "prefix", "TST"));
+            iggs.setConfig(ImmutableMap.of("threads", "5", "prefix", "TST"));
             f.setIdGenStore(iggs);
             f.setProcessorConfig(ImmutableMap.of("initial", "10", "base", "26", "length", "8", "prefix", "TST"));
             String result = f.incrementIdGen(10L);
@@ -82,7 +89,7 @@ public class IdGenGoogleStorageTest {
         try {
             RaptureIdGen f = new RaptureIdGen();
             IdGenGoogleStorage iggs = new IdGenGoogleStorage();
-            iggs.setConfig(ImmutableMap.of("projectid", "todo3-incap", "prefix", "TST"));
+            iggs.setConfig(ImmutableMap.of("threads", "7", "prefix", "TST"));
             f.setIdGenStore(iggs);
             f.setProcessorConfig(ImmutableMap.of("initial", "706216874", "base", "36", "length", "6", "prefix", "OI-"));
 

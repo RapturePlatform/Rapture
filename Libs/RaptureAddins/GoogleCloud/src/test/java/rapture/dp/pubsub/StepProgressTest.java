@@ -73,7 +73,7 @@ public class StepProgressTest {
     @Before
     public void setUp() throws Exception {
         RaptureConfig config = ConfigLoader.getConf();
-        config.DefaultExchange = "PIPELINE {} USING GCP_PUBSUB { threads=\"5\", projectid=\"todo3-incap\"}";
+        config.DefaultExchange = "PIPELINE {} USING GCP_PUBSUB { threads=\"5\"}";
 
         try {
             Kernel.initBootstrap();
@@ -84,7 +84,7 @@ public class StepProgressTest {
         }
         context = ContextFactory.getKernelUser();
 
-        subscriber = Kernel.INSTANCE.createAndSubscribe(ALPHA, "PIPELINE {} USING GCP_PUBSUB { threads=\"5\", projectid=\"todo3-incap\"}");
+        subscriber = Kernel.INSTANCE.createAndSubscribe(ALPHA, "PIPELINE {} USING GCP_PUBSUB { threads=\"5\"}");
 
         createRfxWorkflow();
         createJavaWorkflow();

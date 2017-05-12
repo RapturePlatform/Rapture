@@ -114,7 +114,7 @@ public class IdGenApiStorageTest {
         }
 
         try {
-            IdGenFactory.getIdGen("IDGEN {} USING GCP_STORAGE { projectid=\"todo3-incap\", prefix = \" \" }").incrementIdGen(1L);
+            IdGenFactory.getIdGen("IDGEN {} USING GCP_STORAGE { threads=\"5\", prefix = \" \" }").incrementIdGen(1L);
             fail("You can't create a repo without a valid prefix");
         } catch (Exception e) {
             assertTrue(e.getMessage().contains("Prefix not set"));
@@ -123,18 +123,23 @@ public class IdGenApiStorageTest {
 
     @Test
     public void testThatWhichShouldBe() {
-        char shiftSpace = 160;
-        assertEquals("X02",
-                IdGenFactory
-                        .getIdGen("IDGEN{initial=\"1\", base=\"10\", length=\"2\", prefix=\"X\"}USING\t\r\n"+shiftSpace+"GCP_STORAGE{projectid=\"todo3-incap\",prefix = \"Foo\"}")
-                        .incrementIdGen(1L));
+        try {
+            char shiftSpace = 160;
+            assertEquals("X02",
+                    IdGenFactory
+                            .getIdGen("IDGEN{initial=\"1\", base=\"10\", length=\"2\", prefix=\"X\"}USING\t\r\n"+shiftSpace+"GCP_STORAGE{threads=\"5\",prefix = \"Foo\"}")
+                            .incrementIdGen(1L));
+        } catch (Exception e) {
+            if (e.getMessage().contains("401 Unauthorized")) Assume.assumeNoException(e);
+            throw (e);
+        }
     }
 
     @Test
     public void testIdGen() {
         try {
             RaptureIdGen f = IdGenFactory.getIdGen(
-                    "IDGEN { initial=\"143\", base=\"36\", length=\"8\", prefix=\"FOO\" } USING GCP_STORAGE { projectid=\"todo3-incap\", prefix=\"/tmp/" + auth
+                    "IDGEN { initial=\"143\", base=\"36\", length=\"8\", prefix=\"FOO\" } USING GCP_STORAGE { threads=\"5\", prefix=\"/tmp/" + auth
                             + "\"}");
             String result = f.incrementIdGen(14500L);
             assertEquals("FOO00000BAR", result);

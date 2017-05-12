@@ -67,6 +67,7 @@ import rapture.common.exception.RaptureException;
 import rapture.common.impl.jackson.JacksonUtil;
 import rapture.common.model.BlobRepoConfig;
 import rapture.config.ConfigLoader;
+import rapture.config.MultiValueConfigLoader;
 import rapture.config.RaptureConfig;
 import rapture.kernel.BlobApiImpl;
 import rapture.kernel.ContextFactory;
@@ -81,9 +82,9 @@ public class BlobApiGoogleTest extends LocalDataStoreTest {
     public static CallingContext callingContext;
 
     private static BlobApiImpl blobImpl;
-    private static final String BLOB_USING_GOOGLE = "BLOB {} USING GCP_STORAGE { projectid=\"todo3-incap\", prefix=\"B" + auth + "\"}";
-    private static final String REPO_USING_GOOGLE = "REP {} USING GCP_DATASTORE { projectid=\"todo3-incap\", prefix=\"" + auth + "\"}";
-    private static final String META_USING_GOOGLE = "REP {} USING GCP_DATASTORE { projectid=\"todo3-incap\", prefix=\"M" + auth + "\"}";
+    private static final String BLOB_USING_GOOGLE = "BLOB {} USING GCP_STORAGE { threads=\"5\", prefix=\"B" + auth + "\"}";
+    private static final String REPO_USING_GOOGLE = "REP {} USING GCP_DATASTORE { threads=\"5\", prefix=\"" + auth + "\"}";
+    private static final String META_USING_GOOGLE = "REP {} USING GCP_DATASTORE { threads=\"5\", prefix=\"M" + auth + "\"}";
     private static final byte[] SAMPLE_BLOB = "This is a blob".getBytes();
 
     static String blobAuthorityURI = "blob://" + auth;
@@ -109,7 +110,12 @@ public class BlobApiGoogleTest extends LocalDataStoreTest {
             try {
                 File key = new File("src/test/resources/key.json");
                 Assume.assumeTrue("Cannot read " + key.getAbsolutePath(), key.canRead());
-                storageHelper = RemoteStorageHelper.create("todo3-incap", new FileInputStream(key));
+                String projectId = MultiValueConfigLoader.getConfig("GOOGLE-projectid");
+                if (projectId == null) {
+                    throw new RuntimeException("Project ID not set");
+                }
+
+                storageHelper = RemoteStorageHelper.create(projectId, new FileInputStream(key));
             } catch (StorageHelperException | FileNotFoundException e) {
                 Assume.assumeNoException("Cannot create storage helper", e);
             }
@@ -126,7 +132,7 @@ public class BlobApiGoogleTest extends LocalDataStoreTest {
         callingContext.setUser("dummy");
 
         config.RaptureRepo = REPO_USING_GOOGLE;
-        config.InitSysConfig = "NREP {} USING GCP_DATASTORE { projectid=\"todo3-incap\", prefix=\"" + auth + ".sys.config\"}";
+        config.InitSysConfig = "NREP {} USING GCP_DATASTORE { threads=\"5\", prefix=\"" + auth + ".sys.config\"}";
 
         callingContext = new CallingContext();
         callingContext.setUser("dummy");
@@ -222,8 +228,8 @@ public class BlobApiGoogleTest extends LocalDataStoreTest {
     public void testValidDocStore() {
         Map<String, String> hashMap = new HashMap<>();
         hashMap.put("prefix", "foo");
-        blobImpl.createBlobRepo(callingContext, "blob://dummy2", "BLOB {} USING GCP_STORAGE { projectid=\"todo3-incap\", prefix=\"foo\" }",
-                "REP {} USING GCP_DATASTORE { projectid=\"todo3-incap\", prefix=\"foo\" }");
+        blobImpl.createBlobRepo(callingContext, "blob://dummy2", "BLOB {} USING GCP_STORAGE { threads=\"5\", prefix=\"foo\" }",
+                "REP {} USING GCP_DATASTORE { threads=\"5\", prefix=\"foo\" }");
 
     }
 
@@ -235,8 +241,8 @@ public class BlobApiGoogleTest extends LocalDataStoreTest {
             List<BlobRepoConfig> before = blobImpl.getBlobRepoConfigs(callingContext);
 
             blobImpl.createBlobRepo(callingContext, "blob://somewhere_else/",
-                    "BLOB {} USING GCP_STORAGE {projectid=\"todo3-incap\", prefix=\"somewhere_else\"}",
-                    "REP {} USING GCP_DATASTORE {projectid=\"todo3-incap\", prefix=\"somewhere_else\"}");
+                    "BLOB {} USING GCP_STORAGE {threads=\"5\", prefix=\"somewhere_else\"}",
+                    "REP {} USING GCP_DATASTORE {threads=\"5\", prefix=\"somewhere_else\"}");
 
             List<BlobRepoConfig> after = blobImpl.getBlobRepoConfigs(callingContext);
             // And then there were three

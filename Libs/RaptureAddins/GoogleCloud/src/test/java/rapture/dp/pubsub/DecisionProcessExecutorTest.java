@@ -116,7 +116,7 @@ public class DecisionProcessExecutorTest extends LocalDataStoreTest {
     @BeforeClass
     public static void setup() {
         RaptureConfig config = ConfigLoader.getConf();
-        config.DefaultExchange = "PIPELINE {} USING GCP_PUBSUB { threads=\"5\", projectid=\"todo3-incap\"}";
+        config.DefaultExchange = "PIPELINE {} USING GCP_PUBSUB { threads=\"5\"}";
 
         System.setProperty("LOGSTASH-ISENABLED", "false");
         try {
@@ -130,7 +130,7 @@ public class DecisionProcessExecutorTest extends LocalDataStoreTest {
 
         Kernel.getDoc().createDocRepo(CONTEXT, REPO_URI, "NREP {} USING MEMORY {}");
 
-        subscriber = Kernel.INSTANCE.createAndSubscribe(ALPHA, "PIPELINE {} USING GCP_PUBSUB { threads=\"5\", projectid=\"todo3-incap\"}");
+        subscriber = Kernel.INSTANCE.createAndSubscribe(ALPHA, "PIPELINE {} USING GCP_PUBSUB { threads=\"5\"");
         Kernel.getScript().deleteScript(CONTEXT, REPO_URI + "/" + scr1);
         Kernel.getScript().deleteScript(CONTEXT, REPO_URI + "/" + scr2);
         Kernel.getScript().deleteScript(CONTEXT, REPO_URI + "/" + scr3);

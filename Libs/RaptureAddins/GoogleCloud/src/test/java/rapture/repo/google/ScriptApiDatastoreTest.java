@@ -77,7 +77,7 @@ import reflex.value.internal.ReflexNullValue;
 public class ScriptApiDatastoreTest extends AbstractFileTest {
 
     private static final String auth = "test" + System.currentTimeMillis();
-    private static final String REPO_USING_GCP_DATASTORE = "REP {} USING GCP_DATASTORE {projectid=\"todo3-incap\", prefix=\"/tmp/" + auth + "\"}";
+    private static final String REPO_USING_GCP_DATASTORE = "REP {} USING GCP_DATASTORE {threads=\"5\", prefix=\"/tmp/" + auth + "\"}";
     private static final File temp = new File("/tmp/" + auth);
     private static final String scriptAuthorityURI = "script://" + auth;
     private static final String scriptURI = scriptAuthorityURI + "/For/A/Jesters/Tear";
@@ -91,7 +91,7 @@ public class ScriptApiDatastoreTest extends AbstractFileTest {
     static public void setUp() {
         AbstractFileTest.setUp();
         config.RaptureRepo = REPO_USING_GCP_DATASTORE;
-        config.InitSysConfig = "NREP {} USING GCP_DATASTORE { projectid=\"todo3-incap\", prefix=\"/tmp/" + auth + "/sys.config\"}";
+        config.InitSysConfig = "NREP {} USING GCP_DATASTORE { threads=\"5\", prefix=\"/tmp/" + auth + "/sys.config\"}";
 
         try {
             Kernel.initBootstrap();
@@ -104,7 +104,7 @@ public class ScriptApiDatastoreTest extends AbstractFileTest {
 
         // Kernel.INSTANCE.clearRepoCache(false);
         Kernel.getAudit().createAuditLog(ContextFactory.getKernelUser(), new RaptureURI(RaptureConstants.DEFAULT_AUDIT_URI, Scheme.LOG).getAuthority(),
-                "LOG {} using MEMORY {projectid=\"todo3-incap\", prefix=\"/tmp/" + auth + "\"}");
+                "LOG {} using MEMORY {threads=\"5\", prefix=\"/tmp/" + auth + "\"}");
         Kernel.getLock().createLockManager(callingContext, "lock://kernel", "LOCKING USING DUMMY {}", "");
         scriptImpl = new ScriptApiImpl(Kernel.INSTANCE);
 
