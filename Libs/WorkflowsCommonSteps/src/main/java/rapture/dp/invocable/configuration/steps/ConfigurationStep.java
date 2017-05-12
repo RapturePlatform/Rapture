@@ -46,6 +46,7 @@ import rapture.common.exception.ExceptionToString;
 import rapture.common.impl.jackson.JacksonUtil;
 import rapture.kernel.Kernel;
 import rapture.kernel.dp.ExecutionContextUtil;
+import rapture.util.StringUtil;
 
 public class ConfigurationStep extends AbstractInvocable {
 
@@ -74,10 +75,9 @@ public class ConfigurationStep extends AbstractInvocable {
             if (lio < 0) lio = 0;
 
             StringBuilder externalUrl = new StringBuilder();
-            String host = System.getenv("HOST");
-            String port = System.getenv("PORT");
-            externalUrl.append("http://").append((host != null) ? host : LOCALHOST).append(":").append((port != null) ? port : DEFAULT_RIM_PORT)
-                    .append("/process/")
+            String host = getUIHostName();
+            String port = getUIPort();
+            externalUrl.append("http://").append(host).append(":").append(port).append("/process/")
                     .append(docPath.substring(0, lio)).append(WORKORDER_DELIMETER).append(docPath.substring(lio + 1));
             decision.setContextLiteral(ctx, workOrderUri, EXTERNAL_RIM_WORKORDER_URL, externalUrl.toString());
 
@@ -125,6 +125,30 @@ public class ConfigurationStep extends AbstractInvocable {
 
             return getErrorTransition();
         }
+    }
+
+    private String getUIPort() {
+        String ret = System.getenv("RIM_PORT");
+        if(StringUtils.isBlank(ret)) {
+            //This is for backward compatibility only.
+            ret = System.getenv("PORT");
+        }
+        if(StringUtils.isBlank(ret)) {
+            ret = DEFAULT_RIM_PORT;
+        }
+        return ret;
+    }
+
+    private String getUIHostName() {
+        String ret = System.getenv("RIM_HOST_NAME");
+        if(StringUtils.isBlank(ret)) {
+            //This is for backward compatibility only.
+            ret = System.getenv("HOST");
+        }
+        if(StringUtils.isBlank(ret)) {
+            ret = LOCALHOST;
+        }
+        return ret;
     }
 
 }
