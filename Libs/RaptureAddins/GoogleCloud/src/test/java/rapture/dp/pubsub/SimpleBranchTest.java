@@ -92,7 +92,7 @@ public class SimpleBranchTest {
     public static void setup() {
         System.setProperty("LOGSTASH-ISENABLED", "false");
         RaptureConfig config = ConfigLoader.getConf();
-        config.DefaultExchange = "PIPELINE {} USING GCP_PUBSUB { threads=\"5\", projectid=\"todo3-incap\"}";
+        config.DefaultExchange = "PIPELINE {} USING GCP_PUBSUB { threads=\"5\"}";
         try {
             Kernel.initBootstrap();
         } catch (Exception e) {
@@ -100,10 +100,10 @@ public class SimpleBranchTest {
             if (error.contains("The Application Default Credentials are not available.")) Assume.assumeNoException(e);
             throw e;
         }
-        // Kernel.getPipeline2().getTrusted().registerExchangeDomain(ctx, "main", "PIPELINE {} USING GCP_PUBSUB { threads=\"5\", projectid=\"todo3-incap\"}");
+        // Kernel.getPipeline2().getTrusted().registerExchangeDomain(ctx, "main", "PIPELINE {} USING GCP_PUBSUB { threads=\"5\"}");
 
         cleanUpNeeded = true;
-        subscriber = Kernel.INSTANCE.createAndSubscribe(ALPHA, "PIPELINE {} USING GCP_PUBSUB { threads=\"5\", projectid=\"todo3-incap\"}");
+        subscriber = Kernel.INSTANCE.createAndSubscribe(ALPHA, "PIPELINE {} USING GCP_PUBSUB { threads=\"5\"}");
         if (!Kernel.getDoc().docRepoExists(ctx, AUTHORITY)) {
             Kernel.getDoc().createDocRepo(ctx, AUTHORITY, "NREP {} USING MEMORY {}");
         }

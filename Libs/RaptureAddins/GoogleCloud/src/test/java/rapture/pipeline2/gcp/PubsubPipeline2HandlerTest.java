@@ -32,7 +32,7 @@ public class PubsubPipeline2HandlerTest {
 
             PubsubPipeline2Handler pipe2Handler = new PubsubPipeline2Handler();
             try {
-                pipe2Handler.setConfig(ImmutableMap.of("projectid", "todo3-incap", "threads", "10"));
+                pipe2Handler.setConfig(ImmutableMap.of("threads", "10"));
             } catch (Exception e1) {
                 // This can't run if the credentials aren't available.
                 // rapture.common.exception.RaptureException: Cannot configure:
@@ -141,7 +141,7 @@ public class PubsubPipeline2HandlerTest {
 
             PubsubPipeline2Handler pipe2Handler1 = new PubsubPipeline2Handler();
             try {
-                pipe2Handler1.setConfig(ImmutableMap.of("projectid", "todo3-incap", "threads", "10"));
+                pipe2Handler1.setConfig(ImmutableMap.of("threads", "10"));
             } catch (Exception e1) {
                 // This can't run if the credentials aren't available.
                 // rapture.common.exception.RaptureException: Cannot configure:
@@ -198,7 +198,7 @@ public class PubsubPipeline2HandlerTest {
             pipe2Handler1.subscribe(rp2.getName(), qs3);
 
             PubsubPipeline2Handler pipe2Handler = new PubsubPipeline2Handler();
-            pipe2Handler.setConfig(ImmutableMap.of("projectid", "todo3-incap"));
+            pipe2Handler.setConfig(ImmutableMap.of("threads", "10"));
 
             pipe2Handler.publishTask(rp2.getName(), "Marathon");
             pipe2Handler.publishTask(rp2.getName(), "Snickers");

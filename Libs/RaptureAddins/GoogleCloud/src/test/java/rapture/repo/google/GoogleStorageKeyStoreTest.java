@@ -56,6 +56,7 @@ import rapture.common.exception.ExceptionToString;
 import rapture.common.impl.jackson.JacksonUtil;
 import rapture.common.model.DocumentMetadata;
 import rapture.common.model.DocumentWithMeta;
+import rapture.config.MultiValueConfigLoader;
 import rapture.dsl.dparse.AbsoluteVersion;
 import rapture.dsl.dparse.AsOfTimeDirective;
 import rapture.dsl.dparse.AsOfTimeDirectiveParser;
@@ -78,13 +79,28 @@ public class GoogleStorageKeyStoreTest {
     @Before
     public void setup() throws IOException, InterruptedException {
 
+        /**
+         * RemoteStoraeHelper may require a key. To create the key see Generating a service account credential
+         * https://cloud.google.com/storage/docs/authentication?hl=en#service_accounts
+         * 
+         * 
+         * Briely: Go to https://console.cloud.google.com/apis/credentials select Create Credentials -> Service Account Key Select New Service Account. Fill in
+         * the form. Download the key.
+         */
+
         try {
             storageHelper = RemoteStorageHelper.create();
         } catch (Exception e1) {
             try {
                 File key = new File("src/test/resources/key.json");
                 Assume.assumeTrue("Cannot read " + key.getAbsolutePath(), key.canRead());
-                storageHelper = RemoteStorageHelper.create("todo3-incap", new FileInputStream(key));
+                String projectId = MultiValueConfigLoader.getConfig("GOOGLE-projectid");
+                if (projectId == null) {
+                    throw new RuntimeException("Project ID not set");
+                }
+
+                storageHelper = RemoteStorageHelper.create(projectId, new FileInputStream(key));
+
             } catch (StorageHelperException | FileNotFoundException e) {
                 Assume.assumeNoException("Cannot create storage helper", e);
             }

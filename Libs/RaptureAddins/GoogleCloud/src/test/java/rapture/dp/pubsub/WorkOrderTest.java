@@ -82,7 +82,7 @@ public class WorkOrderTest {
     public void setup() {
 
         RaptureConfig config = ConfigLoader.getConf();
-        config.DefaultExchange = "PIPELINE {} USING GCP_PUBSUB { threads=\"5\", projectid=\"todo3-incap\"}";
+        config.DefaultExchange = "PIPELINE {} USING GCP_PUBSUB { threads=\"5\"}";
 
         try {
             Kernel.shutdown();
@@ -106,7 +106,7 @@ public class WorkOrderTest {
         // }
         // localPubsub = helper.getOptions().getService();
 
-        subscriber = Kernel.createAndSubscribe(ALPHA, "PIPELINE {} USING GCP_PUBSUB { threads=\"5\", projectid=\"todo3-incap\"}");
+        subscriber = Kernel.createAndSubscribe(ALPHA, "PIPELINE {} USING GCP_PUBSUB { threads=\"5\"}");
         Kernel.getAudit().createAuditLog(ContextFactory.getKernelUser(), new RaptureURI(RaptureConstants.DEFAULT_AUDIT_URI, Scheme.LOG).getAuthority(),
                 "LOG {} using MEMORY {prefix=\"/tmp/" + UUID.randomUUID() + "\"}");
 
