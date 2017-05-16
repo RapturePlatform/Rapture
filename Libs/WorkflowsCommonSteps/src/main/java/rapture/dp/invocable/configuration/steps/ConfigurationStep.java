@@ -57,7 +57,11 @@ public class ConfigurationStep extends AbstractInvocable {
     private static final String LOCALHOST = "localhost";
     private static final String DEFAULT_RIM_PORT = "8000";
     private static final String WORKORDER_DELIMETER = "&workorder=";
+    @Deprecated
     public static final String EXTERNAL_RIM_WORKORDER_URL = "EXTERNALRIMWORKORDERURL";
+    public static final String EXTERNAL_UI_WORKORDER_URL = "EXTERNALUIWORKORDERURL";
+    public static final String EXTERNAL_UI_URL = "EXTERNALUIWORKORDERURL";
+
     private static final Logger log = Logger.getLogger(ConfigurationStep.class);
 
     @Override
@@ -75,11 +79,13 @@ public class ConfigurationStep extends AbstractInvocable {
             if (lio < 0) lio = 0;
 
             StringBuilder externalUrl = new StringBuilder();
-            String host = getUIHostName();
-            String port = getUIPort();
-            externalUrl.append("http://").append(host).append(":").append(port).append("/process/")
+
+            externalUrl.append(getUIURL()).append("/process/")
                     .append(docPath.substring(0, lio)).append(WORKORDER_DELIMETER).append(docPath.substring(lio + 1));
+            //For backward compatibility only.
             decision.setContextLiteral(ctx, workOrderUri, EXTERNAL_RIM_WORKORDER_URL, externalUrl.toString());
+            decision.setContextLiteral(ctx, workOrderUri, EXTERNAL_UI_WORKORDER_URL, externalUrl.toString());
+
 
             Map<String, String> view = new HashMap<>();
             DocApi docApi = Kernel.getDoc();
@@ -125,6 +131,22 @@ public class ConfigurationStep extends AbstractInvocable {
 
             return getErrorTransition();
         }
+    }
+
+    private String getUIURL() {
+        String ret = System.getenv("UI_URL");
+        if(StringUtils.isBlank(ret)) {
+            //This is for backward compatibility only.
+            String host = getUIHostName();
+            String port = getUIPort();
+            return "http://" + host + ":" + port;
+        } else {
+            ret = ret.trim();
+            if(ret.endsWith("/")) {
+                ret = ret.substring(0, ret.length() -1);
+            }
+        }
+        return ret;
     }
 
     private String getUIPort() {
