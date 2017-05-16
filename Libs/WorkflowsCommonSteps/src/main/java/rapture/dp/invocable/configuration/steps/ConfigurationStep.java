@@ -46,6 +46,7 @@ import rapture.common.exception.ExceptionToString;
 import rapture.common.impl.jackson.JacksonUtil;
 import rapture.kernel.Kernel;
 import rapture.kernel.dp.ExecutionContextUtil;
+import rapture.util.StringUtil;
 
 public class ConfigurationStep extends AbstractInvocable {
 
@@ -56,7 +57,10 @@ public class ConfigurationStep extends AbstractInvocable {
     private static final String LOCALHOST = "localhost";
     private static final String DEFAULT_RIM_PORT = "8000";
     private static final String WORKORDER_DELIMETER = "&workorder=";
+    @Deprecated
     public static final String EXTERNAL_RIM_WORKORDER_URL = "EXTERNALRIMWORKORDERURL";
+    public static final String EXTERNAL_UI_WORKORDER_URL = "EXTERNALUIWORKORDERURL";
+
     private static final Logger log = Logger.getLogger(ConfigurationStep.class);
 
     @Override
@@ -74,12 +78,13 @@ public class ConfigurationStep extends AbstractInvocable {
             if (lio < 0) lio = 0;
 
             StringBuilder externalUrl = new StringBuilder();
-            String host = System.getenv("HOST");
-            String port = System.getenv("PORT");
-            externalUrl.append("http://").append((host != null) ? host : LOCALHOST).append(":").append((port != null) ? port : DEFAULT_RIM_PORT)
-                    .append("/process/")
+
+            externalUrl.append(getUIURL()).append("/process/")
                     .append(docPath.substring(0, lio)).append(WORKORDER_DELIMETER).append(docPath.substring(lio + 1));
+            //For backward compatibility only.
             decision.setContextLiteral(ctx, workOrderUri, EXTERNAL_RIM_WORKORDER_URL, externalUrl.toString());
+            decision.setContextLiteral(ctx, workOrderUri, EXTERNAL_UI_WORKORDER_URL, externalUrl.toString());
+
 
             Map<String, String> view = new HashMap<>();
             DocApi docApi = Kernel.getDoc();
@@ -125,6 +130,46 @@ public class ConfigurationStep extends AbstractInvocable {
 
             return getErrorTransition();
         }
+    }
+
+    private String getUIURL() {
+        String ret = System.getenv("UI_URL");
+        if(StringUtils.isBlank(ret)) {
+            //This is for backward compatibility only.
+            String host = getUIHostName();
+            String port = getUIPort();
+            return "http://" + host + ":" + port;
+        } else {
+            ret = ret.trim();
+            if(ret.endsWith("/")) {
+                ret = ret.substring(0, ret.length() -1);
+            }
+        }
+        return ret;
+    }
+
+    private String getUIPort() {
+        String ret = System.getenv("RIM_PORT");
+        if(StringUtils.isBlank(ret)) {
+            //This is for backward compatibility only.
+            ret = System.getenv("PORT");
+        }
+        if(StringUtils.isBlank(ret)) {
+            ret = DEFAULT_RIM_PORT;
+        }
+        return ret;
+    }
+
+    private String getUIHostName() {
+        String ret = System.getenv("RIM_HOST_NAME");
+        if(StringUtils.isBlank(ret)) {
+            //This is for backward compatibility only.
+            ret = System.getenv("HOST");
+        }
+        if(StringUtils.isBlank(ret)) {
+            ret = LOCALHOST;
+        }
+        return ret;
     }
 
 }
