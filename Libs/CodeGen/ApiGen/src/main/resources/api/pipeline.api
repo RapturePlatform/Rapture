@@ -76,10 +76,6 @@ api(Pipeline) {
    @entitle=/admin/pipeline
    @public void setupStandardCategory(String category);
    
-   [Make an RPC call using a pair of queues on the pipeline of the default exchange. I notice that the exchange is removed from the above call which seems to be a bit of a regression]
-   @entitle=/admin/pipeline
-   @public Map<String, Object> makeRPC(String queueName, String fnName, Map<String, Object> params, Long timeoutInSeconds);
-   
    [Create a topic exchange that can be used to pub/sub on]
    @entitle=/admin/pipeline
    @public void createTopicExchange(String domain, String exchange);

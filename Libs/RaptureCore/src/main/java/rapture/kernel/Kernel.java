@@ -35,6 +35,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
@@ -54,9 +55,11 @@ import rapture.common.CallingContextStorage;
 import rapture.common.IEntitlementsContext;
 import rapture.common.InstallableKernel;
 import rapture.common.LicenseInfo;
+import rapture.common.QueueSubscriber;
 import rapture.common.RaptureConstants;
 import rapture.common.RaptureIPWhiteList;
 import rapture.common.RaptureIPWhiteListStorage;
+import rapture.common.RapturePipelineTask;
 import rapture.common.RaptureScript;
 import rapture.common.RaptureURI;
 import rapture.common.api.NotificationApi;
@@ -67,6 +70,7 @@ import rapture.common.exception.RaptureExceptionFactory;
 import rapture.common.exception.RaptureExceptionFormatter;
 import rapture.common.hooks.HooksConfig;
 import rapture.common.hooks.HooksConfigRepo;
+import rapture.common.impl.jackson.JacksonUtil;
 import rapture.common.model.RaptureEntitlement;
 import rapture.common.model.RaptureEntitlementGroup;
 import rapture.common.model.RaptureEntitlementGroupStorage;
@@ -85,6 +89,7 @@ import rapture.kernel.cache.RepoCacheManager;
 import rapture.kernel.internalnotification.ExchangeChangeManager;
 import rapture.kernel.internalnotification.TypeChangeManager;
 import rapture.kernel.pipeline.KernelTaskHandler;
+import rapture.kernel.pipeline.PipelineQueueHandler;
 import rapture.kernel.stat.StatHelper;
 import rapture.log.management.LogManagerConnection;
 import rapture.log.manager.LogManagerConnectionFactory;
@@ -149,9 +154,9 @@ public enum Kernel {
     public static TransformApiImplWrapper getTransform() {
         return INSTANCE.transform;
     }
-    
+
     public static EntityApiImplWrapper getEntity() {
-    	return INSTANCE.entity;
+        return INSTANCE.entity;
     }
 
     public static IdGenApiImplWrapper getIdGen() {
@@ -192,6 +197,10 @@ public enum Kernel {
 
     public static PipelineApiImplWrapper getPipeline() {
         return INSTANCE.pipeline;
+    }
+
+    public static Pipeline2ApiImplWrapper getPipeline2() {
+        return INSTANCE.pipeline2;
     }
 
     public static AsyncApiImplWrapper getAsync() {
@@ -237,17 +246,17 @@ public enum Kernel {
     public static TagApiImplWrapper getTag() {
         return INSTANCE.tag;
     }
-    
+
     public static OperationApiImplWrapper getOperation() {
-    	return INSTANCE.operation;
+        return INSTANCE.operation;
     }
-    
+
     public static WidgetApiImplWrapper getWidget() {
-    	return INSTANCE.widget;
+        return INSTANCE.widget;
     }
-    
+
     public static ProgramApiImplWrapper getProgram() {
-    	return INSTANCE.program;
+        return INSTANCE.program;
     }
 
     public static MetricsService getMetricsService() {
@@ -356,7 +365,7 @@ public enum Kernel {
         INSTANCE.pipeline.getTrusted().handleExchangeChanged(exchange);
     }
 
-    private Map<String, RaptureMessageListener<NotificationMessage>> delayListen = new HashMap<String, RaptureMessageListener<NotificationMessage>>();
+    private Map<String, RaptureMessageListener<NotificationMessage>> delayListen = new HashMap<>();
 
     /*
      * Because typeChangeManager might not be available yet
@@ -467,6 +476,7 @@ public enum Kernel {
 
     private PluginApiImplWrapper plugin;
     private PipelineApiImplWrapper pipeline;
+    private Pipeline2ApiImplWrapper pipeline2;
     private AsyncApiImplWrapper async;
     private SysApiImplWrapper sys;
     private RunnerApiImplWrapper runner;
@@ -526,8 +536,8 @@ public enum Kernel {
     }
 
     /**
-     * Here we need to look for the ipaddresswhitelist. If present, check this address against it If not present, everything goes. A separate parameter
-     * "never check" in the kernel can change this behaviour - that will be set on startup.
+     * Here we need to look for the ipaddresswhitelist. If present, check this address against it If not present, everything goes. A separate parameter "never
+     * check" in the kernel can change this behaviour - that will be set on startup.
      *
      * @param remoteAddr
      * @return
@@ -682,7 +692,9 @@ public enum Kernel {
 
     private List<KernelBase> apiBases;
 
+    @SuppressWarnings("static-access")
     public void restart() {
+        this.stopRapture();
         try {
             log.debug("Restarting Rapture");
             ScriptFactory.init();
@@ -694,7 +706,7 @@ public enum Kernel {
             indexCache = new IndexCache();
             auditLogCache = new AuditLogCache();
 
-            apiBases = new ArrayList<KernelBase>();
+            apiBases = new ArrayList<>();
             login = new Login(this);
             apiBases.add(login);
 
@@ -703,7 +715,7 @@ public enum Kernel {
             /*
              * Create the API wrappers
              */
-            kernelApis = new LinkedList<KernelApi>();
+            kernelApis = new LinkedList<>();
             activity = new ActivityApiImplWrapper(this);
             kernelApis.add(activity);
             admin = new AdminApiImplWrapper(this);
@@ -767,6 +779,10 @@ public enum Kernel {
             program = new ProgramApiImplWrapper(this);
             kernelApis.add(program);
 
+            // pipeline2 must be after environment
+            pipeline2 = new Pipeline2ApiImplWrapper(this);
+            kernelApis.add(pipeline2);
+
             // sys depends on series and doc
             sys = new SysApiImplWrapper(this);
             kernelApis.add(sys);
@@ -777,7 +793,11 @@ public enum Kernel {
             HooksConfig hooksConfig = HooksConfigRepo.INSTANCE.loadHooksConfig();
             apiHooksService.configure(hooksConfig);
 
-            taskHandler = new KernelTaskHandler(pipeline.getTrusted());
+            if (Pipeline2ApiImpl.usePipeline2) {
+                createAndSubscribe(Pipeline2ApiImpl.BROADCAST, ConfigLoader.getConf().DefaultExchange);
+            } else {
+                taskHandler = new KernelTaskHandler(pipeline.getTrusted());
+            }
 
             if (metricsService != null) {
                 metricsService.stop();
@@ -797,6 +817,39 @@ public enum Kernel {
         } catch (RaptureException e) {
             log.error("Cannot start Rapture " + e.getMessage());
         }
+    }
+
+    /**
+     * Create a queue (if not already created) and create a subscriber thread that watches it. This could be moved to an external class. Called by Kernel and
+     * SearchApiImpl
+     * 
+     * @param queue
+     * @param config
+     * @return
+     */
+    public static QueueSubscriber createAndSubscribe(String queue, String config) {
+        Pipeline2ApiImpl pai2 = getPipeline2().getTrusted();
+        if (config == null) config = ConfigLoader.getConf().DefaultExchange;
+        try {
+            pai2.createBroadcastQueue(null, queue, config);
+        } catch (Exception e) {
+            log.error("Unable to create queue " + queue + " with config " + config);
+            log.info(ExceptionToString.summary(e));
+            return null;
+        }
+        QueueSubscriber qsub = new QueueSubscriber(queue, "R" + UUID.randomUUID().toString()) {
+            PipelineQueueHandler pqh = new PipelineQueueHandler(null);
+
+            @Override
+            public boolean handleEvent(byte[] data) {
+                RapturePipelineTask task = JacksonUtil.objectFromJson(data, RapturePipelineTask.class);
+                return pqh.handleMessage(null, null, task.getContentType(), task);
+            }
+
+        };
+
+        pai2.subscribeToQueue(null, qsub);
+        return qsub;
     }
 
     private void coordinatedBegin() {
@@ -836,31 +889,29 @@ public enum Kernel {
     }
 
     public void stopRapture() {
-        notificationManager.stopNotificationManager();
-        repoCacheManager.resetAllCache();
+        if (notificationManager != null) notificationManager.stopNotificationManager();
+        if (repoCacheManager != null) repoCacheManager.resetAllCache();
     }
 
     public CallingContext loadContext(String contextId) {
         return CallingContextStorage.readByFields(contextId);
     }
-    
-    public CallingContext loadContext(String appKey, String apiKey) {
-    	log.info("Looking for " + appKey + " and " + apiKey);
-    	APIKeyDefinition def = APIKeyDefinitionStorage.readByFields(appKey, apiKey);
-    	if (def == null) {
-    	    log.debug(appKey + apiKey + " pair does not exist.");
-    		return null;
-    	}
-    	else {
-    		log.info("Resolved to user: " + def.getUserId());
-    		CallingContext ctx = new CallingContext();
-    		ctx.setUser(def.getUserId());
-    		ctx.setContext(apiKey);
-    		ctx.setValid(true);
-    		return ctx;
-    	}
-	}
 
+    public CallingContext loadContext(String appKey, String apiKey) {
+        log.info("Looking for " + appKey + " and " + apiKey);
+        APIKeyDefinition def = APIKeyDefinitionStorage.readByFields(appKey, apiKey);
+        if (def == null) {
+            log.debug(appKey + apiKey + " pair does not exist.");
+            return null;
+        } else {
+            log.info("Resolved to user: " + def.getUserId());
+            CallingContext ctx = new CallingContext();
+            ctx.setUser(def.getUserId());
+            ctx.setContext(apiKey);
+            ctx.setValid(true);
+            return ctx;
+        }
+    }
 
     public void validateContext(CallingContext context, String entitlementPath, IEntitlementsContext entCtx) throws RaptureException, RaptNotLoggedInException {
         // Check to see if the user is an apiKey (it will have a prefix of zz )
@@ -881,7 +932,7 @@ public enum Kernel {
         }
     }
 
-    private static Map<String, DynamicEntitlementGroup> classCache = new HashMap<String, DynamicEntitlementGroup>();
+    private static Map<String, DynamicEntitlementGroup> classCache = new HashMap<>();
 
     private void validateEntitlements(CallingContext context, String entitlementPath, IEntitlementsContext entCtx) {
         if (context == null) throw RaptureExceptionFactory.create("Null calling context in security validation");
@@ -958,7 +1009,11 @@ public enum Kernel {
      * @param category
      */
     public static void setCategoryMembership(String category) {
-        INSTANCE.taskHandler.setCategoryMembership(category);
+        if (Pipeline2ApiImpl.usePipeline2) {
+            createAndSubscribe(category, ConfigLoader.getConf().DefaultExchange);
+        } else {
+            INSTANCE.taskHandler.setCategoryMembership(category);
+        }
     }
 
     /**
@@ -971,7 +1026,12 @@ public enum Kernel {
      * @param customHandlers
      */
     public static void setCategoryMembership(String category, Map<String, QueueHandler> customHandlers) {
-        INSTANCE.taskHandler.setCategoryMembership(category, customHandlers);
+        if (Pipeline2ApiImpl.usePipeline2) {
+            throw new RuntimeException("setCategoryMembership with legacy Queue Handlers not supported for Pipeine 2");
+            // createAndSubscribe(category, ConfigLoader.getConf().DefaultExchange);
+        } else {
+            INSTANCE.taskHandler.setCategoryMembership(category, customHandlers);
+        }
     }
 
     public SeriesRepo getSeriesRepo(RaptureURI seriesURI) {
@@ -987,7 +1047,7 @@ public enum Kernel {
         return INSTANCE.apiHooksService;
     }
 
-    private Map<String, InstallableKernel> iKernels = new HashMap<String, InstallableKernel>();
+    private Map<String, InstallableKernel> iKernels = new HashMap<>();
 
     public static void addInstallableKernel(InstallableKernel iKernel) {
         INSTANCE.iKernels.put(iKernel.getName(), iKernel);
@@ -1039,5 +1099,4 @@ public enum Kernel {
         return (sb.toString());
     }
 
-	
 }

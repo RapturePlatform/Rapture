@@ -27,13 +27,13 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.google.common.collect.ImmutableList;
+
 import rapture.common.model.RaptureExchange;
 import rapture.common.model.RaptureExchangeQueue;
 import rapture.common.model.RaptureExchangeType;
 import rapture.common.pipeline.PipelineConstants;
 import rapture.util.IDGenerator;
-
-import com.google.common.collect.ImmutableList;
 
 /**
  * Class used to create {@link RaptureExchange}
@@ -57,7 +57,7 @@ public class ExchangeConfigFactory {
         xFanout.setExchangeType(RaptureExchangeType.FANOUT);
         xFanout.setDomain(PipelineConstants.DEFAULT_EXCHANGE_DOMAIN);
 
-        List<RaptureExchangeQueue> qsFanout = new LinkedList<RaptureExchangeQueue>();
+        List<RaptureExchangeQueue> qsFanout = new LinkedList<>();
         RaptureExchangeQueue qBroadcast = new RaptureExchangeQueue();
         qBroadcast.setName(PipelineConstants.ANONYMOUS_PREFIX + IDGenerator.getUUID());
         qBroadcast.setRouteBindings(new ArrayList<String>());
@@ -82,7 +82,7 @@ public class ExchangeConfigFactory {
         xDirect.setExchangeType(RaptureExchangeType.DIRECT);
         xDirect.setDomain(PipelineConstants.DEFAULT_EXCHANGE_DOMAIN);
 
-        List<RaptureExchangeQueue> qsDirect = new LinkedList<RaptureExchangeQueue>();
+        List<RaptureExchangeQueue> qsDirect = new LinkedList<>();
 
         RaptureExchangeQueue qCategoryBroadcast = new RaptureExchangeQueue();
         qCategoryBroadcast.setName(PipelineConstants.ANONYMOUS_PREFIX + IDGenerator.getUUID());

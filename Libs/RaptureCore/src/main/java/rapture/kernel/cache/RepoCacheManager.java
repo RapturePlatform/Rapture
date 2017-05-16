@@ -75,7 +75,11 @@ public class RepoCacheManager {
 
     public Optional<Repository> getStorableRepo(String repoName, StorableIndexInfo indexInfo) {
         if (repoName.startsWith(SysRepoCache.SYS_PREFIX)) {
-            return sysRepoCache.getStorableRepo(repoName, indexInfo);
+            Optional<Repository> repo = sysRepoCache.getStorableRepo(repoName, indexInfo);
+            if (!repo.isPresent()) {
+                System.out.println("No repo named " + repoName);
+            }
+            return repo;
         } else {
             RaptureURI uri = new RaptureURI(repoName, Scheme.DOCUMENT);
             return docRepoCache.getStorableRepo(uri.getAuthority(), indexInfo);
@@ -150,11 +154,11 @@ public class RepoCacheManager {
     }
 
     public void resetAllCache() {
-        sysRepoCache = null;
-        blobRepoCache = null;
-        docRepoCache = null;
-        seriesRepoCache = null;
-        structuredRepoCache = null;
-        searchRepoCache = null;
+        sysRepoCache = new SysRepoCache();
+        blobRepoCache = new BlobRepoCache();
+        docRepoCache = new DocRepoCache();
+        seriesRepoCache = new SeriesRepoCache();
+        structuredRepoCache = new StructuredRepoCache();
+        searchRepoCache = new SearchRepoCache();
     }
 }

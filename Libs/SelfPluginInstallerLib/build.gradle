@@ -6,6 +6,6 @@ dependencies {
             compile project(':RaptureCommon')
             compile project(':Reflex')
             compile project(':PluginInstallerLib')
-            compile group: 'com.google.guava', name: 'guava', version: '14.0'
+            compile group: 'com.google.guava', name: 'guava', version: '20.0'
 }
 

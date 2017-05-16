@@ -34,7 +34,6 @@ import org.apache.log4j.Logger;
 import rapture.common.exception.RaptureException;
 import rapture.common.exception.RaptureExceptionFactory;
 import rapture.common.exception.RaptureExceptionFormatter;
-import rapture.dsl.idgen.IdGenStore;
 import rapture.generated.IdGenLexer;
 import rapture.generated.IdGenParser;
 import rapture.idgen.file.FileIdGenStore;
@@ -65,6 +64,12 @@ public final class IdGenFactory {
                 break;
             case IdGenLexer.MEMORY:
                 ret.setIdGenStore(new IdGenMemoryStore());
+                break;
+            case IdGenLexer.GCP_DATASTORE:
+                ret.setIdGenStore(getIdGenStore("rapture.repo.google.IdGenGoogleDatastore", parser.getInstance(), parser.getConfig().getConfig()));
+                break;
+            case IdGenLexer.GCP_STORAGE:
+                ret.setIdGenStore(getIdGenStore("rapture.repo.google.IdGenGoogleStorage", parser.getInstance(), parser.getConfig().getConfig()));
                 break;
             case IdGenLexer.MONGODB:
                 ret.setIdGenStore(getIdGenStore("rapture.idgen.mongodb.IdGenMongoStore", parser.getInstance(), parser.getConfig().getConfig()));
@@ -98,11 +103,7 @@ public final class IdGenFactory {
                 log.error(RaptureExceptionFormatter.getExceptionMessage(raptException, className + " is not a idGen, cannot instantiate"));
                 throw raptException;
             }
-        } catch (InstantiationException e) {
-            throwable = e;
-        } catch (IllegalAccessException e) {
-            throwable = e;
-        } catch (ClassNotFoundException e) {
+        } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
             throwable = e;
         }
         RaptureException raptException = RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, "Could not create idGen");

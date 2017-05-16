@@ -23,6 +23,7 @@ public <ret> <name>(<params; separator=", ">) {
 <else>
     apiImpl.<name>(<callParams; separator=", ">);
 <endif>
+
     Kernel.getApiHooksService().post(context, CallName.<apitype>_<name>);
     
     long endFunctionTime = System.currentTimeMillis();

@@ -25,6 +25,7 @@ AWS : 'AWS';
 REDIS : 'REDIS';
 MONGODB : 'MONGODB';
 PUBHUB : 'PUBHUB';
+GCP_PUBSUB : 'GCP_PUBSUB';
 
 ON: 'ON' | 'on';
 LBRACE : '{';

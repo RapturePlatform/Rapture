@@ -41,4 +41,29 @@ public class PipelineConstants {
     public static final String CATEGORY_APPMANAGER = "appManagers";
     public static final String CATEGORY_DATACAPTURE = "dataCapture";
     public static final String CATEGORY_SEARCH = "search";
+
+    // public enum PipelineConstants {
+    //
+    // DEFAULT_EXCHANGE_DOMAIN("main"), ANONYMOUS_PREFIX("$anonoymous"), DEFAULT_EXCHANGE("$defaultExchange"), FANOUT_EXCHANGE("raptureFanout"),
+    // DIRECT_EXCHANGE(
+    // "raptureDirect"), TOPIC_EXCHANGE("raptureTopic"),
+    //
+    // /**
+    // * The pipeline categories
+    // */
+    // // TODO is this the registry? maybe have a different file with a registry of
+    // // all possible categories? could be configurable on startup maybe?
+    // CATEGORY_ALPHA("alpha"), CATEGORY_RUNNER("runners"), CATEGORY_APPMANAGER("appManagers"), CATEGORY_DATACAPTURE("dataCapture"), CATEGORY_SEARCH("search");
+    //
+    // private String name;
+    //
+    // PipelineConstants(String name) {
+    // this.name = name;
+    // }
+    //
+    // @Override
+    // public String toString() {
+    // return this.name;
+    // }
+
 }

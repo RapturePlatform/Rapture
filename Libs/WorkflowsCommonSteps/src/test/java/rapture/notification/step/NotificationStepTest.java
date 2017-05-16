@@ -27,19 +27,23 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
-import org.junit.After;
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
+
 import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
+import org.subethamail.wiser.Wiser;
+import org.subethamail.wiser.WiserMessage;
+
+import com.google.common.collect.ImmutableMap;
 
 import rapture.common.CallingContext;
 import rapture.common.CreateResponse;
@@ -47,6 +51,7 @@ import rapture.common.RaptureConstants;
 import rapture.common.RaptureURI;
 import rapture.common.Scheme;
 import rapture.common.WorkOrderExecutionState;
+import rapture.common.api.DocApi;
 import rapture.common.dp.Step;
 import rapture.common.dp.StepRecord;
 import rapture.common.dp.StepRecordDebug;
@@ -75,6 +80,7 @@ public class NotificationStepTest {
     private static final String REPO_USING_MEMORY = "REP {} USING MEMORY {prefix=\"/tmp/" + auth + "\"}";
     static CallingContext context;
     static final String templateName = "TESTING";
+    static final Wiser wiser = new Wiser();
 
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
@@ -133,42 +139,26 @@ public class NotificationStepTest {
         } catch (RaptureException e) {
             e.printStackTrace();
         }
+
+        wiser.setPort(2525);
+        wiser.start();
+
+        SMTPConfig emailCfg = new SMTPConfig().setHost("localhost").setPort(2525).setUsername("").setPassword("")
+                .setFrom("Incapture <support@incapturetechnologies.com>").setAuthentication(false).setTlsenable(false).setTlsrequired(false);
+        Kernel.getSys().writeSystemConfig(context, "CONFIG", Mailer.SMTP_CONFIG_URL, JacksonUtil.jsonFromObject(emailCfg));
+        // create dummy email template
+        String template = "{\"emailTo\":\"support@incapturetechnologies.com\",\"subject\":\"Ignore this message\",\"msgBody\":\"This email is generated from NotificationStepTest in WorkflowCommonSteps\"}";
+        String url = Mailer.EMAIL_TEMPLATE_DIR + templateName;
+        Kernel.getSys().writeSystemConfig(context, "CONFIG", url, template);
     }
 
     @AfterClass
     public static void tearDownAfterClass() throws Exception {
+        wiser.stop();
     }
 
-    // Fill in for testing and enable testNotificationEmailStep
-	String username = "";
-	String password = "";
-	String host = "";
-    int port = 587;
-
-    @Before
-    public void setUp() throws Exception {
-        // create smtp config
-        String area = "CONFIG";
-        CallingContext anon = ContextFactory.getAnonymousUser();
-        SMTPConfig smtpConfig = new SMTPConfig().setFrom("support@incapturetechnologies.com").setUsername(username).setPassword(password).setHost(host)
-                .setPort(port).setAuthentication(!StringUtils.isEmpty(password)).setTlsenable(!StringUtils.isEmpty(password))
-                .setTlsrequired(!StringUtils.isEmpty(password));
-        Kernel.getSys().writeSystemConfig(context, area, Mailer.SMTP_CONFIG_URL, JacksonUtil.jsonFromObject(smtpConfig));
-
-        // create dummy email template
-        String template = "{\"emailTo\":\"support@incapturetechnologies.com\",\"subject\":\"Ignore this message\",\"msgBody\":\"This email is generated from NotificationStepTest in WorkflowCommonSteps\"}";
-        String url = Mailer.EMAIL_TEMPLATE_DIR + templateName;
-        Kernel.getSys().writeSystemConfig(context, area, url, template);
-    }
-
-    @After
-    public void tearDown() throws Exception {
-    }
-
-    // Enable this when we have a SMTP config that Google doesn't keep blocking
-    @Ignore
     @Test
-    public void testNotificationEmailStep() {
+    public void testNotificationEmailStep() throws MessagingException, IOException {
 
         String workflowUri = "workflow://foo/bar/baz";
         Workflow w = new Workflow();
@@ -182,7 +172,7 @@ public class NotificationStepTest {
         Map<String, String> viewMap = new HashMap<>();
         viewMap.put("NOTIFY_TYPE", "#" + "EMAIL");
         viewMap.put("MESSAGE_TEMPLATE", "#" + templateName);
-        viewMap.put("RECIPIENT", "#" + "dave.tong@incapturetechnologies.com");
+        viewMap.put("EMAIL_RECIPIENTS", "#" + "dave.tong@incapturetechnologies.com");
         w.setSteps(steps);
         w.setView(viewMap);
         w.setWorkflowURI(workflowUri);
@@ -208,6 +198,198 @@ public class NotificationStepTest {
         assertNotNull(sr);
         assertEquals(sr.toString(), Steps.NEXT.toString(), sr.getRetVal());
         assertEquals(WorkOrderExecutionState.FINISHED, debug.getOrder().getStatus());
+
+        boolean found = false;
+        for (WiserMessage message : wiser.getMessages()) {
+            String envelopeSender = message.getEnvelopeSender();
+            String envelopeReceiver = message.getEnvelopeReceiver();
+            MimeMessage mess = message.getMimeMessage();
+            if (mess.getSubject().equals(("Ignore this message"))) {
+                assertEquals("support@incapturetechnologies.com", envelopeSender);
+                assertEquals("dave.tong@incapturetechnologies.com", envelopeReceiver);
+                assertEquals("This email is generated from NotificationStepTest in WorkflowCommonSteps", mess.getContent().toString().trim());
+                found = true;
+            }
+        }
+        assertTrue(found);
+    }
+
+    @Test
+    public void testNotificationStepname() throws MessagingException, IOException {
+
+        String workflowUri = "workflow://foo/bar/baz";
+        Workflow w = new Workflow();
+        w.setStartStep("step1");
+        List<Step> steps = new LinkedList<>();
+        Step step = new Step();
+        step.setExecutable("dp_java_invocable://notification.steps.NotificationStep");
+        step.setName("step1");
+        step.setDescription("description");
+        steps.add(step);
+        Map<String, String> viewMap = new HashMap<>();
+        viewMap.put("NOTIFY_TYPE", "#" + "EMAIL");
+        // viewMap.put("MESSAGE_BODY",
+        // "%!document://configs/matrix/errorMessages/${JOBNAME$default}"
+        // + "#${STEPNAME$Undefined}_ERROR$$Error in job ${JOBNAME$Undefined} Step "
+        // + "${STEPNAME$Undefined}\n${${STEPNAME}Error$No specific error message defined}"
+        // + "\nWorkorder URL is ${EXTERNALRIMWORKORDERURL$not defined}");
+
+
+        // viewMap.put("MESSAGE_BODY",
+        // "Message ${${FOO}foo$FOOfoo undefined}\n" +
+        // "${${BAR}bar$BARbar undefined}");
+
+        DocApi doc = Kernel.getDoc();
+        String documentUri = "document://configs/matrix/errorMessages/fetchRates";
+        String ERROR_MESSAGE = "This is Sparta!";
+
+        Map<String, String> document = ImmutableMap.of("ERROR_SUBJECT", "Error in job ${JOBNAME$}", "Undefined_ERROR",
+                "Error in job ${JOBNAME$} The step name is undefined. Check logs for details.\nWorkorder URL is  ${EXTERNALRIMWORKORDERURL$not defined}",
+                "configure_ERROR",
+                "Error in job ${JOBNAME$} step configure\n${configure$}\n${configureError$}\nWorkorder URL is  ${EXTERNALRIMWORKORDERURL$not defined}",
+                "fetchWebData_ERROR",
+                "Error in job ${JOBNAME$} step fetchWebData\n${fetchWebData$}\n${fetchWebDataError$}\nWorkorder URL is  ${EXTERNALRIMWORKORDERURL$not defined}");
+        doc.putDoc(context, documentUri, JacksonUtil.jsonFromObject(document));
+
+        viewMap.put("MESSAGE_SUBJECT", "%${SITENAME$test} message");
+        viewMap.put("MESSAGE_BODY",
+                "%!document://configs/matrix/errorMessages/${JOBNAME$default}#${STEPNAME$Undefined}_ERROR$$Error in job ${JOBNAME$Undefined} Step ${STEPNAME$Undefined}\nWorkorder URL is ${EXTERNALRIMWORKORDERURL$notdefined}");
+        viewMap.put("JOBNAME", "#fetchRates");
+        viewMap.put("STEPNAME", "#fetchWebData");
+        viewMap.put("fetchWebDataError", "#" + ERROR_MESSAGE);
+        viewMap.put("EMAIL_RECIPIENTS", "#" + "dave.tong@incapturetechnologies.com");
+        w.setSteps(steps);
+        w.setView(viewMap);
+        w.setWorkflowURI(workflowUri);
+        Kernel.getDecision().putWorkflow(context, w);
+
+        CreateResponse response = Kernel.getDecision().createWorkOrderP(context, workflowUri, null, null);
+        assertTrue(response.getIsCreated());
+        WorkOrderDebug debug;
+        WorkOrderExecutionState state = WorkOrderExecutionState.NEW;
+        long timeout = System.currentTimeMillis() + 60000;
+        do {
+            debug = Kernel.getDecision().getWorkOrderDebug(context, response.getUri());
+            state = debug.getOrder().getStatus();
+        } while (((state == WorkOrderExecutionState.NEW) || (state == WorkOrderExecutionState.ACTIVE)) && (System.currentTimeMillis() < timeout));
+
+        StepRecord sr = null;
+        for (WorkerDebug wd : debug.getWorkerDebugs()) {
+            for (StepRecordDebug srd : wd.getStepRecordDebugs()) {
+                sr = srd.getStepRecord();
+                System.out.println(JacksonUtil.formattedJsonFromObject(sr));
+            }
+        }
+        assertNotNull(sr);
+        assertEquals(sr.toString(), Steps.NEXT.toString(), sr.getRetVal());
+        assertEquals(WorkOrderExecutionState.FINISHED, debug.getOrder().getStatus());
+
+        boolean found = false;
+        for (WiserMessage message : wiser.getMessages()) {
+            String envelopeSender = message.getEnvelopeSender();
+            String envelopeReceiver = message.getEnvelopeReceiver();
+            MimeMessage mess = message.getMimeMessage();
+            if (mess.getSubject().equals(("test message"))) {
+                assertEquals("support@incapturetechnologies.com", envelopeSender);
+                assertEquals("dave.tong@incapturetechnologies.com", envelopeReceiver);
+                String[] content = mess.getContent().toString().trim().split("\r\n");
+                assertEquals(ERROR_MESSAGE, content[2]);
+                found = true;
+            }
+        }
+        assertTrue(found);
+    }
+
+    @Test
+    public void testNotificationTemplate() throws MessagingException, IOException {
+
+        String workflowUri = "workflow://foo/bar/baz";
+        Workflow w = new Workflow();
+        w.setStartStep("step1");
+        List<Step> steps = new LinkedList<>();
+        Step step = new Step();
+        step.setExecutable("dp_java_invocable://notification.steps.NotificationStep");
+        step.setName("step1");
+        step.setDescription("description");
+        steps.add(step);
+        Map<String, String> viewMap = new HashMap<>();
+        viewMap.put("NOTIFY_TYPE", "#" + "EMAIL");
+        viewMap.put("MESSAGE_TEMPLATE", "#" + templateName);
+        viewMap.put("MESSAGE_SUBJECT", "%${SITENAME$QA} Error");
+        viewMap.put("EMAIL_RECIPIENTS", "#" + "dave.tong@incapturetechnologies.com");
+        w.setSteps(steps);
+        w.setView(viewMap);
+        w.setWorkflowURI(workflowUri);
+        Kernel.getDecision().putWorkflow(context, w);
+
+        CreateResponse response = Kernel.getDecision().createWorkOrderP(context, workflowUri, null, null);
+        assertTrue(response.getIsCreated());
+        WorkOrderDebug debug;
+        WorkOrderExecutionState state = WorkOrderExecutionState.NEW;
+        long timeout = System.currentTimeMillis() + 60000;
+        do {
+            debug = Kernel.getDecision().getWorkOrderDebug(context, response.getUri());
+            state = debug.getOrder().getStatus();
+        } while (((state == WorkOrderExecutionState.NEW) || (state == WorkOrderExecutionState.ACTIVE)) && (System.currentTimeMillis() < timeout));
+
+        StepRecord sr = null;
+        for (WorkerDebug wd : debug.getWorkerDebugs()) {
+            for (StepRecordDebug srd : wd.getStepRecordDebugs()) {
+                sr = srd.getStepRecord();
+                System.out.println(JacksonUtil.formattedJsonFromObject(sr));
+            }
+        }
+        assertNotNull(sr);
+        assertEquals(sr.toString(), Steps.NEXT.toString(), sr.getRetVal());
+        assertEquals(WorkOrderExecutionState.FINISHED, debug.getOrder().getStatus());
+
+        boolean found = false;
+        for (WiserMessage message : wiser.getMessages()) {
+            String envelopeSender = message.getEnvelopeSender();
+            String envelopeReceiver = message.getEnvelopeReceiver();
+            MimeMessage mess = message.getMimeMessage();
+            if (mess.getSubject().equals(("QA Error"))) {
+                assertEquals("support@incapturetechnologies.com", envelopeSender);
+                assertEquals("dave.tong@incapturetechnologies.com", envelopeReceiver);
+                assertEquals("This email is generated from NotificationStepTest in WorkflowCommonSteps", mess.getContent().toString().trim());
+                found = true;
+            }
+        }
+        assertTrue(found);
+        
+        response = Kernel.getDecision().createWorkOrderP(context, workflowUri, ImmutableMap.of("SITENAME", "TESTING"), null);
+        assertTrue(response.getIsCreated());
+        state = WorkOrderExecutionState.NEW;
+        timeout = System.currentTimeMillis() + 6000000;
+        do {
+            debug = Kernel.getDecision().getWorkOrderDebug(context, response.getUri());
+            state = debug.getOrder().getStatus();
+        } while (((state == WorkOrderExecutionState.NEW) || (state == WorkOrderExecutionState.ACTIVE)) && (System.currentTimeMillis() < timeout));
+
+        sr = null;
+        for (WorkerDebug wd : debug.getWorkerDebugs()) {
+            for (StepRecordDebug srd : wd.getStepRecordDebugs()) {
+                sr = srd.getStepRecord();
+                System.out.println(JacksonUtil.formattedJsonFromObject(sr));
+            }
+        }
+        assertNotNull(sr);
+        assertEquals(sr.toString(), Steps.NEXT.toString(), sr.getRetVal());
+        assertEquals(WorkOrderExecutionState.FINISHED, debug.getOrder().getStatus());
+
+        found = false;
+        for (WiserMessage message : wiser.getMessages()) {
+            String envelopeSender = message.getEnvelopeSender();
+            String envelopeReceiver = message.getEnvelopeReceiver();
+            MimeMessage mess = message.getMimeMessage();
+            if (mess.getSubject().equals(("TESTING Error"))) {
+                assertEquals("support@incapturetechnologies.com", envelopeSender);
+                assertEquals("dave.tong@incapturetechnologies.com", envelopeReceiver);
+                assertEquals("This email is generated from NotificationStepTest in WorkflowCommonSteps", mess.getContent().toString().trim());
+                found = true;
+            }
+        }
+        assertTrue(found);
     }
 
     @Test

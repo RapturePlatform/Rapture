@@ -38,6 +38,7 @@ import rapture.common.dp.WorkOrderStorage;
 import rapture.common.dp.Worker;
 import rapture.common.dp.WorkerExecutionState;
 import rapture.common.dp.WorkerStorage;
+import rapture.common.exception.ExceptionToString;
 import rapture.common.impl.jackson.JacksonUtil;
 import rapture.dp.DecisionProcessExecutor;
 import rapture.dp.DecisionProcessExecutorFactory;
@@ -106,6 +107,10 @@ public class RaptureDecisionProcessAdvanceHandler implements QueueHandler {
             MDCService.INSTANCE.setWorkOrderMDC(worker.getWorkOrderURI(), worker.getId());
             try {
                 dpe.executeStep(worker);
+            } catch (Exception e) {
+                String error = ExceptionToString.summary(e);
+                log.info(error);
+                throw (e);
             } finally {
                 MDCService.INSTANCE.clearWorkOrderMDC();
             }

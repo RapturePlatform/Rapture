@@ -59,7 +59,7 @@ public class RepoFactory {
     static {
         keyStoreImplementationMap = createKeystoreMap();
 
-        Map<Integer, String> sqlSetupMap = new HashMap<Integer, String>();
+        Map<Integer, String> sqlSetupMap = new HashMap<>();
         sqlSetupMap.put(RapGenLexer.JDBC, "rapture.repo.jdbc.JDBCSqlStore");
         sqlStoreImplementationMap = Collections.unmodifiableMap(sqlSetupMap);
 
@@ -67,7 +67,9 @@ public class RepoFactory {
     }
 
     private static Map<Integer, String> createKeystoreMap() {
-        Map<Integer, String> keyStoreSetupMap = new HashMap<Integer, String>();
+        Map<Integer, String> keyStoreSetupMap = new HashMap<>();
+        keyStoreSetupMap.put(RapGenLexer.GCP_STORAGE, "rapture.repo.google.GoogleStorageKeyStore");
+        keyStoreSetupMap.put(RapGenLexer.GCP_DATASTORE, "rapture.repo.google.GoogleDatastoreKeyStore");
         keyStoreSetupMap.put(RapGenLexer.MEMORY, "rapture.repo.mem.MemKeyStore");
         keyStoreSetupMap.put(RapGenLexer.REDIS, "rapture.repo.redis.RedisKeyStore");
         keyStoreSetupMap.put(RapGenLexer.AWS, "rapture.repo.aws.SimpleDbKeyStore");
@@ -243,12 +245,18 @@ public class RepoFactory {
     }
 
     private static RapGenParser parseConfig(String config) throws RecognitionException {
-        RapGenLexer lexer = new RapGenLexer();
-        lexer.setCharStream(new ANTLRStringStream(config));
-        CommonTokenStream tokens = new CommonTokenStream(lexer);
-        RapGenParser parser = new RapGenParser(tokens);
-        parser.repinfo();
-        return parser;
+        try {
+            RapGenLexer lexer = new RapGenLexer();
+            lexer.setCharStream(new ANTLRStringStream(config));
+            CommonTokenStream tokens = new CommonTokenStream(lexer);
+            RapGenParser parser = new RapGenParser(tokens);
+            parser.repinfo();
+            return parser;
+        } catch (Exception e) {
+            String error = ExceptionToString.format(e);
+            log.error(error);
+            throw e;
+        }
     }
 
     private RepoFactory() {

@@ -56,7 +56,7 @@ public class ReflexTestRunner {
     String raptureUrl = null;
     private HttpScriptApi scriptApi = null;
 
-    private List<String> scriptList = new ArrayList<String>();
+    private List<String> scriptList = new ArrayList<>();
     IntegrationTestHelper helper;
 
     @BeforeClass(groups = { "script", "mongo", "nightly" })
@@ -70,7 +70,7 @@ public class ReflexTestRunner {
     }
 
     Map<String, String> getParams() {
-        Map<String, String> paramMap = new HashMap<String, String>();
+        Map<String, String> paramMap = new HashMap<>();
 
         RaptureURI blobRepo = helper.getRandomAuthority(Scheme.BLOB);
         helper.configureTestRepo(blobRepo, "MEMORY");

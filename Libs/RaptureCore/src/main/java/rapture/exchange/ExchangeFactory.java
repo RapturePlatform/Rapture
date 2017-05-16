@@ -43,7 +43,7 @@ public final class ExchangeFactory {
     private static Logger log = Logger.getLogger(ExchangeFactory.class);
     private static final Map<Integer, String> implementationMap;
     static {
-        Map<Integer, String> setupMap = new HashMap<Integer, String>();
+        Map<Integer, String> setupMap = new HashMap<>();
         setupMap.put(EGenLexer.RABBITMQ, "rapture.exchange.rabbitmq.RabbitExchangeHandler");
         setupMap.put(EGenLexer.MEMORY, "rapture.exchange.memory.MemoryExchangeHandler");
 	// TODO EGenLexer.FILE ?
@@ -95,7 +95,7 @@ public final class ExchangeFactory {
                 throw raptException;
             }
         } catch (ClassNotFoundException e) {
-            RaptureException raptException = RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, "Error creating exchange");
+            RaptureException raptException = RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, "Error creating exchange with config ", e);
             log.error(RaptureExceptionFormatter.getExceptionMessage(raptException, e));
             throw raptException;
         }

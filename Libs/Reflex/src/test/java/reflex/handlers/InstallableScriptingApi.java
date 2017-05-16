@@ -42,6 +42,7 @@ import rapture.common.api.ScriptJarApi;
 import rapture.common.api.ScriptLockApi;
 import rapture.common.api.ScriptNotificationApi;
 import rapture.common.api.ScriptOperationApi;
+import rapture.common.api.ScriptPipeline2Api;
 import rapture.common.api.ScriptPipelineApi;
 import rapture.common.api.ScriptPluginApi;
 import rapture.common.api.ScriptProgramApi;
@@ -267,4 +268,10 @@ public class InstallableScriptingApi implements ScriptingApi {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+    @Override
+    public ScriptPipeline2Api getPipeline2() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

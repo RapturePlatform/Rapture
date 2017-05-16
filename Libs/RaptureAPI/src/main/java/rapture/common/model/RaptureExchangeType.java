@@ -24,5 +24,6 @@
 package rapture.common.model;
 
 public enum RaptureExchangeType {
-    DIRECT, FANOUT, TOPIC, HEADERS
+    DIRECT, FANOUT,
+    TOPIC// , HEADERS
 }

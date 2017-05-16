@@ -57,7 +57,7 @@ public class RaptureConfig {
     public String ServerType = "webserver";
     public String StandardTemplate = "REP {} USING MEMORY {}";
     public String DefaultAudit = "LOG {} USING MEMORY {}";
-    public String DefaultExchange = "EXCHANGE {} USING MEMORY {}";
+    public String DefaultExchange = "EXCHANGE {} USING MEMORY { }";
     public String DefaultCommentary = "COMMENTARY {} USING MEMORY {}";
     public String DefaultNotification = "NOTIFICATION USING MEMORY {}";
     public String DefaultStatus = "STATUS {} USING MEMORY {}";
@@ -71,8 +71,8 @@ public class RaptureConfig {
 
     public String DefaultDecisionRepoConfig = "NREP {} USING MEMORY { prefix=\"sys.decision\"}";
 
-    public String DefaultDecisionIdGenConfig = "IDGEN { base=\"36\", length=\"8\", prefix=\"wo.\" } USING MEMORY {}";
-    public String EventIdGenConfig = "IDGEN { base=\"36\", length=\"8\", prefix=\"mem-event.\" } USING MEMORY {}";
+    public String DefaultDecisionIdGenConfig = "IDGEN { base=\"36\", length=\"8\", prefix=\"WO_\" } USING MEMORY {}";
+    public String EventIdGenConfig = "IDGEN { base=\"36\", length=\"8\", prefix=\"mem-event_\" } USING MEMORY {}";
     public String ActivityIdGenConfig = "IDGEN { base=\"36\", length=\"8\", prefix=\"\" } USING MEMORY {}";
 
     public String DefaultSemaphoreConfig = "LOCKING USING MEMORY {}";
@@ -143,7 +143,6 @@ public class RaptureConfig {
                 }
             }
         }
-
         ensureValidFileRepoDirectory();
     }
 

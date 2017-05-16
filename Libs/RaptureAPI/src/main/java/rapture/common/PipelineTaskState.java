@@ -24,5 +24,20 @@
 package rapture.common;
 
 public enum PipelineTaskState {
-    SUBMITTED, RUNNING, WAITING, COMPLETED, FAILED, UNKNOWN, SUSPENDED
+    SUBMITTED(false), RUNNING(false), WAITING(false), COMPLETED(true), FAILED(true), UNKNOWN(false), SUSPENDED(false), DELETED(true);
+
+    private boolean finished;
+
+    PipelineTaskState() {
+        this.finished = false;
+    }
+
+    PipelineTaskState(boolean finished) {
+        this.finished = finished;
+    }
+
+    public boolean finished() {
+        return this.finished;
+    }
+
 }

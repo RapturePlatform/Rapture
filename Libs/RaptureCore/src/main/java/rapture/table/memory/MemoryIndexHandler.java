@@ -42,10 +42,7 @@ import rapture.common.model.DocumentMetadata;
 import rapture.dsl.iqry.IndexQuery;
 import rapture.dsl.iqry.IndexQueryFactory;
 import rapture.dsl.iqry.OrderDirection;
-import rapture.dsl.iqry.WhereClause;
-import rapture.dsl.iqry.WhereExtension;
-import rapture.dsl.iqry.WhereStatement;
-import rapture.index.IndexHandler;
+import rapture.index.AbstractIndexHandler;
 import rapture.index.IndexProducer;
 import rapture.index.IndexRecord;
 
@@ -53,7 +50,7 @@ import rapture.index.IndexRecord;
  * An in memory table, primarily for testing
  * 
  */
-public class MemoryIndexHandler implements IndexHandler {
+public class MemoryIndexHandler extends AbstractIndexHandler {
     protected static Logger log = Logger.getLogger(MemoryIndexHandler.class);
 
     protected Map<String, Map<String, Object>> memoryView = null;
@@ -165,85 +162,6 @@ public class MemoryIndexHandler implements IndexHandler {
             }
         }
         return result;
-    }
-
-    private List<Predicate<Map<String, Object>>> predicatesFromQuery(IndexQuery parsedQuery) {
-        List<Predicate<Map<String, Object>>> predicates = new LinkedList<>();
-        WhereClause whereClause = parsedQuery.getWhere();
-        if (whereClause.getPrimary() != null) {
-            predicates.add(predicateFromClause(whereClause.getPrimary()));
-        }
-        if (!whereClause.getExtensions().isEmpty()) {
-            for (WhereExtension whereExtension : whereClause.getExtensions()) {
-                predicates.add(predicateFromClause(whereExtension.getClause()));
-            }
-        }
-        return predicates;
-    }
-
-    private Predicate<Map<String, Object>> predicateFromClause(final WhereStatement statement) {
-        return new Predicate<Map<String, Object>>() {
-            @SuppressWarnings({ "unchecked", "rawtypes" })
-            @Override
-            public boolean apply(Map<String, Object> input) {
-                String fieldName = statement.getField();
-                Object queryValue = statement.getValue().getValue();
-                Object actualValue = input.get(fieldName);
-                if (queryValue != null && actualValue != null) {
-                    if (queryValue.getClass().equals(actualValue.getClass())) {
-                        return compare((Comparable) actualValue, (Comparable) queryValue);
-                    }
-                    if (queryValue instanceof Number && actualValue instanceof Number) {
-                        return compare((Number) actualValue, (Number) queryValue);
-                    }
-                }
-                String actualValueString;
-                if (actualValue != null) {
-                    actualValueString = actualValue.toString();
-                } else {
-                    actualValueString = null;
-                }
-
-                String queryValueString;
-                if (queryValue != null) {
-                    queryValueString = queryValue.toString();
-                } else {
-                    queryValueString = null;
-                }
-                return compare(actualValueString, queryValueString);
-            }
-
-            protected <T extends Comparable<T>> boolean compare(T actualValue, T queryValue) {
-                switch (statement.getOper()) {
-                    case GT:
-                        return actualValue != null && actualValue.compareTo(queryValue) > 0;
-                    case LT:
-                        return actualValue != null && actualValue.compareTo(queryValue) < 0;
-                    case NOTEQUAL:
-                        return actualValue != null && !queryValue.equals(actualValue);
-                    case EQUAL:
-                        return queryValue.equals(actualValue);
-                    default:
-                        return false;
-                }
-            }
-
-            protected <T extends Number> boolean compare(T actualValue, T queryValue) {
-                switch (statement.getOper()) {
-                case GT:
-                    return actualValue.doubleValue() > queryValue.doubleValue();
-                case LT:
-                    return actualValue.doubleValue() < queryValue.doubleValue();
-                case NOTEQUAL:
-                    return actualValue.doubleValue() != queryValue.doubleValue();
-                case EQUAL:
-                    return actualValue.doubleValue() == queryValue.doubleValue();
-                default:
-                    return false;
-                }
-            }
-
-        };
     }
 
     @Override

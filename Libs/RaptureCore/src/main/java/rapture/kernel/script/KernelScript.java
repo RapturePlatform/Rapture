@@ -51,6 +51,7 @@ public class KernelScript implements IRaptureScriptHelper, IRaptureKernelScriptH
     private final ScriptEntity entity;
     private final ScriptPlugin plugin;
     private final ScriptPipeline pipeline;
+    private final ScriptPipeline2 pipeline2;
     private final ScriptAsync async;
     private final ScriptSys sys;
     private final ScriptRunner runner;
@@ -86,6 +87,7 @@ public class KernelScript implements IRaptureScriptHelper, IRaptureKernelScriptH
         entity = new ScriptEntity(Kernel.getEntity());
         plugin = new ScriptPlugin(Kernel.getPlugin());
         pipeline = new ScriptPipeline(Kernel.getPipeline());
+        pipeline2 = new ScriptPipeline2(Kernel.getPipeline2());
         async = new ScriptAsync(Kernel.getAsync());
         sys = new ScriptSys(Kernel.getSys());
         runner = new ScriptRunner(Kernel.getRunner());
@@ -108,10 +110,12 @@ public class KernelScript implements IRaptureScriptHelper, IRaptureKernelScriptH
         return login;
     }
 
+    @Override
     public ScriptAdmin getAdmin() {
         return admin;
     }
 
+    @Override
     public ScriptAudit getAudit() {
         return audit;
     }
@@ -121,38 +125,47 @@ public class KernelScript implements IRaptureScriptHelper, IRaptureKernelScriptH
         return activity;
     }
 
+    @Override
     public ScriptBootstrap getBootstrap() {
         return bootstrap;
     }
 
+    @Override
     public ScriptEntitlement getEntitlement() {
         return entitlement;
     }
 
+    @Override
     public ScriptEvent getEvent() {
         return event;
     }
 
+    @Override
     public ScriptTransform getTransform() {
         return transform;
     }
     
+    @Override
     public ScriptEntity getEntity() {
     	return entity;
     }
 
+    @Override
     public ScriptIdGen getIdGen() {
         return idgen;
     }
 
+    @Override
     public ScriptIndex getIndex() {
         return index;
     }
 
+    @Override
     public ScriptLock getLock() {
         return lock;
     }
 
+    @Override
     public ScriptPlugin getPlugin() {
         return plugin;
     }
@@ -162,50 +175,67 @@ public class KernelScript implements IRaptureScriptHelper, IRaptureKernelScriptH
         return "Rapture Kernel";
     }
 
+    @Override
     public ScriptSchedule getSchedule() {
         return schedule;
     }
 
+    @Override
     public ScriptScript getScript() {
         return script;
     }
 
+    @Override
     public ScriptUser getUser() {
         return user;
     }
 
+    @Override
     public ScriptPipeline getPipeline() {
         return pipeline;
     }
 
+    @Override
+    public ScriptPipeline2 getPipeline2() {
+        return pipeline2;
+    }
+
+    @Override
     public ScriptAsync getAsync() {
         return async;
     }
 
+    @Override
     public ScriptSys getSys() {
         return sys;
     }
 
+    @Override
     public ScriptRunner getRunner() {
         return runner;
     }
 
+    @Override
     public ScriptNotification getNotification() {
         return notification;
     }
 
+    @Override
     public ScriptEnvironment getEnvironment() {
         return environment;
     }
 
+    @Override
     public ScriptStructured getStructured() {
         return structured;
     }
 
+    @Override
     public ScriptTag getTag() {
         return tag;
     }
     
+    @Override
     public ScriptOperation getOperation() {
     	return operation;
     }
@@ -215,14 +245,17 @@ public class KernelScript implements IRaptureScriptHelper, IRaptureKernelScriptH
         return "1.0";
     }
 
+    @Override
     public ScriptSeries getSeries() {
         return series;
     }
     
+    @Override
     public ScriptWidget getWidget() {
     	return widget;
     }
     
+    @Override
     public ScriptProgram getProgram() {
     	return program;
     }
@@ -247,6 +280,7 @@ public class KernelScript implements IRaptureScriptHelper, IRaptureKernelScriptH
         getTransform().setCallingContext(ctx);
         getEntity().setCallingContext(ctx);
         getPipeline().setCallingContext(ctx);
+        getPipeline2().setCallingContext(ctx);
         getAsync().setCallingContext(ctx);
         getSys().setCallingContext(ctx);
         getRunner().setCallingContext(ctx);
@@ -270,14 +304,17 @@ public class KernelScript implements IRaptureScriptHelper, IRaptureKernelScriptH
         }
     }
 
+    @Override
     public ScriptUserApi user() {
         return getUser();
     }
 
+    @Override
     public ScriptBlob getBlob() {
         return blob;
     }
 
+    @Override
     public ScriptJar getJar() {
         return jar;
     }

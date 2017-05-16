@@ -47,7 +47,6 @@ public class RunnerIntegrationTest {
     public void setup() {
         try {
             Kernel.initBootstrap(null, null, true);
-
         } catch (RaptureException e) {
             e.printStackTrace();
         }

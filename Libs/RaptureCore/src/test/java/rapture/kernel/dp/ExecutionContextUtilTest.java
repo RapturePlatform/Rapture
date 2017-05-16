@@ -77,4 +77,17 @@ public class ExecutionContextUtilTest {
         String err = ExecutionContextUtil.getValueECF(callingContext, workOrderUri, "%!document://matrix/${JOBNAME$default}#${STEPNAME$Undefined}_ERROR$$Error", m);
     }
 
+    @Test
+    public void test2() {
+        Map<String, String> m = ImmutableMap.of("-one", "ONE", "two", "TWO");
+        CallingContext callingContext = ContextFactory.getKernelUser();
+        String workOrderUri = RaptureURI.builder(Scheme.WORKORDER, "/test/").asString();
+        Kernel.getDoc().putDoc(callingContext, "document://foo/bar", JacksonUtil.jsonFromObject(ImmutableMap.of("FOO", "foo", "BAR", "bar")));
+        Kernel.getDecision().setContextLiteral(callingContext, workOrderUri, "one", "F");
+        Assert.assertEquals("F", Kernel.getDecision().getContextValue(callingContext, workOrderUri, "one"));
+        Kernel.getDecision().setContextLiteral(callingContext, workOrderUri, "two", "OO");
+        Assert.assertEquals("F", ExecutionContextUtil.evalTemplateECF(callingContext, workOrderUri, "${one$99}", m));
+
+    }
+
 }
