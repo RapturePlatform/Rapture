@@ -23,12 +23,9 @@
  */
 package rapture.dsl.idgen;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
-
-import rapture.dsl.idgen.IdGenFactory;
-import rapture.dsl.idgen.RaptureIdGen;
 
 public class IdGenTest {
     @Test
@@ -36,5 +33,16 @@ public class IdGenTest {
         RaptureIdGen f = IdGenFactory.getIdGen("IDGEN { base=\"26\", length=\"8\", prefix=\"TST\" } USING MEMORY {}");
         String result = f.incrementIdGen(20L);
         assertEquals("TST0000000K",result);
+    }
+
+    @Test
+    public void testIdGen2() {
+        RaptureIdGen f = IdGenFactory.getIdGen("IDGEN { initial=\"706216874\", base=\"36\", length=\"6\", prefix=\"OI-\" } USING MEMORY {}");
+        String result = f.incrementIdGen(1L);
+        assertEquals("OI-BOGOFF", result);
+        result = f.incrementIdGen(735953563L);
+        assertEquals("OI-NUMPTY", result);
+        result = f.incrementIdGen(655030524L);
+        assertEquals("OI-YOMAMA", result);
     }
 }

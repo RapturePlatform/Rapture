@@ -87,6 +87,8 @@ public class Mailer {
                 MediaType mediaType = message.contains("<!DOCTYPE html>") ? MediaType.HTML_UTF_8 : MediaType.PLAIN_TEXT_UTF_8;
                 msg.setContent(message, mediaType.toString());
                 msg.setSentDate(new Date());
+                // Use SMTPTransport not Google's GMTransport which causes unit tests to fail
+                session.getProperties().setProperty("mail.transport.protocol.rfc822", "smtp");
                 Transport.send(msg);
             } finally {
                 String level = config.getDebug();

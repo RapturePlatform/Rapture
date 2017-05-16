@@ -330,7 +330,7 @@ public class BlobApiImpl extends KernelBase implements BlobApi, RaptureScheme {
         if (attributesString != null) {
             return JacksonUtil.objectFromJson(attributesString, HashMap.class);
         } else {
-            return new HashMap<String, String>();
+            return new HashMap<>();
         }
     }
 
@@ -356,7 +356,7 @@ public class BlobApiImpl extends KernelBase implements BlobApi, RaptureScheme {
 
         // Why not just put attribute in BlobContainer headers map?
         if (raptureUri.hasAttribute()) {
-            throw new UnsupportedOperationException("not yet implemented");
+            throw new UnsupportedOperationException("Put URI with attribute not yet implemented " + raptureUri.toString());
         } else if (raptureUri.hasDocPath()) {
             // TODO: Ben -
             if (content instanceof BlobContainer && ((BlobContainer) content).getHeaders() != null) {
@@ -439,11 +439,14 @@ public class BlobApiImpl extends KernelBase implements BlobApi, RaptureScheme {
         }
     }
 
+    /**
+     * TODO Intermittent bug here whereby it returns all the blobs correctly but omits the folder Seen on gcloud but hard to debug.
+     */
     @Override
     public Map<String, RaptureFolderInfo> listBlobsByUriPrefix(CallingContext context, String uriPrefix, int depth) {
         RaptureURI internalUri = new RaptureURI(uriPrefix, BLOB);
         String authority = internalUri.getAuthority();
-        Map<String, RaptureFolderInfo> ret = new HashMap<String, RaptureFolderInfo>();
+        Map<String, RaptureFolderInfo> ret = new HashMap<>();
 
         // Schema level is special case.
         if (authority.isEmpty()) {
@@ -484,7 +487,7 @@ public class BlobApiImpl extends KernelBase implements BlobApi, RaptureScheme {
         }
         if (depth <= 0) getAll = true;
 
-        Stack<String> parentsStack = new Stack<String>();
+        Stack<String> parentsStack = new Stack<>();
         parentsStack.push(parentDocPath);
 
         while (!parentsStack.isEmpty()) {
@@ -510,9 +513,11 @@ public class BlobApiImpl extends KernelBase implements BlobApi, RaptureScheme {
             } else {
                 for (RaptureFolderInfo child : children) {
                     String childDocPath = currParentDocPath + (top ? "" : "/") + child.getName();
+                    log.info("Child of " + currParentDocPath + " is " + child.toString());
                     if (child.getName().isEmpty()) continue;
                     String childUri = RaptureURI.builder(BLOB, authority).docPath(childDocPath).asString() + (child.isFolder() ? "/" : "");
                     ret.put(childUri, child);
+                    log.info("Added " + childUri + " as a " + (child.isFolder() ? "folder" : "file"));
                     if (child.isFolder()) {
                         parentsStack.push(childDocPath);
                     }

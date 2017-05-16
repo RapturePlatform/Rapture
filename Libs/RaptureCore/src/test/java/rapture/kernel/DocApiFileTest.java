@@ -181,6 +181,9 @@ public class DocApiFileTest extends AbstractFileTest {
         assertEquals(6, allDocs.size());
         Assert.assertFalse(allDocs.values().toArray(new RaptureFolderInfo[6])[0].getName().startsWith(GET_ALL_BASE + "//"));
         Map<String, RaptureFolderInfo> dadDocs = docImpl.listDocsByUriPrefix(callingContext, GET_ALL_BASE + "/dad", 0);
+        for (String s : dadDocs.keySet()) {
+            System.out.println("Key : " + s);
+        }
         assertEquals(2, dadDocs.size());
         // ordering is not guaranteed, we could get either kid1 or kid2, but should not get fakeKid nor uncle
         String s = dadDocs.keySet().toArray(new String[2])[0];

@@ -87,7 +87,7 @@ public class IntegrationTestHelper {
     HttpStructuredApi structApi = null;
     HttpOperationApi operationApi = null;
 
-    static final String testPrefix = "__RESERVED__";
+    static final String testPrefix = "test";
 
     Set<RaptureURI> uriCache;
 
@@ -215,9 +215,10 @@ public class IntegrationTestHelper {
 
         switch (repo.getScheme()) {
         case BLOB:
+            String metastore = (storage.equals("GSTORE")) ? "GDS" : storage;
             if (blobApi.blobRepoExists(repo.toAuthString())) blobApi.deleteBlobRepo(authString);
             blobApi.createBlobRepo(authString, "BLOB {} USING " + storage + " {prefix=\"B_" + repo.getAuthority() + "\"}",
-                    "NREP {} USING " + storage + " {prefix=\"M_" + repo.getAuthority() + "\"}");
+                    "NREP {} USING " + metastore + " {prefix=\"M_" + repo.getAuthority() + "\"}");
             Assert.assertTrue(blobApi.blobRepoExists(authString), authString + " Create failed");
             break;
 

@@ -86,7 +86,8 @@ public class GetFileStepSFTPTest {
     private static final String REPO_USING_MEMORY = "REP {} USING MEMORY {prefix=\"/tmp/" + auth + "\"}";
     private static final String META_USING_MEMORY = "REP {} USING MEMORY {prefix=\"/tmp/M" + auth + "\"}";
 
-    static final boolean SFTP_Available = true;
+    // As of 4 April 2017 test.rebex.net is temporarily unavailable - tests disabled
+    static final boolean SFTP_Available = false;
 
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {

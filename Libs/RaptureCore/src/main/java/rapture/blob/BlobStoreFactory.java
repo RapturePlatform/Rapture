@@ -47,10 +47,14 @@ public final class BlobStoreFactory {
     private static final Map<Integer, String> implementationMap;
 
     static {
-        Map<Integer, String> setupMap = new HashMap<Integer, String>();
+        Map<Integer, String> setupMap = new HashMap<>();
         setupMap.put(BlobGenLexer.MEMORY, "rapture.blob.memory.MemoryBlobStore");
         setupMap.put(BlobGenLexer.FILE, "rapture.blob.file.FileBlobStore");
         setupMap.put(BlobGenLexer.CASSANDRA, "rapture.blob.cassandra.CassandraBlobStore");
+        // Having GoogleBlobStore in rapture.repo.google rather than rapture.blob.google
+        // puts it in the same package as GoogleDatastoreKeyStore which allows the
+        // methods to be protected which override the Google storage implementations for testing
+        setupMap.put(BlobGenLexer.GCP_STORAGE, "rapture.repo.google.GoogleBlobStore");
         setupMap.put(BlobGenLexer.MONGODB, "rapture.blob.mongodb.MongoDBBlobStore");
         implementationMap = Collections.unmodifiableMap(setupMap);
     }

@@ -24,7 +24,12 @@
 package rapture.dsl.iqry;
 
 public class WhereExtension {
-	private WhereJoiner joiner;
+    @Override
+    public String toString() {
+        return joiner + " " + stmt.toString();
+    }
+
+    private WhereJoiner joiner;
 	private WhereStatement stmt;
 	
     public WhereExtension(String joinerText, WhereStatement stmt) {

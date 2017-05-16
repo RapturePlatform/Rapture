@@ -31,6 +31,9 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Sets;
+
 import rapture.common.CallingContext;
 import rapture.common.RaptureFolderInfo;
 import rapture.common.RapturePipelineTask;
@@ -51,9 +54,6 @@ import rapture.common.model.RunEventHandle;
 import rapture.common.pipeline.PipelineConstants;
 import rapture.idgen.SystemIdGens;
 import rapture.kernel.pipeline.TaskSubmitter;
-
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Sets;
 
 public class EventApiImpl extends KernelBase implements EventApi {
 
@@ -122,7 +122,7 @@ public class EventApiImpl extends KernelBase implements EventApi {
             String eventId = generateEventId(context);
             handle.setEventId(eventId);
             Kernel.getStackContainer().pushStack(context, eUri.toString());
-            Map<String, Object> params = new HashMap<String, Object>();
+            Map<String, Object> params = new HashMap<>();
             params.put(EventConstants.ASSOCIATED_URI, associatedUri);
             String eventContext = JacksonUtil.jsonFromObject(eventContextMap);
             params.put(EventConstants.EVENT_CONTEXT, eventContext);
@@ -156,7 +156,11 @@ public class EventApiImpl extends KernelBase implements EventApi {
                     pTask.addMimeObject(eMsg);
                     log.info("Publishing message to " + msg.getPipeline());
                     Kernel.getActivity().updateActivity(context, activityId, "Publish message " + msg.getName(), 1L, 100L);
-                    Kernel.getPipeline().getTrusted().publishMessageToCategory(context, pTask);
+                    if (Pipeline2ApiImpl.usePipeline2) {
+                        Kernel.getPipeline2().broadcastTask(context, msg.getPipeline(), pTask);
+                    } else {
+                        Kernel.getPipeline().getTrusted().publishMessageToCategory(context, pTask);
+                    }
                 }
             }
             if (event.getNotifications() != null && !event.getNotifications().isEmpty()) {
@@ -178,7 +182,7 @@ public class EventApiImpl extends KernelBase implements EventApi {
                 didAnythingFire = true;
                 log.info("Workflows attached to event - firing");
                 for (RaptureEventWorkflow workflow : event.getWorkflows()) {
-                    Map<String, String> contextMap = new HashMap<String, String>();
+                    Map<String, String> contextMap = new HashMap<>();
                     contextMap.putAll(workflow.getParams());
                     contextMap.put("associatedURI", associatedUri);
                     contextMap.put("eventId", eventId);
@@ -298,6 +302,7 @@ public class EventApiImpl extends KernelBase implements EventApi {
         }
     }
 
+    @Override
     public void addEventNotification(CallingContext context, String eventUri, String name, String notification, Map<String, String> params) {
         // Get script from the repo, if it exists, add to it. If it
         // doesn't, create one
@@ -423,7 +428,7 @@ public class EventApiImpl extends KernelBase implements EventApi {
     @Override
     public List<String> deleteEventsByUriPrefix(CallingContext context, String uriPrefix){
         List<RaptureFolderInfo> rfis = RaptureEventStorage.removeFolder(uriPrefix);
-        List<String> deletedEvents = new ArrayList<String>();
+        List<String> deletedEvents = new ArrayList<>();
         for(RaptureFolderInfo rfi : rfis) {
             deletedEvents.add(rfi.getName());
         }

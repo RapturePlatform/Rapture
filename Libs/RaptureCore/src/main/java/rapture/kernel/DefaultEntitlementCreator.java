@@ -52,7 +52,7 @@ public class DefaultEntitlementCreator {
     public static void ensureEntitlementSetup(EntitlementApi entitlement) {
         log.debug(Messages.getString("DefaultEntitlementCreator.EnsurePresent")); //$NON-NLS-1$
         Field[] fields = EntitlementConst.class.getDeclaredFields();
-        Set<String> entitlementNames = new HashSet<String>();
+        Set<String> entitlementNames = new HashSet<>();
         for (Field f : fields) {
             if (Modifier.isStatic(f.getModifiers())) {
                 try {
@@ -72,6 +72,9 @@ public class DefaultEntitlementCreator {
             }
 
             EntitlementUtilLockoutChecker.setRaptureInternalsMode(true);
+
+            // This is slow. Create a way to batch it?
+
             for (String checkEntitlement : entitlementNames) {
                 log.info(Messages.getString("DefaultEntitlementCreator.Entitlement") + checkEntitlement //$NON-NLS-1$
                         + Messages.getString("DefaultEntitlementCreator.NotPresent")); //$NON-NLS-1$

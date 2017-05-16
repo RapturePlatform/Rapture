@@ -28,7 +28,6 @@ import java.net.HttpURLConnection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -37,6 +36,16 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.log4j.Logger;
+
+import com.rabbitmq.client.AMQP;
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.ConnectionFactory;
+import com.rabbitmq.client.FlowListener;
+import com.rabbitmq.client.QueueingConsumer;
+import com.rabbitmq.client.ReturnListener;
+import com.rabbitmq.client.ShutdownListener;
+import com.rabbitmq.client.ShutdownSignalException;
 
 import rapture.common.RapturePipelineTask;
 import rapture.common.exception.ExceptionToString;
@@ -49,21 +58,8 @@ import rapture.common.pipeline.PipelineConstants;
 import rapture.config.MultiValueConfigLoader;
 import rapture.exchange.ExchangeHandler;
 import rapture.exchange.QueueHandler;
-import rapture.exchange.RPCMessage;
 import rapture.exchange.TopicMessageHandler;
 import rapture.util.IDGenerator;
-
-import com.rabbitmq.client.AMQP;
-import com.rabbitmq.client.AMQP.BasicProperties;
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.ConnectionFactory;
-import com.rabbitmq.client.ConsumerCancelledException;
-import com.rabbitmq.client.FlowListener;
-import com.rabbitmq.client.QueueingConsumer;
-import com.rabbitmq.client.ReturnListener;
-import com.rabbitmq.client.ShutdownListener;
-import com.rabbitmq.client.ShutdownSignalException;
 
 public class RabbitExchangeHandler implements ExchangeHandler {
     private Connection connection;
@@ -73,7 +69,7 @@ public class RabbitExchangeHandler implements ExchangeHandler {
     private String instanceName = "default"; //$NON-NLS-1$
     private int messageCounter = 1;
     private String replyQueueName;
-    private Map<String, String> queueNameRegistry = new ConcurrentHashMap<String, String>();
+    private Map<String, String> queueNameRegistry = new ConcurrentHashMap<>();
     private QueueingConsumer consumer;
 
     @Override
@@ -409,68 +405,9 @@ public class RabbitExchangeHandler implements ExchangeHandler {
     }
 
     @Override
-    public String subscribeToExchange(String exchange,
-            List<String> routingKeys, QueueHandler handler) {
-        throw RaptureExceptionFactory.create(
-                HttpURLConnection.HTTP_INTERNAL_ERROR,
-                Messages.getString("RabbitExchangeHandler.notYetSupported")); //$NON-NLS-1$
-    }
-
-    @Override
     public void ensureExchangeUnAvailable(RaptureExchange exchangeConfig) {
         // This will ensure it gets recreated later
         exchangesTested.remove(exchangeConfig.getName());
-    }
-
-    @Override
-    public Map<String, Object> makeRPC(String queueName, String fnName,
-            Map<String, Object> params, long timeoutInSeconds) {
-        // Send a message on a defined queue and wait for a response
-        try {
-            String corrId = java.util.UUID.randomUUID().toString();
-            BasicProperties props = new BasicProperties.Builder()
-                    .correlationId(corrId).replyTo(replyQueueName).build();
-            // Construct message
-            // A message contains the fnName and the map, as JSON
-            RPCMessage messageObj = new RPCMessage();
-            messageObj.setFnName(fnName);
-            messageObj.setParams(params);
-            String message = JacksonUtil.jsonFromObject(messageObj);
-            logger.debug("Will make call on queue name " + queueName);
-            logger.debug("Message is " + message);
-            channel.basicPublish("", queueName, props,
-                    message.getBytes("UTF-8"));
-
-            // Now wait for a response, max timeout
-            String response = null;
-            while (true) {
-                QueueingConsumer.Delivery delivery = consumer
-                        .nextDelivery(timeoutInSeconds * 1000);
-                if (delivery == null) {
-                    throw RaptureExceptionFactory
-                            .create("Timed out while waiting for response");
-                }
-                if (delivery.getProperties().getCorrelationId().equals(corrId)) {
-                    response = new String(delivery.getBody());
-                    break;
-                }
-            }
-            Map<String, Object> ret = null;
-            if (response != null) {
-                ret = JacksonUtil.getMapFromJson(response);
-            }
-            return ret;
-        } catch (IOException e) {
-            throw RaptureExceptionFactory.create(
-                    "Could not create reply rpc queue", e);
-        } catch (ShutdownSignalException e) {
-            throw RaptureExceptionFactory.create("Shutdown", e);
-        } catch (ConsumerCancelledException e) {
-            throw RaptureExceptionFactory.create("Cancelled", e);
-        } catch (InterruptedException e) {
-            throw RaptureExceptionFactory.create("Interrupted", e);
-
-        }
     }
 
     @Override
@@ -505,7 +442,7 @@ public class RabbitExchangeHandler implements ExchangeHandler {
 
     private AtomicLong subscriptionHandler = new AtomicLong(0);
 
-    private Map<Long, SubscriptionThread> subscriberMap = new HashMap<Long, SubscriptionThread>();
+    private Map<Long, SubscriptionThread> subscriberMap = new HashMap<>();
 
     @Override
     public long subscribeTopic(String exchange, String topic,

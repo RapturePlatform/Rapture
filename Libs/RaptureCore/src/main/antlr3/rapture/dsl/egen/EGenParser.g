@@ -26,7 +26,7 @@ pdef	  : s=pstyle config { addProcessorConfig($s.text); };
 qdef   	  : s=qstyle config { addConfig($s.text); };
 
 pstyle    : EXCHANGE;
-qstyle    : i=(RABBITMQ | MEMORY) { setImpl($i); };
+qstyle    : i=(RABBITMQ | MEMORY | GCP_PUBSUB) { setImpl($i); };
 
 config 	  : LBRACE entrylist RBRACE;
 

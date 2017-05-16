@@ -24,7 +24,7 @@ pdef	  : s=pstyle config { addProcessorConfig($s.text); };
 qdef   	  : s=qstyle config { addConfig($s.text); };
 
 pstyle    : PUBSUB | QUEUE;
-qstyle    : MEMORY | FILE | AWS | REDIS | MONGODB | PUBHUB;
+qstyle    : MEMORY | FILE | AWS | REDIS | MONGODB | PUBHUB | GCP_PUBSUB;
 
 config 	  : LBRACE entrylist RBRACE;
 

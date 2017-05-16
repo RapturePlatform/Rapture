@@ -1,0 +1,60 @@
+[The Pipeline2 Api is a generic queueing API that leverages underlying messaging or PubSub Implementations. There are two kinds of queues: a broadcast queue that is not acknowledged and a task queue that expects a response. Note that a task queue will probably be implemented as a pair of queues, one for sending tasks, another for receiving responses. ]
+
+api(Pipeline2) {
+   [Creates a broadcast queue.]
+   @entitle=/admin/pipeline
+   @public String createBroadcastQueue(String queueIdentifier, String queueConfig);
+
+   [Create a task queue and associated back channel.]
+   @entitle=/admin/pipeline
+   @public String createTaskQueue(String queueIdentifier, String queueConfig);
+
+   [Create the Queue Identifier string based on a se of parameters]
+   @entitle=/admin/pipeline
+   @public String createQueueIdentifier(Map<String, String> queueValues);
+
+   [Check if a queue exists]
+   @entitle=/admin/pipeline
+   @public Boolean queueExists(String queueIdentifier);
+
+   [Deletes a broadcast queue.]
+   @entitle=/admin/pipeline
+   @public void removeBroadcastQueue(String queueIdentifier);
+
+   [Deletes a task queue and associated back channel.]
+   @entitle=/admin/pipeline
+   @public void removeTaskQueue(String queueIdentifier);
+
+   [Subscribe to queue]
+   @entitle=/admin/pipeline
+   @public void subscribeToQueue(QueueSubscriber subscriber);
+
+   [Unsubscribe from a queue]
+   @entitle=/admin/pipeline
+   @public void unsubscribeQueue(QueueSubscriber subscriber);
+
+   [Send a broadcast message to the queue. No response is expected]
+   @entitle=/admin/pipeline
+   @public Boolean broadcastMessage(String queueIdentifier, String message);
+
+   [Send a broadcast message to the queue. No response is expected]
+   @entitle=/admin/pipeline
+   @public Boolean broadcastTask(String queueIdentifier, RaptureTransferObject task);
+
+   [Put a task on the queue. Handler will be called with task response. Call will wait for response. Timeout of 0 means do not block. Negative timeout means block forever. Caller can specify a custom subscriber, or null for the default.]
+   @entitle=/admin/pipeline
+   @public TaskStatus publishTask(String queueIdentifier, String message, Long timeout, QueueSubscriber subscriber);
+
+   [Send the response to a task down the reply channel]
+   @entitle=/admin/pipeline
+   @public void publishTaskResponse(String queueIdentifier, TaskStatus status);
+
+   [Gets the status for a published Task.]
+   @entitle=/admin/pipeline
+   @public TaskStatus getStatus(String taskId);
+   
+   [Queries for pipeline statuses.]
+   @entitle=/admin/pipeline
+   @public List<TaskStatus> listTasks();
+}
+	

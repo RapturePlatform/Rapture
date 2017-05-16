@@ -32,10 +32,12 @@ import rapture.common.AbstractUpdateObject;
 import rapture.common.CallingContext;
 import rapture.common.RapturePipelineTask;
 import rapture.common.RaptureURI;
+import rapture.common.impl.jackson.JacksonUtil;
 import rapture.common.mime.MimeSearchUpdateObject;
 import rapture.common.pipeline.PipelineConstants;
 import rapture.config.ConfigLoader;
 import rapture.kernel.Kernel;
+import rapture.kernel.Pipeline2ApiImpl;
 import rapture.kernel.search.SearchRepoUtils;
 import rapture.object.Searchable;
 
@@ -50,6 +52,15 @@ public class SearchPublisher {
 
     public static void publishCreateMessage(CallingContext context, Searchable searchableRepo, AbstractUpdateObject updateObject) {
         publishCreateMessage(context, searchableRepo, updateObject, true);
+    }
+
+    private static void publishMessageToCategory(CallingContext context, RapturePipelineTask task) {
+        if (Pipeline2ApiImpl.usePipeline2) {
+            Kernel.getPipeline2().broadcastMessage(context, PipelineConstants.CATEGORY_SEARCH, JacksonUtil.jsonFromObject(task));
+        } else {
+            Kernel.getPipeline().publishMessageToCategory(context, task);
+        }
+
     }
 
     public static void publishCreateMessage(CallingContext context, Searchable searchableRepo, AbstractUpdateObject updateObject,
@@ -68,8 +79,7 @@ public class SearchPublisher {
         object.setType(MimeSearchUpdateObject.ActionType.CREATE);
         object.setUpdateObject(updateObject);
         task.addMimeObject(object);
-
-        Kernel.getPipeline().publishMessageToCategory(context, task);
+        publishMessageToCategory(context, task);
     }
 
     public static void publishDeleteMessage(CallingContext context, Searchable searchableRepo, RaptureURI uri) {
@@ -86,7 +96,7 @@ public class SearchPublisher {
         object.setType(MimeSearchUpdateObject.ActionType.DELETE);
         object.setUri(uri);
         task.addMimeObject(object);
-        Kernel.getPipeline().publishMessageToCategory(context, task);
+        publishMessageToCategory(context, task);
     }
 
     public static void publishRebuildMessage(CallingContext context, String repoUriStr) {
@@ -100,7 +110,7 @@ public class SearchPublisher {
         object.setSearchRepo(SearchRepoUtils.getSearchRepo(context, repoUriStr));
         object.setType(MimeSearchUpdateObject.ActionType.REBUILD);
         task.addMimeObject(object);
-        Kernel.getPipeline().publishMessageToCategory(context, task);
+        publishMessageToCategory(context, task);
     }
 
     public static void publishDropMessage(CallingContext context, String repoUriStr) {
@@ -114,7 +124,7 @@ public class SearchPublisher {
         object.setSearchRepo(SearchRepoUtils.getSearchRepo(context, repoUriStr));
         object.setType(MimeSearchUpdateObject.ActionType.DROP);
         task.addMimeObject(object);
-        Kernel.getPipeline().publishMessageToCategory(context, task);
+        publishMessageToCategory(context, task);
     }
 
     public static boolean shouldPublish(Searchable searchableRepo, RaptureURI uri) {
