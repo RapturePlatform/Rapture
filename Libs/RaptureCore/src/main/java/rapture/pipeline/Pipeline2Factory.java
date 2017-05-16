@@ -42,6 +42,8 @@ import rapture.generated.P2GenParser;
 public final class Pipeline2Factory {
     private static Logger log = Logger.getLogger(Pipeline2Factory.class);
     private static final Map<Integer, String> implementationMap;
+
+    private static final Map<String, Pipeline2Handler> handlerCache = new HashMap<>();
     static {
         Map<Integer, String> setupMap = new HashMap<>();
         // Pipeline2 not implemented for Rabbit. If we decide to implement it enable it here and eliminate old Pipeline API
@@ -53,11 +55,19 @@ public final class Pipeline2Factory {
 
     public static Pipeline2Handler getHandler(String id, String config) {
         try {
-            log.info("Creating exchange from config - " + config);
+            Pipeline2Handler fromCache = handlerCache.get(id);
+            if (fromCache != null) {
+                log.info("Found cached handler with ID " + id);
+                return fromCache;
+            }
+
+            log.info("Create exchange for " + id + " from config " + config);
             P2GenParser parser = getParsedForConfig(config);
             int implementationType = parser.getImplementationType();
             if (implementationMap.containsKey(implementationType)) {
-                return getPipeline2(implementationMap.get(implementationType), id, parser.getInstance(), parser.getImplementionConfig());
+                Pipeline2Handler handler = getPipeline2(implementationMap.get(implementationType), id, parser.getInstance(), parser.getImplementionConfig());
+                handlerCache.put(id, handler);
+                return handler;
             } else {
                 throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_BAD_REQUEST, "Unsupported configuration - " + config);
             }
@@ -71,10 +81,10 @@ public final class Pipeline2Factory {
 
     private static Pipeline2Handler getPipeline2(String className, String id, String instance, Map<String, String> config) {
 
-        Class<?> idgenClass;
+        Class<?> klass;
         try {
-            idgenClass = Class.forName(className);
-            Object fStore = idgenClass.newInstance();
+            klass = Class.forName(className);
+            Object fStore = klass.newInstance();
             if (fStore instanceof Pipeline2Handler) {
                 Pipeline2Handler ret = (Pipeline2Handler) fStore;
                 ret.setConfig(config);
