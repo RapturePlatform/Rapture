@@ -60,7 +60,6 @@ public class ConfigurationStep extends AbstractInvocable {
     @Deprecated
     public static final String EXTERNAL_RIM_WORKORDER_URL = "EXTERNALRIMWORKORDERURL";
     public static final String EXTERNAL_UI_WORKORDER_URL = "EXTERNALUIWORKORDERURL";
-    public static final String EXTERNAL_UI_URL = "EXTERNALUIWORKORDERURL";
 
     private static final Logger log = Logger.getLogger(ConfigurationStep.class);
 
