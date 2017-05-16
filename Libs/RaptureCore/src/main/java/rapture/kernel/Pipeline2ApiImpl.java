@@ -25,7 +25,6 @@ package rapture.kernel;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -197,11 +196,13 @@ public class Pipeline2ApiImpl extends KernelBase implements Pipeline2Api {
         } else handler.unsubscribe(subscriber);
     }
 
-    private Map<String, Pipeline2Handler> pipelineHandlers = new HashMap<>();
+    private static Map<String, Pipeline2Handler> pipelineHandlers = new ConcurrentHashMap<>();
 
     public Pipeline2Handler getHandler(String queueIdentifier) {
         Pipeline2Handler handler = pipelineHandlers.get(queueIdentifier);
-        if (handler == null) handler = setupHandler(queueIdentifier);
+        if (handler == null) {
+            handler = setupHandler(queueIdentifier);
+        }
         return handler;
     }
 
