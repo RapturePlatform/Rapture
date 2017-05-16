@@ -45,6 +45,10 @@ public class IdGenGoogleStorageTest {
     static public void setUp() {
         String namespace = UUID.randomUUID().toString();
         try {
+            /**
+             * This uses the default project ID which is defined in ~/.config/gcloud/configurations/config_default To change it edit the file manually or run
+             * gcloud config set project {PROJECTNAME}
+             */
             storageHelper = RemoteStorageHelper.create();
             storage = storageHelper.getOptions().getService();
             IdGenGoogleStorage.setStorageForTesting(storage);

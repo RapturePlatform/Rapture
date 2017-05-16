@@ -42,6 +42,7 @@ dependencies {
        exclude module: 'servlet-api'
     }
     compile "net.rapture:RaptureWebServlet:$project.platformVersion"
+    compile 'io.netty:netty-all:4.1.11.Final'
     compile 'org.apache.tomcat.embed:tomcat-embed-logging-juli:8.0.20'
     compile 'org.apache.tomcat.embed:tomcat-embed-core:8.0.20'
     compile 'org.apache.tomcat.embed:tomcat-embed-jasper:8.0.20'

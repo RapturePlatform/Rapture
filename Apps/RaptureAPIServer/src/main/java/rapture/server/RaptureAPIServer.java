@@ -59,10 +59,26 @@ import rapture.util.IDGenerator;
 public final class RaptureAPIServer {
     private static Logger logger = Logger.getLogger(RaptureAPIServer.class);
 
+    // public static int sslVersion = io.netty.internal.tcnative.SSL.version();
+
     /**
      * @param args
      */
     public static void main(String[] args) {
+
+        try {
+            Class.forName("org.eclipse.jetty.alpn.ALPN", true, null);
+            System.err.println("ALPN configured");
+        } catch (ClassNotFoundException e) {
+            System.err.println("ALPN NOT configured");
+        }
+
+        try {
+            Class.forName("org.eclipse.jetty.npn.NextProtoNego", true, null);
+            System.err.println("NPN configured");
+        } catch (ClassNotFoundException e) {
+            System.err.println("NPN NOT configured");
+        }
 
         // Give -v flag or --version to print out version numbers and quit
         if (args.length > 0) {
@@ -111,7 +127,7 @@ public final class RaptureAPIServer {
     }
 
     private static Map<String, Object> getCapabilities(String categories) {
-        Map<String, Object> capabilities = new HashMap<String, Object>();
+        Map<String, Object> capabilities = new HashMap<>();
         capabilities.put("PipelineHandler", categories);
         String localApiUrl = ApiCapabilitiesService.getApiUrlForThisHost();
         logger.info("Local api url is " + localApiUrl);

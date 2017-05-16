@@ -35,6 +35,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.google.api.core.ApiFuture;
+import com.google.api.gax.grpc.ApiException;
 import com.google.api.gax.grpc.ExecutorProvider;
 import com.google.api.gax.grpc.InstantiatingExecutorProvider;
 import com.google.cloud.pubsub.spi.v1.AckReplyConsumer;
@@ -117,7 +118,7 @@ public class PubsubPipeline2Handler implements Pipeline2Handler {
         }
         String topId = (topicId.toLowerCase().startsWith("rapture")) ? topicId : topicId + "rapture";
         Topic topic = topics.get(topId);
-        if (topic == null) {
+        while (topic == null) {
             try (TopicAdminClient topicAdminClient = topicAdminClientCreate()) {
                 TopicName topicName = TopicName.create(projectId, topId);
                 try {
@@ -129,6 +130,17 @@ public class PubsubPipeline2Handler implements Pipeline2Handler {
                     }
                 }
             } catch (Exception ioe) {
+                if (ioe instanceof ApiException) {
+                    if (ioe.getMessage().contains("RESOURCE_EXHAUSTED")) {
+                        // This happens sometimes in unit testing because the cache doesn't persist between test cases.
+                        // Should never happen in regular use.
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                        }
+                        continue;
+                    }
+                }
                 throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, "Cannot create or get topic " + topicId, ioe);
             }
         }

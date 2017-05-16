@@ -76,6 +76,7 @@ public class StepProgressTest {
         config.DefaultExchange = "PIPELINE {} USING GCP_PUBSUB { threads=\"5\"}";
 
         try {
+            Kernel.INSTANCE.restart();
             Kernel.initBootstrap();
         } catch (Exception e) {
             String error = ExceptionToString.format(e);

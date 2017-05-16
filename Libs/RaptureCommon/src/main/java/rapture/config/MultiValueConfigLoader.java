@@ -60,9 +60,9 @@ public enum MultiValueConfigLoader {
     INSTANCE;
 
     private static Logger log = Logger.getLogger(MultiValueConfigLoader.class);
-    private Map<String, Map<String, String>> knownAssignments = new HashMap<String, Map<String, String>>();
+    private Map<String, Map<String, String>> knownAssignments = new HashMap<>();
     private Map<String, String> knownGlobalDirs = new HashMap<>();
-    private Map<String, Boolean> isSeenBeforeMap = new HashMap<String, Boolean>();
+    private Map<String, Boolean> isSeenBeforeMap = new HashMap<>();
     private ValueReader envReader = new EnvironmentValueReader();
     private ValueReader sysPropReader = new SystemPropertyValueReader();
 

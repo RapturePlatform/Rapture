@@ -75,7 +75,7 @@ import rapture.kernel.schedule.ScheduleManager;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class AppStatusP2Test {
-    private static final int MAX_WAIT = 30000;
+    private static final int MAX_WAIT = 60000;
     private static final long TIMESTAMP = System.currentTimeMillis();
     private static final String DEFAULT_APP = "some app's: name!";
     private static final String EXPECTED_OVER_URI = "idp.status a/workflow/" + TIMESTAMP + "/" + DEFAULT_APP;
@@ -101,7 +101,6 @@ public class AppStatusP2Test {
 
         try {
             Kernel.INSTANCE.restart();
-
             Kernel.initBootstrap();
             Kernel.getAudit().createAuditLog(CTX, "//workflow", auditConfig);
             subscriber = Kernel.INSTANCE.createAndSubscribe(CATEGORY, config.DefaultExchange);

@@ -13,9 +13,9 @@ import rapture.common.model.RapturePipeline2;
 
 public class PubsubPipeline2HandlerTest {
 
-    int count1 = 0;
-    int count2 = 0;
-    int count3 = 0;
+    static Integer count1 = 0;
+    static Integer count2 = 0;
+    static Integer count3 = 0;
 
     // In fan-out mode every subscriber gets all messages
 
@@ -46,12 +46,14 @@ public class PubsubPipeline2HandlerTest {
             QueueSubscriber qs1 = new QueueSubscriber(rp2.getName(), rp2.getName() + "subscriber1") {
                 @Override
                 public boolean handleEvent(byte[] message) {
-                    System.out.println("Handler 1 called");
-                    Assert.assertEquals("A hazelnut in every byte", new String(message));
-                    count1++;
-                    if (count1 + count2 + count3 == 9) {
-                        synchronized (waitForMe) {
-                            waitForMe.notify();
+                    synchronized (count1) {
+                        System.out.println("Handler 1 called - count1 is now " + ++count1);
+                        Assert.assertEquals("A hazelnut in every byte", new String(message));
+                        if (count1 + count2 + count3 == 9) {
+                            synchronized (waitForMe) {
+                                System.out.println("Sum is now 9");
+                                waitForMe.notify();
+                            }
                         }
                     }
                     return true;
@@ -62,12 +64,14 @@ public class PubsubPipeline2HandlerTest {
             QueueSubscriber qs2 = new QueueSubscriber(rp2.getName(), rp2.getName() + "subscriber2") {
                 @Override
                 public boolean handleEvent(byte[] message) {
-                    System.out.println("Handler 2 called");
-                    Assert.assertEquals("A hazelnut in every byte", new String(message));
-                    count2++;
-                    if (count1 + count2 + count3 == 9) {
-                        synchronized (waitForMe) {
-                            waitForMe.notify();
+                    synchronized (count2) {
+                        System.out.println("Handler 2 called - count2 is now " + ++count2);
+                        Assert.assertEquals("A hazelnut in every byte", new String(message));
+                        if (count1 + count2 + count3 == 9) {
+                            synchronized (waitForMe) {
+                                System.out.println("Sum is now 9");
+                                waitForMe.notify();
+                            }
                         }
                     }
                     return true;
@@ -78,12 +82,14 @@ public class PubsubPipeline2HandlerTest {
             QueueSubscriber qs3 = new QueueSubscriber(rp2.getName(), rp2.getName() + "subscriber3") {
                 @Override
                 public boolean handleEvent(byte[] message) {
-                    System.out.println("Handler 3 called");
-                    Assert.assertEquals("A hazelnut in every byte", new String(message));
-                    count3++;
-                    if (count1 + count2 + count3 == 9) {
-                        synchronized (waitForMe) {
-                            waitForMe.notify();
+                    synchronized (count3) {
+                        System.out.println("Handler 3 called - count3 is now " + ++count3);
+                        Assert.assertEquals("A hazelnut in every byte", new String(message));
+                        if (count1 + count2 + count3 == 9) {
+                            synchronized (waitForMe) {
+                                System.out.println("Sum is now 9");
+                                waitForMe.notify();
+                            }
                         }
                     }
                     return true;
@@ -103,9 +109,9 @@ public class PubsubPipeline2HandlerTest {
                 }
             }
 
-            Assert.assertEquals("Handler 1", 3, count1);
-            Assert.assertEquals("Handler 2", 3, count2);
-            Assert.assertEquals("Handler 3", 3, count3);
+            Assert.assertEquals("Handler 1", 3, count1.intValue());
+            Assert.assertEquals("Handler 2", 3, count2.intValue());
+            Assert.assertEquals("Handler 3", 3, count3.intValue());
 
             pipe2Handler.unsubscribe(qs1);
             pipe2Handler.unsubscribe(qs2);
