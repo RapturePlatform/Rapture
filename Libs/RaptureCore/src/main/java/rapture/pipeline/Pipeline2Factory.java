@@ -53,7 +53,7 @@ public final class Pipeline2Factory {
 
     public static Pipeline2Handler getHandler(String id, String config) {
         try {
-            log.info("Find exchange from config - " + config);
+            log.info("Find exchange for " + id + " from config - " + config);
             P2GenParser parser = getParsedForConfig(config);
             int implementationType = parser.getImplementationType();
             if (implementationMap.containsKey(implementationType)) {
@@ -88,7 +88,6 @@ public final class Pipeline2Factory {
             log.error(RaptureExceptionFormatter.getExceptionMessage(raptException, e));
             throw raptException;
         }
-
     }
 
     private static P2GenParser getParsedForConfig(String config) throws RecognitionException {

@@ -125,6 +125,7 @@ public class Pipeline2ApiImpl extends KernelBase implements Pipeline2Api {
 
     @Override
     public String createBroadcastQueue(CallingContext context, String queueIdentifier, String queueConfig) {
+        log.info("Create broadcast queue for " + queueIdentifier);
         Pipeline2Handler handler = null;
         if (queueConfig != null) handler = Pipeline2Factory.getHandler(queueIdentifier, queueConfig);
         if (handler == null) {
@@ -157,29 +158,6 @@ public class Pipeline2ApiImpl extends KernelBase implements Pipeline2Api {
     }
 
     @Override
-    public Boolean queueExists(CallingContext context, String queueIdentifier) {
-        Pipeline2Handler handler = getHandler(queueIdentifier);
-        if (handler == null) return false;
-        throw new RuntimeException("TODO DO NOT CHECK THIS IN");
-        // return handler.queueExists(queueIdentifier);
-    }
-
-    @Override
-    public void removeBroadcastQueue(CallingContext context, String queueIdentifier) {
-        Pipeline2Handler handler = getHandler(queueIdentifier);
-        throw new RuntimeException("TODO DO NOT CHECK THIS IN");
-        // handler.removePipeline(queueIdentifier);
-    }
-
-    @Override
-    public void removeTaskQueue(CallingContext context, String queueIdentifier) {
-        Pipeline2Handler handler = getHandler(queueIdentifier);
-        throw new RuntimeException("TODO DO NOT CHECK THIS IN");
-        // handler.removePipeline(queueIdentifier);
-        // handler.removePipeline(queueIdentifier + "-response");
-    }
-
-    @Override
     public void subscribeToQueue(CallingContext context, QueueSubscriber subscriber) {
         Pipeline2Handler handler = getHandler(subscriber.getQueueName());
         if (handler == null) {
@@ -200,22 +178,24 @@ public class Pipeline2ApiImpl extends KernelBase implements Pipeline2Api {
 
     public Pipeline2Handler getHandler(String queueIdentifier) {
         Pipeline2Handler handler = pipelineHandlers.get(queueIdentifier);
-        if (handler == null) {
+        if ((handler == null)) {
+            log.info("Cache miss for " + queueIdentifier);
             handler = setupHandler(queueIdentifier);
         }
         return handler;
     }
 
     private synchronized Pipeline2Handler setupHandler(String name) {
-        log.info("Getting domain for " + name);
         RaptureURI addressURI = new RaptureURI("//" + name, Scheme.EXCHANGE_DOMAIN);
         ExchangeDomain domain = ExchangeDomainStorage.readByAddress(addressURI);
+        Pipeline2Handler handler = null;
         if (domain != null) {
-            Pipeline2Handler handler = Pipeline2Factory.getHandler(name, domain.getConfig());
+            handler = Pipeline2Factory.getHandler(name, domain.getConfig());
             pipelineHandlers.put(name, handler);
-            return handler;
+        } else {
+            log.info("No exchange domain defined for " + name);
         }
-        return null;
+        return handler;
     }
 
     @Override
@@ -227,11 +207,12 @@ public class Pipeline2ApiImpl extends KernelBase implements Pipeline2Api {
     public Boolean broadcastMessage(CallingContext context, String queueIdentifier, String message) {
         Pipeline2Handler handler = getHandler(queueIdentifier);
         if (handler == null) {
+            log.info("broadcastMessage: No handler for " + queueIdentifier);
             RaptureExchange exchangeConfig = ExchangeConfigFactory.createStandardDirect(queueIdentifier);
             ExchangeDomain domain = getExchangeDomain(exchangeConfig.getDomain());
             if (domain != null) {
                 handler = Pipeline2Factory.getHandler(domain.getName(), domain.getConfig());
-                pipelineHandlers.put(exchangeConfig.getDomain(), handler);
+                pipelineHandlers.put(queueIdentifier, handler);
             } else {
                 log.info("Cannot set up " + queueIdentifier + " - no valid configuration defined");
                 return false;
@@ -277,10 +258,6 @@ public class Pipeline2ApiImpl extends KernelBase implements Pipeline2Api {
             watchers.add(subscriber);
         }
         subscriber.setStatus(status);
-        // Map<String, Object> task = new HashMap<>();
-        // task.put("payload", message);
-        // task.put("status", status);
-        // task.put("queue", queueIdentifier);
         requestHandler.publishTask(queueIdentifier, JacksonUtil.jsonFromObject(status));
 
         if (timeout > 0) {
@@ -316,18 +293,11 @@ public class Pipeline2ApiImpl extends KernelBase implements Pipeline2Api {
                 } catch (Exception e) {
 
                 }
-                try {
-                    removeTaskQueue(null, queueIdentifier);
-                } catch (Exception e) {
-
-                }
             }
-
         }
         super.finalize();
     }
 
-    // @Override
     public void registerExchangeDomain(CallingContext context, String domainURI, String config) {
         RaptureURI internalURI = new RaptureURI(domainURI, Scheme.EXCHANGE_DOMAIN);
         ExchangeDomain exchangeDomain = new ExchangeDomain();

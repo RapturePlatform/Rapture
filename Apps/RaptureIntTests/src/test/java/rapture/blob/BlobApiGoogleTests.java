@@ -62,13 +62,9 @@ public class BlobApiGoogleTests {
      */
     @BeforeClass(groups = { "blob", "mongo", "nightly" })
     @Parameters({ "RaptureURL", "RaptureUser", "RapturePassword" })
-    // public void beforeTest(@Optional("http://35.185.42.115:8665/rapture") String url, @Optional("rapture") String user, @Optional("rapture") String password)
+    // public void beforeTest(@Optional("http://35.184.228.5:8665/rapture") String url, @Optional("rapture") String user, @Optional("rapture") String password)
     // {
-
-    public void beforeTest(@Optional("http://35.185.30.63:8665/rapture") String url, @Optional("rapture") String user, @Optional("rapture") String password) {
-        // public void beforeTest(@Optional("http://localhost:8665/rapture") String url, @Optional("rapture") String user, @Optional("rapture") String password)
-        // {
-
+    public void beforeTest(@Optional("http://localhost:8665/rapture") String url, @Optional("rapture") String user, @Optional("rapture") String password) {
         helper = new IntegrationTestHelper(url, user, password);
         blobApi = helper.getBlobApi();
     }
