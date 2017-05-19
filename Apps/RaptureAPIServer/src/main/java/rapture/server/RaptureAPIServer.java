@@ -24,6 +24,9 @@
 package rapture.server;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -59,11 +62,25 @@ import rapture.util.IDGenerator;
 public final class RaptureAPIServer {
     private static Logger logger = Logger.getLogger(RaptureAPIServer.class);
 
+    // public static int sslVersion = io.netty.internal.tcnative.SSL.version();
+
     /**
      * @param args
      */
     public static void main(String[] args) {
 
+        try {
+            Class.forName("org.eclipse.jetty.alpn.ALPN", true, null);
+        } catch (ClassNotFoundException e) {
+            System.err.println("Warning: ALPN is not configured.");
+            System.err.println(
+                    "If you encounter problems when accessing Google Cloud Platform APIs restart the server and run the jetty-alpn-agent with the following flag:\n");
+            System.err.print("-javaagent:");
+            try {
+                Files.walk(Paths.get(".")).filter(p -> p.toString().contains("jetty-alpn-agent")).forEach(System.err::println);
+            } catch (IOException e1) {
+            }
+        }
         // Give -v flag or --version to print out version numbers and quit
         if (args.length > 0) {
             if (args[0].equals("-v") || args[0].equalsIgnoreCase("--version")) {
@@ -111,7 +128,7 @@ public final class RaptureAPIServer {
     }
 
     private static Map<String, Object> getCapabilities(String categories) {
-        Map<String, Object> capabilities = new HashMap<String, Object>();
+        Map<String, Object> capabilities = new HashMap<>();
         capabilities.put("PipelineHandler", categories);
         String localApiUrl = ApiCapabilitiesService.getApiUrlForThisHost();
         logger.info("Local api url is " + localApiUrl);

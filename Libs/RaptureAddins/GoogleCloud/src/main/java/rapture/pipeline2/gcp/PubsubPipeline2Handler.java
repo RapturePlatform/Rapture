@@ -25,6 +25,7 @@ package rapture.pipeline2.gcp;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -35,6 +36,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.google.api.core.ApiFuture;
+import com.google.api.gax.grpc.ApiException;
 import com.google.api.gax.grpc.ExecutorProvider;
 import com.google.api.gax.grpc.InstantiatingExecutorProvider;
 import com.google.cloud.pubsub.spi.v1.AckReplyConsumer;
@@ -57,6 +59,7 @@ import com.google.pubsub.v1.TopicName;
 import rapture.common.QueueSubscriber;
 import rapture.common.exception.ExceptionToString;
 import rapture.common.exception.RaptureExceptionFactory;
+import rapture.common.impl.jackson.JacksonUtil;
 import rapture.config.MultiValueConfigLoader;
 import rapture.pipeline.Pipeline2Handler;
 
@@ -64,6 +67,7 @@ public class PubsubPipeline2Handler implements Pipeline2Handler {
 
     static Logger logger = Logger.getLogger(PubsubPipeline2Handler.class);
     private String projectId;
+    private String namespace = "rapture";
     Map<String, String> config = null;
 
     static Map<QueueSubscriber, Subscriber> subscribers = new ConcurrentHashMap<>();
@@ -87,7 +91,6 @@ public class PubsubPipeline2Handler implements Pipeline2Handler {
 
     @Override
     public synchronized void setConfig(Map<String, String> config) {
-        this.config = config;
         projectId = StringUtils.trimToNull(config.get("projectid"));
         if (projectId == null) {
             projectId = MultiValueConfigLoader.getConfig("GOOGLE-projectid");
@@ -95,11 +98,23 @@ public class PubsubPipeline2Handler implements Pipeline2Handler {
                 throw new RuntimeException("Project ID not set in RaptureGOOGLE.cfg or in config " + config);
             }
         }
-        
+
+        String ns = StringUtils.stripToNull(config.get("namespace"));
+        if (ns == null) {
+            ns = MultiValueConfigLoader.getConfig("GOOGLE-namespace");
+        }
+        if (ns != null) namespace = ns.toLowerCase();
+
         String threads = config.get("threads");
         if (threads != null) {
             executor = InstantiatingExecutorProvider.newBuilder().setExecutorThreadCount(Integer.parseInt(threads)).build();
         }
+
+        // for debugging - it should not be used again
+        this.config = new HashMap<>(config);
+        this.config.put("projectid", projectId);
+        this.config.put("namespace", namespace);
+
     }
 
     static Map<String, Topic> topics = new ConcurrentHashMap<>();
@@ -115,21 +130,43 @@ public class PubsubPipeline2Handler implements Pipeline2Handler {
         if (topicId == null) {
             throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, "Illegal Argument: topic Id is null");
         }
-        String topId = (topicId.toLowerCase().startsWith("rapture")) ? topicId : topicId + "rapture";
+        Exception cause = null;
+        // prepend namespace
+        String topId = namespace + topicId.toLowerCase();
         Topic topic = topics.get(topId);
-        if (topic == null) {
+        while (topic == null) {
             try (TopicAdminClient topicAdminClient = topicAdminClientCreate()) {
                 TopicName topicName = TopicName.create(projectId, topId);
                 try {
                     topic = topicAdminClient.getTopic(topicName);
                 } catch (Exception e) {
+                    // We could not get the topic. Presumably it doesn't exist. Can we create it?
+                    cause = e;
                     if (topic == null) {
                         topic = topicAdminClient.createTopic(topicName);
                         topics.put(topId, topic);
                     }
                 }
             } catch (Exception ioe) {
-                throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, "Cannot create or get topic " + topicId, ioe);
+                if (ioe instanceof ApiException) {
+                    if (ioe.getMessage().contains("ALREADY_EXISTS")) {
+                        // We could not get it, so we tried to create it and got ALREADY_EXISTS.
+                        // But if it already exists, why couldn't we get it? The CAUSE exception is of more interest to us here.
+                        throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR,
+                                "Cannot get topic " + topicId + " using configuration " + JacksonUtil.jsonFromObject(config), cause);
+                    }
+                    if (ioe.getMessage().contains("RESOURCE_EXHAUSTED")) {
+                        // This happens sometimes in unit testing because the cache doesn't persist between test cases.
+                        // Should never happen in regular use.
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                        }
+                        continue;
+                    }
+                }
+                throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR,
+                        "Cannot create or get topic " + topicId + " using configuration " + JacksonUtil.jsonFromObject(config), ioe);
             }
         }
         return topic;
@@ -139,7 +176,8 @@ public class PubsubPipeline2Handler implements Pipeline2Handler {
         if (topicId == null) {
             throw RaptureExceptionFactory.create(HttpURLConnection.HTTP_INTERNAL_ERROR, "Illegal Argument: topic Id is null");
         }
-        String topId = (topicId.toLowerCase().startsWith("rapture")) ? topicId : topicId + "rapture";
+        // prepend namespace
+        String topId = namespace + topicId.toLowerCase();
         Topic topic = topics.get(topId);
         if (topic != null) {
             try (TopicAdminClient topicAdminClient = topicAdminClientCreate()) {
@@ -176,7 +214,7 @@ public class PubsubPipeline2Handler implements Pipeline2Handler {
             throw new RuntimeException("Null topic");
         }
 
-        SubscriptionName subscriptionName = SubscriptionName.create(projectId, qsubscriber.getSubscriberId());
+        SubscriptionName subscriptionName = SubscriptionName.create(projectId, namespace + qsubscriber.getSubscriberId());
         Topic topic = getTopic(queueIdentifier);
         Subscription subscription = subscriptions.get(subscriptionName);
         if (subscription == null) {
@@ -234,7 +272,7 @@ public class PubsubPipeline2Handler implements Pipeline2Handler {
     }
 
     public void forceDeleteSubscription(QueueSubscriber qsubscriber) {
-        SubscriptionName subscriptionName = SubscriptionName.create(projectId, qsubscriber.getSubscriberId());
+        SubscriptionName subscriptionName = SubscriptionName.create(projectId, namespace + qsubscriber.getSubscriberId());
         try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create()) {
             subscriptionAdminClient.deleteSubscription(subscriptionName);
         } catch (Exception ioe) {

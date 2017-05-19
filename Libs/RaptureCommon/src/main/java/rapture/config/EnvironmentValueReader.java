@@ -31,7 +31,11 @@ public class EnvironmentValueReader implements ValueReader {
     @Override
     public String getValue(String property) {
         log.trace("Looking for " + property + " in environment");
-        return System.getenv(property);
+        String retval = System.getenv(property);
+        if (retval == null) {
+            retval = System.getenv(property.replaceAll("-", "_"));
+        }
+        return retval;
     }
 
 }

@@ -29,9 +29,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -53,8 +53,11 @@ import rapture.config.MultiValueConfigLoader;
 
 /**
  * GoogleBlobStore uses the Google Cloud Storage to implement a BlobStore Google has the concept of Buckets which store blobs. At first pass it seems logical to
- * map Repositories to Buckets; will see if that holds up. The downside of this is that buckets are globally named, so we'll need a prefix that guarantees all
- * our repositories are our own. Bucket names containing dots require verification which we will need to do at some point.
+ * map Repositories to Buckets; will see if that holds up. The downside of this is that buckets are globally named and there is no namespace support in the way
+ * that Datastore has it, so we use the namespace field as a prefix. This is hidden from the client, though if we need to interface with Crux they'll need to be
+ * aware of it.
+ * 
+ * Bucket names containing dots require domain verification which we will need to do at some point.
  * 
  * @author Dave Tong
  * 
@@ -62,9 +65,10 @@ import rapture.config.MultiValueConfigLoader;
 public class GoogleBlobStore extends BaseBlobStore implements BlobStore {
 
     private static Logger logger = Logger.getLogger(GoogleBlobStore.class);
-
-    private String environment;
     Bucket bucket = null;
+    String bucketName = null;
+    private String namespace = "rapturedefault";
+    private String projectId = null;
     private static Storage storage = null;
 
     protected static void setStorageForTesting(Storage teststorage) {
@@ -72,9 +76,6 @@ public class GoogleBlobStore extends BaseBlobStore implements BlobStore {
     }
 
     public GoogleBlobStore() {
-        environment = System.getenv("ENV_NAME");
-        if (environment == null) environment = UUID.randomUUID().toString();
-        environment = "r" + System.currentTimeMillis();
     }
 
     @Override
@@ -203,7 +204,7 @@ public class GoogleBlobStore extends BaseBlobStore implements BlobStore {
         return (bucket.get(blobUri.getDocPath()) != null);
     }
 
-    String bucketName = null;
+    Map<String, String> config;
 
     @Override
     public void setConfig(Map<String, String> config) {
@@ -213,8 +214,21 @@ public class GoogleBlobStore extends BaseBlobStore implements BlobStore {
             throw new RuntimeException("Prefix not set in " + config);
         }
 
+        String ns = StringUtils.stripToNull(config.get("namespace"));
+        if (ns == null) {
+            ns = MultiValueConfigLoader.getConfig("GOOGLE-namespace");
+        }
+
+        if (ns != null) {
+            namespace = ns.toLowerCase();
+            char c = namespace.charAt(0);
+            if ((c < 'a') || (c > 'z'))
+                throw new RuntimeException("namespace must begin with a lower case letter " + ns);
+            // there are other restrictions but this one is quite a biggie
+        }
+
         if (storage == null) {
-            String projectId = StringUtils.trimToNull(config.get("projectid"));
+            projectId = StringUtils.trimToNull(config.get("projectid"));
             if (projectId == null) {
                 projectId = MultiValueConfigLoader.getConfig("GOOGLE-projectid");
                 if (projectId == null) {
@@ -225,7 +239,7 @@ public class GoogleBlobStore extends BaseBlobStore implements BlobStore {
             storage = StorageOptions.newBuilder().setProjectId(projectId).build().getService();
         }
         // NOTE cannot currently use a full stop in a bucket name.
-        bucketName = environment + prefix.replaceAll("[\\./]", "").toLowerCase();
+        bucketName = namespace + prefix.replaceAll("[\\./]", "").toLowerCase();
         try {
             bucket = storage.get(bucketName);
         } catch (StorageException e) {
@@ -233,6 +247,11 @@ public class GoogleBlobStore extends BaseBlobStore implements BlobStore {
             e.printStackTrace();
         }
         if (bucket == null) bucket = storage.create(BucketInfo.of(bucketName));
+
+        // for debugging - it should not be used again
+        this.config = new HashMap<>(config);
+        this.config.put("projectid", projectId);
+        this.config.put("namespace", namespace);
     }
 
     @Override
@@ -241,7 +260,7 @@ public class GoogleBlobStore extends BaseBlobStore implements BlobStore {
 
     // For cleanup after testing
     void destroyBucket(String name) {
-        String bName = environment + name.replaceAll("\\.", "").toLowerCase();
+        String bName = namespace + name.replaceAll("\\.", "").toLowerCase();
         Bucket bukkit = storage.get(bName);
         if (bukkit != null) {
             for (Blob blob : this.listBlobs(name)) {

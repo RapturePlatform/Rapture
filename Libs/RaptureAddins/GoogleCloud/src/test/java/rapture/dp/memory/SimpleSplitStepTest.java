@@ -51,7 +51,6 @@ import rapture.dp.WaitingTestHelper;
 import rapture.dp.invocable.SignalInvocable;
 import rapture.kernel.ContextFactory;
 import rapture.kernel.Kernel;
-import rapture.kernel.Pipeline2ApiImpl;
 
 public class SimpleSplitStepTest {
     private static final String AUTHORITY = "//splitsteptest";
@@ -72,6 +71,7 @@ public class SimpleSplitStepTest {
         RaptureConfig config = ConfigLoader.getConf();
         config.DefaultExchange = "PIPELINE {} USING MEMORY { }";
 
+        Kernel.INSTANCE.restart();
         Kernel.initBootstrap();
         if (!Kernel.getDoc().docRepoExists(ctx, AUTHORITY)) {
             Kernel.getDoc().createDocRepo(ctx, AUTHORITY, "NREP {} USING MEMORY {}");

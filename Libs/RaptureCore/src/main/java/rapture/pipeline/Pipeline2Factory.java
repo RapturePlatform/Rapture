@@ -53,7 +53,7 @@ public final class Pipeline2Factory {
 
     public static Pipeline2Handler getHandler(String id, String config) {
         try {
-            log.info("Creating exchange from config - " + config);
+            log.info("Find exchange for " + id + " from config - " + config);
             P2GenParser parser = getParsedForConfig(config);
             int implementationType = parser.getImplementationType();
             if (implementationMap.containsKey(implementationType)) {
@@ -71,10 +71,10 @@ public final class Pipeline2Factory {
 
     private static Pipeline2Handler getPipeline2(String className, String id, String instance, Map<String, String> config) {
 
-        Class<?> idgenClass;
+        Class<?> klass;
         try {
-            idgenClass = Class.forName(className);
-            Object fStore = idgenClass.newInstance();
+            klass = Class.forName(className);
+            Object fStore = klass.newInstance();
             if (fStore instanceof Pipeline2Handler) {
                 Pipeline2Handler ret = (Pipeline2Handler) fStore;
                 ret.setConfig(config);
@@ -88,7 +88,6 @@ public final class Pipeline2Factory {
             log.error(RaptureExceptionFormatter.getExceptionMessage(raptException, e));
             throw raptException;
         }
-
     }
 
     private static P2GenParser getParsedForConfig(String config) throws RecognitionException {

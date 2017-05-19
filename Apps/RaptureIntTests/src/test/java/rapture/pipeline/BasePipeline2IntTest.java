@@ -180,7 +180,6 @@ public abstract class BasePipeline2IntTest {
         Assert.assertEquals("Response", status.getOutput().get(0));
         Assert.assertEquals(PipelineTaskState.COMPLETED, status.getCurrentState());
         papi.unsubscribeQueue(context, qs3);
-        papi.removeTaskQueue(context, timeoutQueue);
     }
 
     /**
