@@ -834,7 +834,7 @@ public enum Kernel {
             pai2.createBroadcastQueue(null, queue, config);
         } catch (Exception e) {
             log.error("Unable to create queue " + queue + " with config " + config);
-            log.info(ExceptionToString.summary(e));
+            log.info(ExceptionToString.format(e));
             return null;
         }
         QueueSubscriber qsub = new QueueSubscriber(queue, "R" + UUID.randomUUID().toString()) {

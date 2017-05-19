@@ -82,6 +82,8 @@ public class GoogleDatastoreKeyStore extends AbstractKeyStore implements KeyStor
     private Datastore datastore = null;
     private String kind;
     private String id = null;
+    private String namespace = "rapturedefault";
+    private String projectId = null;
 
     private static DatastoreOptions testDatastoreOptions = null;
 
@@ -118,7 +120,7 @@ public class GoogleDatastoreKeyStore extends AbstractKeyStore implements KeyStor
     @Override
     public boolean dropKeyStore() {
         List<Key> keys = new ArrayList<>();
-        QueryResults<Key> result = datastore.run(Query.newKeyQueryBuilder().setKind(kind).build());
+        QueryResults<Key> result = datastore.run(Query.newKeyQueryBuilder().setNamespace(namespace).setKind(kind).build());
         while (result.hasNext())
             keys.add(result.next());
         datastore.delete(keys.toArray(new Key[keys.size()]));
@@ -167,7 +169,7 @@ public class GoogleDatastoreKeyStore extends AbstractKeyStore implements KeyStor
 
     @Override
     public boolean containsKey(String key) {
-        Key taskKey = datastore.newKeyFactory().setKind(kind).newKey(encode(key));
+        Key taskKey = datastore.newKeyFactory().setNamespace(namespace).setKind(kind).newKey(encode(key));
         return (datastore.get(taskKey) != null);
     }
 
@@ -182,12 +184,17 @@ public class GoogleDatastoreKeyStore extends AbstractKeyStore implements KeyStor
     public void setConfig(Map<String, String> config) {
         kind = StringUtils.stripToNull(config.get("prefix"));
         if (kind == null) throw new RuntimeException("Prefix not set in config " + JacksonUtil.formattedJsonFromObject(config));
+        String ns = StringUtils.stripToNull(config.get("namespace"));
+        if (ns == null) {
+            ns = MultiValueConfigLoader.getConfig("GOOGLE-namespace");
+        }
+        if (ns != null) namespace = ns.toLowerCase();
 
         if (datastore == null) {
             if (testDatastoreOptions != null) {
                 datastore = testDatastoreOptions.getService();
             } else {
-                String projectId = StringUtils.trimToNull(config.get("projectid"));
+                projectId = StringUtils.trimToNull(config.get("projectid"));
                 if (projectId == null) {
                     projectId = MultiValueConfigLoader.getConfig("GOOGLE-projectid");
                     if (projectId == null) {
@@ -197,7 +204,10 @@ public class GoogleDatastoreKeyStore extends AbstractKeyStore implements KeyStor
                 datastore = DatastoreOptions.newBuilder().setProjectId(projectId).build().getService();
             }
         }
-        this.config = config;
+        // for debugging - it should not be used again
+        this.config = new HashMap<>(config);
+        this.config.put("projectid", projectId);
+        this.config.put("namespace", namespace);
     }
 
     @Override
@@ -217,7 +227,7 @@ public class GoogleDatastoreKeyStore extends AbstractKeyStore implements KeyStor
      */
     @Override
     public boolean delete(String key) {
-        Key entityKey = datastore.newKeyFactory().setKind(kind).newKey(encode(key));
+        Key entityKey = datastore.newKeyFactory().setNamespace(namespace).setKind(kind).newKey(encode(key));
         datastore.delete(entityKey);
         return true;
     }
@@ -282,7 +292,7 @@ public class GoogleDatastoreKeyStore extends AbstractKeyStore implements KeyStor
     @Override
     public String get(String key) {
         try {
-            Key entityKey = datastore.newKeyFactory().setKind(kind).newKey(encode(key));
+            Key entityKey = datastore.newKeyFactory().setNamespace(namespace).setKind(kind).newKey(encode(key));
             Entity entity = datastore.get(entityKey);
             Map<String, Object> map = new HashMap<>();
             if (entity != null) {
@@ -353,7 +363,7 @@ public class GoogleDatastoreKeyStore extends AbstractKeyStore implements KeyStor
 
     @Override
     public void put(String key, String value) {
-        Key entityKey = datastore.newKeyFactory().setKind(kind).newKey(encode(key));
+        Key entityKey = datastore.newKeyFactory().setNamespace(namespace).setKind(kind).newKey(encode(key));
         Map<String, Object> map = JacksonUtil.getMapFromJson(value);
         Builder builder = Entity.newBuilder(entityKey);
         for (Entry<String, Object> entry : map.entrySet()) {
@@ -385,7 +395,7 @@ public class GoogleDatastoreKeyStore extends AbstractKeyStore implements KeyStor
     @Override
     public void visitKeys(String prefix, StoreKeyVisitor iStoreKeyVisitor) {
         List<Key> keys = new ArrayList<>();
-        QueryResults<Key> result = datastore.run(Query.newKeyQueryBuilder().setKind(kind).build());
+        QueryResults<Key> result = datastore.run(Query.newKeyQueryBuilder().setNamespace(namespace).setKind(kind).build());
         int count = 0;
         while (result.hasNext()) {
             Key peele = result.next();
@@ -421,9 +431,9 @@ public class GoogleDatastoreKeyStore extends AbstractKeyStore implements KeyStor
         List<RaptureFolderInfo> list = new ArrayList<>();
         Map<String, RaptureFolderInfo> map = new HashMap<>();
 
-        KeyQuery.Builder query = Query.newKeyQueryBuilder().setKind(kind);
+        KeyQuery.Builder query = Query.newKeyQueryBuilder().setNamespace(namespace).setKind(kind);
         // if (StringUtils.stripToNull(prefix) != null) {
-        // query.setFilter(PropertyFilter.hasAncestor(datastore.newKeyFactory().setKind(kind).newKey(prefix)));
+        // query.setFilter(PropertyFilter.hasAncestor(datastore.newKeyFactory().setNamespace(namespace).setKind(kind).newKey(prefix)));
         // }
         QueryResults<Key> result = datastore.run(query.build());
         while (result.hasNext()) {

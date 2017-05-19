@@ -24,6 +24,9 @@
 package rapture.server;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -68,18 +71,16 @@ public final class RaptureAPIServer {
 
         try {
             Class.forName("org.eclipse.jetty.alpn.ALPN", true, null);
-            System.err.println("ALPN configured");
         } catch (ClassNotFoundException e) {
-            System.err.println("ALPN NOT configured");
+            System.err.println("Warning: ALPN is not configured.");
+            System.err.println(
+                    "If you encounter problems when accessing Google Cloud Platform APIs restart the server and run the jetty-alpn-agent with the following flag:\n");
+            System.err.print("-javaagent:");
+            try {
+                Files.walk(Paths.get(".")).filter(p -> p.toString().contains("jetty-alpn-agent")).forEach(System.err::println);
+            } catch (IOException e1) {
+            }
         }
-
-        try {
-            Class.forName("org.eclipse.jetty.npn.NextProtoNego", true, null);
-            System.err.println("NPN configured");
-        } catch (ClassNotFoundException e) {
-            System.err.println("NPN NOT configured");
-        }
-
         // Give -v flag or --version to print out version numbers and quit
         if (args.length > 0) {
             if (args[0].equals("-v") || args[0].equalsIgnoreCase("--version")) {

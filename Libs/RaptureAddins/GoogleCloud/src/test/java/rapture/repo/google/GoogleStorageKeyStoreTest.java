@@ -26,6 +26,7 @@ package rapture.repo.google;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.testng.Assert.assertNotEquals;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -312,6 +313,49 @@ public class GoogleStorageKeyStoreTest {
         assertDocWithMeta(key, value2, user, comment, before2, after2, found);
         Long created6 = found.getMetaData().getCreatedTimestamp();
         assertEquals(created4, created6);
+    }
+
+    @Test
+    public void multiTenancy() {
+        // We need to be able to have two instances coexisting using different namespaces.
+
+        GoogleStorageKeyStore store2 = new GoogleStorageKeyStore();
+        store2.setConfig(ImmutableMap.of("prefix", "store", "namespace", "store2"));
+        GoogleStorageKeyStore meta2 = new GoogleStorageKeyStore();
+        meta2.setConfig(ImmutableMap.of("prefix", "meta", "namespace", "store2"));
+        GoogleStorageKeyStore version2 = new GoogleStorageKeyStore();
+        version2.setConfig(ImmutableMap.of("prefix", "version", "namespace", "store2"));
+        GoogleStorageKeyStore attribute2 = new GoogleStorageKeyStore();
+        attribute2.setConfig(ImmutableMap.of("prefix", "attribute", "namespace", "store2"));
+
+        GoogleStorageKeyStore store3 = new GoogleStorageKeyStore();
+        store3.setConfig(ImmutableMap.of("prefix", "store"));
+        GoogleStorageKeyStore meta3 = new GoogleStorageKeyStore();
+        meta3.setConfig(ImmutableMap.of("prefix", "meta"));
+        GoogleStorageKeyStore version3 = new GoogleStorageKeyStore();
+        version3.setConfig(ImmutableMap.of("prefix", "version"));
+        GoogleStorageKeyStore attribute3 = new GoogleStorageKeyStore();
+        attribute3.setConfig(ImmutableMap.of("prefix", "attribute"));
+
+        // Repo1 uses the exact same instances as Repo
+        NVersionedRepo repo1 = new NVersionedRepo(new HashMap<String, String>(), store, version, meta, attribute, new DummyLockHandler());
+        // Repo2 uses the same configuration as repo, but with a different namespace value
+        NVersionedRepo repo2 = new NVersionedRepo(new HashMap<String, String>(), store2, version2, meta2, attribute2, new DummyLockHandler());
+        // Repo3 uses different instances but with the exact same configuration as repo and repo1
+        NVersionedRepo repo3 = new NVersionedRepo(new HashMap<String, String>(), store3, version3, meta3, attribute3, new DummyLockHandler());
+
+        repo.addDocument("A", "{\"A\":1}", "A", "A 1", false);
+        repo2.addDocument("A", "{\"B\":2}", "A", "A 1", false);
+
+        String doc = repo.getDocument("A");
+        String doc1 = repo1.getDocument("A");
+        String doc2 = repo2.getDocument("A");
+        String doc3 = repo3.getDocument("A");
+
+        assertEquals(doc, doc1);
+        assertEquals(doc, doc3);
+        assertNotEquals(doc, doc2);
+
     }
 
     protected long afterAndSleep() throws InterruptedException {

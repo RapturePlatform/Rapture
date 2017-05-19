@@ -229,9 +229,6 @@ public class DocApiGoogleTest extends LocalDataStoreTest {
         //        assertNull("Repository should have been deleted but data still present", zombie);
 
         List<DocumentRepoConfig> docRepositoriesAfter = docImpl.getDocRepoConfigs(callingContext);
-
-        assertEquals("Should be one less now", docRepositories.size() - 1, docRepositoriesAfter.size());
-
         assertFalse("Doc should have been deleted", docImpl.docExists(callingContext, docURI));
         try {
             String doc = docImpl.getDoc(callingContext, docURI);

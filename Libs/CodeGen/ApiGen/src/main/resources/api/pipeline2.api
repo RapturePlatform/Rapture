@@ -13,18 +13,6 @@ api(Pipeline2) {
    @entitle=/admin/pipeline
    @public String createQueueIdentifier(Map<String, String> queueValues);
 
-   [Check if a queue exists]
-   @entitle=/admin/pipeline
-   @public Boolean queueExists(String queueIdentifier);
-
-   [Deletes a broadcast queue.]
-   @entitle=/admin/pipeline
-   @public void removeBroadcastQueue(String queueIdentifier);
-
-   [Deletes a task queue and associated back channel.]
-   @entitle=/admin/pipeline
-   @public void removeTaskQueue(String queueIdentifier);
-
    [Subscribe to queue]
    @entitle=/admin/pipeline
    @public void subscribeToQueue(QueueSubscriber subscriber);
