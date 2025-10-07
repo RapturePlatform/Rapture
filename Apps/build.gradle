@@ -45,17 +45,12 @@ subprojects {
     }
 
     repositories {
-      mavenLocal()
-      mavenCentral()
-      jcenter()
-      maven {
-        url "https://oss.sonatype.org/content/repositories/releases/"
-      }
-      }
-
-    def loggingVersion = '1.6.1'
-    def httpVersion = '4.2.2'
-    def jacksonVersion = '1.9.2'
+        mavenLocal()
+        mavenCentral()
+        maven {
+            url "https://oss.sonatype.org/content/repositories/releases/"
+        }
+    }
 
     task copyProps(type:Copy) {
         from 'src/main/java'
@@ -138,19 +133,19 @@ subprojects {
     }
 
     dependencies {
-        compile "net.rapture:RaptureAppConfig:$project.platformVersion"
-        compile "net.rapture:RaptureAPI:$project.platformVersion"
-        compile "net.rapture:Reflex:$project.platformVersion"
-        compile 'log4j:log4j:1.2.14'
-        compile "org.slf4j:jcl-over-slf4j:$loggingVersion"
-        compile "org.slf4j:slf4j-api:$loggingVersion"
-        compile "org.slf4j:slf4j-log4j12:$loggingVersion"
-        testCompile 'junit:junit:4.10'
-        testCompile 'com.googlecode.catch-exception:catch-exception:1.0.4'
-        testCompile 'org.objenesis:objenesis:2.0'
-        testCompile 'org.powermock:powermock-module-junit4:1.5.1'
-        testCompile 'org.powermock:powermock-api-easymock:1.5.1'
-        testCompile 'org.easymock:easymock:3.2'
+        implementation "net.rapture:RaptureAppConfig:$project.platformVersion"
+        implementation "net.rapture:RaptureAPI:$project.platformVersion"
+        implementation "net.rapture:Reflex:$project.platformVersion"
+        implementation libs.log4j
+        implementation libs.slf4jJclOver
+        implementation libs.slf4jApi
+        implementation libs.slf4jLog4j12
+        testImplementation libs.junit4
+        testImplementation libs.catchException
+        testImplementation libs.objenesis
+        testImplementation libs.powermockModuleJUnit4
+        testImplementation libs.powermockApiEasyMock
+        testImplementation libs.easymock
     }
 
     startScripts {

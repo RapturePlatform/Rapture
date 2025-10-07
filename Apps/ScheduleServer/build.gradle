@@ -6,11 +6,11 @@ jar.manifest.attributes "Implementation-Title" : "Rapture ScheduleServer applica
 jar.manifest.attributes "Implementation-Version" : version
 
 dependencies {
-     compile "net.rapture:MongoDb:$project.platformVersion"
-     compile "net.rapture:RabbitMQ:$project.platformVersion"
-	 compile "net.rapture:RaptureCore:$project.platformVersion"
-	 compile "net.rapture:RaptureAddinCore:$project.platformVersion"
-     compile 'jline:jline:2.7'
+    implementation "net.rapture:MongoDb:$project.platformVersion"
+    implementation "net.rapture:RabbitMQ:$project.platformVersion"
+    implementation "net.rapture:RaptureCore:$project.platformVersion"
+    implementation "net.rapture:RaptureAddinCore:$project.platformVersion"
+    implementation libs.jline
 }
 
 mainClassName = "rapture.server.ScheduleServer"

@@ -29,28 +29,28 @@ startScripts {
 }
 
 dependencies {
-    compile "net.rapture:WorkflowsCore:$project.platformVersion"
-    compile "net.rapture:RaptureCore:$project.platformVersion"
-    compile "net.rapture:RaptureAddinCore:$project.platformVersion"
-    compile "net.rapture:MongoDb:$project.platformVersion"
-    compile "net.rapture:GoogleCloud:$project.platformVersion"
-    compile "net.rapture:RabbitMQ:$project.platformVersion"
-    compile "net.rapture:ElasticSearch:$project.platformVersion"
-    compile "net.rapture:Postgres:$project.platformVersion"
-    compile "net.rapture:ZooKeeper:$project.platformVersion"
-    compile("net.rapture:Cassandra:$project.platformVersion") {
+    implementation "net.rapture:WorkflowsCore:$project.platformVersion"
+    implementation "net.rapture:RaptureCore:$project.platformVersion"
+    implementation "net.rapture:RaptureAddinCore:$project.platformVersion"
+    implementation "net.rapture:MongoDb:$project.platformVersion"
+    implementation "net.rapture:GoogleCloud:$project.platformVersion"
+    implementation "net.rapture:RabbitMQ:$project.platformVersion"
+    implementation "net.rapture:ElasticSearch:$project.platformVersion"
+    implementation "net.rapture:Postgres:$project.platformVersion"
+    implementation "net.rapture:ZooKeeper:$project.platformVersion"
+    implementation("net.rapture:Cassandra:$project.platformVersion") {
        exclude module: 'servlet-api'
     }
-    compile "net.rapture:RaptureWebServlet:$project.platformVersion"
-    compile 'org.apache.tomcat.embed:tomcat-embed-logging-juli:8.0.20'
-    compile 'org.apache.tomcat.embed:tomcat-embed-core:8.0.20'
-    compile 'org.apache.tomcat.embed:tomcat-embed-jasper:8.0.20'
-    compile 'org.apache.tomcat:tomcat-api:8.0.20'
-    compile 'org.apache.tomcat:tomcat-jasper:8.0.20'
-    compile 'org.apache.tomcat:tomcat-jasper-el:8.0.20'
-    compile 'org.apache.tomcat:tomcat-jsp-api:8.0.20'
-    compile 'org.apache.tomcat:tomcat-websocket:8.0.20'
-    compile "javax.servlet:javax.servlet-api:3.1.0"
+    implementation "net.rapture:RaptureWebServlet:$project.platformVersion"
+    implementation libs.tomcatEmbedLoggingJuli
+    implementation libs.tomcatEmbedCore
+    implementation libs.tomcatEmbedJasper
+    implementation libs.tomcatApi
+    implementation libs.tomcatJasper
+    implementation libs.tomcatJasperEl
+    implementation libs.tomcatJspApi
+    implementation libs.tomcatWebsocket
+    implementation libs.servletApi
 }
 
 mainClassName = "rapture.server.RaptureAPIServer"
