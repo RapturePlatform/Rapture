@@ -4,16 +4,16 @@ jar.manifest.attributes "Implementation-Title" : "RestServer application"
 jar.manifest.attributes "Implementation-Version" : version
 
 dependencies {
-  compile "net.rapture:RaptureAPI:$project.platformVersion"
-  compile "net.rapture:RaptureCore:$project.platformVersion"
-  compile "net.rapture:RaptureAppConfig:$project.platformVersion"
-  compile "net.rapture:MongoDb:$project.platformVersion"
-  compile "net.rapture:RabbitMQ:$project.platformVersion"
-  compile "net.rapture:ElasticSearch:$project.platformVersion"
-  compile "net.rapture:Postgres:$project.platformVersion"
-  compile "net.rapture:Cassandra:$project.platformVersion"
-  compile "com.sparkjava:spark-core:2.5.3"
-  compile 'com.mashape.unirest:unirest-java:1.4.9'
+    implementation "net.rapture:RaptureAPI:$project.platformVersion"
+    implementation "net.rapture:RaptureCore:$project.platformVersion"
+    implementation "net.rapture:RaptureAppConfig:$project.platformVersion"
+    implementation "net.rapture:MongoDb:$project.platformVersion"
+    implementation "net.rapture:RabbitMQ:$project.platformVersion"
+    implementation "net.rapture:ElasticSearch:$project.platformVersion"
+    implementation "net.rapture:Postgres:$project.platformVersion"
+    implementation "net.rapture:Cassandra:$project.platformVersion"
+    implementation libs.sparkCore
+    implementation libs.unirest
 }
 
 startScripts {
