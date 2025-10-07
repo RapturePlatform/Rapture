@@ -1,0 +1,54 @@
+[versions]
+log4j = "1.2.14"
+slf4j = "1.6.1"
+junit4 = "4.10"
+catchException = "1.0.4"
+objenesis = "2.0"
+powermock = "1.5.1"
+easymock = "3.2"
+jline = "2.7"
+commonsVfs = "2.1"
+commonsNet = "3.5"
+commonsValidator = "1.5.1"
+tomcat = "8.0.20"
+servletApi = "3.1.0"
+spark = "2.5.3"
+unirest = "1.4.9"
+testng = "6.9.10"
+mail = "1.4.5"
+jsonPatch = "1.9"
+poi = "3.15"
+poiSchemas = "3.15"
+
+[libraries]
+log4j = { module = "log4j:log4j", version.ref = "log4j" }
+slf4jJclOver = { module = "org.slf4j:jcl-over-slf4j", version.ref = "slf4j" }
+slf4jApi = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
+slf4jLog4j12 = { module = "org.slf4j:slf4j-log4j12", version.ref = "slf4j" }
+junit4 = { module = "junit:junit", version.ref = "junit4" }
+catchException = { module = "com.googlecode.catch-exception:catch-exception", version.ref = "catchException" }
+objenesis = { module = "org.objenesis:objenesis", version.ref = "objenesis" }
+powermockModuleJUnit4 = { module = "org.powermock:powermock-module-junit4", version.ref = "powermock" }
+powermockApiEasyMock = { module = "org.powermock:powermock-api-easymock", version.ref = "powermock" }
+easymock = { module = "org.easymock:easymock", version.ref = "easymock" }
+jline = { module = "jline:jline", version.ref = "jline" }
+commonsVfs = { module = "org.apache.commons:commons-vfs2", version.ref = "commonsVfs" }
+commonsNet = { module = "commons-net:commons-net", version.ref = "commonsNet" }
+commonsValidator = { module = "commons-validator:commons-validator", version.ref = "commonsValidator" }
+tomcatEmbedLoggingJuli = { module = "org.apache.tomcat.embed:tomcat-embed-logging-juli", version.ref = "tomcat" }
+tomcatEmbedCore = { module = "org.apache.tomcat.embed:tomcat-embed-core", version.ref = "tomcat" }
+tomcatEmbedJasper = { module = "org.apache.tomcat.embed:tomcat-embed-jasper", version.ref = "tomcat" }
+tomcatApi = { module = "org.apache.tomcat:tomcat-api", version.ref = "tomcat" }
+tomcatJasper = { module = "org.apache.tomcat:tomcat-jasper", version.ref = "tomcat" }
+tomcatJasperEl = { module = "org.apache.tomcat:tomcat-jasper-el", version.ref = "tomcat" }
+tomcatJspApi = { module = "org.apache.tomcat:tomcat-jsp-api", version.ref = "tomcat" }
+tomcatWebsocket = { module = "org.apache.tomcat:tomcat-websocket", version.ref = "tomcat" }
+servletApi = { module = "javax.servlet:javax.servlet-api", version.ref = "servletApi" }
+sparkCore = { module = "com.sparkjava:spark-core", version.ref = "spark" }
+unirest = { module = "com.mashape.unirest:unirest-java", version.ref = "unirest" }
+testng = { module = "org.testng:testng", version.ref = "testng" }
+mail = { module = "javax.mail:mail", version.ref = "mail" }
+jsonPatch = { module = "com.github.fge:json-patch", version.ref = "jsonPatch" }
+poi = { module = "org.apache.poi:poi", version.ref = "poi" }
+poiOoxml = { module = "org.apache.poi:poi-ooxml", version.ref = "poi" }
+poiOoxmlSchemas = { module = "org.apache.poi:poi-ooxml-schemas", version.ref = "poiSchemas" }

@@ -6,7 +6,7 @@ jar.manifest.attributes "Implementation-Title" : "Rapture ReflexRunner applicati
 jar.manifest.attributes "Implementation-Version" : version
 
 dependencies {
-    compile 'jline:jline:2.7'
+    implementation libs.jline
 }
 
 mainClassName = "reflex.app.Runner"
