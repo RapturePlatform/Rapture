@@ -1,7 +1,7 @@
 version = '3.0.0'
 
 dependencies {
-      compile "net.rapture:SelfPluginInstallerLib:$project.platformVersion"
+    implementation "net.rapture:SelfPluginInstallerLib:$project.platformVersion"
 }
 
 mainClassName = "rapture.plugin.app.SelfInstaller"
@@ -14,8 +14,8 @@ task fatJar(type: Jar) {
     }
     baseName = project.name
     from {
-        configurations.compile.collect {
-             it.isDirectory() ? it : zipTree(it) }
+        configurations.runtimeClasspath.collect {
+            it.isDirectory() ? it : zipTree(it) }
     } with jar
 }
 

@@ -5,12 +5,12 @@ ext {
 }
 
 dependencies {
-  compile "net.rapture:RaptureCore:$project.platformVersion"
-  compile "net.rapture:SelfPluginInstallerLib:$project.platformVersion"
-  compile 'commons-net:commons-net:3.5'
-  compile 'org.apache.poi:poi:3.15'
-  compile 'org.apache.poi:poi-ooxml:3.15'
-  compile 'org.apache.poi:poi-ooxml-schemas:3.15'
+    implementation "net.rapture:RaptureCore:$project.platformVersion"
+    implementation "net.rapture:SelfPluginInstallerLib:$project.platformVersion"
+    implementation libs.commonsNet
+    implementation libs.poi
+    implementation libs.poiOoxml
+    implementation libs.poiOoxmlSchemas
 }
 
 mainClassName = "rapture.plugin.app.SelfInstaller"
